@@ -1,29 +1,28 @@
 /** @odoo-module */
 
 import { OdooViewsDataSource } from "@spreadsheet/data_sources/odoo_views_data_source";
-import { EvaluationError } from "@odoo/o-spreadsheet";
+import { orderByToString } from "@spreadsheet/helpers/helpers";
+import { LoadingDataError } from "@spreadsheet/o_spreadsheet/errors";
 import { _t } from "@web/core/l10n/translation";
+import { sprintf } from "@web/core/utils/strings";
 import {
     formatDateTime,
     deserializeDateTime,
     formatDate,
     deserializeDate,
 } from "@web/core/l10n/dates";
-import { orderByToString } from "@web/search/utils/order_by";
 
-import * as spreadsheet from "@odoo/o-spreadsheet";
-import { LOADING_ERROR } from "@spreadsheet/data_sources/data_source";
+import spreadsheet from "../o_spreadsheet/o_spreadsheet_extended";
 
 const { toNumber } = spreadsheet.helpers;
-const { DEFAULT_LOCALE } = spreadsheet.constants;
 
 /**
- * @typedef {import("@spreadsheet").OdooFields} OdooFields
+ * @typedef {import("@spreadsheet/data_sources/metadata_repository").Field} Field
  *
  * @typedef {Object} ListMetaData
  * @property {Array<string>} columns
  * @property {string} resModel
- * @property {OdooFields} fields
+ * @property {Record<string, Field>} fields
  *
  * @typedef {Object} ListSearchParams
  * @property {Array<string>} orderBy
@@ -31,7 +30,7 @@ const { DEFAULT_LOCALE } = spreadsheet.constants;
  * @property {Object} context
  */
 
-export class ListDataSource extends OdooViewsDataSource {
+export default class ListDataSource extends OdooViewsDataSource {
     /**
      * @override
      * @param {Object} services Services (see DataSource)
@@ -42,10 +41,9 @@ export class ListDataSource extends OdooViewsDataSource {
      */
     constructor(services, params) {
         super(services, params);
-        this.maxPosition = 0;
+        this.maxPosition = params.limit;
         this.maxPositionFetched = 0;
         this.data = [];
-        this.fieldsToFetch = new Set();
     }
 
     /**
@@ -56,32 +54,6 @@ export class ListDataSource extends OdooViewsDataSource {
         this.maxPosition = Math.max(this.maxPosition, position);
     }
 
-    isModelValid() {
-        return this._isModelValid;
-    }
-
-    /**
-     * @param {string} fieldName
-     */
-    addFieldToFetch(fieldName) {
-        if (this.data.length && fieldName in this.data[0]) {
-            return;
-        }
-        this.fieldsToFetch.add(fieldName);
-    }
-
-    async load(params) {
-        if (this._fetchingPromise) {
-            // if fetching is already scheduled for the next tick,
-            // wait the fetching promise to trigger the data source loading
-            // and then await the loading.
-            await this._fetchingPromise;
-            await this._loadPromise;
-            return;
-        }
-        return super.load(params);
-    }
-
     async _load() {
         await super._load();
         if (this.maxPosition === 0) {
@@ -89,13 +61,16 @@ export class ListDataSource extends OdooViewsDataSource {
             return;
         }
         const { domain, orderBy, context } = this._searchParams;
-        const { records } = await this._orm.webSearchRead(this._metaData.resModel, domain, {
-            specification: this._getReadSpec(),
-            order: orderByToString(orderBy),
-            limit: this.maxPosition,
-            context,
-        });
-        this.data = records;
+        this.data = await this._orm.searchRead(
+            this._metaData.resModel,
+            domain,
+            this._getFieldsToFetch(),
+            {
+                order: orderByToString(orderBy),
+                limit: this.maxPosition,
+                context,
+            }
+        );
         this.maxPositionFetched = this.maxPosition;
     }
 
@@ -103,40 +78,14 @@ export class ListDataSource extends OdooViewsDataSource {
      * Get the fields to fetch from the server.
      * Automatically add the currency field if the field is a monetary field.
      */
-    _getReadSpec() {
-        const spec = {};
-        const fields = [...this.fieldsToFetch].map((f) => this.getField(f)).filter(Boolean);
+    _getFieldsToFetch() {
+        const fields = this._metaData.columns.filter((f) => this.getField(f));
         for (const field of fields) {
-            switch (field.type) {
-                case "monetary":
-                    spec[field.name] = {};
-                    spec[field.currency_field] = {
-                        fields: {
-                            ...spec[field.currency_field]?.fields,
-                            display_name: {},
-                            name: {}, // currency code
-                            symbol: {},
-                            decimal_places: {},
-                            position: {},
-                        },
-                    };
-                    break;
-                case "many2one":
-                case "many2many":
-                case "one2many":
-                    spec[field.name] = {
-                        fields: {
-                            display_name: {},
-                            ...spec[field.name]?.fields,
-                        },
-                    };
-                    break;
-                default:
-                    spec[field.name] = {};
-                    break;
+            if (this.getField(field).type === "monetary") {
+                fields.push(this.getField(field).currency_field);
             }
         }
-        return spec;
+        return fields;
     }
 
     /**
@@ -144,27 +93,17 @@ export class ListDataSource extends OdooViewsDataSource {
      * @returns {number}
      */
     getIdFromPosition(position) {
-        this.assertIsValid();
+        this._assertDataIsLoaded();
         const record = this.data[position];
         return record ? record.id : undefined;
     }
 
     /**
      * @param {string} fieldName
-     * @returns {string | EvaluationError}
+     * @returns {string}
      */
     getListHeaderValue(fieldName) {
-        if (this.isLoading()) {
-            return LOADING_ERROR;
-        }
-        if (!this._isValid || !this._isModelValid) {
-            return this._loadError;
-        }
-        if (!this.isMetaDataLoaded()) {
-            this._triggerFetching();
-            return LOADING_ERROR;
-        }
-        this.assertIsValid();
+        this._assertDataIsLoaded();
         const field = this.getField(fieldName);
         return field ? field.string : fieldName;
     }
@@ -172,20 +111,15 @@ export class ListDataSource extends OdooViewsDataSource {
     /**
      * @param {number} position
      * @param {string} fieldName
-     * @returns {string|number|undefined|EvaluationError}
+     * @returns {string|number|undefined}
      */
     getListCellValue(position, fieldName) {
-        if (this.isLoading()) {
-            return LOADING_ERROR;
-        }
-        if (!this._isValid || !this._isModelValid) {
-            return this._loadError;
-        }
+        this._assertDataIsLoaded();
         if (position >= this.maxPositionFetched) {
             this.increaseMaxPosition(position + 1);
             // A reload is needed because the asked position is not already loaded.
             this._triggerFetching();
-            return LOADING_ERROR;
+            throw new LoadingDataError();
         }
         const record = this.data[position];
         if (!record) {
@@ -193,24 +127,27 @@ export class ListDataSource extends OdooViewsDataSource {
         }
         const field = this.getField(fieldName);
         if (!field) {
-            return new EvaluationError(
-                _t("The field %s does not exist or you do not have access to that field", fieldName)
+            throw new Error(
+                sprintf(
+                    _t("The field %s does not exist or you do not have access to that field"),
+                    fieldName
+                )
             );
         }
         if (!(fieldName in record)) {
-            this.addFieldToFetch(fieldName);
+            this._metaData.columns.push(fieldName);
+            this._metaData.columns = [...new Set(this._metaData.columns)]; //Remove duplicates
             this._triggerFetching();
-            return LOADING_ERROR;
+            throw new LoadingDataError();
         }
-        this.assertIsValid();
         switch (field.type) {
             case "many2one":
-                return record[fieldName].display_name ?? "";
+                return record[fieldName].length === 2 ? record[fieldName][1] : "";
             case "one2many":
             case "many2many": {
                 const labels = record[fieldName]
-                    .map(({ display_name }) => display_name)
-                    .filter((displayName) => displayName !== undefined);
+                    .map((id) => this._metadataRepository.getRecordDisplayName(field.relation, id))
+                    .filter((value) => value !== undefined);
                 return labels.join(", ");
             }
             case "selection": {
@@ -219,47 +156,20 @@ export class ListDataSource extends OdooViewsDataSource {
                 return value ? value[1] : "";
             }
             case "boolean":
-                return record[fieldName] ? true : false;
+                return record[fieldName] ? "TRUE" : "FALSE";
             case "date":
-                return record[fieldName]
-                    ? toNumber(this._formatDate(record[fieldName]), DEFAULT_LOCALE)
-                    : "";
+                return record[fieldName] ? toNumber(this._formatDate(record[fieldName])) : "";
             case "datetime":
-                return record[fieldName]
-                    ? toNumber(this._formatDateTime(record[fieldName]), DEFAULT_LOCALE)
-                    : "";
+                return record[fieldName] ? toNumber(this._formatDateTime(record[fieldName])) : "";
             case "properties": {
                 const properties = record[fieldName] || [];
                 return properties.map((property) => property.string).join(", ");
             }
             case "json":
-                return new EvaluationError(_t('Fields of type "%s" are not supported', "json"));
-            case "monetary":
-            case "float":
-            case "integer":
-                return fieldName in record ? record[fieldName] : "";
+                throw new Error(sprintf(_t('Fields of type "%s" are not supported'), "json"));
             default:
                 return record[fieldName] || "";
         }
-    }
-
-    /**
-     * @param {number} position
-     * @param {string} currencyFieldName
-     * @returns {import("@spreadsheet/currency/currency_data_source").Currency | undefined}
-     */
-    getListCurrency(position, currencyFieldName) {
-        this.assertIsValid();
-        const currency = this.data[position]?.[currencyFieldName];
-        if (!currency) {
-            return undefined;
-        }
-        return {
-            code: currency.name,
-            symbol: currency.symbol,
-            decimalPlaces: currency.decimal_places,
-            position: currency.position,
-        };
     }
 
     //--------------------------------------------------------------------------
@@ -268,15 +178,17 @@ export class ListDataSource extends OdooViewsDataSource {
 
     _formatDateTime(dateValue) {
         const date = deserializeDateTime(dateValue);
-        return formatDateTime(date.reconfigure({ numberingSystem: "latn" }), {
+        return formatDateTime(date, {
             format: "yyyy-MM-dd HH:mm:ss",
+            numberingSystem: "latn",
         });
     }
 
     _formatDate(dateValue) {
         const date = deserializeDate(dateValue);
-        return formatDate(date.reconfigure({ numberingSystem: "latn" }), {
+        return formatDate(date, {
             format: "yyyy-MM-dd",
+            numberingSystem: "latn",
         });
     }
 
@@ -290,9 +202,9 @@ export class ListDataSource extends OdooViewsDataSource {
             return;
         }
         this._fetchingPromise = Promise.resolve().then(() => {
-            return new Promise((resolve) => {
-                this._fetchingPromise = undefined;
+            new Promise((resolve) => {
                 this.load({ reload: true });
+                this._fetchingPromise = undefined;
                 resolve();
             });
         });

@@ -11,22 +11,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // on JS until the editor's code sets the right values on textareas.
     if (editTranslations) {
         [...document.querySelectorAll('textarea')].map(textarea => {
-            if (textarea.value.indexOf('data-oe-translation-source-sha') !== -1) {
+            if (textarea.value.indexOf('data-oe-translation-initial-sha') !== -1) {
                 textarea.classList.add('o_text_content_invisible');
             }
         });
-    }
-    // Hack: we move the '#o_search_modal' from the '#header' to
-    // '#o_search_modal_block'. Without this change, when the header has a
-    // 'transform: translate' (when it's fixed), the modal, which is positioned
-    // absolutely, takes the dimensions of the header instead of those of the
-    // 'body'.
-    const searchModalEl = document.querySelector("header#top .modal#o_search_modal");
-    if (searchModalEl) {
-        const mainEl = document.querySelector("main");
-        const searchDivEl = document.createElement('div');
-        searchDivEl.id = "o_search_modal_block";
-        searchDivEl.appendChild(searchModalEl);
-        mainEl.appendChild(searchDivEl);
     }
 });

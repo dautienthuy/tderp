@@ -1,4 +1,6 @@
-import { _t } from "@web/core/l10n/translation";
+/** @odoo-module **/
+
+import { _lt } from "@web/core/l10n/translation";
 import { PropertyValue } from "./property_value";
 import { CheckBox } from "@web/core/checkbox/checkbox";
 import { DomainSelector } from "@web/core/domain_selector/domain_selector";
@@ -10,42 +12,13 @@ import { Many2XAutocomplete } from "@web/views/fields/relational_utils";
 import { useService, useOwnedDialogs } from "@web/core/utils/hooks";
 import { PropertyDefinitionSelection } from "./property_definition_selection";
 import { PropertyTags } from "./property_tags";
+import { sprintf } from "@web/core/utils/strings";
 import { SelectCreateDialog } from "@web/views/view_dialogs/select_create_dialog";
 import { uuid } from "../../utils";
 
 import { Component, useState, onWillUpdateProps, useEffect, useRef } from "@odoo/owl";
 
 export class PropertyDefinition extends Component {
-    static template = "web.PropertyDefinition";
-    static components = {
-        CheckBox,
-        DomainSelector,
-        Dropdown,
-        DropdownItem,
-        PropertyValue,
-        Many2XAutocomplete,
-        ModelSelector,
-        PropertyDefinitionSelection,
-        PropertyTags,
-    };
-    static props = {
-        readonly: { type: Boolean, optional: true },
-        canChangeDefinition: { type: Boolean, optional: true },
-        checkDefinitionWriteAccess: { type: Function, optional: true },
-        propertyDefinition: { optional: true },
-        context: { type: Object },
-        isNewlyCreated: { type: Boolean, optional: true },
-        // index and number of properties, to hide the move arrows when needed
-        propertyIndex: { type: Number },
-        propertiesSize: { type: Number },
-        // events
-        onChange: { type: Function, optional: true },
-        onDelete: { type: Function, optional: true },
-        onPropertyMove: { type: Function, optional: true },
-        // prop needed by the popover service
-        close: { type: Function, optional: true },
-    };
-
     setup() {
         this.orm = useService("orm");
 
@@ -108,17 +81,16 @@ export class PropertyDefinition extends Component {
      */
     get availablePropertyTypes() {
         return [
-            ["char", _t("Text")],
-            ["boolean", _t("Checkbox")],
-            ["integer", _t("Integer")],
-            ["float", _t("Decimal")],
-            ["date", _t("Date")],
-            ["datetime", _t("Date & Time")],
-            ["selection", _t("Selection")],
-            ["tags", _t("Tags")],
-            ["many2one", _t("Many2one")],
-            ["many2many", _t("Many2many")],
-            ["separator", _t("Separator")],
+            ["char", _lt("Text")],
+            ["boolean", _lt("Checkbox")],
+            ["integer", _lt("Integer")],
+            ["float", _lt("Decimal")],
+            ["date", _lt("Date")],
+            ["datetime", _lt("Date & Time")],
+            ["selection", _lt("Selection")],
+            ["tags", _lt("Tags")],
+            ["many2one", _lt("Many2one")],
+            ["many2many", _lt("Many2many")],
         ];
     }
 
@@ -180,7 +152,7 @@ export class PropertyDefinition extends Component {
      * @param {event} event
      */
     onPropertyLabelKeypress(event) {
-        if (event.key !== "Enter") {
+        if (event.key !== 'Enter') {
             return;
         }
         this.props.close();
@@ -222,8 +194,8 @@ export class PropertyDefinition extends Component {
 
         this.props.onChange(propertyDefinition);
         this.state.propertyDefinition = propertyDefinition;
-        this.state.resModel = "";
-        this.state.resModelDescription = "";
+        this.state.resModel = '';
+        this.state.resModelDescription = '';
         this.state.typeLabel = this._typeLabel(newType);
     }
 
@@ -274,7 +246,7 @@ export class PropertyDefinition extends Component {
      */
     onButtonDomainClick() {
         this.addDialog(SelectCreateDialog, {
-            title: _t("Selected records"),
+            title: this.env._t("Selected records"),
             noCreate: true,
             multiSelect: false,
             resModel: this.state.propertyDefinition.comodel,
@@ -289,7 +261,7 @@ export class PropertyDefinition extends Component {
      * @param {string} direction, either 'up' or 'down'
      */
     onPropertyMove(direction) {
-        if (direction === "up") {
+        if (direction === 'up') {
             this.state.propertyIndex--;
         } else {
             this.state.propertyIndex++;
@@ -333,7 +305,7 @@ export class PropertyDefinition extends Component {
     onViewInKanbanChange(newValue) {
         const propertyDefinition = {
             ...this.state.propertyDefinition,
-            view_in_cards: newValue,
+            view_in_kanban: newValue,
         };
         this.props.onChange(propertyDefinition);
         this.state.propertyDefinition = propertyDefinition;
@@ -367,10 +339,10 @@ export class PropertyDefinition extends Component {
                     return;
                 }
                 this.state.resModelDescription = result[0].display_name;
-            } catch {
+            } catch (_) {
                 // can not read the ir.model
-                this.state.resModelDescription = _t(
-                    'You do not have access to the model "%s".',
+                this.state.resModelDescription = sprintf(
+                    _lt('You do not have access to the model "%s".'),
                     newModel
                 );
             }
@@ -411,3 +383,34 @@ export class PropertyDefinition extends Component {
         return allTypes.find((type) => type[0] === propertyType)[1];
     }
 }
+
+PropertyDefinition.template = "web.PropertyDefinition";
+PropertyDefinition.components = {
+    CheckBox,
+    DomainSelector,
+    Dropdown,
+    DropdownItem,
+    PropertyValue,
+    Many2XAutocomplete,
+    ModelSelector,
+    PropertyDefinitionSelection,
+    PropertyTags,
+};
+PropertyDefinition.props = {
+    readonly: { type: Boolean, optional: true },
+    canChangeDefinition: { type: Boolean, optional: true },
+    checkDefinitionWriteAccess: { type: Function, optional: true },
+    propertyDefinition: { optional: true },
+    hideKanbanOption: { type: Boolean, optional: true },
+    context: { type: Object },
+    isNewlyCreated: { type: Boolean, optional: true },
+    // index and number of properties, to hide the move arrows when needed
+    propertyIndex: { type: Number },
+    propertiesSize: { type: Number },
+    // events
+    onChange: { type: Function, optional: true },
+    onDelete: { type: Function, optional: true },
+    onPropertyMove: { type: Function, optional: true },
+    // prop needed by the popover service
+    close: { type: Function, optional: true },
+};

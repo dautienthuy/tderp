@@ -1,18 +1,13 @@
+/** @odoo-module */
+
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
-import { formatList } from "@web/core/l10n/utils";
 import { unique } from "@web/core/utils/arrays";
 import { useService } from "@web/core/utils/hooks";
 
 import { Component, useState, onWillStart } from "@odoo/owl";
-import { standardWidgetProps } from "@web/views/widgets/standard_widget_props";
 
 class ResConfigInviteUsers extends Component {
-    static template = "res_config_invite_users";
-    static props = {
-        ...standardWidgetProps,
-    };
-
     setup() {
         this.orm = useService("orm");
         this.invite = useService("user_invite");
@@ -35,8 +30,7 @@ class ResConfigInviteUsers extends Component {
      * @returns {boolean} true if the given email address is valid
      */
     validateEmail(email) {
-        const re =
-            /^([a-z0-9][-a-z0-9_+.]*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,63}(?:\.[a-z]{2})?)$/i;
+        const re = /^([a-z0-9][-a-z0-9_+.]*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,63}(?:\.[a-z]{2})?)$/i;
         return re.test(email);
     }
 
@@ -60,23 +54,11 @@ class ResConfigInviteUsers extends Component {
             }
         }
         if (invalidEmails.length) {
-            const errorMessage = (() => {
-                switch (invalidEmails.length) {
-                    case 1:
-                        return _t("Invalid email address: %(address)s", {
-                            address: invalidEmails[0],
-                        });
-                    case 2:
-                        return _t("Invalid email addresses: %(2 addresses)s", {
-                            "2 addresses": formatList(invalidEmails),
-                        });
-                    default:
-                        return _t("Invalid email addresses: %(addresses)s", {
-                            addresses: formatList(invalidEmails),
-                        });
-                }
-            })();
-            throw new Error(errorMessage);
+            throw new Error(
+                `${_t("Invalid email address")}${
+                    invalidEmails.length > 1 ? "es" : ""
+                }: ${invalidEmails.join(", ")}`
+            );
         }
     }
 
@@ -141,8 +123,6 @@ class ResConfigInviteUsers extends Component {
     }
 }
 
-export const resConfigInviteUsers = {
-    component: ResConfigInviteUsers,
-};
+ResConfigInviteUsers.template = "res_config_invite_users";
 
-registry.category("view_widgets").add("res_config_invite_users", resConfigInviteUsers);
+registry.category("view_widgets").add("res_config_invite_users", ResConfigInviteUsers);

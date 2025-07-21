@@ -3,19 +3,18 @@
 # 	* website_blog
 # 
 # Translators:
-# lhmflexerp <lhm@flexerp.dk>, 2024
-# Ejner Sønniksen <ejner@vkdata.dk>, 2024
+# Mads Søndergaard, 2022
+# lhmflexerp <lhm@flexerp.dk>, 2023
 # Sanne Kristensen <sanne@vkdata.dk>, 2024
-# Mads Søndergaard, 2024
-# Martin Trigaux, 2025
+# Martin Trigaux, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:56+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: Martin Trigaux, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:56+0000\n"
+"Last-Translator: Martin Trigaux, 2024\n"
 "Language-Team: Danish (https://app.transifex.com/odoo/teams/41243/da/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,15 +23,16 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: website_blog
-#: model_terms:ir.ui.view,arch_db:website_blog.date_selector
-msgid "#{year}"
-msgstr ""
-
-#. module: website_blog
 #. odoo-python
 #: code:addons/website_blog/models/website_blog.py:0
+#, python-format
 msgid "%s (copy)"
 msgstr "%s (kopi)"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_cover_post_fullwidth_design
+msgid "&amp;nbsp;"
+msgstr "&amp;nbsp;"
 
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.blog_feed
@@ -90,6 +90,7 @@ msgstr ""
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/tours/website_blog.js:0
+#, python-format
 msgid "<b>Publish your blog post</b> to make it visible to your visitors."
 msgstr "<b>Udgiv din blog post</b> for at gøre den synlig for dine besøgende."
 
@@ -115,6 +116,7 @@ msgstr ""
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/tours/website_blog.js:0
+#, python-format
 msgid ""
 "<b>Write your story here.</b> Use the top toolbar to style your text: add an"
 " image or table, set bold or italic, etc. Drag and drop building blocks for "
@@ -232,15 +234,12 @@ msgid "<i class=\"fa fa-rss-square\" aria-label=\"RSS\" title=\"RSS\"/>"
 msgstr "<i class=\"fa fa-rss-square\" aria-label=\"RSS\" title=\"RSS\"/>"
 
 #. module: website_blog
-#: model_terms:ir.ui.view,arch_db:website_blog.opt_sidebar_blog_index_follow_us
-msgid "<i class=\"fa fa-tiktok text-tiktok\" aria-label=\"TikTok\" title=\"TikTok\"/>"
-msgstr "<i class=\"fa fa-tiktok text-tiktok\" aria-label=\"TikTok\" title=\"TikTok\"/>"
-
-#. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_post_share_links_display
 #: model_terms:ir.ui.view,arch_db:website_blog.opt_sidebar_blog_index_follow_us
-msgid "<i class=\"fa fa-twitter text-twitter\" aria-label=\"X\" title=\"X\"/>"
+msgid "<i class=\"fa fa-twitter text-twitter\" aria-label=\"Twitter\" title=\"Twitter\"/>"
 msgstr ""
+"<i class=\"fa fa-twitter text-twitter\" aria-label=\"Twitter\" "
+"title=\"Twitter\"/>"
 
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.opt_sidebar_blog_index_follow_us
@@ -280,13 +279,6 @@ msgstr "<span class=\"me-1\">Vis:</span>"
 #: model_terms:ir.ui.view,arch_db:website_blog.blogs_nav
 msgid "<span class=\"nav-link disabled ps-0\">Blogs:</span>"
 msgstr "<span class=\"nav-link disabled ps-0\">Blogs:</span>"
-
-#. module: website_blog
-#: model_terms:web_tour.tour,rainbow_man_message:website_blog.blog
-msgid "<span><b>Good job!</b> You went through all steps of this tour.</span>"
-msgstr ""
-"<span><b>Godt arbejde!</b> Du gennemgik samtlige trin for denne "
-"rundvisning.</span>"
 
 #. module: website_blog
 #: model:blog.post,subtitle:website_blog.blog_post_2
@@ -372,7 +364,6 @@ msgid "All"
 msgstr "Alle"
 
 #. module: website_blog
-#: model_terms:ir.ui.view,arch_db:website_blog.blogs_nav
 #: model_terms:ir.ui.view,arch_db:website_blog.post_breadcrumbs
 msgid "All Blogs"
 msgstr "Alle blogs"
@@ -385,6 +376,7 @@ msgstr "Alle blogs"
 #. module: website_blog
 #. odoo-python
 #: code:addons/website_blog/models/website_snippet_filter.py:0
+#, python-format
 msgid "Alone in the ocean"
 msgstr "Alene i havet"
 
@@ -396,8 +388,9 @@ msgstr "Langs de linjer, hvor svært er opsætning og nedrivning?"
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/website_blog.js:0
-msgid "Amazing blog article: %(title)s! Check it live: %(url)s"
-msgstr "Fantastisk blog artikel: %(title)s! Tjek den ud live: %(url)s"
+#, python-format
+msgid "Amazing blog article: %s! Check it live: %s"
+msgstr "Fantastisk blog artikel: %s! Tjek den ud live: %s"
 
 #. module: website_blog
 #: model:blog.post,subtitle:website_blog.blog_post_1
@@ -495,7 +488,6 @@ msgstr "Antal vedhæftninger"
 
 #. module: website_blog
 #: model:ir.model.fields,field_description:website_blog.field_blog_post__author_id
-#: model_terms:ir.ui.view,arch_db:website_blog.s_dynamic_snippet_options_template
 #: model_terms:ir.ui.view,arch_db:website_blog.snippet_options
 #: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_search
 msgid "Author"
@@ -514,6 +506,7 @@ msgstr "Avatar"
 #. module: website_blog
 #. odoo-python
 #: code:addons/website_blog/models/website_snippet_filter.py:0
+#, python-format
 msgid "Awesome hotel rooms"
 msgstr "Fantastiske hotelværelser"
 
@@ -585,12 +578,12 @@ msgstr "Hinsides øjet"
 #: code:addons/website_blog/models/website.py:0
 #: model:ir.model,name:website_blog.model_blog_blog
 #: model:ir.model.fields,field_description:website_blog.field_blog_post__blog_id
-#: model:ir.ui.menu,name:website_blog.menu_website_blog_root_global
 #: model:website.menu,name:website_blog.menu_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.blog_blog_view_search
 #: model_terms:ir.ui.view,arch_db:website_blog.s_dynamic_snippet_options_template
 #: model_terms:ir.ui.view,arch_db:website_blog.view_blog_blog_form
 #: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_search
+#, python-format
 msgid "Blog"
 msgstr "Blog"
 
@@ -624,6 +617,8 @@ msgstr "Blog indlæg sider"
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.blog_post_complete
 #: model_terms:ir.ui.view,arch_db:website_blog.blog_post_view_form_add
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_cover_post
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_cover_post_fullwidth_design
 #: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_post_read_next
 #: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_form
 msgid "Blog Post Title"
@@ -671,10 +666,9 @@ msgstr "Blog overskift"
 #. module: website_blog
 #: model:ir.actions.act_window,name:website_blog.action_blog_blog
 #: model:ir.ui.menu,name:website_blog.menu_blog_global
+#: model:ir.ui.menu,name:website_blog.menu_website_blog_root_global
 #: model_terms:ir.ui.view,arch_db:website_blog.blog_searchbar_input_snippet_options
-#: model_terms:ir.ui.view,arch_db:website_blog.blogs_nav
 #: model_terms:ir.ui.view,arch_db:website_blog.view_blog_blog_list
-#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "Blogs"
 msgstr "Blogs"
 
@@ -754,12 +748,14 @@ msgstr "Børnefaciliteter "
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/tours/website_blog.js:0
+#, python-format
 msgid "Choose an image from the library."
 msgstr "Vælg et billede fra biblioteket."
 
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/tours/website_blog.js:0
+#, python-format
 msgid "Click here to add new content to your website."
 msgstr "Klik her for at tilføje nyt indhold til din hjemmeside."
 
@@ -773,15 +769,9 @@ msgstr ""
 "blog indlæg."
 
 #. module: website_blog
-#: model_terms:ir.ui.view,arch_db:website_blog.blogs_nav
 #: model_terms:ir.ui.view,arch_db:website_blog.posts_loop
 msgid "Close"
 msgstr "Luk"
-
-#. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_tag__color
-msgid "Color"
-msgstr "Farve"
 
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_post_regular_cover
@@ -858,11 +848,6 @@ msgid "Created on"
 msgstr "Oprettet den"
 
 #. module: website_blog
-#: model_terms:ir.ui.view,arch_db:website_blog.s_dynamic_snippet_options_template
-msgid "Date"
-msgstr "Dato"
-
-#. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.blog_searchbar_input_snippet_options
 msgid "Date (new to old)"
 msgstr "Dato (ny til gammel)"
@@ -889,6 +874,11 @@ msgstr "Dexter"
 #: model:ir.model.fields,field_description:website_blog.field_blog_tag_category__display_name
 msgid "Display Name"
 msgstr "Vis navn"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.snippet_options
+msgid "Drop Zone for Building Blocks"
+msgstr "Dropzone til byggeklodser"
 
 #. module: website_blog
 #: model_terms:blog.post,content:website_blog.blog_post_2
@@ -933,12 +923,14 @@ msgstr "Rediger 'Filtrer resultater' sidehovedet."
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/tours/website_blog.js:0
+#, python-format
 msgid "Edit your title, the subtitle is optional."
 msgstr "Rediger din titel, underteksten er valgfri."
 
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/tours/website_blog.js:0
+#, python-format
 msgid "Enter your post's title"
 msgstr "Indtast dit indlægs titel"
 
@@ -969,9 +961,13 @@ msgstr ""
 
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.opt_sidebar_blog_index_follow_us
-#: model_terms:ir.ui.view,arch_db:website_blog.snippet_options
 msgid "Follow Us"
 msgstr "Følg os:"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.snippet_options
+msgid "Follow us"
+msgstr "Følg os"
 
 #. module: website_blog
 #: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_follower_ids
@@ -1073,8 +1069,8 @@ msgstr "Ferie råd"
 
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.s_dynamic_snippet_options_template
-msgid "Hover Effect"
-msgstr ""
+msgid "Hover effect"
+msgstr "Svæve effekt"
 
 #. module: website_blog
 #: model:blog.post,name:website_blog.blog_post_4
@@ -1101,7 +1097,6 @@ msgstr "Hvor mobilt skal dit teleskop være?"
 
 #. module: website_blog
 #: model:blog.post,name:website_blog.blog_post_3
-#: model_terms:ir.ui.view,arch_db:website_blog.s_dynamic_snippet_blog_posts_preview_data
 msgid "How to choose the right hotel"
 msgstr "Hvordan man vælger det rigtige hotel"
 
@@ -1153,7 +1148,6 @@ msgstr ""
 
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.dynamic_filter_template_blog_post_card
-#: model_terms:ir.ui.view,arch_db:website_blog.dynamic_filter_template_blog_post_horizontal
 msgid "In"
 msgstr "I"
 
@@ -1189,6 +1183,7 @@ msgstr "Er udgivet"
 #. module: website_blog
 #. odoo-python
 #: code:addons/website_blog/models/website_snippet_filter.py:0
+#, python-format
 msgid "Islands"
 msgstr "Øer"
 
@@ -1249,8 +1244,9 @@ msgstr ""
 #. module: website_blog
 #. odoo-python
 #: code:addons/website_blog/models/website_snippet_filter.py:0
+#, python-format
 msgid "Jungle"
-msgstr "Jungle"
+msgstr "jungle"
 
 #. module: website_blog
 #: model_terms:blog.post,content:website_blog.blog_post_5
@@ -1265,6 +1261,7 @@ msgstr "Ved hvornår du skal kigge"
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/options.js:0
+#, python-format
 msgid "Large"
 msgstr "Stor"
 
@@ -1273,6 +1270,14 @@ msgstr "Stor"
 #: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_search
 msgid "Last Contributor"
 msgstr "Sidste bidragsyder"
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog____last_update
+#: model:ir.model.fields,field_description:website_blog.field_blog_post____last_update
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag____last_update
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag_category____last_update
+msgid "Last Modified on"
+msgstr "Sidst ændret den"
 
 #. module: website_blog
 #: model:ir.model.fields,field_description:website_blog.field_blog_blog__write_uid
@@ -1288,6 +1293,12 @@ msgstr "Sidst opdateret af"
 #: model:ir.model.fields,field_description:website_blog.field_blog_tag_category__write_date
 msgid "Last Updated on"
 msgstr "Sidst opdateret den"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_cover_post
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_cover_post_fullwidth_design
+msgid "Latest"
+msgstr "Senest"
 
 #. module: website_blog
 #: model:website.snippet.filter,name:website_blog.dynamic_filter_latest_blog_posts
@@ -1346,13 +1357,18 @@ msgid "Location"
 msgstr "Adresse"
 
 #. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_main_attachment_id
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "Vedhæftning"
+
+#. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.s_dynamic_snippet_options_template
 msgid "Marley"
 msgstr "Marley"
 
 #. module: website_blog
 #: model:blog.post,name:website_blog.blog_post_2
-#: model_terms:ir.ui.view,arch_db:website_blog.s_dynamic_snippet_blog_posts_preview_data
 msgid "Maui helicopter tours"
 msgstr "Maui helikopter tours"
 
@@ -1402,6 +1418,7 @@ msgstr ""
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/options.js:0
+#, python-format
 msgid "Medium"
 msgstr "Medium"
 
@@ -1475,6 +1492,11 @@ msgid "Name"
 msgstr "Navn"
 
 #. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.snippet_options
+msgid "Name / Latest Post"
+msgstr "Navn / Seneste indlæg"
+
+#. module: website_blog
 #: model:ir.actions.act_window,name:website_blog.blog_post_action_add
 msgid "New Blog Post"
 msgstr "Nyt blogindlæg"
@@ -1536,16 +1558,6 @@ msgstr ""
 "blotte øje."
 
 #. module: website_blog
-#: model_terms:ir.ui.view,arch_db:website_blog.s_dynamic_snippet_options_template
-msgid "Normal"
-msgstr "Normal"
-
-#. module: website_blog
-#: model_terms:ir.ui.view,arch_db:website_blog.s_dynamic_snippet_options_template
-msgid "Normal picture"
-msgstr ""
-
-#. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.blog_post_view_kanban
 msgid "Not Published"
 msgstr "Ikke udgivet"
@@ -1604,8 +1616,20 @@ msgstr ""
 "af hvad vi kan se på dette, det objekt nærmest på os i himlen."
 
 #. module: website_blog
+#. odoo-python
+#: code:addons/website_blog/models/ir_qweb_fields.py:0
+#, python-format
+msgid ""
+"On your default language, empty the blog post description and save to get an"
+" automated (translated) summary."
+msgstr ""
+"På dit standardsprog skal du tømme blogindlæggets beskrivelse og gemme for "
+"at få en automatisk (oversat) oversigt."
+
+#. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/tours/website_blog.js:0
+#, python-format
 msgid ""
 "Once you have reviewed the content on mobile, you can switch back to the "
 "normal view by clicking here again"
@@ -1617,12 +1641,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:website_blog.opt_sidebar_blog_index_tags
 msgid "Others"
 msgstr "Andre"
-
-#. module: website_blog
-#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_cover_post
-#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_cover_post_fullwidth_design
-msgid "Our Latest Posts"
-msgstr ""
 
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_post_blogs_display
@@ -1685,11 +1703,6 @@ msgid "Photo by Teddy Kelley, @teddykelley"
 msgstr "Foto af Teddy Kelley, @teddykelley"
 
 #. module: website_blog
-#: model_terms:ir.ui.view,arch_db:website_blog.s_dynamic_snippet_options_template
-msgid "Picture size"
-msgstr ""
-
-#. module: website_blog
 #: model:ir.model.fields,field_description:website_blog.field_blog_blog__blog_post_count
 #: model:ir.model.fields,field_description:website_blog.field_blog_tag__post_ids
 msgid "Posts"
@@ -1737,15 +1750,19 @@ msgid "Publishing date"
 msgstr "Udgivelses dato"
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_blog__rating_ids
-#: model:ir.model.fields,field_description:website_blog.field_blog_post__rating_ids
-msgid "Ratings"
-msgstr "Bedømmelser"
+#: model:ir.model,name:website_blog.model_ir_qweb_field
+msgid "Qweb Field"
+msgstr "Qweb felt"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_cover_post
+msgid "Read more"
+msgstr "Læs mere"
 
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.posts_loop
-msgid "Read more <i class=\"oi oi-chevron-right ms-2\"/>"
-msgstr "Læs mere <i class=\"oi oi-chevron-right ms-2\"/>"
+msgid "Read more <i class=\"fa fa-chevron-right ms-2\"/>"
+msgstr ""
 
 #. module: website_blog
 #: model_terms:blog.post,content:website_blog.blog_post_3
@@ -1755,8 +1772,8 @@ msgstr "Restauranter, Caféer, og barre"
 #. module: website_blog
 #: model:ir.model.fields,help:website_blog.field_blog_blog__website_id
 #: model:ir.model.fields,help:website_blog.field_blog_post__website_id
-msgid "Restrict to a specific website."
-msgstr ""
+msgid "Restrict publishing to this website."
+msgstr "Begræns udgivelse til denne hjemmeside."
 
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_form
@@ -1782,29 +1799,33 @@ msgstr "SMS leveringsfejl"
 #: model_terms:ir.ui.view,arch_db:website_blog.dynamic_filter_template_blog_post_horizontal
 #: model_terms:ir.ui.view,arch_db:website_blog.dynamic_filter_template_blog_post_list
 msgid "Sample"
-msgstr "Eksempel"
+msgstr "Prøve"
 
 #. module: website_blog
 #. odoo-python
 #: code:addons/website_blog/models/website_snippet_filter.py:0
+#, python-format
 msgid "Satellites"
 msgstr "Satellitter"
 
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/tours/website_blog.js:0
+#, python-format
 msgid "Search for an image. (eg: type \"business\")"
 msgstr "Søg efter et billede. (f.eks. type \"forretning\")"
 
 #. module: website_blog
 #. odoo-python
 #: code:addons/website_blog/models/website_snippet_filter.py:0
+#, python-format
 msgid "Seaside vs mountain side"
 msgstr "Havside vs bjergside"
 
 #. module: website_blog
 #. odoo-python
 #: code:addons/website_blog/models/website_snippet_filter.py:0
+#, python-format
 msgid "Seeing the world from above"
 msgstr "At se verden fra oven"
 
@@ -1816,12 +1837,14 @@ msgstr "Vælg Blog"
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/tours/website_blog.js:0
+#, python-format
 msgid "Select the blog you want to add the post to."
 msgstr "Vælg bloggen du vil tilføje indlægget til"
 
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/tours/website_blog.js:0
+#, python-format
 msgid "Select this menu item to create a new blog post."
 msgstr "Vælg denne menu for at oprette et nyt blog indlæg"
 
@@ -1850,6 +1873,7 @@ msgstr "Separer hvert nøgleord med et komma"
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/tours/website_blog.js:0
+#, python-format
 msgid "Set a blog post <b>cover</b>."
 msgstr "Angiv blog indlæg som <b>cover</b>."
 
@@ -1881,8 +1905,8 @@ msgstr "Del på LinkedIn"
 
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_post_share_links_display
-msgid "Share on X"
-msgstr ""
+msgid "Share on Twitter"
+msgstr "Del på Twitter"
 
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_post_share_links_display
@@ -1896,7 +1920,6 @@ msgstr "Sidebar"
 
 #. module: website_blog
 #: model:blog.post,name:website_blog.blog_post_1
-#: model_terms:ir.ui.view,arch_db:website_blog.s_dynamic_snippet_blog_posts_preview_data
 msgid "Sierra Tarahumara"
 msgstr "Sierra Tarahumara"
 
@@ -1919,18 +1942,9 @@ msgstr "Silly-Chico"
 #. module: website_blog
 #. odoo-python
 #: code:addons/website_blog/models/website_snippet_filter.py:0
+#, python-format
 msgid "Skies"
 msgstr "Skyer"
-
-#. module: website_blog
-#: model_terms:ir.ui.view,arch_db:website_blog.s_dynamic_snippet_options_template
-msgid "Smaller"
-msgstr ""
-
-#. module: website_blog
-#: model_terms:ir.ui.view,arch_db:website_blog.s_dynamic_snippet_options_template
-msgid "Smaller picture"
-msgstr ""
 
 #. module: website_blog
 #: model_terms:blog.post,content:website_blog.blog_post_6
@@ -2004,12 +2018,14 @@ msgstr "Nogen berømt i <cite title=\"Source Title\">Kilde titel</cite>"
 #. module: website_blog
 #. odoo-python
 #: code:addons/website_blog/models/website_snippet_filter.py:0
+#, python-format
 msgid "Spotting the fauna"
 msgstr "At se faunaen"
 
 #. module: website_blog
 #. odoo-python
 #: code:addons/website_blog/models/website_blog.py:0
+#, python-format
 msgid "Start writing here..."
 msgstr "Begynd at skrive her..."
 
@@ -2026,6 +2042,7 @@ msgstr "Underoverskrift"
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.blog_post_complete
 #: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_cover_post
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_cover_post_fullwidth_design
 #: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_post_read_next
 #: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_post_regular_cover
 msgid "Subtitle"
@@ -2059,12 +2076,12 @@ msgstr "Tag liste"
 
 #. module: website_blog
 #: model:ir.model.constraint,message:website_blog.constraint_blog_tag_category_name_uniq
-msgid "Tag category already exists!"
-msgstr "Tag kategori eksistere allerede!"
+msgid "Tag category already exists !"
+msgstr "Tag kategori eksistere allerede !"
 
 #. module: website_blog
 #: model:ir.model.constraint,message:website_blog.constraint_blog_tag_name_uniq
-msgid "Tag name already exists!"
+msgid "Tag name already exists !"
 msgstr "Tag navn eksisterer allerede!"
 
 #. module: website_blog
@@ -2085,12 +2102,12 @@ msgstr "Tags liste"
 #. module: website_blog
 #. odoo-python
 #: code:addons/website_blog/models/website_snippet_filter.py:0
+#, python-format
 msgid "Taking pictures in the dark"
 msgstr "At tage billeder i mørke"
 
 #. module: website_blog
 #: model:ir.model.fields,field_description:website_blog.field_blog_post__teaser
-#: model_terms:ir.ui.view,arch_db:website_blog.s_dynamic_snippet_options_template
 msgid "Teaser"
 msgstr "Teaser"
 
@@ -2129,7 +2146,7 @@ msgid ""
 "begin looking for ways to look deeper and learn more about the spectacular "
 "universe we see in the millions of stars above us each night."
 msgstr ""
-"Det “Wow” øjeblik er hvad astronomi handler om. For nogle, bliver det wow "
+"Det \"wow\" øjeblik er hvad astronomi handler om. For nogle, bliver det wow "
 "øjeblik en passion, der fører til en karriere indenfor studiet af stjerne. "
 "For et par enkelte heldige, bliver det wow øjeblik en altædende besættelse, "
 "der fører dem ud på en rejse blandt stjernerne i en rumfærge, eller en af "
@@ -2327,12 +2344,14 @@ msgstr "Denne boks vil ikke være synlig for dine besøgende"
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/options.js:0
+#, python-format
 msgid "This tag already exists"
 msgstr "Dette tag eksisterer allerede"
 
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/options.js:0
+#, python-format
 msgid "Tiny"
 msgstr "Bitte"
 
@@ -2460,6 +2479,7 @@ msgstr "Indlæg uden overskrift"
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/tours/website_blog.js:0
+#, python-format
 msgid "Use this icon to preview your blog post on <b>mobile devices</b>."
 msgstr ""
 "Anvend dette ikon til at forhåndsvise dit blogindlæg på <b>mobile "
@@ -2473,6 +2493,7 @@ msgstr "Anvendt i:"
 #. module: website_blog
 #. odoo-python
 #: code:addons/website_blog/models/website_snippet_filter.py:0
+#, python-format
 msgid "Viewpoints"
 msgstr "Synspunkter"
 
@@ -2528,28 +2549,28 @@ msgstr "Hjemmeside URL"
 #: model:ir.model.fields,help:website_blog.field_blog_blog__website_message_ids
 #: model:ir.model.fields,help:website_blog.field_blog_post__website_message_ids
 msgid "Website communication history"
-msgstr "Hjemmesidens kommunikations historik"
+msgstr "Website kommunikations historik"
 
 #. module: website_blog
 #: model:ir.model.fields,field_description:website_blog.field_blog_blog__website_meta_description
 #: model:ir.model.fields,field_description:website_blog.field_blog_post__website_meta_description
 #: model:ir.model.fields,field_description:website_blog.field_blog_tag__website_meta_description
 msgid "Website meta description"
-msgstr "Website meta beskrivelse"
+msgstr "Meta beskrivelse"
 
 #. module: website_blog
 #: model:ir.model.fields,field_description:website_blog.field_blog_blog__website_meta_keywords
 #: model:ir.model.fields,field_description:website_blog.field_blog_post__website_meta_keywords
 #: model:ir.model.fields,field_description:website_blog.field_blog_tag__website_meta_keywords
 msgid "Website meta keywords"
-msgstr "Website meta søgeord"
+msgstr "Meta søgeord"
 
 #. module: website_blog
 #: model:ir.model.fields,field_description:website_blog.field_blog_blog__website_meta_title
 #: model:ir.model.fields,field_description:website_blog.field_blog_post__website_meta_title
 #: model:ir.model.fields,field_description:website_blog.field_blog_tag__website_meta_title
 msgid "Website meta title"
-msgstr "Website meta titel"
+msgstr "Meta titel"
 
 #. module: website_blog
 #: model:ir.model.fields,field_description:website_blog.field_blog_blog__website_meta_og_img
@@ -2581,6 +2602,7 @@ msgstr ""
 #. module: website_blog
 #. odoo-python
 #: code:addons/website_blog/models/website_snippet_filter.py:0
+#, python-format
 msgid "With a View"
 msgstr "Med Udsigt"
 
@@ -2672,6 +2694,16 @@ msgstr "hoteller"
 #: model_terms:ir.ui.view,arch_db:website_blog.blog_post_content
 msgid "in"
 msgstr "i"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_cover_post
+msgid "in <i class=\"fa fa-folder-open text-muted\"/>"
+msgstr "i <i class=\"fa fa-folder-open text-muted\"/>"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_cover_post_fullwidth_design
+msgid "in <i class=\"fa fa-folder-open text-white-75\"/>"
+msgstr "i <i class=\"fa fa-folder-open text-white-75\"/>"
 
 #. module: website_blog
 #: model:blog.tag,name:website_blog.blog_tag_4

@@ -1,3 +1,4 @@
+/** @odoo-module */
 // This module makes it so that some errors only display a notification instead of an error dialog
 
 import { registry } from "@web/core/registry";

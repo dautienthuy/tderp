@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from odoo import api, Command, fields, models, _
+from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
-from odoo.osv import expression
 from odoo.tools import format_amount
 
-ACCOUNT_DOMAIN = "['&', ('deprecated', '=', False), ('account_type', 'not in', ('asset_receivable','liability_payable','asset_cash','liability_credit_card','off_balance'))]"
+ACCOUNT_DOMAIN = "['&', '&', '&', ('deprecated', '=', False), ('account_type', 'not in', ('asset_receivable','liability_payable','asset_cash','liability_credit_card')), ('company_id', '=', current_company_id), ('is_off_balance', '=', False)]"
 
 class ProductCategory(models.Model):
     _inherit = "product.category"
@@ -13,17 +12,11 @@ class ProductCategory(models.Model):
     property_account_income_categ_id = fields.Many2one('account.account', company_dependent=True,
         string="Income Account",
         domain=ACCOUNT_DOMAIN,
-        help="This account will be used when validating a customer invoice.",
-        tracking=True,
-        ondelete='restrict',
-    )
+        help="This account will be used when validating a customer invoice.")
     property_account_expense_categ_id = fields.Many2one('account.account', company_dependent=True,
         string="Expense Account",
         domain=ACCOUNT_DOMAIN,
-        help="The expense is accounted for when a vendor bill is validated, except in anglo-saxon accounting with perpetual inventory valuation in which case the expense (Cost of Goods Sold account) is recognized at the customer invoice validation.",
-        tracking=True,
-        ondelete='restrict',
-    )
+        help="The expense is accounted for when a vendor bill is validated, except in anglo-saxon accounting with perpetual inventory valuation in which case the expense (Cost of Goods Sold account) is recognized at the customer invoice validation.")
 
 #----------------------------------------------------------
 # Products
@@ -31,24 +24,16 @@ class ProductCategory(models.Model):
 class ProductTemplate(models.Model):
     _inherit = "product.template"
 
-    taxes_id = fields.Many2many('account.tax', 'product_taxes_rel', 'prod_id', 'tax_id',
-        string="Sales Taxes",
-        help="Default taxes used when selling the product",
-        domain=[('type_tax_use', '=', 'sale')],
-        default=lambda self: self.env.companies.account_sale_tax_id or self.env.companies.root_id.sudo().account_sale_tax_id,
-    )
+    taxes_id = fields.Many2many('account.tax', 'product_taxes_rel', 'prod_id', 'tax_id', help="Default taxes used when selling the product.", string='Customer Taxes',
+        domain=[('type_tax_use', '=', 'sale')], default=lambda self: self.env.company.account_sale_tax_id)
     tax_string = fields.Char(compute='_compute_tax_string')
-    supplier_taxes_id = fields.Many2many('account.tax', 'product_supplier_taxes_rel', 'prod_id', 'tax_id',
-        string="Purchase Taxes",
-        help="Default taxes used when buying the product",
-        domain=[('type_tax_use', '=', 'purchase')],
-        default=lambda self: self.env.companies.account_purchase_tax_id or self.env.companies.root_id.sudo().account_purchase_tax_id,
-    )
-    property_account_income_id = fields.Many2one('account.account', company_dependent=True, ondelete='restrict',
+    supplier_taxes_id = fields.Many2many('account.tax', 'product_supplier_taxes_rel', 'prod_id', 'tax_id', string='Vendor Taxes', help='Default taxes used when buying the product.',
+        domain=[('type_tax_use', '=', 'purchase')], default=lambda self: self.env.company.account_purchase_tax_id)
+    property_account_income_id = fields.Many2one('account.account', company_dependent=True,
         string="Income Account",
         domain=ACCOUNT_DOMAIN,
         help="Keep this field empty to use the default value from the product category.")
-    property_account_expense_id = fields.Many2one('account.account', company_dependent=True, ondelete='restrict',
+    property_account_expense_id = fields.Many2one('account.account', company_dependent=True,
         string="Expense Account",
         domain=ACCOUNT_DOMAIN,
         help="Keep this field empty to use the default value from the product category. If anglo-saxon accounting with automated valuation method is configured, the expense account on the product category will be used.")
@@ -57,7 +42,6 @@ class ProductTemplate(models.Model):
         comodel_name='account.account.tag',
         domain="[('applicability', '=', 'products')]",
         help="Tags to be set on the base and tax journal items created for this product.")
-    fiscal_country_codes = fields.Char(compute='_compute_fiscal_country_codes')
 
     def _get_product_accounts(self):
         return {
@@ -72,17 +56,10 @@ class ProductTemplate(models.Model):
         return res
 
     def get_product_accounts(self, fiscal_pos=None):
-        return {
-            key: (fiscal_pos or self.env['account.fiscal.position']).map_account(account)
-            for key, account in self._get_product_accounts().items()
-        }
-
-    @api.depends('company_id')
-    @api.depends_context('allowed_company_ids')
-    def _compute_fiscal_country_codes(self):
-        for record in self:
-            allowed_companies = record.company_id or self.env.companies
-            record.fiscal_country_codes = ",".join(allowed_companies.mapped('account_fiscal_country_id.code'))
+        accounts = self._get_product_accounts()
+        if not fiscal_pos:
+            fiscal_pos = self.env['account.fiscal.position']
+        return fiscal_pos.map_accounts(accounts)
 
     @api.depends('taxes_id', 'list_price')
     @api.depends_context('company')
@@ -98,10 +75,10 @@ class ProductTemplate(models.Model):
         joined = []
         included = res['total_included']
         if currency.compare_amounts(included, price):
-            joined.append(_('%(amount)s Incl. Taxes', amount=format_amount(self.env, included, currency)))
+            joined.append(_('%s Incl. Taxes', format_amount(self.env, included, currency)))
         excluded = res['total_excluded']
         if currency.compare_amounts(excluded, price):
-            joined.append(_('%(amount)s Excl. Taxes', amount=format_amount(self.env, excluded, currency)))
+            joined.append(_('%s Excl. Taxes', format_amount(self.env, excluded, currency)))
         if joined:
             tax_string = f"(= {', '.join(joined)})"
         else:
@@ -131,56 +108,6 @@ class ProductTemplate(models.Model):
                 "If you want to change its Unit of Measure, please archive this product and create a new one."
             ))
 
-    @api.onchange('type')
-    def _onchange_type(self):
-        if self.type == 'combo':
-            self.taxes_id = False
-            self.supplier_taxes_id = False
-        return super()._onchange_type()
-
-    def _force_default_sale_tax(self, companies):
-        default_customer_taxes = companies.filtered('account_sale_tax_id').account_sale_tax_id
-        for product_grouped_by_tax in self.grouped('taxes_id').values():
-            product_grouped_by_tax.taxes_id += default_customer_taxes
-        self.invalidate_recordset(['taxes_id'])
-
-    def _force_default_purchase_tax(self, companies):
-        default_supplier_taxes = companies.filtered('account_purchase_tax_id').account_purchase_tax_id
-        for product_grouped_by_tax in self.grouped('supplier_taxes_id').values():
-            product_grouped_by_tax.supplier_taxes_id += default_supplier_taxes
-        self.invalidate_recordset(['supplier_taxes_id'])
-
-    def _force_default_tax(self, companies):
-        self._force_default_sale_tax(companies)
-        self._force_default_purchase_tax(companies)
-
-    @api.model_create_multi
-    def create(self, vals_list):
-        products = super().create(vals_list)
-        # If no company was set for the product, the product will be available for all companies and therefore should
-        # have the default taxes of the other companies as well. sudo() is used since we're going to need to fetch all
-        # the other companies default taxes which the user may not have access to.
-        other_companies = self.env['res.company'].sudo().search([('id', 'not in', self.env.companies.ids)])
-        if other_companies and products:
-            products_without_company = products.filtered(lambda p: not p.company_id).sudo()
-            products_without_company._force_default_tax(other_companies)
-        return products
-
-    def _get_list_price(self, price):
-        """ Get the product sales price from a public price based on taxes defined on the product """
-        self.ensure_one()
-        if not self.taxes_id:
-            return super()._get_list_price(price)
-        computed_price = self.taxes_id.compute_all(price, self.currency_id)
-        total_included = computed_price["total_included"]
-
-        if price == total_included:
-            # Tax is configured as price included
-            return total_included
-        # calculate base from tax
-        included_computed_price = self.taxes_id.with_context(force_price_include=True).compute_all(price, self.currency_id)
-        return included_computed_price['total_excluded']
-
 
 class ProductProduct(models.Model):
     _inherit = "product.product"
@@ -197,8 +124,6 @@ class ProductProduct(models.Model):
         """ Helper to get the price unit from different models.
             This is needed to compute the same unit price in different models (sale order, account move, etc.) with same parameters.
         """
-        self.ensure_one()
-        company.ensure_one()
 
         product = self
 
@@ -231,8 +156,10 @@ class ProductProduct(models.Model):
         if product_taxes and fiscal_position:
             product_price_unit = self._get_tax_included_unit_price_from_price(
                 product_price_unit,
+                currency,
                 product_taxes,
                 fiscal_position=fiscal_position,
+                is_refund_document=is_refund_document,
             )
 
         # Apply currency rate.
@@ -241,10 +168,12 @@ class ProductProduct(models.Model):
 
         return product_price_unit
 
+    @api.model  # the product is optional for `compute_all`
     def _get_tax_included_unit_price_from_price(
-        self, product_price_unit, product_taxes,
+        self, product_price_unit, currency, product_taxes,
         fiscal_position=None,
         product_taxes_after_fp=None,
+        is_refund_document=False,
     ):
         if not product_taxes:
             return product_price_unit
@@ -255,57 +184,38 @@ class ProductProduct(models.Model):
 
             product_taxes_after_fp = fiscal_position.map_tax(product_taxes)
 
-        return product_taxes._adapt_price_unit_to_another_taxes(
-            price_unit=product_price_unit,
-            product=self,
-            original_taxes=product_taxes,
-            new_taxes=product_taxes_after_fp,
-        )
+        flattened_taxes_after_fp = product_taxes_after_fp._origin.flatten_taxes_hierarchy()
+        flattened_taxes_before_fp = product_taxes._origin.flatten_taxes_hierarchy()
+        taxes_before_included = all(tax.price_include for tax in flattened_taxes_before_fp)
+
+        if set(product_taxes.ids) != set(product_taxes_after_fp.ids) and taxes_before_included:
+            taxes_res = flattened_taxes_before_fp.with_context(round=False, round_base=False).compute_all(
+                product_price_unit,
+                quantity=1.0,
+                currency=currency,
+                product=self,
+                is_refund=is_refund_document,
+            )
+            product_price_unit = taxes_res['total_excluded']
+
+            if any(tax.price_include for tax in flattened_taxes_after_fp):
+                taxes_res = flattened_taxes_after_fp.with_context(round=False, round_base=False).compute_all(
+                    product_price_unit,
+                    quantity=1.0,
+                    currency=currency,
+                    product=self,
+                    is_refund=is_refund_document,
+                    handle_price_include=False,
+                )
+                for tax_res in taxes_res['taxes']:
+                    tax = self.env['account.tax'].browse(tax_res['id'])
+                    if tax.price_include:
+                        product_price_unit += tax_res['amount']
+
+        return product_price_unit
 
     @api.depends('lst_price', 'product_tmpl_id', 'taxes_id')
     @api.depends_context('company')
     def _compute_tax_string(self):
         for record in self:
             record.tax_string = record.product_tmpl_id._construct_tax_string(record.lst_price)
-
-    # -------------------------------------------------------------------------
-    # EDI
-    # -------------------------------------------------------------------------
-
-    def _retrieve_product(self, name=None, default_code=None, barcode=None, company=None, extra_domain=None):
-        '''Search all products and find one that matches one of the parameters.
-
-        :param name:            The name of the product.
-        :param default_code:    The default_code of the product.
-        :param barcode:         The barcode of the product.
-        :param company:         The company of the product.
-        :param extra_domain:    Any extra domain to add to the search.
-        :returns:               A product or an empty recordset if not found.
-        '''
-        if name and '\n' in name:
-            # cut Sales Description from the name
-            name = name.split('\n')[0]
-        domains = []
-        if barcode:
-            domains.append([('barcode', '=', barcode)])
-        if default_code:
-            domains.append([('default_code', '=', default_code)])
-        if name:
-            domains += [[('name', '=', name)], [('name', 'ilike', name)]]
-
-        company = company or self.env.company
-        for company_domain in (
-            [*self.env['res.partner']._check_company_domain(company), ('company_id', '!=', False)],
-            [('company_id', '=', False)],
-        ):
-            products = self.env['product.product'].search(
-                expression.AND([
-                    expression.OR(domains),
-                    company_domain,
-                    extra_domain or [],
-                ]),
-            )
-            for domain in domains:
-                if products_by_domain := products.filtered_domain(domain):
-                    return products_by_domain[0]
-        return self.env['product.product']

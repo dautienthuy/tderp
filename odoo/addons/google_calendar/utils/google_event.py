@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-import json
-import logging
-import re
-from collections import abc
-from typing import Iterator, Mapping
 
-from odoo.tools import email_normalize
-from odoo.tools.misc import ReadonlyDict
+from odoo.tools import email_normalize, ReadonlyDict
+import logging
+from typing import Iterator, Mapping
+from collections import abc
+import re
 
 _logger = logging.getLogger(__name__)
 
@@ -55,9 +53,7 @@ class GoogleEvent(abc.Set):
         except ValueError:
             raise ValueError("Expected singleton: %s" % self)
         event_id = list(self._events.keys())[0]
-        value = self._events[event_id].get(name)
-        json.dumps(value)
-        return value
+        return self._events[event_id].get(name)
 
     def __repr__(self):
         return '%s%s' % (self.__class__.__name__, self.ids)
@@ -197,17 +193,9 @@ class GoogleEvent(abc.Set):
         recurringEventId_value = re.match(r'(\w+_)', self.recurringEventId)
         if not id_value or not recurringEventId_value or id_value.group(1) != recurringEventId_value.group(1):
             return None
-        rec_pattern = re.search(r'(\w+_R\d+(?:T\d+)?(?:Z)?)', self.recurringEventId)
-        if not rec_pattern:
-            return None
-        id_range = rec_pattern.group()
-
-        ts_pattern = re.search(r'(\d{8}(?:T\d+Z?)?)$', self.id)
-        if not ts_pattern:
-            return None
-        timestamp = ts_pattern.group()
-
-        return f"{id_range}_{timestamp}"
+        ID_RANGE = re.search(r'\w+_R\d+T\d+', self.recurringEventId).group()
+        TIMESTAMP = re.search(r'\d+T\d+Z', self.id).group()
+        return f"{ID_RANGE}_{TIMESTAMP}"
 
     def cancelled(self):
         return self.filter(lambda e: e.status == 'cancelled')

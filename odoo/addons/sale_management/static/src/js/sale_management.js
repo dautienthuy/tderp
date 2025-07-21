@@ -1,7 +1,7 @@
-/** @odoo-module **/
+odoo.define('sale_management.sale_management', function (require) {
+'use strict';
 
-import publicWidget from "@web/legacy/js/public/public_widget";
-import { rpc } from "@web/core/network/rpc";
+var publicWidget = require('web.public.widget');
 
 publicWidget.registry.SaleUpdateLineButton = publicWidget.Widget.extend({
     selector: '.o_portal_sale_sidebar',
@@ -29,7 +29,10 @@ publicWidget.registry.SaleUpdateLineButton = publicWidget.Widget.extend({
      * @return {Deferred}
      */
      _callUpdateLineRoute(order_id, params) {
-        return rpc("/my/orders/" + order_id + "/update_line_dict", params);
+        return this._rpc({
+            route: "/my/orders/" + order_id + "/update_line_dict",
+            params: params,
+        });
     },
 
     /**
@@ -96,12 +99,13 @@ publicWidget.registry.SaleUpdateLineButton = publicWidget.Widget.extend({
         // to avoid double click on link with href.
         $target.css('pointer-events', 'none');
 
-        rpc(
-            "/my/orders/" + self.orderDetail.orderId + "/add_option/" + $target.data('optionId'),
-            {access_token: self.orderDetail.token}
-        ).then((data) => {
+        this._rpc({
+            route: "/my/orders/" + self.orderDetail.orderId + "/add_option/" + $target.data('optionId'),
+            params: {access_token: self.orderDetail.token}
+        }).then((data) => {
             this._refreshOrderUI(data);
         });
     },
 
+});
 });

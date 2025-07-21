@@ -1,5 +1,6 @@
 /** @odoo-module */
 
+import { patch } from '@web/core/utils/patch';
 import { registry } from '@web/core/registry';
 
 import { listView } from '@web/views/list/list_view';
@@ -11,16 +12,10 @@ import { LunchRendererMixin } from '../mixins/lunch_renderer_mixin';
 import { LunchSearchModel } from './search_model';
 
 
-export class LunchListRenderer extends LunchRendererMixin(ListRenderer) {
-    static template = "lunch.ListRenderer";
-    static components = {
-        ...LunchListRenderer.components,
-        LunchDashboard,
-    };
-
+export class LunchListRenderer extends ListRenderer {
     setup() {
         super.setup();
-        const { locationId } = this.env.searchModel.lunchState;
+        const {locationId} = this.env.searchModel.lunchState;
         if (!locationId) {
             this.props.list.records = [];
         }
@@ -30,7 +25,13 @@ export class LunchListRenderer extends LunchRendererMixin(ListRenderer) {
         this.openOrderLine(record.resId);
     }
 }
+patch(LunchListRenderer.prototype, 'lunch_list_renderer_mixin', LunchRendererMixin);
 
+LunchListRenderer.template = 'lunch.ListRenderer';
+LunchListRenderer.components = {
+    ...LunchListRenderer.components,
+    LunchDashboard,
+}
 
 registry.category('views').add('lunch_list', {
     ...listView,

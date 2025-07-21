@@ -24,31 +24,31 @@
         </record>
 
         <record id="website_sale.sale_ribbon" model="product.ribbon">
-            <field name="name">Sale</field>
-            <field name="position">left</field>
-            <field name="text_color">#FFFFFF</field>
-            <field name="bg_color">#0CA725</field>
+            <field name="html">Sale</field>
+            <field name="html_class">o_ribbon_left</field>
+            <field name="bg_color">rgb(40, 167, 69)</field>
+            <field name="text_color">white</field>
         </record>
 
         <record id="website_sale.sold_out_ribbon" model="product.ribbon">
-            <field name="name">Sold out</field>
-            <field name="position">left</field>
-            <field name="text_color">#FFFFFF</field>
-            <field name="bg_color">#d9534f</field>
+            <field name="html">Sold out</field>
+            <field name="html_class">o_ribbon_left</field>
+            <field name="bg_color">rgb(220, 53, 69)</field>
+            <field name="text_color">white</field>
         </record>
 
         <record id="website_sale.out_of_stock_ribbon" model="product.ribbon">
-            <field name="name">Out of stock</field>
-            <field name="position">left</field>
-            <field name="text_color">#FFFFFF</field>
-            <field name="bg_color">#ffc107</field>
+            <field name="html">Out of stock</field>
+            <field name="html_class">o_ribbon_left</field>
+            <field name="bg_color">rgb(255, 193, 7)</field>
+            <field name="text_color">black</field>
         </record>
 
         <record id="website_sale.new_ribbon" model="product.ribbon">
-            <field name="name">New!</field>
-            <field name="position">left</field>
-            <field name="text_color">#FFFFFF</field>
-            <field name="bg_color">#0275d8</field>
+            <field name="html">New!</field>
+            <field name="html_class">o_ribbon_left</field>
+            <field name="bg_color">rgb(0, 123, 255)</field>
+            <field name="text_color">white</field>
         </record>
 
         <record id="sales_team.salesteam_website_sales" model="crm.team">
@@ -59,8 +59,9 @@
             <field name="salesteam_id" ref="sales_team.salesteam_website_sales"/>
         </record>
 
-        <record id="delivery.free_delivery_carrier" model="delivery.carrier" forcecreate="False">
-            <field name="is_published" eval="True"/>
+        <record model="product.pricelist" id="product.list0">
+            <field name="selectable" eval="True" />
+            <field name="website_id" eval="False"/>
         </record>
 
     </data>
@@ -82,7 +83,7 @@
             <field name="state">code</field>
             <field name="code">
 DynamicFilter = model.env['website.snippet.filter']
-response = DynamicFilter._get_products('latest_sold')
+response = DynamicFilter._get_products('latest_sold', model.env.context)
             </field>
         </record>
         <record id="dynamic_snippet_latest_viewed_products_action" model="ir.actions.server">
@@ -91,7 +92,7 @@ response = DynamicFilter._get_products('latest_sold')
             <field name="state">code</field>
             <field name="code">
 DynamicFilter = model.env['website.snippet.filter']
-res_products = DynamicFilter._get_products('latest_viewed')
+res_products = DynamicFilter._get_products('latest_viewed', model.env.context)
 for data in res_products:
     data['_latest_viewed'] = True
 response = res_products
@@ -103,7 +104,8 @@ response = res_products
             <field name="state">code</field>
             <field name="code">
 DynamicFilter = model.env['website.snippet.filter']
-response = DynamicFilter._get_products('accessories', product_template_id=request.params.get('productTemplateId'))
+model.env.context['product_template_id'] = request.params.get('productTemplateId')
+response = DynamicFilter._get_products('accessories', model.env.context)
             </field>
         </record>
         <record id="dynamic_snippet_recently_sold_with_action" model="ir.actions.server">
@@ -112,7 +114,8 @@ response = DynamicFilter._get_products('accessories', product_template_id=reques
             <field name="state">code</field>
             <field name="code">
 DynamicFilter = model.env['website.snippet.filter']
-response = DynamicFilter._get_products('recently_sold_with', product_template_id=request.params.get('productTemplateId'))
+model.env.context['product_template_id'] = request.params.get('productTemplateId')
+response = DynamicFilter._get_products('recently_sold_with', model.env.context)
             </field>
         </record>
         <record id="dynamic_snippet_alternative_products" model="ir.actions.server">
@@ -121,7 +124,8 @@ response = DynamicFilter._get_products('recently_sold_with', product_template_id
             <field name="state">code</field>
             <field name="code">
 DynamicFilter = model.env['website.snippet.filter']
-response = DynamicFilter._get_products('alternative_products', product_template_id=request.params.get('productTemplateId'))
+model.env.context['product_template_id'] = request.params.get('productTemplateId')
+response = DynamicFilter._get_products('alternative_products', model.env.context)
             </field>
         </record>
         <!-- Dynamic Filter -->

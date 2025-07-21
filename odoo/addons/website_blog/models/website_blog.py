@@ -5,10 +5,10 @@ from datetime import datetime
 import random
 
 from odoo import api, models, fields, _
+from odoo.addons.http_routing.models.ir_http import slug, unslug
 from odoo.addons.website.tools import text_from_html
 from odoo.tools.json import scriptsafe as json_scriptsafe
 from odoo.tools.translate import html_translate
-from odoo.tools import html_escape
 
 
 class Blog(models.Model):
@@ -130,7 +130,7 @@ class BlogTagCategory(models.Model):
     tag_ids = fields.One2many('blog.tag', 'category_id', string='Tags')
 
     _sql_constraints = [
-        ('name_uniq', 'unique (name)', "Tag category already exists!"),
+        ('name_uniq', 'unique (name)', "Tag category already exists !"),
     ]
 
 
@@ -142,11 +142,10 @@ class BlogTag(models.Model):
 
     name = fields.Char('Name', required=True, translate=True)
     category_id = fields.Many2one('blog.tag.category', 'Category', index=True)
-    color = fields.Integer('Color')
     post_ids = fields.Many2many('blog.post', string='Posts')
 
     _sql_constraints = [
-        ('name_uniq', 'unique (name)', "Tag name already exists!"),
+        ('name_uniq', 'unique (name)', "Tag name already exists !"),
     ]
 
 
@@ -161,25 +160,23 @@ class BlogPost(models.Model):
     def _compute_website_url(self):
         super(BlogPost, self)._compute_website_url()
         for blog_post in self:
-            if blog_post.id:
-                blog_post.website_url = "/blog/%s/%s" % (self.env['ir.http']._slug(blog_post.blog_id), self.env['ir.http']._slug(blog_post))
+            blog_post.website_url = "/blog/%s/%s" % (slug(blog_post.blog_id), slug(blog_post))
 
     def _default_content(self):
-        text = html_escape(_("Start writing here..."))
-        return """
-            <p class="o_default_snippet_text">%(text)s</p>
-        """ % {"text": text}
+        return '''
+            <p class="o_default_snippet_text">''' + _("Start writing here...") + '''</p>
+        '''
     name = fields.Char('Title', required=True, translate=True, default='')
     subtitle = fields.Char('Sub Title', translate=True)
-    author_id = fields.Many2one('res.partner', 'Author', default=lambda self: self.env.user.partner_id, index='btree_not_null')
+    author_id = fields.Many2one('res.partner', 'Author', default=lambda self: self.env.user.partner_id)
     author_avatar = fields.Binary(related='author_id.image_128', string="Avatar", readonly=False)
     author_name = fields.Char(related='author_id.display_name', string="Author Name", readonly=False, store=True)
     active = fields.Boolean('Active', default=True)
     blog_id = fields.Many2one('blog.blog', 'Blog', required=True, ondelete='cascade', default=lambda self: self.env['blog.blog'].search([], limit=1))
     tag_ids = fields.Many2many('blog.tag', string='Tags')
     content = fields.Html('Content', default=_default_content, translate=html_translate, sanitize=False)
-    teaser = fields.Text('Teaser', compute='_compute_teaser', inverse='_set_teaser', translate=True)
-    teaser_manual = fields.Text(string='Teaser Content', translate=True)
+    teaser = fields.Text('Teaser', compute='_compute_teaser', inverse='_set_teaser')
+    teaser_manual = fields.Text(string='Teaser Content')
 
     website_message_ids = fields.One2many(domain=lambda self: [('model', '=', self._name), ('message_type', '=', 'comment')])
 
@@ -205,14 +202,6 @@ class BlogPost(models.Model):
 
     def _set_teaser(self):
         for blog_post in self:
-            if not blog_post.with_context(lang='en_US').teaser_manual:
-                # By default, if no teaser is set in english, it will use the
-                # first 200 characters of the content. We don't want to break
-                # that when adding a manual teaser in a translation.
-                # That's how the ORM work: when setting a translation value, if
-                # there is no source value, the source will also receive the
-                # translation value
-                blog_post.update_field_translations('teaser_manual', {'en_US': ''})
             blog_post.teaser_manual = blog_post.teaser
 
     @api.depends('create_date', 'published_date')
@@ -232,12 +221,11 @@ class BlogPost(models.Model):
     def _check_for_publication(self, vals):
         if vals.get('is_published'):
             for post in self.filtered(lambda p: p.active):
-                post.blog_id.message_post_with_source(
+                post.blog_id.message_post_with_view(
                     'website_blog.blog_post_template_new_post',
                     subject=post.name,
-                    render_values={'post': post},
-                    subtype_xmlid='website_blog.mt_blog_blog_published',
-                )
+                    values={'post': post},
+                    subtype_id=self.env['ir.model.data']._xmlid_to_res_id('website_blog.mt_blog_blog_published'))
             return True
         return False
 
@@ -263,9 +251,12 @@ class BlogPost(models.Model):
         self._check_for_publication(vals)
         return result
 
+    @api.returns('self', lambda value: value.id)
     def copy_data(self, default=None):
-        vals_list = super().copy_data(default=default)
-        return [dict(vals, name=self.env._("%s (copy)", blog.name)) for blog, vals in zip(self, vals_list)]
+        self.ensure_one()
+        name = _("%s (copy)", self.name)
+        default = dict(default or {}, name=name)
+        return super(BlogPost, self).copy_data(default)
 
     def _get_access_action(self, access_uid=None, force_website=False):
         """ Instead of the classic form view, redirect to the post on website
@@ -282,11 +273,9 @@ class BlogPost(models.Model):
             'res_id': self.id,
         }
 
-    def _notify_get_recipients_groups(self, message, model_description, msg_vals=None):
+    def _notify_get_recipients_groups(self, msg_vals=None):
         """ Add access button to everyone if the document is published. """
-        groups = super()._notify_get_recipients_groups(
-            message, model_description, msg_vals=msg_vals
-        )
+        groups = super(BlogPost, self)._notify_get_recipients_groups(msg_vals=msg_vals)
         if not self:
             return groups
 
@@ -331,9 +320,9 @@ class BlogPost(models.Model):
         state = options.get('state')
         domain = [website.website_domain()]
         if blog:
-            domain.append([('blog_id', '=', self.env['ir.http']._unslug(blog)[1])])
+            domain.append([('blog_id', '=', unslug(blog)[1])])
         if tags:
-            active_tag_ids = [self.env['ir.http']._unslug(tag)[1] for tag in tags.split(',')] or []
+            active_tag_ids = [unslug(tag)[1] for tag in tags.split(',')] or []
             if active_tag_ids:
                 domain.append([('tag_ids', 'in', active_tag_ids)])
         if date_begin and date_end:

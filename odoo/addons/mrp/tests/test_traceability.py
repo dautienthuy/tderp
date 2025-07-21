@@ -4,10 +4,9 @@
 from odoo.tests import Form
 from odoo.addons.mrp.tests.common import TestMrpCommon
 from odoo.exceptions import UserError
-
-from datetime import datetime
 import logging
 from freezegun import freeze_time
+from datetime import datetime
 
 _logger = logging.getLogger(__name__)
 
@@ -23,7 +22,7 @@ class TestTraceability(TestMrpCommon):
     def _create_product(self, tracking):
         return self.env['product.product'].create({
             'name': 'Product %s' % tracking,
-            'is_storable': True,
+            'type': 'product',
             'tracking': tracking,
             'categ_id': self.env.ref('product.product_category_all').id,
         })
@@ -47,25 +46,25 @@ class TestTraceability(TestMrpCommon):
             'location_id': stock_id,
             'product_id': consumed_lot.id,
             'inventory_quantity': 3,
-            'lot_id': Lot.create({'name': 'L1', 'product_id': consumed_lot.id}).id
+            'lot_id': Lot.create({'name': 'L1', 'product_id': consumed_lot.id, 'company_id': self.env.company.id}).id
         })
         quants |= self.env['stock.quant'].create({
             'location_id': stock_id,
             'product_id': consumed_serial.id,
             'inventory_quantity': 1,
-            'lot_id': Lot.create({'name': 'S1', 'product_id': consumed_serial.id}).id
+            'lot_id': Lot.create({'name': 'S1', 'product_id': consumed_serial.id, 'company_id': self.env.company.id}).id
         })
         quants |= self.env['stock.quant'].create({
             'location_id': stock_id,
             'product_id': consumed_serial.id,
             'inventory_quantity': 1,
-            'lot_id': Lot.create({'name': 'S2', 'product_id': consumed_serial.id}).id
+            'lot_id': Lot.create({'name': 'S2', 'product_id': consumed_serial.id, 'company_id': self.env.company.id}).id
         })
         quants |= self.env['stock.quant'].create({
             'location_id': stock_id,
             'product_id': consumed_serial.id,
             'inventory_quantity': 1,
-            'lot_id': Lot.create({'name': 'S3', 'product_id': consumed_serial.id}).id
+            'lot_id': Lot.create({'name': 'S3', 'product_id': consumed_serial.id, 'company_id': self.env.company.id}).id
         })
         quants.action_apply_inventory()
 
@@ -96,18 +95,17 @@ class TestTraceability(TestMrpCommon):
             mo_form = Form(mo)
             mo_form.qty_producing = 1
             if finished_product.tracking != 'none':
-                mo_form.lot_producing_id = self.env['stock.lot'].create({'name': 'Serial or Lot finished', 'product_id': finished_product.id})
+                mo_form.lot_producing_id = self.env['stock.lot'].create({'name': 'Serial or Lot finished', 'product_id': finished_product.id, 'company_id': self.env.company.id})
             mo = mo_form.save()
 
             details_operation_form = Form(mo.move_raw_ids[1], view=self.env.ref('stock.view_stock_move_operations'))
             with details_operation_form.move_line_ids.edit(0) as ml:
-                ml.quantity = 1
+                ml.qty_done = 1
             details_operation_form.save()
             details_operation_form = Form(mo.move_raw_ids[2], view=self.env.ref('stock.view_stock_move_operations'))
             with details_operation_form.move_line_ids.edit(0) as ml:
-                ml.quantity = 1
+                ml.qty_done = 1
             details_operation_form.save()
-            mo.move_raw_ids.picked = True
 
             mo.button_mark_done()
             self.assertEqual(mo.state, 'done', "Production order should be in done state.")
@@ -133,7 +131,7 @@ class TestTraceability(TestMrpCommon):
             for line in lines:
                 tracking = line['columns'][1].split(' ')[1]
                 self.assertEqual(
-                    line['columns'][-1], "1.00 Test-Unit", 'Part with tracking type "%s", should have quantity = 1' % (tracking)
+                    line['columns'][-1], "1.00 Units", 'Part with tracking type "%s", should have quantity = 1' % (tracking)
                 )
                 unfoldable = False if tracking == 'none' else True
                 self.assertEqual(
@@ -145,27 +143,27 @@ class TestTraceability(TestMrpCommon):
     def test_tracking_on_byproducts(self):
         product_final = self.env['product.product'].create({
             'name': 'Finished Product',
-            'is_storable': True,
+            'type': 'product',
             'tracking': 'serial',
         })
         product_1 = self.env['product.product'].create({
             'name': 'Raw 1',
-            'is_storable': True,
+            'type': 'product',
             'tracking': 'serial',
         })
         product_2 = self.env['product.product'].create({
             'name': 'Raw 2',
-            'is_storable': True,
+            'type': 'product',
             'tracking': 'serial',
         })
         byproduct_1 = self.env['product.product'].create({
             'name': 'Byproduct 1',
-            'is_storable': True,
+            'type': 'product',
             'tracking': 'serial',
         })
         byproduct_2 = self.env['product.product'].create({
             'name': 'Byproduct 2',
-            'is_storable': True,
+            'type': 'product',
             'tracking': 'serial',
         })
         bom_1 = self.env['mrp.bom'].create({
@@ -194,45 +192,53 @@ class TestTraceability(TestMrpCommon):
         mo_form.lot_producing_id = self.env['stock.lot'].create({
             'product_id': product_final.id,
             'name': 'Final_lot_1',
+            'company_id': self.env.company.id,
         })
         mo = mo_form.save()
 
         details_operation_form = Form(mo.move_raw_ids[0], view=self.env.ref('stock.view_stock_move_operations'))
-        with details_operation_form.move_line_ids.edit(0) as ml:
+        with details_operation_form.move_line_ids.new() as ml:
             ml.lot_id = self.env['stock.lot'].create({
                 'product_id': product_1.id,
                 'name': 'Raw_1_lot_1',
+                'company_id': self.env.company.id,
             })
+            ml.qty_done = 1
         details_operation_form.save()
         details_operation_form = Form(mo.move_raw_ids[1], view=self.env.ref('stock.view_stock_move_operations'))
-        with details_operation_form.move_line_ids.edit(0) as ml:
+        with details_operation_form.move_line_ids.new() as ml:
             ml.lot_id = self.env['stock.lot'].create({
                 'product_id': product_2.id,
                 'name': 'Raw_2_lot_1',
+                'company_id': self.env.company.id,
             })
+            ml.qty_done = 1
         details_operation_form.save()
         details_operation_form = Form(
             mo.move_finished_ids.filtered(lambda m: m.product_id == byproduct_1),
             view=self.env.ref('stock.view_stock_move_operations')
         )
-        with details_operation_form.move_line_ids.edit(0) as ml:
+        with details_operation_form.move_line_ids.new() as ml:
             ml.lot_id = self.env['stock.lot'].create({
                 'product_id': byproduct_1.id,
                 'name': 'Byproduct_1_lot_1',
+                'company_id': self.env.company.id,
             })
+            ml.qty_done = 1
         details_operation_form.save()
         details_operation_form = Form(
             mo.move_finished_ids.filtered(lambda m: m.product_id == byproduct_2),
             view=self.env.ref('stock.view_stock_move_operations')
         )
-        with details_operation_form.move_line_ids.edit(0) as ml:
+        with details_operation_form.move_line_ids.new() as ml:
             ml.lot_id = self.env['stock.lot'].create({
                 'product_id': byproduct_2.id,
                 'name': 'Byproduct_2_lot_1',
+                'company_id': self.env.company.id,
             })
+            ml.qty_done = 1
         details_operation_form.save()
 
-        mo.move_raw_ids.picked = True
         action = mo.button_mark_done()
         backorder = Form(self.env['mrp.production.backorder'].with_context(**action['context']))
         backorder.save().action_backorder()
@@ -241,6 +247,7 @@ class TestTraceability(TestMrpCommon):
         mo_form.lot_producing_id = self.env['stock.lot'].create({
             'product_id': product_final.id,
             'name': 'Final_lot_2',
+            'company_id': self.env.company.id,
         })
         mo_form.qty_producing = 1
         mo_backorder = mo_form.save()
@@ -249,45 +256,55 @@ class TestTraceability(TestMrpCommon):
             mo_backorder.move_raw_ids.filtered(lambda m: m.product_id == product_1),
             view=self.env.ref('stock.view_stock_move_operations')
         )
-        with details_operation_form.move_line_ids.edit(0) as ml:
+        with details_operation_form.move_line_ids.new() as ml:
             ml.lot_id = self.env['stock.lot'].create({
                 'product_id': product_1.id,
                 'name': 'Raw_1_lot_2',
+                'company_id': self.env.company.id,
             })
+            ml.qty_done = 1
         details_operation_form.save()
         details_operation_form = Form(
             mo_backorder.move_raw_ids.filtered(lambda m: m.product_id == product_2),
             view=self.env.ref('stock.view_stock_move_operations')
         )
-        with details_operation_form.move_line_ids.edit(0) as ml:
+        with details_operation_form.move_line_ids.new() as ml:
             ml.lot_id = self.env['stock.lot'].create({
                 'product_id': product_2.id,
                 'name': 'Raw_2_lot_2',
+                'company_id': self.env.company.id,
             })
+            ml.qty_done = 1
         details_operation_form.save()
         details_operation_form = Form(
             mo_backorder.move_finished_ids.filtered(lambda m: m.product_id == byproduct_1),
             view=self.env.ref('stock.view_stock_move_operations')
         )
-        with details_operation_form.move_line_ids.edit(0) as ml:
+        with details_operation_form.move_line_ids.new() as ml:
             ml.lot_id = self.env['stock.lot'].create({
                 'product_id': byproduct_1.id,
                 'name': 'Byproduct_1_lot_2',
+                'company_id': self.env.company.id,
             })
+            ml.qty_done = 1
         details_operation_form.save()
         details_operation_form = Form(
             mo_backorder.move_finished_ids.filtered(lambda m: m.product_id == byproduct_2),
             view=self.env.ref('stock.view_stock_move_operations')
         )
-        with details_operation_form.move_line_ids.edit(0) as ml:
+        with details_operation_form.move_line_ids.new() as ml:
             ml.lot_id = self.env['stock.lot'].create({
                 'product_id': byproduct_2.id,
                 'name': 'Byproduct_2_lot_2',
+                'company_id': self.env.company.id,
             })
+            ml.qty_done = 1
         details_operation_form.save()
 
-        mo_backorder.move_raw_ids.picked = True
         mo_backorder.button_mark_done()
+
+        # self.assertEqual(len(mo.move_raw_ids.mapped('move_line_ids')), 4)
+        # self.assertEqual(len(mo.move_finished_ids.mapped('move_line_ids')), 6)
 
         mo = mo | mo_backorder
         raw_move_lines = mo.move_raw_ids.mapped('move_line_ids')
@@ -298,19 +315,19 @@ class TestTraceability(TestMrpCommon):
 
         finished_move_lines = mo.move_finished_ids.mapped('move_line_ids')
         finished_move_line_lot_1 = finished_move_lines.filtered(lambda ml: ml.lot_id.name == 'Final_lot_1')
-        self.assertEqual(finished_move_line_lot_1.consume_line_ids.filtered(lambda l: l.quantity), raw_line_raw_1_lot_1 | raw_line_raw_2_lot_1)
+        self.assertEqual(finished_move_line_lot_1.consume_line_ids.filtered(lambda l: l.qty_done), raw_line_raw_1_lot_1 | raw_line_raw_2_lot_1)
         finished_move_line_lot_2 = finished_move_lines.filtered(lambda ml: ml.lot_id.name == 'Final_lot_2')
         raw_line_raw_1_lot_2 = raw_move_lines.filtered(lambda ml: ml.lot_id.name == 'Raw_1_lot_2')
         raw_line_raw_2_lot_2 = raw_move_lines.filtered(lambda ml: ml.lot_id.name == 'Raw_2_lot_2')
         self.assertEqual(finished_move_line_lot_2.consume_line_ids, raw_line_raw_1_lot_2 | raw_line_raw_2_lot_2)
 
         byproduct_move_line_1_lot_1 = finished_move_lines.filtered(lambda ml: ml.lot_id.name == 'Byproduct_1_lot_1')
-        self.assertEqual(byproduct_move_line_1_lot_1.consume_line_ids.filtered(lambda l: l.quantity), raw_line_raw_1_lot_1 | raw_line_raw_2_lot_1)
+        self.assertEqual(byproduct_move_line_1_lot_1.consume_line_ids.filtered(lambda l: l.qty_done), raw_line_raw_1_lot_1 | raw_line_raw_2_lot_1)
         byproduct_move_line_1_lot_2 = finished_move_lines.filtered(lambda ml: ml.lot_id.name == 'Byproduct_1_lot_2')
         self.assertEqual(byproduct_move_line_1_lot_2.consume_line_ids, raw_line_raw_1_lot_2 | raw_line_raw_2_lot_2)
 
         byproduct_move_line_2_lot_1 = finished_move_lines.filtered(lambda ml: ml.lot_id.name == 'Byproduct_2_lot_1')
-        self.assertEqual(byproduct_move_line_2_lot_1.consume_line_ids.filtered(lambda l: l.quantity), raw_line_raw_1_lot_1 | raw_line_raw_2_lot_1)
+        self.assertEqual(byproduct_move_line_2_lot_1.consume_line_ids.filtered(lambda l: l.qty_done), raw_line_raw_1_lot_1 | raw_line_raw_2_lot_1)
         byproduct_move_line_2_lot_2 = finished_move_lines.filtered(lambda ml: ml.lot_id.name == 'Byproduct_2_lot_2')
         self.assertEqual(byproduct_move_line_2_lot_2.consume_line_ids, raw_line_raw_1_lot_2 | raw_line_raw_2_lot_2)
 
@@ -329,13 +346,13 @@ class TestTraceability(TestMrpCommon):
         lot = self.env['stock.lot'].create({
             'name': 'lot1',
             'product_id': p_final.id,
+            'company_id': self.env.company.id,
         })
 
         mo_form = Form(mo)
         mo_form.qty_producing = 1.0
         mo_form.lot_producing_id = lot
         mo = mo_form.save()
-        mo.move_raw_ids.picked = True
         mo.button_mark_done()
 
         unbuild_form = Form(self.env['mrp.unbuild'])
@@ -355,12 +372,12 @@ class TestTraceability(TestMrpCommon):
             _logger.warning('Dummy')
         self.assertEqual(len(log_catcher.output), 1, "Useless warnings: \n%s" % "\n".join(log_catcher.output[:-1]))
 
-        mo.move_raw_ids.picked = True
         mo.button_mark_done()
         self.assertEqual(mo.state, 'done')
 
     def test_tracked_and_manufactured_component(self):
-        """ Suppose this structure:
+        """
+        Suppose this structure:
             productA --|- 1 x productB --|- 1 x productC
             with productB tracked by lot
         Ensure that, when we already have some qty of productB (with different lots),
@@ -368,13 +385,14 @@ class TestTraceability(TestMrpCommon):
         """
         stock_location = self.env.ref('stock.stock_location_stock')
         picking_type = self.env['stock.picking.type'].search([('code', '=', 'mrp_operation')])[0]
+        picking_type.use_auto_consume_components_lots = True
 
         productA, productB, productC = self.env['product.product'].create([{
             'name': 'Product A',
-            'is_storable': True,
+            'type': 'product',
         }, {
             'name': 'Product B',
-            'is_storable': True,
+            'type': 'product',
             'tracking': 'lot',
         }, {
             'name': 'Product C',
@@ -384,6 +402,7 @@ class TestTraceability(TestMrpCommon):
         lot_B01, lot_B02, lot_B03 = self.env['stock.lot'].create([{
             'name': 'lot %s' % i,
             'product_id': productB.id,
+            'company_id': self.env.company.id,
         } for i in [1, 2, 3]])
 
         self.env['mrp.bom'].create([{
@@ -404,7 +423,10 @@ class TestTraceability(TestMrpCommon):
         mo_form.product_qty = 15
         mo = mo_form.save()
         mo.action_confirm()
-        mo.button_mark_done()
+
+        action = mo.button_mark_done()
+        wizard = Form(self.env[action['res_model']].with_context(action['context'])).save()
+        wizard.process()
 
         # Produce 15 x productB
         mo_form = Form(self.env['mrp.production'])
@@ -444,6 +466,7 @@ class TestTraceability(TestMrpCommon):
         lot_subcomponentA, lot_componentA, lot_endProductA = self.env['stock.lot'].create([{
             'name': 'lot %s' % product,
             'product_id': product.id,
+            'company_id': self.env.company.id,
         } for product in (subcomponentA, componentA, endproductA)])
 
         # Create two boms, one for Component A and one for EndProduct A
@@ -468,7 +491,7 @@ class TestTraceability(TestMrpCommon):
         mo_form.qty_producing = 1
         mo_form.lot_producing_id = lot_componentA
         mo = mo_form.save()
-        mo.move_raw_ids.picked = True
+        mo.move_raw_ids[0].quantity_done = 1.0
         mo.button_mark_done()
 
         # Produce 1 endProduct A
@@ -481,7 +504,7 @@ class TestTraceability(TestMrpCommon):
         mo_form.qty_producing = 1
         mo_form.lot_producing_id = lot_endProductA
         mo = mo_form.save()
-        mo.move_raw_ids[0].write({'quantity': 1.0, 'picked': True})
+        mo.move_raw_ids[0].quantity_done = 1.0
         mo.button_mark_done()
 
         # Create out picking for EndProduct A
@@ -493,19 +516,22 @@ class TestTraceability(TestMrpCommon):
         moveA = self.env['stock.move'].create({
             'name': 'Picking A move',
             'product_id': endproductA.id,
-            'quantity': 1,
+            'product_uom_qty': 1,
             'product_uom': endproductA.uom_id.id,
             'picking_id': pickingA_out.id,
             'location_id': stock_location.id,
             'location_dest_id': customer_location.id})
 
+        # Confirm and assign pickingA
+        pickingA_out.action_confirm()
+        pickingA_out.action_assign()
+
         # Set move_line lot_id to the mrp.production lot_producing_id
         moveA.move_line_ids[0].write({
-            'quantity': 1.0,
+            'qty_done': 1.0,
             'lot_id': lot_endProductA.id,
         })
         # Transfer picking
-        moveA.picked = True
         pickingA_out._action_done()
 
         # Use concat so that delivery_ids is computed in batch.
@@ -523,12 +549,13 @@ class TestTraceability(TestMrpCommon):
 
         component = self.bom_4.bom_line_ids.product_id
         component.write({
-            'is_storable': True,
+            'type': 'product',
             'tracking': 'serial',
         })
         serial_number = self.env['stock.lot'].create({
             'product_id': component.id,
             'name': 'Super Serial',
+            'company_id': self.env.company.id,
         })
         self.env['stock.quant']._update_available_quantity(component, stock_location, 1, lot_id=serial_number)
 
@@ -542,11 +569,13 @@ class TestTraceability(TestMrpCommon):
 
         with Form(mo) as mo_form:
             mo_form.qty_producing = 1
-        mo.move_raw_ids.move_line_ids.quantity = 1
+        mo.move_raw_ids.move_line_ids.qty_done = 1
         mo.button_mark_done()
 
         # unbuild
-        Form.from_action(self.env, mo.button_unbuild()).save().action_validate()
+        action = mo.button_unbuild()
+        wizard = Form(self.env[action['res_model']].with_context(action['context'])).save()
+        wizard.action_validate()
 
         # scrap the component
         scrap = self.env['stock.scrap'].create({
@@ -566,13 +595,12 @@ class TestTraceability(TestMrpCommon):
             'product_id': component.id,
             'product_uom': component.uom_id.id,
             'product_uom_qty': 1.0,
-            'picked': True,
             'move_line_ids': [(0, 0, {
                 'product_id': component.id,
                 'location_id': scrap_location.id,
                 'location_dest_id': stock_location.id,
                 'product_uom_id': component.uom_id.id,
-                'quantity': 1.0,
+                'qty_done': 1.0,
                 'lot_id': serial_number.id,
             })],
         })
@@ -589,13 +617,12 @@ class TestTraceability(TestMrpCommon):
 
         with Form(mo) as mo_form:
             mo_form.qty_producing = 1
-        mo.move_raw_ids.move_line_ids.quantity = 1
-        mo.move_raw_ids.picked = True
+        mo.move_raw_ids.move_line_ids.qty_done = 1
         mo.button_mark_done()
 
         self.assertRecordValues((mo.move_finished_ids + mo.move_raw_ids).move_line_ids, [
-            {'product_id': self.bom_4.product_id.id, 'lot_id': False, 'quantity': 1},
-            {'product_id': component.id, 'lot_id': serial_number.id, 'quantity': 1},
+            {'product_id': self.bom_4.product_id.id, 'lot_id': False, 'qty_done': 1},
+            {'product_id': component.id, 'lot_id': serial_number.id, 'qty_done': 1},
         ])
 
     def test_generate_serial_button(self):
@@ -611,6 +638,7 @@ class TestTraceability(TestMrpCommon):
         lot_1 = self.env['stock.lot'].create({
             'name': str(int(lot_0) + 1).zfill(7),
             'product_id': p_final.id,
+            'company_id': self.env.company.id,
         }).name
         # generate lot lot_2 on a new MO
         mo = mo.copy()
@@ -619,44 +647,16 @@ class TestTraceability(TestMrpCommon):
         lot_2 = mo.lot_producing_id.name
         self.assertEqual(lot_2, str(int(lot_1) + 1).zfill(7))
 
-    def test_generate_serial_button_sequence(self):
-        """Test if serial in form "00000dd" is manually created, the generate serial
-        correctly create new serial from sequence.
-        """
-        seq = self.env['ir.sequence'].search([('code', '=', 'stock.lot.serial')])
-        mo, _bom, p_final, _p1, _p2 = self.generate_mo(qty_base_1=1, qty_base_2=1, qty_final=1, tracking_final='serial')
-
-        seq.active = False
-        # No initial serial and No default sequence
-        with self.assertRaises(UserError):
-            mo.action_generate_serial()
-
-        # manually create lot_1
-        self.env['stock.lot'].create({
-            'name': "test_000",
-            'product_id': p_final.id,
-        })
-
-        # generate serial lot_2 from the MO (next_serial)
-        mo.action_generate_serial()
-        self.assertEqual(mo.lot_producing_id.name, "test_001")
-
-        seq.active = True
-        seq.prefix = 'xx%(doy)sxx'
-        # generate serial lot_3 from the MO (next from sequence)
-        mo.action_generate_serial()
-        self.assertIn(datetime.now().strftime('%j'), mo.lot_producing_id.name)
-
     def test_assign_stock_move_date_on_mark_done(self):
         product_final = self.env['product.product'].create({
             'name': 'Finished Product',
-            'is_storable': True,
+            'type': 'product',
         })
         with freeze_time('2024-01-15'):
             production = self.env['mrp.production'].create({
                 'product_id': product_final.id,
                 'product_qty': 1,
-                'date_start': datetime(2024, 1, 10)
+                'date_planned_start': datetime(2024, 1, 10)
             })
             production.action_confirm()
             production.qty_producing = 1
@@ -673,7 +673,7 @@ class TestTraceability(TestMrpCommon):
         stock_location = self.env.ref('stock.stock_location_stock')
         component = self.bom_4.bom_line_ids.product_id
         component.write({
-            'is_storable': True,
+            'type': 'product',
             'tracking': 'serial',
         })
 
@@ -695,7 +695,7 @@ class TestTraceability(TestMrpCommon):
         mo.lot_producing_id = sn_lot01
         mo.button_mark_done()
         self.assertRecordValues(mo.move_finished_ids.move_line_ids, [
-            {'product_id': component.id, 'lot_id': sn_lot01.id, 'quantity': 1.0, 'state': 'done'},
+            {'product_id': component.id, 'lot_id': sn_lot01.id, 'qty_done': 1.0, 'state': 'done'},
         ])
 
         mo_form = Form(self.env['mrp.production'])
@@ -703,12 +703,11 @@ class TestTraceability(TestMrpCommon):
         mo = mo_form.save()
         mo.action_confirm()
         mo.qty_producing = 1
-        mo.move_raw_ids.move_line_ids.quantity = 1
+        mo.move_raw_ids.move_line_ids.qty_done = 1
         mo.move_raw_ids.move_line_ids.lot_id = sn_lot01
-        mo.move_raw_ids.move_line_ids.picked = True
         mo.button_mark_done()
         self.assertRecordValues(mo.move_raw_ids.move_line_ids, [
-            {'product_id': component.id, 'lot_id': sn_lot01.id, 'quantity': 1.0, 'state': 'done'},
+            {'product_id': component.id, 'lot_id': sn_lot01.id, 'qty_done': 1.0, 'state': 'done'},
         ])
 
         mo_form = Form(self.env['mrp.production'])
@@ -716,9 +715,8 @@ class TestTraceability(TestMrpCommon):
         mo = mo_form.save()
         mo.action_confirm()
         mo.qty_producing = 1
-        mo.move_raw_ids.move_line_ids.quantity = 1
+        mo.move_raw_ids.move_line_ids.qty_done = 1
         mo.move_raw_ids.move_line_ids.lot_id = sn_lot01
-        mo.move_raw_ids.move_line_ids.picked = True
         with self.assertRaises(UserError):
             mo.button_mark_done()
 
@@ -732,7 +730,7 @@ class TestTraceability(TestMrpCommon):
         """
         component = self.bom_4.bom_line_ids.product_id
         component.write({
-            'is_storable': True,
+            'type': 'product',
             'tracking': 'serial',
         })
 
@@ -758,12 +756,11 @@ class TestTraceability(TestMrpCommon):
         mo_consume_sn = mo_consume_sn_form.save()
         mo_consume_sn.action_confirm()
         mo_consume_sn.qty_producing = 1
-        mo_consume_sn.move_raw_ids.move_line_ids.quantity = 1
+        mo_consume_sn.move_raw_ids.move_line_ids.qty_done = 1
         mo_consume_sn.move_raw_ids.move_line_ids.lot_id = sn
-        mo_consume_sn.move_raw_ids.move_line_ids.picked = True
         mo_consume_sn.button_mark_done()
         self.assertRecordValues(mo_consume_sn.move_raw_ids.move_line_ids, [
-            {'product_id': component.id, 'lot_id': sn.id, 'quantity': 1.0, 'state': 'done'},
+            {'product_id': component.id, 'lot_id': sn.id, 'qty_done': 1.0, 'state': 'done'},
         ])
 
         unbuild_form = Form(self.env['mrp.unbuild'])
@@ -775,12 +772,11 @@ class TestTraceability(TestMrpCommon):
         mo_consume_sn = mo_consume_sn_form.save()
         mo_consume_sn.action_confirm()
         mo_consume_sn.qty_producing = 1
-        mo_consume_sn.move_raw_ids.move_line_ids.quantity = 1
+        mo_consume_sn.move_raw_ids.move_line_ids.qty_done = 1
         mo_consume_sn.move_raw_ids.move_line_ids.lot_id = sn
-        mo_consume_sn.move_raw_ids.move_line_ids.picked = True
         mo_consume_sn.button_mark_done()
         self.assertRecordValues(mo_consume_sn.move_raw_ids.move_line_ids, [
-            {'product_id': component.id, 'lot_id': sn.id, 'quantity': 1.0, 'state': 'done'},
+            {'product_id': component.id, 'lot_id': sn.id, 'qty_done': 1.0, 'state': 'done'},
         ])
 
     def test_produce_consume_unbuild_all_and_consume(self):
@@ -796,7 +792,7 @@ class TestTraceability(TestMrpCommon):
         stock_location = self.env.ref('stock.stock_location_stock')
         component = self.bom_4.bom_line_ids.product_id
         component.write({
-            'is_storable': True,
+            'type': 'product',
             'tracking': 'serial',
         })
 
@@ -822,12 +818,11 @@ class TestTraceability(TestMrpCommon):
         mo_consume_sn = mo_consume_sn_form.save()
         mo_consume_sn.action_confirm()
         mo_consume_sn.qty_producing = 1
-        mo_consume_sn.move_raw_ids.move_line_ids.quantity = 1
+        mo_consume_sn.move_raw_ids.move_line_ids.qty_done = 1
         mo_consume_sn.move_raw_ids.move_line_ids.lot_id = sn
-        mo_consume_sn.move_raw_ids.move_line_ids.picked = True
         mo_consume_sn.button_mark_done()
         self.assertRecordValues(mo_consume_sn.move_raw_ids.move_line_ids, [
-            {'product_id': component.id, 'lot_id': sn.id, 'quantity': 1.0, 'state': 'done'},
+            {'product_id': component.id, 'lot_id': sn.id, 'qty_done': 1.0, 'state': 'done'},
         ])
 
         unbuild_form = Form(self.env['mrp.unbuild'])
@@ -845,10 +840,9 @@ class TestTraceability(TestMrpCommon):
         mo_consume_sn = mo_consume_sn_form.save()
         mo_consume_sn.action_confirm()
         mo_consume_sn.qty_producing = 1
-        mo_consume_sn.move_raw_ids.move_line_ids.quantity = 1
+        mo_consume_sn.move_raw_ids.move_line_ids.qty_done = 1
         mo_consume_sn.move_raw_ids.move_line_ids.lot_id = sn
-        mo_consume_sn.move_raw_ids.move_line_ids.picked = True
         mo_consume_sn.button_mark_done()
         self.assertRecordValues(mo_consume_sn.move_raw_ids.move_line_ids, [
-            {'product_id': component.id, 'lot_id': sn.id, 'quantity': 1.0, 'state': 'done'},
+            {'product_id': component.id, 'lot_id': sn.id, 'qty_done': 1.0, 'state': 'done'},
         ])

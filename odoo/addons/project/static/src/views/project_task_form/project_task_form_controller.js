@@ -1,94 +1,45 @@
 /** @odoo-module */
 
-import { _t } from "@web/core/l10n/translation";
-import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
-import { HistoryDialog } from "@html_editor/components/history_dialog/history_dialog";
 import { useService } from '@web/core/utils/hooks';
-import { markup } from '@odoo/owl';
-import { escape } from '@web/core/utils/strings';
-import { FormControllerWithHTMLExpander } from '@resource/views/form_with_html_expander/form_controller_with_html_expander';
+import { FormController } from '@web/views/form/form_controller';
 
-export const subTaskDeleteConfirmationMessage = _t(
-    `Deleting a task will also delete its associated sub-tasks. \
-If you wish to preserve the sub-tasks, make sure to unlink them from their parent task beforehand.
-
-Are you sure you want to proceed?`
-);
-
-export class ProjectTaskFormController extends FormControllerWithHTMLExpander {
+export class ProjectTaskFormController extends FormController {
     setup() {
         super.setup();
-        this.notifications = useService("notification");
+        this.taskRecurrence = useService('project_task_recurrence');
     }
 
-    /**
-     * @override
-     */
-    getStaticActionMenuItems() {
-        return {
-            ...super.getStaticActionMenuItems(),
-            openHistoryDialog: {
-                sequence: 50,
-                icon: "fa fa-history",
-                description: _t("Version History"),
-                callback: () => this.openHistoryDialog(),
-            },
-        };
-    }
-
-    get deleteConfirmationDialogProps() {
-        const deleteConfirmationDialogProps = super.deleteConfirmationDialogProps;
-        if (!this.model.root.data.subtask_count) {
-            return deleteConfirmationDialogProps;
+    getActionMenuItems() {
+        if (!(this.archiveEnabled && this.model.root.isActive) || !this.model.root.data.recurrence_id) {
+            return super.getActionMenuItems();
         }
-        return {
-            ...deleteConfirmationDialogProps,
-            body: subTaskDeleteConfirmationMessage,
-        }
-    }
-
-    async openHistoryDialog() {
-        const record = this.model.root;
-        const versionedFieldName = 'description';
-        const historyMetadata = record.data["html_field_history_metadata"]?.[versionedFieldName];
-        if (!historyMetadata) {
-            this.notifications.add(
-                escape(_t(
-                    "The task description lacks any past content that could be restored at the moment."
-                ))
-            );
-            return;
-        }
-
-        this.dialogService.add(
-            HistoryDialog,
-            {
-                title: _t("Task Description History"),
-                noContentHelper: markup(
-                    `<span class='text-muted fst-italic'>${escape(
-                        _t(
-                            "The task description was empty at the time."
-                        )
-                    )}</span>`
+        this.archiveEnabled = false;
+        const actionMenuItems = super.getActionMenuItems();
+        this.archiveEnabled = true;
+        if (actionMenuItems) {
+            actionMenuItems.other.unshift({
+                description: this.env._t('Archive'),
+                callback: () => this.taskRecurrence.stopRecurrence(
+                    [this.model.root],
+                    () => this.model.root.archive(),
                 ),
-                recordId: record.resId,
-                recordModel: this.props.resModel,
-                versionedFieldName,
-                historyMetadata,
-                restoreRequested: (html, close) => {
-                    this.dialogService.add(ConfirmationDialog, {
-                        title: _t("Are you sure you want to restore this version ?"),
-                        body: _t("Restoring will replace the current content with the selected version. Any unsaved changes will be lost."),
-                        confirm: () => {
-                            const restoredData = {};
-                            restoredData[versionedFieldName] = html;
-                            record.update(restoredData);
-                            close();
-                        },
-                        confirmLabel: _t("Restore"),
-                    });
-                },
-            },
+            });
+        }
+        return actionMenuItems;
+    }
+
+    deleteRecord() {
+        if (!this.model.root.data.recurrence_id) {
+            return super.deleteRecord();
+        }
+        this.taskRecurrence.stopRecurrence(
+            [this.model.root],
+            () => {
+                this.model.root.delete();
+                if (!this.model.root.resId) {
+                    this.env.config.historyBack();
+                }
+            }
         );
     }
 }

@@ -48,11 +48,8 @@ class AccountMove(models.Model):
 
     @api.depends('state', 'edi_document_ids', 'edi_document_ids.state')
     def _compute_l10n_in_edi_ewaybill_show_send_button(self):
-        edi_format = self.env.ref('l10n_in_edi_ewaybill.edi_in_ewaybill_json_1_03', raise_if_not_found=False)
-        if not edi_format:
-            self.l10n_in_edi_ewaybill_show_send_button = False
-            return
-        posted_moves = self.filtered(lambda x: x.move_type in ('out_invoice', 'in_invoice', 'in_refund') and x.state == 'posted' and x.country_code == "IN")
+        edi_format = self.env.ref('l10n_in_edi_ewaybill.edi_in_ewaybill_json_1_03')
+        posted_moves = self.filtered(lambda x: x.is_invoice() and x.state == 'posted' and x.country_code == "IN")
         for move in posted_moves:
             already_sent = move.edi_document_ids.filtered(lambda x: x.edi_format_id == edi_format and x.state in ('sent', 'to_cancel', 'to_send'))
             if already_sent:
@@ -107,11 +104,11 @@ class AccountMove(models.Model):
                 raise UserError(_("You can only create E-waybill from posted invoice"))
             errors = edi_format._check_move_configuration(move)
             if errors:
-                raise UserError(_("Invalid invoice configuration:\n\n%s", '\n'.join(errors)))
+                raise UserError(_("Invalid invoice configuration:\n\n%s") % '\n'.join(errors))
             existing_edi_document = move.edi_document_ids.filtered(lambda x: x.edi_format_id == edi_format)
             if existing_edi_document:
                 if existing_edi_document.state in ('sent', 'to_cancel'):
-                    raise UserError(_("E-waybill is already created"))
+                    raise UserError(_("E-waybill is already created") % '\n'.join(errors))
                 existing_edi_document.sudo().write({
                     'state': 'to_send',
                     'attachment_id': False,
@@ -124,8 +121,3 @@ class AccountMove(models.Model):
                 })
         self.env['account.edi.document'].create(edi_document_vals_list)
         self.env.ref('account_edi.ir_cron_edi_network')._trigger()
-
-    def _can_force_cancel(self):
-        # OVERRIDE
-        self.ensure_one()
-        return any(document.edi_format_id.code == 'in_ewaybill_1_03' and document.state == 'to_cancel' for document in self.edi_document_ids) or super()._can_force_cancel()

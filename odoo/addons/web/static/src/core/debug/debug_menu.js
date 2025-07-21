@@ -1,4 +1,5 @@
-import { _t } from "@web/core/l10n/translation";
+/** @odoo-module **/
+
 import { Dropdown } from "@web/core/dropdown/dropdown";
 import { DropdownItem } from "@web/core/dropdown/dropdown_item";
 import { DebugMenuBasic } from "@web/core/debug/debug_menu_basic";
@@ -7,14 +8,12 @@ import { useService } from "@web/core/utils/hooks";
 import { useEnvDebugContext } from "./debug_context";
 
 export class DebugMenu extends DebugMenuBasic {
-    static components = { Dropdown, DropdownItem };
-    static props = {};
     setup() {
         super.setup();
         const debugContext = useEnvDebugContext();
         this.command = useService("command");
         useCommand(
-            _t("Debug tools..."),
+            this.env._t("Debug tools..."),
             async () => {
                 const items = await debugContext.getItems(this.env);
                 let index = 0;
@@ -43,8 +42,8 @@ export class DebugMenu extends DebugMenuBasic {
                 const configByNamespace = {
                     default: {
                         categories: defaultCategories,
-                        emptyMessage: _t("No debug command found"),
-                        placeholder: _t("Choose a debug command..."),
+                        emptyMessage: this.env._t("No debug command found"),
+                        placeholder: this.env._t("Choose a debug command..."),
                     },
                 };
                 const commandPaletteConfig = {
@@ -59,3 +58,4 @@ export class DebugMenu extends DebugMenuBasic {
         );
     }
 }
+DebugMenu.components = { Dropdown, DropdownItem };

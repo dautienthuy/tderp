@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from psycopg2 import IntegrityError
-from psycopg2.errors import NotNullViolation
+from psycopg2 import IntegrityError, Error as Psycopg2Error
 
 from odoo.exceptions import ValidationError
-from odoo.tests import Form, TransactionCase, HttpCase, tagged
+from odoo.tests.common import Form, TransactionCase, HttpCase, tagged
 from odoo.tools import mute_logger
 from odoo import Command
 
@@ -173,56 +172,6 @@ class TestXMLID(TransactionCase):
         with self.assertRaisesRegex(IntegrityError, 'ir_model_data_name_nospaces'):
             model._load_records(data_list)
 
-    def test_update_xmlid(self):
-        def assert_xmlid(xmlid, value, message):
-            expected_values = (value._name, value.id)
-            with self.assertQueryCount(0):
-                self.assertEqual(self.env['ir.model.data']._xmlid_lookup(xmlid), expected_values, message)
-            module, name = xmlid.split('.')
-            self.env.cr.execute("SELECT model, res_id FROM ir_model_data where module=%s and name=%s", [module, name])
-            self.assertEqual((value._name, value.id), self.env.cr.fetchone(), message)
-
-        xmlid = 'base.test_xmlid'
-        records = self.env['ir.model.data'].search([], limit=6)
-        with self.assertQueryCount(1):
-            self.env['ir.model.data']._update_xmlids([
-                {'xml_id': xmlid, 'record': records[0]},
-            ])
-        assert_xmlid(xmlid, records[0], f'The xmlid {xmlid} should have been created with record {records[0]}')
-
-        with self.assertQueryCount(1):
-            self.env['ir.model.data']._update_xmlids([
-                {'xml_id': xmlid, 'record': records[1]},
-            ], update=True)
-        assert_xmlid(xmlid, records[1], f'The xmlid {xmlid} should have been updated with record {records[1]}')
-
-        with self.assertQueryCount(1):
-            self.env['ir.model.data']._update_xmlids([
-                {'xml_id': xmlid, 'record': records[2]},
-            ])
-        assert_xmlid(xmlid, records[2], f'The xmlid {xmlid} should have been updated with record {records[1]}')
-
-        # noupdate case
-        # note: this part is mainly there to avoid breaking the current behaviour, not asserting that it makes sence
-        xmlid = 'base.test_xmlid_noupdates'
-        with self.assertQueryCount(1):
-            self.env['ir.model.data']._update_xmlids([
-                {'xml_id': xmlid, 'record': records[3], 'noupdate':True}, # record created as noupdate
-            ])
-
-        assert_xmlid(xmlid, records[3], f'The xmlid {xmlid} should have been created for record {records[2]}')
-
-        with self.assertQueryCount(1):
-            self.env['ir.model.data']._update_xmlids([
-                {'xml_id': xmlid, 'record': records[4]},
-            ], update=True)
-        assert_xmlid(xmlid, records[3], f'The xmlid {xmlid} should not have been updated (update mode)')
-
-        with self.assertQueryCount(1):
-            self.env['ir.model.data']._update_xmlids([
-                {'xml_id': xmlid, 'record': records[5]},
-            ])
-        assert_xmlid(xmlid, records[5], f'The xmlid {xmlid} should have been updated with record (not an update) {records[1]}')
 
 class TestIrModel(TransactionCase):
 
@@ -381,64 +330,14 @@ class TestIrModel(TransactionCase):
         self.assertEqual(self.registry.field_depends[type(record).display_name], ())
         self.assertEqual(record.display_name, f"x_bananas,{record.id}")
 
-    def test_monetary_currency_field(self):
-        fields_value = [
-            Command.create({'name': 'x_monetary', 'ttype': 'monetary', 'field_description': 'Monetary', 'currency_field': 'test'}),
-        ]
-        with self.assertRaises(ValidationError):
-            self.env['ir.model'].create({
-                'name': 'Paper Company Model',
-                'model': 'x_paper_model',
-                'field_id': fields_value,
-            })
-
-        fields_value = [
-            Command.create({'name': 'x_monetary', 'ttype': 'monetary', 'field_description': 'Monetary', 'currency_field': 'x_falsy_currency'}),
-            Command.create({'name': 'x_falsy_currency', 'ttype': 'one2many', 'field_description': 'Currency', 'relation': 'res.currency'}),
-        ]
-        with self.assertRaises(ValidationError):
-            self.env['ir.model'].create({
-                'name': 'Paper Company Model',
-                'model': 'x_paper_model',
-                'field_id': fields_value,
-            })
-
-        fields_value = [
-            Command.create({'name': 'x_monetary', 'ttype': 'monetary', 'field_description': 'Monetary', 'currency_field': 'x_falsy_currency'}),
-            Command.create({'name': 'x_falsy_currency', 'ttype': 'many2one', 'field_description': 'Currency', 'relation': 'res.partner'}),
-        ]
-        with self.assertRaises(ValidationError):
-            self.env['ir.model'].create({
-                'name': 'Paper Company Model',
-                'model': 'x_paper_model',
-                'field_id': fields_value,
-            })
-
-        fields_value = [
-            Command.create({'name': 'x_monetary', 'ttype': 'monetary', 'field_description': 'Monetary', 'currency_field': 'x_good_currency'}),
-            Command.create({'name': 'x_good_currency', 'ttype': 'many2one', 'field_description': 'Currency', 'relation': 'res.currency'}),
-        ]
-        model = self.env['ir.model'].create({
-            'name': 'Paper Company Model',
-            'model': 'x_paper_model',
-            'field_id': fields_value,
-        })
-        monetary_field = model.field_id.search([['name', 'ilike', 'x_monetary']])
-        self.assertEqual(len(monetary_field), 1,
-                         "Should have the monetary field in the created ir.model")
-        self.assertEqual(monetary_field.currency_field, "x_good_currency",
-                         "The currency field in monetary should have x_good_currency as name")
-
-@tagged('-at_install', 'post_install')
-class TestIrModelEdition(TransactionCase):
     def test_new_ir_model_fields_related(self):
         """Check that related field are handled correctly on new field"""
-        model = self.env['ir.model'].create({
-            'name': 'Bananas',
-            'model': 'x_bananas'
-        })
         with self.debug_mode():
-            form = Form(self.env['ir.model.fields'].with_context(default_model_id=model.id))
+            form = Form(
+                self.env['ir.model.fields'].with_context(
+                    default_model_id=self.bananas_model.id
+                )
+            )
             form.related = 'id'
             self.assertEqual(form.ttype, 'integer')
 
@@ -482,19 +381,18 @@ class TestIrModelEdition(TransactionCase):
 
     @mute_logger('odoo.sql_db')
     def test_ir_model_fields_name_create(self):
-        model = self.env['ir.model'].create({
-            'name': 'Bananas',
-            'model': 'x_bananas'
-        })
+        NotNullViolationPgCode = '23502'
         # Quick create an ir_model_field should not be possible
         # It should be raise a ValidationError
-        with self.assertRaises(NotNullViolation):
+        with self.assertRaises(Psycopg2Error) as error:
             self.env['ir.model.fields'].name_create("field_name")
+
+        self.assertEqual(error.exception.pgcode, NotNullViolationPgCode)
 
         # But with default_ we should be able to name_create
         self.env['ir.model.fields'].with_context(
-            default_model_id=model.id,
-            default_model=model.name,
+            default_model_id=self.bananas_model.id,
+            default_model=self.bananas_model.name,
             default_ttype="char"
         ).name_create("field_name")
 
@@ -528,10 +426,10 @@ class TestIrModelFieldsTranslation(HttpCase):
         field = self.env['ir.model.fields'].search([('model_id.model', '=', 'res.users'), ('name', '=', 'login')])
         self.assertEqual(field.with_context(lang='en_US').field_description, 'Login')
         # check the name column of res.users is displayed as 'Login'
-        self.start_tour("/odoo", 'ir_model_fields_translation_en_tour', login="admin")
+        self.start_tour("/web", 'ir_model_fields_translation_en_tour', login="admin")
         field.update_field_translations('field_description', {'en_US': 'Login2'})
         # check the name column of res.users is displayed as 'Login2'
-        self.start_tour("/odoo", 'ir_model_fields_translation_en_tour2', login="admin")
+        self.start_tour("/web", 'ir_model_fields_translation_en_tour2', login="admin")
 
         # modify fr_FR translation
         self.env['res.lang']._activate_lang('fr_FR')
@@ -541,31 +439,7 @@ class TestIrModelFieldsTranslation(HttpCase):
         admin = self.env['res.users'].search([('login', '=', 'admin')], limit=1)
         admin.lang = 'fr_FR'
         # check the name column of res.users is displayed as 'Identifiant'
-        self.start_tour("/odoo", 'ir_model_fields_translation_fr_tour', login="admin")
+        self.start_tour("/web", 'ir_model_fields_translation_fr_tour', login="admin")
         field.update_field_translations('field_description', {'fr_FR': 'Identifiant2'})
         # check the name column of res.users is displayed as 'Identifiant2'
-        self.start_tour("/odoo", 'ir_model_fields_translation_fr_tour2', login="admin")
-
-
-class TestIrModelInherit(TransactionCase):
-    def test_inherit(self):
-        imi = self.env["ir.model.inherit"].search([("model_id.model", "=", "ir.actions.server")])
-        self.assertEqual(len(imi), 1)
-        self.assertEqual(imi.parent_id.model, "ir.actions.actions")
-        self.assertFalse(imi.parent_field_id)
-
-    def test_inherits(self):
-        imi = self.env["ir.model.inherit"].search(
-            [("model_id.model", "=", "res.users"), ("parent_field_id", "!=", False)]
-        )
-        self.assertEqual(len(imi), 1)
-        self.assertEqual(imi.parent_id.model, "res.partner")
-        self.assertEqual(imi.parent_field_id.name, "partner_id")
-
-    def test_delegate_field(self):
-        imi = self.env["ir.model.inherit"].search(
-            [("model_id.model", "=", "ir.cron"), ("parent_field_id", "!=", False)]
-        )
-        self.assertEqual(len(imi), 1)
-        self.assertEqual(imi.parent_id.model, "ir.actions.server")
-        self.assertEqual(imi.parent_field_id.name, "ir_actions_server_id")
+        self.start_tour("/web", 'ir_model_fields_translation_fr_tour2', login="admin")

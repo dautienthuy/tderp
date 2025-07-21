@@ -5,9 +5,7 @@
             <t t-set="line" t-value="line_vals['line']"/>
             <t  xmlns:ram="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100"
                 xmlns:rsm="urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100"
-                xmlns:udt="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100"
-                xmlns:qdt="urn:un:unece:uncefact:data:standard:QualifiedDataType:100"
-                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                xmlns:udt="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100">
 
                 <ram:IncludedSupplyChainTradeLineItem>
                     <!-- Line number. -->
@@ -24,14 +22,17 @@
                         <ram:SellerAssignedID
                             t-if="line.product_id and line.product_id.default_code"
                             t-out="line.product_id.default_code"/>
-                        <ram:Name t-out="line.product_id.name"/>
-                        <ram:Description t-out="line.name" t-if="line.name != line.product_id.name"/>
+                        <!-- TODO:
+                        <ram:Name t-esc="line.product_id.name or line.name"/>
+                        <ram:Description t-esc="line.name" t-if="line.name != line.product_id.name"/>
+                        -->
+                        <ram:Name t-esc="line.name"/>
                     </ram:SpecifiedTradeProduct>
 
                     <!-- Amounts. -->
                     <ram:SpecifiedLineTradeAgreement>
                         <!-- Line information: unit_price
-                        NB: the gross_price_unit should be the price tax excluded!
+                        NB: the gross_price_unit should be the price tax excluded !
                         if price_unit = 100 and tax 10% price_include -> then the gross_price_unit is 91
                         -->
                         <ram:GrossPriceProductTradePrice>
@@ -55,7 +56,7 @@
                     <ram:SpecifiedLineTradeDelivery>
                         <ram:BilledQuantity
                                 t-att-unitCode="line_vals.get('unece_uom_code')"
-                                t-out="line_vals.get('quantity')"/>
+                                t-out="line.quantity"/> <!-- /!\ The quantity is the line.quantity since we keep the unece_uom_code ! -->
                     </ram:SpecifiedLineTradeDelivery>
 
                     <ram:SpecifiedLineTradeSettlement>
@@ -67,16 +68,6 @@
                                 <ram:RateApplicablePercent t-out="tax_detail_vals['amount']"/>
                             </ram:ApplicableTradeTax>
                         </t>
-
-                        <!-- Billing Period -->
-                        <ram:BillingSpecifiedPeriod t-if="line_vals.get('billing_start') and line_vals.get('billing_end')"> 
-                            <ram:StartDateTime>
-                                <udt:DateTimeString format="102" t-out="format_date(line_vals['billing_start'])"/>
-                            </ram:StartDateTime>
-                            <ram:EndDateTime>
-                                <udt:DateTimeString format="102" t-out="format_date(line_vals['billing_end'])"/>
-                            </ram:EndDateTime>
-                        </ram:BillingSpecifiedPeriod>
 
                         <!-- Allowance/Charge on the line -->
                         <t t-foreach="line_vals.get('allowance_charge_vals_list')" t-as="allowance_charge_vals">
@@ -103,9 +94,7 @@
         <template id="account_invoice_partner_facturx_export_22">
             <t  xmlns:ram="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100"
                 xmlns:rsm="urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100"
-                xmlns:udt="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100"
-                xmlns:qdt="urn:un:unece:uncefact:data:standard:QualifiedDataType:100"
-                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                xmlns:udt="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100">
                 <!-- Contact. -->
                 <ram:Name t-out="partner.display_name"/>
                 <ram:SpecifiedLegalOrganization t-if="specified_legal_organization_val">
@@ -114,12 +103,12 @@
                 </ram:SpecifiedLegalOrganization>
 
                 <ram:DefinedTradeContact t-if="not hide_dtc">
-                    <ram:PersonName t-out="partner.name"/>
+                    <ram:PersonName t-esc="partner.name"/>
                     <ram:TelephoneUniversalCommunication t-if="partner.phone or partner.mobile">
-                        <ram:CompleteNumber t-out="partner.phone or partner.mobile"/>
+                        <ram:CompleteNumber t-esc="partner.phone or partner.mobile"/>
                     </ram:TelephoneUniversalCommunication>
                     <ram:EmailURIUniversalCommunication t-if="partner.email">
-                        <ram:URIID t-out="partner.email"/>
+                        <ram:URIID schemeID='SMTP' t-esc="partner.email"/>
                     </ram:EmailURIUniversalCommunication>
                 </ram:DefinedTradeContact>
 
@@ -131,9 +120,7 @@
         <template id="account_invoice_address_facturx_export_22">
             <t  xmlns:ram="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100"
                 xmlns:rsm="urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100"
-                xmlns:udt="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100"
-                xmlns:qdt="urn:un:unece:uncefact:data:standard:QualifiedDataType:100"
-                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                xmlns:udt="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100">
                 <!-- Address. -->
                 <ram:PostalTradeAddress>
                     <ram:PostcodeCode t-out="partner.zip"/>
@@ -150,9 +137,7 @@
             <rsm:CrossIndustryInvoice
                 xmlns:ram="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100"
                 xmlns:rsm="urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100"
-                xmlns:udt="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100"
-                xmlns:qdt="urn:un:unece:uncefact:data:standard:QualifiedDataType:100"
-                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                xmlns:udt="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100">
                 <!-- Factur-x level:
                     * minimum or basicwl:   urn:factur-x.eu:1p0...
                     * basic:                urn:cen.eu:en16931:2017:compliant:factur-x.eu:1p0:basic
@@ -251,7 +236,7 @@
 
                         <!-- Bank account. -->
                         <ram:SpecifiedTradeSettlementPaymentMeans t-if="record.partner_bank_id.sanitized_acc_number">
-                            <ram:TypeCode t-out="payment_means_code"/>
+                            <ram:TypeCode>42</ram:TypeCode>
                             <ram:PayeePartyCreditorFinancialAccount>
                                 <ram:IBANID
                                     t-if="record.partner_bank_id.acc_type == 'iban'"
@@ -330,7 +315,7 @@
                     <rdf:Description xmlns:dc="http://purl.org/dc/elements/1.1/" rdf:about="">
                         <dc:title>
                             <rdf:Alt>
-                                <rdf:li t-att="{'xml:lang': 'x-default'}" t-out="title"/>
+                                <rdf:li t-att="{'xml:lang': 'x-default'}" t-esc="title"/>
                             </rdf:Alt>
                         </dc:title>
                         <dc:creator>
@@ -349,8 +334,8 @@
                     </rdf:Description>
                     <rdf:Description xmlns:xmp="http://ns.adobe.com/xap/1.0/" rdf:about="">
                         <xmp:CreatorTool>Odoo</xmp:CreatorTool>
-                        <xmp:CreateDate t-out="date"/>
-                        <xmp:ModifyDate t-out="date"/>
+                        <xmp:CreateDate t-esc="date"/>
+                        <xmp:ModifyDate t-esc="date"/>
                     </rdf:Description>
                     <rdf:Description xmlns:pdfaExtension="http://www.aiim.org/pdfa/ns/extension/"
                                      xmlns:pdfaSchema="http://www.aiim.org/pdfa/ns/schema#"

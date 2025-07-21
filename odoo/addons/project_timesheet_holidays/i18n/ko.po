@@ -3,16 +3,16 @@
 # 	* project_timesheet_holidays
 # 
 # Translators:
-# Wil Odoo, 2024
-# Sarah Park, 2025
+# Martin Trigaux, 2022
+# Daye Jeong, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-10 13:24+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Sarah Park, 2025\n"
+"POT-Creation-Date: 2022-12-15 12:51+0000\n"
+"PO-Revision-Date: 2022-09-22 05:54+0000\n"
+"Last-Translator: Daye Jeong, 2023\n"
 "Language-Team: Korean (https://app.transifex.com/odoo/teams/41243/ko/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -27,19 +27,21 @@ msgstr "분석 라인"
 
 #. module: project_timesheet_holidays
 #: model:ir.model.fields,field_description:project_timesheet_holidays.field_hr_leave__timesheet_ids
+#: model:ir.model.fields,field_description:project_timesheet_holidays.field_resource_calendar_leaves__timesheet_ids
 msgid "Analytic Lines"
 msgstr "분석 라인"
 
 #. module: project_timesheet_holidays
 #. odoo-python
 #: code:addons/project_timesheet_holidays/models/hr_holidays.py:0
+#, python-format
 msgid ""
 "Both the internal project and task are required to generate a timesheet for "
 "the time off %s. If you don't want a timesheet, you should leave the "
 "internal project and task empty."
 msgstr ""
 "휴가 %s에 대한 작업기록을 생성하려면 내부 프로젝트와 작업이 있어야 합니다. 작업기록을 원하지 않는 경우 내부 프로젝트 및 작업을 "
-"비워두십시오."
+"비워두어야 합니다."
 
 #. module: project_timesheet_holidays
 #: model:ir.model,name:project_timesheet_holidays.model_res_company
@@ -49,7 +51,7 @@ msgstr "회사"
 #. module: project_timesheet_holidays
 #: model:ir.model,name:project_timesheet_holidays.model_res_config_settings
 msgid "Config Settings"
-msgstr "환경 설정"
+msgstr "설정 구성"
 
 #. module: project_timesheet_holidays
 #: model:ir.model,name:project_timesheet_holidays.model_hr_employee
@@ -58,13 +60,13 @@ msgstr "임직원"
 
 #. module: project_timesheet_holidays
 #: model:ir.model.fields,field_description:project_timesheet_holidays.field_hr_leave_type__timesheet_generate
-msgid "Generate Timesheets"
+msgid "Generate Timesheet"
 msgstr "작업 기록 생성"
 
 #. module: project_timesheet_holidays
-#: model_terms:ir.ui.view,arch_db:project_timesheet_holidays.hr_holiday_status_view_form_inherit
-msgid "Generate timesheets when validating time off requests of this type"
-msgstr "해당 유형의 휴가를 승인할 때 출퇴근 기록표 생성"
+#: model:ir.model.fields,field_description:project_timesheet_holidays.field_account_analytic_line__global_leave_id
+msgid "Global Time Off"
+msgstr "일반 휴가"
 
 #. module: project_timesheet_holidays
 #: model:ir.model.fields,help:project_timesheet_holidays.field_hr_leave_type__timesheet_generate
@@ -75,7 +77,9 @@ msgstr "이 선택 사항을 선택하면 휴가 시간을 확인할 때 회사 
 
 #. module: project_timesheet_holidays
 #. odoo-python
-#: code:addons/project_timesheet_holidays/__init__.py:0
+#: code:addons/project_timesheet_holidays/models/res_company.py:0
+#: code:addons/project_timesheet_holidays/models/res_company.py:0
+#, python-format
 msgid "Internal"
 msgstr "내부"
 
@@ -85,8 +89,24 @@ msgid "Internal Project"
 msgstr "내부 프로젝트"
 
 #. module: project_timesheet_holidays
+#: model:ir.model.fields,field_description:project_timesheet_holidays.field_project_task__is_timeoff_task
+msgid "Is Time off Task"
+msgstr "휴가 작업 여부"
+
+#. module: project_timesheet_holidays
+#: model:ir.model.fields,field_description:project_timesheet_holidays.field_account_analytic_line__holiday_id
+msgid "Leave Request"
+msgstr "휴가 요청"
+
+#. module: project_timesheet_holidays
+#: model:ir.model.fields,field_description:project_timesheet_holidays.field_project_task__leave_types_count
+msgid "Leave Types Count"
+msgstr ""
+
+#. module: project_timesheet_holidays
 #. odoo-python
 #: code:addons/project_timesheet_holidays/models/project_task.py:0
+#, python-format
 msgid "Operation not supported"
 msgstr "지원되지 않는 작업"
 
@@ -116,7 +136,7 @@ msgid ""
 "off requests. You can specify another project on each time off type "
 "individually."
 msgstr ""
-"휴가 요청을 통해 자동으로 작업기록을 생성할 때 사용되는 기본 프로젝트입니다. 휴가 유형별로 각각 프로젝트를 다르게 지정할 수 있습니다."
+"휴가 요청을 통해 자동으로 작업기록을 생성할 때 사용되는 기본 프로젝트입니다. 휴가 유형별로 각각 프로젝트를 지정할 수 있습니다."
 
 #. module: project_timesheet_holidays
 #: model:ir.model.fields,help:project_timesheet_holidays.field_res_config_settings__leave_timesheet_task_id
@@ -128,10 +148,10 @@ msgstr ""
 
 #. module: project_timesheet_holidays
 #. odoo-python
-#: code:addons/project_timesheet_holidays/__init__.py:0
-#: code:addons/project_timesheet_holidays/models/account_analytic.py:0
+#: code:addons/project_timesheet_holidays/models/res_company.py:0
 #: code:addons/project_timesheet_holidays/models/res_company.py:0
 #: model:ir.model,name:project_timesheet_holidays.model_hr_leave
+#, python-format
 msgid "Time Off"
 msgstr "휴가"
 
@@ -139,8 +159,9 @@ msgstr "휴가"
 #. odoo-python
 #: code:addons/project_timesheet_holidays/models/hr_holidays.py:0
 #: code:addons/project_timesheet_holidays/models/resource_calendar_leaves.py:0
-msgid "Time Off (%(index)s/%(total)s)"
-msgstr "휴가 (%(index)s/%(total)s)"
+#, python-format
+msgid "Time Off (%s/%s)"
+msgstr "휴가 (%s/%s)"
 
 #. module: project_timesheet_holidays
 #: model:ir.model.fields,field_description:project_timesheet_holidays.field_res_company__leave_timesheet_task_id
@@ -154,39 +175,24 @@ msgid "Time Off Type"
 msgstr "휴가 유형"
 
 #. module: project_timesheet_holidays
-#: model:ir.model.fields,field_description:project_timesheet_holidays.field_project_task__leave_types_count
-msgid "Time Off Types Count"
-msgstr "휴가 유형 수"
-
-#. module: project_timesheet_holidays
 #: model_terms:ir.ui.view,arch_db:project_timesheet_holidays.hr_holiday_status_view_form_inherit
-msgid "Timesheets"
+msgid "Timesheet"
 msgstr "작업 기록"
 
 #. module: project_timesheet_holidays
 #. odoo-python
 #: code:addons/project_timesheet_holidays/models/account_analytic.py:0
-msgid "View Time Off"
-msgstr "휴가 보기"
-
-#. module: project_timesheet_holidays
-#. odoo-python
-#: code:addons/project_timesheet_holidays/models/account_analytic.py:0
+#, python-format
 msgid ""
 "You cannot create timesheets for a task that is linked to a time off type. "
 "Please use the Time Off application to request new time off instead."
 msgstr ""
-"휴가 요청과 연결되어 있는 작업에 대한 작업기록을 생성할 수 없습니다. 휴가 애플리케이션을 사용하여 새로운 휴가를 요청하십시오."
+"휴가 요청과 연결되어 있는 작업에 대한 작업 기록을 생성할 수 없습니다. 휴가 애플리케이션을 사용하여 새로운 휴가를 요청하십시오."
 
 #. module: project_timesheet_holidays
 #. odoo-python
 #: code:addons/project_timesheet_holidays/models/account_analytic.py:0
-msgid "You cannot delete timesheets that are linked to global time off."
-msgstr "전체 휴가에 연결된 작업표는 삭제할 수 없습니다."
-
-#. module: project_timesheet_holidays
-#. odoo-python
-#: code:addons/project_timesheet_holidays/models/account_analytic.py:0
+#, python-format
 msgid ""
 "You cannot delete timesheets that are linked to time off requests. Please "
 "cancel your time off request from the Time Off application instead."
@@ -195,6 +201,7 @@ msgstr "휴가 요청과 연결되어 있는 작업기록은 삭제할 수 없�
 #. module: project_timesheet_holidays
 #. odoo-python
 #: code:addons/project_timesheet_holidays/models/account_analytic.py:0
+#, python-format
 msgid ""
 "You cannot modify timesheets that are linked to time off requests. Please "
 "use the Time Off application to modify your time off requests instead."

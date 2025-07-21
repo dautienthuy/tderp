@@ -3,23 +3,21 @@
 # 	* website_sale_stock
 # 
 # Translators:
-# Chrille Hedberg <hedberg.chrille@gmail.com>, 2024
-# Anders Wallenquist <anders.wallenquist@vertel.se>, 2024
-# Martin Trigaux, 2024
-# Lasse L, 2024
-# Simon S, 2024
-# Kim Asplund <kim.asplund@gmail.com>, 2024
+# Simon S, 2022
+# Chrille Hedberg <hedberg.chrille@gmail.com>, 2022
+# Anders Wallenquist <anders.wallenquist@vertel.se>, 2022
+# Martin Trigaux, 2022
+# Kim Asplund <kim.asplund@gmail.com>, 2022
+# Lasse L, 2023
 # Claes-Johan Dahlin, 2024
-# Jakob Krabbe <jakob.krabbe@vertel.se>, 2024
-# Wil Odoo, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-07 20:37+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: Wil Odoo, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:57+0000\n"
+"Last-Translator: Claes-Johan Dahlin, 2024\n"
 "Language-Team: Swedish (https://app.transifex.com/odoo/teams/41243/sv/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -29,19 +27,12 @@ msgstr ""
 
 #. module: website_sale_stock
 #: model_terms:ir.ui.view,arch_db:website_sale_stock.res_config_settings_view_form
-msgid "<span invisible=\"not show_availability\">Units</span>"
-msgstr "<span invisible=\"not show_availability\">Enheter</span>"
-
-#. module: website_sale_stock
-#. odoo-javascript
-#: code:addons/website_sale_stock/static/src/js/product_card/product_card.js:0
-msgid "All available quantity selected"
-msgstr "Alla tillgängliga kvantiteter har valts"
-
-#. module: website_sale_stock
-#: model_terms:ir.ui.view,arch_db:website_sale_stock.res_config_settings_view_form
-msgid "All warehouses"
+msgid ""
+"<span attrs=\"{'invisible': [('show_availability', '=', "
+"False)]}\">Units</span>"
 msgstr ""
+"<span attrs=\"{'invisible': [('show_availability', '=', "
+"False)]}\">Enheter</span>"
 
 #. module: website_sale_stock
 #: model:ir.model.fields,field_description:website_sale_stock.field_product_product__stock_notification_partner_ids
@@ -88,6 +79,7 @@ msgstr "Standard synlighet för anpassade meddelanden."
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/xml/website_sale_stock_product_availability.xml:0
+#, python-format
 msgid "Get notified when back in stock"
 msgstr "Få ett meddelande när produkten åter finns i lager"
 
@@ -100,12 +92,14 @@ msgstr ""
 #. module: website_sale_stock
 #. odoo-python
 #: code:addons/website_sale_stock/controllers/main.py:0
+#, python-format
 msgid "Invalid Email"
 msgstr "Ogiltig E-postadress"
 
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/xml/website_sale_stock_product_availability.xml:0
+#, python-format
 msgid "Invalid email"
 msgstr "Ogiltig e-postadress"
 
@@ -117,6 +111,7 @@ msgstr "Standardinställningar för lager"
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/xml/website_sale_stock_product_availability.xml:0
+#, python-format
 msgid "Only"
 msgstr "Endast"
 
@@ -128,13 +123,8 @@ msgstr "Beställ Nu"
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/xml/website_sale_stock_product_availability.xml:0
+#, python-format
 msgid "Out of Stock"
-msgstr "Slut i lager"
-
-#. module: website_sale_stock
-#. odoo-javascript
-#: code:addons/website_sale_stock/static/src/js/product/product.xml:0
-msgid "Out of stock"
 msgstr "Slut i lager"
 
 #. module: website_sale_stock
@@ -153,13 +143,9 @@ msgstr "Slut i lager meddelande"
 #. odoo-python
 #: code:addons/website_sale_stock/models/product_product.py:0
 #: model:ir.model,name:website_sale_stock.model_product_template
+#, python-format
 msgid "Product"
 msgstr "Produkt"
-
-#. module: website_sale_stock
-#: model:ir.model,name:website_sale_stock.model_product_combo
-msgid "Product Combo"
-msgstr "Produktkombination"
 
 #. module: website_sale_stock
 #: model:ir.model,name:website_sale_stock.model_product_product
@@ -168,6 +154,7 @@ msgstr "Produktvariant"
 
 #. module: website_sale_stock
 #: model:ir.actions.server,name:website_sale_stock.ir_cron_send_availability_email_ir_actions_server
+#: model:ir.cron,cron_name:website_sale_stock.ir_cron_send_availability_email
 msgid "Product: send email regarding products availability"
 msgstr "Produkt: skicka e-post om produkternas tillgänglighet"
 
@@ -177,20 +164,14 @@ msgid "Regards,"
 msgstr "Hälsningar,"
 
 #. module: website_sale_stock
-#. odoo-javascript
-#: code:addons/website_sale_stock/static/src/js/product_card/product_card.xml:0
-msgid "Requested quantity not available"
-msgstr "Begärd kvantitet inte tillgänglig"
-
-#. module: website_sale_stock
 #: model:ir.model,name:website_sale_stock.model_sale_order
 msgid "Sales Order"
-msgstr "Försäljningsorder"
+msgstr "Order"
 
 #. module: website_sale_stock
 #: model:ir.model,name:website_sale_stock.model_sale_order_line
 msgid "Sales Order Line"
-msgstr "Försäljningsorderrad"
+msgstr "Orderrad"
 
 #. module: website_sale_stock
 #: model_terms:ir.ui.view,arch_db:website_sale_stock.product_template_form_view_inherit_website_sale_stock
@@ -215,6 +196,7 @@ msgstr "Visa tillgängligt antal"
 #. module: website_sale_stock
 #. odoo-python
 #: code:addons/website_sale_stock/models/sale_order.py:0
+#, python-format
 msgid ""
 "Some products became unavailable and your cart has been updated. We're sorry"
 " for the inconvenience."
@@ -229,28 +211,22 @@ msgstr "Följande produkt är nu tillgänglig."
 
 #. module: website_sale_stock
 #. odoo-python
-#: code:addons/website_sale_stock/models/sale_order.py:0
-msgid "The item has not been added to your cart since it is not available."
-msgstr ""
-"Artikeln har inte lagts till i din kundvagn eftersom den inte är "
-"tillgänglig."
-
-#. module: website_sale_stock
-#. odoo-python
 #: code:addons/website_sale_stock/models/product_product.py:0
+#, python-format
 msgid "The product '%(product_name)s' is now available"
 msgstr "Produkten '%(product_name)s' är nu tillgänglig"
 
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/js/website_sale_reorder.js:0
+#, python-format
 msgid "This product is out of stock."
 msgstr "Denna produkt är slut i lager."
 
 #. module: website_sale_stock
 #: model:ir.model,name:website_sale_stock.model_stock_picking
 msgid "Transfer"
-msgstr "Överföring"
+msgstr "Flytt"
 
 #. module: website_sale_stock
 #: model_terms:ir.ui.view,arch_db:website_sale_stock.product_template_form_view_inherit_website_sale_stock
@@ -267,6 +243,7 @@ msgstr "Lager"
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/xml/website_sale_stock_product_availability.xml:0
+#, python-format
 msgid "We'll notify you once the product is back in stock."
 msgstr "Vi meddelar dig när produkten åter finns i lager."
 
@@ -284,24 +261,28 @@ msgstr "Webbplats där denna order har lagts, för e-handelsorder."
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/xml/website_sale_stock_product_availability.xml:0
+#, python-format
 msgid "You already added"
 msgstr "Du har redan lagt till"
 
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/xml/website_sale_stock_product_availability.xml:0
+#, python-format
 msgid "You already added all the available product in your cart."
 msgstr "Du har redan lagt till alla tillgängliga produkter i din kundvagn."
 
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/js/website_sale_reorder.js:0
+#, python-format
 msgid "You already have %s Units in your cart."
 msgstr "Du har redan %s enheter i din kundvagn."
 
 #. module: website_sale_stock
 #. odoo-python
 #: code:addons/website_sale_stock/models/sale_order_line.py:0
+#, python-format
 msgid ""
 "You ask for %(desired_qty)s %(product_name)s but only %(new_qty)s is "
 "available"
@@ -312,6 +293,7 @@ msgstr ""
 #. module: website_sale_stock
 #. odoo-python
 #: code:addons/website_sale_stock/models/sale_order.py:0
+#, python-format
 msgid "You ask for %(desired_qty)s products but only %(new_qty)s is available"
 msgstr ""
 "Du efterfrågar %(desired_qty)s produkter men endast %(new_qty)s är "
@@ -320,19 +302,22 @@ msgstr ""
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/js/website_sale_reorder.js:0
-msgid "You ask for %(quantity1)s Units but only %(quantity2)s are available."
-msgstr ""
-"Du ber om %(quantity1)s enheter men endast %(quantity2)s är  tillgängliga."
+#: code:addons/website_sale_stock/static/src/js/website_sale_reorder.js:0
+#, python-format
+msgid "You ask for %s Units but only %s are available."
+msgstr "Du efterfrågar %s enheter men endast %s är tillgängliga."
 
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/xml/website_sale_stock_product_availability.xml:0
+#, python-format
 msgid "in your cart."
 msgstr "i din kundvagn."
 
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/xml/website_sale_stock_product_availability.xml:0
+#, python-format
 msgid "left in stock."
 msgstr "kvar på lager."
 
@@ -345,5 +330,6 @@ msgstr "bara om under"
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/xml/website_sale_stock_product_availability.xml:0
+#, python-format
 msgid "youremail@gmail.com"
-msgstr "ditt.namn@gmail.com"
+msgstr "youremail@gmail.com"

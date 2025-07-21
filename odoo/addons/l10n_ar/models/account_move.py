@@ -1,8 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from odoo import models, fields, api, _
-from odoo.osv import expression
 from odoo.exceptions import UserError, RedirectWarning, ValidationError
-from odoo.tools.misc import formatLang
 from dateutil.relativedelta import relativedelta
 import logging
 _logger = logging.getLogger(__name__)
@@ -26,29 +24,15 @@ class AccountMove(models.Model):
         ' identify the type of responsibilities that a person or a legal entity could have and that impacts in the'
         ' type of operations and requirements they need.')
 
+    l10n_ar_currency_rate = fields.Float(copy=False, digits=(16, 6), readonly=True, string="Currency Rate")
+
     # Mostly used on reports
     l10n_ar_afip_concept = fields.Selection(
         compute='_compute_l10n_ar_afip_concept', selection='_get_afip_invoice_concepts', string="AFIP Concept",
-        help="A concept is suggested regarding the type of the products on the invoice.")
-    l10n_ar_afip_service_start = fields.Date(string='AFIP Service Start Date')
-    l10n_ar_afip_service_end = fields.Date(string='AFIP Service End Date')
-
-    def _is_manual_document_number(self):
-        """ Document number should be manual input by user when the journal use documents and
-
-        * if sales journal and not a AFIP pos (liquido producto case)
-        * if purchase journal and not a AFIP pos (regular case of vendor bills)
-
-        All the other cases the number should be automatic set, wiht only one exception, for pre-printed/online AFIP
-        POS type, the first numeber will be always set manually by the user and then will be computed automatically
-        from there """
-        if self.country_code != 'AR':
-            return super()._is_manual_document_number()
-
-        # NOTE: There is a corner case where 2 sales documents can have the same number for the same DOC from a
-        # different vendor, in that case, the user can create a new Sales Liquido Producto Journal
-        return self.l10n_latam_use_documents and self.journal_id.type in ['purchase', 'sale'] and \
-            not self.journal_id.l10n_ar_is_pos
+        help="A concept is suggested regarding the type of the products on the invoice but it is allowed to force a"
+        " different type if required.")
+    l10n_ar_afip_service_start = fields.Date(string='AFIP Service Start Date', readonly=True, states={'draft': [('readonly', False)]})
+    l10n_ar_afip_service_end = fields.Date(string='AFIP Service End Date', readonly=True, states={'draft': [('readonly', False)]})
 
     @api.constrains('move_type', 'journal_id')
     def _check_moves_use_documents(self):
@@ -89,7 +73,7 @@ class AccountMove(models.Model):
         self.ensure_one()
         invoice_lines = self.invoice_line_ids.filtered(lambda x: x.display_type not in ('line_note', 'line_section'))
         product_types = set([x.product_id.type for x in invoice_lines if x.product_id])
-        consumable = {'consu'}
+        consumable = set(['consu', 'product'])
         service = set(['service'])
         # on expo invoice you can mix services and products
         expo_invoice = self.l10n_latam_document_type_id.code in ['19', '20', '21']
@@ -120,11 +104,10 @@ class AccountMove(models.Model):
         if self.journal_id.company_id.account_fiscal_country_id.code == "AR":
             letters = self.journal_id._get_journal_letter(counterpart_partner=self.partner_id.commercial_partner_id)
             domain += ['|', ('l10n_ar_letter', '=', False), ('l10n_ar_letter', 'in', letters)]
-            domain = expression.AND([
-                domain or [],
-                self.journal_id._get_journal_codes_domain(),
-            ])
-            if self.move_type in ['out_refund', 'in_refund']:
+            codes = self.journal_id._get_journal_codes()
+            if codes:
+                domain.append(('code', 'in', codes))
+            if self.move_type == 'in_refund':
                 domain = ['|', ('code', 'in', self._get_l10n_ar_codes_used_for_inv_and_ref())] + domain
         return domain
 
@@ -139,12 +122,12 @@ class AccountMove(models.Model):
             for line in inv.mapped('invoice_line_ids').filtered(lambda x: x.display_type not in ('line_section', 'line_note')):
                 vat_taxes = line.tax_ids.filtered(lambda x: x.tax_group_id.l10n_ar_vat_afip_code)
                 if len(vat_taxes) != 1:
-                    raise UserError(_("There should be a single tax from the “VAT“ tax group per line, but this is not the case for line “%s”. Please add a tax to this line or check the tax configuration's advanced options for the corresponding field “Tax Group”.", line.name))
+                    raise UserError(_('There should be a single tax from the "VAT" tax group per line, add it to "%s". If you already have it, please check the tax configuration, in advanced options, in the corresponding field "Tax Group".') % line.name)
 
                 elif purchase_aliquots == 'zero' and vat_taxes.tax_group_id.l10n_ar_vat_afip_code != '0':
-                    raise UserError(_('On invoice id “%s” you must use VAT Not Applicable on every line.', inv.id))
+                    raise UserError(_('On invoice id "%s" you must use VAT Not Applicable on every line.')  % inv.id)
                 elif purchase_aliquots == 'not_zero' and vat_taxes.tax_group_id.l10n_ar_vat_afip_code == '0':
-                    raise UserError(_('On invoice id “%s” you must use a VAT tax that is not VAT Not Applicable', inv.id))
+                    raise UserError(_('On invoice id "%s" you must use VAT taxes different than VAT Not Applicable.')  % inv.id)
 
     def _set_afip_service_dates(self):
         for rec in self.filtered(lambda m: m.invoice_date and m.l10n_ar_afip_concept in ['2', '3', '4']):
@@ -159,13 +142,27 @@ class AccountMove(models.Model):
         for rec in self:
             rec.l10n_ar_afip_responsibility_type_id = rec.commercial_partner_id.l10n_ar_afip_responsibility_type_id.id
 
+    def _set_afip_rate(self):
+        """ We set the l10n_ar_currency_rate value with the accounting date. This should be done
+        after invoice has been posted in order to have the proper accounting date"""
+        for rec in self:
+            if rec.company_id.currency_id == rec.currency_id:
+                rec.l10n_ar_currency_rate = 1.0
+            elif not rec.l10n_ar_currency_rate:
+                rec.l10n_ar_currency_rate = self.env['res.currency']._get_conversion_rate(
+                    from_currency=rec.currency_id,
+                    to_currency=rec.company_id.currency_id,
+                    company=rec.company_id,
+                    date=rec.invoice_date,
+                )
+
     @api.onchange('partner_id')
     def _onchange_afip_responsibility(self):
         if self.company_id.account_fiscal_country_id.code == 'AR' and self.l10n_latam_use_documents and self.partner_id \
            and not self.partner_id.l10n_ar_afip_responsibility_type_id:
             return {'warning': {
                 'title': _('Missing Partner Configuration'),
-                'message': _('Please configure the AFIP Responsibility for "%s" in order to continue',
+                'message': _('Please configure the AFIP Responsibility for "%s" in order to continue') % (
                     self.partner_id.name)}}
 
     @api.onchange('partner_id')
@@ -175,11 +172,7 @@ class AccountMove(models.Model):
         for rec in self.filtered(lambda x: x.company_id.account_fiscal_country_id.code == "AR" and x.journal_id.type == 'sale'
                                  and x.l10n_latam_use_documents and x.partner_id.l10n_ar_afip_responsibility_type_id):
             res_code = rec.partner_id.l10n_ar_afip_responsibility_type_id.code
-            domain = [
-                *self.env['account.journal']._check_company_domain(rec.company_id),
-                ('l10n_latam_use_documents', '=', True),
-                ('type', '=', 'sale'),
-            ]
+            domain = [('company_id', '=', rec.company_id.id), ('l10n_latam_use_documents', '=', True), ('type', '=', 'sale')]
             journal = self.env['account.journal']
             msg = False
             if res_code in ['9', '10'] and rec.journal_id.l10n_ar_afip_pos_system not in expo_journals:
@@ -206,6 +199,7 @@ class AccountMove(models.Model):
 
         posted_ar_invoices = posted & ar_invoices
         posted_ar_invoices._set_afip_responsibility()
+        posted_ar_invoices._set_afip_rate()
         posted_ar_invoices._set_afip_service_dates()
         return posted
 
@@ -224,7 +218,7 @@ class AccountMove(models.Model):
         super()._inverse_l10n_latam_document_number()
 
         to_review = self.filtered(lambda x: (
-            x.journal_id.l10n_ar_is_pos
+            x.journal_id.type == 'sale'
             and x.l10n_latam_document_type_id
             and x.l10n_latam_document_number
             and (x.l10n_latam_manual_document_number or not x.highest_name)
@@ -283,22 +277,7 @@ class AccountMove(models.Model):
             if any(tax.tax_group_id.l10n_ar_vat_afip_code and tax.tax_group_id.l10n_ar_vat_afip_code not in ['0', '1', '2'] for tax in line.tax_ids):
                 vat_taxable |= line
 
-        profits_tax_group = self.env['account.chart.template'].with_company(self.company_id).ref(
-            'tax_group_percepcion_ganancias',
-            raise_if_not_found=False,
-        )
-        if not profits_tax_group:
-            raise RedirectWarning(
-                message=_(
-                    "A required tax group could not be found (XML ID: %s).\n"
-                    "Please reload your chart template in order to reinstall the required tax group.\n\n"
-                    "Note: You might have to relink your existing taxes to this new tax group.",
-                    'tax_group_percepcion_ganancias',
-                ),
-                action=self.env.ref('account.action_account_config').id,
-                button_text=_("Accounting Settings"),
-            )
-
+        profits_tax_group = self.env.ref('l10n_ar.tax_group_percepcion_ganancias')
         return {'vat_amount': sign * sum(vat_taxes.mapped(amount_field)),
                 # For invoices of letter C should not pass VAT
                 'vat_taxable_amount': sign * sum(vat_taxable.mapped(amount_field)) if self.l10n_latam_document_type_id.l10n_ar_letter != 'C' else self.amount_untaxed,
@@ -338,7 +317,7 @@ class AccountMove(models.Model):
         # Report vat 0%
         vat_base_0 = sum(self.invoice_line_ids.filtered(lambda x: x.tax_ids.filtered(lambda y: y.tax_group_id.l10n_ar_vat_afip_code == '3')).mapped('price_subtotal'))
         if vat_base_0:
-            res += [{'Id': '3', 'BaseImp': sign * vat_base_0, 'Importe': 0.0}]
+            res += [{'Id': '3', 'BaseImp': vat_base_0, 'Importe': 0.0}]
 
         return res if res else []
 
@@ -351,74 +330,40 @@ class AccountMove(models.Model):
     def _l10n_ar_get_invoice_totals_for_report(self):
         """If the invoice document type indicates that vat should not be detailed in the printed report (result of _l10n_ar_include_vat()) then we overwrite tax_totals field so that includes taxes in the total amount, otherwise it would be showing amount_untaxed in the amount_total"""
         self.ensure_one()
-        tax_totals = self.tax_totals
         include_vat = self._l10n_ar_include_vat()
-        if not include_vat:
-            return tax_totals
+        base_lines = self.line_ids.filtered(lambda x: x.display_type == 'product')
+        tax_lines = self.line_ids.filtered(lambda x: x.display_type == 'tax')
 
-        tax_group_ids = {
-            tax_group['id']
-            for subtotal in tax_totals['subtotals']
-            for tax_group in subtotal['tax_groups']
-        }
-        tax_group_ids_to_exclude = self.env['account.tax.group']\
-            .browse(tax_group_ids)\
-            .filtered(lambda tax_group: (
-                self._l10n_ar_is_tax_group_other_national_ind_tax(tax_group)
-                or self._l10n_ar_is_tax_group_vat(tax_group)
-            )).ids
-        if tax_group_ids_to_exclude:
-            tax_totals = self.env['account.tax']._exclude_tax_groups_from_tax_totals_summary(tax_totals, tax_group_ids_to_exclude)
+        # Base lines.
+        base_line_vals_list = [x._convert_to_tax_base_line_dict() for x in base_lines]
+        if include_vat:
+            for vals in base_line_vals_list:
+                vals['taxes'] = vals['taxes']\
+                    .flatten_taxes_hierarchy()\
+                    .filtered(lambda tax: not tax.tax_group_id.l10n_ar_vat_afip_code)
+
+        # Tax lines.
+        tax_line_vals_list = [x._convert_to_tax_line_dict() for x in tax_lines]
+        if include_vat:
+            tax_line_vals_list = [
+                x
+                for x in tax_line_vals_list
+                if not x['tax_repartition_line'].tax_id.tax_group_id.l10n_ar_vat_afip_code
+            ]
+
+        tax_totals = self.env['account.tax']._prepare_tax_totals(
+            base_line_vals_list,
+            self.currency_id,
+            tax_lines=tax_line_vals_list,
+        )
+
+        if include_vat:
+            temp = self.tax_totals
+            tax_totals['amount_total'] = temp['amount_total']
+            tax_totals['formatted_amount_total'] = temp['formatted_amount_total']
+
         return tax_totals
-
-    def _l10n_ar_get_invoice_custom_tax_summary_for_report(self):
-        """ Get a new tax details for RG 5614/2024 to show ARCA VAT and Other National Internal Taxes. """
-        if self.l10n_latam_document_type_id.code not in ('6', '7', '8'):
-            return []
-
-        base_lines, _tax_lines = self._get_rounded_base_and_tax_lines()
-
-        def grouping_function(base_line, tax_data):
-            if not tax_data:
-                return None
-            tax_group = tax_data['tax'].tax_group_id
-            skip = False
-            name = None
-            if self._l10n_ar_is_tax_group_other_national_ind_tax(tax_group):
-                name = _("Other National Ind. Taxes %s", base_line['currency_id'].symbol)
-            elif self._l10n_ar_is_tax_group_vat(tax_group):
-                name = _("VAT Content %s", base_line['currency_id'].symbol)
-            else:
-                skip = True
-            return {
-                'name': name,
-                'skip': skip,
-            }
-
-        AccountTax = self.env['account.tax']
-        base_lines_aggregated_values = AccountTax._aggregate_base_lines_tax_details(base_lines, grouping_function)
-        values_per_grouping_key = AccountTax._aggregate_base_lines_aggregated_values(base_lines_aggregated_values)
-        results = []
-        for grouping_key, values in values_per_grouping_key.items():
-            if (
-                grouping_key
-                and not grouping_key['skip']
-            ):
-                results.append({
-                    'name': grouping_key['name'],
-                    'tax_amount_currency': values['tax_amount_currency'],
-                    'formatted_tax_amount_currency': formatLang(self.env, values['tax_amount_currency']),
-                })
-        return results
 
     def _l10n_ar_include_vat(self):
         self.ensure_one()
         return self.l10n_latam_document_type_id.l10n_ar_letter in ['B', 'C', 'X', 'R']
-
-    @api.model
-    def _l10n_ar_is_tax_group_other_national_ind_tax(self, tax_group):
-        return tax_group.l10n_ar_tribute_afip_code in ('01', '04')
-
-    @api.model
-    def _l10n_ar_is_tax_group_vat(self, tax_group):
-        return bool(tax_group.l10n_ar_vat_afip_code)

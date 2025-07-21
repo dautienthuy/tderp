@@ -3,16 +3,19 @@
 # 	* hr_work_entry_holidays
 # 
 # Translators:
+# Chrille Hedberg <hedberg.chrille@gmail.com>, 2022
+# Martin Trigaux, 2022
+# Simon S, 2022
+# Lasse L, 2023
 # Anders Wallenquist <anders.wallenquist@vertel.se>, 2024
-# Simon S, 2024
 # Jakob Krabbe <jakob.krabbe@vertel.se>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 08:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2022-09-20 09:01+0000\n"
+"PO-Revision-Date: 2022-09-22 05:52+0000\n"
 "Last-Translator: Jakob Krabbe <jakob.krabbe@vertel.se>, 2024\n"
 "Language-Team: Swedish (https://app.transifex.com/odoo/teams/41243/sv/)\n"
 "MIME-Version: 1.0\n"
@@ -22,19 +25,49 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: hr_work_entry_holidays
+#: code:addons/hr_work_entry_holidays/models/hr_leave.py:0
+#, python-format
+msgid "%s: Time Off"
+msgstr "%s: Ledig tid"
+
+#. module: hr_work_entry_holidays
+#: code:addons/hr_work_entry_holidays/models/hr_leave.py:0
+#, python-format
+msgid ""
+"A leave cannot be set across multiple contracts with different working schedules.\n"
+"\n"
+"Please create one time off for each contract.\n"
+"\n"
+"Time off:\n"
+"%s\n"
+"\n"
+"Contracts:\n"
+"%s"
+msgstr ""
+"En ledighet kan inte läggas in i flera kontrakt med olika arbetsscheman.\n"
+"\n"
+"Vänligen skapa en ledighet för varje kontrakt.\n"
+"\n"
+"Ledig tid:\n"
+"%s\n"
+"\n"
+"Kontrakt:\n"
+"%s"
+
+#. module: hr_work_entry_holidays
 #: model:ir.model,name:hr_work_entry_holidays.model_hr_contract
 msgid "Employee Contract"
-msgstr "Anställningsavtal"
+msgstr "Anställningskontrakt"
 
 #. module: hr_work_entry_holidays
 #: model:ir.model,name:hr_work_entry_holidays.model_hr_work_entry
 msgid "HR Work Entry"
-msgstr "HR Arbetsuppgift"
+msgstr "HR Arbete Inträde"
 
 #. module: hr_work_entry_holidays
 #: model:ir.model,name:hr_work_entry_holidays.model_hr_work_entry_type
 msgid "HR Work Entry Type"
-msgstr "HR Typ av arbetsuppgift"
+msgstr "HR-arbete Ingångstyp"
 
 #. module: hr_work_entry_holidays
 #: model_terms:ir.ui.view,arch_db:hr_work_entry_holidays.work_entry_type_leave_form_inherit
@@ -53,17 +86,23 @@ msgid ""
 "The status is 'To Approve', when time off request is confirmed by user.\n"
 "The status is 'Refused', when time off request is refused by manager.\n"
 "The status is 'Approved', when time off request is approved by manager."
+msgstr "Status är satt till 'Att skicka in', när en ledighetsbegäran skapas."
+
+#. module: hr_work_entry_holidays
+#: code:addons/hr_work_entry_holidays/models/hr_leave.py:0
+#, python-format
+msgid ""
+"There is no employee set on the time off. Please make sure you're logged in "
+"the correct company."
 msgstr ""
-"Statusen sätts till 'Att skicka' när en ledighetsansökan skapas.\n"
-"Statusen är 'Att godkänna', när ledighetsansökan bekräftas av användaren.\n"
-"Statusen är \"Avvisad\", när ledighetsansökan avslås av chefen.\n"
-"Statusen är 'Godkänd' när ledighetsansökan godkänns av chefen."
+"Det finns ingen anställd som är inställd på ledig tid. Kontrollera att du är"
+" inloggad på rätt företag."
 
 #. module: hr_work_entry_holidays
 #: model:ir.model,name:hr_work_entry_holidays.model_hr_leave
 #: model:ir.model.fields,field_description:hr_work_entry_holidays.field_hr_work_entry__leave_id
 msgid "Time Off"
-msgstr "Frånvaro"
+msgstr "Ledighet"
 
 #. module: hr_work_entry_holidays
 #: model:ir.model,name:hr_work_entry_holidays.model_hr_leave_type
@@ -74,7 +113,7 @@ msgstr "Frånvarotyp"
 #. module: hr_work_entry_holidays
 #: model:ir.model.fields,field_description:hr_work_entry_holidays.field_hr_leave_type__work_entry_type_id
 msgid "Work Entry Type"
-msgstr "Typ av arbetsuppgift"
+msgstr "Arbete Inmatningstyp"
 
 #. module: hr_work_entry_holidays
 #: model:ir.model.fields,help:hr_work_entry_holidays.field_hr_work_entry_type__leave_type_ids

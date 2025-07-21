@@ -4,16 +4,11 @@ import { importRecordsItem } from "@base_import/import_records/import_records";
 
 import { registry } from "@web/core/registry";
 
-import {
-    click,
-    getFixture,
-    selectDropdownItem,
-    triggerHotkey,
-    nextTick,
-} from "@web/../tests/helpers/utils";
-import { toggleActionMenu } from "@web/../tests/search/helpers";
+import { click, getFixture, selectDropdownItem } from "@web/../tests/helpers/utils";
+import { toggleFavoriteMenu } from "@web/../tests/search/helpers";
 import { makeView, setupViewRegistries } from "@web/../tests/views/helpers";
-import { clearRegistryWithCleanup } from "@web/../tests/helpers/mock_env";
+
+const favoriteMenuRegistry = registry.category("favoriteMenu");
 
 let serverData;
 let target;
@@ -32,14 +27,12 @@ QUnit.module("Base Import Tests", (hooks) => {
             },
         };
         setupViewRegistries();
-        const cogMenuRegistry = registry.category("cogMenu");
-        clearRegistryWithCleanup(cogMenuRegistry);
-        cogMenuRegistry.add("import-menu", importRecordsItem);
+        favoriteMenuRegistry.add("import-menu", importRecordsItem);
     });
 
     QUnit.module("ImportRecords");
 
-    QUnit.test("import in cog menu dropdown in list", async function (assert) {
+    QUnit.test("import in favorite dropdown in list", async function (assert) {
         assert.expect(3);
 
         const actionService = {
@@ -57,70 +50,57 @@ QUnit.module("Base Import Tests", (hooks) => {
             type: "list",
             resModel: "foo",
             serverData,
-            arch: '<list><field name="foo"/></list>',
+            arch: '<tree><field name="foo"/></tree>',
             config: {
                 actionType: "ir.actions.act_window",
             },
         });
 
-        await toggleActionMenu(target);
-        assert.containsOnce(target, ".o-dropdown--menu");
+        await toggleFavoriteMenu(target);
+        assert.containsOnce(target, ".o_favorite_menu .o-dropdown--menu");
         assert.containsOnce(target, ".o_import_menu");
         await click(target.querySelector(".o_import_menu"));
     });
 
     QUnit.test(
-        'import should not be available in cog menu dropdown in list with create="0"',
+        'import favorite dropdown item should not be in list with create="0"',
         async function (assert) {
             await makeView({
                 type: "list",
                 resModel: "foo",
                 serverData,
-                arch: '<list create="0"><field name="foo"/></list>',
+                arch: '<tree create="0"><field name="foo"/></tree>',
                 config: {
                     actionType: "ir.actions.act_window",
                 },
             });
 
-            assert.containsNone(target, ".o_cp_action_menus");
+            await toggleFavoriteMenu(target);
+            assert.containsOnce(target, ".o_favorite_menu .o-dropdown--menu");
             assert.containsNone(target, ".o_import_menu");
         }
     );
 
     QUnit.test(
-        'import should not be available in cog menu dropdown in list with import="0"',
+        'import favorite dropdown item should not be in list with import="0"',
         async function (assert) {
             await makeView({
                 type: "list",
                 resModel: "foo",
                 serverData,
-                arch: '<list import="0"><field name="foo"/></list>',
+                arch: '<tree import="0"><field name="foo"/></tree>',
                 config: {
                     actionType: "ir.actions.act_window",
                 },
             });
 
-            assert.containsNone(target, ".o_cp_action_menus");
+            await toggleFavoriteMenu(target);
+            assert.containsOnce(target, ".o_favorite_menu .o-dropdown--menu");
             assert.containsNone(target, ".o_import_menu");
         }
     );
 
-    QUnit.test("cog menu should open with alt+u shortcut", async function (assert) {
-        await makeView({
-            type: "list",
-            resModel: "foo",
-            serverData,
-            arch: "<list/>",
-            config: {
-                actionType: "ir.actions.act_window",
-            },
-        });
-        await triggerHotkey("alt+u");
-        await nextTick();
-        assert.containsOnce(target, ".o-dropdown--menu");
-    });
-
-    QUnit.test("import in cog menu dropdown in kanban", async function (assert) {
+    QUnit.test("import in favorite dropdown in kanban", async function (assert) {
         assert.expect(3);
 
         const actionService = {
@@ -141,8 +121,8 @@ QUnit.module("Base Import Tests", (hooks) => {
             arch: `
                 <kanban>
                     <templates>
-                        <t t-name="card">
-                            <field name="foo"/>
+                        <t t-name="kanban-box">
+                            <div><field name="foo"/></div>
                         </t>
                     </templates>
                 </kanban>`,
@@ -151,14 +131,14 @@ QUnit.module("Base Import Tests", (hooks) => {
             },
         });
 
-        await toggleActionMenu(target);
-        assert.containsOnce(target, ".o-dropdown--menu");
+        await toggleFavoriteMenu(target);
+        assert.containsOnce(target, ".o_favorite_menu .o-dropdown--menu");
         assert.containsOnce(target, ".o_import_menu");
         await click(target.querySelector(".o_import_menu"));
     });
 
     QUnit.test(
-        'import should not be available in cog menu dropdown in kanban with create="0"',
+        'import favorite dropdown item should not be in list with create="0"',
         async function (assert) {
             await makeView({
                 type: "kanban",
@@ -167,8 +147,8 @@ QUnit.module("Base Import Tests", (hooks) => {
                 arch: `
                     <kanban create="0">
                         <templates>
-                            <t t-name="card">
-                                <field name="foo"/>
+                            <t t-name="kanban-box">
+                                <div><field name="foo"/></div>
                             </t>
                         </templates>
                     </kanban>`,
@@ -176,13 +156,15 @@ QUnit.module("Base Import Tests", (hooks) => {
                     actionType: "ir.actions.act_window",
                 },
             });
-            // Cog menu will not show when empty
-            assert.containsNone(target, ".o_cp_action_menus");
+
+            await toggleFavoriteMenu(target);
+            assert.containsOnce(target, ".o_favorite_menu .o-dropdown--menu");
+            assert.containsNone(target, ".o_import_menu");
         }
     );
 
     QUnit.test(
-        'import should not be available in cog menu dropdown in kanban with import="0"',
+        'import dropdown favorite should not be in kanban with import="0"',
         async function (assert) {
             await makeView({
                 type: "kanban",
@@ -191,8 +173,8 @@ QUnit.module("Base Import Tests", (hooks) => {
                 arch: `
                     <kanban import="0">
                         <templates>
-                            <t t-name="card">
-                                <field name="foo"/>
+                            <t t-name="kanban-box">
+                                <div><field name="foo"/></div>
                             </t>
                         </templates>
                     </kanban>`,
@@ -200,18 +182,20 @@ QUnit.module("Base Import Tests", (hooks) => {
                     actionType: "ir.actions.act_window",
                 },
             });
-            // Cog menu will not show when empty
-            assert.containsNone(target, ".o_cp_action_menus");
+
+            await toggleFavoriteMenu(target);
+            assert.containsOnce(target, ".o_favorite_menu .o-dropdown--menu");
+            assert.containsNone(target, ".o_import_menu");
         }
     );
 
     QUnit.test(
-        "import should not be available in cog menu dropdown in pivot (other than kanban or list)",
+        "import should not be available in favorite dropdown in pivot (other than kanban or list)",
         async function (assert) {
             serverData.models.foo.fields.foobar = {
                 string: "Fubar",
                 type: "integer",
-                aggregator: "sum",
+                group_operator: "sum",
             };
 
             await makeView({
@@ -223,13 +207,15 @@ QUnit.module("Base Import Tests", (hooks) => {
                     actionType: "ir.actions.act_window",
                 },
             });
-            // Cog menu will not show when empty
-            assert.containsNone(target, ".o_cp_action_menus");
+
+            await toggleFavoriteMenu(target);
+            assert.containsOnce(target, ".o_favorite_menu .o-dropdown--menu");
+            assert.containsNone(target, ".o_import_menu");
         }
     );
 
     QUnit.test(
-        "import should not be available in cog menu dropdown in dialog view",
+        "import should not be available in favorite dropdown in dialog view",
         async function (assert) {
             serverData.models.bar = {
                 fields: {
@@ -243,7 +229,7 @@ QUnit.module("Base Import Tests", (hooks) => {
             serverData.models.foo.fields.m2o = { string: "M2O", type: "many2one", relation: "bar" };
 
             serverData.views = {
-                "bar,false,list": '<list><field name="display_name"/></list>',
+                "bar,false,list": '<tree><field name="display_name"/></tree>',
                 "bar,false,search": "<search></search>",
             };
             await makeView({
@@ -258,7 +244,8 @@ QUnit.module("Base Import Tests", (hooks) => {
 
             await selectDropdownItem(target, "m2o", "Search More...");
             const dialog = target.querySelector(".modal");
-            assert.containsNone(dialog, ".o_cp_action_menus");
+            await toggleFavoriteMenu(dialog);
+            assert.containsOnce(dialog, ".o_favorite_menu .o-dropdown--menu");
             assert.containsNone(dialog, ".o_import_menu");
         }
     );

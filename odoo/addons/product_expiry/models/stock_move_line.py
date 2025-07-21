@@ -41,6 +41,15 @@ class StockMoveLine(models.Model):
                 else:
                     move_line.expiration_date = False
 
+    @api.onchange('lot_id')
+    def _onchange_lot_id(self):
+        if not self.picking_type_use_existing_lots or not self.product_id.use_expiration_date:
+            return
+        if self.lot_id:
+            self.expiration_date = self.lot_id.expiration_date
+        else:
+            self.expiration_date = False
+
     @api.onchange('product_id', 'product_uom_id', 'picking_id')
     def _onchange_product_id(self):
         res = super()._onchange_product_id()
@@ -52,8 +61,17 @@ class StockMoveLine(models.Model):
                 self.expiration_date = False
         return res
 
-    def _prepare_new_lot_vals(self):
-        vals = super()._prepare_new_lot_vals()
+    def _assign_production_lot(self, lot):
+        super()._assign_production_lot(lot)
+        self.lot_id._update_date_values(self[0].expiration_date)
+
+    def _get_value_production_lot(self):
+        res = super()._get_value_production_lot()
         if self.expiration_date:
-            vals['expiration_date'] = self.expiration_date
-        return vals
+            res.update({
+                'expiration_date': self.expiration_date,
+                'use_date': self.expiration_date - datetime.timedelta(days=self.product_id.use_time),
+                'removal_date': self.expiration_date - datetime.timedelta(days=self.product_id.removal_time),
+                'alert_date': self.expiration_date - datetime.timedelta(days=self.product_id.alert_time),
+            })
+        return res

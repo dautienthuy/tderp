@@ -3,16 +3,19 @@
 # 	* barcodes
 # 
 # Translators:
+# Martin Trigaux, 2022
+# Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2022
+# Pedro M. Baeza <pedro.baeza@tecnativa.com>, 2023
 # Wil Odoo, 2024
-# Larissa Manderfeld, 2025
+# Larissa Manderfeld, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-23 18:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Larissa Manderfeld, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2022-09-22 05:45+0000\n"
+"Last-Translator: Larissa Manderfeld, 2024\n"
 "Language-Team: Spanish (https://app.transifex.com/odoo/teams/41243/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -23,10 +26,10 @@ msgstr ""
 #. module: barcodes
 #. odoo-python
 #: code:addons/barcodes/models/barcode_rule.py:0
-msgid " '*' is not a valid Regex Barcode Pattern. Did you mean '.*'?"
+#, python-format
+msgid " '*' is not a valid Regex Barcode Pattern. Did you mean '.*' ?"
 msgstr ""
-" '*' no es un patrón de código de barras válido para la expresión regular. "
-"¿Se refiere a'.*'?"
+"'*' no es un patrón Regex válido para código de barras. ¿Quieres usar '.*'?"
 
 #. module: barcodes
 #: model_terms:ir.ui.view,arch_db:barcodes.view_barcode_nomenclature_form
@@ -85,12 +88,6 @@ msgid "Any"
 msgstr "Cualquiera"
 
 #. module: barcodes
-#. odoo-javascript
-#: code:addons/barcodes/static/src/components/barcode_scanner.xml:0
-msgid "Barcode"
-msgstr "Código de barras"
-
-#. module: barcodes
 #: model:ir.model,name:barcodes.model_barcodes_barcode_events_mixin
 msgid "Barcode Event Mixin"
 msgstr "Mixin de eventos de código de barras"
@@ -128,8 +125,9 @@ msgstr "Código de barras escaneado"
 #. module: barcodes
 #. odoo-javascript
 #: code:addons/barcodes/static/src/barcode_handlers.js:0
-msgid "Barcode: %(barcode)s"
-msgstr "Código de barras: %(barcode)s"
+#, python-format
+msgid "Barcode: "
+msgstr "Código de barras:"
 
 #. module: barcodes
 #: model:ir.model,name:barcodes.model_res_company
@@ -186,14 +184,10 @@ msgid "ID"
 msgstr "ID"
 
 #. module: barcodes
-#. odoo-python
-#: code:addons/barcodes/models/barcode_events_mixin.py:0
-msgid ""
-"In order to use barcodes.barcode_events_mixin, method on_barcode_scanned "
-"must be implemented"
-msgstr ""
-"Para poder utilizar barcodes.barcode_events_mixin, es necesario implementar "
-"el método on_barcode_scanned."
+#: model:ir.model.fields,field_description:barcodes.field_barcode_nomenclature____last_update
+#: model:ir.model.fields,field_description:barcodes.field_barcode_rule____last_update
+msgid "Last Modified on"
+msgstr "Última modificación el"
 
 #. module: barcodes
 #: model:ir.model.fields,field_description:barcodes.field_barcode_nomenclature__write_uid
@@ -222,23 +216,17 @@ msgstr "Nomenclatura"
 msgid ""
 "Patterns can also define how numerical values, such as weight or price, can be\n"
 "                                encoded into the barcode. They are indicated by <code>{NNN}</code> where the N's\n"
-"                                define where the number's digits are encoded. Floats are also supported with the\n"
-"                                decimals indicated with D's, such as <code>{NNNDD}</code>. In these cases,\n"
-"                                the barcode field on the associated records <i>must</i> show these digits as\n"
+"                                define where the number's digits are encoded. Floats are also supported with the \n"
+"                                decimals indicated with D's, such as <code>{NNNDD}</code>. In these cases, \n"
+"                                the barcode field on the associated records <i>must</i> show these digits as \n"
 "                                zeroes."
 msgstr ""
-"Los patrones también pueden definir el modo en que los valores numéricos, como el peso o el precio, pueden\n"
-"                                codificarse en el código de barras. Estos se indican con el parámetro <code>{NNN}</code> donde las N\n"
-"                                definen dónde se codifican los dígitos del número. También se admiten valores flotantes con los\n"
-"                                decimales indicados con D, como <code>{NNNDD}</code>. En estos casos,\n"
-"                                el campo de código de barras de los registros asociados <i>debe</i> mostrar estos dígitos como\n"
-"                                ceros."
-
-#. module: barcodes
-#. odoo-javascript
-#: code:addons/barcodes/static/src/components/barcode_scanner.js:0
-msgid "Please, Scan again!"
-msgstr "¡Escanee de nuevo!"
+"Los patrones también pueden definir cómo se codifican valores numéricos, tales como\n"
+"el peso o el precio, en el código de barras. Se indican por <code>{NNN}</code>,\n"
+"donde las letras N definen en qué posición se codifican los números. También se permiten\n"
+"números reales si los decimales se indican con la letra D, por ejemplo <code>{NNNDD}</code>.\n"
+"En estos casos, el campo de código de barras en los registros asociados <i>debe</i>\n"
+"tener ceros en esas posiciones."
 
 #. module: barcodes
 #: model:ir.model.fields,field_description:barcodes.field_barcode_rule__name
@@ -261,19 +249,13 @@ msgid "Tables"
 msgstr "Tablas"
 
 #. module: barcodes
-#. odoo-javascript
-#: code:addons/barcodes/static/src/components/barcode_scanner.xml:0
-msgid "Tap to scan"
-msgstr "Presione para escanear"
-
-#. module: barcodes
 #: model:ir.model.fields,help:barcodes.field_barcode_rule__pattern
 msgid "The barcode matching pattern"
 msgstr "Patrón de concordancia para el código de barras"
 
 #. module: barcodes
-#. odoo-python
 #: code:addons/barcodes/models/barcode_rule.py:0
+#, python-format
 msgid ""
 "The barcode pattern %(pattern)s does not lead to a valid regular expression."
 msgstr ""
@@ -293,6 +275,7 @@ msgstr "El patrón de concordancia será un alias para este código de barras"
 #. module: barcodes
 #. odoo-python
 #: code:addons/barcodes/models/barcode_rule.py:0
+#, python-format
 msgid ""
 "There is a syntax error in the barcode pattern %(pattern)s: a rule can only "
 "contain one pair of braces."
@@ -303,6 +286,7 @@ msgstr ""
 #. module: barcodes
 #. odoo-python
 #: code:addons/barcodes/models/barcode_rule.py:0
+#, python-format
 msgid ""
 "There is a syntax error in the barcode pattern %(pattern)s: braces can only "
 "contain N's followed by D's."
@@ -313,6 +297,7 @@ msgstr ""
 #. module: barcodes
 #. odoo-python
 #: code:addons/barcodes/models/barcode_rule.py:0
+#, python-format
 msgid ""
 "There is a syntax error in the barcode pattern %(pattern)s: empty braces."
 msgstr ""
@@ -368,6 +353,7 @@ msgstr "Producto unitario"
 #. module: barcodes
 #. odoo-javascript
 #: code:addons/barcodes/static/src/barcode_handlers.js:0
+#, python-format
 msgid "Unknown barcode command"
 msgstr "Comando de código de barras desconocido"
 

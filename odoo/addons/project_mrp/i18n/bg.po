@@ -3,18 +3,17 @@
 # 	* project_mrp
 # 
 # Translators:
-# aleksandar ivanov, 2024
-# Maria Boyadjieva <marabo2000@gmail.com>, 2024
-# Igor Sheludko <igor.sheludko@gmail.com>, 2024
-# Milena Georgieva, 2024
+# Igor Sheludko <igor.sheludko@gmail.com>, 2023
+# Maria Boyadjieva <marabo2000@gmail.com>, 2023
+# aleksandar ivanov, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-25 07:49+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Milena Georgieva, 2024\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:54+0000\n"
+"Last-Translator: aleksandar ivanov, 2023\n"
 "Language-Team: Bulgarian (https://app.transifex.com/odoo/teams/41243/bg/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -23,60 +22,36 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: project_mrp
-#: model:ir.model,name:project_mrp.model_mrp_bom
-msgid "Bill of Material"
-msgstr "Фактура за покупка на материали"
-
-#. module: project_mrp
 #. odoo-python
-#: code:addons/project_mrp/models/project_project.py:0
-#: model:ir.embedded.actions,name:project_mrp.project_embedded_action_bills_of_materials
+#: code:addons/project_mrp/models/project.py:0
+#, python-format
 msgid "Bills of Materials"
-msgstr "Спецификация с материали"
+msgstr "Списъци с материали"
 
 #. module: project_mrp
-#. odoo-python
-#: code:addons/project_mrp/models/project_project.py:0
-msgid ""
-"Bills of materials allow you to define the list of required raw materials "
-"used to make a finished product; through a manufacturing order or a pack of "
-"products."
+#: model:ir.model.fields,field_description:project_mrp.field_project_project__bom_count
+msgid "BoM Count"
 msgstr ""
-"Спецификациите на материалите Ви позволяват да дефинирате списъка с "
-"необходимите суровини, използвани за производството на завършен продукт; "
-"чрез производствена поръчка или пакет от продукти."
-
-#. module: project_mrp
-#: model:ir.model,name:project_mrp.model_mrp_production
-msgid "Manufacturing Order"
-msgstr "Производствена поръчка "
 
 #. module: project_mrp
 #. odoo-python
-#: code:addons/project_mrp/models/project_project.py:0
-#: model:ir.embedded.actions,name:project_mrp.project_embedded_action_manufacturing_orders
+#: code:addons/project_mrp/models/project.py:0
+#: code:addons/project_mrp/models/project.py:0
+#, python-format
 msgid "Manufacturing Orders"
 msgstr "Производствена поръчка "
 
 #. module: project_mrp
-#. odoo-python
-#: code:addons/project_mrp/models/project_project.py:0
-msgid "No bill of materials found. Let's create one."
-msgstr "Не е намерена спецификация на материалите. Нека да създадем една!"
+#: model:ir.model.fields,field_description:project_mrp.field_project_project__production_count
+msgid "Manufacturing Orders Count"
+msgstr ""
 
 #. module: project_mrp
 #: model:ir.model,name:project_mrp.model_project_project
-#: model:ir.model.fields,field_description:project_mrp.field_mrp_bom__project_id
-#: model:ir.model.fields,field_description:project_mrp.field_mrp_production__project_id
 msgid "Project"
 msgstr "Проект"
 
 #. module: project_mrp
-#: model:ir.model,name:project_mrp.model_stock_move
-msgid "Stock Move"
-msgstr "Движение в склада"
-
-#. module: project_mrp
-#: model:ir.model,name:project_mrp.model_stock_rule
-msgid "Stock Rule"
-msgstr "Правило зс наличност"
+#: model:ir.model.fields,field_description:project_mrp.field_project_project__workorder_count
+msgid "Work Order Count"
+msgstr ""

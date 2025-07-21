@@ -1,47 +1,21 @@
 /** @odoo-module */
 
-import { rpc } from "@web/core/network/rpc";
+import { useService } from '@web/core/utils/hooks';
 import { TextField } from '@web/views/fields/text/text_field';
 import { PortalAttachDocument } from '../portal_attach_document/portal_attach_document';
 import { ChatterAttachmentsViewer } from './chatter_attachments_viewer';
-import { Component, useState, onWillUpdateProps, useRef } from "@odoo/owl";
+
+const { Component, useState, onWillUpdateProps } = owl;
 
 export class ChatterComposer extends Component {
-    static template = "project.ChatterComposer";
-    static components = {
-        ChatterAttachmentsViewer,
-        PortalAttachDocument,
-        TextField,
-    };
-    static props = {
-        resModel: String,
-        projectSharingId: Number,
-        resId: { type: Number, optional: true },
-        allowComposer: { type: Boolean, optional: true },
-        displayComposer: { type: Boolean, optional: true },
-        token: { type: String, optional: true },
-        messageCount: { type: Number, optional: true },
-        isUserPublic: { type: Boolean, optional: true },
-        partnerId: { type: Number, optional: true },
-        postProcessMessageSent: { type: Function, optional: true },
-        attachments: { type: Array, optional: true },
-    };
-    static defaultProps = {
-        allowComposer: true,
-        displayComposer: false,
-        isUserPublic: true,
-        token: "",
-        attachments: [],
-    };
-
     setup() {
+        this.rpc = useService('rpc');
         this.state = useState({
             displayError: false,
             attachments: this.props.attachments.map(file => file.state === 'done'),
             message: '',
             loading: false,
         });
-        this.inputRef = useRef("textarea");
 
         onWillUpdateProps(this.onWillUpdateProps);
     }
@@ -49,9 +23,6 @@ export class ChatterComposer extends Component {
     onWillUpdateProps(nextProps) {
         this.clearErrors();
         this.state.message = '';
-        if (this.inputRef.el) {
-            this.inputRef.el.value = "";
-        }
         this.state.attachments = nextProps.attachments.map(file => file.state === 'done');
     }
 
@@ -59,9 +30,9 @@ export class ChatterComposer extends Component {
         return `${window.location.href.split('#')[0]}#discussion`;
     }
 
-    update() {
+    update(change) {
         this.clearErrors();
-        this.state.message = this.inputRef.el.value;
+        this.state.message = change;
     }
 
     prepareMessageData() {
@@ -72,15 +43,11 @@ export class ChatterComposer extends Component {
             attachment_tokens.push(attachment.access_token);
         }
         return {
-            thread_model: this.props.resModel,
-            thread_id: this.props.resId,
-            post_data: {
-                body: this.state.message,
-                attachment_ids,
-                message_type: "comment",
-                subtype_xmlid: "mail.mt_comment",
-            },
+            message: this.state.message,
+            attachment_ids,
             attachment_tokens,
+            res_model: this.props.resModel,
+            res_id: this.props.resId,
             project_sharing_id: this.props.projectSharingId,
         };
     }
@@ -92,8 +59,8 @@ export class ChatterComposer extends Component {
             return;
         }
 
-        await rpc(
-            "/mail/message/post",
+        await this.rpc(
+            "/mail/chatter_post",
             this.prepareMessageData(),
         );
         this.props.postProcessMessageSent();
@@ -113,8 +80,7 @@ export class ChatterComposer extends Component {
     onFileUpload(files) {
         this.state.loading = false;
         this.clearErrors();
-        for (const fileData of files) {
-            let file = fileData.data["ir.attachment"][0];
+        for (const file of files) {
             file.state = 'pending';
             this.state.attachments.push(file);
         }
@@ -123,7 +89,7 @@ export class ChatterComposer extends Component {
     async deleteAttachment(attachment) {
         this.clearErrors();
         try {
-            await rpc(
+            await this.rpc(
                 '/portal/attachment/remove',
                 {
                     attachment_id: attachment.id,
@@ -137,3 +103,32 @@ export class ChatterComposer extends Component {
         this.state.attachments = this.state.attachments.filter(a => a.id !== attachment.id);
     }
 }
+
+ChatterComposer.components = {
+    ChatterAttachmentsViewer,
+    PortalAttachDocument,
+    TextField,
+};
+
+ChatterComposer.props = {
+    resModel: String,
+    projectSharingId: Number,
+    resId: { type: Number, optional: true },
+    allowComposer: { type: Boolean, optional: true },
+    displayComposer: { type: Boolean, optional: true },
+    token: { type: String, optional: true },
+    messageCount: { type: Number, optional: true },
+    isUserPublic: { type: Boolean, optional: true },
+    partnerId: { type: Number, optional: true },
+    postProcessMessageSent: { type: Function, optional: true },
+    attachments: { type: Array, optional: true },
+};
+ChatterComposer.defaultProps = {
+    allowComposer: true,
+    displayComposer: false,
+    isUserPublic: true,
+    token: '',
+    attachments: [],
+};
+
+ChatterComposer.template = 'project.ChatterComposer';

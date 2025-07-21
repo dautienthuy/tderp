@@ -3,28 +3,26 @@
 # 	* pos_loyalty
 # 
 # Translators:
-# emre oktem, 2024
-# Tiffany Chang, 2024
-# Güven YILMAZ <guvenyilmaz@outlook.com.tr>, 2024
-# Tugay Hatıl <tugayh@projetgrup.com>, 2024
+# Güven YILMAZ <guvenyilmaz@outlook.com.tr>, 2022
+# Ahmet Altinisik <aaltinisik@altinkaya.com.tr>, 2022
+# abc Def <hdogan1974@gmail.com>, 2022
+# omerfarukcakmak <omerfarukckmk@protonmail.com>, 2022
+# Levent Karakaş <levent@mektup.at>, 2022
+# Martin Trigaux, 2022
+# Ertuğrul Güreş <ertugrulg@projetgrup.com>, 2022
+# Umur Akın <umura@projetgrup.com>, 2022
+# Murat Kaplan <muratk@projetgrup.com>, 2022
+# Tugay Hatıl <tugayh@projetgrup.com>, 2023
+# Halil, 2023
 # Ediz Duman <neps1192@gmail.com>, 2024
-# Umur Akın <umura@projetgrup.com>, 2024
-# Levent Karakaş <levent@mektup.at>, 2024
-# Sinem Cil, 2024
-# Murat Kaplan <muratk@projetgrup.com>, 2024
-# Ahmet Altinisik <aaltinisik@altinkaya.com.tr>, 2024
-# Martin Trigaux, 2024
-# Ertuğrul Güreş <ertugrulg@projetgrup.com>, 2024
-# Halil, 2025
-# Deniz Guvener_Odoo <degu@odoo.com>, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-07 20:36+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Deniz Guvener_Odoo <degu@odoo.com>, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2022-09-22 05:54+0000\n"
+"Last-Translator: Ediz Duman <neps1192@gmail.com>, 2024\n"
 "Language-Team: Turkish (https://app.transifex.com/odoo/teams/41243/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -45,7 +43,8 @@ msgstr ""
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/partner_line/partner_line.js:0
+#: code:addons/pos_loyalty/static/src/js/PartnerLine.js:0
+#, python-format
 msgid "%s Points"
 msgstr "%s Puan"
 
@@ -61,21 +60,17 @@ msgstr "siparişinizde 15%"
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/models/pos_order.js:0
+#: code:addons/pos_loyalty/static/src/js/Loyalty.js:0
+#, python-format
 msgid "A better global discount is already applied."
 msgstr "Daha iyi bir küresel indirim zaten uygulanmaktadır."
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/product_screen/order_summary/order_summary.js:0
-msgid "A coupon/loyalty card must have a unique code."
-msgstr "Bir kupon/sadakat kartının benzersiz bir kodu olmalıdır."
-
-#. module: pos_loyalty
-#. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/models/pos_store.js:0
+#: code:addons/pos_loyalty/static/src/js/Loyalty.js:0
+#, python-format
 msgid "A reward could not be loaded"
-msgstr "Bir ödül yüklenemedi"
+msgstr ""
 
 #. module: pos_loyalty
 #: model:ir.model.fields,help:pos_loyalty.field_loyalty_rule__promo_barcode
@@ -83,31 +78,13 @@ msgid ""
 "A technical field used as an alternative to the promo code. This is "
 "automatically generated when the promo code is changed."
 msgstr ""
-"Promosyon koduna alternatif olarak kullanılan teknik bir alan. Bu alan, "
-"promosyon kodu değiştirildiğinde otomatik olarak oluşturulur."
-
-#. module: pos_loyalty
-#: model:ir.model.fields,field_description:pos_loyalty.field_res_partner__loyalty_card_count
-#: model:ir.model.fields,field_description:pos_loyalty.field_res_users__loyalty_card_count
-msgid "Active loyalty cards"
-msgstr "Aktif sadakat kartları"
-
-#. module: pos_loyalty
-#. odoo-javascript
-#: code:addons/pos_loyalty/static/src/utils/manage_giftcard_popup/manage_giftcard_popup.xml:0
-msgid "Add Balance"
-msgstr "Bakiye Ekleyin"
+"Promosyon koduna alternatif olarak kullanılan teknik bir alan. Bu, promosyon"
+" kodu değiştirildiğinde otomatik olarak oluşturulur."
 
 #. module: pos_loyalty
 #: model_terms:ir.ui.view,arch_db:pos_loyalty.loyalty_program_view_form_inherit_pos_loyalty
 msgid "All PoS"
 msgstr "Tüm PoS"
-
-#. module: pos_loyalty
-#. odoo-javascript
-#: code:addons/pos_loyalty/static/src/utils/manage_giftcard_popup/manage_giftcard_popup.xml:0
-msgid "Amount"
-msgstr "Tutar"
 
 #. module: pos_loyalty
 #: model:ir.model.fields,field_description:pos_loyalty.field_loyalty_rule__any_product
@@ -116,30 +93,27 @@ msgstr "Herhangi Bir Ürün"
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/product_screen/order_summary/order_summary.js:0
+#: code:addons/pos_loyalty/static/src/js/ProductScreen.js:0
+#, python-format
 msgid ""
 "Are you sure you want to remove %s from this order?\n"
 " You will still be able to claim it through the reward button."
 msgstr ""
-"Bu öğeyi (%s) bu siparişten çıkarmak istediğinizden emin misiniz?\n"
-" Yine de ödül düğmesi aracılığıyla talep edebileceksiniz."
+"%s bu siparişten kaldırmak istediğinizden emin misiniz?\n"
+" Yine de ödül düğmesinden talep edebileceksiniz."
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/control_buttons/control_buttons.js:0
-msgid "Available rewards"
-msgstr "Mevcut ödüller "
-
-#. module: pos_loyalty
-#. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/order_receipt/order_receipt.xml:0
+#: code:addons/pos_loyalty/static/src/xml/OrderReceipt.xml:0
+#, python-format
 msgid "Balance"
 msgstr "Bakiye"
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/order_receipt/order_receipt.xml:0
+#: code:addons/pos_loyalty/static/src/xml/OrderReceipt.xml:0
 #: model:ir.model.fields,field_description:pos_loyalty.field_loyalty_rule__promo_barcode
+#, python-format
 msgid "Barcode"
 msgstr "Barkod"
 
@@ -149,9 +123,9 @@ msgid "Barcode Rule"
 msgstr "Barkod kuralı"
 
 #. module: pos_loyalty
-#: model:ir.model,name:pos_loyalty.model_res_partner
-msgid "Contact"
-msgstr "Kontak"
+#: model:ir.model,name:pos_loyalty.model_res_config_settings
+msgid "Config Settings"
+msgstr "Yapılandırma Ayarları"
 
 #. module: pos_loyalty
 #: model:ir.model.fields,field_description:pos_loyalty.field_pos_order_line__coupon_id
@@ -161,7 +135,8 @@ msgstr "Kupon"
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/order_receipt/order_receipt.xml:0
+#: code:addons/pos_loyalty/static/src/xml/OrderReceipt.xml:0
+#, python-format
 msgid "Coupon Codes"
 msgstr "Kupon Kodları"
 
@@ -172,27 +147,37 @@ msgstr "Kupon nokta(lar)ı"
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/product_screen/order_summary/order_summary.xml:0
+#: code:addons/pos_loyalty/static/src/xml/Orderline.xml:0
+#, python-format
 msgid "Current Balance:"
 msgstr "Güncel Bakiye:"
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/order_receipt/order_receipt.xml:0
+#: code:addons/pos_loyalty/static/src/xml/OrderReceipt.xml:0
+#, python-format
 msgid "Customer"
 msgstr "Müşteri"
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/models/pos_store.js:0
+#: code:addons/pos_loyalty/static/src/js/ProductScreen.js:0
+#, python-format
 msgid "Customer needed"
 msgstr "Müşteri ihtiyacı"
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/product_screen/order_summary/order_summary.js:0
+#: code:addons/pos_loyalty/static/src/js/ProductScreen.js:0
+#, python-format
 msgid "Deactivating reward"
 msgstr "Ödülü devre dışı bırakma"
+
+#. module: pos_loyalty
+#: model:ir.model.fields,help:pos_loyalty.field_pos_config__gift_card_settings
+#: model:ir.model.fields,help:pos_loyalty.field_res_config_settings__pos_gift_card_settings
+msgid "Defines the way you want to set your gift cards."
+msgstr "Hediye kartlarınızı nasıl ayarlamak istediğinizi tanımlar."
 
 #. module: pos_loyalty
 #: model:ir.ui.menu,name:pos_loyalty.menu_discount_loyalty_type_config
@@ -202,40 +187,32 @@ msgstr "İndirim ve Sadakat"
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/control_buttons/control_buttons.js:0
-#: code:addons/pos_loyalty/static/src/overrides/components/control_buttons/control_buttons.xml:0
+#: code:addons/pos_loyalty/static/src/js/ControlButtons/PromoCodeButton.js:0
+#: code:addons/pos_loyalty/static/src/xml/ControlButtons/PromoCodeButton.xml:0
+#, python-format
 msgid "Enter Code"
 msgstr "Kodu girin"
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/product_screen/order_summary/order_summary.js:0
-msgid "Enter Gift Card Number"
-msgstr "Hediye Kartı Numarasını Girin"
+#: code:addons/pos_loyalty/static/src/js/ProductScreen.js:0
+#, python-format
+msgid "Enter the gift card code"
+msgstr "Hediye kartı kodunu girin"
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/utils/manage_giftcard_popup/manage_giftcard_popup.xml:0
-msgid "Enter amount"
-msgstr "Tutar girin"
-
-#. module: pos_loyalty
-#. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/control_buttons/control_buttons.js:0
+#: code:addons/pos_loyalty/static/src/js/ControlButtons/eWalletButton.js:0
+#, python-format
 msgid "Error"
 msgstr "Hata"
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/payment_screen/payment_screen.js:0
+#: code:addons/pos_loyalty/static/src/js/PaymentScreen.js:0
+#, python-format
 msgid "Error validating rewards"
 msgstr "Ödülleri doğrulamada hata oluştu"
-
-#. module: pos_loyalty
-#. odoo-javascript
-#: code:addons/pos_loyalty/static/src/utils/manage_giftcard_popup/manage_giftcard_popup.xml:0
-msgid "Expiration"
-msgstr "Geçerlilik Tarihi"
 
 #. module: pos_loyalty
 #: model:loyalty.reward,description:pos_loyalty.loyalty_program_reward
@@ -243,18 +220,27 @@ msgid "Free Product - Simple Pen"
 msgstr "Ücretsiz Ürün - Basit Kalem"
 
 #. module: pos_loyalty
-#. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/models/pos_store.js:0
-msgid ""
-"Gift Card: %s\n"
-"Balance: %s"
-msgstr ""
-"Hediye Kartı: %s\n"
-"Bakiye: %s"
+#: model:ir.model.fields.selection,name:pos_loyalty.selection__pos_config__gift_card_settings__create_set
+msgid "Generate PDF cards"
+msgstr "PDF kartları oluşturma"
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/control_buttons/control_buttons.js:0
+#: code:addons/pos_loyalty/static/src/js/ProductScreen.js:0
+#, python-format
+msgid "Generate a Gift Card"
+msgstr "Hediye Kartı Oluşturma"
+
+#. module: pos_loyalty
+#: model:ir.model.fields,field_description:pos_loyalty.field_pos_config__gift_card_settings
+#: model:ir.model.fields,field_description:pos_loyalty.field_res_config_settings__pos_gift_card_settings
+msgid "Gift Cards settings"
+msgstr "Hediye Kartları ayarları"
+
+#. module: pos_loyalty
+#. odoo-javascript
+#: code:addons/pos_loyalty/static/src/js/ControlButtons/PromoCodeButton.js:0
+#, python-format
 msgid "Gift card or Discount code"
 msgstr "Hediye kartı veya İndirim kodu"
 
@@ -262,7 +248,7 @@ msgstr "Hediye kartı veya İndirim kodu"
 #: model:ir.ui.menu,name:pos_loyalty.menu_gift_ewallet_type_config
 #: model_terms:ir.ui.view,arch_db:pos_loyalty.res_config_view_form_inherit_pos_loyalty
 msgid "Gift cards & eWallet"
-msgstr "Hediye kartları & e-Cüzdan"
+msgstr "Hediye kartları ve e-Cüzdan"
 
 #. module: pos_loyalty
 #: model:ir.model.fields,help:pos_loyalty.field_pos_order_line__points_cost
@@ -272,6 +258,7 @@ msgstr "Bu ödülün kuponda kaç puana mal olduğu."
 #. module: pos_loyalty
 #. odoo-python
 #: code:addons/pos_loyalty/models/pos_config.py:0
+#, python-format
 msgid "Invalid gift card program reward. Use 1 currency per point discount."
 msgstr ""
 "Geçersiz hediye kartı programı ödülü. Puan başına 1 para birimi indirimi "
@@ -280,6 +267,7 @@ msgstr ""
 #. module: pos_loyalty
 #. odoo-python
 #: code:addons/pos_loyalty/models/pos_config.py:0
+#, python-format
 msgid "Invalid gift card program rule. Use 1 point per currency spent."
 msgstr ""
 "Geçersiz hediye kartı programı kuralı. Harcanan para birimi başına 1 puan "
@@ -288,12 +276,14 @@ msgstr ""
 #. module: pos_loyalty
 #. odoo-python
 #: code:addons/pos_loyalty/models/pos_config.py:0
+#, python-format
 msgid "Invalid gift card program. More than one reward."
 msgstr "Geçersiz hediye kartı programı. Birden fazla ödül."
 
 #. module: pos_loyalty
 #. odoo-python
 #: code:addons/pos_loyalty/models/pos_config.py:0
+#, python-format
 msgid "Invalid gift card program. More than one rule."
 msgstr "Geçersiz hediye kartı programı. Birden fazla kural."
 
@@ -335,33 +325,45 @@ msgstr "Sadakat Kuralları"
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/product_screen/order_summary/order_summary.js:0
+#: code:addons/pos_loyalty/static/src/js/ProductScreen.js:0
+#, python-format
 msgid "No"
 msgstr "Hayır"
 
 #. module: pos_loyalty
 #. odoo-python
 #: code:addons/pos_loyalty/models/pos_config.py:0
+#, python-format
 msgid "No reward can be claimed with this coupon."
 msgstr "Bu kuponla ödül talep edilemez."
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/control_buttons/control_buttons.js:0
-msgid "No valid eWallet found"
-msgstr "Geçerli bir eCüzdan bulunamadı"
-
-#. module: pos_loyalty
-#. odoo-python
-#: code:addons/pos_loyalty/models/pos_order.py:0
-msgid "Onsite %s"
-msgstr "Yerinde %s"
+#: code:addons/pos_loyalty/static/src/js/ControlButtons/RewardButton.js:0
+#, python-format
+msgid "No rewards available."
+msgstr "Uygun ödül yok."
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/control_buttons/control_buttons.js:0
+#: code:addons/pos_loyalty/static/src/js/ControlButtons/eWalletButton.js:0
+#, python-format
+msgid "No valid eWallet found"
+msgstr ""
+
+#. module: pos_loyalty
+#. odoo-javascript
+#: code:addons/pos_loyalty/static/src/js/ControlButtons/RewardButton.js:0
+#, python-format
 msgid "Please select a product for this reward"
 msgstr "Lütfen bu ödül için bir ürün seçin"
+
+#. module: pos_loyalty
+#. odoo-javascript
+#: code:addons/pos_loyalty/static/src/js/ControlButtons/RewardButton.js:0
+#, python-format
+msgid "Please select a reward"
+msgstr "Lütfen bir ödül seçin"
 
 #. module: pos_loyalty
 #: model:ir.model.fields,field_description:pos_loyalty.field_loyalty_program__pos_order_count
@@ -372,6 +374,13 @@ msgstr "PoS Sipariş Sayısı"
 #: model:ir.model.fields,field_description:pos_loyalty.field_loyalty_card__source_pos_order_id
 msgid "PoS Order Reference"
 msgstr "PoS Sipariş Referansı"
+
+#. module: pos_loyalty
+#. odoo-python
+#: code:addons/pos_loyalty/models/loyalty_program.py:0
+#, python-format
+msgid "PoS Orders"
+msgstr "POS Siparişleri"
 
 #. module: pos_loyalty
 #: model:ir.model.fields,help:pos_loyalty.field_loyalty_card__source_pos_order_id
@@ -411,7 +420,8 @@ msgstr "Satış Noktası"
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/models/pos_order.js:0
+#: code:addons/pos_loyalty/static/src/js/Loyalty.js:0
+#, python-format
 msgid "Points"
 msgstr "Puanlar"
 
@@ -427,31 +437,30 @@ msgid "Print Report"
 msgstr "Rapor Yazdır"
 
 #. module: pos_loyalty
-#: model:ir.model,name:pos_loyalty.model_product_product
-msgid "Product Variant"
-msgstr "Ürün Varyantı"
-
-#. module: pos_loyalty
 #. odoo-python
 #: code:addons/pos_loyalty/models/pos_config.py:0
+#, python-format
 msgid "Program: %(name)s, Reward Product: `%(reward_product)s`"
 msgstr "Program: %(name)s, Ödül Ürünü: '%(reward_product)s'"
 
 #. module: pos_loyalty
 #. odoo-python
 #: code:addons/pos_loyalty/models/pos_config.py:0
+#, python-format
 msgid "Program: %(name)s, Rule Product: `%(rule_product)s`"
 msgstr "Program: %(name)s, Kural Ürünü: '%(rule_product)s'"
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/control_buttons/control_buttons.js:0
+#: code:addons/pos_loyalty/static/src/js/ControlButtons/eWalletButton.js:0
+#, python-format
 msgid "Refund with eWallet"
 msgstr "e-Cüzdan ile geri ödeme"
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/ticket_screen/ticket_screen.js:0
+#: code:addons/pos_loyalty/static/src/js/TicketScreen.js:0
+#, python-format
 msgid ""
 "Refunding a top up or reward product for an eWallet or gift card program is "
 "not allowed."
@@ -461,7 +470,8 @@ msgstr ""
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/control_buttons/control_buttons.xml:0
+#: code:addons/pos_loyalty/static/src/xml/ControlButtons/ResetProgramsButton.xml:0
+#, python-format
 msgid "Reset Programs"
 msgstr "Programları Sıfırla"
 
@@ -472,8 +482,9 @@ msgstr "Yayıncılığı bu mağazalarla sınırlandırın."
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/control_buttons/control_buttons.xml:0
+#: code:addons/pos_loyalty/static/src/xml/ControlButtons/RewardButton.xml:0
 #: model:ir.model.fields,field_description:pos_loyalty.field_pos_order_line__reward_id
+#, python-format
 msgid "Reward"
 msgstr "Ödül"
 
@@ -483,22 +494,16 @@ msgid "Reward Identifier Code"
 msgstr "Ödül Tanımlayıcı Kodu"
 
 #. module: pos_loyalty
+#: model:ir.model.fields.selection,name:pos_loyalty.selection__pos_config__gift_card_settings__scan_use
+msgid "Scan existing cards"
+msgstr "Mevcut kartları tarayın"
+
+#. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/models/pos_store.js:0
+#: code:addons/pos_loyalty/static/src/js/ProductScreen.js:0
+#, python-format
 msgid "Select program"
 msgstr "Program seçin"
-
-#. module: pos_loyalty
-#. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/product_screen/order_summary/order_summary.xml:0
-msgid "Sell physical gift card?"
-msgstr "Fiziksel hediye kartı satılsın mı?"
-
-#. module: pos_loyalty
-#. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/product_screen/order_summary/order_summary.js:0
-msgid "Sell/Manage physical gift card"
-msgstr "Fiziksel hediye kartı satın / kartları yönetin"
 
 #. module: pos_loyalty
 #: model:product.template,name:pos_loyalty.simple_pen_product_template
@@ -508,6 +513,7 @@ msgstr "Basit Kalem"
 #. module: pos_loyalty
 #. odoo-python
 #: code:addons/pos_loyalty/models/pos_order.py:0
+#, python-format
 msgid ""
 "Some coupons are invalid. The applied coupons have been updated. Please "
 "check the order."
@@ -517,7 +523,8 @@ msgstr ""
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/order_receipt/order_receipt.xml:0
+#: code:addons/pos_loyalty/static/src/xml/OrderReceipt.xml:0
+#, python-format
 msgid "Spent:"
 msgstr "Harcanan:"
 
@@ -528,34 +535,17 @@ msgstr "Teknik alan, tüm ürünlerin eşleşip eşleşmediği"
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/models/pos_store.js:0
+#: code:addons/pos_loyalty/static/src/js/Loyalty.js:0
+#, python-format
 msgid "That coupon code has already been scanned and activated."
 msgstr "Bu kupon kodu zaten taranmış ve etkinleştirilmiştir."
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/models/pos_store.js:0
+#: code:addons/pos_loyalty/static/src/js/Loyalty.js:0
+#, python-format
 msgid "That promo code program has already been activated."
 msgstr "Bu promosyon kodu programı zaten etkinleştirildi."
-
-#. module: pos_loyalty
-#. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/models/pos_store.js:0
-msgid "That promo code program is expired."
-msgstr "Bu promosyon kodu programının süresi doldu"
-
-#. module: pos_loyalty
-#. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/models/pos_store.js:0
-msgid "That promo code program is not yet valid."
-msgstr "Bu promosyon kodu programı henüz geçerli değil."
-
-#. module: pos_loyalty
-#. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/models/pos_store.js:0
-msgid "That promo code program requires a specific pricelist."
-msgstr ""
-"Bu promosyon kodu programı belirli bir fiyat listesi gerektirmektedir."
 
 #. module: pos_loyalty
 #: model:ir.model.fields,help:pos_loyalty.field_pos_order_line__coupon_id
@@ -565,6 +555,7 @@ msgstr "Kupon bu ödülü talep etmek için kullanılırdı."
 #. module: pos_loyalty
 #. odoo-python
 #: code:addons/pos_loyalty/models/pos_order.py:0
+#, python-format
 msgid ""
 "The following codes already exist in the database, perhaps they were already sold?\n"
 "%s"
@@ -583,13 +574,12 @@ msgstr ""
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/models/pos_store.js:0
+#: code:addons/pos_loyalty/static/src/js/Loyalty.js:0
+#, python-format
 msgid ""
 "The reward \"%s\" contain an error in its domain, your domain must be "
 "compatible with the PoS client"
 msgstr ""
-"\"%s\" ödülünde alanla ilgili bir hata var, alanınızın Satış Noktası "
-"istemcisiyle uyumlu olması gerekir"
 
 #. module: pos_loyalty
 #: model:ir.model.fields,help:pos_loyalty.field_pos_order_line__reward_id
@@ -598,31 +588,43 @@ msgstr "Bu çizgiyle ilişkili ödül."
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/models/pos_order.js:0
+#: code:addons/pos_loyalty/static/src/js/Loyalty.js:0
+#, python-format
 msgid "The reward could not be applied."
 msgstr "Ödül uygulanamadı."
 
 #. module: pos_loyalty
+#. odoo-javascript
+#: code:addons/pos_loyalty/static/src/js/ControlButtons/RewardButton.js:0
+#, python-format
+msgid "There are no rewards claimable for this customer."
+msgstr "Bu müşteri için talep edilebilecek herhangi bir ödül yoktur."
+
+#. module: pos_loyalty
 #. odoo-python
 #: code:addons/pos_loyalty/models/pos_order.py:0
+#, python-format
 msgid "There are not enough points for the coupon: %s."
 msgstr "Kupon için yeterli puan yok: %s."
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/models/pos_order.js:0
+#: code:addons/pos_loyalty/static/src/js/Loyalty.js:0
+#, python-format
 msgid "There are not enough points on the coupon to claim this reward."
 msgstr "Kuponda bu ödülü talep etmek için yeterli puan yok."
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/models/pos_order.js:0
+#: code:addons/pos_loyalty/static/src/js/Loyalty.js:0
+#, python-format
 msgid "There are not enough products in the basket to claim this reward."
 msgstr "Sepette bu ödülü almak için yeterli ürün yok."
 
 #. module: pos_loyalty
 #. odoo-python
 #: code:addons/pos_loyalty/models/pos_config.py:0
+#, python-format
 msgid ""
 "There is no email template on the gift card program and your pos is set to "
 "print them."
@@ -633,6 +635,7 @@ msgstr ""
 #. module: pos_loyalty
 #. odoo-python
 #: code:addons/pos_loyalty/models/pos_config.py:0
+#, python-format
 msgid ""
 "There is no print report on the gift card program and your pos is set to "
 "print them."
@@ -646,38 +649,30 @@ msgid "These are the products that are valid for this rule."
 msgstr "Bunlar, bu kural için geçerli olan ürünlerdir."
 
 #. module: pos_loyalty
-#. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/product_screen/order_summary/order_summary.js:0
-msgid "This Gift card has already been sold."
-msgstr "Bu Hediye Kartı zaten satılmış."
-
-#. module: pos_loyalty
 #. odoo-python
 #: code:addons/pos_loyalty/models/pos_config.py:0
+#, python-format
 msgid "This coupon is expired (%s)."
 msgstr "Bu kuponun süresi doldu (%s)."
 
 #. module: pos_loyalty
 #. odoo-python
 #: code:addons/pos_loyalty/models/pos_config.py:0
+#, python-format
 msgid "This coupon is invalid (%s)."
 msgstr "Bu kupon geçersiz (%s)."
 
 #. module: pos_loyalty
-#. odoo-python
-#: code:addons/pos_loyalty/models/pos_config.py:0
-msgid "This coupon is not available with the current pricelist."
-msgstr "Bu kupon mevcut fiyat listesinde yoktur."
-
-#. module: pos_loyalty
-#. odoo-python
-#: code:addons/pos_loyalty/models/pos_config.py:0
-msgid "This coupon is not yet valid (%s)."
-msgstr "Bu kupon henüz geçerli değil (%s)."
+#. odoo-javascript
+#: code:addons/pos_loyalty/static/src/js/ProductScreen.js:0
+#, python-format
+msgid "This gift card has already been sold"
+msgstr "Bu hediye kartı zaten satıldı"
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/models/pos_store.js:0
+#: code:addons/pos_loyalty/static/src/js/Loyalty.js:0
+#, python-format
 msgid ""
 "This gift card is not linked to any order. Do you really want to apply its "
 "reward?"
@@ -693,12 +688,7 @@ msgstr "Bu, PoS'tan oluşturulan hediye kartlarını yazdırmak için kullanıl�
 #. module: pos_loyalty
 #. odoo-python
 #: code:addons/pos_loyalty/models/pos_config.py:0
-msgid "This programs requires a code to be applied."
-msgstr "Bu programın uygulanabilmesi için bir kod gereklidir."
-
-#. module: pos_loyalty
-#. odoo-python
-#: code:addons/pos_loyalty/models/pos_config.py:0
+#, python-format
 msgid ""
 "To continue, make the following reward products available in Point of Sale."
 msgstr ""
@@ -708,29 +698,33 @@ msgstr ""
 #. module: pos_loyalty
 #: model:ir.model.fields,field_description:pos_loyalty.field_barcode_rule__type
 msgid "Type"
-msgstr "Tip"
+msgstr "Tür"
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/models/pos_order.js:0
+#: code:addons/pos_loyalty/static/src/js/Loyalty.js:0
+#, python-format
 msgid "Unknown discount type"
 msgstr "Bilinmeyen indirim türü"
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/models/pos_store.js:0
+#: code:addons/pos_loyalty/static/src/js/Loyalty.js:0
+#, python-format
 msgid "Unpaid gift card"
 msgstr "Ödenmemiş hediye kartı"
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/models/pos_store.js:0
+#: code:addons/pos_loyalty/static/src/js/Loyalty.js:0
+#, python-format
 msgid "Unpaid gift card rejected."
 msgstr "Ödenmemiş hediye kartı reddedildi."
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/control_buttons/control_buttons.js:0
+#: code:addons/pos_loyalty/static/src/js/ControlButtons/eWalletButton.js:0
+#, python-format
 msgid "Use eWallet to pay"
 msgstr "Ödeme yapmak için e-Cüzdan kullanın"
 
@@ -741,15 +735,10 @@ msgstr "Geçerli Ürün"
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/order_receipt/order_receipt.xml:0
+#: code:addons/pos_loyalty/static/src/xml/OrderReceipt.xml:0
+#, python-format
 msgid "Valid until:"
 msgstr "Geçerlilik Bitişi:"
-
-#. module: pos_loyalty
-#. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/product_screen/order_summary/order_summary.js:0
-msgid "Validation Error"
-msgstr "Doğrulama hatası"
 
 #. module: pos_loyalty
 #: model:ir.model.fields,help:pos_loyalty.field_pos_order_line__is_reward_line
@@ -758,69 +747,79 @@ msgstr "Bu çizginin bir ödülün parçası olup olmadığı."
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/order_receipt/order_receipt.xml:0
+#: code:addons/pos_loyalty/static/src/xml/OrderReceipt.xml:0
+#, python-format
 msgid "Won:"
 msgstr "Kazandı:"
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/product_screen/order_summary/order_summary.js:0
+#: code:addons/pos_loyalty/static/src/js/ProductScreen.js:0
+#, python-format
 msgid "Yes"
 msgstr "Evet"
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/product_screen/order_summary/order_summary.js:0
+#: code:addons/pos_loyalty/static/src/js/ProductScreen.js:0
+#, python-format
+msgid "You cannot sell a gift card that has already been sold."
+msgstr "Daha önce satılmış bir hediye kartını satamazsınız."
+
+#. module: pos_loyalty
+#. odoo-javascript
+#: code:addons/pos_loyalty/static/src/js/ProductScreen.js:0
+#, python-format
 msgid "You cannot set negative quantity or price to gift card or ewallet."
 msgstr ""
 "Hediye kartı veya e-cüzdan için negatif miktar veya fiyat ayarlayamazsınız."
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/control_buttons/control_buttons.js:0
+#: code:addons/pos_loyalty/static/src/js/ControlButtons/eWalletButton.js:0
+#, python-format
 msgid ""
 "You either have not created an eWallet or all your eWallets have expired."
 msgstr ""
-"Ya bir e-Cüzdan oluşturmadınız ya da tüm e-Cüzdanlarınızın süresi doldu."
 
 #. module: pos_loyalty
 #. odoo-python
 #: code:addons/pos_loyalty/models/loyalty_program.py:0
-msgid "You must set '%(mail_template)s' before setting '%(report)s'."
-msgstr "\"%(mail_template)s\"i ayarlamadan önce \"%(report)s\"yi ayarlamanız gerekir."
+#, python-format
+msgid "You must set '%s' before setting '%s'."
+msgstr "\"%s\"i ayarlamadan önce \"%s\"yi ayarlamanız gerekir."
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/control_buttons/control_buttons.xml:0
+#: code:addons/pos_loyalty/static/src/js/ControlButtons/eWalletButton.js:0
+#, python-format
 msgid "eWallet"
 msgstr "e-Cüzdan"
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/control_buttons/control_buttons.xml:0
+#: code:addons/pos_loyalty/static/src/js/ControlButtons/eWalletButton.js:0
+#, python-format
 msgid "eWallet Pay"
 msgstr "e-Cüzdan Ödeme"
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/control_buttons/control_buttons.xml:0
+#: code:addons/pos_loyalty/static/src/js/ControlButtons/eWalletButton.js:0
+#, python-format
 msgid "eWallet Refund"
 msgstr "e-Cüzdan Para İadesi"
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/models/pos_store.js:0
+#: code:addons/pos_loyalty/static/src/js/ProductScreen.js:0
+#, python-format
 msgid "eWallet requires a customer to be selected"
 msgstr "eWallet, bir müşterinin seçilmesini gerektirir"
 
 #. module: pos_loyalty
 #. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/components/order_receipt/order_receipt.xml:0
+#: code:addons/pos_loyalty/static/src/xml/OrderReceipt.xml:0
+#, python-format
 msgid "no expiration"
 msgstr "bitiş süresi yok"
-
-#. module: pos_loyalty
-#. odoo-javascript
-#: code:addons/pos_loyalty/static/src/overrides/models/pos_order.js:0
-msgid "the gift cards"
-msgstr "hediye kartları"

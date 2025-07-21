@@ -6,7 +6,6 @@ from odoo.addons.project.tests.test_project_sharing import TestProjectSharingCom
 from odoo.addons.sms.tests.common import SMSCommon
 from odoo.tests import tagged
 
-
 class TestProjectSharingWithSms(TestProjectSharingCommon, SMSCommon):
     @classmethod
     def setUpClass(cls):
@@ -65,7 +64,9 @@ class TestProjectSharingWithSms(TestProjectSharingCommon, SMSCommon):
         self.assertEqual(self.project_portal.stage_id, self.project_stage_with_sms)
         self.assertSMSIapSent([self.project_portal.partner_id.mobile])
 
-    @tagged('post_install', '-at_install')
+@tagged('post_install', '-at_install')
+class TestPostInstallProjectSharingWithSms(TestProjectSharingWithSms):
+
     def test_project_user_can_change_stage_with_sms_template(self):
         """ Test that users with the rights to change the stage of a task can perform this action
             when the stage has an sms template.
@@ -82,7 +83,7 @@ class TestProjectSharingWithSms(TestProjectSharingCommon, SMSCommon):
                 Command.link(sale_manager_group.id),
             ]
         })
-        self.assertTrue(self.task_cow.with_user(self.user_projectuser).has_access('write'))
+        self.assertTrue(self.task_cow.with_user(self.user_projectuser).check_access_rights('write'))
         with self.mockSMSGateway():
             self.task_cow.with_user(self.user_projectuser).write({
                 'stage_id': self.task_stage_with_sms.id,

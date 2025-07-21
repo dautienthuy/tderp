@@ -1,17 +1,17 @@
-import { useDebugCategory } from "@web/core/debug/debug_context";
-import { evaluateBooleanExpr } from "@web/core/py_js/py";
+/** @odoo-module **/
+
+import { evaluateExpr } from "@web/core/py_js/py";
 import { registry } from "@web/core/registry";
 import { KeepLast } from "@web/core/utils/concurrency";
 import { useService } from "@web/core/utils/hooks";
 import { deepCopy, pick } from "@web/core/utils/objects";
-import { nbsp } from "@web/core/utils/strings";
-import { parseXML } from "@web/core/utils/xml";
+import { ControlPanel } from "@web/search/control_panel/control_panel";
 import { extractLayoutComponents } from "@web/search/layout";
+import { SearchPanel } from "@web/search/search_panel/search_panel";
 import { WithSearch } from "@web/search/with_search/with_search";
+import { OnboardingBanner } from "@web/views/onboarding_banner";
 import { useActionLinks } from "@web/views/view_hook";
-import { computeViewClassName } from "./utils";
-import { loadBundle } from "@web/core/assets";
-import { cookie } from "@web/core/browser/cookie";
+
 import {
     Component,
     markRaw,
@@ -21,81 +21,22 @@ import {
     useSubEnv,
     reactive,
 } from "@odoo/owl";
-import { session } from "@web/session";
-
-/**
- * @typedef Config
- * @property {number | false} actionId
- * @property {string | false} actionType
- * @property {Record<string, any>} actionFlags
- * @property {() => []} breadcrumbs
- * @property {() => string} getDisplayName
- * @property {(string) => any} setDisplayName
- * @property {() => Record<string, any>} getPagerProps
- * @property {Record<string, any>[]} viewSwitcherEntry
- * @property {typeof Component} Banner
- *
- * @typedef {import("@web/core/context").Context} Context
- * @typedef {import("@web/env").OdooEnv} OdooEnv
- * @typedef {import("@web/search/utils/order_by").OrderTerm} OrderTerm
- *
- * @typedef ViewProps
- * @property {string} resModel
- * @property {ViewType} type
- *
- * @property {string} [arch] if given, fields must be given too /\ no post processing is done (evaluation of "groups" attribute,...)
- * @property {Record<string, any>} [fields] if given, arch must be given too
- * @property {number|false} [viewId]
- * @property {Record<string, any>} [actionMenus]
- * @property {boolean} [loadActionMenus=false]
- *
- * @property {string} [searchViewArch] if given, searchViewFields must be given too
- * @property {Record<string, any>} [searchViewFields] if given, searchViewArch must be given too
- * @property {number|false} [searchViewId]
- * @property {Record<string, any>[]} [irFilters]
- * @property {boolean} [loadIrFilters=false]
- *
- * @property {Record<string, any>} [comparison]
- * @property {Context} [context={}]
- * @property {DomainRepr} [domain]
- * @property {string[]} [groupBy]
- * @property {OrderTerm[]} [orderBy]
- *
- * @property {boolean} [useSampleModel]
- * @property {string} [noContentHelp]
- *
- * @property {Record<string, any>} [display={}] to rework
- *
- * --- Manipulated by withSearch ---
- * @property {boolean} [activateFavorite]
- * @property {Record<string, any>[]} [dynamicFilters]
- * @property {boolean} [hideCustomGroupBy]
- * @property {string[]} [searchMenuTypes]
- * @property {Record<string, any>} [globalState]
- *
- * @typedef {"activity"
- *  | "calendar"
- *  | "cohort"
- *  | "form"
- *  | "gantt"
- *  | "graph"
- *  | "grid"
- *  | "hierarchy"
- *  | "kanban"
- *  | "list"
- *  | "map"
- *  | "pivot"
- *  | "search"
- * } ViewType
- */
-
 const viewRegistry = registry.category("views");
 
-viewRegistry.addValidation({
-    type: { validate: (t) => t in session.view_info },
-    Controller: { validate: (c) => c.prototype instanceof Component },
-    "*": true,
-});
+/** @typedef {Object} Config
+ *  @property {integer|false} actionId
+ *  @property {string|false} actionType
+ *  @property {Object} actionFlags
+ *  @property {() => []} breadcrumbs
+ *  @property {() => string} getDisplayName
+ *  @property {(string) => void} setDisplayName
+ *  @property {() => Object} getPagerProps
+ *  @property {Object[]} viewSwitcherEntry
+ *  @property {Object[]} viewSwitcherEntry
+ *  @property {Component} ControlPanel
+ *  @property {Component} SearchPanel
+ *  @property {Component} Banner
+ */
 
 /**
  * Returns the default config to use if no config, or an incomplete config has
@@ -107,9 +48,6 @@ export function getDefaultConfig() {
     const config = {
         actionId: false,
         actionType: false,
-        embeddedActions: [],
-        currentEmbeddedActionId: false,
-        parentActionId: false,
         actionFlags: {},
         breadcrumbs: reactive([
             {
@@ -130,24 +68,56 @@ export function getDefaultConfig() {
         },
         viewSwitcherEntries: [],
         views: [],
+        ControlPanel: ControlPanel,
+        SearchPanel: SearchPanel,
+        Banner: OnboardingBanner,
     };
     return config;
 }
 
-export class ViewNotFoundError extends Error {}
+/** @typedef {import("./relational_model").OrderTerm} OrderTerm */
 
-const CALLBACK_RECORDER_NAMES = [
-    "__beforeLeave__",
-    "__getGlobalState__",
-    "__getLocalState__",
-    "__getContext__",
-    "__getOrderBy__",
-];
+/** @typedef {Object} ViewProps
+ *  @property {string} resModel
+ *  @property {string} type
+ *
+ *  @property {string} [arch] if given, fields must be given too /\ no post processing is done (evaluation of "groups" attribute,...)
+ *  @property {Object} [fields] if given, arch must be given too
+ *  @property {number|false} [viewId]
+ *  @property {Object} [actionMenus]
+ *  @property {boolean} [loadActionMenus=false]
+ *
+ *  @property {string} [searchViewArch] if given, searchViewFields must be given too
+ *  @property {Object} [searchViewFields] if given, searchViewArch must be given too
+ *  @property {number|false} [searchViewId]
+ *  @property {Object[]} [irFilters]
+ *  @property {boolean} [loadIrFilters=false]
+ *
+ *  @property {Object} [comparison]
+ *  @property {Object} [context={}]
+ *  @property {DomainRepr} [domain]
+ *  @property {string[]} [groupBy]
+ *  @property {OrderTerm[]} [orderBy]
+ *
+ *  @property {boolean} [useSampleModel]
+ *  @property {string} [noContentHelp]
+ *
+ *  @property {Object} [display={}] to rework
+ *
+ *  manipulated by withSearch
+ *
+ *  @property {boolean} [activateFavorite]
+ *  @property {Object[]} [dynamicFilters]
+ *  @property {boolean} [hideCustomGroupBy]
+ *  @property {string[]} [searchMenuTypes]
+ *  @property {Object} [globalState]
+ */
+
+export class ViewNotFoundError extends Error {}
 
 const STANDARD_PROPS = [
     "resModel",
     "type",
-    "jsClass",
 
     "arch",
     "fields",
@@ -181,33 +151,12 @@ const STANDARD_PROPS = [
     "hideCustomGroupBy",
     "searchMenuTypes",
 
-    ...CALLBACK_RECORDER_NAMES,
-
     // LEGACY: remove this later (clean when mappings old state <-> new state are established)
     "searchPanel",
     "searchModel",
 ];
 
-const ACTIONS = ["create", "delete", "edit", "group_create", "group_delete", "group_edit"];
-
-/** @extends {Component<ViewProps, import("@web/env").OdooEnv>} */
 export class View extends Component {
-    static _download = async function () {};
-    static template = "web.View";
-    static components = { WithSearch };
-    static searchMenuTypes = ["filter", "groupBy", "favorite"];
-    static canOrderByCount = false;
-    static defaultProps = {
-        display: {},
-        context: {},
-        loadActionMenus: false,
-        loadIrFilters: false,
-        className: "",
-    };
-    static props = {
-        "*": true,
-    };
-
     setup() {
         const { arch, fields, resModel, searchViewArch, searchViewFields, type } = this.props;
         if (!resModel) {
@@ -232,28 +181,18 @@ export class View extends Component {
                 ...getDefaultConfig(),
                 ...this.env.config,
             },
-            ...Object.fromEntries(
-                CALLBACK_RECORDER_NAMES.map((name) => [name, this.props[name] || null])
-            ),
         });
 
         this.handleActionLinks = useActionLinks({ resModel });
 
         onWillStart(() => this.loadView(this.props));
         onWillUpdateProps((nextProps) => this.onWillUpdateProps(nextProps));
-
-        useDebugCategory("view", { component: this });
     }
 
-    /**
-     * @param {ViewProps} props
-     */
     async loadView(props) {
-        const type = props.type;
-
-        if (!session.view_info[type]) {
-            throw new Error(`Invalid view type: ${type}`);
-        }
+        // determine view type
+        let descr = viewRegistry.get(props.type);
+        const type = descr.type;
 
         // determine views for which descriptions should be obtained
         let { viewId, searchViewId } = props;
@@ -298,16 +237,10 @@ export class View extends Component {
         if (loadView || loadSearchView) {
             // view description (or search view description if required) is incomplete
             // a loadViews is done to complete the missing information
-            const options = {
-                actionId: this.env.config.actionId,
-                loadActionMenus,
-                loadIrFilters,
-            };
-            if (this.env.config.currentEmbeddedActionId) {
-                options.embeddedActionId = this.env.config.currentEmbeddedActionId;
-                options.embeddedParentResId = context.active_id;
-            }
-            const result = await this.viewService.loadViews({ context, resModel, views }, options);
+            const result = await this.viewService.loadViews(
+                { context, resModel, views },
+                { actionId: this.env.config.actionId, loadActionMenus, loadIrFilters }
+            );
             // Note: if props.views is different from views, the cached descriptions
             // will certainly not be reused! (but for the standard flow this will work as
             // before)
@@ -335,37 +268,29 @@ export class View extends Component {
             actionMenus = viewDescription.actionMenus;
         }
 
-        const archXmlDoc = parseXML(arch.replace(/&amp;nbsp;/g, nbsp));
-        for (const action of ACTIONS) {
-            if (action in this.props.context && !this.props.context[action]) {
-                archXmlDoc.setAttribute(action, "0");
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(arch, "text/xml");
+        const rootNode = xml.documentElement;
+
+        let subType = rootNode.getAttribute("js_class");
+        const bannerRoute = rootNode.getAttribute("banner_route");
+        const sample = rootNode.getAttribute("sample");
+
+        // determine ViewClass to instantiate (if not already done)
+        if (subType) {
+            if (viewRegistry.contains(subType)) {
+                descr = viewRegistry.get(subType);
+            } else {
+                subType = null;
             }
         }
 
-        const jsClass = archXmlDoc.hasAttribute("js_class")
-            ? archXmlDoc.getAttribute("js_class")
-            : props.jsClass || type;
-        if (!viewRegistry.contains(jsClass)) {
-            await loadBundle(
-                cookie.get("color_scheme") === "dark"
-                    ? "web.assets_backend_lazy_dark"
-                    : "web.assets_backend_lazy"
-            );
-        }
-        const descr = viewRegistry.get(jsClass);
-
-        const sample = archXmlDoc.getAttribute("sample");
-        const className = computeViewClassName(type, archXmlDoc, [
-            "o_view_controller",
-            ...(props.className || "").split(" "),
-        ]);
-
         Object.assign(this.env.config, {
-            rawArch: arch,
-            viewArch: archXmlDoc,
+            viewArch: rootNode,
             viewId: viewDescription.id,
             viewType: type,
-            viewSubType: jsClass,
+            viewSubType: subType,
+            bannerRoute,
             noBreadcrumbs: props.noBreadcrumbs,
             ...extractLayoutComponents(descr),
         });
@@ -381,12 +306,12 @@ export class View extends Component {
         // prepare the view props
         const viewProps = {
             info,
-            arch: archXmlDoc,
+            arch,
             fields,
             relatedModels,
             resModel,
             useSampleModel: false,
-            className,
+            className: `${props.className} o_view_controller o_${this.env.config.viewType}_view`,
         };
         if (viewDescription.custom_view_id) {
             // for dashboard
@@ -399,7 +324,7 @@ export class View extends Component {
         if ("useSampleModel" in props) {
             viewProps.useSampleModel = props.useSampleModel;
         } else if (sample) {
-            viewProps.useSampleModel = evaluateBooleanExpr(sample);
+            viewProps.useSampleModel = Boolean(evaluateExpr(sample));
         }
 
         for (const key in props) {
@@ -416,7 +341,6 @@ export class View extends Component {
         const searchMenuTypes =
             props.searchMenuTypes || descr.searchMenuTypes || this.constructor.searchMenuTypes;
         viewProps.searchMenuTypes = searchMenuTypes;
-        const canOrderByCount = descr.canOrderByCount || this.constructor.canOrderByCount;
 
         const finalProps = descr.props ? descr.props(viewProps, descr, this.env.config) : viewProps;
         // prepare the WithSearch component props
@@ -426,7 +350,6 @@ export class View extends Component {
             ...toRaw(props),
             hideCustomGroupBy: props.hideCustomGroupBy || descr.hideCustomGroupBy,
             searchMenuTypes,
-            canOrderByCount,
             SearchModel: descr.SearchModel,
         };
 
@@ -464,9 +387,6 @@ export class View extends Component {
         }
     }
 
-    /**
-     * @param {ViewProps} nextProps
-     */
     onWillUpdateProps(nextProps) {
         const oldProps = pick(this.props, "arch", "type", "resModel");
         const newProps = pick(nextProps, "arch", "type", "resModel");
@@ -479,3 +399,17 @@ export class View extends Component {
         Object.assign(this.withSearchProps, { comparison, context, domain, groupBy, orderBy });
     }
 }
+
+View._download = async function () {};
+
+View.template = "web.View";
+View.components = { WithSearch };
+View.defaultProps = {
+    display: {},
+    context: {},
+    loadActionMenus: false,
+    loadIrFilters: false,
+    className: "",
+};
+
+View.searchMenuTypes = ["filter", "groupBy", "favorite"];

@@ -81,7 +81,7 @@ class TestMassMailValues(MassSMSCommon):
 
         expected = {
             'link': f'{base_url}/r/xxx{"x" if link_trackers else ""}/s/xxxxx',
-            'unsubscribe': f"\nSTOP SMS: {base_url}/sms/{'x' * len(str(mailing.id))}/{'x' * self.env['mailing.trace'].CODE_SIZE}",
+            'unsubscribe': f"\nSTOP SMS : {base_url}/sms/{'x' * len(str(mailing.id))}/{'x' * self.env['mailing.trace'].CODE_SIZE}",
         }
         self.assertDictEqual(mailing.get_sms_link_replacements_placeholders(), expected)
 

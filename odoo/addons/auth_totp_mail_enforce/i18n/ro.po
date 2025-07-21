@@ -3,17 +3,18 @@
 # 	* auth_totp_mail_enforce
 # 
 # Translators:
-# Lyall Kindmurr, 2024
-# Wil Odoo, 2024
-# Larisa_nexterp, 2025
+# Dorin Hongu <dhongu@gmail.com>, 2022
+# Martin Trigaux, 2022
+# Claudia Baisan, 2023
+# Simonel Criste <info@erpsystems.solutions>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-16 13:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Larisa_nexterp, 2025\n"
+"POT-Creation-Date: 2023-05-23 08:23+0000\n"
+"PO-Revision-Date: 2022-09-22 05:45+0000\n"
+"Last-Translator: Simonel Criste <info@erpsystems.solutions>, 2024\n"
 "Language-Team: Romanian (https://app.transifex.com/odoo/teams/41243/ro/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -34,23 +35,23 @@ msgstr ""
 #: model:mail.template,body_html:auth_totp_mail_enforce.mail_template_totp_mail_code
 msgid ""
 "<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"    Dear <t t-out=\"object.partner_id.name or ''\"/><br/><br/>\n"
+"    Dear <t t-out=\"object.partner_id.name or ''\"></t><br><br>\n"
 "    <p>Someone is trying to log in into your account with a new device.</p>\n"
 "    <ul>\n"
 "        <t t-set=\"not_available\">N/A</t>\n"
-"        <li>Location: <t t-out=\"ctx.get('location') or not_available\"/></li>\n"
-"        <li>Device: <t t-out=\"ctx.get('device') or not_available\"/></li>\n"
-"        <li>Browser: <t t-out=\"ctx.get('browser') or not_available\"/></li>\n"
-"        <li>IP address: <t t-out=\"ctx.get('ip') or not_available\"/></li>\n"
+"        <li>Location: <t t-out=\"ctx.get('location') or not_available\"></t></li>\n"
+"        <li>Device: <t t-out=\"ctx.get('device') or not_available\"></t></li>\n"
+"        <li>Browser: <t t-out=\"ctx.get('browser') or not_available\"></t></li>\n"
+"        <li>IP address: <t t-out=\"ctx.get('ip') or not_available\"></t></li>\n"
 "    </ul>\n"
 "    <p>If this is you, please enter the following code to complete the login:</p>\n"
-"    <t t-set=\"code_expiration\" t-value=\"object._get_totp_mail_code()\"/>\n"
-"    <t t-set=\"code\" t-value=\"code_expiration[0]\"/>\n"
-"    <t t-set=\"expiration\" t-value=\"code_expiration[1]\"/>\n"
+"    <t t-set=\"code_expiration\" t-value=\"object._get_totp_mail_code()\"></t>\n"
+"    <t t-set=\"code\" t-value=\"code_expiration[0]\"></t>\n"
+"    <t t-set=\"expiration\" t-value=\"code_expiration[1]\"></t>\n"
 "    <div style=\"margin: 16px 0px 16px 0px; text-align: center;\">\n"
-"        <span t-out=\"code\" style=\"background-color:#faf9fa; border: 1px solid #dad8de; padding: 8px 16px 8px 16px; font-size: 24px; color: #875A7B; border-radius: 5px;\"/>\n"
+"        <span t-out=\"code\" style=\"background-color:#faf9fa; border: 1px solid #dad8de; padding: 8px 16px 8px 16px; font-size: 24px; color: #875A7B; border-radius: 5px;\"></span>\n"
 "    </div>\n"
-"    <small>Please note that this code expires in <t t-out=\"expiration\"/>.</small>\n"
+"    <small>Please note that this code expires in <t t-out=\"expiration\"></t>.</small>\n"
 "\n"
 "    <p style=\"margin: 16px 0px 16px 0px;\">\n"
 "        If you did NOT initiate this log-in,\n"
@@ -70,36 +71,36 @@ msgid ""
 "            "
 msgstr ""
 "<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"    Stimate <t t-out=\"object.partner_id.name or ''\"/><br/><br/>\n"
-"    <p>Cineva încearcă să se autentifice în contul dvs. de pe un dispozitiv nou.</p>\n"
+"    Dragă <t t-out=\"object.partner_id.name or ''\"></t><br><br>\n"
+"    <p>Cineva încearcă să se conecteze la contul dvs. cu un dispozitiv nou.</p>\n"
 "    <ul>\n"
 "        <t t-set=\"not_available\">N/A</t>\n"
-"        <li>Locație: <t t-out=\"ctx.get('location') or not_available\"/></li>\n"
-"        <li>Dispozitiv: <t t-out=\"ctx.get('device') or not_available\"/></li>\n"
-"        <li>Browser: <t t-out=\"ctx.get('browser') or not_available\"/></li>\n"
-"        <li>Adresă IP: <t t-out=\"ctx.get('ip') or not_available\"/></li>\n"
+"        <li>Locație: <t t-out=\"ctx.get('location') or not_available\"></t></li>\n"
+"        <li>Dispozitiv: <t t-out=\"ctx.get('device') or not_available\"></t></li>\n"
+"        <li>Browser: <t t-out=\"ctx.get('browser') or not_available\"></t></li>\n"
+"        <li>Adresa IP: <t t-out=\"ctx.get('ip') or not_available\"></t></li>\n"
 "    </ul>\n"
-"    <p>Dacă sunteți dvs., vă rugăm să introduceți următorul cod pentru a finaliza autentificarea:</p>\n"
-"    <t t-set=\"code_expiration\" t-value=\"object._get_totp_mail_code()\"/>\n"
-"    <t t-set=\"code\" t-value=\"code_expiration[0]\"/>\n"
-"    <t t-set=\"expiration\" t-value=\"code_expiration[1]\"/>\n"
+"    <p>Dacă sunteți dumneavoastră, vă rugăm să introduceți următorul cod pentru a finaliza autentificarea:</p>\n"
+"    <t t-set=\"code_expiration\" t-value=\"object._get_totp_mail_code()\"></t>\n"
+"    <t t-set=\"code\" t-value=\"code_expiration[0]\"></t>\n"
+"    <t t-set=\"expiration\" t-value=\"code_expiration[1]\"></t>\n"
 "    <div style=\"margin: 16px 0px 16px 0px; text-align: center;\">\n"
-"        <span t-out=\"code\" style=\"background-color:#faf9fa; border: 1px solid #dad8de; padding: 8px 16px 8px 16px; font-size: 24px; color: #875A7B; border-radius: 5px;\"/>\n"
+"        <span t-out=\"code\" style=\"background-color:#faf9fa; border: 1px solid #dad8de; padding: 8px 16px 8px 16px; font-size: 24px; color: #875A7B; border-radius: 5px;\"></span>\n"
 "    </div>\n"
-"    <small>Vă rugăm să rețineți că acest cod expiră în <t t-out=\"expiration\"/>.</small>\n"
+"    <small>Vă rugăm să rețineți că acest cod expiră în <t t-out=\"expiration\"></t>.</small>\n"
 "\n"
 "    <p style=\"margin: 16px 0px 16px 0px;\">\n"
 "        Dacă NU ați inițiat această autentificare,\n"
-"        ar trebui să vă schimbați imediat parola pentru a vă asigura securitatea contului.\n"
+"        trebuie să vă schimbați imediat parola pentru a asigura securitatea contului.\n"
 "    </p>\n"
 "\n"
 "    <p style=\"margin: 16px 0px 16px 0px;\">\n"
-"        Vă recomandăm cu tărie să activați autentificarea cu doi factori folosind o aplicație de autentificare pentru a vă securiza contul.\n"
+"        De asemenea, vă recomandăm să activați autentificarea cu doi factori utilizând o aplicație de autentificare pentru a vă proteja contul.\n"
 "    </p>\n"
 "\n"
 "    <p style=\"margin: 16px 0px 16px 0px; text-align: center;\">\n"
 "        <a t-att-href=\"object.get_totp_invite_url()\" style=\"background-color:#875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px;\">\n"
-"            Activează autentificarea cu doi factori\n"
+"            Îmi activez autentificarea cu doi factori\n"
 "        </a>\n"
 "    </p>\n"
 "</div>\n"
@@ -122,6 +123,7 @@ msgstr "Toți utilizatorii"
 #. module: auth_totp_mail_enforce
 #. odoo-python
 #: code:addons/auth_totp_mail_enforce/models/res_users.py:0
+#, python-format
 msgid "Cannot send email: user %s has no email address."
 msgstr "Email-ul nu poate fi trimis: utilizatorul %s nu are adresă de email."
 
@@ -143,7 +145,7 @@ msgstr "Creat de"
 #. module: auth_totp_mail_enforce
 #: model:ir.model.fields,field_description:auth_totp_mail_enforce.field_auth_totp_rate_limit_log__create_date
 msgid "Created on"
-msgstr "Creat pe"
+msgstr "Creat în"
 
 #. module: auth_totp_mail_enforce
 #: model:ir.model.fields,field_description:auth_totp_mail_enforce.field_auth_totp_rate_limit_log__display_name
@@ -158,13 +160,13 @@ msgstr "Doar angajați"
 #. module: auth_totp_mail_enforce
 #: model_terms:ir.ui.view,arch_db:auth_totp_mail_enforce.res_config_settings_view_form
 msgid ""
-"Enforce the two-factor authentication by email for employees or for all "
-"users (including portal users) if they didn't enable any other two-factor "
-"authentication method."
+"Enforce the two-factor authentication by email for employees or for all users\n"
+"                                (including portal users) if they didn't enable any other two-factor authentication\n"
+"                                method."
 msgstr ""
-"Aplicați autentificarea cu doi factori prin e-mail pentru angajați sau "
-"pentru toți utilizatorii (inclusiv utilizatorii portalului) dacă nu au "
-"activat nicio altă metodă de autentificare cu doi factori."
+"Aplicați autentificarea cu doi factori prin e-mail pentru angajați sau pentru toți utilizatorii\n"
+"                                (inclusiv utilizatorii portal) dacă nu au activat nici o altă metodă de autentificare cu doi factori\n"
+"                                metoda."
 
 #. module: auth_totp_mail_enforce
 #: model:ir.model.fields,field_description:auth_totp_mail_enforce.field_res_config_settings__auth_totp_enforce
@@ -180,6 +182,11 @@ msgstr "ID"
 #: model:ir.model.fields,field_description:auth_totp_mail_enforce.field_auth_totp_rate_limit_log__ip
 msgid "Ip"
 msgstr "Ip"
+
+#. module: auth_totp_mail_enforce
+#: model:ir.model.fields,field_description:auth_totp_mail_enforce.field_auth_totp_rate_limit_log____last_update
+msgid "Last Modified on"
+msgstr "Ultima modificare la"
 
 #. module: auth_totp_mail_enforce
 #: model:ir.model.fields,field_description:auth_totp_mail_enforce.field_auth_totp_rate_limit_log__write_uid
@@ -209,12 +216,12 @@ msgstr "Retrimiteți email-ul"
 #. module: auth_totp_mail_enforce
 #: model:ir.model.fields,field_description:auth_totp_mail_enforce.field_auth_totp_rate_limit_log__scope
 msgid "Scope"
-msgstr "Domeniu de aplicare"
+msgstr "Scope"
 
 #. module: auth_totp_mail_enforce
 #: model:ir.model.fields.selection,name:auth_totp_mail_enforce.selection__auth_totp_rate_limit_log__limit_type__send_email
 msgid "Send Email"
-msgstr "Trimiteți e-mail"
+msgstr "Trimite email"
 
 #. module: auth_totp_mail_enforce
 #: model:mail.template,name:auth_totp_mail_enforce.mail_template_totp_mail_code
@@ -235,11 +242,12 @@ msgstr "Politica de aplicare a autentificării cu doi factori"
 #: model:ir.model,name:auth_totp_mail_enforce.model_res_users
 #: model:ir.model.fields,field_description:auth_totp_mail_enforce.field_auth_totp_rate_limit_log__user_id
 msgid "User"
-msgstr "Utilizator"
+msgstr "Operator"
 
 #. module: auth_totp_mail_enforce
 #. odoo-python
 #: code:addons/auth_totp_mail_enforce/models/res_users.py:0
+#, python-format
 msgid "Verification failed, please double-check the 6-digit code"
 msgstr "Verificarea a eșuat, vă rugăm să verificați codul de 6 cifre"
 
@@ -255,6 +263,7 @@ msgstr ""
 #. module: auth_totp_mail_enforce
 #. odoo-python
 #: code:addons/auth_totp_mail_enforce/models/res_users.py:0
+#, python-format
 msgid "You reached the limit of authentication mails sent for your account"
 msgstr ""
 "Ați atins limita de email-uri de autentificare trimise pentru contul dvs."
@@ -262,6 +271,7 @@ msgstr ""
 #. module: auth_totp_mail_enforce
 #. odoo-python
 #: code:addons/auth_totp_mail_enforce/models/res_users.py:0
+#, python-format
 msgid "You reached the limit of code verifications for your account"
 msgstr "Ați atins limita de verificări de cod pentru contul dvs."
 

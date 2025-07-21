@@ -1,3 +1,5 @@
+/** @odoo-module **/
+
 export function editModelDebug(env, title, model, id) {
     return env.services.action.doAction({
         res_model: model,
@@ -6,6 +8,6 @@ export function editModelDebug(env, title, model, id) {
         type: "ir.actions.act_window",
         views: [[false, "form"]],
         view_mode: "form",
-        target: "current",
+        target: "new",
     });
 }

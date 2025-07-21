@@ -8,9 +8,6 @@
         'l10n_din5008',
         'purchase',
     ],
-    'data': [
-        'report/din5008_purchase_order_templates.xml',
-    ],
     'auto_install': True,
     'license': 'LGPL-3',
 }

@@ -1,3 +1,5 @@
+/** @odoo-module **/
+
 import { DEFAULT_INTERVAL, INTERVAL_OPTIONS } from "./dates";
 
 /**
@@ -21,10 +23,10 @@ export function getGroupBy(descr, fields) {
         throw Error();
     }
     if (fields) {
-        if (!fields[fieldName] && !fieldName.includes(".")) {
+        if (!fields[fieldName]) {
             throw Error(errorMsg(descr));
         }
-        const fieldType = fields[fieldName]?.type;
+        const fieldType = fields[fieldName].type;
         if (["date", "datetime"].includes(fieldType)) {
             if (!interval) {
                 interval = DEFAULT_INTERVAL;

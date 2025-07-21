@@ -10,9 +10,9 @@ class TestLinkTracker(common.TestMassMailCommon):
     def setUp(self):
         super(TestLinkTracker, self).setUp()
 
-        self.link = self.env['link.tracker'].search_or_create([{
+        self.link = self.env['link.tracker'].search_or_create({
             'url': 'https://www.example.com'
-        }])
+        })
 
         self.click = self.env['link.tracker.click'].create({
             'link_id': self.link.id,
@@ -32,6 +32,15 @@ class TestLinkTracker(common.TestMassMailCommon):
         )
         self.assertEqual(click.ip, '100.00.00.01')
         self.assertEqual(click.country_id, self.env.ref('base.be'))
+        self.assertEqual(self.link.count, 2)
+
+        # click from same IP (even another country) does not create a new entry
+        click = self.env['link.tracker.click'].sudo().add_click(
+            code,
+            ip='100.00.00.01',
+            country_code='FRA'
+        )
+        self.assertEqual(click, None)
         self.assertEqual(self.link.count, 2)
 
     @users('user_marketing')

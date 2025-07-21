@@ -22,18 +22,14 @@ If the automated inventory valuation is active, the necessary accounting entries
     "data": [
         'security/ir.model.access.csv',
         "views/product_views.xml",
+        "views/mrp_bom_views.xml",
         "views/mrp_production_views.xml",
         "views/analytic_account_views.xml",
-        "views/account_move_views.xml",
-        "views/mrp_workcenter_views.xml",
-        "report/report_mrp_templates.xml",
-        "wizard/mrp_wip_accounting.xml",
     ],
     'demo': [
         'data/mrp_account_demo.xml',
     ],
     'installable': True,
     'auto_install': True,
-    'post_init_hook': '_configure_journals',
     'license': 'LGPL-3',
 }

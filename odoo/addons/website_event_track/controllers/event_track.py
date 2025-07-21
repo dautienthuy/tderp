@@ -58,7 +58,7 @@ class EventTrackController(http.Controller):
     @http.route([
         '''/event/<model("event.event"):event>/track''',
         '''/event/<model("event.event"):event>/track/tag/<model("event.track.tag"):tag>'''
-    ], type='http', auth="public", website=True, sitemap=False, readonly=True)
+    ], type='http', auth="public", website=True, sitemap=False)
     def event_tracks(self, event, tag=None, **searches):
         """ Main route
 
@@ -69,18 +69,6 @@ class EventTrackController(http.Controller):
           * 'search': search string;
           * 'tags': list of tag IDs for filtering;
         """
-
-        if searches.get('tags', '[]').count(',') > 0 and request.httprequest.method == 'GET' and not searches.get('prevent_redirect'):
-            # Previously, the tags were searched using GET, which caused issues with crawlers (too many hits)
-            # We replaced those with POST to avoid that, but it's not sufficient as bots "remember" crawled pages for a while
-            # This permanent redirect is placed to instruct the bots that this page is no longer valid
-            # Note: We allow a single tag to be GET, to keep crawlers & indexes on those pages
-            # What we really want to avoid is combinatorial explosions
-            # (Tags are formed as a JSON array, so we count ',' to keep it simple)
-            # TODO: remove in a few stable versions (v19?), including the "prevent_redirect" param in templates
-            slug = request.env['ir.http']._slug
-            return request.redirect(f'/event/{slug(event)}/track', code=301)
-
         return request.render(
             "website_event_track.tracks_session",
             self._event_tracks_get_values(event, tag=tag, **searches)
@@ -355,7 +343,7 @@ class EventTrackController(http.Controller):
     # ------------------------------------------------------------
 
     @http.route('''/event/<model("event.event", "[('website_track', '=', True)]"):event>/track/<model("event.track", "[('event_id', '=', event.id)]"):track>''',
-                type='http', auth="public", website=True, sitemap=True, readonly=True)
+                type='http', auth="public", website=True, sitemap=True)
     def event_track_page(self, event, track, **options):
         track = self._fetch_track(track.id, allow_sudo=False)
 
@@ -501,7 +489,10 @@ class EventTrackController(http.Controller):
         track = request.env['event.track'].browse(track_id).exists()
         if not track:
             raise NotFound()
-        if not track.has_access('read'):
+        try:
+            track.check_access_rights('read')
+            track.check_access_rule('read')
+        except exceptions.AccessError:
             if not allow_sudo:
                 raise Forbidden()
             track = track.sudo()
@@ -510,7 +501,10 @@ class EventTrackController(http.Controller):
         # JSON RPC have no website in requests
         if hasattr(request, 'website_id') and not event.can_access_from_current_website():
             raise NotFound()
-        if not event.has_access('read'):
+        try:
+            event.check_access_rights('read')
+            event.check_access_rule('read')
+        except exceptions.AccessError:
             raise Forbidden()
 
         return track

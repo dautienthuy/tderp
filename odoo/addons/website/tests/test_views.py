@@ -1,14 +1,13 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from hashlib import sha256
-import copy
 import unittest
 from unittest.mock import patch
 from itertools import zip_longest
 from lxml import etree as ET, html
 from lxml.html import builder as h
 
-from odoo.modules.module import _DEFAULT_MANIFEST
 from odoo.tests import common, HttpCase, tagged
 
 
@@ -1008,7 +1007,7 @@ class TestCowViewSaving(TestViewSavingCommon):
         self.assertEqual(specific_view.with_context(lang='fr_BE').arch, '<div>bonjour</div>',
                          "copy on write (COW) also copy existing translations")
 
-        self.base_view.update_field_translations('arch_db', {'fr_BE': {'hello': 'salut'}})
+        self.base_view.update_field_translations('arch_db', {'fr_BE': {'bonjour': 'salut'}})
         self.assertEqual(self.base_view.with_context(lang='fr_BE').arch, '<div>salut</div>')
         self.assertEqual(specific_view.with_context(lang='fr_BE').arch, '<div>bonjour</div>',
                          "updating translation of base view doesn't update specific view")
@@ -1164,7 +1163,7 @@ class TestCowViewSaving(TestViewSavingCommon):
         french = self.env['res.lang']._activate_lang('fr_FR')
         self.env['ir.module.module']._load_module_terms(['website'], [french.code])
         # Make sure res.lang.get_installed is recomputed
-        self.env.registry.clear_cache()
+        self.env.registry.clear_caches()
 
         View = self.env['ir.ui.view'].with_context(lang=french.code, website_id=1)
         old_specific_views = View.search([('website_id', '!=', None)])
@@ -1173,7 +1172,7 @@ class TestCowViewSaving(TestViewSavingCommon):
         root = html.fromstring(self.base_view.arch, parser=html.HTMLParser(encoding="utf-8"))
         to_translate = root.text_content()
         sha = sha256(to_translate.encode()).hexdigest()
-        view.web_update_field_translations('arch_db', {french.code: {sha: 'contenu de base'}})
+        view.update_field_translations_sha('arch_db', {french.code: {sha: 'contenu de base'}})
 
         new_specific_views = View.search([('website_id', '!=', None)])
         self.assertEqual(len(old_specific_views), len(new_specific_views), "No additional specific view must have been created")
@@ -1510,8 +1509,6 @@ class TestThemeViews(common.TransactionCase):
         main_view.with_context(website_id=website_1.id).arch = '<body>specific</body>'
 
         # 2. Simulate a theme install with a child view of `main_view`
-        patcher = patch('odoo.modules.module._get_manifest_cached', return_value=copy.deepcopy(_DEFAULT_MANIFEST))
-        self.startPatcher(patcher)
         test_theme_module = self.env['ir.module.module'].create({'name': 'test_theme'})
         self.env['ir.model.data'].create({
             'module': 'base',

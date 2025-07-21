@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from . import assets
@@ -15,7 +16,6 @@ from . import ir_qweb_fields
 from . import mixins
 from . import website
 from . import website_menu
-from . import website_page_properties
 from . import website_page
 from . import website_rewrite
 from . import ir_rule
@@ -31,4 +31,3 @@ from . import website_configurator_feature
 from . import website_form
 from . import website_snippet_filter
 from . import website_visitor
-from . import website_controller_page

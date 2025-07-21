@@ -11,8 +11,8 @@ class TestSEPAQRCode(AccountTestInvoicingCommon):
     """
 
     @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+    def setUpClass(cls, chart_template_ref=None):
+        super().setUpClass(chart_template_ref=chart_template_ref)
 
         cls.company_data['company'].qr_code = True
         cls.acc_sepa_iban = cls.env['res.partner.bank'].create({
@@ -24,8 +24,6 @@ class TestSEPAQRCode(AccountTestInvoicingCommon):
             'acc_number': 'SA4420000001234567891234',
             'partner_id': cls.company_data['company'].partner_id.id,
         })
-
-        cls.env.ref('base.EUR').active = True
 
         cls.sepa_qr_invoice = cls.env['account.move'].create({
             'move_type': 'out_invoice',
@@ -71,67 +69,10 @@ class TestSEPAQRCode(AccountTestInvoicingCommon):
         move_reversal = self.env['account.move.reversal'].with_context(active_model="account.move", active_ids=self.sepa_qr_invoice.ids).create({
             'date': fields.Date.from_string('2019-02-01'),
             'reason': 'no reason',
+            'refund_method': 'refund',
             'journal_id': self.sepa_qr_invoice.journal_id.id,
         })
-        reversal = move_reversal.refund_moves()
+        reversal = move_reversal.reverse_moves()
         reverse_move = self.env['account.move'].browse(reversal['res_id'])
 
         self.assertFalse(reverse_move.qr_code_method, "qr_code_method for credit note should be None")
-
-    def test_get_qr_vals_communication(self):
-        """ The aim of this test is making sure that we only provide a structured
-            reference (or communication) in the qr code values if the communication
-            is well-structured. If the communication is not structured, we provide
-            it through the unstructured communication value.
-        """
-        result = self.acc_sepa_iban._get_qr_vals(
-            qr_method='sct_qr',
-            amount=100.0,
-            currency=self.env.ref('base.EUR'),
-            debtor_partner=None,
-            free_communication='A free communication',
-            structured_communication='A free communication',
-        )
-        self.assertEqual(
-            result,
-            [
-                'BCD',
-                '002',
-                '1',
-                'SCT',
-                '',
-                'company_1_data',
-                'BE15001559627230',
-                'EUR100.0',
-                '',
-                '',
-                'A free communication',
-                '',
-            ]
-        )
-
-        result = self.acc_sepa_iban._get_qr_vals(
-            qr_method='sct_qr',
-            amount=100.0,
-            currency=self.env.ref('base.EUR'),
-            debtor_partner=None,
-            free_communication=' 5 000 0567 89012345 ',  # NL Structured reference
-            structured_communication=' 5 000 0567 89012345 ',  # NL Structured reference
-        )
-        self.assertEqual(
-            result,
-            [
-                'BCD',
-                '002',
-                '1',
-                'SCT',
-                '',
-                'company_1_data',
-                'BE15001559627230',
-                'EUR100.0',
-                '',
-                '5000056789012345',
-                '',
-                '',
-            ]
-        )

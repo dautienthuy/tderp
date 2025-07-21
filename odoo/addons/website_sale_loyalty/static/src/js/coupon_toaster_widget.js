@@ -1,40 +1,36 @@
-import publicWidget from '@web/legacy/js/public/public_widget';
+/** @odoo-module **/
+
+import publicWidget from 'web.public.widget';
+import {registry} from "@web/core/registry";
 
 const CouponToasterWidget = publicWidget.Widget.extend({
-    selector: '.coupon-message',
-
-    init() {
-        this._super(...arguments);
-        this.notification = this.bindService("notification");
-    },
-
     start() {
         let options = {};
-        const contentEl = this.el.querySelector('.coupon-message-content');
-        const titleEl = this.el.querySelector('.coupon-message-title');
-        let message = null;
+        const $content = this.$('.coupon-message-content');
+        const $title = this.$('.coupon-message-title');
 
-        if (contentEl) {
-            message = contentEl.innerHTML;
-            if (titleEl) {
-                Object.assign(options, { title: titleEl.innerHTML });
-            }
-        } else if (titleEl) {
-            message = titleEl.innerHTML;
+        if ($content.length) {
+            Object.assign(options, {message: $content[0].innerHTML});
+        }
+        if ($title.length) {
+            Object.assign(options, {title: $title[0].innerHTML});
         }
 
-        if (this.el.classList.contains('coupon-info-message')) {
-            this.notification.add(message, Object.assign({type: 'success'}, options));
-        } else if (this.el.classList.contains('coupon-error-message')) {
-            this.notification.add(message, Object.assign({type: 'danger'}, options));
-        } else if (this.el.classList.contains('coupon-warning-message')) {
-            this.notification.add(message, Object.assign({type: 'warning'}, options));
+        if (this.$el.hasClass('coupon-info-message')) {
+            this.displayNotification(Object.assign({type: 'success'}, options));
+        } else if (this.$el.hasClass('coupon-error-message')) {
+            this.displayNotification(Object.assign({type: 'danger'}, options));
+        } else if (this.$el.hasClass('coupon-warning-message')) {
+            this.displayNotification(Object.assign({type: 'warning'}, options));
         }
 
         return this._super(...arguments);
     },
 });
 
-publicWidget.registry.CouponToasterWidget = CouponToasterWidget;
+registry.category("public_root_widgets").add("CouponToasterWidget", {
+    Widget: CouponToasterWidget,
+    selector: '.coupon-message',
+});
 
 export default CouponToasterWidget;

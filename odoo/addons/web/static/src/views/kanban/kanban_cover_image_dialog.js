@@ -1,3 +1,5 @@
+/** @odoo-module **/
+
 import { Dialog } from "@web/core/dialog/dialog";
 import { FileInput } from "@web/core/file_input/file_input";
 import { useService } from "@web/core/utils/hooks";
@@ -7,9 +9,6 @@ import { Component, useState, onWillStart } from "@odoo/owl";
 let nextDialogId = 1;
 
 export class KanbanCoverImageDialog extends Component {
-    static template = "web.KanbanCoverImageDialog";
-    static components = { Dialog, FileInput };
-    static props = ["*"];
     setup() {
         this.id = `o_cover_image_upload_${nextDialogId++}`;
         this.orm = useService("orm");
@@ -64,7 +63,8 @@ export class KanbanCoverImageDialog extends Component {
 
     async setCover() {
         const id = this.state.selectedAttachmentId ? [this.state.selectedAttachmentId] : false;
-        await this.props.record.update({ [this.props.fieldName]: id }, { save: true });
+        await this.props.record.update({ [this.props.fieldName]: id });
+        await this.props.record.save();
         this.props.close();
     }
 
@@ -72,3 +72,6 @@ export class KanbanCoverImageDialog extends Component {
         this.state.selectFile = true;
     }
 }
+
+KanbanCoverImageDialog.template = "web.KanbanCoverImageDialog";
+KanbanCoverImageDialog.components = { Dialog, FileInput };

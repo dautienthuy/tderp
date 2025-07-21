@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import logging
@@ -32,7 +33,6 @@ class Crawler(HttpCaseWithUserDemo):
             'social_youtube': 'https://www.youtube.com/user/OpenERPonline',
             'social_github': 'https://github.com/odoo',
             'social_instagram': 'https://www.instagram.com/explore/tags/odoo/',
-            'social_tiktok': 'https://www.tiktok.com/@odoo',
         })
 
         if hasattr(self.env['res.partner'], 'grade_id'):
@@ -52,15 +52,12 @@ class Crawler(HttpCaseWithUserDemo):
     def clean_url(self, url):
         # convert <slug>
         clean_url = re.sub(r"(?<=/)(([^/=?&]+)?-?[0-9]+)(?=(/|$|\?|#))", r"<slug>", url)
-
-        # remove # part, sort param and clean trailing /?
-        base, *qs = clean_url.split('#', 1)[0].split('?', 1)
-        qs_sorted = '?' + '&'.join(sorted(''.join(qs).split('&')))
-
         # convert ?qs=<param>
-        qs_sorted = re.sub(r"([^=?&]+)=[^=?&]+", r'\g<1>=<param>', qs_sorted)
+        clean_url = re.sub(r"([^/=?&]+)=[^/=?&]+", r'\g<1>=<param>', clean_url)
+        # sort param and clean trailing /?#
+        base, *qs = clean_url.split('?', 1)
+        qs_sorted = '?' + '&'.join(sorted(''.join(qs).split('&')))
         clean_url = base.rstrip('/#') + qs_sorted.rstrip('?#')
-
         return clean_url
 
     def crawl(self, url, seen=None, msg=''):
@@ -98,7 +95,7 @@ class Crawler(HttpCaseWithUserDemo):
                 # FIXME: handle relative link (not parts.path.startswith /)
                 if parts.netloc or \
                     not parts.path.startswith('/') or \
-                    parts.path == '/odoo' or\
+                    parts.path == '/web' or\
                     parts.path.startswith('/web/') or \
                     parts.path.startswith('/en/') or \
                    (parts.scheme and parts.scheme not in ('http', 'https')):
@@ -112,12 +109,12 @@ class Crawler(HttpCaseWithUserDemo):
             ("/my/1/20/300", "/my/<slug>/<slug>/<slug>"),
             ("/my/19/", "/my/<slug>"),
             ("/my/19#", "/my/<slug>"),
-            ("/my/19#a=b", "/my/<slug>"),
+            ("/my/19#a=b", "/my/<slug>#a=<param>"),
             ("/my/19/?access_token=www-xxx-yyy-zzz", "/my/<slug>?access_token=<param>"),
             ("/my/19?access_token=www-xxx-yyy-zzz", "/my/<slug>?access_token=<param>"),
             ("/my/19?access_token=www-xxx-yyy-zzz&report_type=pdf", "/my/<slug>?access_token=<param>&report_type=<param>"),
             ("/my/slug-19/", "/my/<slug>"),
-            ("/my/slug-19#a=b", "/my/<slug>"),
+            ("/my/slug-19#a=b", "/my/<slug>#a=<param>"),
             ("/my/slug-19/?access_token=www-xxx-yyy-zzz", "/my/<slug>?access_token=<param>"),
             ("/my/slug-19?access_token=www-xxx-yyy-zzz", "/my/<slug>?access_token=<param>"),
             ("/my/slug-19?access_token=www-xxx-yyy-zzz&report_type=pdf", "/my/<slug>?access_token=<param>&report_type=<param>"),
@@ -133,16 +130,13 @@ class Crawler(HttpCaseWithUserDemo):
             ("/controller?tags=%5B5%5D", "/controller?tags=<param>"),
             ("/controller?date=upcoming&tags=%5B5%5D", "/controller?date=<param>&tags=<param>"),
             ("/controller?tags=%5B%5D&date=upcoming", "/controller?date=<param>&tags=<param>"),
-            ("/controller?tags=%5B%5D&from=/a/b/c", "/controller?from=<param>&tags=<param>"),
-            ("/controller?tags=%5B%5D&from=d/e/f&to=/a/b", "/controller?from=<param>&tags=<param>&to=<param>"),
-            ("/controller?tags=%5B%5D&from=d/e/f&to=/c/d", "/controller?from=<param>&tags=<param>&to=<param>"),
         ]
         uniq = set()
         for url, clean_expected in urls_to_check:
             cleaned = self.clean_url(url)
             self.assertEqual(cleaned, clean_expected)
             uniq.add(cleaned)
-        self.assertEqual(len(uniq), 16)
+        self.assertEqual(len(uniq), 15)
 
     def test_10_crawl_public(self):
         t0 = time.time()

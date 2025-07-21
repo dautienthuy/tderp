@@ -60,80 +60,6 @@ class test_search(TransactionCase):
         id_desc_active_desc = Partner.search([('name', 'like', 'test_search_order%'), '|', ('active', '=', True), ('active', '=', False)], order="id desc, active desc")
         self.assertEqual([e, ab, b, a, d, c], list(id_desc_active_desc), "Search with 'ID DESC, ACTIVE DESC' order failed.")
 
-        a.ref = "ref1"
-        c.ref = "ref2"
-        ids = (a | b | c).ids
-        for order, result in [
-            ('ref', a | c | b),
-            ('ref desc', b | c | a),
-            ('ref asc nulls first', b | a | c),
-            ('ref asc nulls last', a | c | b),
-            ('ref desc nulls first', b | c | a),
-            ('ref desc nulls last', c | a | b)
-        ]:
-            with self.subTest(order):
-                self.assertEqual(
-                    Partner.search([('id', 'in', ids)], order=order).mapped('name'),
-                    result.mapped('name'))
-
-        # sorting by an m2o should alias to the natural order of the m2o
-        self.patch_order('res.country', 'phone_code')
-        a.country_id, c.country_id = self.env['res.country'].create([{
-            'name': "Country 1",
-            'code': 'C1',
-            'phone_code': '01',
-        }, {
-            'name': 'Country 2',
-            'code': 'C2',
-            'phone_code': '02'
-        }])
-
-        for order, result in [
-            ('country_id', a | c | b),
-            ('country_id desc', b | c | a),
-            ('country_id asc nulls first', b | a | c),
-            ('country_id asc nulls last', a | c | b),
-            ('country_id desc nulls first', b | c | a),
-            ('country_id desc nulls last', c | a | b)
-        ]:
-            with self.subTest(order):
-                self.assertEqual(
-                    Partner.search([('id', 'in', ids)], order=order).mapped('name'),
-                    result.mapped('name'))
-
-        # NULLS applies to the m2o itself, not its sub-fields, so a null `phone_code`
-        # will sort normally (larger than non-null codes)
-        b.country_id = self.env['res.country'].create({'name': "Country X", 'code': 'C3'})
-
-        for order, result in [
-            ('country_id', a | c | b),
-            ('country_id desc', b | c | a),
-            ('country_id asc nulls first', a | c | b),
-            ('country_id asc nulls last', a | c | b),
-            ('country_id desc nulls first', b | c | a),
-            ('country_id desc nulls last', b | c | a)
-        ]:
-            with self.subTest(order):
-                self.assertEqual(
-                    Partner.search([('id', 'in', ids)], order=order).mapped('name'),
-                    result.mapped('name'))
-
-        # a field DESC should reverse the nested behaviour (and thus the inner
-        # NULLS clauses), but the outer NULLS clause still has no effect
-        self.patch_order('res.country', 'phone_code NULLS FIRST')
-        for order, result in [
-            ('country_id', b | a | c),
-            ('country_id desc', c | a | b),
-            ('country_id asc nulls first', b | a | c),
-            ('country_id asc nulls last', b | a | c),
-            ('country_id desc nulls first', c | a | b),
-            ('country_id desc nulls last', c | a | b)
-        ]:
-            with self.subTest(order):
-                self.assertEqual(
-                    Partner.search([('id', 'in', ids)], order=order).mapped('name'),
-                    result.mapped('name'))
-
     def test_10_inherits_m2order(self):
         Users = self.env['res.users']
 
@@ -218,16 +144,9 @@ class test_search(TransactionCase):
         kw = dict(groups_id=[Command.set([self.ref('base.group_system'),
                                      self.ref('base.group_partner_manager')])])
 
-        # When creating with the superuser, the ordering by 'create_uid' will
-        # compare user logins with the superuser's login "__system__", which
-        # may give different results, because "_" may come before or after
-        # letters, depending on the database's locale.  In order to avoid this
-        # issue, use a user with a login that doesn't include "_".
-        u0 = Users.create(dict(name='A system', login='a', **kw)).id
-
-        u1 = Users.with_user(u0).create(dict(name='Q', login='m', **kw)).id
+        u1 = Users.create(dict(name='Q', login='m', **kw)).id
         u2 = Users.with_user(u1).create(dict(name='B', login='f', **kw)).id
-        u3 = Users.with_user(u0).create(dict(name='C', login='c', **kw)).id
+        u3 = Users.create(dict(name='C', login='c', **kw)).id
         u4 = Users.with_user(u2).create(dict(name='D', login='z', **kw)).id
 
         expected_ids = [u2, u4, u3, u1]
@@ -239,8 +158,6 @@ class test_search(TransactionCase):
         # test that a custom field x_active filters like active
         # we take the model res.country as a test model as it is included in base and does
         # not have an active field
-        self.addCleanup(self.registry.reset_changes) # reset the registry to avoid polluting other tests
-
         model_country = self.env['res.country']
         self.assertNotIn('active', model_country._fields)  # just in case someone adds the active field in the model
         self.env['ir.model.fields'].create({
@@ -249,7 +166,7 @@ class test_search(TransactionCase):
             'ttype': 'boolean',
         })
         self.assertEqual('x_active', model_country._active_name)
-        country_ussr = model_country.create({'name': 'USSR', 'x_active': False, 'code': 'ZV'})
+        country_ussr = model_country.create({'name': 'USSR', 'x_active': False})
         ussr_search = model_country.search([('name', '=', 'USSR')])
         self.assertFalse(ussr_search)
         ussr_search = model_country.with_context(active_test=False).search([('name', '=', 'USSR')])
@@ -286,21 +203,7 @@ class test_search(TransactionCase):
             {'name': 'runbot'},
         ])
         self.assertEqual(len(partners) + count_partner_before, Partner.search_count([]))
+        self.assertEqual(len(partners) + count_partner_before, Partner.search([], count=True))
+
         self.assertEqual(3, Partner.search_count([], limit=3))
-
-    def test_22_like_folding(self):
-        Model = self.env['res.country']
-
-        with self.assertQueries(["""
-            SELECT "res_country"."id"
-            FROM "res_country"
-            WHERE TRUE
-            ORDER BY "res_country"."name"->>%s
-        """, """
-            SELECT "res_country"."id"
-            FROM "res_country"
-            WHERE FALSE
-            ORDER BY "res_country"."name"->>%s
-        """]):
-            Model.search([('code', 'ilike', '')])
-            Model.search([('code', 'not ilike', '')])
+        self.assertEqual(3, Partner.search([], count=True, limit=3))

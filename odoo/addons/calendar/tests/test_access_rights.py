@@ -19,7 +19,6 @@ class TestAccessRights(TransactionCase):
         cls.george = new_test_user(cls.env, login='george', groups='base.group_user')
         cls.portal = new_test_user(cls.env, login='pot', groups='base.group_portal')
         cls.admin_user = new_test_user(cls.env, login='admin_user', groups='base.group_partner_manager,base.group_user')
-        cls.admin_system_user = new_test_user(cls.env, login='admin_system_user', groups='base.group_system')
 
     def create_event(self, user, **values):
         return self.env['calendar.event'].with_user(user).create({
@@ -95,8 +94,6 @@ class TestAccessRights(TransactionCase):
             privacy='public',
             location='In Hell',
         )
-        # invalidate cache before reading, otherwise read() might leak private data
-        self.env.invalidate_all()
         [private_location, public_location] = self.read_event(self.raoul, private + public, 'location')
         self.assertFalse(private_location, "Private value should be obfuscated")
         self.assertEqual(public_location, 'In Hell', "Public value should not be obfuscated")
@@ -161,179 +158,69 @@ class TestAccessRights(TransactionCase):
             'stop': datetime.now() + timedelta(days=2, hours=2),
         })
 
-    def test_event_default_privacy_as_private(self):
-        """ Check the privacy of events with owner's event default privacy as 'private'. """
-        # Set organizer default privacy as 'private' and create event privacies default, public, private and confidential.
-        self.george.with_user(self.george).calendar_default_privacy = 'private'
-        default_event = self.create_event(self.george)
-        public_event = self.create_event(self.george, privacy='public')
-        private_event = self.create_event(self.george, privacy='private')
-        confidential_event = self.create_event(self.george, privacy='confidential')
-
-        # With another user who is not an event attendee, try accessing the events.
-        query_default_event = self.env['calendar.event'].with_user(self.raoul).read_group([('id', '=', default_event.id)], fields=['name'], groupby='name')
-        query_public_event = self.env['calendar.event'].with_user(self.raoul).read_group([('id', '=', public_event.id)], fields=['name'], groupby='name')
-        query_private_event = self.env['calendar.event'].with_user(self.raoul).read_group([('id', '=', private_event.id)], fields=['name'], groupby='name')
-        query_confidential_event = self.env['calendar.event'].with_user(self.raoul).read_group([('id', '=', confidential_event.id)], fields=['name'], groupby='name')
-
-        # Ensure that each event is accessible or not according to its privacy.
-        self.assertFalse(query_default_event, "Event must be inaccessible because the user has default privacy as 'private'.")
-        self.assertTrue(query_public_event, "Public event must be accessible to other users.")
-        self.assertFalse(query_private_event, "Private event must be inaccessible to other users.")
-        self.assertTrue(query_confidential_event, "Confidential event must be accessible to other internal users.")
-
-    def test_edit_private_event_of_other_user(self):
-        """
-        Ensure that it is not possible editing the private event of another user when the current user is not an
-        attendee/organizer of that event. Attendees should be able to edit it, others will receive AccessError on write.
-        """
-        def ensure_user_can_update_event(self, event, user):
-            event.with_user(user).write({'name': user.name})
-            self.assertEqual(event.name, user.name, 'Event name should be updated by user %s' % user.name)
-
-        # Prepare events attendees/partners including organizer (john) and another user (raoul).
-        events_attendees = [
-            (0, 0, {'partner_id': self.john.partner_id.id, 'state': 'accepted'}),
-            (0, 0, {'partner_id': self.raoul.partner_id.id, 'state': 'accepted'})
-        ]
-        events_partners = [self.john.partner_id.id, self.raoul.partner_id.id]
-
-        # Set calendar default privacy as private and create a normal event, only attendees/organizer can edit it.
-        self.john.with_user(self.john).calendar_default_privacy = 'private'
-        johns_default_privacy_event = self.create_event(self.john, name='my event with default privacy', attendee_ids=events_attendees, partner_ids=events_partners)
-        ensure_user_can_update_event(self, johns_default_privacy_event, self.john)
-        ensure_user_can_update_event(self, johns_default_privacy_event, self.raoul)
-        with self.assertRaises(AccessError):
-            self.assertEqual(len(self.john.res_users_settings_id), 1, "Res Users Settings for the user is not defined.")
-            self.assertEqual(self.john.res_users_settings_id.calendar_default_privacy, 'private', "Privacy field update was lost.")
-            johns_default_privacy_event.with_user(self.george).write({'name': 'blocked-update-by-non-attendee'})
-
-        # Set calendar default privacy as public and create a private event, only attendees/organizer can edit it.
-        self.john.with_user(self.john).calendar_default_privacy = 'public'
-        johns_private_event = self.create_event(self.john, name='my private event', privacy='private', attendee_ids=events_attendees, partner_ids=events_partners)
-        ensure_user_can_update_event(self, johns_private_event, self.john)
-        ensure_user_can_update_event(self, johns_private_event, self.raoul)
-        with self.assertRaises(AccessError):
-            self.assertEqual(len(self.john.res_users_settings_id), 1, "Res Users Settings for the user is not defined.")
-            self.assertEqual(self.john.res_users_settings_id.calendar_default_privacy, 'public', "Privacy field update was lost.")
-            johns_private_event.with_user(self.george).write({'name': 'blocked-update-by-non-attendee'})
-
-    def test_admin_cant_fetch_uninvited_private_events(self):
-        """
-        Administrators must not be able to fetch information from private events which
-        they are not attending (i.e. events which it is not an event partner). The privacy
-        of the event information must always be kept. Public events can be read normally.
-        """
-        john_private_evt = self.create_event(self.john, name='priv', privacy='private', location='loc_1', description='priv')
-        john_public_evt = self.create_event(self.john, name='pub', privacy='public', location='loc_2', description='pub')
-        self.env.invalidate_all()
-
-        # For the private event, ensure that no private field can be read, such as: 'name', 'location' and 'description'.
-        for (field, value) in [('name', 'Busy'), ('location', False), ('description', False)]:
-            hidden_information = self.read_event(self.admin_user, john_private_evt, field)
-            self.assertEqual(hidden_information, value, "The field '%s' information must be hidden, even for uninvited admins." % field)
-
-        # For the public event, ensure that the same fields can be read by the admin.
-        for (field, value) in [('name', 'pub'), ('location', 'loc_2'), ('description', "<p>pub</p>")]:
-            field_information = self.read_event(self.admin_user, john_public_evt, field)
-            self.assertEqual(str(field_information), value, "The field '%s' information must be readable by the admin." % field)
-
-    def test_admin_cant_edit_uninvited_private_events(self):
-        """
-        Administrators must not be able to edit private events that they are not attending.
-        The event is property of the organizer and its attendees only (for private events in the backend).
-        """
-        john_private_evt = self.create_event(self.john, name='priv', privacy='private', location='loc_1', description='priv')
-
-        # Ensure that uninvited admin can not edit the event since it is not an event partner (attendee).
-        with self.assertRaises(AccessError):
-            john_private_evt.with_user(self.admin_user)._compute_user_can_edit()
-
-        # Ensure that AccessError is raised when trying to update the uninvited event.
-        with self.assertRaises(AccessError):
-            john_private_evt.with_user(self.admin_user).write({'name': 'forbidden-update'})
-
-    def test_admin_edit_uninvited_non_private_events(self):
-        """
-        Administrators must be able to edit (public, confidential) events that they are not attending.
-        This feature is widely used for customers since it is useful editing normal user's events on their behalf.
-        """
-        for privacy in ['public', 'confidential']:
-            john_event = self.create_event(self.john, name='event', privacy=privacy, location='loc')
-
-            # Ensure that uninvited admin can edit this type of event.
-            john_event.with_user(self.admin_user)._compute_user_can_edit()
-            self.assertTrue(john_event.user_can_edit, f"Event of type {privacy} must be editable by uninvited admins.")
-            john_event.with_user(self.admin_user).write({'name': 'update'})
-            self.assertEqual(john_event.name, 'update', f"Simple write must be allowed for uninvited admins in {privacy} events.")
-
     def test_hide_sensitive_fields_private_events_from_uninvited_admins(self):
         """
         Ensure that it is not possible fetching sensitive fields for uninvited administrators,
         i.e. admins who are not attendees of private events. Sensitive fields are fields that
         could contain sensitive information, such as 'name', 'description', 'location', etc.
         """
-        sensitive_fields = {
-            'name', 'location', 'attendee_ids', 'description', 'alarm_ids',
-            'categ_ids', 'message_ids', 'partner_ids', 'videocall_location'
-        }
+        sensitive_fields = [
+            'location', 'attendee_ids', 'partner_ids', 'description',
+            'videocall_location', 'categ_ids', 'message_ids',
+        ]
 
         # Create event with all sensitive fields defined on it.
+        event_type = self.env['calendar.event.type'].create({'name': 'type'})
         john_private_evt = self.create_event(
             self.john,
             name='private-event',
             privacy='private',
             location='private-location',
             description='private-description',
+            attendee_status='accepted',
             partner_ids=[self.john.partner_id.id, self.raoul.partner_id.id],
+            categ_ids=[event_type.id],
             videocall_location='private-url.com'
         )
         john_private_evt.message_post(body="Message to be hidden.")
 
-        # Search_fetch the event as an uninvited administrator and ensure that the sensitive fields were hidden.
-        # This method goes through the _fetch_query method which covers all variations of read(), search_read() and export_data().
+        # Read the event as an uninvited administrator and ensure that the sensitive fields were hidden.
+        # Do the same for the search_read method: the information of sensitive fields must be hidden.
         private_event_domain = ('id', '=', john_private_evt.id)
-        search_fetch_event = self.env['calendar.event'].with_user(self.admin_user).search_fetch([private_event_domain], sensitive_fields)
-        self.assertEqual(len(search_fetch_event), 1, "The event itself must be fetched since the record is not hidden from uninvited admins.")
-        for field in sensitive_fields:
+        readed_event = john_private_evt.with_user(self.admin_user).read(sensitive_fields + ['name'])
+        search_readed_event = self.env['calendar.event'].with_user(self.admin_user).search_read([private_event_domain])
+        for event in [readed_event, search_readed_event]:
+            self.assertEqual(len(event), 1, "The event itself must be fetched since the record is not hidden from uninvited admins.")
+            self.assertEqual(event[0]['name'], "Busy", "Event name must be 'Busy', hiding the information from uninvited administrators.")
+            for field in sensitive_fields:
+                self.assertFalse(event[0][field], "Field %s contains private information, it must be hidden from uninvited administrators." % field)
+
+        # Ensure that methods like 'mapped', 'filtered', 'filtered_domain', '_search' and 'read_group' do not
+        # bypass the override of read, which will hide the private information of the events from uninvited administrators.
+        sensitive_stored_fields = ['name', 'location', 'description', 'videocall_location']
+        searched_event = self.env['calendar.event'].with_user(self.admin_user).search([private_event_domain])
+
+        for field in sensitive_stored_fields:
+            # For each method, fetch the information of the private event as an uninvited administrator.
+            check_mapped_event = searched_event.with_user(self.admin_user).mapped(field)
+            check_filtered_event = searched_event.with_user(self.admin_user).filtered(lambda ev: ev.id == john_private_evt.id)
+            check_filtered_domain = searched_event.with_user(self.admin_user).filtered_domain([private_event_domain])
+            check_search_query = self.env['calendar.event'].with_user(self.admin_user)._search([private_event_domain])
+            check_search_object = self.env['calendar.event'].with_user(self.admin_user).browse(check_search_query)
+            check_read_group = self.env['calendar.event'].with_user(self.admin_user).read_group([private_event_domain], [field], [field])
+
             if field == 'name':
-                self.assertEqual(search_fetch_event['name'], "Busy", "Event name must be 'Busy', hiding the information from uninvited administrators.")
+                # The 'name' field is manually changed to 'Busy' by default. We need to ensure it is shown as 'Busy' in all following methods.
+                self.assertEqual(check_mapped_event, ['Busy'], 'Private event name should be shown as Busy using the mapped function.')
+                self.assertEqual(check_filtered_event.name, 'Busy', 'Private event name should be shown as Busy using the filtered function.')
+                self.assertEqual(check_filtered_domain.name, 'Busy', 'Private event name should be shown as Busy using the filtered_domain function.')
+                self.assertEqual(check_search_object.name, 'Busy', 'Private event name should be shown as Busy using the _search function.')
             else:
-                self.assertFalse(search_fetch_event[field], "Field %s contains private information, it must be hidden from uninvited administrators." % field)
+                # The remaining private fields should be falsy for uninvited administrators.
+                self.assertFalse(check_mapped_event[0], 'Private event field "%s" should be hidden when using the mapped function.' % field)
+                self.assertFalse(check_filtered_event[field], 'Private event field "%s" should be hidden when using the filtered function.' % field)
+                self.assertFalse(check_filtered_domain[field], 'Private event field "%s" should be hidden when using the filtered_domain function.' % field)
+                self.assertFalse(check_search_object[field], 'Private event field "%s" should be hidden when using the _search function.' % field)
 
-    def test_user_update_calendar_default_privacy(self):
-        """
-        Ensure that administrators and normal users can update their own calendar
-        default privacy from the 'res.users' related field without throwing any error.
-        Updates from others users are blocked during write (except for Default User Template from admins).
-        """
-        default_user = self.env.ref('base.default_user', raise_if_not_found=False)
-
-        for privacy in ['public', 'private', 'confidential']:
-            # Update normal user and administrator 'calendar_default_privacy' simulating their own update.
-            self.john.with_user(self.john).write({'calendar_default_privacy': privacy})
-            self.admin_system_user.with_user(self.admin_system_user).write({'calendar_default_privacy': privacy})
-            self.assertEqual(self.john.calendar_default_privacy, privacy, 'Normal user must be able to update its calendar default privacy.')
-            self.assertEqual(self.admin_system_user.calendar_default_privacy, privacy, 'Admin must be able to update its calendar default privacy.')
-
-            # Update the Default User Template's 'calendar_default_privacy' as an administrator.
-            default_user.with_user(self.admin_system_user).write({'calendar_default_privacy': privacy})
-            self.assertEqual(default_user.calendar_default_privacy, privacy, 'Admin must be able to update the Default User Template calendar privacy.')
-
-            # All calendar default privacy updates (except for Default user Template) must be blocked during write.
-            with self.assertRaises(AccessError):
-                self.john.with_user(self.admin_system_user).write({'calendar_default_privacy': privacy})
-            with self.assertRaises(AccessError):
-                self.admin_system_user.with_user(self.john).write({'calendar_default_privacy': privacy})
-
-    def test_check_private_event_conditions_by_internal_user(self):
-        """ Ensure that internal user (non-admin) will see that admin's event is private. """
-        # Update admin calendar_default_privacy with 'private' option. Create private event for admin.
-        self.admin_user.with_user(self.admin_user).write({'calendar_default_privacy': 'private'})
-        admin_user_private_evt = self.create_event(self.admin_user, name='My Event', privacy=False, partner_ids=[self.admin_user.partner_id.id])
-
-        # Ensure that intrnal user will see the admin's event as private.
-        self.assertTrue(
-            admin_user_private_evt.with_user(self.raoul)._check_private_event_conditions(),
-            "Privacy check must be True since the new event is private (following John's calendar default privacy)."
-        )
+            # Private events are excluded from read_group by default, ensure that we do not fetch it.
+            self.assertFalse(len(check_read_group), 'Private event should be hidden using the function _read_group.')

@@ -1,20 +1,12 @@
-/** @odoo-module **/
-
-import { _t } from "@web/core/l10n/translation";
+/** @odoo-module */
+// Legacy services
+import legacyEnv from 'web.commonEnv';
 import { useService } from '@web/core/utils/hooks';
-import {
-    markup,
-    Component,
-    useState,
-    useEffect,
-    onWillStart,
-    onMounted,
-    onWillUnmount,
-} from "@odoo/owl";
+import { WysiwygAdapterComponent } from '../wysiwyg_adapter/wysiwyg_adapter';
+
+const { markup, Component, useState, useChildSubEnv, useEffect, onWillStart, onMounted, onWillUnmount } = owl;
 
 export class WebsiteEditorComponent extends Component {
-    static template = "website.WebsiteEditorComponent";
-    static props = ["*"];
     /**
      * @override
      */
@@ -29,10 +21,18 @@ export class WebsiteEditorComponent extends Component {
         });
         this.wysiwygOptions = {};
 
+        // TODO: This is done here because the snippet menu cannot access
+        // OWL services. Once it can, the logic for invalidating the
+        // cache should probably be moved there.
+        if (this.websiteService.invalidateSnippetCache) {
+            this.wysiwygOptions.invalidateSnippetCache = true;
+            this.websiteService.invalidateSnippetCache = false;
+        }
+
+        useChildSubEnv(legacyEnv);
+
         onWillStart(async () => {
-            await this.websiteService.loadWysiwyg();
-            const adapterModule = await odoo.loader.modules.get('@website/components/wysiwyg_adapter/wysiwyg_adapter');
-            this.WysiwygAdapterComponent = adapterModule.WysiwygAdapterComponent;
+            this.Wysiwyg = await this.websiteService.loadWysiwyg();
         });
 
         useEffect(isPublicRootReady => {
@@ -76,9 +76,9 @@ export class WebsiteEditorComponent extends Component {
             document.body.classList.remove('editor_has_dummy_snippets');
             this.state.reloading = false;
         }
+        this.wysiwygOptions.invalidateSnippetCache = false;
         this.websiteService.unblockPreview();
-        document.body.classList.add("o_website_navbar_transition_hide");
-        setTimeout(() => document.body.classList.add("o_website_navbar_hide"), 400);
+        this.websiteService.hideLoader();
     }
     /**
      * Prepares the editor for reload. Copies the widget element tree
@@ -100,13 +100,17 @@ export class WebsiteEditorComponent extends Component {
      *
      * @param snippetOptionSelector {string} Selector to refocus the editor once reloaded.
      * @param [url] {string} URL to reload the iframe tp
+     * @param invalidateSnippetCache {boolean} If the SnippetMenu needs to reload the Snippets from server.
      * @returns {Promise<void>}
      */
-    async reload({ snippetOptionSelector, url } = {}) {
-        this.notificationService.add(_t("Your modifications were saved to apply this option."), {
-            title: _t("Content saved."),
+    async reload({ snippetOptionSelector, url, invalidateSnippetCache } = {}) {
+        this.notificationService.add(this.env._t("Your modifications were saved to apply this option."), {
+            title: this.env._t("Content saved."),
             type: 'success'
         });
+        if (invalidateSnippetCache) {
+            this.wysiwygOptions.invalidateSnippetCache = true;
+        }
         this.state.showWysiwyg = false;
         await this.props.reloadIframe(url);
         this.reloadSelector = snippetOptionSelector;
@@ -126,8 +130,6 @@ export class WebsiteEditorComponent extends Component {
             this.websiteService.unblockPreview();
         }
         this.websiteContext.snippetsLoaded = false;
-        document.body.classList.remove("o_website_navbar_hide");
-        setTimeout(() => document.body.classList.remove("o_website_navbar_transition_hide"));
         setTimeout(this.destroyAfterTransition.bind(this), 400);
     }
     /**
@@ -140,3 +142,5 @@ export class WebsiteEditorComponent extends Component {
         this.websiteContext.edition = false;
     }
 }
+WebsiteEditorComponent.components = { WysiwygAdapterComponent };
+WebsiteEditorComponent.template = 'website.WebsiteEditorComponent';

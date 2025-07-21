@@ -18,13 +18,8 @@ class AccountMoveLine(models.Model):
         invoice = self.move_id
         included_taxes = self.tax_ids.filtered(lambda x: x.l10n_cl_sii_code == 14) if self.move_id._l10n_cl_include_sii() else self.tax_ids
         if not included_taxes:
-            price_unit = self.tax_ids.compute_all(
-                self.price_unit,
-                currency=invoice.currency_id,
-                product=self.product_id,
-                partner=invoice.partner_id,
-                rounding_method='round_globally',
-            )
+            price_unit = self.tax_ids.with_context(round=False).compute_all(
+                self.price_unit, invoice.currency_id, 1.0, self.product_id, invoice.partner_id)
             price_unit = price_unit['total_excluded']
             price_subtotal = self.price_subtotal
         else:
@@ -70,7 +65,7 @@ class AccountMoveLine(models.Model):
             second_currency_field = 'price_subtotal'
             second_currency = self.currency_id
             main_currency_rate = 1
-            second_currency_rate = 1 / self.move_id.invoice_currency_rate if self.move_id.invoice_currency_rate else 1
+            second_currency_rate = abs(self.move_id.amount_total_signed) / self.move_id.amount_total if self.move_id.amount_total else 1
             inverse_rate = second_currency_rate if domestic_invoice_other_currency else main_currency_rate
         else:
             # This is to manage case 5 (export docs)
@@ -78,7 +73,7 @@ class AccountMoveLine(models.Model):
             second_currency = self.move_id.company_id.currency_id
             main_currency_field = 'price_subtotal'
             second_currency_field = 'balance'
-            inverse_rate = 1 / self.move_id.invoice_currency_rate if self.move_id.invoice_currency_rate else 1
+            inverse_rate = abs(self.move_id.amount_total_signed) / self.move_id.amount_total if self.move_id.amount_total else 1
         price_subtotal = abs(self[main_currency_field]) * line_sign
         if self.quantity and self.discount != 100.0:
             price_unit = (price_subtotal / abs(self.quantity)) / (1 - self.discount / 100)

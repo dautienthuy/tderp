@@ -6,19 +6,10 @@
     'version': '1.0',
     'summary': "Monitor purchase in project",
     'category': 'Services/Project',
-    'depends': ['purchase', 'project_account'],
+    'depends': ['purchase', 'project'],
     'demo': [
         'data/project_purchase_demo.xml',
     ],
-    'data': [
-        'views/project_project.xml',
-        'views/purchase_order.xml',
-    ],
-    'assets': {
-        'web.assets_backend': [
-            'project_purchase/static/src/product_catalog/kanban_record.js',
-        ],
-    },
     'auto_install': True,
     'license': 'LGPL-3',
 }

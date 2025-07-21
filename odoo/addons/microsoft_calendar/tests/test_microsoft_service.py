@@ -28,10 +28,7 @@ class TestMicrosoftService(TransactionCase):
         self.fake_next_sync_token_url = f"https://graph.microsoft.com/v1.0/me/calendarView/delta?$deltatoken={self.fake_next_sync_token}"
 
         self.header_prefer = 'outlook.body-content-type="html", odata.maxpagesize=50'
-        self.delete_header = {
-            'Authorization': 'Bearer %s' % self.fake_token,
-        }
-        self.header = {'Content-type': 'application/json', **self.delete_header}
+        self.header = {'Content-type': 'application/json', 'Authorization': 'Bearer %s' % self.fake_token}
         self.call_with_sync_token = call(
             "/v1.0/me/calendarView/delta",
             {"$deltatoken": self.fake_sync_token},
@@ -368,7 +365,7 @@ class TestMicrosoftService(TransactionCase):
         self.assertFalse(res)
         mock_do_request.assert_called_with(
             f"/v1.0/me/calendar/events/{event_id}",
-            {}, headers=self.delete_header, method="DELETE", timeout=DEFAULT_TIMEOUT
+            {}, headers={'Authorization': 'Bearer %s' % self.fake_token}, method="DELETE", timeout=DEFAULT_TIMEOUT
         )
 
     @patch.object(MicrosoftService, "_do_request")
@@ -387,7 +384,7 @@ class TestMicrosoftService(TransactionCase):
             self.assertTrue(res)
             mock_do_request.assert_called_with(
                 f"/v1.0/me/calendar/events/{event_id}",
-                {}, headers=self.delete_header, method="DELETE", timeout=DEFAULT_TIMEOUT
+                {}, headers={'Authorization': 'Bearer %s' % self.fake_token}, method="DELETE", timeout=DEFAULT_TIMEOUT
             )
 
 
@@ -401,7 +398,7 @@ class TestMicrosoftService(TransactionCase):
         self.assertTrue(res)
         mock_do_request.assert_called_with(
             f"/v1.0/me/calendar/events/{event_id}",
-            {}, headers=self.delete_header, method="DELETE", timeout=DEFAULT_TIMEOUT
+            {}, headers={'Authorization': 'Bearer %s' % self.fake_token}, method="DELETE", timeout=DEFAULT_TIMEOUT
         )
 
     def test_answer_token_error(self):

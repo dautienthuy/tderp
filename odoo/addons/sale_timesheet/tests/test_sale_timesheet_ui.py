@@ -9,7 +9,7 @@ _logger = logging.getLogger(__name__)
 
 
 @tagged('-at_install', 'post_install')
-class TestSaleTimesheetUi(HttpCase):
+class TestUi(HttpCase):
 
     @classmethod
     def setUpClass(cls):
@@ -42,5 +42,4 @@ class TestSaleTimesheetUi(HttpCase):
         admin.employee_id.hourly_cost = 75
 
     def test_ui(self):
-        self.env['product.pricelist'].with_context(active_test=False).search([]).unlink()
-        self.start_tour('/odoo', 'sale_timesheet_tour', login='admin', timeout=100)
+        self.start_tour('/web', 'sale_timesheet_tour', login='admin', timeout=100)

@@ -8,7 +8,8 @@
             <field name="inherit_id" ref="base.view_currency_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//sheet" position="before">
-                    <div class="alert alert-warning" role="alert" invisible="not display_rounding_warning">
+                    <field name="display_rounding_warning" invisible="1"/>
+                    <div class="alert alert-warning" role="alert" attrs="{'invisible': [('display_rounding_warning', '=', False)]}">
                         <strong>This currency has already been used to generate accounting entries.</strong> <br/>
                         Changing its rounding factor now will not change the rounding made on previous entries; possibly causing an inconsistency with the new ones.
                     </div>

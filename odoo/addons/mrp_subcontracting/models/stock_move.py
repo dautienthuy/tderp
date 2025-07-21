@@ -4,7 +4,7 @@
 from collections import defaultdict
 
 from odoo import fields, models, api, _
-from odoo.exceptions import AccessError
+from odoo.exceptions import UserError, AccessError
 from odoo.tools.float_utils import float_compare, float_is_zero, float_round
 from odoo.tools.misc import OrderedSet
 
@@ -23,7 +23,7 @@ class StockMove(models.Model):
             if not move.is_subcontract:
                 continue
             productions = move._get_subcontract_production()
-            if not productions or move.has_tracking == 'none':
+            if not productions or move.has_tracking != 'serial':
                 continue
             if productions._has_tracked_component() or productions[:1].consumption != 'strict':
                 move.display_assign_serial = False
@@ -34,7 +34,7 @@ class StockMove(models.Model):
         for move in self:
             if not move.is_subcontract:
                 continue
-            if not move.picked or float_is_zero(move.quantity, precision_rounding=move.product_uom.rounding):
+            if float_is_zero(move.quantity_done, precision_rounding=move.product_uom.rounding):
                 continue
             productions = move._get_subcontract_production()
             if not productions or (productions[:1].consumption == 'strict' and not productions[:1]._has_tracked_component()):
@@ -49,7 +49,7 @@ class StockMove(models.Model):
         for move in self:
             if not move.is_subcontract:
                 continue
-            if self.env.user._is_portal():
+            if self.env.user.has_group('base.group_portal'):
                 move.show_details_visible = any(not p._has_been_recorded() for p in move._get_subcontract_production())
                 continue
             productions = move._get_subcontract_production()
@@ -57,10 +57,6 @@ class StockMove(models.Model):
                 continue
             move.show_details_visible = True
         return res
-
-    def _compute_picked(self):
-        subcontracted_moves = self.filtered(lambda m: m.is_subcontract and float_compare(m.product_uom_qty, m.quantity, precision_rounding=m.product_uom.rounding) != 0)
-        super(StockMove, self - subcontracted_moves)._compute_picked()
 
     def _set_quantity_done(self, qty):
         to_set_moves = self
@@ -72,19 +68,18 @@ class StockMove(models.Model):
         if to_set_moves:
             super(StockMove, to_set_moves)._set_quantity_done(qty)
 
-    def _set_quantity(self):
+    def _quantity_done_set(self):
         to_set_moves = self
         for move in self:
             if move.is_subcontract and move._subcontracting_possible_record():
-                move_line_quantities = sum(move.move_line_ids.filtered(lambda ml: ml.picked).mapped('quantity'))
-                delta_qty = move.quantity - move_line_quantities
+                delta_qty = move.quantity_done - move._quantity_done_sml()
                 if float_compare(delta_qty, 0, precision_rounding=move.product_uom.rounding) > 0:
                     move._auto_record_components(delta_qty)
                     to_set_moves -= move
-                elif float_compare(delta_qty, 0, precision_rounding=move.product_uom.rounding) < 0:
+                elif float_compare(delta_qty, 0, precision_rounding=move.product_uom.rounding) < 0 and not move.picking_id.immediate_transfer:
                     move.with_context(transfer_qty=True)._reduce_subcontract_order_qty(abs(delta_qty))
         if to_set_moves:
-            super(StockMove, to_set_moves)._set_quantity()
+            super(StockMove, to_set_moves)._quantity_done_set()
 
     def _auto_record_components(self, qty):
         self.ensure_one()
@@ -121,14 +116,14 @@ class StockMove(models.Model):
             production._set_qty_producing()
             production.with_context(cancel_backorder=False).subcontracting_record_component()
 
-    def copy_data(self, default=None):
-        default = dict(default or {})
-        vals_list = super().copy_data(default=default)
-        for move, vals in zip(self, vals_list):
-            if 'location_id' in default or not move.is_subcontract:
-                continue
-            vals['location_id'] = move.picking_id.location_id.id
-        return vals_list
+    def copy(self, default=None):
+        self.ensure_one()
+        if not self.is_subcontract or 'location_id' in default:
+            return super(StockMove, self).copy(default=default)
+        if not default:
+            default = {}
+        default['location_id'] = self.picking_id.location_id.id
+        return super(StockMove, self).copy(default=default)
 
     def write(self, values):
         """ If the initial demand is updated then also update the linked
@@ -145,9 +140,9 @@ class StockMove(models.Model):
             for move in self:
                 if move.state in ('done', 'cancel') or not move.is_subcontract:
                     continue
-                move.move_orig_ids.production_id.with_context(from_subcontract=True).filtered(lambda p: p.state not in ('done', 'cancel')).write({
-                    'date_start': move.date,
-                    'date_finished': move.date,
+                move.move_orig_ids.production_id.filtered(lambda p: p.state not in ('done', 'cancel')).write({
+                    'date_planned_finished': move.date,
+                    'date_planned_start': move.date,
                 })
         return res
 
@@ -171,28 +166,35 @@ class StockMove(models.Model):
                 'show_lots_m2o': self.has_tracking != 'none',
                 'show_lots_text': False,
             })
-        elif self.env.user._is_portal():
-            action['views'] = [(self.env.ref('mrp_subcontracting.mrp_subcontracting_view_stock_move_operations').id, 'form')]
+        elif self.env.user.has_group('base.group_portal'):
+            if self.picking_type_id.show_reserved:
+                action['views'] = [(self.env.ref('mrp_subcontracting.mrp_subcontracting_view_stock_move_operations').id, 'form')]
+            else:
+                action['views'] = [(self.env.ref('mrp_subcontracting.mrp_subcontracting_view_stock_move_nosuggest_operations').id, 'form')]
         return action
 
     def action_show_subcontract_details(self):
         """ Display moves raw for subcontracted product self. """
         moves = self._get_subcontract_production().move_raw_ids.filtered(lambda m: m.state != 'cancel')
-        list_view = self.env.ref('mrp_subcontracting.mrp_subcontracting_move_tree_view')
+        tree_view = self.env.ref('mrp_subcontracting.mrp_subcontracting_move_tree_view')
         form_view = self.env.ref('mrp_subcontracting.mrp_subcontracting_move_form_view')
         ctx = dict(self._context, search_default_by_product=True)
-        if self.env.user._is_portal():
+        if self.env.user.has_group('base.group_portal'):
             form_view = self.env.ref('mrp_subcontracting.mrp_subcontracting_portal_move_form_view')
             ctx.update(no_breadcrumbs=False)
         return {
-            'name': _('Raw Materials for %s', self.product_id.display_name),
+            'name': _('Raw Materials for %s') % (self.product_id.display_name),
             'type': 'ir.actions.act_window',
             'res_model': 'stock.move',
-            'views': [(list_view.id, 'list'), (form_view.id, 'form')],
+            'views': [(tree_view.id, 'list'), (form_view.id, 'form')],
             'target': 'current',
             'domain': [('id', 'in', moves.ids)],
             'context': ctx
         }
+
+    def _set_quantities_to_reservation(self):
+        move_untouchable = self.filtered(lambda m: m.is_subcontract and m._get_subcontract_production()._has_tracked_component())
+        return super(StockMove, self - move_untouchable)._set_quantities_to_reservation()
 
     def _action_cancel(self):
         productions_to_cancel_ids = OrderedSet()
@@ -220,15 +222,17 @@ class StockMove(models.Model):
             bom = move._get_subcontract_bom()
             if not bom:
                 continue
-            company = move.company_id
-            subcontracting_location = \
-                move.picking_id.partner_id.with_company(company).property_stock_subcontractor \
-                or company.subcontracting_location_id
+            if float_is_zero(move.product_qty, precision_rounding=move.product_uom.rounding) and\
+                    move.picking_id.immediate_transfer is True:
+                raise UserError(_("To subcontract, use a planned transfer."))
             move.write({
                 'is_subcontract': True,
-                'location_id': subcontracting_location.id
+                'location_id': move.picking_id.partner_id.with_company(move.company_id).property_stock_subcontractor.id
             })
-            move._action_assign()  # Re-reserve as the write on location_id will break the link
+            if float_compare(move.product_qty, 0, precision_rounding=move.product_uom.rounding) <= 0:
+                # If a subcontracted amount is decreased, don't create a MO that would be for a negative value.
+                # We don't care if the MO decreases even when done since everything is handled through picking
+                continue
         res = super()._action_confirm(merge=merge, merge_into=merge_into)
         for move in res:
             if move.is_subcontract:
@@ -244,7 +248,7 @@ class StockMove(models.Model):
         self.ensure_one()
         production = self._get_subcontract_production()[-1:]
         view = self.env.ref('mrp_subcontracting.mrp_production_subcontracting_form_view')
-        if self.env.user._is_portal():
+        if self.env.user.has_group('base.group_portal'):
             view = self.env.ref('mrp_subcontracting.mrp_production_subcontracting_portal_form_view')
         context = dict(self._context)
         context.pop('skip_consumption', False)
@@ -287,16 +291,20 @@ class StockMove(models.Model):
     def _has_tracked_subcontract_components(self):
         return any(m.has_tracking != 'none' for m in self._get_subcontract_production().move_raw_ids)
 
+    def _prepare_extra_move_vals(self, qty):
+        vals = super(StockMove, self)._prepare_extra_move_vals(qty)
+        vals['location_id'] = self.location_id.id
+        return vals
+
     def _prepare_move_split_vals(self, qty):
         vals = super(StockMove, self)._prepare_move_split_vals(qty)
         vals['location_id'] = self.location_id.id
         return vals
 
-    def _prepare_procurement_values(self):
-        res = super()._prepare_procurement_values()
-        if self.raw_material_production_id.subcontractor_id:
-            res['warehouse_id'] = self.picking_type_id.warehouse_id
-        return res
+    def _should_bypass_set_qty_producing(self):
+        if (self.production_id | self.raw_material_production_id)._get_subcontract_move():
+            return False
+        return super()._should_bypass_set_qty_producing()
 
     def _should_bypass_reservation(self, forced_location=False):
         """ If the move is subcontracted then ignore the reservation. """
@@ -305,14 +313,10 @@ class StockMove(models.Model):
             return True
         return should_bypass_reservation
 
-    def _get_available_move_lines(self, assigned_moves_ids, partially_available_moves_ids):
-        return super(StockMove, self.filtered(lambda m: not m.is_subcontract))._get_available_move_lines(assigned_moves_ids, partially_available_moves_ids)
-
     def _update_subcontract_order_qty(self, new_quantity):
         for move in self:
             quantity_to_remove = move.product_uom_qty - new_quantity
-            if not float_is_zero(quantity_to_remove, precision_rounding=move.product_uom.rounding):
-                move._reduce_subcontract_order_qty(quantity_to_remove)
+            move._reduce_subcontract_order_qty(quantity_to_remove)
 
     def _reduce_subcontract_order_qty(self, quantity_to_remove):
         self.ensure_one()
@@ -342,7 +346,7 @@ class StockMove(models.Model):
                 break
 
     def _check_access_if_subcontractor(self, vals):
-        if self.env.user._is_portal() and not self.env.su:
+        if self.env.user.has_group('base.group_portal') and not self.env.su:
             if vals.get('state') == 'done':
                 raise AccessError(_("Portal users cannot create a stock move with a state 'Done' or change the current state to 'Done'."))
 

@@ -5,15 +5,14 @@
 # Translators:
 # Wil Odoo, 2024
 # Jaisal Shah <jaisal13shah@gmail.com>, 2025
-# Ujjawal Pathak, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:56+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: Ujjawal Pathak, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:57+0000\n"
+"Last-Translator: Jaisal Shah <jaisal13shah@gmail.com>, 2025\n"
 "Language-Team: Hindi (https://app.transifex.com/odoo/teams/41243/hi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -32,14 +31,19 @@ msgid "<i class=\"fa fa-shopping-cart\"/> Add to Cart"
 msgstr ""
 
 #. module: website_sale_slides
-#. odoo-python
-#: code:addons/website_sale_slides/models/product_product.py:0
-msgid "Access to: %(new_line)s%(channel_list)s"
+#: model:ir.model.fields,help:website_sale_slides.field_product_product__detailed_type
+#: model:ir.model.fields,help:website_sale_slides.field_product_template__detailed_type
+msgid ""
+"A storable product is a product for which you manage stock. The Inventory app has to be installed.\n"
+"A consumable product is a product for which stock is not managed.\n"
+"A service is a non-material product you provide."
 msgstr ""
 
 #. module: website_sale_slides
-#: model:product.template,name:website_sale_slides.product_course_channel_5_product_template
-msgid "Basics of Furniture Creation"
+#. odoo-python
+#: code:addons/website_sale_slides/models/product_product.py:0
+#, python-format
+msgid "Access to:%s%s"
 msgstr ""
 
 #. module: website_sale_slides
@@ -50,12 +54,14 @@ msgstr ""
 #. module: website_sale_slides
 #. odoo-javascript
 #: code:addons/website_sale_slides/static/src/xml/website_sale_slides_quiz.xml:0
+#, python-format
 msgid "Buy the course to validate your answers!"
 msgstr ""
 
 #. module: website_sale_slides
 #. odoo-javascript
 #: code:addons/website_sale_slides/static/src/xml/slide_course_join.xml:0
+#, python-format
 msgid "Buy this Course"
 msgstr ""
 
@@ -66,11 +72,11 @@ msgstr ""
 
 #. module: website_sale_slides
 #: model:ir.model,name:website_sale_slides.model_slide_channel
+#: model:ir.model.fields.selection,name:website_sale_slides.selection__product_template__detailed_type__course
 msgid "Course"
 msgstr ""
 
 #. module: website_sale_slides
-#: model:ir.model.fields.selection,name:website_sale_slides.selection__product_template__service_tracking__course
 #: model:product.template,name:website_sale_slides.default_product_course_product_template
 msgid "Course Access"
 msgstr ""
@@ -91,15 +97,9 @@ msgid "Courses"
 msgstr ""
 
 #. module: website_sale_slides
-#: model:ir.model.fields,field_description:website_sale_slides.field_product_product__service_tracking
-#: model:ir.model.fields,field_description:website_sale_slides.field_product_template__service_tracking
-msgid "Create on Order"
-msgstr ""
-
-#. module: website_sale_slides
 #: model:ir.model.fields,field_description:website_sale_slides.field_slide_channel__currency_id
 msgid "Currency"
-msgstr "करेंसी"
+msgstr ""
 
 #. module: website_sale_slides
 #: model:product.template,name:website_sale_slides.product_course_channel_6_product_template
@@ -123,12 +123,6 @@ msgid "Free Preview"
 msgstr ""
 
 #. module: website_sale_slides
-#. odoo-python
-#: code:addons/website_sale_slides/models/product_template.py:0
-msgid "Grant access to the eLearning course linked to this product."
-msgstr ""
-
-#. module: website_sale_slides
 #: model_terms:ir.ui.view,arch_db:website_sale_slides.course_buy_course_link
 msgid "Join this Course"
 msgstr ""
@@ -136,14 +130,10 @@ msgstr ""
 #. module: website_sale_slides
 #. odoo-javascript
 #: code:addons/website_sale_slides/static/src/xml/website_slides_unsubscribe.xml:0
+#, python-format
 msgid ""
 "Leaving the course and re-enrolling afterwards means that you'll be charged "
 "again."
-msgstr ""
-
-#. module: website_sale_slides
-#: model_terms:ir.ui.view,arch_db:website_sale_slides.course_buy_course_button
-msgid "Log in"
 msgstr ""
 
 #. module: website_sale_slides
@@ -162,20 +152,21 @@ msgid "Once your order is paid &amp; confirmed, you will gain access to:"
 msgstr ""
 
 #. module: website_sale_slides
-#: model_terms:ir.ui.view,arch_db:website_sale_slides.course_buy_course_button
-msgid "Prerequisite:"
-msgstr ""
-
-#. module: website_sale_slides
 #: model_terms:ir.ui.view,arch_db:website_sale_slides.course_slides_list_slide
 msgid "Preview"
-msgstr "प्रीव्यू"
+msgstr ""
 
 #. module: website_sale_slides
 #: model:ir.model,name:website_sale_slides.model_product_template
 #: model:ir.model.fields,field_description:website_sale_slides.field_slide_channel__product_id
 msgid "Product"
 msgstr "उत्पाद"
+
+#. module: website_sale_slides
+#: model:ir.model.fields,field_description:website_sale_slides.field_product_product__detailed_type
+#: model:ir.model.fields,field_description:website_sale_slides.field_product_template__detailed_type
+msgid "Product Type"
+msgstr ""
 
 #. module: website_sale_slides
 #: model:ir.model,name:website_sale_slides.model_product_product
@@ -196,28 +187,25 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:website_sale_slides.slide_channel_view_form
 #: model_terms:ir.ui.view,arch_db:website_sale_slides.slide_channel_view_kanban
 msgid "Sales"
-msgstr "सेल्स"
+msgstr ""
 
 #. module: website_sale_slides
 #: model:ir.model,name:website_sale_slides.model_sale_order
 msgid "Sales Order"
-msgstr "सेल्स ऑर्डर"
+msgstr ""
 
 #. module: website_sale_slides
 #. odoo-javascript
 #: code:addons/website_sale_slides/static/src/xml/slide_course_join.xml:0
+#, python-format
 msgid "Sign in"
 msgstr ""
 
 #. module: website_sale_slides
 #. odoo-javascript
 #: code:addons/website_sale_slides/static/src/xml/website_sale_slides_quiz.xml:0
+#, python-format
 msgid "Sign in and buy the course to take the quiz"
-msgstr ""
-
-#. module: website_sale_slides
-#: model_terms:ir.ui.view,arch_db:website_sale_slides.course_buy_course_button
-msgid "Sign up"
 msgstr ""
 
 #. module: website_sale_slides
@@ -231,11 +219,6 @@ msgid "Taking care of Trees Course"
 msgstr ""
 
 #. module: website_sale_slides
-#: model_terms:ir.ui.view,arch_db:website_sale_slides.course_buy_course_button
-msgid "There are some"
-msgstr "कुछ"
-
-#. module: website_sale_slides
 #: model_terms:ir.ui.view,arch_db:website_sale_slides.course_main
 msgid "This course cannot be bought because its linked product"
 msgstr ""
@@ -243,6 +226,7 @@ msgstr ""
 #. module: website_sale_slides
 #. odoo-javascript
 #: code:addons/website_sale_slides/static/src/xml/website_slides_unsubscribe.xml:0
+#, python-format
 msgid "This course is paid."
 msgstr ""
 
@@ -257,16 +241,14 @@ msgid "Total revenues"
 msgstr ""
 
 #. module: website_sale_slides
-#. odoo-python
-#: code:addons/website_sale_slides/models/slide_channel.py:0
-msgid ""
-"You are not allowed to add members to this course. Please contact the course"
-" responsible or an administrator."
+#: model:ir.model,name:website_sale_slides.model_website
+msgid "Website"
 msgstr ""
 
 #. module: website_sale_slides
 #. odoo-python
 #: code:addons/website_sale_slides/models/sale_order.py:0
+#, python-format
 msgid "You can only add a course once in your cart."
 msgstr ""
 
@@ -288,11 +270,6 @@ msgstr ""
 #. module: website_sale_slides
 #: model_terms:ir.ui.view,arch_db:website_sale_slides.course_main
 msgid "is not published."
-msgstr ""
-
-#. module: website_sale_slides
-#: model_terms:ir.ui.view,arch_db:website_sale_slides.course_buy_course_button
-msgid "prerequisite courses."
 msgstr ""
 
 #. module: website_sale_slides

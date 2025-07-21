@@ -119,7 +119,7 @@ class OAuthLogin(Home):
 
 class OAuthController(http.Controller):
 
-    @http.route('/auth_oauth/signin', type='http', auth='none', readonly=False)
+    @http.route('/auth_oauth/signin', type='http', auth='none')
     @fragment_to_query_string
     def signin(self, **kw):
         state = json.loads(kw['state'])
@@ -142,17 +142,16 @@ class OAuthController(http.Controller):
             action = state.get('a')
             menu = state.get('m')
             redirect = werkzeug.urls.url_unquote_plus(state['r']) if state.get('r') else False
-            url = '/odoo'
+            url = '/web'
             if redirect:
                 url = redirect
             elif action:
-                url = '/odoo/action-%s' % action
+                url = '/web#action=%s' % action
             elif menu:
-                url = '/odoo?menu_id=%s' % menu
+                url = '/web#menu_id=%s' % menu
 
-            credential = {'login': login, 'token': key, 'type': 'oauth_token'}
-            auth_info = request.session.authenticate(dbname, credential)
-            resp = request.redirect(_get_login_redirect_url(auth_info['uid'], url), 303)
+            pre_uid = request.session.authenticate(dbname, login, key)
+            resp = request.redirect(_get_login_redirect_url(pre_uid, url), 303)
             resp.autocorrect_location_header = False
 
             # Since /web is hardcoded, verify user has right to land on it
@@ -176,7 +175,7 @@ class OAuthController(http.Controller):
         redirect.autocorrect_location_header = False
         return redirect
 
-    @http.route('/auth_oauth/oea', type='http', auth='none', readonly=False)
+    @http.route('/auth_oauth/oea', type='http', auth='none')
     def oea(self, **kw):
         """login user via Odoo Account provider"""
         dbname = kw.pop('db', None)

@@ -22,7 +22,6 @@ class StockPicking(models.Model):
             'move_type': 'direct',
             'location_id': location_id,
             'location_dest_id': location_dest_id,
-            'state': 'draft',
         }
 
 
@@ -31,7 +30,7 @@ class StockPicking(models.Model):
         """We'll create some picking based on order_lines"""
 
         pickings = self.env['stock.picking']
-        stockable_lines = lines.filtered(lambda l: l.product_id.type == 'consu' and not float_is_zero(l.qty, precision_rounding=l.product_id.uom_id.rounding))
+        stockable_lines = lines.filtered(lambda l: l.product_id.type in ['product', 'consu'] and not float_is_zero(l.qty, precision_rounding=l.product_id.uom_id.rounding))
         if not stockable_lines:
             return pickings
         positive_lines = stockable_lines.filtered(lambda l: l.qty > 0)
@@ -81,10 +80,10 @@ class StockPicking(models.Model):
             'picking_type_id': self.picking_type_id.id,
             'product_id': first_line.product_id.id,
             'product_uom_qty': abs(sum(order_lines.mapped('qty'))),
+            'state': 'draft',
             'location_id': self.location_id.id,
             'location_dest_id': self.location_dest_id.id,
             'company_id': self.company_id.id,
-            'never_product_template_attribute_value_ids': first_line.attribute_value_ids.filtered(lambda a: a.attribute_id.create_variant == 'no_variant'),
         }
 
     def _create_move_from_pos_order_lines(self, lines):
@@ -97,21 +96,20 @@ class StockPicking(models.Model):
         moves = self.env['stock.move'].create(move_vals)
         confirmed_moves = moves._action_confirm()
         confirmed_moves._add_mls_related_to_order(lines, are_qties_done=True)
-        confirmed_moves.picked = True
         self._link_owner_on_return_picking(lines)
 
     def _link_owner_on_return_picking(self, lines):
         """This method tries to retrieve the owner of the returned product"""
-        if lines and lines[0].order_id.refunded_order_id.picking_ids:
-            returned_lines_picking = lines[0].order_id.refunded_order_id.picking_ids
+        if lines[0].order_id.refunded_order_ids.picking_ids:
+            returned_lines_picking = lines[0].order_id.refunded_order_ids.picking_ids
             returnable_qty_by_product = {}
             for move_line in returned_lines_picking.move_line_ids:
-                returnable_qty_by_product[(move_line.product_id.id, move_line.owner_id.id or 0)] = move_line.quantity
+                returnable_qty_by_product[(move_line.product_id.id, move_line.owner_id.id or 0)] = move_line.qty_done
             for move in self.move_line_ids:
                 for keys in returnable_qty_by_product:
                     if move.product_id.id == keys[0] and keys[1] and returnable_qty_by_product[keys] > 0:
                         move.write({'owner_id': keys[1]})
-                        returnable_qty_by_product[keys] -= move.quantity
+                        returnable_qty_by_product[keys] -= move.qty_done
 
 
     def _send_confirmation_email(self):
@@ -124,23 +122,20 @@ class StockPicking(models.Model):
         for rec in self:
             if rec.picking_type_id.code != 'outgoing':
                 continue
-            if rec.pos_order_id.shipping_date and not rec.pos_order_id.to_invoice:
+            if rec.pos_order_id.to_ship and not rec.pos_order_id.to_invoice:
                 cost_per_account = defaultdict(lambda: 0.0)
-                for line in rec.move_line_ids:
-                    if not line.product_id.is_storable or line.product_id.valuation != 'real_time':
+                for line in rec.pos_order_id.lines:
+                    if line.product_id.type != 'product' or line.product_id.valuation != 'real_time':
                         continue
                     out = line.product_id.categ_id.property_stock_account_output_categ_id
                     exp = line.product_id._get_product_accounts()['expense']
-                    line_cost = next(iter(line.move_id._get_price_unit().values())) * line.quantity_product_uom
-                    if line_cost != 0:
-                        cost_per_account[out, exp] += line_cost
+                    cost_per_account[(out, exp)] += line.total_cost
                 move_vals = []
                 for (out_acc, exp_acc), cost in cost_per_account.items():
                     move_vals.append({
                         'journal_id': rec.pos_order_id.sale_journal.id,
                         'date': rec.pos_order_id.date_order,
                         'ref': 'pos_order_'+str(rec.pos_order_id.id),
-                        'partner_id': rec.pos_order_id.partner_id.id,
                         'line_ids': [
                             (0, 0, {
                                 'name': rec.pos_order_id.name,
@@ -161,8 +156,7 @@ class StockPicking(models.Model):
         return res
 
 class StockPickingType(models.Model):
-    _name = 'stock.picking.type'
-    _inherit = ['stock.picking.type', 'pos.load.mixin']
+    _inherit = 'stock.picking.type'
 
     @api.depends('warehouse_id')
     def _compute_hide_reservation_method(self):
@@ -178,15 +172,7 @@ class StockPickingType(models.Model):
                 continue
             pos_config = self.env['pos.config'].sudo().search([('picking_type_id', '=', picking_type.id)], limit=1)
             if pos_config:
-                raise ValidationError(_("You cannot archive '%(picking_type)s' as it is used by POS configuration '%(config)s'.", picking_type=picking_type.name, config=pos_config.name))
-
-    @api.model
-    def _load_pos_data_domain(self, data):
-        return [('id', '=', data['pos.config']['data'][0]['picking_type_id'])]
-
-    @api.model
-    def _load_pos_data_fields(self, config_id):
-        return ['id', 'use_create_lots', 'use_existing_lots']
+                raise ValidationError(_("You cannot archive '%s' as it is used by a POS configuration '%s'.", picking_type.name, pos_config.name))
 
 class ProcurementGroup(models.Model):
     _inherit = 'procurement.group'
@@ -213,6 +199,22 @@ class StockMove(models.Model):
             lines_data[product_id].update({'order_lines': self.env['pos.order.line'].concat(*olines)})
         return lines_data
 
+    def _complete_done_qties(self, set_quantity_done_on_move=False):
+        self._action_assign()
+        for move_line in self.move_line_ids:
+            move_line.qty_done = move_line.reserved_uom_qty
+        mls_vals = []
+        moves_to_set = set()
+        for move in self:
+            if float_compare(move.product_uom_qty, move.quantity_done, precision_rounding=move.product_uom.rounding) > 0:
+                remaining_qty = move.product_uom_qty - move.quantity_done
+                mls_vals.append(dict(move._prepare_move_line_vals(), qty_done=remaining_qty))
+                moves_to_set.add(move.id)
+        self.env['stock.move.line'].create(mls_vals)
+        if set_quantity_done_on_move:
+            for move in self.env['stock.move'].browse(moves_to_set):
+                move.quantity_done = move.product_uom_qty
+
     def _create_production_lots_for_pos_order(self, lines):
         ''' Search for existing lots and create missing ones.
 
@@ -230,7 +232,7 @@ class StockMove(models.Model):
             lots = lines.pack_lot_ids.filtered(lambda l: l.lot_name and l.product_id.id in moves_product_ids)
             lots_data = set(lots.mapped(lambda l: (l.product_id.id, l.lot_name)))
             existing_lots = self.env['stock.lot'].search([
-                '|', ('company_id', '=', False), ('company_id', '=', moves[0].picking_type_id.company_id.id),
+                ('company_id', '=', moves[0].picking_type_id.company_id.id),
                 ('product_id', 'in', lines.product_id.ids),
                 ('name', 'in', lots.mapped('lot_name')),
             ])
@@ -250,52 +252,25 @@ class StockMove(models.Model):
 
     def _add_mls_related_to_order(self, related_order_lines, are_qties_done=True):
         lines_data = self._prepare_lines_data_dict(related_order_lines)
+        qty_fname = 'qty_done' if are_qties_done else 'reserved_uom_qty'
         # Moves with product_id not in related_order_lines. This can happend e.g. when product_id has a phantom-type bom.
         moves_to_assign = self.filtered(lambda m: m.product_id.id not in lines_data or m.product_id.tracking == 'none'
                                                   or (not m.picking_type_id.use_existing_lots and not m.picking_type_id.use_create_lots))
-
-        # Check for any conversion issues in the moves before setting quantities
-        uoms_with_issues = set()
-        for move in moves_to_assign.filtered(lambda m: m.product_uom_qty and m.product_uom != m.product_id.uom_id):
-            converted_qty = move.product_uom._compute_quantity(
-                move.product_uom_qty,
-                move.product_id.uom_id,
-                rounding_method='HALF-UP'
-            )
-            if not converted_qty:
-                uoms_with_issues.add(
-                    (move.product_uom.name, move.product_id.uom_id.name)
-                )
-
-        if uoms_with_issues:
-            error_message_lines = [
-                _("Conversion Error: The following unit of measure conversions result in a zero quantity due to rounding:")
-            ]
-            for uom_from, uom_to in uoms_with_issues:
-                error_message_lines.append(_(' - From "%(uom_from)s" to "%(uom_to)s"', uom_from=uom_from, uom_to=uom_to))
-
-            error_message_lines.append(
-                _("\nThis issue occurs because the quantity becomes zero after rounding during the conversion. "
-                "To fix this, adjust the conversion factors or rounding method to ensure that even the smallest quantity in the original unit "
-                "does not round down to zero in the target unit.")
-            )
-
-            raise UserError('\n'.join(error_message_lines))
-
-        for move in moves_to_assign:
-            move.quantity = move.product_uom_qty
+        moves_to_assign._complete_done_qties(set_quantity_done_on_move=True)
         moves_remaining = self - moves_to_assign
         existing_lots = moves_remaining._create_production_lots_for_pos_order(related_order_lines)
         move_lines_to_create = []
         mls_qties = []
         if are_qties_done:
             for move in moves_remaining:
-                move.move_line_ids.quantity = 0
                 for line in lines_data[move.product_id.id]['order_lines']:
                     sum_of_lots = 0
                     for lot in line.pack_lot_ids.filtered(lambda l: l.lot_name):
-                        qty = 1 if line.product_id.tracking == 'serial' else abs(line.qty)
-                        ml_vals = dict(move._prepare_move_line_vals(qty))
+                        if line.product_id.tracking == 'serial':
+                            qty = 1
+                        else:
+                            qty = abs(line.qty)
+                        ml_vals = dict(move._prepare_move_line_vals())
                         if existing_lots:
                             existing_lot = existing_lots.filtered_domain([('product_id', '=', line.product_id.id), ('name', '=', lot.lot_name)])
                             quant = self.env['stock.quant']
@@ -305,21 +280,28 @@ class StockMove(models.Model):
                                     order='id desc',
                                     limit=1
                                 )
-                                if quant:
-                                    ml_vals.update({
-                                        'quant_id': quant.id,
-                                    })
-                                else:
-                                    ml_vals.update({
-                                        'lot_name': existing_lot.name,
-                                        'lot_id': existing_lot.id,
-                                    })
+                            ml_vals.update({
+                                'lot_id': existing_lot.id,
+                                'location_id': quant.location_id.id or move.location_id.id,
+                                'owner_id': quant.owner_id.id or False,
+                            })
                         else:
                             ml_vals.update({'lot_name': lot.lot_name})
                         move_lines_to_create.append(ml_vals)
                         mls_qties.append(qty)
                         sum_of_lots += qty
-            self.env['stock.move.line'].create(move_lines_to_create)
+                    if abs(line.qty) != sum_of_lots:
+                        difference_qty = abs(line.qty) - sum_of_lots
+                        ml_vals = move._prepare_move_line_vals()
+                        if line.product_id.tracking == 'serial':
+                            move_lines_to_create.extend([ml_vals for i in range(int(difference_qty))])
+                            mls_qties.extend([1]*int(difference_qty))
+                        else:
+                            move_lines_to_create.append(ml_vals)
+                            mls_qties.append(difference_qty)
+            move_lines = self.env['stock.move.line'].create(move_lines_to_create)
+            for move_line, qty in zip(move_lines, mls_qties):
+                move_line.write({qty_fname: qty})
         else:
             for move in moves_remaining:
                 for line in lines_data[move.product_id.id]['order_lines']:
@@ -331,5 +313,7 @@ class StockMove(models.Model):
                         if existing_lots:
                             existing_lot = existing_lots.filtered_domain([('product_id', '=', line.product_id.id), ('name', '=', lot.lot_name)])
                             if existing_lot:
-                                move._update_reserved_quantity(qty, move.location_id, lot_id=existing_lot)
-                                continue
+                                available_quantity = move._get_available_quantity(move.location_id, lot_id=existing_lot, strict=True)
+                                if not float_is_zero(available_quantity, precision_rounding=line.product_id.uom_id.rounding):
+                                    move._update_reserved_quantity(qty, min(qty, available_quantity), move.location_id, existing_lot)
+                                    continue

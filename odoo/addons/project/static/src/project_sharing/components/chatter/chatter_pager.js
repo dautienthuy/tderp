@@ -1,17 +1,8 @@
 /** @odoo-module */
 
-import { Component, useState, onWillUpdateProps } from "@odoo/owl";
+const { Component, useState, onWillUpdateProps } = owl;
 
 export class ChatterPager extends Component {
-    static template = "project.ChatterPager";
-    static props = {
-        pagerScope: Number,
-        pagerStep: Number,
-        page: Number,
-        messageCount: Number,
-        changePage: Function,
-    };
-
     setup() {
         this.state = useState({
             disabledButtons: false,
@@ -61,3 +52,13 @@ export class ChatterPager extends Component {
         this.state.disabledButtons = false;
     }
 }
+
+ChatterPager.props = {
+    pagerScope: Number,
+    pagerStep: Number,
+    page: Number,
+    messageCount: Number,
+    changePage: Function,
+};
+
+ChatterPager.template = 'project.ChatterPager';

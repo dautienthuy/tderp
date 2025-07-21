@@ -1,22 +1,22 @@
 /** @odoo-module **/
 
-import { registry } from "@web/core/registry";
-import { clickOnEditAndWaitEditModeInTranslatedPage } from "@website/js/tours/tour_utils";
+import tour from "web_tour.tour";
+import wTourUtils from "website.tour_utils";
 
-registry.category("web_tour.tours").add('edit_translated_page_redirect', {
+tour.register('edit_translated_page_redirect', {
+    test: true,
     url: '/nl/contactus',
-    steps: () => [
+}, [
     {
         content: "Enter backend",
         trigger: 'a.o_frontend_to_backend_edit_btn',
-        run: "click",
-        expectUnloadPage: true,
     },
     {
         content: "Check the data-for attribute",
-        trigger: ':iframe main:has([data-for="contactus_form"])',
+        trigger: 'iframe main:has([data-for="contactus_form"])',
+        run: () => {}, // it's a check
     },
-    ...clickOnEditAndWaitEditModeInTranslatedPage(),
+    ...wTourUtils.clickOnEditAndWaitEditMode(),
     {
         content: "Go to /nl",
         trigger: "body",
@@ -26,13 +26,10 @@ registry.category("web_tour.tours").add('edit_translated_page_redirect', {
             // case (there is no trailing slash), so we test it separately.
             location.href = '/nl';
         },
-        expectUnloadPage: true,
     },
     {
         content: "Enter backend",
         trigger: 'a.o_frontend_to_backend_edit_btn',
-        run: "click",
-        expectUnloadPage: true,
     },
-    ...clickOnEditAndWaitEditModeInTranslatedPage(),
-]});
+    ...wTourUtils.clickOnEditAndWaitEditMode(),
+]);

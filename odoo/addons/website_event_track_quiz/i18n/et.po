@@ -3,22 +3,25 @@
 # 	* website_event_track_quiz
 # 
 # Translators:
-# Stevin Lilla, 2024
-# Siim Raasuke, 2024
-# Tairi Tiimann, 2024
-# Triine Aavik <triine@avalah.ee>, 2024
-# Martin Trigaux, 2024
-# Eneli Õigus <enelioigus@gmail.com>, 2024
-# JanaAvalah, 2024
-# Anna, 2024
+# Piia Paurson <piia@avalah.ee>, 2022
+# Andre Roomet <andreroomet@gmail.com>, 2022
+# Triine Aavik <triine@avalah.ee>, 2022
+# Rivo Zängov <eraser@eraser.ee>, 2022
+# Egon Raamat <egon@avalah.ee>, 2022
+# Arma Gedonsky <armagedonsky@hot.ee>, 2022
+# Martin Trigaux, 2022
+# Leaanika Randmets, 2022
+# Anna, 2023
+# JanaAvalah, 2023
+# Eneli Õigus <enelioigus@gmail.com>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:57+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: Anna, 2024\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:56+0000\n"
+"Last-Translator: Eneli Õigus <enelioigus@gmail.com>, 2023\n"
 "Language-Team: Estonian (https://app.transifex.com/odoo/teams/41243/et/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -54,7 +57,8 @@ msgstr "Lisa viktoriin"
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/js/event_quiz.js:0
-msgid "All questions must be answered!"
+#, python-format
+msgid "All questions must be answered !"
 msgstr "Kõikidele küsimustele tuleb vastata!"
 
 #. module: website_event_track_quiz
@@ -71,12 +75,15 @@ msgstr "Vastus"
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "Check answers"
 msgstr "Kontrolli vastuseid"
 
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "Check your answers"
 msgstr "Kontrolli oma vastuseid"
 
@@ -93,6 +100,7 @@ msgstr "Betoonplokkidest sein"
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "Congratulations, you scored a total of"
 msgstr "Palju õnne, teie skoor kokku on"
 
@@ -114,6 +122,7 @@ msgstr "Õige vastus"
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "Correct."
 msgstr "Õige."
 
@@ -129,14 +138,14 @@ msgstr "Loonud"
 #: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz_answer__create_date
 #: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz_question__create_date
 msgid "Created on"
-msgstr "Loodud"
+msgstr "Loomise kuupäev"
 
 #. module: website_event_track_quiz
 #: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz__display_name
 #: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz_answer__display_name
 #: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz_question__display_name
 msgid "Display Name"
-msgstr "Kuvatav nimi"
+msgstr "Näidatav nimi"
 
 #. module: website_event_track_quiz
 #: model:event.quiz.answer,comment:website_event_track_quiz.event_7_track_1_question_0_1
@@ -204,7 +213,7 @@ msgstr "Mine viktoriini vahelehele"
 #: model_terms:ir.ui.view,arch_db:website_event_track_quiz.event_quiz_question_view_search
 #: model_terms:ir.ui.view,arch_db:website_event_track_quiz.event_quiz_view_search
 msgid "Group By"
-msgstr "Rühmitamine"
+msgstr "Grupeeri"
 
 #. module: website_event_track_quiz
 #: model:event.quiz.answer,text_value:website_event_track_quiz.event_7_track_5_question_1_0
@@ -235,6 +244,7 @@ msgstr ""
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "Incorrect."
 msgstr "Väär."
 
@@ -244,11 +254,18 @@ msgid "Is Quiz Done"
 msgstr "On viktoriin tehtud"
 
 #. module: website_event_track_quiz
+#: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz____last_update
+#: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz_answer____last_update
+#: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz_question____last_update
+msgid "Last Modified on"
+msgstr "Viimati muudetud"
+
+#. module: website_event_track_quiz
 #: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz__write_uid
 #: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz_answer__write_uid
 #: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz_question__write_uid
 msgid "Last Updated by"
-msgstr "Viimati uuendatud"
+msgstr "Viimati uuendas"
 
 #. module: website_event_track_quiz
 #: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz__write_date
@@ -315,6 +332,7 @@ msgstr "Punktide arv"
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "Oopsie, you did not score any point on this quiz."
 msgstr "Oi, Ta ei saanud sellel viktoriinil ühtegi punkti."
 
@@ -331,6 +349,7 @@ msgstr "OpenWood is not an Open Source congres about Apps."
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "Point"
 msgstr "Punkt"
 
@@ -338,8 +357,9 @@ msgstr "Punkt"
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
 #: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz_answer__awarded_points
+#, python-format
 msgid "Points"
-msgstr "Punkti"
+msgstr "Punktid"
 
 #. module: website_event_track_quiz
 #: model:event.quiz,name:website_event_track_quiz.event_7_track_13_quiz
@@ -355,6 +375,7 @@ msgstr "Küsimus"
 #. module: website_event_track_quiz
 #. odoo-python
 #: code:addons/website_event_track_quiz/models/event_quiz.py:0
+#, python-format
 msgid ""
 "Question \"%s\" must have 1 correct answer and at least 1 incorrect answer "
 "to be valid."
@@ -363,6 +384,7 @@ msgstr "Küsimusel \"%s\" peab olema 1 õige vastus ja vähemalt 1 vale vastus."
 #. module: website_event_track_quiz
 #. odoo-python
 #: code:addons/website_event_track_quiz/models/event_quiz.py:0
+#, python-format
 msgid "Question \"%s\" must have 1 correct answer to be valid."
 msgstr "Küsimusel \"%s\" peab olema 1 õige vastus, et see oleks kehtiv."
 
@@ -407,6 +429,7 @@ msgstr "Viktoriini küsimused"
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/js/event_quiz.js:0
+#, python-format
 msgid "Quiz validation error"
 msgstr "Viktoriini kinnitamise viga"
 
@@ -421,6 +444,7 @@ msgstr "Küsimustikud"
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "Reset"
 msgstr "Lähtesta"
 
@@ -453,7 +477,7 @@ msgstr "Saematerjali kindlustamine transpordi ajal"
 #: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz_answer__sequence
 #: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz_question__sequence
 msgid "Sequence"
-msgstr "Jada"
+msgstr "Järjestus"
 
 #. module: website_event_track_quiz
 #: model:event.quiz.answer,text_value:website_event_track_quiz.event_7_track_13_question_0_1
@@ -462,8 +486,8 @@ msgstr "Terasest sein"
 
 #. module: website_event_track_quiz
 #: model:event.quiz.answer,text_value:website_event_track_quiz.event_7_track_1_question_1_1
-msgid "Stores!"
-msgstr "Kauplused!"
+msgid "Stores !"
+msgstr "Kauplused !"
 
 #. module: website_event_track_quiz
 #: model_terms:ir.ui.view,arch_db:website_event_track_quiz.event_track_content
@@ -473,6 +497,7 @@ msgstr "Osale viktoriinil"
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "The correct answer was:"
 msgstr "Õige vastus oli:"
 
@@ -484,6 +509,7 @@ msgstr "Pingerida pole hetkel saadaval"
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/js/event_quiz.js:0
+#, python-format
 msgid "There was an error validating this quiz."
 msgstr "Viktoriini kinnitamisel ilmnes viga."
 
@@ -499,6 +525,7 @@ msgstr ""
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/js/event_quiz.js:0
+#, python-format
 msgid "This quiz is already done. Retaking it is not possible."
 msgstr "Viktoriin on juba tehtud. Uuesti teha ei ole võimalik. "
 
@@ -524,8 +551,8 @@ msgstr "Saematerjali transportimine kauplustest koju on ohutu."
 
 #. module: website_event_track_quiz
 #: model:event.quiz.answer,text_value:website_event_track_quiz.event_7_track_1_question_1_0
-msgid "Trees!"
-msgstr "Puud!"
+msgid "Trees !"
+msgstr "Puud !"
 
 #. module: website_event_track_quiz
 #: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz__repeatable
@@ -549,23 +576,23 @@ msgstr "Mida see sündmus endast kujutab"
 
 #. module: website_event_track_quiz
 #: model:event.quiz.question,name:website_event_track_quiz.event_7_track_5_question_1
-msgid "What kind of tool are needed to secure your lumber?"
+msgid "What kind of tool are needed to secure your lumber ?"
 msgstr "Mida on saematerjali kinnitamiseks vaja?"
 
 #. module: website_event_track_quiz
 #: model:event.quiz.question,name:website_event_track_quiz.event_7_track_13_question_0
-msgid "What kind of wall is transformed here?"
+msgid "What kind of wall is transformed here ?"
 msgstr "Millist seina siin muudetakse?"
 
 #. module: website_event_track_quiz
 #: model:event.quiz.question,name:website_event_track_quiz.event_7_track_1_question_0
-msgid "What will we talk about during this event?"
-msgstr "Millest me selle sündmuse ajal räägime?"
+msgid "What will we talk about during this event ?"
+msgstr "Millest me selle ürituse ajal räägime?"
 
 #. module: website_event_track_quiz
 #: model:event.quiz.question,name:website_event_track_quiz.event_7_track_1_question_1
-msgid "Where does lumber comes from?"
-msgstr "Kust pärineb puit?"
+msgid "Where does lumber comes from ?"
+msgstr "Kust on saematerjal pärit?"
 
 #. module: website_event_track_quiz
 #: model:event.quiz.answer,text_value:website_event_track_quiz.event_7_track_1_question_0_0
@@ -585,8 +612,8 @@ msgstr "Teie"
 
 #. module: website_event_track_quiz
 #: model:event.quiz.answer,comment:website_event_track_quiz.event_7_track_1_question_0_0
-msgid "You're really smart!"
-msgstr "Sa oled tõesti nutikas!"
+msgid "You're really smart !"
+msgstr "Sa oled tõesti tark!"
 
 #. module: website_event_track_quiz
 #: model_terms:ir.ui.view,arch_db:website_event_track_quiz.event_quiz_view_form
@@ -601,11 +628,13 @@ msgstr "nt. Mis on Joe lemmik moto?"
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "point!"
 msgstr "punkt!"
 
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "points!"
 msgstr "punkte!"

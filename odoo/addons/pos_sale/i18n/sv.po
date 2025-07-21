@@ -3,21 +3,22 @@
 # 	* pos_sale
 # 
 # Translators:
-# Martin Trigaux, 2024
-# Lasse L, 2024
-# Simon S, 2024
-# Robin Calvin, 2024
-# Chrille Hedberg <hedberg.chrille@gmail.com>, 2024
+# Martin Wilderoth <martin.wilderoth@linserv.se>, 2022
+# Zou Haojun <haojunzou84@gmail.com>, 2022
+# Simon S, 2022
+# Chrille Hedberg <hedberg.chrille@gmail.com>, 2022
+# Kim Asplund <kim.asplund@gmail.com>, 2022
+# Martin Trigaux, 2022
+# Levi Siuzdak (sile), 2023
 # Anders Wallenquist <anders.wallenquist@vertel.se>, 2024
-# Kim Asplund <kim.asplund@gmail.com>, 2024
 # Jakob Krabbe <jakob.krabbe@vertel.se>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 08:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2022-09-22 05:54+0000\n"
 "Last-Translator: Jakob Krabbe <jakob.krabbe@vertel.se>, 2024\n"
 "Language-Team: Swedish (https://app.transifex.com/odoo/teams/41243/sv/)\n"
 "MIME-Version: 1.0\n"
@@ -28,9 +29,27 @@ msgstr ""
 
 #. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/components/orderline/orderline.xml:0
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderRow.xml:0
+#, python-format
+msgid "(left:"
+msgstr "(återstående:"
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/xml/ProductScreen/Orderline.xml:0
+#, python-format
 msgid "(tax incl.)"
 msgstr "(skatt inkl.)"
+
+#. module: pos_sale
+#: model_terms:ir.ui.view,arch_db:pos_sale.res_config_settings_view_form
+msgid "<span class=\"o_form_label\">Down Payment Product</span>"
+msgstr "<span class=\"o_form_label\">Förskottsbetalningsproduktt</span>"
+
+#. module: pos_sale
+#: model_terms:ir.ui.view,arch_db:pos_sale.res_config_settings_view_form
+msgid "<span class=\"o_form_label\">Sales Team</span>"
+msgstr "<span class=\"o_form_label\">Försäljningsteam </span>"
 
 #. module: pos_sale
 #: model_terms:ir.ui.view,arch_db:pos_sale.report_invoice_document
@@ -39,33 +58,45 @@ msgstr "<span style=\"margin: 0px 5px;\">:</span>"
 
 #. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/models/pos_store.js:0
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
 msgid "A new order has been created."
 msgstr "En ny order har skapats."
 
 #. module: pos_sale
-#: model:ir.model.fields,field_description:pos_sale.field_sale_order__amount_unpaid
-msgid "Amount To Pay In POS"
-msgstr "Belopp att betala i POS"
-
-#. module: pos_sale
-#: model:ir.model.fields,help:pos_sale.field_sale_order__amount_unpaid
-msgid "Amount left to pay in POS to avoid double payment or double invoicing."
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
+msgid "Apply a down payment"
 msgstr ""
-"Belopp kvar att betala i POS för att undvika dubbelbetalning eller "
-"dubbelfakturering."
 
 #. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/models/pos_store.js:0
-msgid "Apply a down payment (fixed amount)"
-msgstr "Lägg till en handpenning (fast belopp)"
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderManagementControlPanel.xml:0
+#, python-format
+msgid "Back"
+msgstr "Tillbaka"
 
 #. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/models/pos_store.js:0
-msgid "Apply a down payment (percentage)"
-msgstr "Lägga en handpenning (procent)"
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/MobileSaleOrderManagementScreen.xml:0
+#, python-format
+msgid "Back to list"
+msgstr "Tillbaka till listan"
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderRow.js:0
+#, python-format
+msgid "Cancelled"
+msgstr "Annullerad"
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/SetSaleOrderButton.js:0
+#, python-format
+msgid "Cannot access order management screen if offline."
+msgstr "Kan inte komma åt skärmen för orderhantering om den är offline."
 
 #. module: pos_sale
 #: model:ir.model,name:pos_sale.model_res_config_settings
@@ -78,26 +109,39 @@ msgid "Currency Rate"
 msgstr "Valutakurs"
 
 #. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderList.xml:0
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderRow.xml:0
+#, python-format
+msgid "Customer"
+msgstr "Kund"
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
+msgid "Customer loading error"
+msgstr "Fel vid laddning av kund"
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderList.xml:0
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderRow.xml:0
+#, python-format
+msgid "Date"
+msgstr "Datum"
+
+#. module: pos_sale
 #: model_terms:ir.ui.view,arch_db:pos_sale.message_body
 msgid "Delivered from"
 msgstr "Levereras från"
 
 #. module: pos_sale
-#: model:ir.model.fields,field_description:pos_sale.field_pos_order_line__qty_delivered
-msgid "Delivery Quantity"
-msgstr "Leveranskvantitet"
-
-#. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/models/pos_store.js:0
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
 msgid "Do you want to load the SN/Lots linked to the Sales Order?"
 msgstr "Vill du ladda SN/Parti som är länkat till ordern?"
-
-#. module: pos_sale
-#. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/models/pos_store.js:0
-msgid "Down Payment"
-msgstr "Delbetalning"
 
 #. module: pos_sale
 #: model:product.template,name:pos_sale.default_downpayment_product_product_template
@@ -112,34 +156,28 @@ msgstr "Förskottsbetalnings Detaljer"
 #. module: pos_sale
 #: model:ir.model.fields,field_description:pos_sale.field_pos_config__down_payment_product_id
 #: model:ir.model.fields,field_description:pos_sale.field_res_config_settings__pos_down_payment_product_id
-#: model_terms:ir.ui.view,arch_db:pos_sale.res_config_settings_view_form
 msgid "Down Payment Product"
 msgstr "Handpenning produkt"
 
 #. module: pos_sale
-#. odoo-python
-#: code:addons/pos_sale/models/pos_order.py:0
-msgid ""
-"Down payment (ref: %(order_reference)s on \n"
-" %(date)s)"
-msgstr ""
-"Handpenning (ref: %(order_reference)s på \n"
-" %(date)s)"
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderManagementControlPanel.xml:0
+#, python-format
+msgid "E.g. customer: Steward, date: 2020-05-09"
+msgstr "T.ex. kund: Steward, datum: 2020-05-09"
 
 #. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/models/pos_store.js:0
-msgid "Due balance: %s"
-msgstr "Förfallet saldo: %s"
-
-#. module: pos_sale
-#. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/models/pos_store.js:0
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
 msgid "Error amount too high"
 msgstr "Felbeloppet är för högt"
 
 #. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/xml/ReceiptScreen/OrderReceipt.xml:0
 #: model_terms:ir.ui.view,arch_db:pos_sale.report_invoice_document
+#, python-format
 msgid "From"
 msgstr "Från"
 
@@ -150,18 +188,17 @@ msgstr "Fakturerad"
 
 #. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/models/pos_store.js:0
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
 msgid ""
-"It seems that you didn't configure a down payment product in your point of "
-"sale. You can go to your point of sale configuration to choose one."
+"It seems that you didn't configure a down payment product in your point of sale.\n"
+"                        You can go to your point of sale configuration to choose one."
 msgstr ""
-"Det verkar som om du inte har konfigurerat en handpenningsprodukt i ditt "
-"försäljningsställe. Du kan gå till din konfiguration av försäljningsstället "
-"för att välja en."
 
 #. module: pos_sale
 #. odoo-python
 #: code:addons/pos_sale/models/sale_order.py:0
+#, python-format
 msgid "Linked POS Orders"
 msgstr "Länkad Kassa Order"
 
@@ -173,12 +210,50 @@ msgstr "Länkad Sälj Order"
 #. module: pos_sale
 #. odoo-python
 #: code:addons/pos_sale/models/pos_order.py:0
+#, python-format
 msgid "Linked Sale Orders"
 msgstr "Länkade släjordrar"
 
 #. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/models/pos_store.js:0
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderRow.js:0
+#, python-format
+msgid "Locked"
+msgstr "Låst"
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderFetcher.js:0
+#: code:addons/pos_sale/static/src/js/SetSaleOrderButton.js:0
+#, python-format
+msgid "Network Error"
+msgstr "Nätverksfel"
+
+#. module: pos_sale
+#: model:ir.model.fields.selection,name:pos_sale.selection__sale_report__state__pos_draft
+msgid "New"
+msgstr "Ny"
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderManagementControlPanel.xml:0
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderManagementControlPanel.xml:0
+#, python-format
+msgid "Next Order List"
+msgstr "Nästa orderlista"
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
+msgid "No"
+msgstr "Nej"
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
 msgid "No down payment product"
 msgstr "Produkt utan handpenning"
 
@@ -194,12 +269,9 @@ msgstr "Öppna sessioner"
 
 #. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/components/product_info_popup/product_info_popup.xml:0
-msgid "Optional Products:"
-msgstr "Valfria produkter:"
-
-#. module: pos_sale
-#: model:ir.model.fields,field_description:pos_sale.field_sale_report__order_reference
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderList.xml:0
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderRow.xml:0
+#, python-format
 msgid "Order"
 msgstr "Order"
 
@@ -210,14 +282,16 @@ msgid "Order lines Transfered to Point of Sale"
 msgstr "Orderlinjer Flyttade till Kassan"
 
 #. module: pos_sale
-#: model:ir.model.fields.selection,name:pos_sale.selection__sale_report__order_reference__pos_order
-msgid "POS Order"
-msgstr "POS Order"
-
-#. module: pos_sale
 #: model:ir.model.fields.selection,name:pos_sale.selection__sale_report__state__paid
 msgid "Paid"
 msgstr "Betalad"
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
+msgid "Percentage of %s"
+msgstr "Procent av %s"
 
 #. module: pos_sale
 #: model:ir.model,name:pos_sale.model_pos_config
@@ -250,30 +324,58 @@ msgid "Pos Order Count"
 msgstr "Kassa Order Antal"
 
 #. module: pos_sale
-#: model:ir.model.fields.selection,name:pos_sale.selection__sale_report__state__done
+#: model:ir.model.fields.selection,name:pos_sale.selection__sale_report__state__pos_done
 msgid "Posted"
-msgstr "Bokförd"
-
-#. module: pos_sale
-#: model:ir.model,name:pos_sale.model_product_product
-msgid "Product Variant"
-msgstr "Produktvariant"
+msgstr "Publicerad"
 
 #. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/components/control_buttons/control_buttons.xml:0
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderManagementControlPanel.xml:0
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderManagementControlPanel.xml:0
+#, python-format
+msgid "Previous Order List"
+msgstr "Föregående orderlista"
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
+msgid "Products not available in POS"
+msgstr "Produkten är inte tillgänglig i kassan"
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderRow.js:0
+#, python-format
+msgid "Quotation"
+msgstr "Offert"
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderRow.js:0
+#, python-format
+msgid "Quotation Sent"
+msgstr "Offert skickad"
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/xml/SetSaleOrderButton.xml:0
+#, python-format
 msgid "Quotation/Order"
 msgstr "Offert/Order"
 
 #. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/models/pos_store.js:0
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
 msgid "SN/Lots Loading"
 msgstr "SN/Parti Laddar"
 
 #. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/components/orderline/orderline.xml:0
+#: code:addons/pos_sale/static/src/xml/ProductScreen/Orderline.xml:0
+#: code:addons/pos_sale/static/src/xml/ProductScreen/Orderline.xml:0
+#, python-format
 msgid "SO"
 msgstr "SO"
 
@@ -293,23 +395,25 @@ msgid "Sales Analysis Report"
 msgstr "Rapport försäljningsanalys"
 
 #. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderRow.js:0
 #: model:ir.model,name:pos_sale.model_sale_order
+#, python-format
 msgid "Sales Order"
-msgstr "Försäljningsorder"
+msgstr "Order"
 
 #. module: pos_sale
 #: model:ir.model,name:pos_sale.model_sale_order_line
 msgid "Sales Order Line"
-msgstr "Försäljningsorderrad"
+msgstr "Orderrad"
 
 #. module: pos_sale
 #: model:ir.model,name:pos_sale.model_crm_team
 #: model:ir.model.fields,field_description:pos_sale.field_pos_config__crm_team_id
 #: model:ir.model.fields,field_description:pos_sale.field_pos_order__crm_team_id
 #: model:ir.model.fields,field_description:pos_sale.field_pos_session__crm_team_id
-#: model_terms:ir.ui.view,arch_db:pos_sale.res_config_settings_view_form
 msgid "Sales Team"
-msgstr "Säljlag"
+msgstr "Säljteam"
 
 #. module: pos_sale
 #: model:ir.model.fields,field_description:pos_sale.field_res_config_settings__pos_crm_team_id
@@ -320,6 +424,20 @@ msgstr "Försäljningsteam (PoS)"
 #: model_terms:ir.ui.view,arch_db:pos_sale.res_config_settings_view_form
 msgid "Sales are reported to the following sales team"
 msgstr "Försäljning rapporteras till följande säljteam"
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderRow.xml:0
+#, python-format
+msgid "Salesman"
+msgstr "Säljare"
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderList.xml:0
+#, python-format
+msgid "Salesperson"
+msgstr "Säljare"
 
 #. module: pos_sale
 #: model_terms:ir.ui.view,arch_db:pos_sale.crm_team_view_kanban_dashboard
@@ -338,15 +456,29 @@ msgstr "Pågående sessioner"
 
 #. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/components/control_buttons/control_buttons.xml:0
+#: code:addons/pos_sale/static/src/xml/SetSaleOrderButton.xml:0
+#: code:addons/pos_sale/static/src/xml/SetSaleOrderButton.xml:0
+#, python-format
 msgid "Set Sale Order"
 msgstr "Sätt Sälj Order"
 
 #. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/models/pos_store.js:0
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
 msgid "Settle the order"
 msgstr "Avveckla ordern"
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
+msgid ""
+"Some of the products in your Sale Order are not available in POS, do you "
+"want to import them?"
+msgstr ""
+"Några produkter i din försäljningsorder är inte tillgängliga i kassan, vill "
+"du importera dem?"
 
 #. module: pos_sale
 #: model:ir.model.fields,field_description:pos_sale.field_pos_order_line__sale_order_line_id
@@ -354,9 +486,22 @@ msgid "Source Sale Order Line"
 msgstr "Källa försäljningsorderrad"
 
 #. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderList.xml:0
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderRow.xml:0
+#, python-format
+msgid "State"
+msgstr "Status"
+
+#. module: pos_sale
 #: model:ir.model.fields,field_description:pos_sale.field_sale_report__state
 msgid "Status"
 msgstr "Status"
+
+#. module: pos_sale
+#: model:ir.model.fields,help:pos_sale.field_sale_order__amount_unpaid
+msgid "The amount due from the sale order."
+msgstr "Det belopp som ska betalas från försäljningsordern."
 
 #. module: pos_sale
 #: model:ir.model.fields,help:pos_sale.field_pos_order__currency_rate
@@ -366,11 +511,18 @@ msgid ""
 msgstr "Valutakurser beräknas till datum för order"
 
 #. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
+msgid "There was a problem in loading the %s customer."
+msgstr "Det uppstod ett problem vid inläsningen av %s-kunden."
+
+#. module: pos_sale
 #: model:ir.model.fields,help:pos_sale.field_pos_config__crm_team_id
 #: model:ir.model.fields,help:pos_sale.field_pos_session__crm_team_id
 #: model:ir.model.fields,help:pos_sale.field_res_config_settings__pos_crm_team_id
 msgid "This Point of sale's sales will be related to this Sales Team."
-msgstr "Kassans försäljning relateras till detta försäljningsteam."
+msgstr "Kassans försäljning relateras till detta försäljningsteam"
 
 #. module: pos_sale
 #: model_terms:ir.ui.view,arch_db:pos_sale.res_config_settings_view_form
@@ -385,46 +537,70 @@ msgstr ""
 "Denna produkt kommer att användas som handpenning på en försäljningsorder."
 
 #. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderList.xml:0
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderRow.xml:0
+#, python-format
+msgid "Total"
+msgstr "Totalt"
+
+#. module: pos_sale
 #: model:ir.model,name:pos_sale.model_stock_picking
 msgid "Transfer"
-msgstr "Överföring"
+msgstr "Flytt"
 
 #. module: pos_sale
 #: model_terms:ir.ui.view,arch_db:pos_sale.view_pos_order_form_inherit_pos_sale
 msgid ""
-"Transferred<br/>\n"
+"Transfered<br/>\n"
 "                                from Sale"
 msgstr ""
-"Överförd<br/>\n"
-"                                från Sale"
+"Flyttad<br/>\n"
+"                                från Sälj"
 
 #. module: pos_sale
 #: model_terms:ir.ui.view,arch_db:pos_sale.view_order_form_inherit_pos_sale
 msgid ""
-"Transferred<br/>\n"
+"Transfered<br/>\n"
 "                                to POS"
 msgstr ""
-"Överförd <br/>\n"
-"                                till POS"
+"Flyttad<br/>\n"
+"                                till Kassan"
 
 #. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/models/pos_store.js:0
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderFetcher.js:0
+#, python-format
+msgid "Unable to fetch orders if offline."
+msgstr "Kan inte hämta order om inte ansluten."
+
+#. module: pos_sale
+#: model:ir.model.fields,field_description:pos_sale.field_sale_order__amount_unpaid
+msgid "Unpaid Amount"
+msgstr "Obetalt belopp"
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
 msgid "What do you want to do?"
 msgstr "Vad vill du göra?"
 
 #. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/models/pos_store.js:0
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
+msgid "Yes"
+msgstr "Ja"
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
 msgid ""
 "You have tried to charge a down payment of %s but only %s remains to be "
 "paid, %s will be applied to the purchase order line."
 msgstr ""
 "Du har försökt att debitera en handpenning på %s men endast %s återstår att "
 "betala, %s kommer att tillämpas på inköpsorderraden."
-
-#. module: pos_sale
-#. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/components/product_info_popup/product_info_popup.xml:0
-msgid "from"
-msgstr "från"

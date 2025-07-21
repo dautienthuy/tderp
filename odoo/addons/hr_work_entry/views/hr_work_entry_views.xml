@@ -7,17 +7,13 @@
         <field name="name">Work Entry</field>
         <field name="res_model">hr.work.entry</field>
         <field name="context">{'search_default_work_entries_error': 1}</field>
-        <field name="view_mode">list,calendar,form,pivot</field>
+        <field name="view_mode">tree,calendar,form,pivot</field>
     </record>
 
     <record id="hr_work_entry_action" model="ir.actions.act_window">
         <field name="name">Work Entry</field>
         <field name="res_model">hr.work.entry</field>
-        <field name="path">work-entries</field>
-        <field name="view_mode">calendar,list,form,pivot</field>
-        <field name="context">{
-            'search_default_work_entries_error': True
-        }</field>
+        <field name="view_mode">calendar,tree,form,pivot</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_empty_folder">
                 No data to display
@@ -36,11 +32,11 @@
                 date_start="date_start"
                 date_stop="date_stop"
                 mode="month"
-                quick_create="0"
+                quick_add="False"
                 color="color"
                 event_limit="5">
                 <!-- Sidebar favorites filters -->
-                <field name="employee_id" write_model="hr.user.work.entry.employee" write_field="employee_id" avatar_field="avatar_128" widget="many2one_avatar_user"/>
+                <field name="employee_id" write_model="hr.user.work.entry.employee" write_field="employee_id" avatar_field="avatar_128"/>
                 <field name="state"/>
             </calendar>
         </field>
@@ -54,26 +50,26 @@
                 <header>
                     <field name="state" widget="statusbar" readonly="1" statusbar_visible="draft,validated,conflict"/>
                 </header>
-                <div class="alert alert-warning text-center" role="alert" invisible="state != 'validated'">
+                <div class="alert alert-warning text-center" role="alert" attrs="{'invisible': [('state', '!=', 'validated')]}">
                     Note: Validated work entries cannot be modified.
                 </div>
                 <sheet>
                     <group>
                         <group>
-                            <field name="name" string="Description" placeholder="Work Entry Name" readonly="state == 'validated'"/>
-                            <field name="employee_id" readonly="state != 'draft'" widget="many2one_avatar_user"/>
-                            <field name="work_entry_type_id" readonly="state == 'validated'" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="name" string="Description" placeholder="Work Entry Name" attrs="{'readonly': [('state', '=', 'validated')]}"/>
+                            <field name="employee_id" attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            <field name="work_entry_type_id" attrs="{'readonly': [('state', '=', 'validated')]}" options="{'no_create': True, 'no_open': True}"/>
                         </group>
                         <group>
-                            <field name="date_start" readonly="state != 'draft'" />
-                            <field name="date_stop" required="1" readonly="state != 'draft'"/>
+                            <field name="date_start" attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            <field name="date_stop" attrs="{'readonly': [('state', '!=', 'draft')]}" required="1"/>
                             <label for="duration"/>
                             <div class="o_row mw-50 mw-sm-25">
                                 <field name="duration"
                                     nolabel="1"
                                     widget="float_time"
                                     class="o_hr_narrow_field"
-                                    readonly="state != 'draft'" />
+                                    attrs="{'readonly': [('state', '!=', 'draft')]}" />
                                 <span>Hours</span>
                             </div>
                             <field name="company_id" invisible="1"/>
@@ -85,19 +81,17 @@
     </record>
 
     <record id="hr_work_entry_view_tree" model="ir.ui.view">
-        <field name="name">hr.work.entry.list</field>
+        <field name="name">hr.work.entry.tree</field>
         <field name="model">hr.work.entry</field>
         <field name="arch" type="xml">
-            <list multi_edit="1" sample="1">
+            <tree multi_edit="1" sample="1">
                 <field name="name"/>
                 <field name="work_entry_type_id" options="{'no_create': True, 'no_open': True}"/>
-                <field name="code" optional="hidden"/>
-                <field name="external_code" optional="hidden"/>
                 <field name="duration" widget="float_time" readonly="1"/>
                 <field name="state"/>
                 <field name="date_start" string="Beginning" readonly="1"/>
                 <field name="date_stop" string="End" readonly="1"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -106,9 +100,7 @@
         <field name="model">hr.work.entry</field>
         <field name="arch" type="xml">
             <pivot string="Work Entries" sample="1">
-                <field name="duration" widget="float_time" type="measure"/>
-                <field name="employee_id" type="row"/>
-                <field name="work_entry_type_id" type="col"/>
+                <field name="duration" widget="float_time" readonly="1"/>
             </pivot>
         </field>
     </record>
@@ -122,8 +114,6 @@
                 <field name="department_id"/>
                 <field name="work_entry_type_id"/>
                 <field name="name"/>
-                <filter name="work_entries_draft" string="Draft" domain="[('state', '=', 'draft')]"/>
-                <filter name="work_entries_validated" string="Validated" domain="[('state', '=', 'validated')]"/>
                 <filter name="work_entries_error" string="Conflicting" domain="[('state', '=', 'conflict')]"/>
                 <separator/>
                 <filter name="date_filter" string="Date" date="date_start"/>
@@ -158,7 +148,7 @@
     <record id="hr_work_entry_type_action" model="ir.actions.act_window">
         <field name="name">Work Entry Types</field>
         <field name="res_model">hr.work.entry.type</field>
-        <field name="view_mode">list,kanban,form</field>
+        <field name="view_mode">tree,kanban,form</field>
         <field name="search_view_id" ref="hr_work_entry_type_view_search"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
@@ -168,14 +158,14 @@
     </record>
 
     <record id="hr_work_entry_type_view_tree" model="ir.ui.view">
-        <field name="name">hr.work.entry.type.list</field>
+        <field name="name">hr.work.entry.type.tree</field>
         <field name="model">hr.work.entry.type</field>
         <field name="arch" type="xml">
-            <list>
+            <tree>
                 <field name="name"/>
                 <field name="code"/>
                 <field name="color" widget="color_picker"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -185,7 +175,7 @@
         <field name="arch" type="xml">
             <form string="Work Entry Type" >
                 <sheet>
-                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                     <div class="oe_title">
                         <h1>
                             <field name="name" placeholder="Work Entry Type Name"/>
@@ -195,12 +185,8 @@
                         <group name="identification" class="o_form_fw_labels">
                             <field name="active" invisible="1"/>
                             <field name="code"/>
-                            <field name="external_code"/>
-                            <field name="sequence" groups="base.group_no_one"/>
+                            <field name="sequence"/>
                             <field name="color" widget="color_picker"/>
-                        </group>
-                        <group>
-                            <field name="country_id" options="{'no_create': True, 'no_open': True}"/>
                         </group>
                     </group>
                     <group name="other">
@@ -215,14 +201,28 @@
         <field name="name">hr.work.entry.type.kanban.view</field>
         <field name="model">hr.work.entry.type</field>
         <field name="arch" type="xml">
-            <kanban highlight_color="color">
+            <kanban>
+                <field name="color"/>
                 <templates>
-                    <t t-name="menu" t-if="!selection_mode">
-                        <field name="color" widget="kanban_color_picker"/>
-                    </t>
-                    <t t-name="card" t-attf-class="#{!selection_mode ? record.color.raw_value : ''}">
-                        <field class="fw-bold fs-5" name="name"/>
-                        <field class="text-muted" name="code"/>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="#{!selection_mode ? kanban_color(record.color.raw_value) : ''} oe_kanban_global_click">
+                            <div class="o_dropdown_kanban dropdown" t-if="!selection_mode">
+                                <a class="dropdown-toggle o-no-caret btn" role="button" data-bs-toggle="dropdown" href="#" aria-label="Dropdown menu" title="Dropdown menu">
+                                    <span class="fa fa-ellipsis-v"/>
+                                </a>
+                                <div class="dropdown-menu" role="menu">
+                                    <ul class="oe_kanban_colorpicker" data-field="color"/>
+                                </div>
+                            </div>
+                            <div class="oe_kanban_content">
+                                <div>
+                                    <strong class="o_kanban_record_title"><span><field name="name"/></span></strong>
+                                </div>
+                                <div>
+                                    <span class="text-muted o_kanban_record_subtitle"><field name="code"/></span>
+                                </div>
+                            </div>
+                        </div>
                     </t>
                 </templates>
             </kanban>

@@ -1,148 +1,102 @@
+/** @odoo-module **/
+
 import {CheckBox} from '@web/core/checkbox/checkbox';
-import { _t } from "@web/core/l10n/translation";
+import { _lt } from "@web/core/l10n/translation";
 import {useService, useAutofocus} from "@web/core/utils/hooks";
 import {sprintf} from "@web/core/utils/strings";
+import {useWowlService} from '@web/legacy/utils';
 import {WebsiteDialog} from './dialog';
-import { standardFieldProps } from "@web/views/fields/standard_field_props";
 import {FormViewDialog} from "@web/views/view_dialogs/form_view_dialog";
-import { formView } from '@web/views/form/form_view';
-import { renderToFragment } from "@web/core/utils/render";
-import { Component, onWillDestroy, useEffect, useRef, useState, xml } from "@odoo/owl";
-import { FormController } from '@web/views/form/form_controller';
-import { registry } from "@web/core/registry";
+import { qweb } from 'web.core';
+
+const { Component, useEffect, useState, xml, useRef } = owl;
 
 export class PageDependencies extends Component {
-    static template = "website.PageDependencies";
-    static popoverTemplate = xml`
-        <div class="popover o_page_dependencies" role="tooltip">
-            <div class="arrow"/>
-            <h3 class="popover-header"/>
-            <div class="popover-body"/>
-        </div>
-    `;
-    static props = {
-        resIds: Array,
-        resModel: String,
-        mode: String,
-    };
-
     setup() {
         super.setup();
-        this.orm = useService('orm');
+        try {
+            this.orm = useService('orm');
+        } catch {
+            // We are in a legacy environment.
+            // TODO check with framework team to know if this is really needed.
+            this.orm = useWowlService('orm');
+        }
 
         this.action = useRef('action');
         this.sprintf = sprintf;
 
         useEffect(
             () => {
-                this.fetchDependencies();
+                this.onWillStart();
             },
             () => []
         );
         this.state = useState({
             dependencies: {},
-        });
-
-        onWillDestroy(async () => {
-            await this.destroyDependenciesPopover();
+            depText: "...",
         });
     }
 
-    async getResIds() {
-        return this.props.resIds;
+    async onWillStart() {
+        // TODO Remove in master: call fetchDependencies in useEffect.
+        return this.fetchDependencies();
+    }
+
+    // TODO Remove in master: use state from template.
+    get dependencies() {
+        return this.state.dependencies;
+    }
+
+    // TODO Remove in master: use state from template.
+    get depText() {
+        return this.state.depText;
     }
 
     async fetchDependencies() {
         this.state.dependencies = await this.orm.call(
             'website',
             'search_url_dependencies',
-            [this.props.resModel, await this.getResIds()],
+            [this.props.resModel, this.props.resIds],
         );
+        if (this.props.mode === 'popover') {
+            this.state.depText = Object.entries(this.state.dependencies)
+                .map(dependency => `${dependency[1].length} ${dependency[0].toLowerCase()}`)
+                .join(', ');
+        }
     }
 
     showDependencies() {
-        const popover = window.Popover.getOrCreateInstance(this.action.el, {
-            title: _t("Dependencies"),
+        $(this.action.el).popover({
+            title: this.env._t("Dependencies"),
             boundary: 'viewport',
             placement: 'right',
             trigger: 'focus',
-            content: () => {
-                return renderToFragment("website.PageDependencies.Tooltip", {
-                    dependencies: this.state.dependencies,
-                });
-            },
-        });
-        popover.toggle();
-    }
-
-    async destroyDependenciesPopover() {
-        const actionEl = this.action.el;
-        const popover = window.Popover.getInstance(actionEl);
-        if (popover) {
-            // If popover is hiding (animation), wait for the animation to
-            // complete.
-            if (!popover.tip.classList.contains("show")) {
-                await new Promise((resolve) => {
-                    const handler = () => {
-                        actionEl.removeEventListener("hidden.bs.popover", handler);
-                        resolve();
-                    };
-                    actionEl.addEventListener("hidden.bs.popover", handler);
-                });
-            }
-            popover.dispose();
-        }
+            content: qweb.render("website.PageDependencies.Tooltip", {
+                dependencies: this.state.dependencies,
+            }),
+        }).popover('toggle');
     }
 }
-
-export class FormPageDependencies extends PageDependencies {
-    static props = {
-        ...standardFieldProps,
-        ...PageDependencies.props,
-        resIds: { type: Array, optional: true },
-    };
-
-    async getResIds() {
-        const records = await this.orm.read(
-            this.props.record.resModel,
-            [this.props.record.resId],
-            ["target_model_id"],
-        );
-        return records.map((record) => record.target_model_id[0]);
-    }
-}
-
-export const formPageDependenciesWidget = {
-    component: FormPageDependencies,
-    extractProps: ({ attrs }) => {
-        const { mode, name, resModel, resIds } = attrs;
-        return {
-            mode,
-            name: name || "",
-            resModel,
-            resIds,
-        };
-    },
+PageDependencies.popoverTemplate = xml`
+    <div class="popover o_page_dependencies" role="tooltip">
+        <div class="arrow"/>
+        <h3 class="popover-header"/>
+        <div class="popover-body"/>
+    </div>
+`;
+PageDependencies.template = 'website.PageDependencies';
+PageDependencies.props = {
+    resIds: Array,
+    resModel: String,
+    mode: String,
 };
-registry.category("view_widgets").add("form_page_dependencies", formPageDependenciesWidget);
 
 export class DeletePageDialog extends Component {
-    static template = "website.DeletePageDialog";
-    static components = {
-        PageDependencies,
-        CheckBox,
-        WebsiteDialog,
-    };
-    static props = {
-        resIds: Array,
-        resModel: String,
-        onDelete: { type: Function, optional: true },
-        close: Function,
-        hasNewPageTemplate: { type: Boolean, optional: true },
-    };
-
     setup() {
         this.website = useService('website');
+        this.title = this.env._t("Delete Page");
+        this.deleteButton = this.env._t("Ok");
+        this.cancelButton = this.env._t("Cancel");
 
         this.state = useState({
             confirm: false,
@@ -158,16 +112,20 @@ export class DeletePageDialog extends Component {
         this.props.onDelete();
     }
 }
+DeletePageDialog.components = {
+    PageDependencies,
+    CheckBox,
+    WebsiteDialog
+};
+DeletePageDialog.template = 'website.DeletePageDialog';
+DeletePageDialog.props = {
+    resIds: Array,
+    resModel: String,
+    onDelete: {type: Function, optional: true},
+    close: Function,
+};
 
 export class DuplicatePageDialog extends Component {
-    static components = { WebsiteDialog };
-    static template = "website.DuplicatePageDialog";
-    static props = {
-        onDuplicate: Function,
-        close: Function,
-        pageIds: { type: Array, element: Number },
-    };
-
     setup() {
         this.orm = useService('orm');
         this.website = useService('website');
@@ -179,113 +137,51 @@ export class DuplicatePageDialog extends Component {
     }
 
     async duplicate() {
-        const duplicates = [];
         if (this.state.name) {
-            for (let count = 0; count < this.props.pageIds.length; count++) {
-                const name = this.state.name + (count ? ` ${count + 1}` : "");
-                duplicates.push(await this.orm.call(
-                    'website.page',
-                    'clone_page',
-                    [this.props.pageIds[count], name]
-                ));
-            }
+            const res = await this.orm.call(
+                'website.page',
+                'clone_page',
+                [this.props.pageId, this.state.name]
+            );
+            this.website.goToWebsite({path: res, edition: true});
         }
-        this.props.onDuplicate(duplicates);
+        this.props.onDuplicate();
     }
 }
-
-export class PagePropertiesFormController extends FormController {
-    static props = {
-        ...FormController.props,
-        clonePage: { type: Function, optional: true },
-        deletePage: { type: Function, optional: true },
-    };
-}
-
-registry.category("views").add("page_properties_dialog_form", {
-    ...formView,
-    Controller: PagePropertiesFormController,
-});
+DuplicatePageDialog.components = {WebsiteDialog};
+DuplicatePageDialog.template = "website.DuplicatePageDialog";
+DuplicatePageDialog.props = {
+    onDuplicate: Function,
+    close: Function,
+    pageId: Number,
+};
 
 export class PagePropertiesDialog extends FormViewDialog {
-    static props = {
-        ...FormViewDialog.props,
-        onClose: { type: Function, optional: true },
-        resModel: { type: String, optional: true },
-    };
-
-    static defaultProps = {
-        ...FormViewDialog.defaultProps,
-        title: _t("Page Properties"),
-        size: "md",
-        onClose: () => {},
-    };
-
     setup() {
         super.setup();
         this.dialog = useService('dialog');
         this.orm = useService('orm');
         this.website = useService('website');
 
-        this.viewProps = {
-            ...this.viewProps,
-            resId: this.resId,
-            resModel: this.resModel,
-            context: Object.assign(
-                {
-                    form_view_ref: this.isPage
-                        ? "website.website_page_properties_view_form"
-                        : "website.website_page_properties_base_view_form",
-                },
-                this.viewProps.context,
-            ),
-            ...(this.isPage
-                ? {
-                      buttonTemplate: "website.PagePropertiesDialogButtons",
-                      clonePage: this.clonePage.bind(this),
-                      deletePage: this.deletePage.bind(this),
-                  }
-                : {}),
-        };
+        this.viewProps.resId = this.resId;
     }
 
     get resId() {
-        return this.props.resId;
-    }
-
-    get resModel() {
-        if (this.props.resModel) {
-            return this.props.resModel;
-        }
-        return this.isPage ? "website.page.properties" : "website.page.properties.base";
-    }
-
-    get targetId() {
-        return this.website.currentWebsite?.metadata.mainObject.id;
-    }
-
-    get targetModel() {
-        return this.website.currentWebsite?.metadata.mainObject.model;
-    }
-
-    get isPage() {
-        return this.targetModel === "website.page";
+        return this.props.resId || (this.website.currentWebsite && this.website.currentWebsite.metadata.mainObject.id);
     }
 
     clonePage() {
         this.dialog.add(DuplicatePageDialog, {
-            pageIds: [this.targetId],
-            onDuplicate: (duplicates) => {
+            pageId: this.resId,
+            onDuplicate: () => {
                 this.props.close();
                 this.props.onClose();
-                this.website.goToWebsite({ path: duplicates[0], edition: true });
             },
         });
     }
 
-    async deletePage() {
-        const pageIds = [this.targetId];
-        const newPageTemplateFields = await this.orm.read("website.page", pageIds, ["is_new_page_template"]);
+    deletePage() {
+        const pageIds = [this.resId];
         this.dialog.add(DeletePageDialog, {
             resIds: pageIds,
             resModel: 'website.page',
@@ -295,7 +191,23 @@ export class PagePropertiesDialog extends FormViewDialog {
                 this.props.close();
                 this.props.onClose();
             },
-            hasNewPageTemplate: newPageTemplateFields[0].is_new_page_template,
         });
     }
 }
+PagePropertiesDialog.template = 'website.PagePropertiesDialog';
+PagePropertiesDialog.props = {
+    ...FormViewDialog.props,
+    onClose: {type: Function, optional: true},
+    resModel: {type: String, optional: true},
+};
+
+PagePropertiesDialog.defaultProps = {
+    ...FormViewDialog.defaultProps,
+    resModel: 'website.page',
+    title: _lt("Page Properties"),
+    size: 'md',
+    context: {
+        form_view_ref: 'website.website_page_properties_view_form',
+    },
+    onClose: () => {},
+};

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 
@@ -24,21 +25,16 @@ This module contains all the common features of Sales Management and eCommerce.
         'report/ir_actions_report.xml',
         'report/sale_report_views.xml',
 
-        'data/ir_cron.xml',
         'data/ir_sequence_data.xml',
         'data/mail_activity_type_data.xml',
         'data/mail_message_subtype_data.xml',
         'data/mail_template_data.xml',
-        'data/sale_tour.xml',
-        'data/ir_config_parameter.xml', # Needs mail_template_data
+        'data/sale_data.xml',
 
         'wizard/account_accrued_orders_wizard_views.xml',
-        'wizard/mass_cancel_orders_views.xml',
         'wizard/payment_link_wizard_views.xml',
-        'wizard/res_config_settings_views.xml',
         'wizard/sale_make_invoice_advance_views.xml',
         'wizard/sale_order_cancel_views.xml',
-        'wizard/sale_order_discount_views.xml',
 
         # Define sale order views before their references
         'views/sale_order_views.xml',
@@ -46,13 +42,14 @@ This module contains all the common features of Sales Management and eCommerce.
         'views/account_views.xml',
         'views/crm_team_views.xml',
         'views/mail_activity_views.xml',
-        'views/mail_activity_plan_views.xml',
+        'views/payment_templates.xml',
         'views/payment_views.xml',
-        'views/product_document_views.xml',
         'views/product_packaging_views.xml',
-        'views/product_template_views.xml',
         'views/product_views.xml',
+        'views/res_config_settings_views.xml',
         'views/res_partner_views.xml',
+        'views/variant_templates.xml',
+        'views/sale_onboarding_views.xml',
         'views/sale_order_line_views.xml',
         'views/sale_portal_templates.xml',
         'views/utm_campaign_views.xml',
@@ -67,53 +64,30 @@ This module contains all the common features of Sales Management and eCommerce.
     'assets': {
         'web.assets_backend': [
             'sale/static/src/scss/sale_onboarding.scss',
-            'sale/static/src/js/badge_extra_price/*',
-            'sale/static/src/js/sale_action_helper/*',
-            'sale/static/src/js/combo_configurator_dialog/*',
-            'sale/static/src/js/models/*',
-            'sale/static/src/js/product/*',
-            'sale/static/src/js/product_card/*',
-            'sale/static/src/js/product_configurator_dialog/*',
-            'sale/static/src/js/product_list/*',
-            'sale/static/src/js/product_template_attribute_line/*',
-            'sale/static/src/js/quantity_buttons/*',
-            'sale/static/src/js/sale_order_line_field/*',
+            'sale/static/src/scss/product_configurator.scss',
             'sale/static/src/js/sale_progressbar_field.js',
             'sale/static/src/js/tours/sale.js',
+            'sale/static/src/js/product_discount_field.js',
             'sale/static/src/js/sale_product_field.js',
-            'sale/static/src/js/sale_product_field.scss',
-            'sale/static/src/js/sale_utils.js',
             'sale/static/src/xml/**/*',
-            'sale/static/src/views/**/*',
         ],
         'web.assets_frontend': [
             'sale/static/src/scss/sale_portal.scss',
             'sale/static/src/js/sale_portal_sidebar.js',
-            'sale/static/src/js/sale_portal_prepayment.js',
             'sale/static/src/js/sale_portal.js',
+            'sale/static/src/js/payment_form.js',
         ],
         'web.assets_tests': [
             'sale/static/tests/tours/**/*',
-            'sale/static/src/js/tours/combo_configurator_tour_utils.js',
-            'sale/static/src/js/tours/product_configurator_tour_utils.js',
-            'sale/static/src/js/tours/tour_utils.js',
-        ],
-        'web.assets_unit_tests': [
-            'sale/static/tests/mock_server/**/*',
-            'sale/static/tests/sale_test_helpers.js',
-            'sale/static/tests/**/*.test.js',
         ],
         'web.qunit_suite_tests': [
             'sale/static/tests/**/*',
-            ('remove', 'sale/static/tests/tours/**/*'),
-            ('remove', 'sale/static/tests/mock_server/**/*'),
-            ('remove', 'sale/static/tests/sale_test_helpers.js'),
-            ('remove', 'sale/static/tests/**/*.test.js'),
+            ('remove', 'sale/static/tests/tours/**/*')
         ],
         'web.report_assets_common': [
             'sale/static/src/scss/sale_report.scss',
         ],
     },
-    'post_init_hook': '_post_init_hook',
+    'post_init_hook': '_synchronize_cron',
     'license': 'LGPL-3',
 }

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import base64
@@ -10,7 +11,6 @@ import odoo.tests
 from odoo import http
 from odoo.addons.base.tests.common import HttpCaseWithUserDemo
 from odoo.addons.web_editor.controllers.main import Web_Editor
-from odoo.fields import Command
 
 
 @odoo.tests.tagged('-at_install', 'post_install')
@@ -34,7 +34,7 @@ class TestUiCustomizeTheme(odoo.tests.HttpCase):
         website_test = Website.create({'name': 'Website Test'})
 
         # simulate attachment state when editing 2 theme through customize
-        custom_url = '/_custom/web.assets_frontend/TEST/website/static/src/scss/options/colors/user_theme_color_palette.scss'
+        custom_url = '/TEST/website/static/src/scss/options/colors/user_theme_color_palette.custom.web.assets_frontend.scss'
         scss_attachment = Attachment.create({
             'name': custom_url,
             'type': 'binary',
@@ -68,23 +68,18 @@ class TestUiCustomizeTheme(odoo.tests.HttpCase):
 class TestUiHtmlEditor(HttpCaseWithUserDemo):
 
     def test_html_editor_language(self):
-        Lang = self.env['res.lang']
         Page = self.env['website.page']
 
         default_website = self.env.ref('website.default_website')
-        parseltongue = Lang.create({
+        parseltongue = self.env['res.lang'].create({
             'name': 'Parseltongue',
             'code': 'pa_GB',
             'iso_code': 'pa_GB',
             'url_code': 'pa_GB',
         })
-        Lang._activate_lang(parseltongue.code)
-        default_website.write({
-            'language_ids': [
-                Command.link(parseltongue.id),
-            ],
-            'default_lang_id': parseltongue.id,
-        })
+        self.env['res.lang']._activate_lang(parseltongue.code)
+        default_website.language_ids += parseltongue
+        default_website.default_lang_id = parseltongue.id
 
         page = Page.create({
             'name': 'Test page',
@@ -182,11 +177,6 @@ class TestUiHtmlEditor(HttpCaseWithUserDemo):
 
         self.start_tour("/", 'website_media_dialog_undraw', login='admin')
 
-    def test_code_editor_usable(self):
-        # TODO: enable debug mode when failing tests have been fixed (props validation)
-        url = '/odoo/action-website.website_preview'
-        self.start_tour(url, 'website_code_editor_usable', login='admin')
-
 
 @odoo.tests.tagged('external', '-standard', '-at_install', 'post_install')
 class TestUiHtmlEditorWithExternal(HttpCaseWithUserDemo):
@@ -231,18 +221,6 @@ class TestUiTranslate(odoo.tests.HttpCase):
         self.assertNotEqual(new_menu.name, 'value pa-GB', msg="The new menu should not have its value edited, only its translation")
         self.assertEqual(new_menu.with_context(lang=parseltongue.code).name, 'value pa-GB', msg="The new translation should be set")
 
-    def test_translate_text_options(self):
-        lang_en = self.env.ref('base.lang_en')
-        lang_fr = self.env.ref('base.lang_fr')
-        self.env['res.lang']._activate_lang(lang_fr.code)
-        default_website = self.env.ref('website.default_website')
-        default_website.write({
-            'default_lang_id': lang_en.id,
-            'language_ids': [(6, 0, (lang_en + lang_fr).ids)],
-        })
-
-        self.start_tour(self.env['website'].get_client_action_url('/'), 'translate_text_options', login='admin')
-
     def test_snippet_translation(self):
         ResLang = self.env['res.lang']
         parseltongue, fake_user_lang = ResLang.create([{
@@ -264,6 +242,11 @@ class TestUiTranslate(odoo.tests.HttpCase):
                 'Contact us': 'Contact us in Parseltongue'
             }
         })
+        self.env.ref('web_editor.snippets').update_field_translations('arch_db', {
+            fake_user_lang.code: {
+                'Save': 'Save in fu_GB',
+            }
+        })
         website = self.env['website'].create({
             'name': 'website pa_GB',
             'language_ids': [(6, 0, [parseltongue.id])],
@@ -283,7 +266,7 @@ class TestUiTranslate(odoo.tests.HttpCase):
 class TestUi(odoo.tests.HttpCase):
 
     def test_01_admin_tour_homepage(self):
-        self.start_tour("/odoo", 'homepage', login='admin')
+        self.start_tour("/web", 'homepage', login='admin')
 
     def test_02_restricted_editor(self):
         self.restricted_editor = self.env['res.users'].create({
@@ -309,9 +292,7 @@ class TestUi(odoo.tests.HttpCase):
         self.start_tour("/", 'website_navbar_menu')
 
     def test_05_specific_website_editor(self):
-        asset_bundle_xmlid = 'website.assets_wysiwyg'
         website_default = self.env['website'].search([], limit=1)
-
         new_website = self.env['website'].create({'name': 'New Website'})
 
         code = b"document.body.dataset.hello = 'world';"
@@ -320,7 +301,7 @@ class TestUi(odoo.tests.HttpCase):
             'mimetype': 'text/javascript',
             'datas': base64.b64encode(code),
         })
-        custom_url = '/_custom/web/content/%s/%s' % (attach.id, attach.name)
+        custom_url = '/web/content/%s/%s' % (attach.id, attach.name)
         attach.url = custom_url
 
         self.env['ir.asset'].create({
@@ -329,17 +310,6 @@ class TestUi(odoo.tests.HttpCase):
             'path': custom_url,
             'website_id': new_website.id,
         })
-
-        base_website_bundle = self.env['ir.qweb']._get_asset_bundle(asset_bundle_xmlid, assets_params={'website_id': website_default.id})
-        self.assertNotIn(custom_url, [f['url'] for f in base_website_bundle.files])
-        base_website_css_version = base_website_bundle.get_version('css')
-        base_website_js_version = base_website_bundle.get_version('js')
-
-        new_website_bundle_modified = self.env['ir.qweb']._get_asset_bundle('website.assets_wysiwyg', assets_params={'website_id': new_website.id})
-        self.assertIn(custom_url, [f['url'] for f in new_website_bundle_modified.files])
-        self.assertEqual(new_website_bundle_modified.get_version('css'), base_website_css_version)
-        self.assertNotEqual(new_website_bundle_modified.get_version('js'), base_website_js_version, "js version for new website should now have been changed")
-
         url_params = url_encode({'path': '/@/'})
         self.start_tour(f'/website/force/{website_default.id}?{url_params}', "generic_website_editor", login='admin')
         self.start_tour(f'/website/force/{new_website.id}?{url_params}', "specific_website_editor", login='admin')
@@ -359,7 +329,7 @@ class TestUi(odoo.tests.HttpCase):
 
     def test_07_snippet_version(self):
         website_snippets = self.env.ref('website.snippets')
-        view_ids = self.env['ir.ui.view'].create([{
+        self.env['ir.ui.view'].create([{
             'name': 'Test snip',
             'type': 'qweb',
             'key': 'website.s_test_snip',
@@ -373,57 +343,22 @@ class TestUi(odoo.tests.HttpCase):
             'inherit_id': website_snippets.id,
             'arch': """
                 <xpath expr="//t[@t-snippet='website.s_parallax']" position="after">
-                    <t t-snippet="website.s_test_snip" group="content"/>
+                    <t t-snippet="website.s_test_snip" t-thumbnail="/website/static/src/img/snippets_thumbs/s_website_form.svg"/>
                 </xpath>
             """,
         }])
-        self.start_tour(self.env['website'].get_client_action_url('/'), 'snippet_version_1', login='admin')
-
-        self.env['ir.ui.view'].create([
-            {
-                'name': 'Test snippet version 999',
-                'mode': 'extension',
-                'inherit_id': view_ids[0].id,
-                'arch': """
-                    <xpath expr="//section[hasclass('s_test_snip')]" position="attributes">
-                        <attribute name="data-vjs">999</attribute>
-                    </xpath>
-                """
-            },
-            {
-                'name': 'Share snippet version 999',
-                'mode': 'extension',
-                'inherit_id': self.env.ref("website.s_share").id,
-                'arch': """
-                    <xpath expr="//div" position="attributes">
-                        <attribute name="data-vcss">999</attribute>
-                    </xpath>
-                """
-            },
-            {
-                'name': 's_text_image version 999',
-                'mode': 'extension',
-                'inherit_id': self.env.ref("website.s_text_image").id,
-                'arch': """
-                    <xpath expr="//section[hasclass('s_text_image')]" position="attributes">
-                        <attribute name="data-vxml">999</attribute>
-                    </xpath>
-                """
-            }
-        ])
-
-        self.start_tour(self.env['website'].get_client_action_url('/'), 'snippet_version_2', login='admin')
+        self.start_tour(self.env['website'].get_client_action_url('/'), 'snippet_version', login='admin')
 
     def test_08_website_style_custo(self):
         self.start_tour(self.env['website'].get_client_action_url('/'), 'website_style_edition', login='admin')
 
     def test_09_website_edit_link_popover(self):
-        self.start_tour('/@/', 'edit_link_popover', login='admin', step_delay=500, timeout=180)
+        self.start_tour('/@/', 'edit_link_popover', login='admin')
 
     def test_10_website_conditional_visibility(self):
         self.start_tour(self.env['website'].get_client_action_url('/'), 'conditional_visibility_1', login='admin')
-        self.start_tour('/odoo', 'conditional_visibility_2', login='admin')
-        self.start_tour(self.env['website'].get_client_action_url('/'), 'conditional_visibility_3', login='admin', step_delay=500, timeout=180)
+        self.start_tour('/web', 'conditional_visibility_2', login='admin')
+        self.start_tour(self.env['website'].get_client_action_url('/'), 'conditional_visibility_3', login='admin')
         self.start_tour(self.env['website'].get_client_action_url('/'), 'conditional_visibility_4', login='admin')
         self.start_tour(self.env['website'].get_client_action_url('/'), 'conditional_visibility_5', login='admin')
 
@@ -470,7 +405,7 @@ class TestUi(odoo.tests.HttpCase):
             'arch': """
                 <data>
                     <xpath expr="//*[@id='snippet_structure']//t[@t-snippet]" position="before">
-                        <t t-snippet="website.s_focusblur" group="content"/>
+                        <t t-snippet="website.s_focusblur"/>
                     </xpath>
                 </data>
             """,
@@ -502,9 +437,6 @@ class TestUi(odoo.tests.HttpCase):
     def test_16_website_edit_megamenu(self):
         self.start_tour(self.env['website'].get_client_action_url('/'), 'edit_megamenu', login='admin')
 
-    def test_website_megamenu_active_nav_link(self):
-        self.start_tour(self.env['website'].get_client_action_url('/'), 'megamenu_active_nav_link', login='admin')
-
     def test_17_website_edit_menus(self):
         self.start_tour(self.env['website'].get_client_action_url('/'), 'edit_menus', login='admin')
 
@@ -512,16 +444,16 @@ class TestUi(odoo.tests.HttpCase):
         self.start_tour('/', 'website_snippets_menu_tabs', login='admin')
 
     def test_19_website_page_options(self):
-        self.start_tour("/odoo", "website_page_options", login="admin")
+        self.start_tour("/web", "website_page_options", login="admin")
 
     def test_20_snippet_editor_panel_options(self):
         self.start_tour('/@/', 'snippet_editor_panel_options', login='admin')
 
     def test_21_website_start_cloned_snippet(self):
-        self.start_tour('/odoo', 'website_start_cloned_snippet', login='admin')
+        self.start_tour('/web', 'website_start_cloned_snippet', login='admin')
 
     def test_22_website_gray_color_palette(self):
-        self.start_tour('/odoo', 'website_gray_color_palette', login='admin')
+        self.start_tour('/web', 'website_gray_color_palette', login='admin')
 
     def test_23_website_multi_edition(self):
         self.start_tour('/@/', 'website_multi_edition', login='admin')
@@ -536,7 +468,7 @@ class TestUi(odoo.tests.HttpCase):
         self.env['ir.ui.view'].with_context(website_id=default_website.id).save_snippet(
             name='custom_snippet_test',
             arch="""
-                <section class="s_text_block" data-snippet="s_text_block">
+                <section class="s_text_block">
                     <div class="custom_snippet_website_1">Custom Snippet Website 1</div>
                 </section>
             """,
@@ -547,23 +479,20 @@ class TestUi(odoo.tests.HttpCase):
             'websiteIdMapping': json.dumps({'Test Website': website.id})
         })
 
+    def test_25_website_edit_discard(self):
+        self.start_tour('/web', 'homepage_edit_discard', login='admin')
+
     def test_26_website_media_dialog_icons(self):
-        self.env.ref('website.default_website').write({
-            'social_twitter': 'https://twitter.com/Odoo',
-            'social_facebook': 'https://www.facebook.com/Odoo',
-            'social_linkedin': 'https://www.linkedin.com/company/odoo',
-            'social_youtube': 'https://www.youtube.com/user/OpenERPonline',
-            'social_github': 'https://github.com/odoo',
-            'social_instagram': 'https://www.instagram.com/explore/tags/odoo/',
-            'social_tiktok': 'https://www.tiktok.com/@odoo',
-        })
         self.start_tour("/", 'website_media_dialog_icons', login='admin')
 
     def test_27_website_clicks(self):
-        self.start_tour('/odoo', 'website_click_tour', login='admin')
+        self.start_tour('/web', 'website_click_tour', login='admin')
 
-    def test_29_website_text_edition(self):
+    def test_28_website_text_edition(self):
         self.start_tour('/@/', 'website_text_edition', login='admin')
+
+    def test_20_website_edit_megamenu_big_icons_subtitles(self):
+        self.start_tour(self.env['website'].get_client_action_url('/'), 'edit_megamenu_big_icons_subtitles', login='admin')
 
     def test_29_website_backend_menus_redirect(self):
         Menu = self.env['ir.ui.menu']
@@ -580,26 +509,8 @@ class TestUi(odoo.tests.HttpCase):
     def test_30_website_text_animations(self):
         self.start_tour("/", 'text_animations', login='admin')
 
-    def test_31_website_edit_megamenu_big_icons_subtitles(self):
-        self.start_tour(self.env['website'].get_client_action_url('/'), 'edit_megamenu_big_icons_subtitles', login='admin')
-
-    def test_32_website_background_colorpicker(self):
-        self.start_tour(self.env['website'].get_client_action_url("/"), "website_background_colorpicker", login="admin")
-
     def test_website_media_dialog_image_shape(self):
         self.start_tour("/", 'website_media_dialog_image_shape', login='admin')
-
-    def test_website_media_dialog_insert_media(self):
-        self.start_tour("/", "website_media_dialog_insert_media", login="admin")
-
-    def test_website_text_font_size(self):
-        self.start_tour('/@/', 'website_text_font_size', login='admin', timeout=300)
-
-    def test_update_column_count(self):
-        self.start_tour(self.env['website'].get_client_action_url('/'), 'website_update_column_count', login="admin")
-
-    def test_website_text_highlights(self):
-        self.start_tour("/", 'text_highlights', login='admin')
 
     def test_website_extra_items_no_dirty_page(self):
         """
@@ -644,9 +555,6 @@ class TestUi(odoo.tests.HttpCase):
 
         self.start_tour('/', 'website_no_dirty_page', login='admin')
 
-    def test_website_default_snippet_text(self):
-        self.start_tour('/', 'website_default_snippet_text', login='admin')
-
     def test_widget_lifecycle(self):
         self.env['ir.asset'].create({
             'name': 'wysiwyg_patch_start_and_destroy',
@@ -655,107 +563,11 @@ class TestUi(odoo.tests.HttpCase):
         })
         self.start_tour(self.env['website'].get_client_action_url('/'), 'widget_lifecycle', login='admin')
 
-    def test_drop_404_ir_attachment_url(self):
-        website_snippets = self.env.ref('website.snippets')
-        self.env['ir.ui.view'].create([{
-            'name': '404 Snippet',
-            'type': 'qweb',
-            'key': 'website.s_404_snippet',
-            'arch': """
-                <section class="s_404_snippet">
-                    <div class="container">
-                        <img class="img-responsive img-thumbnail" src="/web/image/website.404_ir_attachment"/>
-                    </div>
-                </section>
-            """,
-        }, {
-            'type': 'qweb',
-            'inherit_id': website_snippets.id,
-            'arch': """
-                <xpath expr="//t[@t-snippet='website.s_parallax']" position="after">
-                    <t t-snippet="website.s_404_snippet" group="images"/>
-                </xpath>
-            """,
-        }])
-        attachment = self.env['ir.attachment'].create({
-            'name': '404_ir_attachment',
-            'type': 'url',
-            'url': '/web/static/__some__typo__.png',
-            'mimetype': 'image/png',
-        })
-        self.env['ir.model.data'].create({
-            'name': '404_ir_attachment',
-            'module': 'website',
-            'model': 'ir.attachment',
-            'res_id': attachment.id,
-        })
-        self.start_tour(self.env['website'].get_client_action_url('/'), 'drop_404_ir_attachment_url', login='admin')
-
-    def test_mobile_order_with_drag_and_drop(self):
-        self.start_tour(self.env['website'].get_client_action_url('/'), 'website_mobile_order_with_drag_and_drop', login='admin')
-
-    def test_powerbox_snippet(self):
-        self.start_tour('/', 'website_powerbox_snippet', login='admin')
-        self.start_tour('/', 'website_powerbox_keyword', login='admin')
-
-    def test_website_no_dirty_lazy_image(self):
-        website = self.env['website'].browse(1)
-        # Enable multiple langs to reduce the chance of the test being silently
-        # broken by ensuring that it receives a lot of extra o_dirty elements.
-        # This is done to account for potential later changes in the number of
-        # o_dirty elements caused by legitimate modifications in the code.
-        # Perfs: `_activate_lang()` does not load .pot so it is perf friendly
-        lang_fr = self.env['res.lang']._activate_lang('fr_FR')
-        lang_es = self.env['res.lang']._activate_lang('es_AR')
-        lang_zh = self.env['res.lang']._activate_lang('zh_HK')
-        lang_ar = self.env['res.lang']._activate_lang('ar_SY')
-        website.language_ids = self.env.ref('base.lang_en') + lang_fr + lang_es + lang_zh + lang_ar
-        # Select "dropdown with image" language selector template
-        for key, active in [
-            # footer
-            ('portal.footer_language_selector', True),
-            ('website.footer_language_selector_inline', False),
-            ('website.footer_language_selector_flag', True),
-            ('website.footer_language_selector_no_text', False),
-            ('website.footer_language_selector_flag', True),
-            ('website.footer_language_selector_no_text', False),
-            # header
-            ('website.header_language_selector', True),
-            ('website.header_language_selector_inline', False),
-            ('website.header_language_selector_flag', True),
-            ('website.header_language_selector_no_text', False),
-            ('website.header_language_selector_flag', True),
-            ('website.header_language_selector_no_text', False),
-        ]:
-            self.env['website'].with_context(website_id=website.id).viewref(key).active = active
-
-        self.start_tour('/', 'website_no_dirty_lazy_image', login='admin')
-
-    def test_website_edit_menus_delete_parent(self):
-        website = self.env['website'].browse(1)
-        menu_tree = self.env['website.menu'].get_tree(website.id)
-
-        parent_menu = menu_tree['children'][0]['fields']
-        child_menu = menu_tree['children'][1]['fields']
-        child_menu['parent_id'] = parent_menu['id']
-
-        self.env['website.menu'].save(website.id, {'data': [parent_menu, child_menu]})
-        self.start_tour(self.env['website'].get_client_action_url('/'), 'edit_menus_delete_parent', login='admin')
-
     def test_snippet_carousel(self):
         self.start_tour('/', 'snippet_carousel', login='admin')
 
     def test_media_iframe_video(self):
         self.start_tour("/", "website_media_iframe_video", login="admin")
 
-    def test_snippet_visibility_option(self):
-        self.start_tour("/", "snippet_visibility_option", login="admin")
-
-    def test_website_font_family(self):
-        self.start_tour("/", "website_font_family", login="admin")
-
-    def test_website_seo_notification(self):
-        self.start_tour(self.env['website'].get_client_action_url("/"), "website_seo_notification", login="admin")
-
-    def test_popup_visibility_option(self):
-        self.start_tour("/", "website_popup_visibility_option", login="admin")
+    def test_snippet_background_video(self):
+        self.start_tour("/", "website_snippet_background_video", login="admin")

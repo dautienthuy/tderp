@@ -3,19 +3,16 @@
 # 	* event_booth_sale
 # 
 # Translators:
+# Martin Trigaux, 2023
 # Sanne Kristensen <sanne@vkdata.dk>, 2024
-# lhmflexerp <lhm@flexerp.dk>, 2024
-# Ejner Sønniksen <ejner@vkdata.dk>, 2024
-# Martin Trigaux, 2024
-# Kira Petersen, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:55+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Kira Petersen, 2025\n"
+"POT-Creation-Date: 2023-04-14 05:52+0000\n"
+"PO-Revision-Date: 2022-09-22 05:45+0000\n"
+"Last-Translator: Sanne Kristensen <sanne@vkdata.dk>, 2024\n"
 "Language-Team: Danish (https://app.transifex.com/odoo/teams/41243/da/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,52 +21,59 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: event_booth_sale
-#: model_terms:ir.ui.view,arch_db:event_booth_sale.event_booth_view_form_from_event
-msgid "<span class=\"o_stat_text\">Sale Order</span>"
-msgstr "<span class=\"o_stat_text\">Salgsordre</span>"
+#: model:ir.model.fields,help:event_booth_sale.field_product_product__detailed_type
+#: model:ir.model.fields,help:event_booth_sale.field_product_template__detailed_type
+msgid ""
+"A storable product is a product for which you manage stock. The Inventory app has to be installed.\n"
+"A consumable product is a product for which stock is not managed.\n"
+"A service is a non-material product you provide."
+msgstr ""
+"Et opbevaringsvare er et produkt for hvilket du kan administrere lager. Inventar appliktionen skal være installeret.\n"
+"En forbrugsvare er et produkt hvor lageret ikke er administreret.\n"
+"En tjeneste er et ikke-materielt produkt du tilbyder."
 
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_configurator__event_booth_ids
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_registration__event_booth_id
 msgid "Booth"
-msgstr "Stand"
+msgstr ""
 
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_configurator__event_booth_category_id
 msgid "Booth Category"
-msgstr "Standkategori"
+msgstr ""
 
 #. module: event_booth_sale
 #: model:ir.model.fields,help:event_booth_sale.field_event_booth_configurator__event_booth_category_available_ids
 msgid "Booth Category for which booths are still available. Used in frontend"
-msgstr "Standkategori med ledige stande. Anvendes i frontend"
+msgstr ""
 
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_sale_order__event_booth_count
 msgid "Booth Count"
-msgstr "Antal stande"
+msgstr ""
 
 #. module: event_booth_sale
 #: model_terms:ir.ui.view,arch_db:event_booth_sale.event_booth_category_view_form
 msgid "Booth Details"
-msgstr "Oplysinger om stande"
+msgstr ""
 
 #. module: event_booth_sale
 #: model_terms:ir.ui.view,arch_db:event_booth_sale.event_booth_registration_view_form
 #: model_terms:ir.ui.view,arch_db:event_booth_sale.event_booth_registration_view_tree
 msgid "Booth Registration"
-msgstr "Reservation af stand"
+msgstr ""
 
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_sale_order__event_booth_ids
 #: model_terms:ir.ui.view,arch_db:event_booth_sale.sale_order_view_form
 msgid "Booths"
-msgstr "Stande"
+msgstr ""
 
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_sale_order_line__event_booth_category_id
 msgid "Booths Category"
-msgstr "Standkategori"
+msgstr ""
 
 #. module: event_booth_sale
 #: model_terms:ir.ui.view,arch_db:event_booth_sale.event_booth_configurator_view_form
@@ -79,12 +83,12 @@ msgstr "Annullér"
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_sale_order_line__event_booth_ids
 msgid "Confirmed Booths"
-msgstr "Bekræftede stande"
+msgstr ""
 
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_sale_order_line__event_booth_registration_ids
 msgid "Confirmed Registration"
-msgstr "Bekræftede tilmeldinger"
+msgstr ""
 
 #. module: event_booth_sale
 #: model_terms:ir.ui.view,arch_db:event_booth_sale.event_booth_registration_view_form
@@ -97,6 +101,11 @@ msgid "Contact Email"
 msgstr "Kontakt e-mail"
 
 #. module: event_booth_sale
+#: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_registration__contact_mobile
+msgid "Contact Mobile"
+msgstr ""
+
+#. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_registration__contact_name
 msgid "Contact Name"
 msgstr "Kontaktnavn"
@@ -105,12 +114,6 @@ msgstr "Kontaktnavn"
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_registration__contact_phone
 msgid "Contact Phone"
 msgstr "Kontakt telefon"
-
-#. module: event_booth_sale
-#: model:ir.model.fields,field_description:event_booth_sale.field_product_product__service_tracking
-#: model:ir.model.fields,field_description:event_booth_sale.field_product_template__service_tracking
-msgid "Create on Order"
-msgstr "Opret ved bestilling"
 
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_configurator__create_uid
@@ -154,40 +157,40 @@ msgstr "Arrangement"
 
 #. module: event_booth_sale
 #: model:ir.model,name:event_booth_sale.model_event_booth
-#: model:ir.model.fields.selection,name:event_booth_sale.selection__product_template__service_tracking__event_booth
+#: model:ir.model.fields.selection,name:event_booth_sale.selection__product_template__detailed_type__event_booth
 msgid "Event Booth"
-msgstr "Stand til arrangementer"
+msgstr ""
 
 #. module: event_booth_sale
 #: model:ir.model,name:event_booth_sale.model_event_booth_category
 msgid "Event Booth Category"
-msgstr "Standkategori til arrangementer"
+msgstr ""
 
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_configurator__event_booth_category_available_ids
 msgid "Event Booth Category Available"
-msgstr "Standkategori til arrangementer, der er til rådighed"
+msgstr ""
 
 #. module: event_booth_sale
 #: model:ir.model,name:event_booth_sale.model_event_booth_configurator
 msgid "Event Booth Configurator"
-msgstr "Eventstandkategori"
+msgstr ""
 
 #. module: event_booth_sale
 #: model:ir.model,name:event_booth_sale.model_event_booth_registration
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth__event_booth_registration_ids
 msgid "Event Booth Registration"
-msgstr "Reservation af eventstand"
+msgstr ""
 
 #. module: event_booth_sale
 #: model:ir.model,name:event_booth_sale.model_event_type_booth
 msgid "Event Booth Template"
-msgstr "Skabelon til stand"
+msgstr ""
 
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth__sale_order_line_id
 msgid "Final Sale Order Line"
-msgstr "Sidste salgsordrelinje"
+msgstr ""
 
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_configurator__id
@@ -203,7 +206,7 @@ msgstr "Billede"
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_sale_order_line__is_event_booth
 msgid "Is Event Booth"
-msgstr "Er eventstand"
+msgstr ""
 
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth__is_paid
@@ -213,7 +216,13 @@ msgstr "Er Betalt"
 #. module: event_booth_sale
 #: model:ir.model,name:event_booth_sale.model_account_move
 msgid "Journal Entry"
-msgstr "Journalbilag"
+msgstr "Postering"
+
+#. module: event_booth_sale
+#: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_configurator____last_update
+#: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_registration____last_update
+msgid "Last Modified on"
+msgstr "Sidst ændret den"
 
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_configurator__write_uid
@@ -226,12 +235,6 @@ msgstr "Sidst opdateret af"
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_registration__write_date
 msgid "Last Updated on"
 msgstr "Sidst opdateret den"
-
-#. module: event_booth_sale
-#. odoo-python
-#: code:addons/event_booth_sale/models/product_template.py:0
-msgid "Mark the selected Booth as Unavailable."
-msgstr "Angiv, at den valgte stand ikke er ledig."
 
 #. module: event_booth_sale
 #: model_terms:ir.ui.view,arch_db:event_booth_sale.event_booth_configurator_view_form
@@ -251,17 +254,7 @@ msgstr "Betalt"
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_sale_order_line__event_booth_pending_ids
 msgid "Pending Booths"
-msgstr "Stande i venteposition"
-
-#. module: event_booth_sale
-#. odoo-python
-#: code:addons/event_booth_sale/models/sale_order.py:0
-msgid ""
-"Please make sure all your event-booth related lines are configured before "
-"confirming this order:%s"
 msgstr ""
-"Sørg for, at alle linjer er konfigureret til din stand, inden du bekræfter "
-"ordren:%s"
 
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth__price
@@ -281,23 +274,36 @@ msgid "Price Reduce Tax inc"
 msgstr "Prisreduktion inkl. moms"
 
 #. module: event_booth_sale
-#: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_category__price_incl
-msgid "Price incl"
-msgstr "Pris inkl."
-
-#. module: event_booth_sale
 #: model:ir.model,name:event_booth_sale.model_product_template
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth__product_id
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_category__product_id
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_configurator__product_id
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_type_booth__product_id
+#: model:ir.model.fields,field_description:event_booth_sale.field_sale_order_template_line__product_id
+#: model:ir.model.fields,field_description:event_booth_sale.field_sale_order_template_option__product_id
 msgid "Product"
 msgstr "Produkt"
+
+#. module: event_booth_sale
+#: model:ir.model.fields,field_description:event_booth_sale.field_product_product__detailed_type
+#: model:ir.model.fields,field_description:event_booth_sale.field_product_template__detailed_type
+msgid "Product Type"
+msgstr "Produkttype"
 
 #. module: event_booth_sale
 #: model:ir.model,name:event_booth_sale.model_product_product
 msgid "Product Variant"
 msgstr "Varevariant"
+
+#. module: event_booth_sale
+#: model:ir.model,name:event_booth_sale.model_sale_order_template_line
+msgid "Quotation Template Line"
+msgstr "Tilbud skabelon linje"
+
+#. module: event_booth_sale
+#: model:ir.model,name:event_booth_sale.model_sale_order_template_option
+msgid "Quotation Template Option"
+msgstr "Tilbud skabelon indstilling"
 
 #. module: event_booth_sale
 #: model_terms:ir.ui.view,arch_db:event_booth_sale.event_booth_view_form_from_event
@@ -307,13 +313,19 @@ msgstr "Tilmeldinger"
 #. module: event_booth_sale
 #. odoo-python
 #: code:addons/event_booth_sale/models/sale_order_line.py:0
+#, python-format
 msgid "Registrations from the same Order Line must belong to a single event."
-msgstr "En ordrelinje må kun indeholde registreringer til ét arrangement."
+msgstr ""
 
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth__sale_order_line_registration_ids
 msgid "SO Lines with reservations"
-msgstr "Kommandolinjer med reservationer"
+msgstr ""
+
+#. module: event_booth_sale
+#: model_terms:ir.ui.view,arch_db:event_booth_sale.event_booth_view_form_from_event
+msgid "Sale Order"
+msgstr "Salgsordre"
 
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_configurator__sale_order_line_id
@@ -334,22 +346,21 @@ msgstr "Salgsordrelinje"
 #. module: event_booth_sale
 #: model:ir.actions.act_window,name:event_booth_sale.event_booth_configurator_action
 msgid "Select an event booth"
-msgstr "Vælg en eventstand"
+msgstr ""
 
 #. module: event_booth_sale
 #. odoo-python
 #: code:addons/event_booth_sale/models/sale_order_line.py:0
+#, python-format
 msgid ""
 "The following booths are unavailable, please remove them to continue : "
 "%(booth_names)s"
 msgstr ""
-"Følgende stande er ikke ledige, fjern dem venligst for at fortsætte: "
-"%(booth_names)s"
 
 #. module: event_booth_sale
 #: model:ir.model.constraint,message:event_booth_sale.constraint_event_booth_registration_unique_registration
 msgid "There can be only one registration for a booth by sale order line"
-msgstr "Det er kun muligt at reservere én stand pr. ordrelinje."
+msgstr ""
 
 #. module: event_booth_sale
 #: model_terms:ir.ui.view,arch_db:event_booth_sale.event_booth_view_tree_from_event
@@ -360,29 +371,28 @@ msgstr "I alt"
 #: model:ir.model.fields,help:event_booth_sale.field_sale_order_line__event_booth_pending_ids
 msgid "Used to create registration when providing the desired event booth."
 msgstr ""
-"Anvendes til at oprette reservationen, når den ønskede eventstand er klar."
 
 #. module: event_booth_sale
 #. odoo-python
 #: code:addons/event_booth_sale/models/event_booth.py:0
+#, python-format
 msgid ""
 "You can't delete the following booths as they are linked to sales orders: "
 "%(booths)s"
 msgstr ""
-"Følgende stande kan ikke slettes, fordi de er knyttet til salgsordrer: "
-"%(booths)s"
 
 #. module: event_booth_sale
 #. odoo-python
 #: code:addons/event_booth_sale/wizard/event_booth_configurator.py:0
+#, python-format
 msgid "You have to select at least one booth."
-msgstr "Du skal vælge mindst én stand."
+msgstr ""
 
 #. module: event_booth_sale
 #. odoo-python
 #: code:addons/event_booth_sale/models/event_booth_registration.py:0
+#, python-format
 msgid ""
 "Your order has been cancelled because the following booths have been "
 "reserved"
 msgstr ""
-"Din ordre er blevet annulleret, fordi følgende stande allerede er reserveret"

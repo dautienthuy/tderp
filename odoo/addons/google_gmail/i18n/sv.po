@@ -3,20 +3,20 @@
 # 	* google_gmail
 # 
 # Translators:
-# Chrille Hedberg <hedberg.chrille@gmail.com>, 2024
-# Lasse L, 2024
-# Robin Calvin, 2024
-# Martin Trigaux, 2024
-# Mikael Åkerberg <mikael.akerberg@mariaakerberg.com>, 2024
+# Chrille Hedberg <hedberg.chrille@gmail.com>, 2022
+# Robin Calvin, 2022
+# Martin Trigaux, 2022
+# Mikael Åkerberg <mikael.akerberg@mariaakerberg.com>, 2023
+# Lasse L, 2023
 # Anders Wallenquist <anders.wallenquist@vertel.se>, 2024
 # Jakob Krabbe <jakob.krabbe@vertel.se>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:55+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2022-09-22 05:46+0000\n"
 "Last-Translator: Jakob Krabbe <jakob.krabbe@vertel.se>, 2024\n"
 "Language-Team: Swedish (https://app.transifex.com/odoo/teams/41243/sv/)\n"
 "MIME-Version: 1.0\n"
@@ -28,39 +28,39 @@ msgstr ""
 #. module: google_gmail
 #: model_terms:ir.ui.view,arch_db:google_gmail.fetchmail_server_view_form
 #: model_terms:ir.ui.view,arch_db:google_gmail.ir_mail_server_view_form
+msgid ""
+"<i class=\"fa fa-arrow-right\"/>\n"
+"                        Connect your Gmail account"
+msgstr ""
+"<i class=\"fa fa-arrow-right\"/>\n"
+"                        Koppla ditt Gmailkonto"
+
+#. module: google_gmail
+#: model_terms:ir.ui.view,arch_db:google_gmail.fetchmail_server_view_form
+#: model_terms:ir.ui.view,arch_db:google_gmail.ir_mail_server_view_form
 msgid "<i class=\"fa fa-cog\" title=\"Edit Settings\"/>"
 msgstr "<i class=\"fa fa-cog\" title=\"Edit Settings\"/>"
 
 #. module: google_gmail
 #: model_terms:ir.ui.view,arch_db:google_gmail.fetchmail_server_view_form
-#: model_terms:ir.ui.view,arch_db:google_gmail.ir_mail_server_view_form
 msgid ""
-"<i class=\"oi oi-arrow-right\"/>\n"
-"                        Connect your Gmail account"
-msgstr ""
-"<i class=\"oi oi-arrow-right\"/>\n"
-"                        Koppla ditt Gmailkonto"
-
-#. module: google_gmail
-#: model_terms:ir.ui.view,arch_db:google_gmail.fetchmail_server_view_form
-msgid ""
-"<span invisible=\"server_type != 'gmail' or not google_gmail_refresh_token\" class=\"badge text-bg-success\">\n"
+"<span attrs=\"{'invisible': ['|', ('server_type', '!=', 'gmail'), ('google_gmail_refresh_token', '=', False)]}\" class=\"badge text-bg-success\">\n"
 "                        Gmail Token Valid\n"
 "                    </span>"
 msgstr ""
-"<span invisible=\"server_type != 'gmail' or not google_gmail_refresh_token\" class=\"badge text-bg-success\">\n"
-"                        Gmail polletten är giltig\n"
+"<span attrs=\"{'invisible': ['|', ('server_type', '!=', 'gmail'), ('google_gmail_refresh_token', '=', False)]}\" class=\"badge text-bg-success\">\n"
+"                        Gmail Polletten Giltig\n"
 "                    </span>"
 
 #. module: google_gmail
 #: model_terms:ir.ui.view,arch_db:google_gmail.ir_mail_server_view_form
 msgid ""
-"<span invisible=\"smtp_authentication != 'gmail' or not google_gmail_refresh_token\" class=\"badge text-bg-success\">\n"
+"<span attrs=\"{'invisible': ['|', ('smtp_authentication', '!=', 'gmail'), ('google_gmail_refresh_token', '=', False)]}\" class=\"badge text-bg-success\">\n"
 "                        Gmail Token Valid\n"
 "                    </span>"
 msgstr ""
-"<span invisible=\"smtp_authentication != 'gmail' or not google_gmail_refresh_token\" class=\"badge text-bg-success\">\n"
-"                        Gmail polletten är giltig\n"
+"<span attrs=\"{'invisible': ['|', ('smtp_authentication', '!=', 'gmail'), ('google_gmail_refresh_token', '=', False)]}\" class=\"badge text-bg-success\">\n"
+"                        Gmail Polletten Giltig\n"
 "                    </span>"
 
 #. module: google_gmail
@@ -80,12 +80,15 @@ msgstr "Tidstämpel för åtkomstpollettens utgång"
 #. module: google_gmail
 #. odoo-python
 #: code:addons/google_gmail/controllers/main.py:0
+#: code:addons/google_gmail/controllers/main.py:0
+#, python-format
 msgid "An error occur during the authentication process."
 msgstr "Ett fel inträffade under autentiseringsprocessen."
 
 #. module: google_gmail
 #. odoo-python
 #: code:addons/google_gmail/models/google_gmail_mixin.py:0
+#, python-format
 msgid "An error occurred when fetching the access token."
 msgstr "Ett fel uppstod vid hämtning av åtkomstpolletten."
 
@@ -109,6 +112,7 @@ msgstr "Inställningar"
 #. module: google_gmail
 #. odoo-python
 #: code:addons/google_gmail/models/fetchmail_server.py:0
+#, python-format
 msgid ""
 "Connect your Gmail account with the OAuth Authentication process. \n"
 "You will be redirected to the Gmail login page where you will need to accept the permission."
@@ -119,6 +123,7 @@ msgstr ""
 #. module: google_gmail
 #. odoo-python
 #: code:addons/google_gmail/models/ir_mail_server.py:0
+#, python-format
 msgid ""
 "Connect your Gmail account with the OAuth Authentication process.  \n"
 "By default, only a user with a matching email address will be able to use this server. To extend its use, you should set a \"mail.default.from\" system parameter."
@@ -165,11 +170,12 @@ msgstr "Inkommande e-postserver"
 #. module: google_gmail
 #. odoo-python
 #: code:addons/google_gmail/models/ir_mail_server.py:0
+#, python-format
 msgid ""
-"Incorrect Connection Security for Gmail mail server “%s”. Please set it to "
+"Incorrect Connection Security for Gmail mail server %r. Please set it to "
 "\"TLS (STARTTLS)\"."
 msgstr ""
-"Felaktig anslutningssäkerhet för Gmail-e-postservern“%s”. Vänligen ställ in "
+"Felaktig anslutningssäkerhet för Gmail-e-postservern %r. Vänligen ställ in "
 "den på \"TLS (STARTTLS)\"."
 
 #. module: google_gmail
@@ -180,18 +186,21 @@ msgstr "Mail-server"
 #. module: google_gmail
 #. odoo-python
 #: code:addons/google_gmail/models/google_gmail_mixin.py:0
+#, python-format
 msgid "Only the administrator can link a Gmail mail server."
 msgstr "Endast administratören kan länka en Gmail-e-postserver."
 
 #. module: google_gmail
 #. odoo-python
 #: code:addons/google_gmail/models/google_gmail_mixin.py:0
+#, python-format
 msgid "Please configure your Gmail credentials."
 msgstr "Vänligen konfigurera dina Gmail-uppgifter."
 
 #. module: google_gmail
 #. odoo-python
 #: code:addons/google_gmail/models/ir_mail_server.py:0
+#, python-format
 msgid ""
 "Please fill the \"Username\" field with your Gmail username (your email "
 "address). This should be the same account as the one used for the Gmail "
@@ -204,11 +213,12 @@ msgstr ""
 #. module: google_gmail
 #. odoo-python
 #: code:addons/google_gmail/models/ir_mail_server.py:0
+#, python-format
 msgid ""
-"Please leave the password field empty for Gmail mail server “%s”. The OAuth "
+"Please leave the password field empty for Gmail mail server %r. The OAuth "
 "process does not require it"
 msgstr ""
-"Lämna lösenordsfältet tomt för Gmails e-postserver“%s”. OAuth-processen "
+"Lämna lösenordsfältet tomt för Gmails e-postserver %r. OAuth-processen "
 "kräver det inte"
 
 #. module: google_gmail

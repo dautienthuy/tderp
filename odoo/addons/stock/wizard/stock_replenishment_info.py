@@ -1,17 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import babel.dates
 from json import dumps
 from datetime import datetime, time
-from dateutil.relativedelta import relativedelta
-
 
 from odoo import api, fields, models, SUPERUSER_ID, _
 from odoo.osv.expression import AND
-from odoo.tools.date_utils import get_month, subtract
-from odoo.tools.float_utils import float_compare
-from odoo.tools.misc import get_lang, format_date
+from odoo.tools import get_month, subtract, format_date
 
 
 class StockReplenishmentInfo(models.TransientModel):
@@ -57,8 +52,6 @@ class StockReplenishmentInfo(models.TransientModel):
                 'product_max_qty': self.env['ir.qweb.field.float'].value_to_html(orderpoint.product_max_qty, {'decimal_precision': 'Product Unit of Measure'}),
                 'product_uom_name': orderpoint.product_uom_name,
                 'virtual': orderpoint.trigger == 'manual' and orderpoint.create_uid.id == SUPERUSER_ID,
-                'visibility_days': orderpoint.visibility_days if float_compare(orderpoint.qty_forecast, orderpoint.product_min_qty, precision_rounding=orderpoint.product_uom.rounding) < 0 else 0,
-                'visibility_days_date': format_date(self.env, replenishment_report.orderpoint_id.lead_days_date + relativedelta(days=orderpoint.visibility_days))
             })
 
     @api.depends('orderpoint_id')
@@ -76,18 +69,19 @@ class StockReplenishmentInfo(models.TransientModel):
                 ('state', '=', 'done'),
                 ('company_id', '=', replenishment_report.orderpoint_id.company_id.id)
             ]
-            quantity_by_month_out = self.env['stock.move']._read_group(
+            quantity_by_month_out = self.env['stock.move'].read_group(
                 AND([domain, [('location_dest_id.usage', '=', 'customer')]]),
-                ['date:month'], ['product_qty:sum'])
-            quantity_by_month_returned = dict(self.env['stock.move']._read_group(
+                ['date', 'product_qty'], ['date:month'])
+            quantity_by_month_returned = self.env['stock.move'].read_group(
                 AND([domain, [('location_id.usage', '=', 'customer')]]),
-                ['date:month'], ['product_qty:sum']))
-            locale = get_lang(self.env).code
-            fmt = models.READ_GROUP_DISPLAY_FORMAT['month']
-            for month, product_qty_sum in quantity_by_month_out:
+                ['date', 'product_qty'], ['date:month'])
+            quantity_by_month_returned = {
+                g['date:month']: g['product_qty'] for g in quantity_by_month_returned}
+            for group in quantity_by_month_out:
+                month = group['date:month']
                 replenishment_history.append({
-                    'name': babel.dates.format_datetime(month, format=fmt, locale=locale),
-                    'quantity': product_qty_sum - quantity_by_month_returned.get(month, 0),
+                    'name': month,
+                    'quantity': group['product_qty'] - quantity_by_month_returned.get(month, 0),
                     'uom_name': replenishment_report.product_id.uom_id.display_name,
                 })
             replenishment_report.json_replenishment_history = dumps({
@@ -122,24 +116,19 @@ class StockReplenishmentOption(models.TransientModel):
     @api.depends('replenishment_info_id')
     def _compute_lead_time(self):
         for record in self:
-            rule = self.env['procurement.group']._get_rule(record.product_id, record.location_id, {
-                'route_ids': record.route_id,
-                'warehouse_id': record.warehouse_id,
-            })
-            delay = rule._get_lead_days(record.product_id)[0]['total_delay'] if rule else 0
-            record.lead_time = _("%s days", delay)
+            lead_time = record.route_id.rule_ids._get_lead_days(record.product_id)[0]
+            record.lead_time = str(lead_time) + " days"
 
     @api.depends('warehouse_id', 'free_qty', 'uom', 'qty_to_order')
     def _compute_warning_message(self):
         self.warning_message = ''
         for record in self:
             if record.free_qty < record.qty_to_order:
-                record.warning_message = _(
-                    '%(warehouse)s can only provide %(free_qty)s %(uom)s, while the quantity to order is %(qty_to_order)s %(uom)s.',
-                    warehouse=record.warehouse_id.name,
-                    free_qty=record.free_qty,
-                    uom=record.uom,
-                    qty_to_order=record.qty_to_order
+                record.warning_message = _('{0} can only provide {1} {2}, while the quantity to order is {3} {2}.').format(
+                    record.warehouse_id.name,
+                    record.free_qty,
+                    record.uom,
+                    record.qty_to_order
                 )
 
     def select_route(self):

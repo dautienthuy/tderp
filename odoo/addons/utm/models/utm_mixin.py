@@ -15,11 +15,11 @@ class UtmMixin(models.AbstractModel):
     _name = 'utm.mixin'
     _description = 'UTM Mixin'
 
-    campaign_id = fields.Many2one('utm.campaign', 'Campaign', index='btree_not_null',
+    campaign_id = fields.Many2one('utm.campaign', 'Campaign',
                                   help="This is a name that helps you keep track of your different campaign efforts, e.g. Fall_Drive, Christmas_Special")
-    source_id = fields.Many2one('utm.source', 'Source', index='btree_not_null',
+    source_id = fields.Many2one('utm.source', 'Source',
                                 help="This is the source of the link, e.g. Search Engine, another domain, or name of email list")
-    medium_id = fields.Many2one('utm.medium', 'Medium', index='btree_not_null',
+    medium_id = fields.Many2one('utm.medium', 'Medium',
                                 help="This is the method of delivery, e.g. Postcard, Email, or Banner Ad")
 
     @api.model
@@ -36,7 +36,7 @@ class UtmMixin(models.AbstractModel):
                 value = False
                 if request:
                     # ir_http dispatch saves the url params in a cookie
-                    value = request.cookies.get(cookie_name)
+                    value = request.httprequest.cookies.get(cookie_name)
                 # if we receive a string for a many2one, we search/create the id
                 if field.type == 'many2one' and isinstance(value, str) and value:
                     record = self._find_or_create_record(field.comodel_name, value)
@@ -59,42 +59,15 @@ class UtmMixin(models.AbstractModel):
             ('utm_medium', 'medium_id', 'odoo_utm_medium'),
         ]
 
-    def _tracking_models(self):
-        fnames = {fname for _, fname, _ in self.tracking_fields()}
-        return {
-            self._fields[fname].comodel_name
-            for fname in fnames
-            if fname in self._fields and self._fields[fname].type == "many2one"
-        }
-
-    @api.model
-    def find_or_create_record(self, model_name, name):
-        """ Version of ``_find_or_create_record`` used in frontend notably in
-        website_links. For UTM models it calls _find_or_create_record. For other
-        models (as through inheritance custom models could be used notably in
-        website links) it simply calls a create. In the end it relies on
-        standard ACLs, and is mainly a wrapper for UTM models.
-
-        :return: id of newly created or found record. As the magic of call_kw
-        for create is not called anymore we have to manually return an id
-        instead of a recordset. """
-        if model_name in self._tracking_models():
-            record = self._find_or_create_record(model_name, name)
-        else:
-            record = self.env[model_name].create({self.env[model_name]._rec_name: name})
-        return {'id': record.id, 'name': record.display_name}
-
     def _find_or_create_record(self, model_name, name):
         """Based on the model name and on the name of the record, retrieve the corresponding record or create it."""
         Model = self.env[model_name]
 
-        cleaned_name = name.strip()
-        if cleaned_name:
-            record = Model.with_context(active_test=False).search([('name', '=ilike', cleaned_name)], limit=1)
+        record = Model.search([('name', '=', name)], limit=1)
 
         if not record:
             # No record found, create a new one
-            record_values = {'name': cleaned_name}
+            record_values = {'name': name}
             if 'is_auto_campaign' in record._fields:
                 record_values['is_auto_campaign'] = True
             record = Model.create(record_values)

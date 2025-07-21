@@ -3,17 +3,20 @@
 # 	* hr_fleet
 # 
 # Translators:
-# zakariya moradi, 2025
-# Tiffany Chang, 2025
-# Naser mars, 2025
+# F Hariri <fhari1234@gmail.com>, 2023
+# Hanna Kheradroosta, 2023
+# Martin Trigaux, 2023
+# Hamed Mohammadi <hamed@dehongi.com>, 2023
+# Mohsen Mohammadi <iammohsen.123@gmail.com>, 2023
+# Mostafa Barmshory <mostafa.barmshory@gmail.com>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-23 18:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Naser mars, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2022-09-22 05:46+0000\n"
+"Last-Translator: Mostafa Barmshory <mostafa.barmshory@gmail.com>, 2024\n"
 "Language-Team: Persian (https://app.transifex.com/odoo/teams/41243/fa/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,28 +25,15 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #. module: hr_fleet
-#: model_terms:ir.ui.view,arch_db:hr_fleet.fleet_vehicle_log_contract_view_form_inherit_hr
-msgid "<span class=\"o_stat_text\">Employee</span>"
-msgstr "<span class=\"o_stat_text\">کارمند</span>"
-
-#. module: hr_fleet
 #: model_terms:ir.ui.view,arch_db:hr_fleet.fleet_vehicle_view_form_inherit_hr
 msgid ""
 "<span class=\"o_stat_value\">1</span>\n"
 "                        <span class=\"o_stat_text\">Employee</span>"
 msgstr ""
-"<span class=\"o_stat_value\">1</span>\n"
-"                        <span class=\"o_stat_text\">کارمند</span>"
-
-#. module: hr_fleet
-#: model:ir.model,name:hr_fleet.model_mail_activity_plan_template
-msgid "Activity plan template"
-msgstr "قالب طرح فعالیت"
-
-#. module: hr_fleet
-#: model:ir.model.fields,field_description:hr_fleet.field_mail_activity_plan_template__responsible_type
-msgid "Assignment"
-msgstr "انتساب"
+"```html\n"
+"<span class=\"o_stat_value\">۱</span>\n"
+"                        <span class=\"o_stat_text\">کارمند</span>\n"
+"```"
 
 #. module: hr_fleet
 #: model_terms:ir.ui.view,arch_db:hr_fleet.fleet_vehicle_assignation_log_employee_view_list
@@ -54,6 +44,7 @@ msgstr "پیوست ها"
 #. module: hr_fleet
 #. odoo-python
 #: code:addons/hr_fleet/models/employee.py:0
+#, python-format
 msgid "Cannot remove address from employees with linked cars."
 msgstr "امکان حذف آدرس از کارمندانی که خودروهای مرتبط دارند وجود ندارد."
 
@@ -72,6 +63,11 @@ msgstr "اتومبیل شرکت"
 #: model_terms:ir.ui.view,arch_db:hr_fleet.fleet_vehicle_assignation_log_employee_view_list
 msgid "Current Driver"
 msgstr "راننده هم‌اکنون"
+
+#. module: hr_fleet
+#: model_terms:ir.ui.view,arch_db:hr_fleet.fleet_vehicle_view_search_inherit_hr
+msgid "Current Driver (Employee)"
+msgstr ""
 
 #. module: hr_fleet
 #: model:ir.model,name:hr_fleet.model_hr_departure_wizard
@@ -105,26 +101,9 @@ msgid "Employee"
 msgstr "کارمند"
 
 #. module: hr_fleet
-#. odoo-python
-#: code:addons/hr_fleet/models/mail_activity_plan_template.py:0
-msgid "Employee %s is not linked to a vehicle."
-msgstr "کارمند %s به وسیله نقلیه متصل نیست."
-
-#. module: hr_fleet
 #: model:ir.model.fields,field_description:hr_fleet.field_fleet_vehicle__driver_employee_name
 msgid "Employee Name"
 msgstr "نام کارمند"
-
-#. module: hr_fleet
-#: model:ir.model.fields.selection,name:hr_fleet.selection__mail_activity_plan_template__responsible_type__fleet_manager
-msgid "Fleet Manager"
-msgstr "مدیر ناوگان"
-
-#. module: hr_fleet
-#. odoo-python
-#: code:addons/hr_fleet/models/mail_activity_plan_template.py:0
-msgid "Fleet Manager is limited to Employee plans."
-msgstr "مدیر ناوگان به طرح‌های کارمند محدود است."
 
 #. module: hr_fleet
 #: model_terms:ir.ui.view,arch_db:hr_fleet.view_employee_form
@@ -137,13 +116,7 @@ msgid "Future Driver (Employee)"
 msgstr "راننده آینده (کارمند)"
 
 #. module: hr_fleet
-#. odoo-python
-#: code:addons/hr_fleet/models/employee.py:0
-msgid "History Employee Cars"
-msgstr ""
-
-#. module: hr_fleet
-#: model:ir.model.fields,field_description:hr_fleet.field_hr_employee__license_plate
+#: model_terms:ir.ui.view,arch_db:hr_fleet.view_employee_filter
 msgid "License Plate"
 msgstr "پلاک مجوز"
 
@@ -162,7 +135,7 @@ msgstr "تعداد پیوست‌ها"
 #. module: hr_fleet
 #: model:ir.model,name:hr_fleet.model_fleet_vehicle_odometer
 msgid "Odometer log for a vehicle"
-msgstr "دفتر کیلومتر شمار برای یک وسیله نقلیه"
+msgstr "گزارش کیلومترشمار برای یک خودرو"
 
 #. module: hr_fleet
 #: model:ir.model,name:hr_fleet.model_hr_employee_public
@@ -172,7 +145,7 @@ msgstr "کارمند عمومی"
 #. module: hr_fleet
 #. odoo-python
 #: code:addons/hr_fleet/models/fleet_vehicle.py:0
-#: code:addons/hr_fleet/models/fleet_vehicle_log_contract.py:0
+#, python-format
 msgid "Related Employee"
 msgstr "کارمند مرتبط"
 
@@ -187,14 +160,9 @@ msgid "Services for vehicles"
 msgstr "سرویسهای خودروها"
 
 #. module: hr_fleet
-#. odoo-python
-#: code:addons/hr_fleet/models/mail_activity_plan_template.py:0
-msgid "The vehicle of employee %(employee)s is not linked to a fleet manager."
-msgstr "وسیله نقلیه کارمند %(employee)s به یک مدیر ناوگان متصل نیست."
-
-#. module: hr_fleet
 #. odoo-javascript
 #: code:addons/hr_fleet/static/src/views/hr_fleet_kanban/hr_fleet_kanban_controller.xml:0
+#, python-format
 msgid "Upload"
 msgstr "آپلود"
 

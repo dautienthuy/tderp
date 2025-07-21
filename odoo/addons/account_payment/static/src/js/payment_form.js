@@ -1,44 +1,36 @@
-/** @odoo-module **/
+odoo.define('account_payment.payment_form', require => {
+    'use strict';
 
-import PaymentForm from "@payment/js/payment_form";
+    const checkoutForm = require('payment.checkout_form');
+    const manageForm = require('payment.manage_form');
 
-PaymentForm.include({
-    /**
-     * Set whether we are paying an installment before submitting.
-     *
-     * @override method from payment.payment_form
-     * @private
-     * @param {Event} ev
-     * @returns {void}
-     */
-    async _submitForm(ev) {
-        ev.stopPropagation();
-        ev.preventDefault();
+    const PaymentMixin = {
 
-        const paymentDialog = this.el.closest("#pay_with");
-        const chosenPaymentDetails = paymentDialog
-            ? paymentDialog.querySelector(".o_btn_payment_tab.active")
-            : null;
-        if (chosenPaymentDetails){
-            if (chosenPaymentDetails.id === "o_payment_installments_tab") {
-                this.paymentContext.amount = parseFloat(this.paymentContext.invoiceNextAmountToPay);
-            } else {
-                this.paymentContext.amount = parseFloat(this.paymentContext.invoiceAmountDue);
-            }
-        }
-        await this._super(...arguments);
-    },
+        //--------------------------------------------------------------------------
+        // Private
+        //--------------------------------------------------------------------------
 
         /**
-     * Prepare the params for the RPC to the transaction route.
-     *
-     * @override method from payment.payment_form
-     * @private
-     * @return {object} The transaction route params.
-     */
-        _prepareTransactionRouteParams() {
-            const transactionRouteParams =  this._super(...arguments);
-            transactionRouteParams.payment_reference = this.paymentContext.paymentReference;
-            return transactionRouteParams;
+         * Add `invoice_id` to the transaction route params if it is provided.
+         *
+         * @override method from payment.payment_form_mixin
+         * @private
+         * @param {string} code - The provider code of the selected payment option.
+         * @param {number} paymentOptionId - The id of the selected payment option.
+         * @param {string} flow - The online payment flow of the selected payment option.
+         * @return {object} The extended transaction route params.
+         */
+        _prepareTransactionRouteParams: function (code, paymentOptionId, flow) {
+            const transactionRouteParams = this._super(...arguments);
+            return {
+                ...transactionRouteParams,
+                'invoice_id': this.txContext.invoiceId ? parseInt(this.txContext.invoiceId) : null,
+            };
         },
+
+    };
+
+    checkoutForm.include(PaymentMixin);
+    manageForm.include(PaymentMixin);
+
 });

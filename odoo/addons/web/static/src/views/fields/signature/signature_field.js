@@ -1,10 +1,11 @@
-import { _t } from "@web/core/l10n/translation";
+/** @odoo-module **/
+
 import { registry } from "@web/core/registry";
 import { SignatureDialog } from "@web/core/signature/signature_dialog";
 import { useService } from "@web/core/utils/hooks";
-import { imageUrl } from "@web/core/utils/urls";
+import { url } from "@web/core/utils/urls";
 import { isBinarySize } from "@web/core/utils/binary";
-import { fileTypeMagicWordMap } from "@web/views/fields/image/image_field";
+import { fileTypeMagicWordMap, imageCacheKey } from "@web/views/fields/image/image_field";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
 
 import { Component, useState } from "@odoo/owl";
@@ -12,20 +13,6 @@ import { Component, useState } from "@odoo/owl";
 const placeholder = "/web/static/img/placeholder.png";
 
 export class SignatureField extends Component {
-    static template = "web.SignatureField";
-    static props = {
-        ...standardFieldProps,
-        defaultFont: { type: String },
-        fullName: { type: String, optional: true },
-        height: { type: Number, optional: true },
-        previewImage: { type: String, optional: true },
-        width: { type: Number, optional: true },
-        type: { validate: (t) => ["initial", "signature"].includes(t), optional: true },
-    };
-    static defaultProps = {
-        type: "signature",
-    };
-
     setup() {
         this.displaySignatureRatio = 3;
 
@@ -36,29 +23,32 @@ export class SignatureField extends Component {
     }
 
     get rawCacheKey() {
-        return this.props.record.data.write_date;
+        return this.props.record.data.__last_update;
     }
 
     get getUrl() {
-        const { name, previewImage, record } = this.props;
-        if (this.state.isValid && this.value) {
-            if (isBinarySize(this.value)) {
-                return imageUrl(record.resModel, record.resId, previewImage || name, {
-                    unique: this.rawCacheKey,
+        const { name, previewImage, record, value } = this.props;
+        if (this.state.isValid && value) {
+            if (isBinarySize(value)) {
+                return url("/web/image", {
+                    model: record.resModel,
+                    id: record.resId,
+                    field: previewImage || name,
+                    unique: imageCacheKey(this.rawCacheKey),
                 });
             } else {
                 // Use magic-word technique for detecting image type
-                const magic = fileTypeMagicWordMap[this.value[0]] || "png";
-                return `data:image/${magic};base64,${this.props.record.data[this.props.name]}`;
+                const magic = fileTypeMagicWordMap[this.props.value[0]] || "png";
+                return `data:image/${magic};base64,${this.props.value}`;
             }
         }
         return placeholder;
     }
 
     get sizeStyle() {
-        let { width, height } = this.props;
+        let { width, height, value } = this.props;
 
-        if (!this.value) {
+        if (!value) {
             if (width && height) {
                 width = Math.min(width, this.displaySignatureRatio * height);
                 height = width / this.displaySignatureRatio;
@@ -79,15 +69,12 @@ export class SignatureField extends Component {
         return style;
     }
 
-    get value() {
-        return this.props.record.data[this.props.name];
-    }
-
     onClickSignature() {
         if (!this.props.readonly) {
             const nameAndSignatureProps = {
+                mode: "draw",
                 displaySignatureRatio: 3,
-                signatureType: this.props.type,
+                signatureType: "signature",
                 noInputName: true,
             };
             const { fullName, record } = this.props;
@@ -117,7 +104,7 @@ export class SignatureField extends Component {
 
     onLoadFailed() {
         this.state.isValid = false;
-        this.notification.add(_t("Could not display the selected image"), {
+        this.notification.add(this.env._t("Could not display the selected image"), {
             type: "danger",
         });
     }
@@ -128,53 +115,33 @@ export class SignatureField extends Component {
      * @private
      */
     uploadSignature({ signatureImage }) {
-        return this.props.record.update({
-            [this.props.name]: signatureImage.split(",")[1] || false,
-        });
+        return this.props.update(signatureImage[1] || false);
     }
 }
 
-export const signatureField = {
-    component: SignatureField,
-    fieldDependencies: [{ name: "write_date", type: "datetime" }],
-    supportedOptions: [
-        {
-            label: _t("Prefill with"),
-            name: "full_name",
-            type: "field",
-            availableTypes: ["char", "many2one"],
-            help: _t("The selected field will be used to pre-fill the signature"),
-        },
-        {
-            label: _t("Default font"),
-            name: "default_font",
-            type: "string",
-        },
-        {
-            label: _t("Size"),
-            name: "size",
-            type: "selection",
-            choices: [
-                { label: _t("Small"), value: "[0,90]" },
-                { label: _t("Medium"), value: "[0,180]" },
-                { label: _t("Large"), value: "[0,270]" },
-            ],
-        },
-        {
-            label: _t("Preview image field"),
-            name: "preview_image",
-            type: "field",
-            availableTypes: ["binary"],
-        },
-    ],
-    extractProps: ({ attrs, options }) => ({
-        defaultFont: options.default_font || "",
-        fullName: options.full_name,
-        height: options.size ? options.size[1] || undefined : attrs.height,
-        previewImage: options.preview_image,
-        type: options.type,
-        width: options.size ? options.size[0] || undefined : attrs.width,
-    }),
+SignatureField.template = "web.SignatureField";
+SignatureField.props = {
+    ...standardFieldProps,
+    defaultFont: { type: String },
+    fullName: { type: String, optional: true },
+    height: { type: Number, optional: true },
+    previewImage: { type: String, optional: true },
+    width: { type: Number, optional: true },
 };
 
-registry.category("fields").add("signature", signatureField);
+SignatureField.fieldDependencies = {
+    __last_update: { type: "datetime" },
+};
+
+SignatureField.extractProps = ({ attrs }) => {
+    const { options, width, height } = attrs;
+    return {
+        defaultFont: attrs.options.default_font || "",
+        fullName: attrs.options.full_name,
+        height: options.size ? options.size[1] || undefined : height,
+        previewImage: attrs.options.preview_image,
+        width: options.size ? options.size[0] || undefined : width,
+    };
+};
+
+registry.category("fields").add("signature", SignatureField);

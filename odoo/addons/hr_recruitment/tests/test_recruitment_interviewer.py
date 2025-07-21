@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.exceptions import AccessError, UserError
+from odoo.exceptions import AccessError
 from odoo.tests.common import new_test_user
 
 from odoo.addons.mail.tests.common import MailCommon
-from odoo.tests import tagged
 
-
-@tagged('recruitment_interviewer')
 class TestRecruitmentInterviewer(MailCommon):
     @classmethod
     def setUpClass(cls):
@@ -46,7 +43,8 @@ class TestRecruitmentInterviewer(MailCommon):
         self.assertFalse(interviewer_group.id in self.simple_user.groups_id.ids, "Simple User should be removed from interviewer")
 
         applicant = self.env['hr.applicant'].create({
-            'candidate_id': self.env['hr.candidate'].create({'partner_name': 'toto'}).id,
+            'name': 'toto',
+            'partner_name': 'toto',
             'job_id': self.job.id,
             'interviewer_ids': self.simple_user.ids,
         })
@@ -69,18 +67,23 @@ class TestRecruitmentInterviewer(MailCommon):
         applicant.interviewer_ids = False
         self.assertFalse(interviewer_group.id in self.simple_user.groups_id.ids, "Simple User should be removed from interviewer")
 
-    def test_interviewer_access_rights(self):
-        candidate = self.env['hr.candidate'].create({'partner_name': 'toto'})
+        # A Manager should not be added to the Interviewer group
+        self.assertFalse(interviewer_group.id in self.manager_user.groups_id.ids, "Manager User should not be interviewer")
+        applicant.interviewer_ids = self.manager_user.ids
+        self.assertFalse(interviewer_group.id in self.manager_user.groups_id.ids, "Manager User should not be added in Interviewer group")
 
+    def test_interviewer_access_rights(self):
         applicant = self.env['hr.applicant'].create({
-            'candidate_id': candidate.id,
+            'name': 'toto',
+            'partner_name': 'toto',
             'job_id': self.job.id,
         })
         with self.assertRaises(AccessError):
             applicant.with_user(self.interviewer_user).read()
 
         applicant = self.env['hr.applicant'].create({
-            'candidate_id': candidate.id,
+            'name': 'toto',
+            'partner_name': 'toto',
             'job_id': self.job.id,
             'interviewer_ids': self.interviewer_user.ids,
         })
@@ -88,7 +91,8 @@ class TestRecruitmentInterviewer(MailCommon):
 
         self.job.interviewer_ids = self.interviewer_user.ids
         applicant = self.env['hr.applicant'].create({
-            'candidate_id': candidate.id,
+            'name': 'toto',
+            'partner_name': 'toto',
             'job_id': self.job.id,
         })
         applicant.with_user(self.interviewer_user).read()
@@ -97,5 +101,32 @@ class TestRecruitmentInterviewer(MailCommon):
         applicant.with_user(self.interviewer_user).interviewer_ids = self.simple_user.ids
         self.assertEqual(self.simple_user, applicant.interviewer_ids)
 
-        with self.assertRaises(UserError):
+        with self.assertRaises(AccessError):
             applicant.with_user(self.interviewer_user).create_employee_from_applicant()
+
+    def test_interviewer_chatter(self):
+        self.manager_user.notification_type = 'email'
+        self.interviewer_user.notification_type = 'email'
+        applicant = self.env['hr.applicant'].create({
+            'name': 'toto',
+            'partner_name': 'toto',
+            'job_id': self.job.id,
+            'interviewer_ids': self.interviewer_user.ids,
+        })
+
+        applicant.message_subscribe(partner_ids=[self.interviewer_user.partner_id.id])
+
+        with self.mock_mail_gateway():
+            message = applicant.message_post(body='A super secret message', message_type='comment', subtype_xmlid='mail.mt_comment')
+
+        with self.assertRaises(AccessError):
+            message.with_user(self.interviewer_user).read()
+
+        try:
+            self._find_mail_mail_wpartners(self.interviewer_user.partner_id, None)
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError('No mail.mail should be sent to members of Interviewer group')
+
+        self.assertSentEmail(self.env.user.partner_id, [self.manager_user.partner_id])

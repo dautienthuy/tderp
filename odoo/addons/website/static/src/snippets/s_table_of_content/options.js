@@ -1,6 +1,7 @@
-/** @odoo-module **/
+odoo.define('website.s_table_of_content_options', function (require) {
+'use strict';
 
-import options from "@web_editor/js/editor/snippets.options";
+const options = require('web_editor.snippets.options');
 
 options.registry.TableOfContent = options.Class.extend({
     /**
@@ -149,7 +150,7 @@ options.registry.TableOfContent = options.Class.extend({
 
         navEl.innerHTML = '';
         const uniqueHeadingIds = new Set();
-        headingsEls.forEach((el) => {
+        _.each(headingsEls, el => {
             const $el = $(el);
             let headingId = this._getTocAndHeadingId(el).headingId;
             if (headingId) {
@@ -242,4 +243,5 @@ options.registry.TableOfContentNavbar = options.Class.extend({
 
 options.registry.TableOfContentMainColumns = options.Class.extend({
     forceNoDeleteButton: true,
+});
 });

@@ -3,7 +3,6 @@
 
 from odoo.addons.purchase_requisition.tests.common import TestPurchaseRequisitionCommon
 from odoo.tests import Form
-from odoo import Command
 
 
 class TestPurchaseRequisitionStock(TestPurchaseRequisitionCommon):
@@ -23,7 +22,7 @@ class TestPurchaseRequisitionStock(TestPurchaseRequisitionCommon):
         })
         product_test = self.env['product.product'].create({
             'name': 'Usb Keyboard',
-            'is_storable': True,
+            'type': 'product',
             'uom_id': unit,
             'uom_po_id': unit,
             'seller_ids': [(6, 0, [supplier_info1.id])],
@@ -51,13 +50,17 @@ class TestPurchaseRequisitionStock(TestPurchaseRequisitionCommon):
 
         # Blanket order creation
         line1 = (0, 0, {'product_id': product_test.id, 'product_qty': 18, 'product_uom_id': product_test.uom_po_id.id, 'price_unit': 50})
+        requisition_type = self.env['purchase.requisition.type'].create({
+            'name': 'Blanket test',
+            'quantity_copy': 'none',
+        })
         requisition_blanket = self.env['purchase.requisition'].create({
             'line_ids': [line1],
-            'requisition_type': 'blanket_order',
+            'type_id': requisition_type.id,
             'vendor_id': vendor2.id,
             'currency_id': self.env.user.company_id.currency_id.id,
         })
-        requisition_blanket.action_confirm()
+        requisition_blanket.action_in_progress()
 
         # Second stock move
         move2 = self.env['stock.move'].create({
@@ -116,7 +119,7 @@ class TestPurchaseRequisitionStock(TestPurchaseRequisitionCommon):
         })
         product_1 = self.env['product.product'].create({
             'name': 'product1',
-            'is_storable': True,
+            'type': 'product',
             'uom_id': unit,
             'uom_po_id': unit,
             'seller_ids': [(6, 0, [supplier_info1.id])],
@@ -124,29 +127,33 @@ class TestPurchaseRequisitionStock(TestPurchaseRequisitionCommon):
         })
         product_2 = self.env['product.product'].create({
             'name': 'product2',
-            'is_storable': True,
+            'type': 'product',
             'uom_id': unit,
             'uom_po_id': unit,
             'seller_ids': [(6, 0, [supplier_info1.id])],
             'route_ids': [(6, 0, [route_buy, route_mto])]
         })
         # Blanket orders creation
+        requisition_type = self.env['purchase.requisition.type'].create({
+            'name': 'Blanket test',
+            'quantity_copy': 'none',
+        })
         line1 = (0, 0, {'product_id': product_1.id, 'product_qty': 18, 'product_uom_id': product_1.uom_po_id.id, 'price_unit': 41})
         line2 = (0, 0, {'product_id': product_2.id, 'product_qty': 18, 'product_uom_id': product_2.uom_po_id.id, 'price_unit': 42})
         requisition_1 = self.env['purchase.requisition'].create({
             'line_ids': [line1],
-            'requisition_type': 'blanket_order',
+            'type_id': requisition_type.id,
             'vendor_id': vendor1.id,
             'currency_id': self.env.user.company_id.currency_id.id,
         })
         requisition_2 = self.env['purchase.requisition'].create({
             'line_ids': [line2],
-            'requisition_type': 'blanket_order',
+            'type_id': requisition_type.id,
             'vendor_id': vendor1.id,
             'currency_id': self.env.user.company_id.currency_id.id,
         })
-        requisition_1.action_confirm()
-        requisition_2.action_confirm()
+        requisition_1.action_in_progress()
+        requisition_2.action_in_progress()
         # Stock moves
         stock_location = self.env.ref('stock.stock_location_stock')
         customer_location = self.env.ref('stock.stock_location_customers')
@@ -232,79 +239,10 @@ class TestPurchaseRequisitionStock(TestPurchaseRequisitionCommon):
         warning_wiz = Form(
             self.env['purchase.requisition.alternative.warning'].with_context(**action['context']))
         warning_wiz = warning_wiz.save()
-        self.assertEqual(len(warning_wiz.alternative_po_ids), 1,
+        self.assertEqual(warning_wiz.alternative_po_count, 1,
                          "POs not in a RFQ status should not be listed as possible to cancel")
         warning_wiz.action_cancel_alternatives()
         self.assertEqual(orig_po.state, 'cancel', "Original PO should have been cancelled")
-
-    def test_05_move_dest_links_alternatives(self):
-        """ Checks if Purchase Order alternatives are correctly linked to the original PO's move_dest_ids. """
-        # Prepare test data
-        wh = self.env.ref('stock.warehouse0')
-        buy_route_id = self.ref('purchase_stock.route_warehouse0_buy')
-        vendor_1 = self.env['res.partner'].create({'name': 'Vendor 1'})
-        vendor_2 = self.env['res.partner'].create({'name': 'Vendor 2'})
-        product = self.env['product.product'].create({
-            'name': 'Test product',
-            'is_storable': True,
-            'seller_ids': [Command.create({
-                'partner_id': vendor_1.id,
-                'price': 10.0,
-                'delay': 0,
-            })],
-            'route_ids': [Command.set([buy_route_id])],
-        })
-
-        # Sets the warehouse to do two-steps receptions
-        grp_multi_loc = self.env.ref('stock.group_stock_multi_locations')
-        grp_multi_step_rule = self.env.ref('stock.group_adv_location')
-        self.env.user.write({'groups_id': [(3, grp_multi_loc.id)]})
-        self.env.user.write({'groups_id': [(3, grp_multi_step_rule.id)]})
-        wh.reception_steps = 'two_steps'
-
-        # Create a reordering rule for the product and
-        self.env['stock.warehouse.orderpoint'].create({
-            'name': 'RR for %s' % product.name,
-            'warehouse_id': wh.id,
-            'location_id': wh.lot_stock_id.id,
-            'product_id': product.id,
-            'product_min_qty': 1,
-            'product_max_qty': 10,
-        })
-        # Run scheduler to create internal transfer from Input -> Stock and generate the Purchase Order
-        self.env['procurement.group'].run_scheduler()
-        # The internal move (Input -> Stock) shouldn't have been generated yet
-        int_move = self.env['stock.move'].search([('product_id', '=', product.id)])
-        self.assertFalse(int_move)
-        # Find the Purchase Order generated by the orderpoint
-        orig_po = self.env['purchase.order'].search([('partner_id', '=', vendor_1.id)])
-        self.assertEqual(len(orig_po.ids), 1, "Only one PO should have been generated.")
-        # Create an alternative RFQ for another vendor
-        action = orig_po.action_create_alternative()
-        alt_po_wizard = Form(self.env['purchase.requisition.create.alternative'].with_context(**action['context']))
-        alt_po_wizard.partner_id = vendor_2
-        alt_po_wizard.copy_products = True
-        alt_po_wizard = alt_po_wizard.save()
-        alt_po_wizard.action_create_alternative()
-        # Find the alternative Purchase Order
-        alt_po = orig_po.alternative_po_ids.filtered(lambda po: po.id != orig_po.id)
-        self.assertEqual(len(orig_po.alternative_po_ids), 2, "Base PO should be linked with the alternative PO.")
-        # Validate it
-        warning_wizard = Form.from_action(self.env, alt_po.button_confirm()).save()
-        # Cancel other alternatives
-        warning_wizard.action_cancel_alternatives()
-        self.assertEqual(orig_po.state, 'cancel', "Original PO should have been cancelled.")
-        self.assertEqual(alt_po.state, 'purchase', "Alternative PO should have been confirmed.")
-        # Set all qty as done and validate the alternative PO's picking
-        in_picking = alt_po.picking_ids
-        self.assertEqual(in_picking.picking_type_id.code, 'incoming', "Must be the reception picking.")
-        in_picking.move_ids.quantity = 10
-        in_picking.move_ids.picked = True
-        in_picking.button_validate()
-        # Now the internal move (Input -> Stock) should be generated
-        int_move = self.env['stock.move'].search([('product_id', '=', product.id), ('location_dest_id', '=', wh.lot_stock_id.id)])
-        self.assertEqual(int_move.quantity, 10, "Quantity should be reserved in the original internal move.")
-        self.assertEqual(int_move.move_orig_ids.id, in_picking.move_ids.id, "Both moves should be correctly chained together.")
 
     def test_group_id_alternative_po(self):
         """ Check that the group_id is propagated in the alternative PO"""

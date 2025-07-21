@@ -90,19 +90,6 @@ class GoogleService(models.AbstractModel):
             error_msg = _("Something went wrong during your token generation. Maybe your Authorization Code is invalid or already expired")
             raise self.env['res.config.settings'].get_config_warning(error_msg)
 
-    def _refresh_google_token(self, service, rtoken):
-        ICP = self.env['ir.config_parameter'].sudo()
-
-        headers = {"content-type": "application/x-www-form-urlencoded"}
-        data = {
-            'refresh_token': rtoken,
-            'client_id': self._get_client_id(service),
-            'client_secret': _get_client_secret(ICP, service),
-            'grant_type': 'refresh_token',
-        }
-        dummy, response, dummy = self._do_request(GOOGLE_TOKEN_ENDPOINT, params=data, headers=headers, method='POST', preuri='')
-        return response.get('access_token'), response.get('expires_in')
-
     @api.model
     def _do_request(self, uri, params=None, headers=None, method='POST', preuri=GOOGLE_API_BASE_URL, timeout=TIMEOUT):
         """ Execute the request to Google API. Return a tuple ('HTTP_CODE', 'HTTP_RESPONSE')
@@ -127,9 +114,9 @@ class GoogleService(models.AbstractModel):
         else:
             _log_params = (params or {}).copy()
         if _log_params.get('client_secret'):
-            _log_params['client_secret'] = str(_log_params['client_secret'])[0:4] + 'x' * 12
+            _log_params['client_secret'] = _log_params['client_secret'][0:4] + 'x' * 12
 
-        _logger.debug("Uri: %s - Type : %s - Headers: %s - Params : %s!", uri, method, headers, _log_params)
+        _logger.debug("Uri: %s - Type : %s - Headers: %s - Params : %s !", uri, method, headers, _log_params)
 
         ask_time = fields.Datetime.now()
         try:
@@ -138,7 +125,7 @@ class GoogleService(models.AbstractModel):
             elif method.upper() in ('POST', 'PATCH', 'PUT'):
                 res = requests.request(method.lower(), preuri + uri, data=params, headers=headers, timeout=timeout)
             else:
-                raise Exception(_('Method not supported [%s] not in [GET, POST, PUT, PATCH or DELETE]!', method))
+                raise Exception(_('Method not supported [%s] not in [GET, POST, PUT, PATCH or DELETE]!') % (method))
             res.raise_for_status()
             status = res.status_code
 
@@ -156,6 +143,6 @@ class GoogleService(models.AbstractModel):
                 status = error.response.status_code
                 response = ""
             else:
-                _logger.exception("Bad google request : %s!", error.response.content)
+                _logger.exception("Bad google request : %s !", error.response.content)
                 raise error
         return (status, response, ask_time)

@@ -6,7 +6,8 @@
         <field name="inherit_id" ref="hr_holidays.edit_holiday_status_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='request_unit']" position="after">
-                <field name="overtime_deductible"/>
+                <field name="hr_attendance_overtime" invisible="1" />
+                <field name="overtime_deductible" attrs="{'invisible': [('hr_attendance_overtime', '=', False)]}"/>
             </xpath>
         </field>
     </record>

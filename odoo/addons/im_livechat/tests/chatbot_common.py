@@ -4,7 +4,7 @@
 from odoo.tests import common
 
 
-class ChatbotCase(common.HttpCase):
+class ChatbotCase(common.TransactionCase):
 
     @classmethod
     def setUpClass(cls):
@@ -38,18 +38,14 @@ class ChatbotCase(common.HttpCase):
             cls.step_dispatch_buy_software,
             cls.step_dispatch_pricing,
             cls.step_dispatch_operator,
-            cls.step_dispatch_documentation,
         ] = cls.env['chatbot.script.answer'].sudo().create([{
-            'name': 'I\'d like to buy the software',
+            'name': 'I want to buy the software',
             'script_step_id': cls.step_dispatch.id,
         }, {
             'name': 'Pricing Question',
             'script_step_id': cls.step_dispatch.id,
         }, {
             'name': "I want to speak with an operator",
-            'script_step_id': cls.step_dispatch.id,
-        }, {
-            'name': "Other & Documentation",
             'script_step_id': cls.step_dispatch.id,
         }])
 
@@ -60,7 +56,6 @@ class ChatbotCase(common.HttpCase):
             cls.step_forward_operator,
             cls.step_no_one_available,
             cls.step_no_operator_dispatch,
-            cls.step_documentation_validated,
         ] = ChatbotScriptStep.create([{
             'step_type': 'text',
             'message': 'For any pricing question, feel free ton contact us at pricing@mycompany.com',
@@ -90,11 +85,6 @@ class ChatbotCase(common.HttpCase):
             'step_type': 'question_selection',
             'message': 'So... What can I do to help you?',
             'triggering_answer_ids': [(4, cls.step_dispatch_operator.id)],
-            'chatbot_script_id': cls.chatbot_script.id,
-        }, {
-            'step_type': 'text',
-            'message': 'Please find documentation at https://www.odoo.com/documentation/18.0/',
-            'triggering_answer_ids': [(4, cls.step_dispatch_documentation.id)],
             'chatbot_script_id': cls.chatbot_script.id,
         }])
 
@@ -144,13 +134,12 @@ class ChatbotCase(common.HttpCase):
         })
 
     @classmethod
-    def _post_answer_and_trigger_next_step(cls, discuss_channel, answer, chatbot_script_answer=False):
-        mail_message = discuss_channel.message_post(body=answer)
+    def _post_answer_and_trigger_next_step(cls, mail_channel, answer, chatbot_script_answer=False):
+        mail_message = mail_channel.message_post(body=answer)
         if chatbot_script_answer:
             cls.env['chatbot.message'].search([
                 ('mail_message_id', '=', mail_message.id)
             ], limit=1).user_script_answer_id = chatbot_script_answer.id
-
         # sudo: chatbot.script.step - members of a channel can access the current chatbot step
-        next_step = discuss_channel.chatbot_current_step_id.sudo()._process_answer(discuss_channel, mail_message.body)
-        next_step._process_step(discuss_channel)
+        next_step = mail_channel.chatbot_current_step_id.sudo()._process_answer(mail_channel, mail_message.body)
+        next_step._process_step(mail_channel)

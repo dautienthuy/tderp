@@ -3,16 +3,17 @@
 # 	* website_event
 # 
 # Translators:
+# Martin Trigaux, 2022
+# Abe Manyo, 2023
 # Wil Odoo, 2024
-# Abe Manyo, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-23 18:38+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: Abe Manyo, 2025\n"
+"POT-Creation-Date: 2023-02-07 08:56+0000\n"
+"PO-Revision-Date: 2022-09-22 05:56+0000\n"
+"Last-Translator: Wil Odoo, 2024\n"
 "Language-Team: Indonesian (https://app.transifex.com/odoo/teams/41243/id/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -31,14 +32,30 @@ msgid "'. Showing results for '"
 msgstr "'. Menunjukkan hasil untuk '"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.modal_ticket_registration
+#: model_terms:ir.ui.view,arch_db:website_event.registration_complete
+msgid "(Ref:"
+msgstr "(Ref:"
+
+#. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
 msgid "(only"
 msgstr "(hanya"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.registration_template
-msgid ", at"
-msgstr ", di"
+#: model_terms:ir.ui.view,arch_db:website_event.event_description_full
+msgid ""
+")\n"
+"                                <i class=\"fa fa-long-arrow-down d-block text-muted mx-3 my-2\" style=\"font-size: 1.5rem\"/>"
+msgstr ""
+")\n"
+"                                <i class=\"fa fa-long-arrow-down d-block text-muted mx-3 my-2\" style=\"font-size: 1.5rem\"/>"
+
+#. module: website_event
+#. odoo-javascript
+#: code:addons/website_event/static/src/js/tours/event_tour.js:0
+#, python-format
+msgid "<b>Drag and Drop</b> this snippet below the event title."
+msgstr "<b>Drag dan Drop</b> snippet ini di bawah judul acara."
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.registration_complete
@@ -46,24 +63,9 @@ msgid "<b>End</b>"
 msgstr "<b>Akhir</b>"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.registration_template
-msgid "<b>Sold Out</b>"
-msgstr "<b>Sold Out</b>"
-
-#. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.registration_complete
 msgid "<b>Start</b>"
 msgstr "<b>Mulai</b>"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_full
-msgid "<em>Hidden for visitors</em>"
-msgstr "<em>Disembunyikan untuk pengunjung</em>"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.registration_template
-msgid "<em>Registrations <b>Closed</b></em>"
-msgstr "<em>Pendaftaran <b>Ditutup</b></em>"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.index_sidebar_quotes
@@ -75,21 +77,26 @@ msgstr ""
 "memberikan Anda kepercayaan diri untuk acara-acara Anda.</em>"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.modal_ticket_registration
+#: model_terms:ir.ui.view,arch_db:website_event.template_intro
+msgid ""
+"<font style=\"font-size: 62px;\" "
+"class=\"o_default_snippet_text\">Introduction</font>"
+msgstr ""
+"<font style=\"font-size: 62px;\" "
+"class=\"o_default_snippet_text\">Pengantar</font>"
+
+#. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
 msgid "<i class=\"fa fa-ban me-2\"/>Sold Out"
 msgstr "<i class=\"fa fa-ban me-2\"/>Sold Out"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.events_list
 msgid "<i class=\"fa fa-ban me-2\"/>Unpublished"
-msgstr "<i class=\"fa fa-ban me-2\"/>Unpublished"
+msgstr "<i class=\"fa fa-ban me-2\"/>Belum dipublikasi"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_full
-msgid "<i class=\"fa fa-check me-2\" role=\"img\"/>Registered"
-msgstr "<i class=\"fa fa-check me-2\" role=\"img\"/>Pendaftaran"
-
-#. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.event_details
 #: model_terms:ir.ui.view,arch_db:website_event.events_list
 msgid "<i class=\"fa fa-check me-2\"/>Registered"
 msgstr "<i class=\"fa fa-check me-2\"/>Didaftarkan"
@@ -102,6 +109,16 @@ msgid ""
 msgstr ""
 "<i class=\"fa fa-facebook text-facebook\" aria-label=\"Facebook\" "
 "title=\"Facebook\"/>"
+
+#. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.registration_complete
+msgid "<i class=\"fa fa-fw fa-calendar\"/> Add to Google Calendar"
+msgstr "<i class=\"fa fa-fw fa-calendar\"/> Tambahkan ke Google Calendar"
+
+#. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.registration_complete
+msgid "<i class=\"fa fa-fw fa-calendar\"/> Add to iCal/Outlook"
+msgstr "<i class=\"fa fa-fw fa-calendar\"/> Tambahkan ke iCal/Outlook"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.registration_configure_tickets_button
@@ -141,24 +158,29 @@ msgstr ""
 "title=\"LinkedIn\"/>"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.events_list
-msgid "<i class=\"fa fa-map-marker me-2\" title=\"Location\"/>"
-msgstr "<i class=\"fa fa-map-marker me-2\" title=\"Lokasi\"/>"
+#: model_terms:ir.ui.view,arch_db:website_event.layout
+msgid ""
+"<i class=\"fa fa-long-arrow-left me-2\"/>\n"
+"                            <span>All Events</span>"
+msgstr ""
+"<i class=\"fa fa-long-arrow-left me-2\"/>\n"
+"                            <span>Semua Acara</span>"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_full
-msgid "<i class=\"fa fa-map-marker\" title=\"Location\"/> Online event"
-msgstr "<i class=\"fa fa-map-marker\" title=\"Location\"/> Acara online"
+#: model_terms:ir.ui.view,arch_db:website_event.event_event_view_form_add
+msgid ""
+"<i class=\"fa fa-long-arrow-right mx-2\" aria-label=\"Arrow icon\" "
+"title=\"Arrow\"/>"
+msgstr ""
+"<i class=\"fa fa-long-arrow-right mx-2\" aria-label=\"Arrow icon\" "
+"title=\"Panah\"/>"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.index_sidebar_follow_us
-msgid "<i class=\"fa fa-tiktok text-tiktok\" aria-label=\"TikTok\" title=\"TikTok\"/>"
-msgstr "<i class=\"fa fa-tiktok text-tiktok\" aria-label=\"TikTok\" title=\"TikTok\"/>"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.index_sidebar_follow_us
-msgid "<i class=\"fa fa-twitter text-twitter\" aria-label=\"X\" title=\"X\"/>"
-msgstr "<i class=\"fa fa-twitter text-twitter\" aria-label=\"X\" title=\"X\"/>"
+msgid "<i class=\"fa fa-twitter text-twitter\" aria-label=\"Twitter\" title=\"Twitter\"/>"
+msgstr ""
+"<i class=\"fa fa-twitter text-twitter\" aria-label=\"Twitter\" "
+"title=\"Twitter\"/>"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.index_sidebar_follow_us
@@ -168,35 +190,6 @@ msgid ""
 msgstr ""
 "<i class=\"fa fa-youtube-play text-youtube\" aria-label=\"Youtube\" "
 "title=\"Youtube\"/>"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.navbar
-msgid ""
-"<i class=\"oi oi-chevron-left\"/>\n"
-"                <span>All Events</span>"
-msgstr ""
-"<i class=\"oi oi-chevron-left\"/>\n"
-"                <span>Semua Acara</span>"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_dates
-msgid "<small class=\"fw-bold\">Ends</small>"
-msgstr "<small class=\"fw-bold\">Berakhir</small>"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_dates
-msgid "<small class=\"fw-bold\">Starts</small>"
-msgstr "<small class=\"fw-bold\">Mulai</small>"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_dates
-msgid "<small class=\"text-muted\">Add to calendar:</small>"
-msgstr "<small class=\"text-muted\">Tambahkan ke kalender:</small>"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.registration_complete
-msgid "<small>Add this event to your calendar</small>"
-msgstr "<small>Tambahkan acara ini ke kalender Anda</small>"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.s_speaker_bio
@@ -208,9 +201,9 @@ msgstr ""
 "o_wevent_badge\">Speaker</span>"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.events_list
-msgid "<span class=\"fa fa-plus me-1\"/> Create an Event"
-msgstr "<span class=\"fa fa-plus me-1\"/> Buat Acara"
+#: model_terms:ir.ui.view,arch_db:website_event.index_topbar
+msgid "<span class=\"navbar-brand h4 my-0 me-auto\">Events</span>"
+msgstr "<span class=\"navbar-brand h4 my-0 me-auto\">Acara</span>"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.display_timer_widget
@@ -249,15 +242,25 @@ msgstr ""
 "class=\"o_countdown_metric\"/>"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.modal_ticket_registration
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
+msgid "<span class=\"py-2 o_wevent_registration_title text-start\">Tickets</span>"
+msgstr "<span class=\"py-2 o_wevent_registration_title text-start\">Tiket</span>"
+
+#. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
+msgid "<span class=\"text-dark fw-bold align-middle px-2\">Qty</span>"
+msgstr "<span class=\"text-dark fw-bold align-middle px-2\">Kuantitas</span>"
+
+#. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
 msgid ""
 "<span itemprop=\"availability\" content=\"http://schema.org/SoldOut\" class=\"text-danger\">\n"
-"                                        <i class=\"fa fa-ban me-2\"/>Sold Out\n"
-"                                    </span>"
+"                                    <i class=\"fa fa-ban me-2\"/>Sold Out\n"
+"                                </span>"
 msgstr ""
 "<span itemprop=\"availability\" content=\"http://schema.org/SoldOut\" class=\"text-danger\">\n"
-"                                        <i class=\"fa fa-ban me-2\"/>Sold Out\n"
-"                                    </span>"
+"                                    <i class=\"fa fa-ban me-2\"/>Sold Out\n"
+"                                </span>"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.event_location
@@ -265,72 +268,19 @@ msgid "<span>Online Events</span>"
 msgstr "<span>Acara Online</span>"
 
 #. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
+msgid ""
+"<span>Tickets</span>\n"
+"                        <span class=\"btn p-0 close d-none\">×</span>"
+msgstr ""
+"<span>Tiket</span>\n"
+"                        <span class=\"btn p-0 close d-none\">×</span>"
+
+#. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.registration_attendee_details
 msgid "<strong> You ordered more tickets than available seats</strong>"
 msgstr ""
 "<strong> Anda memesan tiket melebihi tempat duduk yang tersedia</strong>"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.s_event_upcoming_snippet_preview_data
-msgid ""
-"<time class=\"text-white\" datetime=\"2024-08-05 07:00:00\">\n"
-"                                <span>July 26, 2024</span>\n"
-"                                <span class=\"s_events_event_time\">\n"
-"                                    - <span>9:00 AM</span>\n"
-"                                    (Europe/Brussels)\n"
-"                                </span>\n"
-"                            </time>"
-msgstr ""
-"<time class=\"text-white\" datetime=\"2024-08-05 07:00:00\">\n"
-"                                <span>July 26, 2024</span>\n"
-"                                <span class=\"s_events_event_time\">\n"
-"                                    - <span>9:00 AM</span>\n"
-"                                    (Europe/Brussels)\n"
-"                                </span>\n"
-"                            </time>"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.s_event_upcoming_snippet_preview_data
-msgid ""
-"<time class=\"text-white\" datetime=\"2024-08-10 08:00:00\">\n"
-"                                <span>October 24, 2024</span>\n"
-"                                <span class=\"s_events_event_time\">\n"
-"                                    - <span>1:15 AM</span>\n"
-"                                    (Europe/Brussels)\n"
-"                                </span>\n"
-"                            </time>"
-msgstr ""
-"<time class=\"text-white\" datetime=\"2024-08-10 08:00:00\">\n"
-"                                <span>October 24, 2024</span>\n"
-"                                <span class=\"s_events_event_time\">\n"
-"                                    - <span>1:15 AM</span>\n"
-"                                    (Europe/Brussels)\n"
-"                                </span>\n"
-"                            </time>"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.s_event_upcoming_snippet_preview_data
-msgid ""
-"<time class=\"text-white\" datetime=\"2024-11-08 20:15:00\">\n"
-"                                <span>November 23, 2024</span>\n"
-"                                <span class=\"s_events_event_time\">\n"
-"                                    - <span>8:15 PM</span>\n"
-"                                    (Europe/Brussels)\n"
-"                                </span>\n"
-"                            </time>"
-msgstr ""
-"<time class=\"text-white\" datetime=\"2024-11-08 20:15:00\">\n"
-"                                <span>November 23, 2024</span>\n"
-"                                <span class=\"s_events_event_time\">\n"
-"                                    - <span>8:15 PM</span>\n"
-"                                    (Europe/Brussels)\n"
-"                                </span>\n"
-"                            </time>"
-
-#. module: website_event
-#: model:event.question.answer,name:website_event.event_0_question_2_answer_2
-msgid "A friend"
-msgstr "Teman"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.index_sidebar_photos
@@ -348,45 +298,21 @@ msgid "About us"
 msgstr "Tentang kami"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_dates
-msgid "Add to Google"
-msgstr "Tambahkan ke Google"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.registration_complete
-msgid "Add to Google Agenda"
-msgstr "Tambahkan ke Google Agenda"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_dates
-msgid "Add to Outlook"
-msgstr "Tambahkan ke Outlook"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_dates
-msgid "Add to iCal"
-msgstr "Tambahkan ke iCal"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.registration_complete
-msgid "Add to iCal/Outlook"
-msgstr "Tambahkan ke iCal/Outlook"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.index_topbar
-msgid "All"
-msgstr "Semua"
+#: model_terms:ir.ui.view,arch_db:website_event.event_description_full
+msgid "Add to Calendar"
+msgstr "Tambahkan ke Kalender"
 
 #. module: website_event
 #. odoo-python
 #: code:addons/website_event/controllers/main.py:0
+#, python-format
 msgid "All Countries"
 msgstr "Semua Negara"
 
 #. module: website_event
 #. odoo-python
 #: code:addons/website_event/models/event_event.py:0
-#: model_terms:ir.ui.view,arch_db:website_event.navbar
+#, python-format
 msgid "All Events"
 msgstr "Semua Acara"
 
@@ -396,16 +322,16 @@ msgid "All countries"
 msgstr "Semua negara"
 
 #. module: website_event
-#: model:event.question,title:website_event.event_0_question_1
-msgid "Allergies"
-msgstr "Alergi"
-
-#. module: website_event
 #: model:ir.model.fields,help:website_event.field_event_event__website_menu
 msgid "Allows to display and manage event-specific menus on website."
 msgstr ""
 "Izinkan untuk menampilkan dan mengelola menu spesifik untuk acara di "
 "website."
+
+#. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.res_config_settings_view_form
+msgid "Ask questions to attendees when registering online"
+msgstr "Tanyakan pertanyaan ke peserta saat mendaftar online"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.s_speaker_bio
@@ -432,31 +358,14 @@ msgid "Author"
 msgstr "Penulis"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.navbar
-msgid "Back to All Events"
-msgstr "Kembali ke Semua Acara"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.navbar
-msgid "Back to {{event.name}}"
-msgstr "Kembali ke {{event.name}}"
-
-#. module: website_event
-#: model:event.question.answer,name:website_event.event_1_question_0_answer_1
-#: model:event.question.answer,name:website_event.event_5_question_0_answer_1
-#: model:event.question.answer,name:website_event.event_type_data_sports_question_0_answer_1
-msgid "Blog Post"
-msgstr "Blog Post"
-
-#. module: website_event
 #. odoo-python
 #: code:addons/website_event/models/website_snippet_filter.py:0
+#, python-format
 msgid "Business Workshops"
 msgstr "Workshop Bisnis"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event__can_publish
-#: model:ir.model.fields,field_description:website_event.field_event_tag__can_publish
 #: model:ir.model.fields,field_description:website_event.field_event_tag_category__can_publish
 msgid "Can Publish"
 msgstr "Dapat Dipublikasikan"
@@ -468,27 +377,21 @@ msgstr "Batal"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.snippet_options
-msgid "Card design"
-msgstr "Desain kartu"
+msgid "Cards"
+msgstr "Kartu-Kartu"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.display_timer_alert_widget
-#: model_terms:ir.ui.view,arch_db:website_event.index_topbar
-#: model_terms:ir.ui.view,arch_db:website_event.modal_ticket_registration
 #: model_terms:ir.ui.view,arch_db:website_event.registration_attendee_details
 msgid "Close"
 msgstr "Tutup"
-
-#. module: website_event
-#: model:event.question.answer,name:website_event.event_0_question_2_answer_1
-msgid "Commercials"
-msgstr "Komersial"
 
 #. module: website_event
 #. odoo-python
 #: code:addons/website_event/models/event_event.py:0
 #: model_terms:ir.ui.view,arch_db:website_event.event_event_view_form
 #: model_terms:ir.ui.view,arch_db:website_event.event_type_view_form
+#, python-format
 msgid "Community"
 msgstr "Komunitas"
 
@@ -507,34 +410,19 @@ msgstr "Perusahaan"
 #. module: website_event
 #. odoo-python
 #: code:addons/website_event/models/website_snippet_filter.py:0
+#, python-format
 msgid "Conference For Architects"
 msgstr "Konferensi untuk Arsitek"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.registration_configure_tickets_button
-msgid "Configure event tickets"
-msgstr "Konfigurasikan tiket acara"
-
-#. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.registration_attendee_details
-msgid "Confirm Registration"
-msgstr "Konfirmasi Pendaftaran"
+msgid "Continue"
+msgstr "Lanjutkan"
 
 #. module: website_event
-#: model:event.question.answer,name:website_event.event_7_question_0_answer_0
-msgid "Consumers"
-msgstr "Konsumen"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_location
 #: model_terms:ir.ui.view,arch_db:website_event.snippet_options
 msgid "Countries"
 msgstr "Negara"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.snippet_options
-msgid "Cover Position"
-msgstr "Posisi Sampul"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event__cover_properties
@@ -552,10 +440,14 @@ msgid "Created on"
 msgstr "Dibuat pada"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_time
 #: model_terms:ir.ui.view,arch_db:website_event.snippet_options
 msgid "Date"
 msgstr "Tanggal"
+
+#. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.event_description_full
+msgid "Date &amp; Time"
+msgstr "Tanggal &amp; Waktu"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.event_searchbar_input_snippet_options
@@ -566,17 +458,6 @@ msgstr "Tanggal (baru ke lama)"
 #: model_terms:ir.ui.view,arch_db:website_event.event_searchbar_input_snippet_options
 msgid "Date (old to new)"
 msgstr "Tanggal (lama ke baru)"
-
-#. module: website_event
-#: model:ir.model.fields,help:website_event.field_event_event__website_visibility
-msgid ""
-"Defines the Visibility of the Event on the Website and searches.\n"
-"\n"
-"            Note that the Event is however always available via its link."
-msgstr ""
-"Definisikan Visibilitas Acara pada Website dan pencarian.\n"
-"\n"
-"            Catat bahwa Acara akan selalu tersedia melalui linknya."
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.event_searchbar_input_snippet_options
@@ -602,27 +483,24 @@ msgstr "Tampilkan tab komunitas pada website"
 #. module: website_event
 #. odoo-javascript
 #: code:addons/website_event/static/src/js/tours/event_tour.js:0
+#, python-format
 msgid "Don't forget to click <b>save</b> when you're done."
 msgstr "Jangan lupa untuk mengeklik <b>simpan</b> saat Anda selesai."
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.registration_complete
-msgid "Don't miss out!"
-msgstr "Jangan ketinggalan!"
+#: model_terms:ir.ui.view,arch_db:website_event.registration_attendee_details
+msgid "Email *"
+msgstr "Email *"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.registration_ticket_access
-msgid "Download All Tickets"
-msgstr "Unduh Semua Tiket"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.registration_ticket_access
-msgid "Download Tickets <i class=\"ms-1 fa fa-download\"/>"
-msgstr "Unduh Tiket <i class=\"ms-1 fa fa-download\"/>"
+#: model_terms:ir.ui.view,arch_db:website_event.event_description_full
+msgid "End -"
+msgstr "Akhir -"
 
 #. module: website_event
 #. odoo-javascript
 #: code:addons/website_event/static/src/js/website_event.js:0
+#, python-format
 msgid "Error"
 msgstr "Error!"
 
@@ -638,24 +516,9 @@ msgid "Event Community Menus"
 msgstr "Menu Acara Komunitas"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.snippet_options
-msgid "Event Cover Position"
-msgstr "Posisi Sampul Acara"
-
-#. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.event_searchbar_input_snippet_options
 msgid "Event Date"
 msgstr "Tanggal Event"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.registration_complete
-msgid "Event Details"
-msgstr "Detail Acara"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_full
-msgid "Event Info"
-msgstr "Informasi Acara"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.template_location
@@ -670,7 +533,7 @@ msgstr "Menu Acara"
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.event_event_view_form_add
 msgid "Event Name"
-msgstr "Nama acara"
+msgstr "Nama Acara"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.snippet_options
@@ -685,12 +548,7 @@ msgstr "Halaman Acara"
 #. module: website_event
 #: model:ir.model,name:website_event.model_event_registration
 msgid "Event Registration"
-msgstr "Pendaftaran acara"
-
-#. module: website_event
-#: model:ir.model.fields,field_description:website_event.field_event_event__event_register_url
-msgid "Event Registration Link"
-msgstr "Link Pendaftaran Acara"
+msgstr "Pendaftaran Acara"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_website_visitor__event_registration_ids
@@ -699,14 +557,9 @@ msgstr "Pendaftaran Acara"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event__subtitle
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_full
+#: model_terms:ir.ui.view,arch_db:website_event.event_details
 msgid "Event Subtitle"
 msgstr "Subtitle Acara"
-
-#. module: website_event
-#: model:ir.model,name:website_event.model_event_tag
-msgid "Event Tag"
-msgstr "Tag Acara"
 
 #. module: website_event
 #: model:ir.model,name:website_event.model_event_tag_category
@@ -724,7 +577,7 @@ msgid "Event Template"
 msgstr "Templat Acara"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_full
+#: model_terms:ir.ui.view,arch_db:website_event.event_details
 msgid "Event Title"
 msgstr "Judul Acara"
 
@@ -751,8 +604,8 @@ msgstr "Acara yang tidak dipublikasikan"
 #: model:ir.ui.menu,name:website_event.menu_event_pages
 #: model:website.menu,name:website_event.menu_events
 #: model_terms:ir.ui.view,arch_db:website_event.event_searchbar_input_snippet_options
-#: model_terms:ir.ui.view,arch_db:website_event.index_topbar
 #: model_terms:ir.ui.view,arch_db:website_event.snippets
+#, python-format
 msgid "Events"
 msgstr "Acara"
 
@@ -762,29 +615,16 @@ msgid "Events Page"
 msgstr "Halaman Acara"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.s_event_upcoming_snippet_preview_data
-msgid "Excellence in Achievement Awards"
-msgstr "Excellence in Achievement Awards"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.modal_ticket_registration
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
 msgid "Expired"
-msgstr "Berakhir"
+msgstr "Kadaluarsa"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_location
-msgid "Filter by Country"
-msgstr "Filter berdasarkan Negara"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_time
-msgid "Filter by Date"
-msgstr "Filter berdasarkan Tanggal"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.index_topbar
-msgid "Filters"
-msgstr "Penyaring"
+#: model:ir.model.fields,field_description:website_event.field_event_event__menu_register_cta
+#: model:ir.model.fields,field_description:website_event.field_event_type__menu_register_cta
+#: model_terms:ir.ui.view,arch_db:website_event.event_event_view_form
+msgid "Extra Register Button"
+msgstr "Tombol Pendaftaran Ekstra"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.event_description_full
@@ -794,6 +634,11 @@ msgid ""
 msgstr ""
 "Cari tahu apa yang orang lihat dan katakan mengenai acara ini, dan ikuti "
 "percakapan mereka."
+
+#. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.snippet_options
+msgid "Fold Tickets Details"
+msgstr "Detail Tampilan Tiket"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.index_sidebar_follow_us
@@ -808,18 +653,18 @@ msgstr "Konten berikut akan muncul di semua acara."
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.event_description_full
-msgid "Get directions"
-msgstr "Dapatkan araha"
+msgid "Get the direction"
+msgstr "Dapatkan petunjuk arah"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_dates
-#: model_terms:ir.ui.view,arch_db:website_event.registration_complete
-msgid "Google Agenda"
-msgstr "Google Agenda"
+#: model_terms:ir.ui.view,arch_db:website_event.event_description_full
+msgid "Google"
+msgstr "Google"
 
 #. module: website_event
 #. odoo-python
 #: code:addons/website_event/models/website_snippet_filter.py:0
+#, python-format
 msgid "Great Reno Ballon Race"
 msgstr "Great Reno Ballon Race"
 
@@ -829,33 +674,11 @@ msgid "Grid"
 msgstr "Grid"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.s_event_upcoming_snippet_preview_data
-msgid "Harmony Under the Stars"
-msgstr "Harmony Under the Stars"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.snippet_options
-msgid "Hidden (visitor only)"
-msgstr "Tersembunyi (hanya pengunjung)"
-
-#. module: website_event
 #. odoo-python
 #: code:addons/website_event/models/website_snippet_filter.py:0
+#, python-format
 msgid "Hockey Tournament"
 msgstr "Turnamen hoki"
-
-#. module: website_event
-#: model:event.question,title:website_event.event_7_question_1
-msgid "How did you hear about us?"
-msgstr "Dari mana Anda mendengar tentang kami?"
-
-#. module: website_event
-#: model:event.question,title:website_event.event_0_question_2
-#: model:event.question,title:website_event.event_1_question_0
-#: model:event.question,title:website_event.event_5_question_0
-#: model:event.question,title:website_event.event_type_data_sports_question_0
-msgid "How did you learn about this event?"
-msgstr "Dari mana Anda mendengar tentang acara ini?"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_website_event_menu__id
@@ -865,25 +688,8 @@ msgstr "ID"
 #. module: website_event
 #. odoo-python
 #: code:addons/website_event/models/event_event.py:0
-#: model:ir.model.fields.selection,name:website_event.selection__website_event_menu__menu_type__register
-msgid "Info"
-msgstr "Info"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.s_event_upcoming_snippet_preview_data
-msgid "Innovations in Technology and Society"
-msgstr "Innovations in Technology and Society"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.snippet_options
-msgid "Inside content"
-msgstr "Konten di dalam"
-
-#. module: website_event
-#. odoo-python
-#: code:addons/website_event/models/event_event.py:0
 #: model:ir.model.fields.selection,name:website_event.selection__website_event_menu__menu_type__introduction
-#: model_terms:ir.ui.view,arch_db:website_event.template_intro
+#, python-format
 msgid "Introduction"
 msgstr "Pengantar"
 
@@ -914,7 +720,6 @@ msgstr "Berpartisipasi"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event__is_published
-#: model:ir.model.fields,field_description:website_event.field_event_tag__is_published
 #: model:ir.model.fields,field_description:website_event.field_event_tag_category__is_published
 msgid "Is Published"
 msgstr "Dipublikasikan"
@@ -923,6 +728,11 @@ msgstr "Dipublikasikan"
 #: model_terms:ir.ui.view,arch_db:website_event.s_speaker_bio
 msgid "John DOE"
 msgstr "John DOE"
+
+#. module: website_event
+#: model:ir.model.fields,field_description:website_event.field_website_event_menu____last_update
+msgid "Last Modified on"
+msgstr "Terakhir Diubah pada"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_website_event_menu__write_uid
@@ -947,6 +757,7 @@ msgstr "Daftar"
 #. module: website_event
 #. odoo-python
 #: code:addons/website_event/models/website_snippet_filter.py:0
+#, python-format
 msgid "Live Music Festival"
 msgstr "Festival Live Music"
 
@@ -955,6 +766,7 @@ msgstr "Festival Live Music"
 #: code:addons/website_event/models/event_event.py:0
 #: model:ir.model.fields.selection,name:website_event.selection__website_event_menu__menu_type__location
 #: model_terms:ir.ui.view,arch_db:website_event.event_description_full
+#, python-format
 msgid "Location"
 msgstr "Lokasi"
 
@@ -969,24 +781,15 @@ msgid "Location Menus"
 msgstr "Menu-Menu Lokasi"
 
 #. module: website_event
-#: model:ir.model.fields.selection,name:website_event.selection__event_event__website_visibility__logged_users
-msgid "Logged Users"
-msgstr "User yang Login"
-
-#. module: website_event
 #. odoo-javascript
 #: code:addons/website_event/static/src/js/tours/event_tour.js:0
+#, python-format
 msgid ""
 "Looking great! Let's now <b>publish</b> this page so that it becomes "
 "<b>visible</b> on your website!"
 msgstr ""
 "Bagus! Mari sekarang <b>publikasi</b> halaman ini supaya <b>terlihat</b> "
 "pada website Anda!"
-
-#. module: website_event
-#: model:event.question,title:website_event.event_0_question_0
-msgid "Meal Type"
-msgstr "Tipe Makanan"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_website_event_menu__menu_id
@@ -1004,23 +807,24 @@ msgid "Menus"
 msgstr "Menu-Menu"
 
 #. module: website_event
-#: model:event.question.answer,name:website_event.event_0_question_0_answer_0
-msgid "Mixed"
-msgstr "Campuran"
+#: model_terms:ir.ui.view,arch_db:website_event.registration_complete
+msgid "N/A"
+msgstr "N/A"
 
 #. module: website_event
-#: model:ir.model.fields,field_description:website_event.field_event_event__address_name
-msgid "Name"
-msgstr "Nama"
+#: model_terms:ir.ui.view,arch_db:website_event.registration_attendee_details
+msgid "Name *"
+msgstr "Nama *"
 
 #. module: website_event
 #: model:ir.actions.act_window,name:website_event.event_event_action_add
 msgid "New Event"
-msgstr "Acara baru"
+msgstr "Acara Baru"
 
 #. module: website_event
 #. odoo-python
 #: code:addons/website_event/models/website.py:0
+#, python-format
 msgid "Next Events"
 msgstr "Acara-Acara Berikutnya"
 
@@ -1031,15 +835,8 @@ msgstr "Belum ada item Menu Website!"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.events_list
-msgid "No event matching your search criteria could be found."
-msgstr ""
-"Tidak ada acara yang cocok dengan criteria pencarian Anda yang dapat "
-"ditemukan."
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.events_list
-msgid "No events scheduled yet"
-msgstr "Belum ada acara yang dijadwalkan"
+msgid "No events found."
+msgstr "Tidak ada event yang ditemukan."
 
 #. module: website_event
 #: model_terms:ir.actions.act_window,help:website_event.event_registration_action_from_visitor
@@ -1057,20 +854,16 @@ msgid "Not Published"
 msgstr "Tidak Dipublikasikan"
 
 #. module: website_event
+#. odoo-python
+#: code:addons/website_event/models/website_snippet_filter.py:0
+#, python-format
+msgid "OpenWood Collection Online Reveal"
+msgstr "OpenWood Collection Online Reveal"
+
+#. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.event_location
 msgid "Online Events"
 msgstr "Acara Online"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.events_list
-msgid "Online event"
-msgstr "Acara online"
-
-#. module: website_event
-#. odoo-python
-#: code:addons/website_event/models/website_snippet_filter.py:0
-msgid "OpenWood Collection Online Reveal"
-msgstr "OpenWood Collection Online Reveal"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.event_description_full
@@ -1083,26 +876,16 @@ msgid "Our Trainings"
 msgstr "Training Kami"
 
 #. module: website_event
-#: model:event.question.answer,name:website_event.event_0_question_2_answer_0
-msgid "Our website"
-msgstr "Website kami"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_dates
-#: model_terms:ir.ui.view,arch_db:website_event.registration_complete
-msgid "Outlook"
-msgstr "Outlook"
-
-#. module: website_event
 #. odoo-python
 #: code:addons/website_event/models/event_event.py:0
+#, python-format
 msgid "Past Events"
-msgstr "Acara Masa Lalu"
+msgstr "Acara Masa Llu"
 
 #. module: website_event
-#: model:event.question.answer,name:website_event.event_0_question_0_answer_2
-msgid "Pastafarian"
-msgstr "Pastafarian"
+#: model_terms:ir.ui.view,arch_db:website_event.registration_attendee_details
+msgid "Phone <small>(Optional)</small>"
+msgstr "Telepon <small>(Opsional)</small>"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.index_sidebar_photos
@@ -1111,20 +894,22 @@ msgid "Photos"
 msgstr "Foto"
 
 #. module: website_event
-#: model:ir.model.fields.selection,name:website_event.selection__event_event__website_visibility__public
-msgid "Public"
-msgstr "Umum"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_event_view_form
-msgid "Publish"
-msgstr "Publikasikan"
+#. odoo-javascript
+#: code:addons/website_event/static/src/js/website_event.js:0
+#, python-format
+msgid "Please select at least one ticket."
+msgstr "Mohon pilih setidaknya satu tiket."
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.event_event_view_search
 #: model_terms:ir.ui.view,arch_db:website_event.event_pages_kanban_view
 msgid "Published"
-msgstr "Terpublikasi"
+msgstr "Dipublikasi"
+
+#. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.res_config_settings_view_form
+msgid "Questions"
+msgstr "Pertanyaan"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.snippet_options
@@ -1132,19 +917,26 @@ msgid "Quotes"
 msgstr "Penawaran"
 
 #. module: website_event
-#: model:event.question.answer,name:website_event.event_1_question_0_answer_2
-#: model:event.question.answer,name:website_event.event_5_question_0_answer_2
-#: model:event.question.answer,name:website_event.event_type_data_sports_question_0_answer_2
-msgid "Radio Ad"
-msgstr "Iklan Radio"
+#: model_terms:ir.ui.view,arch_db:website_event.registration_complete
+msgid "Ref:"
+msgstr "Ref:"
 
 #. module: website_event
+#. odoo-python
 #. odoo-javascript
+#: code:addons/website_event/models/event_event.py:0
 #: code:addons/website_event/static/src/js/register_toaster_widget.js:0
-#: model_terms:ir.ui.view,arch_db:website_event.modal_ticket_registration
+#: model:ir.model.fields.selection,name:website_event.selection__website_event_menu__menu_type__register
+#: model_terms:ir.ui.view,arch_db:website_event.layout
 #: model_terms:ir.ui.view,arch_db:website_event.registration_template
+#, python-format
 msgid "Register"
 msgstr "Daftar"
+
+#. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.event_type_view_form
+msgid "Register Button"
+msgstr "Tombol Daftar"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event__register_menu
@@ -1164,10 +956,10 @@ msgstr "Acara-Acara yang Terdaftar"
 #. module: website_event
 #. odoo-python
 #: code:addons/website_event/controllers/main.py:0
-#: model_terms:ir.ui.view,arch_db:website_event.modal_ticket_registration
-#: model_terms:ir.ui.view,arch_db:website_event.navbar
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
+#, python-format
 msgid "Registration"
-msgstr "Registrasi rawat inap"
+msgstr "Pendaftaran"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.registration_complete
@@ -1175,31 +967,27 @@ msgid "Registration confirmed!"
 msgstr "Pendaftaran dikonfirmasi!"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.modal_ticket_registration
-#: model_terms:ir.ui.view,arch_db:website_event.registration_template
-msgid "Registration failed! These tickets are not available anymore."
-msgstr "Pendaftaran gagal! Tiket-tiket ini tidak lagi tersedia."
-
-#. module: website_event
 #: model:ir.actions.act_window,name:website_event.event_registration_action_from_visitor
 #: model_terms:ir.ui.view,arch_db:website_event.website_visitor_view_form
 msgid "Registrations"
-msgstr "Proyek"
+msgstr "Pendaftaran"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.events_list
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
 msgid "Registrations Closed"
 msgstr "Pendaftaran DItutup"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.events_list
-msgid "Registrations not yet open"
-msgstr "Pendaftaran belum dibuka"
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
+msgid "Registrations are <b>closed</b>"
+msgstr "Pendaftaran <b>ditutup</b>"
 
 #. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.events_list
 #: model_terms:ir.ui.view,arch_db:website_event.registration_template
-msgid "Registrations will open on"
-msgstr "Pendaftaran akan dibuka pada"
+msgid "Registrations not yet open"
+msgstr "Pendaftaran belum dibuka"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event__start_remaining
@@ -1212,16 +1000,9 @@ msgid "Remaining time before event starts (minutes)"
 msgstr "Waktu tersisa sebelum acara dimulai (menit)"
 
 #. module: website_event
-#: model:event.question.answer,name:website_event.event_7_question_0_answer_2
-msgid "Research"
-msgstr "Penelitian"
-
-#. module: website_event
 #: model:ir.model.fields,help:website_event.field_event_event__website_id
-#: model:ir.model.fields,help:website_event.field_event_tag__website_id
-#: model:ir.model.fields,help:website_event.field_event_tag_category__website_id
-msgid "Restrict to a specific website."
-msgstr "Batasi ke website tertentu."
+msgid "Restrict publishing to this website."
+msgstr "Batasi publikasi ke website ini."
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.404
@@ -1234,17 +1015,17 @@ msgid "SEO optimized"
 msgstr "Dioptimalkan SEO"
 
 #. module: website_event
-#: model:event.question.answer,name:website_event.event_7_question_0_answer_1
-msgid "Sales"
-msgstr "Penjualan"
+#: model_terms:ir.ui.view,arch_db:website_event.event_description_full
+msgid "SHARE"
+msgstr "SHARE"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.modal_ticket_registration
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
 msgid "Sales end on"
 msgstr "Sale berakhir pada"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.modal_ticket_registration
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
 msgid "Sales start on"
 msgstr "Sale dimulai pada"
 
@@ -1260,20 +1041,9 @@ msgid "Search an event..."
 msgstr "Cari acara..."
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_registration_view_search
-#: model_terms:ir.ui.view,arch_db:website_event.event_registration_view_tree
-msgid "Selected Answers"
-msgstr "Jawaban-Jawaban yang Dipilih"
-
-#. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event__seo_name
 msgid "Seo name"
 msgstr "Nama SEO"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_full
-msgid "Share"
-msgstr "Bagikan"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.event_tag_category_view_form
@@ -1282,32 +1052,25 @@ msgid "Show on Website"
 msgstr "Tunjukkan pada Website"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.s_dynamic_snippet_options_template
-msgid "Show time"
-msgstr "Tunjukkan waktu"
-
-#. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.snippet_options
 msgid "Sidebar"
 msgstr "Sidebar"
 
 #. module: website_event
-#: model:event.question.answer,name:website_event.event_1_question_0_answer_0
-#: model:event.question.answer,name:website_event.event_5_question_0_answer_0
-#: model:event.question.answer,name:website_event.event_type_data_sports_question_0_answer_0
-msgid "Social Media"
-msgstr "Media sosial"
-
-#. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.events_list
-#: model_terms:ir.ui.view,arch_db:website_event.modal_ticket_registration
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
 msgid "Sold Out"
-msgstr "Terjual Habis"
+msgstr "Sold Out"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.404
 msgid "Sorry, the requested event is not available anymore."
 msgstr "Maaf, acara yang diminta tidak tersedia lagi."
+
+#. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.event_description_full
+msgid "Start -"
+msgstr "Mulai -"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event__start_today
@@ -1332,17 +1095,17 @@ msgstr "Sub-menu (Spesifik)"
 #. module: website_event
 #. odoo-python
 #: code:addons/website_event/controllers/main.py:0
+#, python-format
 msgid "Suspicious activity detected by Google reCaptcha."
 msgstr "Kegiatan mencurigakan dideteksi oleh Google reCaptcha."
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.snippet_options
-msgid "Template badge"
-msgstr "Lencana templat"
+msgid "Templates"
+msgstr "Templat"
 
 #. module: website_event
 #: model:ir.model.fields,help:website_event.field_event_event__website_url
-#: model:ir.model.fields,help:website_event.field_event_tag__website_url
 #: model:ir.model.fields,help:website_event.field_event_tag_category__website_url
 msgid "The full URL to access the document through the website."
 msgstr "URL lengkap untuk mengakses dokumen melalui website."
@@ -1350,24 +1113,21 @@ msgstr "URL lengkap untuk mengakses dokumen melalui website."
 #. module: website_event
 #. odoo-python
 #: code:addons/website_event/models/event_event.py:0
+#, python-format
 msgid "The website must be from the same company as the event."
 msgstr "Website harus berasal dari perusahaan yang sama dengan acara."
 
 #. module: website_event
 #. odoo-python
 #: code:addons/website_event/models/event_event.py:0
+#, python-format
 msgid "This month"
 msgstr "Bulan ini"
 
 #. module: website_event
-#. odoo-python
-#: code:addons/website_event/models/event_event.py:0
-msgid "This operator is not supported"
-msgstr "Operator ini tidak didukung penggunaannya"
-
-#. module: website_event
 #. odoo-javascript
 #: code:addons/website_event/static/src/js/tours/event_tour.js:0
+#, python-format
 msgid "This shortcut will bring you right back to the event form."
 msgstr "Shortcut ini akan membawa Anda kembali ke formulir acara."
 
@@ -1379,6 +1139,7 @@ msgstr "Menu teknis ini menampilkan semua item sub-menu acara."
 #. module: website_event
 #. odoo-python
 #: code:addons/website_event/controllers/main.py:0
+#, python-format
 msgid "This ticket is not available for sale for this event"
 msgstr "TIket ini tidak tersedia untuk dijual untuk acara ini."
 
@@ -1388,20 +1149,26 @@ msgid "Ticket #"
 msgstr "Tiket #"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.modal_ticket_registration
-msgid "Tickets"
-msgstr "Tiket"
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
+msgid "Ticket Sales starting on"
+msgstr "Penjualan Tiket dimulai pada"
+
+#. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
+msgid "Tickets for this Event are <b>Sold Out</b>"
+msgstr "Tiket untuk Acara ini sudah <b>Sold Out</b>"
 
 #. module: website_event
 #. odoo-python
 #: code:addons/website_event/models/event_event.py:0
+#, python-format
 msgid "Today"
 msgstr "Hari Ini"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.snippet_options
-msgid "Top"
-msgstr "Atas"
+#: model_terms:ir.ui.view,arch_db:website_event.layout
+msgid "Toggle navigation"
+msgstr "Toggle navigasi"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.snippet_options
@@ -1410,30 +1177,22 @@ msgstr "Filter Top Bar"
 
 #. module: website_event
 #. odoo-python
-#: code:addons/website_event/models/website_visitor.py:0
-msgid "Unsupported 'Not In' operation on visitors registrations"
-msgstr "Operasi 'Not In' tidak didukung di pendaftaran pengunjung"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_time
-msgid "Upcoming"
-msgstr "Mendatang"
-
-#. module: website_event
-#. odoo-python
 #: code:addons/website_event/models/event_event.py:0
 #: model:website.snippet.filter,name:website_event.website_snippet_filter_event_list
+#: model_terms:ir.ui.view,arch_db:website_event.event_time
+#, python-format
 msgid "Upcoming Events"
 msgstr "Acara-Acara Mendatang"
 
 #. module: website_event
-#: model:website.snippet.filter,name:website_event.website_snippet_filter_event_list_unfinished
-msgid "Upcoming and Ongoing Events"
-msgstr "Acara Mendatang dan Berlangsung"
+#: model_terms:ir.ui.view,arch_db:website_event.events_list
+msgid "Use the top button '<b>+ New</b>' to create an event."
+msgstr "Gunakan tombol '<b>+ Baru</b>' di atas untuk membuat acara."
 
 #. module: website_event
 #. odoo-javascript
 #: code:addons/website_event/static/src/js/tours/event_tour.js:0
+#, python-format
 msgid "Use this <b>shortcut</b> to easily access your event web page."
 msgstr ""
 "Gunakan <b>shortcut</b> ini untuk dengan mudah mengakses halaman website "
@@ -1452,39 +1211,12 @@ msgid "Used when not being an url based menu"
 msgstr "DIgunakan saat tidak merupakan menu berdasarkan url"
 
 #. module: website_event
-#. odoo-python
-#: code:addons/website_event/models/event_event.py:0
-msgid "Value should be True or False (not %)"
-msgstr "Value harus True atau False (bukan %)"
-
-#. module: website_event
-#: model:event.question.answer,name:website_event.event_0_question_0_answer_1
-msgid "Vegetarian"
-msgstr "Vegetarian"
-
-#. module: website_event
-#: model:ir.model.fields.selection,name:website_event.selection__event_event__website_visibility__link
-msgid "Via a Link"
-msgstr "Melalui Link"
-
-#. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_website_event_menu__view_id
 msgid "View"
 msgstr "Tampilan"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_event_view_form
-msgid "Visibility"
-msgstr "Visibilitas"
-
-#. module: website_event
-#: model:ir.model.fields,field_description:website_event.field_event_event__is_visible_on_website
-msgid "Visible On Website"
-msgstr "Terlihat Pada Website"
-
-#. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event__website_published
-#: model:ir.model.fields,field_description:website_event.field_event_tag__website_published
 #: model:ir.model.fields,field_description:website_event.field_event_tag_category__website_published
 msgid "Visible on current website"
 msgstr "Terlihat pada website saat ini"
@@ -1495,23 +1227,8 @@ msgid "Visitor"
 msgstr "Pengunjung"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.events_list
-msgid "We couldn't find any event matching your search for:"
-msgstr ""
-"Kita tidak dapat menemukan acara apapun yang cocok dengan yang Anda cari:"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.events_list
-msgid "We couldn't find any event scheduled at this moment."
-msgstr ""
-"Kita tidak dapat menemukan acara apapun yang dijadwalkan pada saat ini."
-
-#. module: website_event
 #: model:ir.model,name:website_event.model_website
 #: model:ir.model.fields,field_description:website_event.field_event_event__website_id
-#: model:ir.model.fields,field_description:website_event.field_event_tag__website_id
-#: model:ir.model.fields,field_description:website_event.field_event_tag_category__website_id
-#: model_terms:ir.ui.view,arch_db:website_event.event_tag_category_view_form
 msgid "Website"
 msgstr "Website"
 
@@ -1536,7 +1253,7 @@ msgstr "Beranda Website"
 #: model:ir.model,name:website_event.model_website_menu
 #: model:ir.model.fields,field_description:website_event.field_event_event__website_menu
 msgid "Website Menu"
-msgstr "Situs Menu"
+msgstr "Menu Website"
 
 #. module: website_event
 #: model:ir.ui.menu,name:website_event.menu_website_event_menu
@@ -1556,15 +1273,9 @@ msgstr "Submenu Website"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event__website_url
-#: model:ir.model.fields,field_description:website_event.field_event_tag__website_url
 #: model:ir.model.fields,field_description:website_event.field_event_tag_category__website_url
 msgid "Website URL"
-msgstr "URL Websi8te"
-
-#. module: website_event
-#: model:ir.model.fields,field_description:website_event.field_event_event__website_visibility
-msgid "Website Visibility"
-msgstr "Visibilitas Website"
+msgstr "URL Website"
 
 #. module: website_event
 #: model:ir.model,name:website_event.model_website_visitor
@@ -1574,27 +1285,22 @@ msgstr "Pengunjung Website"
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event__website_meta_description
 msgid "Website meta description"
-msgstr "Keterangan website"
+msgstr "Keterangan meta website"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event__website_meta_keywords
 msgid "Website meta keywords"
-msgstr "Situs meta kata kunci"
+msgstr "Keyword meta website"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event__website_meta_title
 msgid "Website meta title"
-msgstr "Judul meta situs"
+msgstr "Judul meta website"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event__website_meta_og_img
 msgid "Website opengraph image"
 msgstr "Gambar opengraph Website"
-
-#. module: website_event
-#: model:event.question,title:website_event.event_5_question_1
-msgid "What's your Hockey level?"
-msgstr "Apa tingkat ketrampilan Hoki Anda?"
 
 #. module: website_event
 #: model:ir.model.fields,help:website_event.field_event_event__is_ongoing
@@ -1607,13 +1313,9 @@ msgid "Whether event is going to start today if still not ongoing"
 msgstr "Apakah acara akan dimulai hari ini bila belum sedang berlangsung"
 
 #. module: website_event
-#: model:event.question,title:website_event.event_7_question_0
-msgid "Which field are you working in"
-msgstr "Anda bekerja di bidang apa"
-
-#. module: website_event
 #. odoo-javascript
 #: code:addons/website_event/static/src/js/tours/event_tour.js:0
+#, python-format
 msgid ""
 "With the Edit button, you can <b>customize</b> the web page visitors will "
 "see when registering."
@@ -1622,7 +1324,7 @@ msgstr ""
 "pengunjung akan lihat saat mendaftar."
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.modal_ticket_registration
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
 msgid "available)"
 msgstr "tersedia)"
 
@@ -1632,16 +1334,6 @@ msgid "e.g. \"Conference for Architects\""
 msgstr "contoh \"Konferensi untuk Arsitek\""
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.registration_template
-msgid "time)"
-msgstr "waktu)"
-
-#. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.event_description_full
-msgid "w-100"
-msgstr "w-100"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_full
-msgid "w-100 py-sm-3 mt-sm-2"
-msgstr "w-100 py-sm-3 mt-sm-2"
+msgid "iCal/Outlook"
+msgstr "iCal/Outlook"

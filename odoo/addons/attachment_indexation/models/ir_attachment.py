@@ -142,6 +142,5 @@ class IrAttachment(models.Model):
         return res
 
     def copy(self, default=None):
-        for attachment in self:
-            index_content_cache[attachment.checksum] = attachment.index_content
+        index_content_cache[self.checksum] = self.index_content
         return super().copy(default=default)

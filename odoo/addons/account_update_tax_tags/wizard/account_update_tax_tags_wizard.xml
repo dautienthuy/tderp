@@ -5,6 +5,8 @@
         <field name="model">account.update.tax.tags.wizard</field>
         <field name="arch" type="xml">
             <form>
+                <field name="company_id" invisible="1"/>
+                <field name="display_lock_date_warning" invisible="1"/>
                 <div class="alert alert-warning" role="alert">
                     Updating tax tags on existing Journal Entries is an <b>irreversible</b> action that will impact
                     your reports.<br/>
@@ -12,7 +14,7 @@
                     The update will change tax tags on your accounting history, starting from and including selected date,
                     so that it matches with the current configuration of your taxes.<br/>
                 </div>
-                <div class="alert alert-warning" role="alert" invisible="not display_lock_date_warning">
+                <div class="alert alert-warning" role="alert" attrs="{'invisible': [('display_lock_date_warning', '=', False)]}">
                     The date you chose is violating the tax lock date, do this at your own risk.
                 </div>
                 <group>

@@ -1,6 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from collections import Counter
 
+from psycopg2.extras import execute_values
+
 from odoo import fields, models, _
 
 
@@ -25,7 +27,7 @@ class HrExpenseSheet(models.Model):
                 - name
         """
         # Get the product account move lines created by an expense
-        expensed_amls = self.account_move_ids.line_ids.filtered(lambda aml: aml.expense_id.sale_order_id and aml.balance >= 0 and not aml.tax_line_id)
+        expensed_amls = self.account_move_id.line_ids.filtered(lambda aml: aml.expense_id.sale_order_id and aml.balance >= 0 and not aml.tax_line_id)
         if not expensed_amls:
             return self.env['sale.order.line']
 
@@ -65,7 +67,11 @@ class HrExpenseSheet(models.Model):
         expensed_amls_keys_and_count = tuple(
             (key_id, key_count, *key) for key_id, (key, key_count) in enumerate(expense_keys_counter.items())
         )
-        self.env.cr.execute_values(query, expensed_amls_keys_and_count)
+        execute_values(
+            self.env.cr._obj,
+            query,
+            expensed_amls_keys_and_count,
+        )
 
         # Filters out the sale order lines so that we only keep one per expense
         sol_ids = []
@@ -77,9 +83,10 @@ class HrExpenseSheet(models.Model):
         sale_order_lines = self._get_sale_order_lines()
         sale_order_lines.write({'qty_delivered': 0.0, 'product_uom_qty': 0.0})
 
-    def action_reset_expense_sheets(self):
-        super().action_reset_expense_sheets()
-        self.sudo()._sale_expense_reset_sol_quantities()
+    def reset_expense_sheets(self):
+        super().reset_expense_sheets()
+        self._sale_expense_reset_sol_quantities()
+        return True
 
     def action_open_sale_orders(self):
         self.ensure_one()
@@ -102,13 +109,3 @@ class HrExpenseSheet(models.Model):
             'name': _('Reinvoiced Sales Orders'),
             'domain': [('id', 'in', self.expense_line_ids.sale_order_id.ids)],
         }
-
-    def _do_create_moves(self):
-        """ When posting expense, we need the analytic entries to be generated, so a AA is required to reinvoice.
-            We then ensure a AA is given in the distribution and if not, we create a AA et set the distribution to it.
-        """
-        for expense in self.expense_line_ids:
-            if expense.sale_order_id and not expense.analytic_distribution:
-                analytic_account = self.env['account.analytic.account'].create(expense.sale_order_id._prepare_analytic_account_data())
-                expense.analytic_distribution = {analytic_account.id: 100}
-        return super()._do_create_moves()

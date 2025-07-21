@@ -9,4 +9,3 @@ from . import res_users
 from . import sale_order
 from . import sale_order_line
 from . import stock
-from . import stock_warehouse

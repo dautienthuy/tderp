@@ -2,12 +2,10 @@
 
 import { registry } from '@web/core/registry';
 import { useBus } from "@web/core/utils/hooks";
-import { Component, useState } from "@odoo/owl";
-import { standardFieldProps } from '@web/views/fields/standard_field_props';
+
+const { Component, useState } = owl;
 
 class FieldIframePreview extends Component {
-    static template = "website.iframeWidget";
-    static props = {...standardFieldProps};
     setup() {
         this.state = useState({isMobile: false});
 
@@ -16,9 +14,6 @@ class FieldIframePreview extends Component {
         });
     }
 }
+FieldIframePreview.template = 'website.iframeWidget';
 
-export const fieldIframePreview = {
-    component: FieldIframePreview,
-};
-
-registry.category("fields").add("iframe", fieldIframePreview);
+registry.category('fields').add('iframe', FieldIframePreview);

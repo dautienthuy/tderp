@@ -96,11 +96,3 @@ class TestAutoComplete(TransactionCase):
                     'displayImage': False, 'allowFuzzy': True
                 }
             )
-
-    def test_indirect(self):
-        self._autocomplete('module', 2, 'model')
-        self._autocomplete('rechord', 1, 'record')
-        self._autocomplete('suborder', 1, 'submodel')
-        # Sub-sub-fields are currently not supported.
-        # Adapt expected result if this becomes a feature.
-        self._autocomplete('tagg', 0, "Not found")

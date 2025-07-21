@@ -2,11 +2,8 @@
 
 import re
 
-from odoo import api, models
+from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
-from odoo. tools import LazyTranslate
-
-_lt = LazyTranslate(__name__)  # TODO pass env to functions and remove _lt
 
 
 def normalize_iban(iban):
@@ -31,21 +28,21 @@ def get_bban_from_iban(iban):
 def validate_iban(iban):
     iban = normalize_iban(iban)
     if not iban:
-        raise ValidationError(_lt("There is no IBAN code."))
+        raise ValidationError(_("There is no IBAN code."))
 
     country_code = iban[:2].lower()
     if country_code not in _map_iban_template:
-        raise ValidationError(_lt("The IBAN is invalid, it should begin with the country code"))
+        raise ValidationError(_("The IBAN is invalid, it should begin with the country code"))
 
     iban_template = _map_iban_template[country_code]
     if len(iban) != len(iban_template.replace(' ', '')) or not re.fullmatch("[a-zA-Z0-9]+", iban):
-        raise ValidationError(_lt("The IBAN does not seem to be correct. You should have entered something like this %s\n"
-            "Where B = National bank code, S = Branch code, C = Account No, k = Check digit", iban_template))
+        raise ValidationError(_("The IBAN does not seem to be correct. You should have entered something like this %s\n"
+            "Where B = National bank code, S = Branch code, C = Account No, k = Check digit") % iban_template)
 
     check_chars = iban[4:] + iban[:4]
     digits = int(''.join(str(int(char, 36)) for char in check_chars))  # BASE 36: 0..9,A..Z -> 0..35
     if digits % 97 != 1:
-        raise ValidationError(_lt("This IBAN does not pass the validation check, please verify it."))
+        raise ValidationError(_("This IBAN does not pass the validation check, please verify it."))
 
 
 class ResPartnerBank(models.Model):
@@ -54,7 +51,7 @@ class ResPartnerBank(models.Model):
     @api.model
     def _get_supported_account_types(self):
         rslt = super(ResPartnerBank, self)._get_supported_account_types()
-        rslt.append(('iban', self.env._('IBAN')))
+        rslt.append(('iban', _('IBAN')))
         return rslt
 
     @api.model
@@ -67,7 +64,7 @@ class ResPartnerBank(models.Model):
 
     def get_bban(self):
         if self.acc_type != 'iban':
-            raise UserError(self.env._("Cannot compute the BBAN because the account number is not an IBAN."))
+            raise UserError(_("Cannot compute the BBAN because the account number is not an IBAN."))
         return get_bban_from_iban(self.acc_number)
 
     @api.model_create_multi
@@ -158,7 +155,6 @@ _map_iban_template = {
     'mu': 'MUkk BBBB BBSS CCCC CCCC CCCC CCCC CC',  # Mauritius
     'nl': 'NLkk BBBB CCCC CCCC CC',  # Netherlands
     'no': 'NOkk BBBB CCCC CCK',  # Norway
-    'om': 'OMkk BBBC CCCC CCCC CCCC CCC', # Oman
     'pk': 'PKkk BBBB CCCC CCCC CCCC CCCC',  # Pakistan
     'pl': 'PLkk BBBS SSSK CCCC CCCC CCCC CCCC',  # Poland
     'ps': 'PSkk BBBB XXXX XXXX XCCC CCCC CCCC C',  # Palestinian

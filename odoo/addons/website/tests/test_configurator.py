@@ -1,8 +1,11 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from unittest.mock import patch
 
 import odoo.tests
+from odoo.addons.iap.tools.iap_tools import iap_jsonrpc_mocked
+from odoo.tools import mute_logger
 
 class TestConfiguratorCommon(odoo.tests.HttpCase):
 
@@ -38,8 +41,8 @@ class TestConfiguratorCommon(odoo.tests.HttpCase):
                 return []
             elif '/api/website/2/configurator/custom_resources/' in endpoint:
                 return {'images': {}}
-            elif '/api/olg/1/generate_placeholder' in endpoint:
-                return {"a non existing placeholder": "😠", 'Catchy Headline': 'Welcome to XXXX - Your Super test'}
+
+            iap_jsonrpc_mocked()
 
         iap_patch = patch('odoo.addons.iap.tools.iap_tools.iap_jsonrpc', iap_jsonrpc_mocked_configurator)
         self.startPatcher(iap_patch)
@@ -66,6 +69,11 @@ class TestConfiguratorTranslation(TestConfiguratorCommon):
         self.env.ref('base.user_admin').write({'lang': parseltongue.code})
         website_fr = self.env['website'].create({
             'name': "New website",
+        })
+        self.env.ref('web_editor.snippets').update_field_translations('arch_db', {
+            parseltongue.code: {
+                'Save': 'Save_Parseltongue'
+            }
         })
         # disable configurator todo to ensure this test goes through
         active_todo = self.env['ir.actions.todo'].search([('state', '=', 'open')], limit=1)

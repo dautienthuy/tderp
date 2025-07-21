@@ -6,25 +6,17 @@
         <template id="template_LROE_240_main">
             <lrpjfecsgap:LROEPJ240FacturasEmitidasConSGAltaPeticion
                 xmlns:lrpjfecsgap="https://www.batuz.eus/fitxategiak/batuz/LROE/esquemas/LROE_PJ_240_1_1_FacturasEmitidas_ConSG_AltaPeticion_V1_0_2.xsd"
-                t-if="is_emission and not freelancer"
-                t-call="l10n_es_edi_tbai.template_LROE_240_inner"/>
-            <lrpficfcsgap:LROEPF140IngresosConFacturaConSGAltaPeticion
-                xmlns:lrpficfcsgap="https://www.batuz.eus/fitxategiak/batuz/LROE/esquemas/LROE_PF_140_1_1_Ingresos_ConfacturaConSG_AltaPeticion_V1_0_2.xsd"
-                t-elif="is_emission and freelancer"
+                t-if="is_emission"
                 t-call="l10n_es_edi_tbai.template_LROE_240_inner"/>
             <lrpjfecsgap:LROEPJ240FacturasEmitidasConSGAnulacionPeticion
                 xmlns:lrpjfecsgap="https://www.batuz.eus/fitxategiak/batuz/LROE/esquemas/LROE_PJ_240_1_1_FacturasEmitidas_ConSG_AnulacionPeticion_V1_0_0.xsd"
-                t-elif="not is_emission and not freelancer"
-                t-call="l10n_es_edi_tbai.template_LROE_240_inner"/>
-            <lrpficfcsgap:LROEPF140IngresosConFacturaConSGAnulacionPeticion
-                xmlns:lrpficfcsgap="https://www.batuz.eus/fitxategiak/batuz/LROE/esquemas/LROE_PF_140_1_1_Ingresos_ConfacturaConSG_AnulacionPeticion_V1_0_0.xsd"
-                t-elif="not is_emission and freelancer"
+                t-else=""
                 t-call="l10n_es_edi_tbai.template_LROE_240_inner"/>
         </template>
 
-        <template id="template_LROE_240_inner"> <!-- To be used for both 140 and 240 -->
+        <template id="template_LROE_240_inner">
             <Cabecera>
-                <Modelo t-out="'140' if freelancer else '240'"/>
+                <Modelo>240</Modelo>
                 <Capitulo>1</Capitulo>
                 <Subcapitulo>1.1</Subcapitulo>
                 <Operacion t-out="'A00' if is_emission else 'AN0'"/>
@@ -35,46 +27,30 @@
                     <ApellidosNombreRazonSocial t-out="sender.name"/>
                 </ObligadoTributario>
             </Cabecera>
-            <FacturasEmitidas t-if="not freelancer">
+            <FacturasEmitidas>
                 <FacturaEmitida t-foreach="tbai_b64_list" t-as="tbai_b64">
                     <TicketBai t-if="is_emission" t-out="tbai_b64"/>
                     <AnulacionTicketBai t-else="" t-out="tbai_b64"/>
                 </FacturaEmitida>
             </FacturasEmitidas>
-            <Ingresos t-if="freelancer">
-                <Ingreso t-foreach="tbai_b64_list" t-as="tbai_b64">
-                    <TicketBai t-if="is_emission" t-out="tbai_b64"/>
-                    <Renta t-if="is_emission"><DetalleRenta><Epigrafe t-out="epigrafe"/></DetalleRenta></Renta>
-                    <AnulacionTicketBai t-else="" t-out="tbai_b64"/>
-                </Ingreso>
-            </Ingresos>
         </template>
 
 
         <template id="template_LROE_240_main_recibidas">
             <lrpjframp:LROEPJ240FacturasRecibidasAltaModifPeticion
                 xmlns:lrpjframp="https://www.batuz.eus/fitxategiak/batuz/LROE/esquemas/LROE_PJ_240_2_FacturasRecibidas_AltaModifPeticion_V1_0_1.xsd"
-                t-if="is_emission and not freelancer"
-                t-call="l10n_es_edi_tbai.template_LROE_240_inner_recibidas"/>
-            <lrpfgcfamp:LROEPF140GastosConFacturaAltaModifPeticion
-                xmlns:lrpfgcfamp="https://www.batuz.eus/fitxategiak/batuz/LROE/esquemas/LROE_PF_140_2_1_Gastos_Confactura_AltaModifPeticion_V1_0_2.xsd"
-                t-elif="is_emission and freelancer"
+                t-if="is_emission"
                 t-call="l10n_es_edi_tbai.template_LROE_240_inner_recibidas"/>
             <lrpjfrap:LROEPJ240FacturasRecibidasAnulacionPeticion
                 xmlns:lrpjfrap="https://www.batuz.eus/fitxategiak/batuz/LROE/esquemas/LROE_PJ_240_2_FacturasRecibidas_AnulacionPeticion_V1_0_0.xsd"
-                t-elif="not is_emission and not freelancer"
-                t-call="l10n_es_edi_tbai.template_LROE_240_inner_recibidas"/>
-            <lrpfgcfap:LROEPF140GastosConFacturaAnulacionPeticion
-                xmlns:lrpfgcfap="https://www.batuz.eus/fitxategiak/batuz/LROE/esquemas/LROE_PF_140_2_1_Gastos_Confactura_AnulacionPeticion_V1_0_0.xsd"
-                t-elif="not is_emission and freelancer"
+                t-else=""
                 t-call="l10n_es_edi_tbai.template_LROE_240_inner_recibidas"/>
         </template>
 
         <template id="template_LROE_240_inner_recibidas">
             <Cabecera>
-                <Modelo t-out="'140' if freelancer else '240'"/>
+                <Modelo>240</Modelo>
                 <Capitulo>2</Capitulo>
-                <Subcapitulo t-out="'2.1' if freelancer else None"/>
                 <Operacion t-out="'A00' if is_emission else 'AN0'"/>
                 <Version>1.0</Version>
                 <Ejercicio t-out="fiscal_year"/>
@@ -83,25 +59,14 @@
                     <ApellidosNombreRazonSocial t-out="sender.name"/>
                 </ObligadoTributario>
             </Cabecera>
-            <FacturasRecibidas t-if="not freelancer">
+            <FacturasRecibidas>
                 <FacturaRecibida>
-                    <t t-call="l10n_es_edi_tbai.template_LROE_recibidas_common"/>
-                </FacturaRecibida>
-            </FacturasRecibidas>
-            <Gastos t-else="">
-                <Gasto>
-                    <t t-call="l10n_es_edi_tbai.template_LROE_recibidas_common"/>
-                </Gasto>
-            </Gastos>
-        </template>
-
-        <template id="template_LROE_recibidas_common">
-            <t t-if="not is_emission"> <!-- cancel case -->
-                        <IDRecibida t-if="not freelancer">
-                            <t t-set="seq_and_num" t-value="doc._get_tbai_sequence_and_number()"/>
+                    <t t-if="not is_emission"> <!-- cancel case -->
+                        <IDRecibida>
+                            <t t-set="seq_and_num" t-value="invoice._get_l10n_es_tbai_sequence_and_number()"/>
                             <SerieFactura t-out="seq_and_num[0]"/>
                             <NumFactura t-out="seq_and_num[1]"/>
-                            <FechaExpedicionFactura t-out="format_date(invoice_date)"/>
+                            <FechaExpedicionFactura t-out="format_date(invoice.invoice_date)"/>
                             <EmisorFacturaRecibida>
                                 <NIF t-if="recipient.get('nif')" t-out="recipient['nif']"/>
                                 <IDOtro t-else="">
@@ -111,20 +76,6 @@
                                 </IDOtro>
                             </EmisorFacturaRecibida>
                         </IDRecibida>
-                        <IDGasto t-else="">
-                            <t t-set="seq_and_num" t-value="doc._get_tbai_sequence_and_number_purchase()"/>
-                            <SerieFactura t-out="seq_and_num[0]"/>
-                            <NumFactura t-out="seq_and_num[1]"/>
-                            <FechaExpedicionFactura t-out="format_date(invoice_date)"/>
-                            <EmisorFacturaRecibida>
-                                <NIF t-if="recipient.get('nif')" t-out="recipient['nif']"/>
-                                <IDOtro t-else="">
-                                    <CodigoPais t-if="recipient.get('alt_id_country')" t-out="recipient['alt_id_country']"/>
-                                    <IDType t-out="recipient['alt_id_type']"/>
-                                    <ID t-out="recipient['alt_id_number']"/>
-                                </IDOtro>
-                            </EmisorFacturaRecibida>
-                        </IDGasto>
                     </t>
                     <t t-else="">
                         <EmisorFacturaRecibida>
@@ -138,20 +89,20 @@
                             <ApellidosNombreRazonSocial t-out="partner.name"/>
                         </EmisorFacturaRecibida>
                         <CabeceraFactura>
-                            <t t-set="seq_and_num" t-value="doc._get_tbai_sequence_and_number_purchase()"/>
+                            <t t-set="seq_and_num" t-value="invoice._get_l10n_es_tbai_sequence_and_number()"/>
                             <SerieFactura t-out="seq_and_num[0]"/>
                             <NumFactura t-out="seq_and_num[1]"/>
-                            <FechaExpedicionFactura t-out="format_date(invoice_date)"/>
-                            <FechaRecepcion t-out="format_date(doc.date)"/>
+                            <FechaExpedicionFactura t-out="format_date(invoice.invoice_date)"/>
+                            <FechaRecepcion t-out="format_date(invoice.date)"/>
                             <TipoFactura t-out="tipofactura"/>
                             <t t-if="is_refund">
                                 <FacturaRectificativa>
-                                    <Codigo t-out="refund_reason"/>
+                                    <Codigo t-out="credit_note_code"/>
                                     <Tipo>I</Tipo>
                                 </FacturaRectificativa>
-                                <FacturasRectificadasSustituidas t-if="credit_note_invoices">
-                                    <IDFacturaRectificadaSustituida t-foreach="credit_note_invoices" t-as="credit_note_invoice">
-                                        <t t-set="seq_and_num" t-value="credit_note_invoice.l10n_es_tbai_post_document_id._get_tbai_sequence_and_number_purchase()"/>
+                                <FacturasRectificadasSustituidas t-if="credit_note_invoice">
+                                    <IDFacturaRectificadaSustituida>
+                                        <t t-set="seq_and_num" t-value="credit_note_invoice._get_l10n_es_tbai_sequence_and_number()"/>
                                         <SerieFactura t-out="seq_and_num[0]"/>
                                         <NumFactura t-out="seq_and_num[1]"/>
                                         <FechaExpedicionFactura t-out="format_date(credit_note_invoice.invoice_date)"/>
@@ -160,7 +111,7 @@
                             </t>
                         </CabeceraFactura>
                         <DatosFactura>
-                            <DescripcionOperacion t-out="ref"/>
+                            <DescripcionOperacion t-out="invoice.ref"/>
 
                             <Claves>
                                 <IDClave t-foreach="regime_key" t-as="key">
@@ -169,33 +120,19 @@
                             </Claves>
                             <ImporteTotalFactura t-out="format_float(amount_total)"/>
                         </DatosFactura>
-                        <IVA t-if="not freelancer">
+                        <IVA>
                             <DetalleIVA t-foreach="iva_values" t-as="tax">
                                 <CompraBienesCorrientesGastosBienesInversion t-out="tax['code']"/>
                                 <InversionSujetoPasivo t-out="'N' if tax['rec'].l10n_es_type != 'sujeto_isp' else 'S'"/>
                                 <BaseImponible t-out="format_float(tax['base'])"/>
-                            <t t-if="tax['rec'].l10n_es_type == 'sujeto_agricultura'">
-                                <PorcentajeCompensacionREAGYP t-out="tax['rec'].amount"/>
-                                <ImporteCompensacionREAGYP t-out="format_float(tax['tax'])"/>
-                            </t>
-                            <t t-else="">
                                 <TipoImpositivo t-out="tax['rec'].amount"/>
                                 <CuotaIVASoportada t-out="format_float(tax['tax'])"/>
-                                <CuotaIVADeducible t-out="format_float(tax['tax']) if tax['rec'].l10n_es_type != 'no_deducible' else '0.00'"/>
-                            </t>
+                                <CuotaIVADeducible t-out="format_float(tax['tax'])"/>
                             </DetalleIVA>
                         </IVA>
-                        <RentaIVA t-elif="freelancer">
-                            <DetalleRentaIVA t-foreach="iva_values" t-as="tax">
-                                <Epigrafe t-out="epigrafe"/>
-                                <InversionSujetoPasivo t-out="'N' if tax['rec'].l10n_es_type != 'sujeto_isp' else 'S'"/>
-                                <BaseImponible t-out="format_float(tax['base'])"/>
-                                <TipoImpositivo t-out="tax['rec'].amount"/>
-                                <CuotaIVASoportada t-out="format_float(tax['tax'])"/>
-                                <CuotaIVADeducible t-out="format_float(tax['tax']) if tax['rec'].l10n_es_type != 'no_deducible' else '0.00'"/>
-                            </DetalleRentaIVA>
-                        </RentaIVA>
                     </t>
+                </FacturaRecibida>
+            </FacturasRecibidas>
         </template>
     </data>
 </odoo>

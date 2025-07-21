@@ -3,16 +3,20 @@
 # 	* im_livechat
 # 
 # Translators:
+# Alexandra Jubert, 2022
+# Cécile Collart <cco@odoo.com>, 2022
+# Martin Trigaux, 2022
+# Jolien De Paepe, 2023
 # Wil Odoo, 2024
-# Manon Rondou, 2025
+# Manon Rondou, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-27 13:02+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Manon Rondou, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2022-09-22 05:53+0000\n"
+"Last-Translator: Manon Rondou, 2024\n"
 "Language-Team: French (https://app.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,12 +26,20 @@ msgstr ""
 
 #. module: im_livechat
 #. odoo-python
+#: code:addons/im_livechat/models/chatbot_script.py:0
+#, python-format
+msgid " (copy)"
+msgstr " (copie)"
+
+#. module: im_livechat
+#. odoo-python
 #: code:addons/im_livechat/models/chatbot_script_step.py:0
+#, python-format
 msgid "\"%s\" is not a valid email."
 msgstr "\"%s\" n'est pas un e-mail valide."
 
 #. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.discuss_channel_view_tree
+#: model_terms:ir.ui.view,arch_db:im_livechat.mail_channel_view_tree
 msgid "# Messages"
 msgstr "# Messages"
 
@@ -57,15 +69,38 @@ msgid "% of Happiness"
 msgstr "% de satisfaction"
 
 #. module: im_livechat
+#. odoo-javascript
+#: code:addons/im_livechat/static/src/legacy/models/public_livechat.js:0
+#, python-format
+msgid "%s and %s are typing..."
+msgstr "%s et %s écrivent..."
+
+#. module: im_livechat
 #. odoo-python
-#: code:addons/im_livechat/models/chatbot_script.py:0
-msgid "%s (copy)"
-msgstr "%s (copie)"
+#: code:addons/im_livechat/models/chatbot_script_step.py:0
+#, python-format
+msgid "%s has joined"
+msgstr "%s a rejoint "
+
+#. module: im_livechat
+#. odoo-javascript
+#: code:addons/im_livechat/static/src/legacy/models/public_livechat.js:0
+#, python-format
+msgid "%s is typing..."
+msgstr "%s est en train d'écrire..."
+
+#. module: im_livechat
+#. odoo-javascript
+#: code:addons/im_livechat/static/src/legacy/models/public_livechat.js:0
+#, python-format
+msgid "%s, %s and more are typing..."
+msgstr "%s, %s et d'autres sont en train d'écrire..."
 
 #. module: im_livechat
 #. odoo-python
 #: code:addons/im_livechat/models/chatbot_script.py:0
-#: code:addons/im_livechat/models/discuss_channel.py:0
+#: code:addons/im_livechat/models/mail_channel.py:0
+#, python-format
 msgid ""
 "'%(input_email)s' does not look like a valid email. Can you please try "
 "again?"
@@ -92,9 +127,21 @@ msgid ", on the"
 msgstr ", sur le "
 
 #. module: im_livechat
+#. odoo-javascript
+#: code:addons/im_livechat/static/src/legacy/widgets/public_livechat_view/public_livechat_view.xml:0
+#, python-format
+msgid "-------- Show older messages --------"
+msgstr "-------- Montrer les anciens messages --------"
+
+#. module: im_livechat
 #: model:ir.model.fields,help:im_livechat.field_im_livechat_report_channel__day_number
 msgid "1 is Monday, 7 is Sunday"
 msgstr "1 est lundi, 7 est dimanche"
+
+#. module: im_livechat
+#: model_terms:ir.ui.view,arch_db:im_livechat.chatbot_test_script_page
+msgid "<i class=\"fa fa-fw fa-arrow-right\"/>Back to edit mode"
+msgstr "<i class=\"fa fa-fw fa-arrow-right\"/>Retour au mode édition"
 
 #. module: im_livechat
 #: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_kanban
@@ -106,19 +153,11 @@ msgstr ""
 "positives\" role=\"img\" aria-label=\"Visage souriant\"/>"
 
 #. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.chatbot_test_script_page
-msgid "<i class=\"oi oi-fw oi-arrow-right\"/>Back to edit mode"
-msgstr "<i class=\"oi oi-fw oi-arrow-right\"/>Retour au mode édition"
-
-#. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_form
-msgid "<i title=\"Remove operator\" class=\"fa fa-fw fa-lg fa-close\"/>"
-msgstr "<i title=\"Supprimer l'opérateur\" class=\"fa fa-fw fa-lg fa-close\"/>"
-
-#. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.discuss_channel_view_kanban
-msgid "<span class=\"fw-bold\">Country: </span>"
-msgstr "<span class=\"fw-bold\">Pays : </span>"
+#: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_kanban
+msgid "<i class=\"fa fa-user\" role=\"img\" aria-label=\"User\" title=\"User\"/>"
+msgstr ""
+"<i class=\"fa fa-user\" role=\"img\" aria-label=\"Utilisateur\" "
+"title=\"Utilisateur\"/>"
 
 #. module: im_livechat
 #: model_terms:ir.ui.view,arch_db:im_livechat.livechat_email_template
@@ -193,19 +232,9 @@ msgstr ""
 "                                       Si le visiteur est aussi l'opérateur, la session sera toujours considérée comme répondue."
 
 #. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_discuss_channel__message_needaction
-msgid "Action Needed"
-msgstr "Nécessite une action"
-
-#. module: im_livechat
 #: model:ir.model.fields,field_description:im_livechat.field_chatbot_script__active
 msgid "Active"
 msgstr "Actif"
-
-#. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_form
-msgid "Add the following code to the &lt;head&gt; section of your website:"
-msgstr "Ajoutez le code suivant à la section &lt;head&gt; de votre site web :"
 
 #. module: im_livechat
 #: model:res.groups,name:im_livechat.im_livechat_group_manager
@@ -213,24 +242,17 @@ msgid "Administrator"
 msgstr "Administrateur"
 
 #. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_form
-msgid ""
-"Alternatively, share this URL with your customers or suppliers via email:"
-msgstr "Ou partagez cette URL avec vos clients ou fournisseurs par e-mail :"
-
-#. module: im_livechat
-#. odoo-javascript
-#: code:addons/im_livechat/static/src/embed/common/feedback_panel/transcript_sender.xml:0
-msgid "An error occurred. Please try again."
-msgstr "Une erreur est survenue. Veuillez réessayer."
-
-#. module: im_livechat
 #: model:chatbot.script.step,message:im_livechat.chatbot_script_welcome_step_documentation_redirect
 msgid "And tadaaaa here you go! 🌟"
 msgstr "Et tadaaaa ! 🌟"
 
 #. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_discuss_channel__anonymous_name
+#: model_terms:ir.ui.view,arch_db:im_livechat.mail_channel_view_form
+msgid "Anonymous"
+msgstr "Anonyme"
+
+#. module: im_livechat
+#: model:ir.model.fields,field_description:im_livechat.field_mail_channel__anonymous_name
 msgid "Anonymous Name"
 msgstr "Nom anonyme"
 
@@ -256,18 +278,26 @@ msgid "Are you inside the matrix?"
 msgstr "Êtes-vous dans la matrice ?"
 
 #. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_discuss_channel__message_attachment_count
-msgid "Attachment Count"
-msgstr "Nombre de pièces jointes"
+#. odoo-javascript
+#: code:addons/im_livechat/static/src/public_models/livechat_button_view.js:0
+#, python-format
+msgid "Ask something ..."
+msgstr "Posez une question ..."
 
 #. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_im_livechat_channel__available_operator_ids
-msgid "Available Operator"
-msgstr "Opérateur disponible"
+#: model_terms:ir.ui.view,arch_db:im_livechat.mail_channel_view_form
+#: model_terms:ir.ui.view,arch_db:im_livechat.mail_channel_view_tree
+msgid "Attendees"
+msgstr "Participants"
 
 #. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_discuss_channel__rating_avg
+#: model_terms:ir.ui.view,arch_db:im_livechat.mail_channel_view_form
+msgid "Avatar"
+msgstr "Avatar"
+
+#. module: im_livechat
 #: model:ir.model.fields,field_description:im_livechat.field_im_livechat_channel__rating_avg
+#: model:ir.model.fields,field_description:im_livechat.field_mail_channel__rating_avg
 msgid "Average Rating"
 msgstr "Évaluation moyenne"
 
@@ -288,16 +318,6 @@ msgid "Average message"
 msgstr "Message moyen"
 
 #. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_im_livechat_report_operator__rating
-msgid "Average rating"
-msgstr "Évaluation moyenne"
-
-#. module: im_livechat
-#: model:ir.model.fields,help:im_livechat.field_im_livechat_report_operator__rating
-msgid "Average rating given by the visitor"
-msgstr "Évaluation moyenne donnée par le visiteur"
-
-#. module: im_livechat
 #: model:ir.model.fields,help:im_livechat.field_im_livechat_report_channel__time_to_answer
 msgid "Average time in seconds to give the first answer to the visitor"
 msgstr "Temps moyen en secondes pour donner la première réponse au visiteur"
@@ -308,9 +328,11 @@ msgid "Average time to give the first answer to the visitor"
 msgstr "Temps moyen pour donner une première réponse au visiteur"
 
 #. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.discuss_channel_view_search
-msgid "Bad Ratings"
-msgstr "Évaluations négatives"
+#. odoo-javascript
+#: code:addons/im_livechat/static/src/legacy/widgets/feedback/feedback.xml:0
+#, python-format
+msgid "Bad"
+msgstr "Mauvais"
 
 #. module: im_livechat
 #: model:ir.model.fields,field_description:im_livechat.field_chatbot_script__operator_partner_id
@@ -328,32 +350,40 @@ msgid "Button Text Color"
 msgstr "Couleur du texte du bouton"
 
 #. module: im_livechat
+#: model:ir.actions.act_window,name:im_livechat.im_livechat_canned_response_action
 #: model:ir.ui.menu,name:im_livechat.canned_responses
 msgid "Canned Responses"
 msgstr "Réponses enregistrées"
 
 #. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_discuss_channel__livechat_channel_id
+#: model_terms:ir.actions.act_window,help:im_livechat.im_livechat_canned_response_action
+msgid ""
+"Canned responses allow you to insert prewritten responses in\n"
+"                your messages by typing <i>:shortcut</i>. The shortcut is\n"
+"                replaced directly in your message, so that you can still edit\n"
+"                it before sending."
+msgstr ""
+"Les réponses enregistrées vous permettent d'insérer des réponses pré-écrites dans\n"
+" vos messages en tapant <i>:shortcut</i>. Le raccourci est remplacé directement dans votre message, afin que vous puissiez toujours le modifier \n"
+"avant de l'envoyer."
+
+#. module: im_livechat
 #: model:ir.model.fields,field_description:im_livechat.field_im_livechat_channel_rule__channel_id
 #: model:ir.model.fields,field_description:im_livechat.field_im_livechat_report_channel__livechat_channel_id
 #: model:ir.model.fields,field_description:im_livechat.field_im_livechat_report_operator__livechat_channel_id
-#: model_terms:ir.ui.view,arch_db:im_livechat.discuss_channel_view_search
+#: model:ir.model.fields,field_description:im_livechat.field_mail_channel__livechat_channel_id
 #: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_kanban
 #: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_search
 #: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_report_channel_view_search
 #: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_report_operator_view_search
+#: model_terms:ir.ui.view,arch_db:im_livechat.mail_channel_view_search
 msgid "Channel"
-msgstr "Chaîne"
+msgstr "Canal"
 
 #. module: im_livechat
 #: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_form
 msgid "Channel Header Color"
 msgstr "Couleur de l'en-tête du canal"
-
-#. module: im_livechat
-#: model:ir.model,name:im_livechat.model_discuss_channel_member
-msgid "Channel Member"
-msgstr "Membre du canal"
 
 #. module: im_livechat
 #: model:ir.model.fields,field_description:im_livechat.field_im_livechat_channel__name
@@ -372,7 +402,7 @@ msgid "Channel Rules"
 msgstr "Règles de canal"
 
 #. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_discuss_channel__channel_type
+#: model:ir.model.fields,field_description:im_livechat.field_mail_channel__channel_type
 msgid "Channel Type"
 msgstr "Type de canal"
 
@@ -388,7 +418,7 @@ msgid "Chat Input Placeholder"
 msgstr "Placeholder de l'entrée de conversation"
 
 #. module: im_livechat
-#: model:ir.model.fields,help:im_livechat.field_discuss_channel__channel_type
+#: model:ir.model.fields,help:im_livechat.field_mail_channel__channel_type
 msgid ""
 "Chat is private and unique between 2 persons. Group is private among invited"
 " persons. Channel can be freely joined (depending on its configuration)."
@@ -396,6 +426,13 @@ msgstr ""
 "Le chat est privé et unique entre 2 personnes. Le groupe est privé parmi les"
 " personnes invitées. Le canal peut être librement rejoint (selon sa "
 "configuration)."
+
+#. module: im_livechat
+#. odoo-javascript
+#: code:addons/im_livechat/static/src/public_models/livechat_button_view.js:0
+#, python-format
+msgid "Chat with one of our collaborators"
+msgstr "Discutez en ligne avec un de nos collaborateurs"
 
 #. module: im_livechat
 #: model:ir.actions.act_window,name:im_livechat.chatbot_script_action
@@ -407,7 +444,7 @@ msgid "Chatbot"
 msgstr "Chatbot"
 
 #. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_discuss_channel__chatbot_current_step_id
+#: model:ir.model.fields,field_description:im_livechat.field_mail_channel__chatbot_current_step_id
 msgid "Chatbot Current Step"
 msgstr "Étape actuelle du Chatbot"
 
@@ -417,7 +454,7 @@ msgid "Chatbot Message"
 msgstr "Message du Chatbot"
 
 #. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_discuss_channel__chatbot_message_ids
+#: model:ir.model.fields,field_description:im_livechat.field_mail_channel__chatbot_message_ids
 msgid "Chatbot Messages"
 msgstr "Messages du Chatbot"
 
@@ -453,20 +490,14 @@ msgid "Chatbots"
 msgstr "Chatbots"
 
 #. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_form
-msgid "Choose the live chat channel you want to display on your website."
-msgstr ""
-"Choisissez le canal Live Chat que vous souhaitez afficher sur votre site "
-"web."
-
-#. module: im_livechat
 #: model_terms:ir.ui.view,arch_db:im_livechat.chatbot_test_script_page
 msgid "Close"
 msgstr "Fermer"
 
 #. module: im_livechat
 #. odoo-javascript
-#: code:addons/im_livechat/static/src/embed/common/feedback_panel/feedback_panel.xml:0
+#: code:addons/im_livechat/static/src/legacy/widgets/feedback/feedback.xml:0
+#, python-format
 msgid "Close conversation"
 msgstr "Fermer la conversation"
 
@@ -483,11 +514,6 @@ msgid "Configuration"
 msgstr "Configuration"
 
 #. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_kanban
-msgid "Configure Channel"
-msgstr "Configurer le canal"
-
-#. module: im_livechat
 #: model:ir.model,name:im_livechat.model_res_partner
 msgid "Contact"
 msgstr "Contact"
@@ -500,13 +526,22 @@ msgstr "Conversation"
 
 #. module: im_livechat
 #. odoo-javascript
-#: code:addons/im_livechat/static/src/embed/common/chatbot/chatbot_service.js:0
+#: code:addons/im_livechat/static/src/legacy/widgets/feedback/feedback.xml:0
+#, python-format
+msgid "Conversation Sent"
+msgstr "Conversation envoyée"
+
+#. module: im_livechat
+#. odoo-javascript
+#: code:addons/im_livechat/static/src/legacy/public_livechat_chatbot.xml:0
+#, python-format
 msgid "Conversation ended..."
 msgstr "La conversation a pris fin ..."
 
 #. module: im_livechat
 #. odoo-python
-#: code:addons/im_livechat/models/discuss_channel.py:0
+#: code:addons/im_livechat/models/mail_channel.py:0
+#, python-format
 msgid "Conversation with %s"
 msgstr "Conversation avec %s"
 
@@ -516,9 +551,16 @@ msgid "Conversations handled"
 msgstr "Conversations gérées"
 
 #. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_discuss_channel__country_id
+#: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_form
+msgid ""
+"Copy and paste this code into your website, within the &lt;head&gt; tag:"
+msgstr ""
+"Copiez et collez ce code dans votre site web, à l'intérieur de la "
+"&lt;head&gt; balise :"
+
+#. module: im_livechat
 #: model:ir.model.fields,field_description:im_livechat.field_im_livechat_channel_rule__country_ids
-#: model_terms:ir.ui.view,arch_db:im_livechat.discuss_channel_view_kanban
+#: model:ir.model.fields,field_description:im_livechat.field_mail_channel__country_id
 msgid "Country"
 msgstr "Pays"
 
@@ -528,7 +570,7 @@ msgid "Country of the visitor"
 msgstr "Pays du visiteur"
 
 #. module: im_livechat
-#: model:ir.model.fields,help:im_livechat.field_discuss_channel__country_id
+#: model:ir.model.fields,help:im_livechat.field_mail_channel__country_id
 msgid "Country of the visitor of the channel"
 msgstr "Pays du visiteur du canal"
 
@@ -538,11 +580,16 @@ msgid "Create a Chatbot"
 msgstr "Créer un Chatbot"
 
 #. module: im_livechat
-#: model_terms:ir.actions.act_window,help:im_livechat.discuss_channel_action
+#: model_terms:ir.actions.act_window,help:im_livechat.mail_channel_action
 msgid "Create a channel and start chatting to fill up your history."
 msgstr ""
 "Créez un nouveau canal et commencez à discuter pour remplir votre "
 "historique."
+
+#. module: im_livechat
+#: model_terms:ir.actions.act_window,help:im_livechat.im_livechat_canned_response_action
+msgid "Create a new canned response"
+msgstr "Créer une nouvelle réponse enregistrée"
 
 #. module: im_livechat
 #: model:ir.model.fields,field_description:im_livechat.field_chatbot_message__create_uid
@@ -565,6 +612,11 @@ msgid "Created on"
 msgstr "Créé le"
 
 #. module: im_livechat
+#: model_terms:ir.ui.view,arch_db:im_livechat.mail_channel_view_search
+msgid "Creation Date"
+msgstr "Date de création"
+
+#. module: im_livechat
 #: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_report_channel_view_search
 #: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_report_operator_view_search
 msgid "Creation date"
@@ -580,11 +632,6 @@ msgstr "Date de création (heure)"
 #: model:ir.ui.menu,name:im_livechat.rating_rating_menu_livechat
 msgid "Customer Ratings"
 msgstr "Évaluations des clients"
-
-#. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.discuss_channel_view_kanban
-msgid "Date:"
-msgstr "Date :"
 
 #. module: im_livechat
 #: model:ir.model.fields,field_description:im_livechat.field_im_livechat_report_channel__day_number
@@ -653,9 +700,10 @@ msgstr ""
 
 #. module: im_livechat
 #. odoo-javascript
-#: code:addons/im_livechat/static/src/embed/common/feedback_panel/feedback_panel.xml:0
-msgid "Did we correctly answer your question?"
-msgstr "Avons-nous correctement répondu à votre question ?"
+#: code:addons/im_livechat/static/src/legacy/widgets/feedback/feedback.xml:0
+#, python-format
+msgid "Did we correctly answer your question ?"
+msgstr "Avons-nous correctement répondu à votre question ? "
 
 #. module: im_livechat
 #: model:ir.model,name:im_livechat.model_digest_digest
@@ -663,14 +711,8 @@ msgid "Digest"
 msgstr "Digest"
 
 #. module: im_livechat
-#. odoo-javascript
-#: code:addons/im_livechat/static/src/views/livechat_view_controller_mixin.js:0
-msgid "Discuss"
-msgstr "Discussion"
-
-#. module: im_livechat
-#: model:ir.model,name:im_livechat.model_discuss_channel
-#: model:ir.model.fields,field_description:im_livechat.field_chatbot_message__discuss_channel_id
+#: model:ir.model,name:im_livechat.model_mail_channel
+#: model:ir.model.fields,field_description:im_livechat.field_chatbot_message__mail_channel_id
 msgid "Discussion Channel"
 msgstr "Canal de discussion"
 
@@ -687,37 +729,10 @@ msgid "Display Name"
 msgstr "Nom d'affichage"
 
 #. module: im_livechat
-#. odoo-javascript
-#: code:addons/im_livechat/static/src/embed/common/livechat_button.xml:0
-msgid "Drag to Move"
-msgstr "Glisser pour déplacer"
-
-#. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_discuss_channel__duration
-msgid "Duration"
-msgstr "Durée"
-
-#. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_report_channel_view_graph
-#: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_report_channel_view_pivot
-msgid "Duration of Session (min)"
-msgstr "Durée de la session (min)"
-
-#. module: im_livechat
 #: model:ir.model.fields,help:im_livechat.field_im_livechat_report_channel__duration
 #: model:ir.model.fields,help:im_livechat.field_im_livechat_report_operator__duration
 msgid "Duration of the conversation (in seconds)"
 msgstr "Durée de la conversation (en secondes)"
-
-#. module: im_livechat
-#: model:ir.model.fields,help:im_livechat.field_discuss_channel__duration
-msgid "Duration of the session in hours"
-msgstr "Durée de la session en heures"
-
-#. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.discuss_channel_view_kanban
-msgid "Duration:"
-msgstr "Durée :"
 
 #. module: im_livechat
 #: model:ir.model.fields.selection,name:im_livechat.selection__chatbot_script_step__step_type__question_email
@@ -737,19 +752,10 @@ msgstr "Activé uniquement s'il n'y a aucun opérateur"
 
 #. module: im_livechat
 #. odoo-javascript
-#: code:addons/im_livechat/static/src/embed/common/feedback_panel/feedback_panel.xml:0
+#: code:addons/im_livechat/static/src/legacy/widgets/feedback/feedback.xml:0
+#, python-format
 msgid "Explain your note"
 msgstr "Expliquez votre remarque"
-
-#. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_form
-msgid "FOR OTHER WEBSITES"
-msgstr "POUR D'AUTRES SITES WEB"
-
-#. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_form
-msgid "FOR WEBSITES BUILT WITH ODOO"
-msgstr "POUR LES SITES WEB CRÉÉS AVEC ODOO"
 
 #. module: im_livechat
 #: model:ir.model.fields.selection,name:im_livechat.selection__chatbot_script__first_step_warning__first_step_invalid
@@ -767,14 +773,15 @@ msgid "First Step Warning"
 msgstr "Avertissement première étape"
 
 #. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_discuss_channel__message_follower_ids
-msgid "Followers"
-msgstr "Abonnés"
-
-#. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_discuss_channel__message_partner_ids
-msgid "Followers (Partners)"
-msgstr "Abonnés (Partenaires)"
+#: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_form
+msgid ""
+"For websites built with the Odoo CMS, go to Website &gt; Configuration &gt; "
+"Settings and select the Website Live Chat Channel you want to add to your "
+"website."
+msgstr ""
+"Pour les sites web créés avec le CMS Odoo, accédez au Site Web &gt; "
+"Configuration &gt; Paramètres et sélectionnez le canal de Live Chat du site "
+"web que vous souhaitez ajouter."
 
 #. module: im_livechat
 #: model:ir.model.fields.selection,name:im_livechat.selection__chatbot_script_step__step_type__forward_operator
@@ -802,42 +809,23 @@ msgstr ""
 " choisie."
 
 #. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_form
-msgid ""
-"Go to <strong>Website</strong> &gt; <strong>Configuration</strong> &gt; "
-"<strong>Settings</strong> &gt; <strong>Email</strong> &amp; "
-"<strong>Marketing.</strong>"
-msgstr ""
-"Allez dans <strong>Site web</strong> > <strong>Configuration</strong> > "
-"<strong>Paramètres</strong> > <strong>E-mail</strong> & "
-"<strong>Marketing</strong>."
+#. odoo-javascript
+#: code:addons/im_livechat/static/src/legacy/widgets/feedback/feedback.xml:0
+#, python-format
+msgid "Good"
+msgstr "Bon"
 
 #. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.discuss_channel_view_search
-msgid "Good Ratings"
-msgstr "Évaluations positives"
-
-#. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.discuss_channel_view_search
 #: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_report_channel_view_search
 #: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_report_operator_view_search
+#: model_terms:ir.ui.view,arch_db:im_livechat.mail_channel_view_search
 msgid "Group By..."
 msgstr "Regrouper par..."
 
 #. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_discuss_channel__has_message
-msgid "Has Message"
-msgstr "A un message"
-
-#. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_res_users__has_access_livechat
-msgid "Has access to Livechat"
-msgstr "A accès au live chat"
-
-#. module: im_livechat
 #. odoo-python
 #: code:addons/im_livechat/models/im_livechat_channel.py:0
-#: model:im_livechat.channel,button_text:im_livechat.im_livechat_channel_data
+#, python-format
 msgid "Have a Question? Chat with us."
 msgstr "Vous avez une question? Chattez avec nous."
 
@@ -847,18 +835,14 @@ msgid "Header Background Color"
 msgstr "Couleur de fond de l'en-tête"
 
 #. module: im_livechat
-#: model:im_livechat.channel,default_message:im_livechat.im_livechat_channel_data
-msgid "Hello, how may I help you?"
-msgstr "Bonjour, comment puis-je vous aider ?"
-
-#. module: im_livechat
 #: model:ir.model.fields.selection,name:im_livechat.selection__im_livechat_channel_rule__action__hide_button
 msgid "Hide"
 msgstr "Masquer"
 
 #. module: im_livechat
-#: model:ir.actions.act_window,name:im_livechat.discuss_channel_action
-#: model_terms:ir.ui.view,arch_db:im_livechat.discuss_channel_view_tree
+#: model:ir.actions.act_window,name:im_livechat.mail_channel_action
+#: model_terms:ir.ui.view,arch_db:im_livechat.mail_channel_view_form
+#: model_terms:ir.ui.view,arch_db:im_livechat.mail_channel_view_tree
 msgid "History"
 msgstr "Historique"
 
@@ -876,10 +860,18 @@ msgid "Hour of start Date of session"
 msgstr "Heure de début Date de la session"
 
 #. module: im_livechat
+#. odoo-javascript
 #. odoo-python
 #: code:addons/im_livechat/models/im_livechat_channel.py:0
+#: code:addons/im_livechat/static/src/public_models/livechat_button_view.js:0
+#, python-format
 msgid "How may I help you?"
 msgstr "Comment puis-je vous aider ?"
+
+#. module: im_livechat
+#: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_form
+msgid "How to use the Website Live Chat widget?"
+msgstr "Comment utiliser le widget de Live Chat sur le site web ?"
 
 #. module: im_livechat
 #: model:chatbot.script.step,message:im_livechat.chatbot_script_welcome_step_pricing_noone_available
@@ -914,17 +906,6 @@ msgid "ID"
 msgstr "ID"
 
 #. module: im_livechat
-#: model:ir.model.fields,help:im_livechat.field_discuss_channel__message_needaction
-msgid "If checked, new messages require your attention."
-msgstr "Si coché, de nouveaux messages demandent votre attention."
-
-#. module: im_livechat
-#: model:ir.model.fields,help:im_livechat.field_discuss_channel__message_has_error
-#: model:ir.model.fields,help:im_livechat.field_discuss_channel__message_has_sms_error
-msgid "If checked, some messages have a delivery error."
-msgstr "Si coché, certains messages ont une erreur de livraison."
-
-#. module: im_livechat
 #: model:chatbot.script.step,message:im_livechat.chatbot_script_welcome_step_documentation_exit
 msgid "If you need anything else, feel free to get back in touch"
 msgstr "Si vous avez besoin d'autre chose, n'hésitez pas à nous recontacter"
@@ -956,9 +937,11 @@ msgid "Image 512"
 msgstr "Image 512"
 
 #. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_discuss_channel__message_is_follower
-msgid "Is Follower"
-msgstr "Est un abonné"
+#. odoo-javascript
+#: code:addons/im_livechat/static/src/legacy/widgets/feedback/feedback.js:0
+#, python-format
+msgid "Invalid email address"
+msgstr "Adresse e-mail invalide"
 
 #. module: im_livechat
 #: model:ir.model.fields,field_description:im_livechat.field_chatbot_script_step__is_forward_operator_child
@@ -966,7 +949,12 @@ msgid "Is Forward Operator Child"
 msgstr "Est un opérateur enfant direct"
 
 #. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_discuss_channel__livechat_active
+#: model:ir.model.fields,field_description:im_livechat.field_res_users_settings__is_discuss_sidebar_category_livechat_open
+msgid "Is category livechat open"
+msgstr "Est une catégorie de Live Chat ouverte"
+
+#. module: im_livechat
+#: model:ir.model.fields,field_description:im_livechat.field_mail_channel__livechat_active
 msgid "Is livechat ongoing?"
 msgstr "Est-ce que le Live Chat continue ?"
 
@@ -979,12 +967,6 @@ msgstr "Est un visiteur anonyme"
 #: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_kanban
 msgid "Join"
 msgstr "Rejoindre"
-
-#. module: im_livechat
-#. odoo-javascript
-#: code:addons/im_livechat/static/src/core/web/livechat_channel_model_patch.js:0
-msgid "Join %s"
-msgstr "Rejoindre %s"
 
 #. module: im_livechat
 #: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_form
@@ -1007,17 +989,22 @@ msgid "Kpi Livechat Response Value"
 msgstr "Valeur KPI de la Réponse Live Chat"
 
 #. module: im_livechat
-#. odoo-javascript
-#: code:addons/im_livechat/static/src/core/web/channel_invitation_patch.xml:0
-#: code:addons/im_livechat/static/src/core/web/channel_member_list_patch.xml:0
-msgid "Lang"
-msgstr "Lang"
-
-#. module: im_livechat
 #: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_report_channel_view_search
 #: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_report_operator_view_search
 msgid "Last 24h"
 msgstr "Dernière 24h"
+
+#. module: im_livechat
+#: model:ir.model.fields,field_description:im_livechat.field_chatbot_message____last_update
+#: model:ir.model.fields,field_description:im_livechat.field_chatbot_script____last_update
+#: model:ir.model.fields,field_description:im_livechat.field_chatbot_script_answer____last_update
+#: model:ir.model.fields,field_description:im_livechat.field_chatbot_script_step____last_update
+#: model:ir.model.fields,field_description:im_livechat.field_im_livechat_channel____last_update
+#: model:ir.model.fields,field_description:im_livechat.field_im_livechat_channel_rule____last_update
+#: model:ir.model.fields,field_description:im_livechat.field_im_livechat_report_channel____last_update
+#: model:ir.model.fields,field_description:im_livechat.field_im_livechat_report_operator____last_update
+msgid "Last Modified on"
+msgstr "Dernière modification le"
 
 #. module: im_livechat
 #: model:ir.model.fields,field_description:im_livechat.field_chatbot_message__write_uid
@@ -1027,7 +1014,7 @@ msgstr "Dernière 24h"
 #: model:ir.model.fields,field_description:im_livechat.field_im_livechat_channel__write_uid
 #: model:ir.model.fields,field_description:im_livechat.field_im_livechat_channel_rule__write_uid
 msgid "Last Updated by"
-msgstr "Mis à jour par"
+msgstr "Dernière mise à jour par"
 
 #. module: im_livechat
 #: model:ir.model.fields,field_description:im_livechat.field_chatbot_message__write_date
@@ -1037,16 +1024,7 @@ msgstr "Mis à jour par"
 #: model:ir.model.fields,field_description:im_livechat.field_im_livechat_channel__write_date
 #: model:ir.model.fields,field_description:im_livechat.field_im_livechat_channel_rule__write_date
 msgid "Last Updated on"
-msgstr "Mis à jour le"
-
-#. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_form
-msgid ""
-"Learn how to display a live chat bubble on your website and start chatting "
-"with visitors in a few easy steps."
-msgstr ""
-"Découvrez comment afficher une bulle de chat sur votre site web et commencer"
-" à discuter avec les visiteurs en quelques étapes simples."
+msgstr "Dernière mise à jour le"
 
 #. module: im_livechat
 #: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_kanban
@@ -1054,15 +1032,14 @@ msgid "Leave"
 msgstr "Quitter"
 
 #. module: im_livechat
-#. odoo-javascript
-#: code:addons/im_livechat/static/src/core/web/livechat_channel_model_patch.js:0
-msgid "Leave %s"
-msgstr "Quitter %s"
-
-#. module: im_livechat
 #: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_form
 msgid "Leave Channel"
 msgstr "Quitter le canal"
+
+#. module: im_livechat
+#: model:ir.model,name:im_livechat.model_mail_channel_member
+msgid "Listeners of a Channel"
+msgstr "Auditeurs d'un canal"
 
 #. module: im_livechat
 #: model:ir.module.category,name:im_livechat.module_category_im_livechat
@@ -1083,10 +1060,11 @@ msgstr "Rechercher un canal de Live Chat"
 
 #. module: im_livechat
 #. odoo-javascript
-#: code:addons/im_livechat/static/src/core/public_web/discuss_app_model_patch.js:0
-#: code:addons/im_livechat/static/src/core/public_web/messaging_menu_patch.js:0
-#: code:addons/im_livechat/static/src/core/web/thread_icon_patch.js:0
+#: code:addons/im_livechat/static/src/components/thread_icon/thread_icon.xml:0
+#: code:addons/im_livechat/static/src/models/discuss_sidebar_category.js:0
+#: code:addons/im_livechat/static/src/models/mobile_messaging_navbar_view.js:0
 #: model_terms:ir.ui.view,arch_db:im_livechat.res_users_form_view
+#, python-format
 msgid "Livechat"
 msgstr "Live Chat"
 
@@ -1117,22 +1095,12 @@ msgid "Livechat Channel Rules"
 msgstr "Règles de canal de Live Chat"
 
 #. module: im_livechat
-#: model:ir.model.fields.selection,name:im_livechat.selection__discuss_channel__channel_type__livechat
+#: model:ir.model.fields.selection,name:im_livechat.selection__mail_channel__channel_type__livechat
 msgid "Livechat Conversation"
 msgstr "Conversation Live Chat"
 
 #. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.unit_embed_suite
-msgid "Livechat External Tests"
-msgstr "Tests externes Live Chat"
-
-#. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_res_users__livechat_lang_ids
-msgid "Livechat Languages"
-msgstr "Langues du live chat"
-
-#. module: im_livechat
-#: model:ir.model.constraint,message:im_livechat.constraint_discuss_channel_livechat_operator_id
+#: model:ir.model.constraint,message:im_livechat.constraint_mail_channel_livechat_operator_id
 msgid "Livechat Operator ID is required for a channel of type livechat."
 msgstr ""
 "L'identifiant de l'opérateur de Live Chat est requis pour un canal de type "
@@ -1171,7 +1139,6 @@ msgstr "Statistiques de l'assistance Live Chat"
 
 #. module: im_livechat
 #: model:ir.model.fields,field_description:im_livechat.field_res_users__livechat_username
-#: model:ir.model.fields,field_description:im_livechat.field_res_users_settings__livechat_username
 msgid "Livechat Username"
 msgstr "Nom d'utilisateur Live Chat"
 
@@ -1181,16 +1148,18 @@ msgid "Livechat Window"
 msgstr "Fenêtre de Live Chat"
 
 #. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_res_users_settings__livechat_lang_ids
-msgid "Livechat languages"
-msgstr "Langues du live chat"
-
-#. module: im_livechat
-#: model:ir.model.fields,help:im_livechat.field_discuss_channel__livechat_active
+#: model:ir.model.fields,help:im_livechat.field_mail_channel__livechat_active
 msgid "Livechat session is active until visitor leaves the conversation."
 msgstr ""
 "La session de Live Chat est active jusqu'à ce que le visiteur quitte la "
 "conversation."
+
+#. module: im_livechat
+#. odoo-javascript
+#: code:addons/im_livechat/static/src/legacy/widgets/public_livechat_view/public_livechat_view.xml:0
+#, python-format
+msgid "Loading older messages..."
+msgstr "Chargement des messages plus anciens..."
 
 #. module: im_livechat
 #: model:ir.model.fields,field_description:im_livechat.field_im_livechat_channel_rule__sequence
@@ -1204,30 +1173,9 @@ msgid "Message"
 msgstr "Message"
 
 #. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_discuss_channel__message_has_error
-msgid "Message Delivery error"
-msgstr "Erreur d'envoi du message"
-
-#. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_discuss_channel__message_ids
-msgid "Messages"
-msgstr "Messages"
-
-#. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_report_channel_view_graph
-#: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_report_channel_view_pivot
-msgid "Messages per session"
-msgstr "Messages par session"
-
-#. module: im_livechat
 #: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_report_channel_view_search
 msgid "Missed sessions"
 msgstr "Sessions manquées"
-
-#. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.discuss_channel_view_search
-msgid "My Sessions"
-msgstr "Mes sessions"
 
 #. module: im_livechat
 #: model:ir.model.fields,field_description:im_livechat.field_chatbot_script__name
@@ -1237,7 +1185,16 @@ msgstr "Nom"
 
 #. module: im_livechat
 #. odoo-javascript
-#: code:addons/im_livechat/static/src/embed/common/livechat_service.js:0
+#: code:addons/im_livechat/static/src/legacy/widgets/public_livechat_view/public_livechat_view.xml:0
+#, python-format
+msgid "New messages"
+msgstr "Nouveaux messages"
+
+#. module: im_livechat
+#. odoo-javascript
+#: code:addons/im_livechat/static/src/public_models/livechat_button_view.js:0
+#: code:addons/im_livechat/static/src/public_models/livechat_button_view.js:0
+#, python-format
 msgid "No available collaborator, please try again later."
 msgstr "Aucun collaborateur n'est disponible, veuillez réessayer plus tard."
 
@@ -1253,19 +1210,24 @@ msgstr "Pas encore de données !"
 
 #. module: im_livechat
 #. odoo-python
-#: code:addons/im_livechat/models/res_partner.py:0
+#: code:addons/im_livechat/models/mail_channel.py:0
+#, python-format
 msgid "No history found"
 msgstr "Aucun historique trouvé"
 
 #. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_form
-msgid "Notification text"
-msgstr "Texte de notification"
+#. odoo-javascript
+#: code:addons/im_livechat/static/src/legacy/widgets/public_livechat_window/public_livechat_window.xml:0
+#, python-format
+msgid "No operator available"
+msgstr "Aucun opérateur n'est disponible"
 
 #. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_discuss_channel__message_needaction_counter
-msgid "Number of Actions"
-msgstr "Nombre d'actions"
+#. odoo-javascript
+#: code:addons/im_livechat/static/src/legacy/widgets/public_livechat_view/public_livechat_view.xml:0
+#, python-format
+msgid "Note by"
+msgstr "Remarque par"
 
 #. module: im_livechat
 #: model:ir.model.fields,field_description:im_livechat.field_im_livechat_channel__chatbot_script_count
@@ -1288,24 +1250,16 @@ msgid "Number of different speakers"
 msgstr "Nombre d'intervenants différents"
 
 #. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_discuss_channel__message_has_error_counter
-msgid "Number of errors"
-msgstr "Nombre d'erreurs"
-
-#. module: im_livechat
 #: model:ir.model.fields,help:im_livechat.field_im_livechat_report_channel__nbr_message
 msgid "Number of message in the conversation"
 msgstr "Nombre de messages dans la conversation"
 
 #. module: im_livechat
-#: model:ir.model.fields,help:im_livechat.field_discuss_channel__message_needaction_counter
-msgid "Number of messages requiring action"
-msgstr "Nombre de messages nécessitant une action"
-
-#. module: im_livechat
-#: model:ir.model.fields,help:im_livechat.field_discuss_channel__message_has_error_counter
-msgid "Number of messages with delivery error"
-msgstr "Nombre de messages avec des erreurs d'envoi"
+#. odoo-javascript
+#: code:addons/im_livechat/static/src/legacy/widgets/feedback/feedback.xml:0
+#, python-format
+msgid "OK"
+msgstr "OK"
 
 #. module: im_livechat
 #: model_terms:ir.ui.view,arch_db:im_livechat.livechat_email_template
@@ -1313,13 +1267,6 @@ msgid "Odoo"
 msgstr "Odoo"
 
 #. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.res_users_form_view
-#: model_terms:ir.ui.view,arch_db:im_livechat.res_users_form_view_simple_modif
-msgid "Online Chat Language"
-msgstr "Langue du chat en ligne"
-
-#. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_form
 #: model_terms:ir.ui.view,arch_db:im_livechat.res_users_form_view_simple_modif
 msgid "Online Chat Name"
 msgstr "Nom de chat en ligne"
@@ -1328,6 +1275,13 @@ msgstr "Nom de chat en ligne"
 #: model:ir.model.fields,field_description:im_livechat.field_chatbot_script_step__triggering_answer_ids
 msgid "Only If"
 msgstr "Seulement si"
+
+#. module: im_livechat
+#. odoo-javascript
+#: code:addons/im_livechat/static/src/legacy/widgets/feedback/feedback.xml:0
+#, python-format
+msgid "Oops! Something went wrong."
+msgstr "Oups ! Un problème est survenu."
 
 #. module: im_livechat
 #: model:ir.model.fields.selection,name:im_livechat.selection__im_livechat_channel_rule__action__auto_popup
@@ -1340,9 +1294,9 @@ msgid "Open automatically timer"
 msgstr "Minuteur pour l'ouverture automatique"
 
 #. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_discuss_channel__livechat_operator_id
 #: model:ir.model.fields,field_description:im_livechat.field_im_livechat_report_channel__partner_id
 #: model:ir.model.fields,field_description:im_livechat.field_im_livechat_report_operator__partner_id
+#: model:ir.model.fields,field_description:im_livechat.field_mail_channel__livechat_operator_id
 #: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_report_channel_view_search
 #: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_report_operator_view_search
 msgid "Operator"
@@ -1359,6 +1313,17 @@ msgstr "Analyse de l'opérateur"
 #: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_form
 msgid "Operators"
 msgstr "Opérateurs"
+
+#. module: im_livechat
+#: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_kanban
+msgid ""
+"Operators\n"
+"                                            <br/>\n"
+"                                            <i class=\"fa fa-comments\" role=\"img\" aria-label=\"Comments\" title=\"Comments\"/>"
+msgstr ""
+"Opérateurs\n"
+"                                            <br/>\n"
+"                                            <i class=\"fa fa-comments\" role=\"img\" aria-label=\"Commentaires\" title=\"Commentaires\"/>"
 
 #. module: im_livechat
 #: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_form
@@ -1381,29 +1346,6 @@ msgid "Options"
 msgstr "Options"
 
 #. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_mail_mail__parent_author_name
-#: model:ir.model.fields,field_description:im_livechat.field_mail_message__parent_author_name
-msgid "Parent Author Name"
-msgstr "Nom de l'auteur parent"
-
-#. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_mail_mail__parent_body
-#: model:ir.model.fields,field_description:im_livechat.field_mail_message__parent_body
-msgid "Parent Body"
-msgstr "Corps du parent"
-
-#. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.discuss_channel_view_search
-msgid "Participant"
-msgstr "Participant"
-
-#. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.discuss_channel_view_form
-#: model_terms:ir.ui.view,arch_db:im_livechat.discuss_channel_view_tree
-msgid "Participants"
-msgstr "Participants"
-
-#. module: im_livechat
 #: model:ir.model.fields,help:im_livechat.field_im_livechat_channel__rating_percentage_satisfaction
 msgid "Percentage of happy ratings"
 msgstr "Pourcentage d'évaluations positives"
@@ -1416,12 +1358,21 @@ msgstr "Téléphone"
 #. module: im_livechat
 #. odoo-python
 #: code:addons/im_livechat/models/chatbot_script_step.py:0
+#, python-format
 msgid "Please call me on: "
 msgstr "Veuillez m'appeler au :"
 
 #. module: im_livechat
+#. odoo-javascript
+#: code:addons/im_livechat/static/src/legacy/widgets/feedback/feedback.xml:0
+#, python-format
+msgid "Please check your internet connection."
+msgstr "Merci de vérifier votre connexion Internet."
+
+#. module: im_livechat
 #. odoo-python
 #: code:addons/im_livechat/models/chatbot_script_step.py:0
+#, python-format
 msgid "Please contact me on: "
 msgstr "Veuillez me contacter au :"
 
@@ -1431,6 +1382,21 @@ msgid "Please do! If there is anything we can help with, let us know"
 msgstr ""
 "N'hésitez pas ! Si nous pouvons vous aider en quoi que ce soit, faites-le "
 "nous savoir"
+
+#. module: im_livechat
+#. odoo-javascript
+#: code:addons/im_livechat/static/src/legacy/widgets/public_livechat_view/public_livechat_view.xml:0
+#: code:addons/im_livechat/static/src/legacy/widgets/public_livechat_view/public_livechat_view.xml:0
+#, python-format
+msgid "Please wait"
+msgstr "Veuillez patienter"
+
+#. module: im_livechat
+#. odoo-javascript
+#: code:addons/im_livechat/static/src/legacy/widgets/public_livechat_view/public_livechat_view.xml:0
+#, python-format
+msgid "Please wait..."
+msgstr "Veuillez patienter..."
 
 #. module: im_livechat
 #: model_terms:ir.ui.view,arch_db:im_livechat.livechat_email_template
@@ -1443,55 +1409,58 @@ msgid "Question"
 msgstr "Question"
 
 #. module: im_livechat
-#. odoo-python
-#: code:addons/im_livechat/controllers/main.py:0
 #: model:ir.model,name:im_livechat.model_rating_rating
 #: model:ir.model.fields,field_description:im_livechat.field_im_livechat_report_channel__rating
-#: model_terms:ir.ui.view,arch_db:im_livechat.discuss_channel_view_kanban
-#: model_terms:ir.ui.view,arch_db:im_livechat.discuss_channel_view_tree
+#: model:ir.model.fields,field_description:im_livechat.field_mail_channel__rating_ids
+#: model_terms:ir.ui.view,arch_db:im_livechat.mail_channel_view_tree
 msgid "Rating"
 msgstr "Évaluation"
 
 #. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_discuss_channel__rating_avg_text
+#: model:ir.model.fields,field_description:im_livechat.field_mail_channel__rating_avg_text
 msgid "Rating Avg Text"
 msgstr "Texte de l'évaluation moyenne"
 
 #. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_discuss_channel__rating_last_feedback
+#: model:ir.model.fields,field_description:im_livechat.field_mail_channel__rating_last_feedback
 msgid "Rating Last Feedback"
 msgstr "Évaluation des derniers feedbacks"
 
 #. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_discuss_channel__rating_last_image
+#: model:ir.model.fields,field_description:im_livechat.field_mail_channel__rating_last_image
 msgid "Rating Last Image"
 msgstr "Évaluation de la dernière image"
 
 #. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_discuss_channel__rating_last_value
+#: model:ir.model.fields,field_description:im_livechat.field_mail_channel__rating_last_value
 msgid "Rating Last Value"
-msgstr "Évaluation dernière valeur"
+msgstr "Évaluation de la dernière valeur"
 
 #. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_discuss_channel__rating_percentage_satisfaction
 #: model:ir.model.fields,field_description:im_livechat.field_im_livechat_channel__rating_percentage_satisfaction
+#: model:ir.model.fields,field_description:im_livechat.field_mail_channel__rating_percentage_satisfaction
 msgid "Rating Satisfaction"
-msgstr "Évaluation de la satisfaction"
+msgstr "Evaluation de la satisfaction"
 
 #. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_discuss_channel__rating_last_text
+#: model:ir.model.fields,field_description:im_livechat.field_mail_channel__rating_last_text
 msgid "Rating Text"
 msgstr "Texte de l'évaluation"
 
 #. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_discuss_channel__rating_count
+#: model:ir.model.fields,field_description:im_livechat.field_mail_channel__rating_count
 msgid "Rating count"
 msgstr "Nombre d'évaluations"
 
 #. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_discuss_channel__rating_ids
+#. odoo-javascript
+#: code:addons/im_livechat/static/src/legacy/widgets/feedback/feedback.js:0
+#, python-format
+msgid "Rating: %s"
+msgstr "Évaluation : %s"
+
+#. module: im_livechat
 #: model:ir.model.fields,field_description:im_livechat.field_im_livechat_channel__rating_ids
-#: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_kanban
 msgid "Ratings"
 msgstr "Évaluations"
 
@@ -1502,9 +1471,10 @@ msgstr "Évaluations pour le canal de Live Chat"
 
 #. module: im_livechat
 #. odoo-javascript
-#: code:addons/im_livechat/static/src/embed/common/feedback_panel/transcript_sender.xml:0
-msgid "Receive a copy of this conversation."
-msgstr "Recevez une copie de cette conversation."
+#: code:addons/im_livechat/static/src/legacy/widgets/feedback/feedback.xml:0
+#, python-format
+msgid "Receive a copy of this conversation"
+msgstr "Recevoir une copie de cette conversation"
 
 #. module: im_livechat
 #: model:ir.model.fields,field_description:im_livechat.field_chatbot_script_answer__redirect_link
@@ -1522,7 +1492,7 @@ msgstr ""
 #. module: im_livechat
 #: model:ir.model.fields,field_description:im_livechat.field_chatbot_message__mail_message_id
 msgid "Related Mail Message"
-msgstr "Message e-mail lié"
+msgstr "Message email lié"
 
 #. module: im_livechat
 #: model:ir.ui.menu,name:im_livechat.menu_reporting_livechat
@@ -1532,18 +1502,30 @@ msgstr "Rapport"
 #. module: im_livechat
 #. odoo-javascript
 #: code:addons/im_livechat/static/src/js/colors_reset_button/colors_reset_button.xml:0
+#: code:addons/im_livechat/static/src/js/colors_reset_button/colors_reset_button.xml:0
+#, python-format
 msgid "Reset to default colors"
 msgstr "Réinitialiser les couleurs par défaut"
 
 #. module: im_livechat
 #. odoo-javascript
-#: code:addons/im_livechat/static/src/embed/common/thread_actions.js:0
+#: code:addons/im_livechat/static/src/legacy/public_livechat_chatbot.xml:0
+#, python-format
+msgid "Restart"
+msgstr "Redémarrer"
+
+#. module: im_livechat
+#. odoo-javascript
+#: code:addons/im_livechat/static/src/legacy/public_livechat_chatbot.xml:0
+#: code:addons/im_livechat/static/src/legacy/public_livechat_chatbot.xml:0
+#, python-format
 msgid "Restart Conversation"
 msgstr "Redémarrer la conversation"
 
 #. module: im_livechat
 #. odoo-python
-#: code:addons/im_livechat/models/discuss_channel.py:0
+#: code:addons/im_livechat/models/mail_channel.py:0
+#, python-format
 msgid "Restarting conversation..."
 msgstr "Reprise de la conversation..."
 
@@ -1552,11 +1534,6 @@ msgstr "Reprise de la conversation..."
 #: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_rule_view_tree
 msgid "Rules"
 msgstr "Règles"
-
-#. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_discuss_channel__message_has_sms_error
-msgid "SMS Delivery error"
-msgstr "Erreur d'envoi SMS"
 
 #. module: im_livechat
 #: model:ir.model.fields,field_description:im_livechat.field_im_livechat_report_channel__rating_text
@@ -1570,15 +1547,10 @@ msgstr "Enregistrez votre Canal pour générer votre widget de configuration."
 
 #. module: im_livechat
 #. odoo-javascript
-#: code:addons/im_livechat/static/src/embed/common/chatbot/chatbot_service.js:0
+#: code:addons/im_livechat/static/src/public_models/public_livechat_window.js:0
+#, python-format
 msgid "Say something"
 msgstr "Dites quelque chose"
-
-#. module: im_livechat
-#. odoo-javascript
-#: code:addons/im_livechat/static/src/embed/common/composer_patch.js:0
-msgid "Say something..."
-msgstr "Dites quelque chose..."
 
 #. module: im_livechat
 #: model_terms:ir.ui.view,arch_db:im_livechat.chatbot_script_view_form
@@ -1601,7 +1573,7 @@ msgid "Script Steps"
 msgstr "Étapes du script"
 
 #. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.discuss_channel_view_search
+#: model_terms:ir.ui.view,arch_db:im_livechat.mail_channel_view_search
 msgid "Search history"
 msgstr "Rechercher dans l'historique"
 
@@ -1613,19 +1585,22 @@ msgstr "Recherche de rapport"
 
 #. module: im_livechat
 #. odoo-javascript
-#: code:addons/im_livechat/static/src/core/web/channel_commands_patch.js:0
+#: code:addons/im_livechat/static/src/models/messaging_initializer.js:0
+#, python-format
 msgid "See 15 last visited pages"
 msgstr "Voir les 15 dernières pages visitées"
 
 #. module: im_livechat
 #. odoo-javascript
-#: code:addons/im_livechat/static/src/embed/common/chatbot/chatbot_service.js:0
+#: code:addons/im_livechat/static/src/public_models/public_livechat_window.js:0
+#, python-format
 msgid "Select an option above"
 msgstr "Sélectionnez une option ci-dessus"
 
 #. module: im_livechat
 #. odoo-javascript
-#: code:addons/im_livechat/static/src/embed/common/feedback_panel/feedback_panel.xml:0
+#: code:addons/im_livechat/static/src/legacy/widgets/feedback/feedback.xml:0
+#, python-format
 msgid "Send"
 msgstr "Envoyer"
 
@@ -1636,14 +1611,13 @@ msgid "Sequence"
 msgstr "Séquence"
 
 #. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.discuss_channel_view_form
-#: model_terms:ir.ui.view,arch_db:im_livechat.discuss_channel_view_search
-#: model_terms:ir.ui.view,arch_db:im_livechat.discuss_channel_view_tree
+#: model_terms:ir.ui.view,arch_db:im_livechat.mail_channel_view_form
+#: model_terms:ir.ui.view,arch_db:im_livechat.mail_channel_view_tree
 msgid "Session Date"
 msgstr "Date de la session"
 
 #. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.discuss_channel_view_form
+#: model_terms:ir.ui.view,arch_db:im_livechat.mail_channel_view_form
 msgid "Session Form"
 msgstr "Formulaire de session"
 
@@ -1653,6 +1627,14 @@ msgstr "Formulaire de session"
 #: model:ir.ui.menu,name:im_livechat.menu_reporting_livechat_channel
 msgid "Session Statistics"
 msgstr "Statistiques de session"
+
+#. module: im_livechat
+#. odoo-javascript
+#: code:addons/im_livechat/static/src/public_models/livechat_button_view.js:0
+#: code:addons/im_livechat/static/src/public_models/livechat_button_view.js:0
+#, python-format
+msgid "Session expired... Please refresh and try again."
+msgstr "Session expirée... Veuillez actualiser et réessayer."
 
 #. module: im_livechat
 #: model:ir.model.fields,field_description:im_livechat.field_im_livechat_report_channel__is_unrated
@@ -1665,7 +1647,7 @@ msgid "Session(s) without answer"
 msgstr "Session(s) sans réponse"
 
 #. module: im_livechat
-#: model:ir.actions.act_window,name:im_livechat.discuss_channel_action_from_livechat_channel
+#: model:ir.actions.act_window,name:im_livechat.mail_channel_action_from_livechat_channel
 #: model:ir.model.fields,field_description:im_livechat.field_im_livechat_channel__channel_ids
 #: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_form
 #: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_kanban
@@ -1715,19 +1697,6 @@ msgid "Step Type"
 msgstr "Type d'étape"
 
 #. module: im_livechat
-#. odoo-python
-#: code:addons/im_livechat/models/chatbot_script.py:0
-msgid "Step of type 'Question' must have answers."
-msgstr "L'étape de type \"Question\" doit comporter des réponses."
-
-#. module: im_livechat
-#. odoo-javascript
-#: code:addons/im_livechat/static/src/core/web/composer_patch.js:0
-#: code:addons/im_livechat/static/src/core/web/composer_patch.xml:0
-msgid "Tab to next livechat"
-msgstr "Tab vers le prochain live chat"
-
-#. module: im_livechat
 #: model:ir.model.fields.selection,name:im_livechat.selection__chatbot_script_step__step_type__text
 msgid "Text"
 msgstr "Texte"
@@ -1743,13 +1712,9 @@ msgid "Text that prompts the user to initiate the chat."
 msgstr "Texte qui invite l'utilisateur à discuter. "
 
 #. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_form
-msgid "Text to display on the notification"
-msgstr "Texte à afficher sur la notification"
-
-#. module: im_livechat
 #. odoo-javascript
-#: code:addons/im_livechat/static/src/embed/common/feedback_panel/feedback_panel.xml:0
+#: code:addons/im_livechat/static/src/legacy/widgets/feedback/feedback.js:0
+#, python-format
 msgid "Thank you for your feedback"
 msgstr "Merci pour votre feedback"
 
@@ -1757,12 +1722,6 @@ msgstr "Merci pour votre feedback"
 #: model:ir.model.fields,help:im_livechat.field_im_livechat_channel_rule__channel_id
 msgid "The channel of the rule"
 msgstr "Le canal de la règle"
-
-#. module: im_livechat
-#. odoo-javascript
-#: code:addons/im_livechat/static/src/embed/common/feedback_panel/transcript_sender.xml:0
-msgid "The conversation was sent."
-msgstr "La conversation a été envoyée."
 
 #. module: im_livechat
 #: model:ir.model.fields,help:im_livechat.field_im_livechat_channel_rule__country_ids
@@ -1803,20 +1762,6 @@ msgid "There is no rating for this channel at the moment"
 msgstr "Il n'y a pas d'évaluation pour ce canal pour le moment."
 
 #. module: im_livechat
-#: model:ir.model.fields,help:im_livechat.field_res_users_settings__livechat_lang_ids
-msgid ""
-"These languages, in addition to your main language, will be used to assign "
-"you to Live Chat sessions."
-msgstr ""
-"Ces langues, en plus de votre langue principale, seront utilisées pour vous "
-"assigner aux sessions de live chat."
-
-#. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_report_operator_view_search
-msgid "This Month"
-msgstr "Ce mois"
-
-#. module: im_livechat
 #: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_report_channel_view_search
 #: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_report_operator_view_search
 #: model_terms:ir.ui.view,arch_db:im_livechat.rating_rating_view_search_livechat
@@ -1833,7 +1778,7 @@ msgstr ""
 "début d'une discussion."
 
 #. module: im_livechat
-#: model:ir.model.fields,help:im_livechat.field_res_users_settings__livechat_username
+#: model:ir.model.fields,help:im_livechat.field_res_users__livechat_username
 msgid "This username will be used as your name in the livechat channels."
 msgstr "Ce nom d'utilisateur sera votre nom dans les canaux Live Chat."
 
@@ -1866,14 +1811,32 @@ msgid "Title Color"
 msgstr "Couleur du titre"
 
 #. module: im_livechat
+#. odoo-javascript
+#: code:addons/im_livechat/static/src/legacy/models/public_livechat_message.js:0
+#, python-format
+msgid "Today"
+msgstr "Aujourd'hui"
+
+#. module: im_livechat
 #: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_report_channel_view_search
 msgid "Treated sessions"
 msgstr "Sessions traitées"
 
 #. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_form
-msgid "Turn on the <strong>Live Chat</strong> feature."
-msgstr "Activez la fonctionnalité <strong>Live Chat</strong>."
+#. odoo-javascript
+#: code:addons/im_livechat/static/src/legacy/widgets/feedback/feedback.xml:0
+#, python-format
+msgid "Try again"
+msgstr "Réessayer"
+
+#. module: im_livechat
+#. odoo-python
+#: code:addons/im_livechat/models/mail_channel.py:0
+#, python-format
+msgid "Type <b>:shortcut</b> to insert a canned response in your message.<br>"
+msgstr ""
+"Tapez <b>:shortcut</b> pour insérer une réponse enregistrée dans votre "
+"message.<br>"
 
 #. module: im_livechat
 #: model:ir.model.fields,field_description:im_livechat.field_im_livechat_channel_rule__regex_url
@@ -1893,11 +1856,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:im_livechat.field_im_livechat_report_channel__uuid
 msgid "UUID"
 msgstr "UUID"
-
-#. module: im_livechat
-#: model_terms:ir.ui.view,arch_db:im_livechat.discuss_channel_view_search
-msgid "Unrated"
-msgstr "Sans évaluation"
 
 #. module: im_livechat
 #: model_terms:digest.tip,tip_description:im_livechat.digest_tip_im_livechat_0
@@ -1943,20 +1901,22 @@ msgstr "Réponse brute de l'utilisateur"
 #. odoo-python
 #: code:addons/im_livechat/controllers/main.py:0
 #: code:addons/im_livechat/models/im_livechat_channel.py:0
-#: code:addons/im_livechat/static/src/embed/common/livechat_service.js:0
+#: code:addons/im_livechat/static/src/public_models/livechat_button_view.js:0
+#, python-format
 msgid "Visitor"
 msgstr "Visiteur"
+
+#. module: im_livechat
+#. odoo-python
+#: code:addons/im_livechat/models/mail_channel.py:0
+#, python-format
+msgid "Visitor has left the conversation."
+msgstr "Le visiteur a quitté la conversation."
 
 #. module: im_livechat
 #: model:ir.model.fields,field_description:im_livechat.field_im_livechat_report_channel__is_happy
 msgid "Visitor is Happy"
 msgstr "Le visiteur est satisfait"
-
-#. module: im_livechat
-#. odoo-python
-#: code:addons/im_livechat/models/discuss_channel.py:0
-msgid "Visitor left the conversation."
-msgstr "Le visiteur a quitté la conversation."
 
 #. module: im_livechat
 #: model:ir.model.fields,field_description:im_livechat.field_im_livechat_channel__web_page
@@ -1967,16 +1927,6 @@ msgstr "Page web"
 #: model:ir.actions.act_window,name:im_livechat.im_livechat_channel_action
 msgid "Website Live Chat Channels"
 msgstr "Canaux de Live Chat du site web"
-
-#. module: im_livechat
-#: model:ir.model.fields,field_description:im_livechat.field_discuss_channel__website_message_ids
-msgid "Website Messages"
-msgstr "Messages du site web"
-
-#. module: im_livechat
-#: model:ir.model.fields,help:im_livechat.field_discuss_channel__website_message_ids
-msgid "Website communication history"
-msgstr "Historique de communication du site web"
 
 #. module: im_livechat
 #: model:chatbot.script,title:im_livechat.chatbot_script_welcome_bot
@@ -1990,8 +1940,8 @@ msgstr "Message d'accueil"
 
 #. module: im_livechat
 #: model:chatbot.script.step,message:im_livechat.chatbot_script_welcome_step_welcome
-msgid "Welcome to CompanyName! 👋"
-msgstr "Bienvenue à CompanyName ! 👋"
+msgid "Welcome to CompanyName ! 👋"
+msgstr "Bienvenue chez CompanyName ! 👋"
 
 #. module: im_livechat
 #: model:chatbot.script.step,message:im_livechat.chatbot_script_welcome_step_dispatch
@@ -2013,20 +1963,15 @@ msgstr ""
 
 #. module: im_livechat
 #. odoo-javascript
-#: code:addons/im_livechat/static/src/embed/common/close_confirmation.xml:0
-msgid "Yes, leave conversation"
-msgstr "Oui, quitter la conversation"
+#: code:addons/im_livechat/static/src/legacy/models/public_livechat_message.js:0
+#, python-format
+msgid "Yesterday"
+msgstr "Hier"
 
 #. module: im_livechat
 #: model_terms:ir.ui.view,arch_db:im_livechat.livechat_email_template
 msgid "You"
 msgstr "Vous "
-
-#. module: im_livechat
-#. odoo-python
-#: code:addons/im_livechat/controllers/attachment.py:0
-msgid "You are not allowed to upload attachments on this channel."
-msgstr "Vous n'êtes pas autorisé à charger des pièces jointes sur ce canal."
 
 #. module: im_livechat
 #: model_terms:ir.actions.act_window,help:im_livechat.chatbot_script_action
@@ -2049,35 +1994,16 @@ msgstr ""
 " de votre site de discuter en temps réel avec vos opérateurs."
 
 #. module: im_livechat
-#. odoo-javascript
-#: code:addons/im_livechat/static/src/core/web/livechat_channel_model_patch.js:0
-msgid "You joined %s."
-msgstr "Vous avez rejoint %s."
-
-#. module: im_livechat
-#. odoo-javascript
-#: code:addons/im_livechat/static/src/core/web/livechat_channel_model_patch.js:0
-msgid "You left %s."
-msgstr "Vous avez quitté %s."
-
-#. module: im_livechat
-#. odoo-javascript
-#: code:addons/im_livechat/static/src/embed/common/close_confirmation.xml:0
-msgid "You're about to leave the conversation, proceed?"
-msgstr ""
-"Vous êtes sur le point de quitter la conversation, souhaitez-vous poursuivre"
-" ?"
-
-#. module: im_livechat
-#: model_terms:ir.actions.act_window,help:im_livechat.discuss_channel_action
+#: model_terms:ir.actions.act_window,help:im_livechat.mail_channel_action
 msgid "Your chatter history is empty"
 msgstr "Votre historique de chat est vide"
 
 #. module: im_livechat
 #. odoo-javascript
-#: code:addons/im_livechat/static/src/core/web/channel_member_list_patch.xml:0
-msgid "country"
-msgstr "pays"
+#: code:addons/im_livechat/static/src/legacy/public_livechat_chatbot.xml:0
+#, python-format
+msgid "chatbot_image"
+msgstr "chatbot_image"
 
 #. module: im_livechat
 #: model_terms:ir.ui.view,arch_db:im_livechat.chatbot_script_view_form
@@ -2106,9 +2032,37 @@ msgstr "par ex. VotreSiteWeb.com"
 
 #. module: im_livechat
 #. odoo-javascript
-#: code:addons/im_livechat/static/src/embed/common/feedback_panel/transcript_sender.xml:0
+#: code:addons/im_livechat/static/src/legacy/public_livechat_chatbot.xml:0
+#, python-format
+msgid "is typing"
+msgstr "est en train d'écrire"
+
+#. module: im_livechat
+#. odoo-javascript
+#: code:addons/im_livechat/static/src/legacy/widgets/feedback/feedback.xml:0
+#, python-format
 msgid "mail@example.com"
 msgstr "mail@example.com"
+
+#. module: im_livechat
+#: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_view_form
+msgid "or copy this url and send it by email to your customers or suppliers:"
+msgstr ""
+"ou copiez cet URL et envoyez-la par e-mail à vos clients ou fournisseurs :"
+
+#. module: im_livechat
+#. odoo-javascript
+#: code:addons/im_livechat/static/src/legacy/widgets/public_livechat_view/public_livechat_view.js:0
+#, python-format
+msgid "read less"
+msgstr "lire moins"
+
+#. module: im_livechat
+#. odoo-javascript
+#: code:addons/im_livechat/static/src/legacy/widgets/public_livechat_view/public_livechat_view.js:0
+#, python-format
+msgid "read more"
+msgstr "lire plus"
 
 #. module: im_livechat
 #: model_terms:ir.ui.view,arch_db:im_livechat.im_livechat_channel_rule_view_form

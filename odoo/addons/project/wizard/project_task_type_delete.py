@@ -7,12 +7,12 @@ from ast import literal_eval
 
 class ProjectTaskTypeDelete(models.TransientModel):
     _name = 'project.task.type.delete.wizard'
-    _description = 'Project Task Stage Delete Wizard'
+    _description = 'Project Stage Delete Wizard'
 
-    project_ids = fields.Many2many('project.project', domain="['|', ('active', '=', False), ('active', '=', True)]", string='Projects', ondelete='cascade', export_string_translation=False)
-    stage_ids = fields.Many2many('project.task.type', string='Stages To Delete', ondelete='cascade', export_string_translation=False)
-    tasks_count = fields.Integer('Number of Tasks', compute='_compute_tasks_count', export_string_translation=False)
-    stages_active = fields.Boolean(compute='_compute_stages_active', export_string_translation=False)
+    project_ids = fields.Many2many('project.project', domain="['|', ('active', '=', False), ('active', '=', True)]", string='Projects', ondelete='cascade')
+    stage_ids = fields.Many2many('project.task.type', string='Stages To Delete', ondelete='cascade')
+    tasks_count = fields.Integer('Number of Tasks', compute='_compute_tasks_count')
+    stages_active = fields.Boolean(compute='_compute_stages_active')
 
     @api.depends('project_ids')
     def _compute_tasks_count(self):
@@ -59,7 +59,7 @@ class ProjectTaskTypeDelete(models.TransientModel):
 
         if project_id:
             action = self.env["ir.actions.actions"]._for_xml_id("project.action_view_task")
-            action['domain'] = [('project_id', '=', project_id), ('display_in_project', '=', 'True')]
+            action['domain'] = [('display_project_id', '=', project_id)]
             action['context'] = str({
                 'pivot_row_groupby': ['user_ids'],
                 'default_project_id': project_id,
@@ -67,7 +67,7 @@ class ProjectTaskTypeDelete(models.TransientModel):
         elif self.env.context.get('stage_view'):
             action = self.env["ir.actions.actions"]._for_xml_id("project.open_task_type_form")
         else:
-            action = self.env["ir.actions.actions"]._for_xml_id("project.action_view_my_task")
+            action = self.env["ir.actions.actions"]._for_xml_id("project.action_view_all_task")
 
         context = action.get('context', '{}')
         context = context.replace('uid', str(self.env.uid))

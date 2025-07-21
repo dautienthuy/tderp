@@ -35,7 +35,7 @@
             <span class="hidden" data-for="contactus_form" t-att-data-values="contactus_form_values"/>
             <div id="wrap" class="oe_structure oe_empty">
                 <section class="s_title parallax s_parallax_is_fixed bg-black-50 pt24 pb24" data-vcss="001" data-snippet="s_title" data-scroll-background-ratio="1">
-                    <span class="s_parallax_bg oe_img_bg" style="background-image: url('/web/image/website.s_parallax_default_image'); background-position: 50% 0;"/>
+                    <span class="s_parallax_bg oe_img_bg" style="background-image: url('/web/image/website.s_banner_default_image'); background-position: 50% 0;"/>
                     <div class="o_we_bg_filter bg-black-50"/>
                     <div class="container">
                         <h1>Contact us</h1>
@@ -44,8 +44,8 @@
                 <section class="s_text_block pt40 pb40 o_colored_level " data-snippet="s_text_block">
                     <div class="container s_allow_columns">
                         <div class="row">
-                            <div class="col-lg-7 mt-4 mt-lg-0">
-                                <p class="lead">
+                            <div class="col-lg-8 mt-4 mt-lg-0">
+                                <p>
                                     Contact us about anything related to our company or services.<br/>
                                     We'll do our best to get back to you as soon as possible.
                                 </p>
@@ -53,47 +53,71 @@
                                     <div class="container">
                                         <form id="contactus_form" action="/website/form/" method="post" enctype="multipart/form-data" class="o_mark_required" data-mark="*" data-model_name="mail.mail" data-success-mode="redirect" data-success-page="/contactus-thank-you" data-pre-fill="true">
                                             <div class="s_website_form_rows row s_col_no_bgcolor">
-                                                <div class="mb-3 col-lg-6 s_website_form_field s_website_form_custom s_website_form_required" data-type="char" data-name="Field">
-                                                    <label class="s_website_form_label" style="width: 200px" for="contact1">
-                                                        <span class="s_website_form_label_content">Name</span>
-                                                        <span class="s_website_form_mark"> *</span>
-                                                    </label>
-                                                    <input id="contact1" type="text" class="form-control s_website_form_input" name="name" required="" data-fill-with="name"/>
+                                                <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom s_website_form_required" data-type="char" data-name="Field">
+                                                    <div class="row s_col_no_resize s_col_no_bgcolor">
+                                                        <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="contact1">
+                                                            <span class="s_website_form_label_content">Name</span>
+                                                            <span class="s_website_form_mark"> *</span>
+                                                        </label>
+                                                        <div class="col-sm">
+                                                            <input id="contact1" type="text" class="form-control s_website_form_input" name="name" required="" data-fill-with="name"/>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="mb-3 col-lg-6 s_website_form_field s_website_form_custom" data-type="char" data-name="Field">
-                                                    <label class="s_website_form_label" style="width: 200px" for="contact2">
-                                                        <span class="s_website_form_label_content">Phone Number</span>
-                                                    </label>
-                                                    <input id="contact2" type="tel" class="form-control s_website_form_input" name="phone" data-fill-with="phone"/>
+                                                <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom" data-type="char" data-name="Field">
+                                                    <div class="row s_col_no_resize s_col_no_bgcolor">
+                                                        <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="contact2">
+                                                            <span class="s_website_form_label_content">Phone Number</span>
+                                                        </label>
+                                                        <div class="col-sm">
+                                                            <input id="contact2" type="tel" class="form-control s_website_form_input" name="phone" data-fill-with="phone"/>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="mb-3 col-lg-6 s_website_form_field s_website_form_required s_website_form_model_required" data-type="email" data-name="Field">
-                                                    <label class="s_website_form_label" style="width: 200px" for="contact3">
-                                                        <span class="s_website_form_label_content">Email</span>
-                                                        <span class="s_website_form_mark"> *</span>
-                                                    </label>
-                                                    <input id="contact3" type="email" class="form-control s_website_form_input" name="email_from" required="" data-fill-with="email"/>
+                                                <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_required s_website_form_model_required" data-type="email" data-name="Field">
+                                                    <div class="row s_col_no_resize s_col_no_bgcolor">
+                                                        <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="contact3">
+                                                            <span class="s_website_form_label_content">Email</span>
+                                                            <span class="s_website_form_mark"> *</span>
+                                                        </label>
+                                                        <div class="col-sm">
+                                                            <input id="contact3" type="email" class="form-control s_website_form_input" name="email_from" required="" data-fill-with="email"/>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="mb-3 col-lg-6 s_website_form_field s_website_form_custom" data-type="char" data-name="Field">
-                                                    <label class="s_website_form_label" style="width: 200px" for="contact4">
-                                                        <span class="s_website_form_label_content">Company</span>
-                                                    </label>
-                                                    <input id="contact4" type="text" class="form-control s_website_form_input" name="company" data-fill-with="commercial_company_name"/>
+                                                <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom" data-type="char" data-name="Field">
+                                                    <div class="row s_col_no_resize s_col_no_bgcolor">
+                                                        <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="contact4">
+                                                            <span class="s_website_form_label_content">Company</span>
+                                                        </label>
+                                                        <div class="col-sm">
+                                                            <input id="contact4" type="text" class="form-control s_website_form_input" name="company" data-fill-with="commercial_company_name"/>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="mb-3 col-12 s_website_form_field s_website_form_required s_website_form_model_required" data-type="char" data-name="Field">
-                                                    <label class="s_website_form_label" style="width: 200px" for="contact5">
-                                                        <span class="s_website_form_label_content">Subject</span>
-                                                        <span class="s_website_form_mark"> *</span>
-                                                    </label>
-                                                    <input id="contact5" type="text" class="form-control s_website_form_input" name="subject" required=""/>
+                                                <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_required s_website_form_model_required" data-type="char" data-name="Field">
+                                                    <div class="row s_col_no_resize s_col_no_bgcolor">
+                                                        <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="contact5">
+                                                            <span class="s_website_form_label_content">Subject</span>
+                                                            <span class="s_website_form_mark"> *</span>
+                                                        </label>
+                                                        <div class="col-sm">
+                                                            <input id="contact5" type="text" class="form-control s_website_form_input" name="subject" required=""/>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="mb-3 col-12 s_website_form_field s_website_form_custom s_website_form_required" data-type="text" data-name="Field">
-                                                    <label class="s_website_form_label" style="width: 200px" for="contact6">
-                                                        <span class="s_website_form_label_content">Question</span>
-                                                        <span class="s_website_form_mark"> *</span>
-                                                    </label>
-                                                    <textarea id="contact6" class="form-control s_website_form_input" name="description" required="" rows="8"></textarea>
+                                                <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom s_website_form_required" data-type="text" data-name="Field">
+                                                    <div class="row s_col_no_resize s_col_no_bgcolor">
+                                                        <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="contact6">
+                                                            <span class="s_website_form_label_content">Question</span>
+                                                            <span class="s_website_form_mark"> *</span>
+                                                        </label>
+                                                        <div class="col-sm">
+                                                            <textarea id="contact6" class="form-control s_website_form_input" name="description" required=""></textarea>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="mb-3 col-12 s_website_form_field s_website_form_dnone">
+                                                <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_dnone">
                                                     <div class="row s_col_no_resize s_col_no_bgcolor">
                                                         <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="contact7">
                                                             <span class="s_website_form_label_content">Email To</span>
@@ -103,9 +127,9 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="mb-0 py-2 col-12 s_website_form_submit s_website_form_no_submit_label text-end" data-name="Submit Button">
+                                                <div class="mb-0 py-2 col-12 s_website_form_submit" data-name="Submit Button">
                                                     <div style="width: 200px;" class="s_website_form_label"/>
-                                                    <a href="#" role="button" class="btn btn-primary s_website_form_send">Submit</a>
+                                                    <a href="#" role="button" class="btn btn-primary btn-lg s_website_form_send">Submit</a>
                                                     <span id="s_website_form_result"></span>
                                                 </div>
                                             </div>
@@ -113,9 +137,9 @@
                                     </div>
                                 </section>
                             </div>
-                            <div class="col-lg-4 offset-lg-1 mt-4 mt-lg-0">
-                                <h5>My Company</h5>
+                            <div class="col-lg-4 mt-4 mt-lg-0">
                                 <ul class="list-unstyled mb-0 ps-2">
+                                    <li>My Company</li>
                                     <li><i class="fa fa-map-marker fa-fw me-2"/><span class="o_force_ltr">3575 Fake Buena Vista Avenue</span></li>
                                     <li><i class="fa fa-phone fa-fw me-2"/><span class="o_force_ltr">+1 555-555-5556</span></li>
                                     <li><i class="fa fa-1x fa-fw fa-envelope me-2"/><span>info@yourcompany.example.com</span></li>
@@ -142,18 +166,21 @@
                         <section class="s_text_block pt40 pb40 o_colored_level " data-snippet="s_text_block">
                             <div class="container s_allow_columns">
                                 <div class="row">
-                                    <div class="col-lg-6 offset-lg-1 text-center">
-                                        <div class="d-inline-block mx-auto p-4">
-                                            <i class="fa fa-paper-plane fa-2x mb-3 rounded-circle text-bg-success" role="presentation"/>
-                                            <h1 class="fw-bolder">Thank You!</h1>
-                                            <p class="lead mb-0">Your message has been sent.</p>
-                                            <p class="lead">We will get back to you shortly.</p>
-                                            <a href="/">Go to Homepage</a>
+                                    <div class="col-lg-7 col-xl-6 me-lg-auto">
+                                        <span class="d-block fa fa-4x fa-thumbs-up mx-auto rounded-circle bg-primary"/><br/>
+                                        <h1 class="text-center">Thank You!</h1>
+                                        <div class="pb16 pt16 s_hr" data-snippet="s_hr" data-name="Separator">
+                                            <hr class="mx-auto border-top w-50 border-dark text-center"/>
                                         </div>
+                                        <h5 class="text-center">
+                                            <span class="fa fa-check-circle"/>
+                                            <span>Your message has been sent <b>successfully</b></span>
+                                        </h5>
+                                        <p class="text-center">We will get back to you shortly.</p>
                                     </div>
-                                    <div class="col-lg-4 offset-lg-1">
-                                        <h5>My Company</h5>
+                                    <div class="col-lg-4">
                                         <ul class="list-unstyled mb-0 ps-2">
+                                            <li>My Company</li>
                                             <li><i class="fa fa-map-marker fa-fw me-2"/><span class="o_force_ltr">3575 Fake Buena Vista Avenue</span></li>
                                             <li><i class="fa fa-phone fa-fw me-2"/><span class="o_force_ltr">+1 555-555-5556</span></li>
                                             <li><i class="fa fa-1x fa-fw fa-envelope me-2"/><span>info@yourcompany.example.com</span></li>
@@ -237,7 +264,7 @@
                                             <p>We may not be able to provide the best service to you if you reject those cookies, but the website will work.</p>
                                         </td>
                                         <td>
-                                            im_livechat_previous_operator (Odoo)<br/>
+                                            im_livechat_previous_operator_pid (Odoo)<br/>
                                             utm_campaign (Odoo)<br/>
                                             utm_source (Odoo)<br/>
                                             utm_medium (Odoo)
@@ -301,7 +328,7 @@
             <div id="wrap">
                 <div class="oe_structure">
                     <section class="s_title parallax s_parallax_is_fixed bg-black-50 pt24 pb24" data-vcss="001" data-snippet="s_title" data-scroll-background-ratio="1">
-                        <span class="s_parallax_bg oe_img_bg" style="background-image: url('/web/image/website.s_parallax_default_image'); background-position: 50% 0;"/>
+                        <span class="s_parallax_bg oe_img_bg" style="background-image: url('/web/image/website.s_banner_default_image'); background-position: 50% 0;"/>
                         <div class="o_we_bg_filter bg-black-50"/>
                         <div class="container">
                             <h1>About us</h1>
@@ -317,7 +344,7 @@
             <div id="wrap">
                 <div class="oe_structure">
                     <section class="s_title parallax s_parallax_is_fixed bg-black-50 pt24 pb24" data-vcss="001" data-snippet="s_title" data-scroll-background-ratio="1">
-                        <span class="s_parallax_bg oe_img_bg" style="background-image: url('/web/image/website.s_parallax_default_image'); background-position: 50% 0;"/>
+                        <span class="s_parallax_bg oe_img_bg" style="background-image: url('/web/image/website.s_banner_default_image'); background-position: 50% 0;"/>
                         <div class="o_we_bg_filter bg-black-50"/>
                         <div class="container">
                             <h1>Services</h1>
@@ -333,7 +360,7 @@
             <div id="wrap">
                 <div class="oe_structure">
                     <section class="s_title parallax s_parallax_is_fixed bg-black-50 pt24 pb24" data-vcss="001" data-snippet="s_title" data-scroll-background-ratio="1">
-                        <span class="s_parallax_bg oe_img_bg" style="background-image: url('/web/image/website.s_parallax_default_image'); background-position: 50% 0;"/>
+                        <span class="s_parallax_bg oe_img_bg" style="background-image: url('/web/image/website.s_banner_default_image'); background-position: 50% 0;"/>
                         <div class="o_we_bg_filter bg-black-50"/>
                         <div class="container">
                             <h1>Pricing</h1>
@@ -349,7 +376,7 @@
             <div id="wrap">
                 <div class="oe_structure">
                     <section class="s_title parallax s_parallax_is_fixed bg-black-50 pt24 pb24" data-vcss="001" data-snippet="s_title" data-scroll-background-ratio="1">
-                        <span class="s_parallax_bg oe_img_bg" style="background-image: url('/web/image/website.s_parallax_default_image'); background-position: 50% 0;"/>
+                        <span class="s_parallax_bg oe_img_bg" style="background-image: url('/web/image/website.s_banner_default_image'); background-position: 50% 0;"/>
                         <div class="o_we_bg_filter bg-black-50"/>
                         <div class="container">
                             <h1>Privacy Policy</h1>
@@ -492,14 +519,12 @@
             <field name="url">/</field>
             <field name="view_id" ref="homepage"/>
             <field name="track">True</field>
-            <field name="website_meta_description">This is the homepage of the website</field>
         </record>
         <record id="contactus_page" model="website.page">
             <field name="url">/contactus</field>
             <field name="is_published">True</field>
             <field name="view_id" ref="contactus"/>
             <field name="track">True</field>
-            <field name="website_meta_description">This is the contact us page of the website</field>
         </record>
 
         <!-- Default Menu to store module menus for new website -->
@@ -528,5 +553,678 @@
             <field name="company_id" ref="base.main_company"/>
             <field name="user_id" ref="base.public_user"/>
         </record>
+
+        <!-- Pre loaded images -->
+        <record id="website.business_conference" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">business_conference.jpg</field>
+            <field name="res_model">ir.ui.view</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/library/business_conference.jpg</field>
+        </record>
+        <record id="website.library_image_01" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">bridge.jpg</field>
+            <field name="res_model">ir.ui.view</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/library/bridge.jpg</field>
+        </record>
+        <record id="website.library_image_02" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">deliver.jpg</field>
+            <field name="res_model">ir.ui.view</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/library/deliver.jpg</field>
+        </record>
+        <record id="website.library_image_03" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">clock.jpg</field>
+            <field name="res_model">ir.ui.view</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/library/clock.jpg</field>
+        </record>
+        <record id="website.library_image_04" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">manufacturing.jpg</field>
+            <field name="res_model">ir.ui.view</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/library/manufacturing.jpg</field>
+        </record>
+        <record id="website.library_image_05" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">compass.jpg</field>
+            <field name="res_model">ir.ui.view</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/library/compass.jpg</field>
+        </record>
+        <record id="website.library_image_06" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">gift.jpg</field>
+            <field name="res_model">ir.ui.view</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/library/gift.jpg</field>
+        </record>
+        <record id="website.library_image_07" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">mobile_device.jpg</field>
+            <field name="res_model">ir.ui.view</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/library/mobile_device.jpg</field>
+        </record>
+        <record id="website.library_image_08" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">mobile.jpg</field>
+            <field name="res_model">ir.ui.view</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/library/mobile.jpg</field>
+        </record>
+        <record id="website.library_image_09" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">office.jpg</field>
+            <field name="res_model">ir.ui.view</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/library/office.jpg</field>
+        </record>
+        <record id="website.library_image_10" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">ice_coffe.jpg</field>
+            <field name="res_model">ir.ui.view</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/library/ice_coffe.jpg</field>
+        </record>
+        <record id="website.library_image_11" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">rocket.jpg</field>
+            <field name="res_model">ir.ui.view</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/library/rocket.jpg</field>
+        </record>
+        <record id="website.library_image_12" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">sell.jpg</field>
+            <field name="res_model">ir.ui.view</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/library/sell.jpg</field>
+        </record>
+        <record id="website.library_image_13" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">shop.jpg</field>
+            <field name="res_model">ir.ui.view</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/library/shop.jpg</field>
+        </record>
+        <record id="website.library_image_14" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">sign.jpg</field>
+            <field name="res_model">ir.ui.view</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/library/sign.jpg</field>
+        </record>
+        <record id="website.library_image_15" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">sweet.jpg</field>
+            <field name="res_model">ir.ui.view</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/library/sweet.jpg</field>
+        </record>
+        <record id="website.library_image_16" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">wine.jpg</field>
+            <field name="res_model">ir.ui.view</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/library/wine.jpg</field>
+        </record>
+        <record id="website.library_image_17" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">marketing.jpg</field>
+            <field name="res_model">ir.ui.view</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/library/marketing.jpg</field>
+        </record>
+        <record id="website.library_image_18" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">firework.jpg</field>
+            <field name="res_model">ir.ui.view</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/library/firework.jpg</field>
+        </record>
+
+        <!-- Website Builder Background Images -->
+        <record id="website.s_background_image_01" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_background_image_01.jpg</field>
+            <field name="type">url</field>
+            <field name="res_model">ir.ui.view</field>
+            <field name="url">/website/static/src/img/backgrounds/peak.jpg</field>
+        </record>
+        <record id="website.s_background_image_02" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_background_image_02.jpg</field>
+            <field name="type">url</field>
+            <field name="res_model">ir.ui.view</field>
+            <field name="url">/website/static/src/img/backgrounds/la.jpg</field>
+        </record>
+        <record id="website.s_background_image_03" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_background_image_03.jpg</field>
+            <field name="type">url</field>
+            <field name="res_model">ir.ui.view</field>
+            <field name="url">/website/static/src/img/backgrounds/panama-sky.jpg</field>
+        </record>
+        <record id="website.s_background_image_04" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_background_image_04.jpg</field>
+            <field name="type">url</field>
+            <field name="res_model">ir.ui.view</field>
+            <field name="url">/website/static/src/img/backgrounds/cubes.jpg</field>
+        </record>
+        <record id="website.s_background_image_05" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_background_image_05.jpg</field>
+            <field name="type">url</field>
+            <field name="res_model">ir.ui.view</field>
+            <field name="url">/website/static/src/img/backgrounds/building-profile.jpg</field>
+        </record>
+        <record id="website.s_background_image_06" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_background_image_06.jpg</field>
+            <field name="type">url</field>
+            <field name="res_model">ir.ui.view</field>
+            <field name="url">/website/static/src/img/backgrounds/type.jpg</field>
+        </record>
+        <record id="website.s_background_image_07" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_background_image_07.jpg</field>
+            <field name="type">url</field>
+            <field name="res_model">ir.ui.view</field>
+            <field name="url">/website/static/src/img/backgrounds/people.jpg</field>
+        </record>
+        <record id="website.s_background_image_08" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_background_image_08.jpg</field>
+            <field name="type">url</field>
+            <field name="res_model">ir.ui.view</field>
+            <field name="url">/website/static/src/img/backgrounds/city.jpg</field>
+        </record>
+        <record id="website.s_background_image_09" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_background_image_09.jpg</field>
+            <field name="type">url</field>
+            <field name="res_model">ir.ui.view</field>
+            <field name="url">/website/static/src/img/backgrounds/sails.jpg</field>
+        </record>
+
+        <!-- Header default images (to be replaced by themes) -->
+        <record id="website.header_image_1_default_image" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">header_image_1_default_image.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/header_image_1_default_image.jpg</field>
+        </record>
+
+        <!-- Snippets' Default Images (to be replaced by themes) -->
+        <record id="website.s_cover_default_image" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_cover_default_image.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_cover.jpg</field>
+        </record>
+        <record id="website.s_masonry_block_default_image_1" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_masonry_block_default_image_1.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_masonry_block_1.jpg</field>
+        </record>
+        <record id="website.s_masonry_block_default_image_2" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_masonry_block_default_image_2.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_picture.jpg</field>
+        </record>
+        <record id="website.s_media_list_default_image_1" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_media_list_default_image_1.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_media_list_1.jpg</field>
+        </record>
+        <record id="website.s_media_list_default_image_2" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_media_list_default_image_2.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_media_list_2.jpg</field>
+        </record>
+        <record id="website.s_media_list_default_image_3" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_media_list_default_image_3.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_media_list_3.jpg</field>
+        </record>
+        <record id="website.s_product_list_default_image_1" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_product_list_default_image_1.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/furniture.jpg</field>
+        </record>
+        <record id="website.s_product_list_default_image_2" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_product_list_default_image_2.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/clothes.jpg</field>
+        </record>
+        <record id="website.s_product_list_default_image_3" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_product_list_default_image_3.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/books.jpg</field>
+        </record>
+        <record id="website.s_product_list_default_image_4" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_product_list_default_image_4.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/essentials_oils.jpg</field>
+        </record>
+        <record id="website.s_product_list_default_image_5" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_product_list_default_image_5.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/services.jpg</field>
+        </record>
+        <record id="website.s_product_list_default_image_6" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_product_list_default_image_6.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/multimedia.jpg</field>
+        </record>
+        <record id="website.s_quotes_carousel_demo_image_0" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_quotes_carousel_image_0.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_carousel_1.jpg</field>
+        </record>
+        <record id="website.s_quotes_carousel_demo_image_1" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_quotes_carousel_image_01.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_quotes_carousel_1.jpg</field>
+        </record>
+        <record id="website.s_quotes_carousel_demo_image_2" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_quotes_carousel_image_02.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_quotes_carousel_2.jpg</field>
+        </record>
+        <record id="website.s_quotes_carousel_demo_image_3" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_quotes_carousel_image_3.png</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_team_member_3.png</field>
+        </record>
+        <record id="website.s_quotes_carousel_demo_image_4" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_quotes_carousel_image_4.png</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_team_member_2.png</field>
+        </record>
+        <record id="website.s_quotes_carousel_demo_image_5" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_quotes_carousel_image_5.png</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_team_member_4.png</field>
+        </record>
+        <record id="website.s_image_text_default_image" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_image_text_default_image.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_image_text.jpg</field>
+        </record>
+        <record id="website.s_text_image_default_image" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_text_image_default_image.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_text_image.jpg</field>
+        </record>
+        <record id="website.s_three_columns_default_image_1" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_three_columns_default_image_1.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/web/image/website.library_image_11</field>
+        </record>
+        <record id="website.s_three_columns_default_image_2" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_three_columns_default_image_2.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/web/image/website.library_image_13</field>
+        </record>
+        <record id="website.s_three_columns_default_image_3" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_three_columns_default_image_3.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/web/image/website.library_image_07</field>
+        </record>
+        <record id="website.s_carousel_default_image_1" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_carousel_default_image_1.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_carousel_1.jpg</field>
+        </record>
+        <record id="website.s_carousel_default_image_2" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_carousel_default_image_2.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_carousel_2.jpg</field>
+        </record>
+        <record id="website.s_carousel_default_image_3" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_carousel_default_image_3.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_carousel_3.jpg</field>
+        </record>
+        <record id="website.s_picture_default_image" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_picture_default_image.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_picture.jpg</field>
+        </record>
+        <record id="website.s_banner_default_image" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_banner_default_image.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_banner.jpg</field>
+        </record>
+        <record id="website.s_parallax_default_image" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_parallax_default_image.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_parallax.jpg</field>
+        </record>
+        <record id="website.s_reference_demo_image_1" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_reference_demo_image_1.png</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_references_1.png</field>
+        </record>
+        <record id="website.s_reference_demo_image_2" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_reference_demo_image_2.png</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_references_2.png</field>
+        </record>
+        <record id="website.s_reference_demo_image_3" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_reference_demo_image_3.png</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_references_3.png</field>
+        </record>
+        <record id="website.s_reference_demo_image_4" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_reference_demo_image_4.png</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_references_4.png</field>
+        </record>
+        <record id="website.s_reference_demo_image_5" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_reference_demo_image_5.png</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_references_5.png</field>
+        </record>
+        <record id="website.s_reference_default_image_6" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_reference_default_image_6.png</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_references_6.png</field>
+        </record>
+        <record id="website.s_company_team_image_1" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_company_team_image_1.png</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_team_member_1.png</field>
+        </record>
+        <record id="website.s_company_team_image_2" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_company_team_image_2.png</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_team_member_2.png</field>
+        </record>
+        <record id="website.s_company_team_image_3" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_company_team_image_3.png</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_team_member_3.png</field>
+        </record>
+        <record id="website.s_company_team_image_4" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_company_team_image_4.png</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_team_member_4.png</field>
+        </record>
+        <record id="website.s_mega_menu_menu_image_menu_default_image" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_menu_image_menu_default_image.png</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_references_5.png</field>
+        </record>
+        <record id="website.s_mega_menu_thumbnails_default_image_1" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_thumbnails_default_image_1.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_thumbnails_default_image_1.jpg</field>
+        </record>
+        <record id="website.s_mega_menu_thumbnails_default_image_2" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_thumbnails_default_image_2.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_thumbnails_default_image_2.jpg</field>
+        </record>
+        <record id="website.s_mega_menu_thumbnails_default_image_3" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_thumbnails_default_image_3.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_thumbnails_default_image_3.jpg</field>
+        </record>
+        <record id="website.s_mega_menu_thumbnails_default_image_4" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_thumbnails_default_image_4.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_thumbnails_default_image_4.jpg</field>
+        </record>
+        <record id="website.s_mega_menu_thumbnails_default_image_5" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_thumbnails_default_image_5.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_thumbnails_default_image_5.jpg</field>
+        </record>
+        <record id="website.s_mega_menu_thumbnails_default_image_6" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_thumbnails_default_image_6.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_thumbnails_default_image_6.jpg</field>
+        </record>
+        <record id="website.s_mega_menu_thumbnails_default_image_7" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_thumbnails_default_image_7.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_thumbnails_default_image_7.jpg</field>
+        </record>
+        <record id="website.s_mega_menu_thumbnails_default_image_8" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_thumbnails_default_image_8.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_thumbnails_default_image_8.jpg</field>
+        </record>
+        <record id="website.s_mega_menu_thumbnails_default_image_9" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_thumbnails_default_image_9.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_thumbnails_default_image_9.jpg</field>
+        </record>
+        <record id="website.s_mega_menu_thumbnails_default_image_10" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_thumbnails_default_image_10.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_thumbnails_default_image_10.jpg</field>
+        </record>
+        <record id="website.s_mega_menu_thumbnails_default_image_11" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_thumbnails_default_image_11.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_thumbnails_default_image_11.jpg</field>
+        </record>
+        <record id="website.s_mega_menu_images_subtitles_default_image_1" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_images_subtitles_default_image_1.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_images_subtitles_default_image_1.jpg</field>
+        </record>
+        <record id="website.s_mega_menu_images_subtitles_default_image_2" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_images_subtitles_default_image_2.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_images_subtitles_default_image_2.jpg</field>
+        </record>
+        <record id="website.s_mega_menu_images_subtitles_default_image_3" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_images_subtitles_default_image_3.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_images_subtitles_default_image_3.jpg</field>
+        </record>
+        <record id="website.s_mega_menu_images_subtitles_default_image_4" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_images_subtitles_default_image_4.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_images_subtitles_default_image_4.jpg</field>
+        </record>
+        <record id="website.s_mega_menu_images_subtitles_default_image_5" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_images_subtitles_default_image_5.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_images_subtitles_default_image_5.jpg</field>
+        </record>
+        <record id="website.s_mega_menu_images_subtitles_default_image_6" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_images_subtitles_default_image_6.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_images_subtitles_default_image_6.jpg</field>
+        </record>
+        <record id="website.s_mega_menu_images_subtitles_default_image_7" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_images_subtitles_default_image_7.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_images_subtitles_default_image_7.jpg</field>
+        </record>
+        <record id="website.s_mega_menu_menus_logos_default_image" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_menus_logos_default_image.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_menus_logos_default_image.jpg</field>
+        </record>
+        <record id="website.s_mega_menu_menus_logos_default_logo_1" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_menus_logos_default_logo_1.png</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_menus_logos_default_logo_1.png</field>
+        </record>
+        <record id="website.s_mega_menu_menus_logos_default_logo_2" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_menus_logos_default_logo_2.png</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_menus_logos_default_logo_2.png</field>
+        </record>
+        <record id="website.s_mega_menu_menus_logos_default_logo_3" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_menus_logos_default_logo_3.png</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_menus_logos_default_logo_3.png</field>
+        </record>
+        <record id="website.s_mega_menu_menus_logos_default_logo_4" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_menus_logos_default_logo_4.png</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_menus_logos_default_logo_4.png</field>
+        </record>
+        <record id="website.s_mega_menu_menus_logos_default_logo_5" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_menus_logos_default_logo_5.png</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_menus_logos_default_logo_5.png</field>
+        </record>
+        <record id="website.s_mega_menu_menus_logos_default_logo_6" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_menus_logos_default_logo_6.png</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_menus_logos_default_logo_6.png</field>
+        </record>
+        <record id="website.s_mega_menu_cards_default_image_1" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_cards_default_image_1.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_cards_default_image_1.jpg</field>
+        </record>
+        <record id="website.s_mega_menu_cards_default_image_2" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_cards_default_image_2.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_cards_default_image_2.jpg</field>
+        </record>
+        <record id="website.s_mega_menu_cards_default_image_3" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_cards_default_image_3.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_cards_default_image_3.jpg</field>
+        </record>
+        <record id="website.s_mega_menu_cards_default_image_4" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_cards_default_image_4.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_cards_default_image_4.jpg</field>
+        </record>
+        <record id="website.s_mega_menu_cards_default_image_5" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_cards_default_image_5.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_cards_default_image_5.jpg</field>
+        </record>
+        <record id="website.s_mega_menu_cards_default_image_6" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_cards_default_image_6.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_cards_default_image_6.jpg</field>
+        </record>
+        <record id="website.s_mega_menu_cards_default_image_7" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_cards_default_image_7.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_cards_default_image_7.jpg</field>
+        </record>
+        <record id="website.s_mega_menu_cards_default_image_8" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_mega_menu_cards_default_image_8.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_mega_menu_cards_default_image_8.jpg</field>
+        </record>
+        <record id="website.s_product_catalog_default_image" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_product_catalog_default_image.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_product_catalog.jpg</field>
+        </record>
+        <record id="website.s_blockquote_default_image" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_blockquote_default_image.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_team_member_2.png</field>
+        </record>
+        <record id="website.s_blockquote_cover_default_image" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_blockquote_cover_default_image.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_blockquote_cover.jpg</field>
+        </record>
+        <record id="website.s_popup_default_image" model="ir.attachment">
+            <field name="public" eval="True"/>
+            <field name="name">s_popup_default_image.jpg</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/snippets_demo/s_popup.jpg</field>
+        </record>
+
     </data>
 </odoo>

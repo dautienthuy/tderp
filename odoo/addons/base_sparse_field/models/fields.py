@@ -59,7 +59,7 @@ def _compute_sparse(self, records):
 def _inverse_sparse(self, records):
     for record in records:
         values = record[self.sparse]
-        value = self.convert_to_read(record[self.name], record, use_display_name=False)
+        value = self.convert_to_read(record[self.name], record, use_name_get=False)
         if value:
             if values.get(self.name) != value:
                 values[self.name] = value
@@ -81,7 +81,7 @@ class Serialized(fields.Field):
 
     prefetch = False                    # not prefetched by default
 
-    def convert_to_column_insert(self, value, record, values=None, validate=True):
+    def convert_to_column(self, value, record, values=None, validate=True):
         return self.convert_to_cache(value, record, validate=validate)
 
     def convert_to_cache(self, value, record, validate=True):

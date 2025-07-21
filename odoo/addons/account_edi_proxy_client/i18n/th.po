@@ -3,32 +3,23 @@
 # 	* account_edi_proxy_client
 # 
 # Translators:
-# Wil Odoo, 2024
-# Rasareeyar Lappiam, 2025
+# Wichanon Jamwutthipreecha, 2022
+# Martin Trigaux, 2023
+# Rasareeyar Lappiam, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-19 20:36+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Rasareeyar Lappiam, 2025\n"
+"POT-Creation-Date: 2023-04-14 05:51+0000\n"
+"PO-Revision-Date: 2022-09-22 05:44+0000\n"
+"Last-Translator: Rasareeyar Lappiam, 2023\n"
 "Language-Team: Thai (https://app.transifex.com/odoo/teams/41243/th/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: th\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-
-#. module: account_edi_proxy_client
-#. odoo-python
-#: code:addons/account_edi_proxy_client/models/account_edi_proxy_user.py:0
-msgid ""
-"A user already exists with theses credentials on our server. Please check "
-"your information."
-msgstr ""
-"มีผู้ใช้ที่มีข้อมูลประจำตัวเหล่านี้อยู่แล้วบนเซิร์ฟเวอร์ของคุณ "
-"โปรดตรวจสอบข้อมูลของคุณ"
 
 #. module: account_edi_proxy_client
 #: model:ir.model,name:account_edi_proxy_client.model_account_edi_proxy_client_user
@@ -38,7 +29,7 @@ msgstr "ผู้ใช้พร็อกซี EDI ของบัญชี"
 #. module: account_edi_proxy_client
 #: model:ir.model.fields,field_description:account_edi_proxy_client.field_res_company__account_edi_proxy_client_ids
 msgid "Account Edi Proxy Client"
-msgstr "บัญชีพร็อกซีลูกค้า Edi"
+msgstr "บัญชีไคลเอ็นต์พร็อกซี Edi"
 
 #. module: account_edi_proxy_client
 #: model_terms:ir.ui.view,arch_db:account_edi_proxy_client.view_form_account_edi_proxy_client_user
@@ -51,14 +42,19 @@ msgid "Active"
 msgstr "เปิดใช้งาน"
 
 #. module: account_edi_proxy_client
+#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__edi_format_code
+msgid "Code"
+msgstr "โค้ด"
+
+#. module: account_edi_proxy_client
 #: model:ir.model,name:account_edi_proxy_client.model_res_company
 msgid "Companies"
-msgstr "บริษัท"
+msgstr "หลายบริษัท"
 
 #. module: account_edi_proxy_client
 #: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__company_id
 msgid "Company"
-msgstr "บริษัท"
+msgstr "บริษัทเดียว"
 
 #. module: account_edi_proxy_client
 #: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__create_uid
@@ -69,16 +65,6 @@ msgstr "สร้างโดย"
 #: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__create_date
 msgid "Created on"
 msgstr "สร้างเมื่อ"
-
-#. module: account_edi_proxy_client
-#: model:ir.model,name:account_edi_proxy_client.model_certificate_key
-msgid "Cryptographic Keys"
-msgstr "คีย์การเข้ารหัส"
-
-#. module: account_edi_proxy_client
-#: model:ir.model.fields.selection,name:account_edi_proxy_client.selection__account_edi_proxy_client_user__edi_mode__demo
-msgid "Demo mode"
-msgstr "โหมดสาธิต"
 
 #. module: account_edi_proxy_client
 #: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__display_name
@@ -96,9 +82,14 @@ msgid "EDI Proxy Users"
 msgstr "ผู้ใช้พร็อกซี EDI"
 
 #. module: account_edi_proxy_client
-#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__edi_mode
-msgid "EDI operating mode"
-msgstr "โหมดการทำงานของ EDI"
+#: model:ir.model,name:account_edi_proxy_client.model_account_edi_format
+msgid "EDI format"
+msgstr "รูปแบบ EDI"
+
+#. module: account_edi_proxy_client
+#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__edi_format_id
+msgid "Edi Format"
+msgstr "รูปแบบ Edi"
 
 #. module: account_edi_proxy_client
 #: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__edi_identification
@@ -116,13 +107,9 @@ msgid "Id Client"
 msgstr "รหัสลูกค้า"
 
 #. module: account_edi_proxy_client
-#. odoo-python
-#: code:addons/account_edi_proxy_client/models/account_edi_proxy_user.py:0
-msgid ""
-"Invalid signature for request. This might be due to another connection to odoo Access Point server. It can occur if you have duplicated your database. \n"
-"\n"
-"If you are not sure how to fix this, please contact our support."
-msgstr ""
+#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user____last_update
+msgid "Last Modified on"
+msgstr "แก้ไขครั้งล่าสุดเมื่อ"
 
 #. module: account_edi_proxy_client
 #: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__write_uid
@@ -135,19 +122,14 @@ msgid "Last Updated on"
 msgstr "อัปเดตครั้งล่าสุดเมื่อ"
 
 #. module: account_edi_proxy_client
-#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__private_key_id
+#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__private_key
 msgid "Private Key"
 msgstr "รหัสส่วนตัว"
 
 #. module: account_edi_proxy_client
-#: model:ir.model.fields.selection,name:account_edi_proxy_client.selection__account_edi_proxy_client_user__edi_mode__prod
-msgid "Production mode"
-msgstr "โหมดการผลิต"
-
-#. module: account_edi_proxy_client
-#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__proxy_type
-msgid "Proxy Type"
-msgstr "ประเภทพร็อกซี"
+#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__private_key_filename
+msgid "Private Key Filename"
+msgstr "ชื่อไฟล์ไพรเวทคีย์"
 
 #. module: account_edi_proxy_client
 #: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__refresh_token
@@ -155,33 +137,21 @@ msgid "Refresh Token"
 msgstr "รีเฟรชโทเคน"
 
 #. module: account_edi_proxy_client
-#: model:ir.model.fields.selection,name:account_edi_proxy_client.selection__account_edi_proxy_client_user__edi_mode__test
-msgid "Test mode"
-msgstr "โหมดทดสอบ"
-
-#. module: account_edi_proxy_client
-#: model:ir.model.fields,help:account_edi_proxy_client.field_account_edi_proxy_client_user__private_key_id
+#: model:ir.model.fields,help:account_edi_proxy_client.field_account_edi_proxy_client_user__private_key
 msgid "The key to encrypt all the user's data"
-msgstr "กุญแจสำคัญในการเข้ารหัสข้อมูลทั้งหมดของผู้ใช้"
+msgstr "คีย์สำคัญในการเข้ารหัสข้อมูลทั้งหมดของผู้ใช้"
 
 #. module: account_edi_proxy_client
 #: model:ir.model.fields,help:account_edi_proxy_client.field_account_edi_proxy_client_user__edi_identification
-msgid "The unique id that identifies this user, typically the vat"
-msgstr "รหัสเฉพาะที่ระบุผู้ใช้รายนี้ โดยทั่วไปคือ vat"
-
-#. module: account_edi_proxy_client
-#. odoo-python
-#: code:addons/account_edi_proxy_client/models/account_edi_proxy_user.py:0
 msgid ""
-"The url that this service requested returned an error. The url it tried to "
-"contact was %(url)s. %(error_message)s"
+"The unique id that identifies this user for on the edi format, typically the"
+" vat"
 msgstr ""
-"URL ที่บริการนี้ร้องขอส่งคืนข้อผิดพลาด URL ที่พยายามติดต่อคือ %(url)s "
-"%(error_message)s"
 
 #. module: account_edi_proxy_client
 #. odoo-python
 #: code:addons/account_edi_proxy_client/models/account_edi_proxy_user.py:0
+#, python-format
 msgid ""
 "The url that this service requested returned an error. The url it tried to "
 "contact was %s"
@@ -190,19 +160,24 @@ msgstr "URL ที่บริการนี้ขอส่งคืนข้�
 #. module: account_edi_proxy_client
 #. odoo-python
 #: code:addons/account_edi_proxy_client/models/account_edi_proxy_user.py:0
+#, python-format
 msgid ""
-"The url that this service tried to contact does not exist. The url was “%s”"
-msgstr "ไม่พบ URL ที่บริการนี้พยายามติดต่อ URL คือ “%s”"
+"The url that this service requested returned an error. The url it tried to "
+"contact was %s. %s"
+msgstr "URL ที่บริการนี้ ขอส่งคืนข้อผิดพลาด URL ที่พยายามติดต่อคือ %s %s"
 
 #. module: account_edi_proxy_client
-#: model:ir.model.constraint,message:account_edi_proxy_client.constraint_account_edi_proxy_client_user_unique_active_company_proxy
-msgid "This company has an active user already created for this EDI type"
-msgstr "บริษัทนี้มีผู้ใช้งานที่สร้างไว้แล้วสำหรับ EDI ประเภทนี้"
+#. odoo-python
+#: code:addons/account_edi_proxy_client/models/account_edi_proxy_user.py:0
+#, python-format
+msgid ""
+"The url that this service tried to contact does not exist. The url was %r"
+msgstr "ไม่มี URL ที่บริการนี้พยายามติดต่อ URL คือ %r"
 
 #. module: account_edi_proxy_client
-#: model:ir.model.constraint,message:account_edi_proxy_client.constraint_account_edi_proxy_client_user_unique_active_edi_identification
-msgid "This edi identification is already assigned to an active user"
-msgstr "รหัส edi นี้ถูกกำหนดให้กับผู้ใช้ที่ใช้งานอยู่แล้ว"
+#: model:ir.model.constraint,message:account_edi_proxy_client.constraint_account_edi_proxy_client_user_unique_edi_identification_per_format
+msgid "This edi identification is already assigned to a user"
+msgstr "รหัสประจำตัว edi นี้ถูกกำหนดให้กับผู้ใช้แล้ว"
 
 #. module: account_edi_proxy_client
 #: model:ir.model.constraint,message:account_edi_proxy_client.constraint_account_edi_proxy_client_user_unique_id_client

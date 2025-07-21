@@ -3,21 +3,22 @@
 # 	* website_payment
 # 
 # Translators:
-# Gergő Kertész <gergo.kertesz@maxflow.hu>, 2024
-# Tamás Dombos, 2024
-# Martin Trigaux, 2024
-# Tamás Németh <ntomasz81@gmail.com>, 2024
-# krnkris, 2024
-# gezza <geza.nagy@oregional.hu>, 2024
-# 5768b353f27900ae76ad88cc42dfd5b8_3bb349f, 2024
+# Zsolt Godó <zsolttokio@gmail.com>, 2022
+# Martin Trigaux, 2022
+# krnkris, 2022
+# Tamás Németh <ntomasz81@gmail.com>, 2022
+# gezza <geza.nagy@oregional.hu>, 2023
+# Tamás Dombos, 2023
+# Szabolcs Rádi, 2023
+# Gergő Kertész <gergo.kertesz@maxflow.hu>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:56+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: 5768b353f27900ae76ad88cc42dfd5b8_3bb349f, 2024\n"
+"POT-Creation-Date: 2023-05-23 08:24+0000\n"
+"PO-Revision-Date: 2022-09-22 05:56+0000\n"
+"Last-Translator: Gergő Kertész <gergo.kertesz@maxflow.hu>, 2023\n"
 "Language-Team: Hungarian (https://app.transifex.com/odoo/teams/41243/hu/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -66,34 +67,18 @@ msgid "<b>Payment Method:</b>"
 msgstr ""
 
 #. module: website_payment
-#: model_terms:ir.ui.view,arch_db:website_payment.donation_information
+#: model_terms:ir.ui.view,arch_db:website_payment.payment_checkout
 msgid "<option value=\"\">Country...</option>"
 msgstr "<option value=\"\">Ország...</option>"
 
 #. module: website_payment
-#: model_terms:ir.ui.view,arch_db:website_payment.s_donation_button
-msgid "<span class=\"s_donation_currency pe-1\">$</span>"
+#: model_terms:ir.ui.view,arch_db:website_payment.donation_pay
+msgid ""
+"<strong>No suitable payment option could be found.</strong><br/>\n"
+"                                If you believe that it is an error, please contact the website administrator."
 msgstr ""
-
-#. module: website_payment
-#: model_terms:ir.ui.view,arch_db:website_payment.s_donation_button
-msgid "<span class=\"s_donation_currency pe-1\">$</span>10"
-msgstr ""
-
-#. module: website_payment
-#: model_terms:ir.ui.view,arch_db:website_payment.s_donation_button
-msgid "<span class=\"s_donation_currency pe-1\">$</span>100"
-msgstr ""
-
-#. module: website_payment
-#: model_terms:ir.ui.view,arch_db:website_payment.s_donation_button
-msgid "<span class=\"s_donation_currency pe-1\">$</span>25"
-msgstr ""
-
-#. module: website_payment
-#: model_terms:ir.ui.view,arch_db:website_payment.s_donation_button
-msgid "<span class=\"s_donation_currency pe-1\">$</span>50"
-msgstr ""
+"<strong>Nem található megfelelő fizetési lehetőség.</strong><br/>\n"
+"                                Lépjen kapcsolatba a weboldal adminisztrátorával, ha úgy gondolja, hogy ez egy hiba."
 
 #. module: website_payment
 #: model_terms:ir.ui.view,arch_db:website_payment.donation_pay
@@ -103,6 +88,7 @@ msgstr ""
 #. module: website_payment
 #. odoo-python
 #: code:addons/website_payment/models/payment_transaction.py:0
+#, python-format
 msgid "A donation has been made on your website"
 msgstr ""
 
@@ -124,24 +110,27 @@ msgstr "Stripe aktiválása"
 #. module: website_payment
 #. odoo-javascript
 #: code:addons/website_payment/static/src/snippets/s_donation/options.js:0
+#, python-format
 msgid "Add a description here"
 msgstr "Adjon hozzá egy leírást"
 
 #. module: website_payment
 #. odoo-javascript
 #: code:addons/website_payment/static/src/snippets/s_donation/options.js:0
+#, python-format
 msgid "Add new pre-filled option"
 msgstr ""
 
 #. module: website_payment
 #. odoo-javascript
 #: code:addons/website_payment/static/src/snippets/s_donation/options.xml:0
-#: model_terms:ir.ui.view,arch_db:website_payment.s_donation_button
+#: code:addons/website_payment/static/src/snippets/s_donation/options.xml:0
+#, python-format
 msgid "Amount"
 msgstr "Összeg"
 
 #. module: website_payment
-#: model_terms:ir.ui.view,arch_db:website_payment.donation_information
+#: model_terms:ir.ui.view,arch_db:website_payment.payment_checkout
 msgid "Amount ("
 msgstr ""
 
@@ -158,45 +147,56 @@ msgstr ""
 #. module: website_payment
 #. odoo-javascript
 #: code:addons/website_payment/static/src/snippets/s_donation/options.xml:0
+#, python-format
 msgid "Choose Your Amount"
 msgstr ""
 
 #. module: website_payment
 #: model:ir.model,name:website_payment.model_res_config_settings
 msgid "Config Settings"
-msgstr "Beállítások"
+msgstr "Beállítások módosítása"
 
 #. module: website_payment
 #. odoo-python
 #: code:addons/website_payment/models/res_config_settings.py:0
+#, python-format
 msgid "Configure %s"
 msgstr ""
 
 #. module: website_payment
+#: model:ir.actions.server,name:website_payment.action_stripe_connect_account
+msgid "Connect to Stripe"
+msgstr ""
+
+#. module: website_payment
 #. odoo-javascript
-#: code:addons/website_payment/static/src/js/payment_form.js:0
+#: code:addons/website_payment/static/src/js/website_payment_form.js:0
+#: model:ir.model,name:website_payment.model_res_country
+#, python-format
 msgid "Country"
 msgstr "Ország"
 
 #. module: website_payment
-#: model_terms:ir.ui.view,arch_db:website_payment.donation_information
+#: model_terms:ir.ui.view,arch_db:website_payment.payment_checkout
 msgid ""
 "Country\n"
-"                    <span class=\"s_website_form_mark\"> *</span>"
+"                            <span class=\"s_website_form_mark\"> *</span>"
 msgstr ""
 
 #. module: website_payment
 #. odoo-python
 #: code:addons/website_payment/controllers/portal.py:0
+#, python-format
 msgid "Country is required."
 msgstr "Ország megadása kötelező."
 
 #. module: website_payment
 #. odoo-javascript
 #: code:addons/website_payment/static/src/snippets/s_donation/options.xml:0
+#: code:addons/website_payment/static/src/snippets/s_donation/options.xml:0
 #: model_terms:ir.ui.view,arch_db:website_payment.donation_input
-#: model_terms:ir.ui.view,arch_db:website_payment.s_donation_button
 #: model_terms:ir.ui.view,arch_db:website_payment.s_donation_options
+#, python-format
 msgid "Custom Amount"
 msgstr ""
 
@@ -221,19 +221,14 @@ msgid "Display Options"
 msgstr ""
 
 #. module: website_payment
-#. odoo-python
-#: code:addons/website_payment/controllers/portal.py:0
-msgid "Donate"
-msgstr ""
-
-#. module: website_payment
+#: model_terms:ir.ui.view,arch_db:website_payment.payment_checkout
 #: model_terms:ir.ui.view,arch_db:website_payment.s_donation_button
 msgid "Donate Now"
 msgstr ""
 
 #. module: website_payment
-#: model_terms:ir.ui.view,arch_db:website_payment.donation_information
 #: model_terms:ir.ui.view,arch_db:website_payment.donation_mail_body
+#: model_terms:ir.ui.view,arch_db:website_payment.payment_checkout
 #: model_terms:ir.ui.view,arch_db:website_payment.snippets
 msgid "Donation"
 msgstr "Adományozás"
@@ -246,12 +241,14 @@ msgstr "Adományozás gomb"
 #. module: website_payment
 #. odoo-python
 #: code:addons/website_payment/controllers/portal.py:0
+#, python-format
 msgid "Donation amount must be at least %.2f."
 msgstr ""
 
 #. module: website_payment
 #. odoo-python
 #: code:addons/website_payment/models/payment_transaction.py:0
+#, python-format
 msgid "Donation confirmation"
 msgstr ""
 
@@ -262,32 +259,36 @@ msgstr ""
 
 #. module: website_payment
 #. odoo-javascript
-#: code:addons/website_payment/static/src/js/payment_form.js:0
+#: code:addons/website_payment/static/src/js/website_payment_form.js:0
+#, python-format
 msgid "Email"
-msgstr "Email"
+msgstr "E-mail"
 
 #. module: website_payment
-#: model_terms:ir.ui.view,arch_db:website_payment.donation_information
+#: model_terms:ir.ui.view,arch_db:website_payment.payment_checkout
 msgid ""
 "Email\n"
-"                    <span class=\"s_website_form_mark\"> *</span>"
+"                            <span class=\"s_website_form_mark\"> *</span>"
 msgstr ""
 
 #. module: website_payment
 #. odoo-javascript
-#: code:addons/website_payment/static/src/js/payment_form.js:0
+#: code:addons/website_payment/static/src/js/website_payment_form.js:0
+#, python-format
 msgid "Email is invalid"
 msgstr "Érvénytelen e-mail cím"
 
 #. module: website_payment
 #. odoo-python
 #: code:addons/website_payment/controllers/portal.py:0
+#, python-format
 msgid "Email is required."
 msgstr "Mail cím megadása kötelező."
 
 #. module: website_payment
 #. odoo-javascript
-#: code:addons/website_payment/static/src/js/payment_form.js:0
+#: code:addons/website_payment/static/src/js/website_payment_form.js:0
+#, python-format
 msgid "Field '%s' is mandatory"
 msgstr ""
 
@@ -308,6 +309,7 @@ msgstr ""
 
 #. module: website_payment
 #: model:ir.model.fields,field_description:website_payment.field_res_config_settings__is_stripe_supported_country
+#: model:ir.model.fields,field_description:website_payment.field_res_country__is_stripe_supported_country
 msgid "Is Stripe Supported Country"
 msgstr ""
 
@@ -333,20 +335,24 @@ msgstr ""
 
 #. module: website_payment
 #. odoo-javascript
-#: code:addons/website_payment/static/src/js/payment_form.js:0
+#: code:addons/website_payment/static/src/js/website_payment_form.js:0
+#, python-format
 msgid "Name"
 msgstr "Név"
 
 #. module: website_payment
-#: model_terms:ir.ui.view,arch_db:website_payment.donation_information
+#: model_terms:ir.ui.view,arch_db:website_payment.payment_checkout
 msgid ""
 "Name\n"
-"                    <span class=\"s_website_form_mark\"> *</span>"
+"                            <span class=\"s_website_form_mark\"> *</span>"
 msgstr ""
+"Név\n"
+"                            <span class=\"s_website_form_mark\"> *</span>"
 
 #. module: website_payment
 #. odoo-python
 #: code:addons/website_payment/controllers/portal.py:0
+#, python-format
 msgid "Name is required."
 msgstr "Név megadása kötelező."
 
@@ -372,7 +378,7 @@ msgid "Other than Paypal"
 msgstr ""
 
 #. module: website_payment
-#: model_terms:ir.ui.view,arch_db:website_payment.donation_information
+#: model_terms:ir.ui.view,arch_db:website_payment.payment_checkout
 msgid "Payment Details"
 msgstr "Fizetési művelet részletei"
 
@@ -387,21 +393,21 @@ msgid "Payment Transaction"
 msgstr "Fizetési tranzakció"
 
 #. module: website_payment
-#. odoo-javascript
-#: code:addons/website_payment/static/src/js/payment_form.js:0
-msgid "Payment processing failed"
-msgstr ""
-
-#. module: website_payment
 #. odoo-python
 #: code:addons/website_payment/models/payment_transaction.py:0
+#, python-format
 msgid "Payment received from donation with following details:"
 msgstr ""
 
 #. module: website_payment
 #: model:ir.model,name:website_payment.model_account_payment
 msgid "Payments"
-msgstr "Fizetések"
+msgstr "Vevői befizetések"
+
+#. module: website_payment
+#: model:ir.model.fields,field_description:website_payment.field_res_config_settings__module_payment_paypal
+msgid "Paypal - Express Checkout"
+msgstr ""
 
 #. module: website_payment
 #: model:ir.model.fields.selection,name:website_payment.selection__res_config_settings__providers_state__paypal_only
@@ -411,6 +417,7 @@ msgstr ""
 #. module: website_payment
 #. odoo-javascript
 #: code:addons/website_payment/static/src/snippets/s_donation/000.js:0
+#, python-format
 msgid "Please select or enter an amount"
 msgstr "Válasszon ki, vagy adjon meg egy összeget"
 
@@ -430,6 +437,13 @@ msgid "Recipient Email"
 msgstr "Címzett email címe"
 
 #. module: website_payment
+#. odoo-javascript
+#: code:addons/website_payment/static/src/js/website_payment_form.js:0
+#, python-format
+msgid "Server Error"
+msgstr "Szerverhiba"
+
+#. module: website_payment
 #: model_terms:ir.ui.view,arch_db:website_payment.res_config_settings_view_form
 msgid "Shop - Payment"
 msgstr "Shop - Fizetés"
@@ -446,7 +460,8 @@ msgstr ""
 
 #. module: website_payment
 #. odoo-javascript
-#: code:addons/website_payment/static/src/js/payment_form.js:0
+#: code:addons/website_payment/static/src/js/website_payment_form.js:0
+#, python-format
 msgid "Some information is missing to process your payment."
 msgstr "Néhány információ hiányzik a fizetés végrehajtásához."
 
@@ -477,13 +492,21 @@ msgstr ""
 #. module: website_payment
 #. odoo-javascript
 #: code:addons/website_payment/static/src/snippets/s_donation/000.js:0
-msgid "The minimum donation amount is %(amount)s"
+#, python-format
+msgid "The minimum donation amount is %s%s%s"
 msgstr ""
 
 #. module: website_payment
 #: model_terms:ir.ui.view,arch_db:website_payment.donation_pay
 msgid "There is nothing to pay."
 msgstr "Nincs fizetendő tétel"
+
+#. module: website_payment
+#. odoo-javascript
+#: code:addons/website_payment/static/src/js/website_payment_form.js:0
+#, python-format
+msgid "Validation Error"
+msgstr "Érvényesítési hiba"
 
 #. module: website_payment
 #: model_terms:ir.ui.view,arch_db:website_payment.res_config_settings_view_form
@@ -496,9 +519,16 @@ msgid "View other providers"
 msgstr ""
 
 #. module: website_payment
+#. odoo-javascript
+#: code:addons/website_payment/static/src/js/website_payment_form.js:0
+#, python-format
+msgid "We could not obtain payment fees."
+msgstr ""
+
+#. module: website_payment
 #: model:ir.model.fields,field_description:website_payment.field_payment_provider__website_id
 msgid "Website"
-msgstr "Weboldal"
+msgstr "Honlap"
 
 #. module: website_payment
 #: model:mail.template,name:website_payment.mail_template_donation
@@ -506,12 +536,12 @@ msgid "Website: Donation"
 msgstr ""
 
 #. module: website_payment
-#: model_terms:ir.ui.view,arch_db:website_payment.donation_information
+#: model_terms:ir.ui.view,arch_db:website_payment.payment_checkout
 msgid "Write us a comment"
 msgstr ""
 
 #. module: website_payment
-#: model_terms:ir.ui.view,arch_db:website_payment.donation_information
+#: model_terms:ir.ui.view,arch_db:website_payment.payment_checkout
 msgid "Your comment"
 msgstr ""
 

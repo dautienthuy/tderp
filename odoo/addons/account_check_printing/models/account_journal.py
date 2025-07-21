@@ -34,16 +34,6 @@ class AccountJournal(models.Model):
         help="Sequence number of the next printed check.",
     )
 
-    bank_check_printing_layout = fields.Selection(
-        selection='_get_check_printing_layouts',
-        string="Check Layout",
-    )
-
-    def _get_check_printing_layouts(self):
-        """ Returns available check printing layouts for the company, excluding disabled options """
-        selection = self.company_id._fields['account_check_printing_layout'].selection
-        return [(value, label) for value, label in selection if value != 'disabled']
-
     @api.depends('check_manual_sequencing')
     def _compute_check_next_number(self):
         for journal in self:
@@ -77,7 +67,7 @@ class AccountJournal(models.Model):
         """ Create a check sequence for the journal """
         for journal in self:
             journal.check_sequence_id = self.env['ir.sequence'].sudo().create({
-                'name': _("%(journal)s: Check Number Sequence", journal=journal.name),
+                'name': journal.name + _(" : Check Number Sequence"),
                 'implementation': 'no_gap',
                 'padding': 5,
                 'number_increment': 1,
@@ -88,8 +78,8 @@ class AccountJournal(models.Model):
         dashboard_data = super()._get_journal_dashboard_data_batched()
         self._fill_dashboard_data_count(dashboard_data, 'account.payment', 'num_checks_to_print', [
             ('payment_method_line_id.code', '=', 'check_printing'),
-            ('state', '=', 'in_process'),
-            ('is_sent', '=', False),
+            ('state', '=', 'posted'),
+            ('is_move_sent','=', False),
         ])
         return dashboard_data
 

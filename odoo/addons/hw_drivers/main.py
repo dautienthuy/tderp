@@ -4,12 +4,12 @@ from traceback import format_exc
 import json
 import platform
 import logging
+import socket
 from threading import Thread
 import time
 import urllib3
 
 from odoo.addons.hw_drivers.tools import helpers
-from odoo.addons.hw_drivers.websocket_client import WebsocketClient
 
 _logger = logging.getLogger(__name__)
 
@@ -31,127 +31,70 @@ iot_devices = {}
 
 
 class Manager(Thread):
-    server_url = None
-
-    def __init__(self):
-        super().__init__()
-        self.hostname = helpers.get_hostname()
-        self.mac_address = helpers.get_mac_address()
-        self.domain = self._get_domain()
-        self.token = helpers.get_token()
-        self.version = helpers.get_version(detailed_version=True)
-        self.previous_iot_devices = {}
-
-    def _get_domain(self):
+    def send_alldevices(self):
         """
-        Get the iot box domain based on the IP address and subject.
+        This method send IoT Box and devices informations to Odoo database
         """
-        subject = helpers.get_conf('subject')
-        ip_addr = helpers.get_ip()
-        if subject and ip_addr:
-            return ip_addr.replace('.', '-') + subject.strip('*')
-        return ip_addr or '127.0.0.1'
-
-    def _get_changes_to_send(self):
-        """
-        Check if the IoT Box information has changed since the last time it was sent.
-        Returns True if any tracked property has changed.
-        """
-        changed = False
-
-        if iot_devices != self.previous_iot_devices:
-            self.previous_iot_devices = iot_devices.copy()
-            changed = True
-
-        # Mac address can change if the user has multiple network interfaces
-        new_mac_address = helpers.get_mac_address()
-        if self.mac_address != new_mac_address:
-            self.mac_address = new_mac_address
-            changed = True
-        # IP address change
-        new_domain = self._get_domain()
-        if self.domain != new_domain:
-            self.domain = new_domain
-            changed = True
-        # Version change
-        new_version = helpers.get_version(detailed_version=True)
-        if self.version != new_version:
-            self.version = new_version
-            changed = True
-
-        return changed
-
-    def send_alldevices(self, iot_client=None):
-        """
-        This method send IoT Box and devices information to Odoo database
-        """
-        if self.server_url:
+        server = helpers.get_odoo_server_url()
+        if server:
+            subject = helpers.read_file_first_line('odoo-subject.conf')
+            if subject:
+                domain = helpers.get_ip().replace('.', '-') + subject.strip('*')
+            else:
+                domain = helpers.get_ip()
             iot_box = {
-                'name': self.hostname,
-                'identifier': self.mac_address,
-                'ip': self.domain,
-                'token': self.token,
-                'version': self.version,
+                'name': socket.gethostname(),
+                'identifier': helpers.get_mac_address(),
+                'ip': domain,
+                'token': helpers.get_token(),
+                'version': helpers.get_version(detailed_version=True),
             }
             devices_list = {}
-            for device in self.previous_iot_devices.values():
-                identifier = device.device_identifier
+            for device in iot_devices:
+                identifier = iot_devices[device].device_identifier
                 devices_list[identifier] = {
-                    'name': device.device_name,
-                    'type': device.device_type,
-                    'manufacturer': device.device_manufacturer,
-                    'connection': device.device_connection,
-                    'subtype': device.device_subtype if device.device_type == 'printer' else '',
+                    'name': iot_devices[device].device_name,
+                    'type': iot_devices[device].device_type,
+                    'manufacturer': iot_devices[device].device_manufacturer,
+                    'connection': iot_devices[device].device_connection,
                 }
-            devices_list_to_send = {
-                key: value for key, value in devices_list.items() if key != 'distant_display'
-            }
-            data = {
-                'params': {
-                    'iot_box': iot_box,
-                    'devices': devices_list_to_send,
-                }  # Don't send distant_display to the db
-            }
+            data = {'params': {'iot_box': iot_box, 'devices': devices_list,}}
             # disable certifiacte verification
             urllib3.disable_warnings()
             http = urllib3.PoolManager(cert_reqs='CERT_NONE')
             try:
-                resp = http.request(
+                http.request(
                     'POST',
-                    self.server_url + "/iot/setup",
+                    server + "/iot/setup",
                     body=json.dumps(data).encode('utf8'),
                     headers={
                         'Content-type': 'application/json',
                         'Accept': 'text/plain',
                     },
                 )
-                if iot_client:
-                    iot_client.iot_channel = json.loads(resp.data).get('result', '')
-            except json.decoder.JSONDecodeError:
-                _logger.exception('Could not load JSON data: Received data is not in valid JSON format\ncontent:\n%s', resp.data)
             except Exception:
                 _logger.exception('Could not reach configured server to send all IoT devices')
         else:
-            _logger.info('Ignoring sending the devices to the database: no associated database')
+            _logger.warning('Odoo server not set')
 
     def run(self):
-        """Thread that will load interfaces and drivers and contact the odoo server with the updates"""
-        self.server_url = helpers.get_odoo_server_url()
-        helpers.start_nginx_server()
+        """
+        Thread that will load interfaces and drivers and contact the odoo server with the updates
+        """
 
+        helpers.start_nginx_server()
         _logger.info("IoT Box Image version: %s", helpers.get_version(detailed_version=True))
-        if platform.system() == 'Linux' and self.server_url:
+        if platform.system() == 'Linux' and helpers.get_odoo_server_url():
             helpers.check_git_branch()
             helpers.generate_password()
         is_certificate_ok, certificate_details = helpers.get_certificate_status()
-        if not is_certificate_ok and certificate_details != 'ERR_IOT_HTTPS_CHECK_NO_SERVER':
+        if not is_certificate_ok:
             _logger.warning("An error happened when trying to get the HTTPS certificate: %s",
                             certificate_details)
 
-        iot_client = self.server_url and WebsocketClient(self.server_url)
         # We first add the IoT Box to the connected DB because IoT handlers cannot be downloaded if
         # the identifier of the Box is not found in the DB. So add the Box to the DB.
-        self.send_alldevices(iot_client)
+        self.send_alldevices()
         helpers.download_iot_handlers()
         helpers.load_iot_handlers()
 
@@ -166,18 +109,15 @@ class Manager(Thread):
 
         # Set scheduled actions
         schedule and schedule.every().day.at("00:00").do(helpers.get_certificate_status)
-        schedule and schedule.every().day.at("00:00").do(helpers.reset_log_level)
 
-        # Set up the websocket connection
-        if self.server_url and iot_client.iot_channel:
-            iot_client.start()
-        # Check every 3 seconds if the list of connected devices has changed and send the updated
+        # Check every 3 secondes if the list of connected devices has changed and send the updated
         # list to the connected DB.
         self.previous_iot_devices = []
         while 1:
             try:
-                if self._get_changes_to_send():
-                    self.send_alldevices(iot_client)
+                if iot_devices != self.previous_iot_devices:
+                    self.previous_iot_devices = iot_devices.copy()
+                    self.send_alldevices()
                 time.sleep(3)
                 schedule and schedule.run_pending()
             except Exception:

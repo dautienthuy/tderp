@@ -1,32 +1,27 @@
-/** @odoo-module **/
+odoo.define('stock.reports.setup.tour', function (require) {
+    "use strict";
 
-import { registry } from "@web/core/registry";
+    const tour = require('web_tour.tour');
 
-    registry.category("web_tour.tours").add('test_stock_route_diagram_report', {
-        steps: () => [
-        {
-            trigger: ".o_breadcrumb",
-        },
+    tour.register('test_stock_route_diagram_report', {
+        test: true,
+    }, [
     {
         trigger: '.o_kanban_record',
-        run: "click",
+        extra_trigger:'.breadcrumb',
     },
     {
         trigger: '.nav-item > a:contains("Inventory")',
-        run: "click",
     },
     {
         trigger: '.btn[id="stock.view_diagram_button"]',
-        run: "click",
     },
     {
-        trigger: ':iframe .o_report_stock_rule',
+        trigger: 'iframe .o_report_stock_rule',
     },
-    ],
-    });
+    ]);
 
-registry.category("web_tour.tours").add("test_context_from_warehouse_filter", {
-    steps: () => [
+    tour.register("test_context_from_warehouse_filter", { test: true }, [
         // Add "foo" to the warehouse context key
         {
             trigger: ".o_searchview_input",
@@ -34,7 +29,7 @@ registry.category("web_tour.tours").add("test_context_from_warehouse_filter", {
         },
         {
             trigger: ".o_searchview_input",
-            run: "edit foo",
+            run: "text foo",
         },
         {
             trigger: ".o_menu_item.dropdown-item:contains(Warehouse):contains(foo)",
@@ -47,10 +42,10 @@ registry.category("web_tour.tours").add("test_context_from_warehouse_filter", {
         },
         {
             trigger: ".o_searchview_input",
-            run: "edit warehouse",
+            run: "text warehouse",
         },
         {
-            trigger: ".o_menu_item.dropdown-item:contains(Search Warehouse for:) a.o_expand > i",
+            trigger: ".o_menu_item.dropdown-item:contains(Warehouse) a.o_expand > i",
             run: "click",
         },
         {
@@ -60,10 +55,10 @@ registry.category("web_tour.tours").add("test_context_from_warehouse_filter", {
         // Add warehouse B's id to the warehouse context key
         {
             trigger: ".o_searchview_input",
-            run: "edit warehouse",
+            run: "text warehouse",
         },
         {
-            trigger: ".o_menu_item.dropdown-item:contains(Search Warehouse for:) a.o_expand > i",
+            trigger: ".o_menu_item.dropdown-item:contains(Warehouse) a.o_expand > i",
             run: "click",
         },
         {
@@ -72,22 +67,8 @@ registry.category("web_tour.tours").add("test_context_from_warehouse_filter", {
         },
         {
             content: "Go to product page",
-            trigger: ".o_kanban_record:has(span:contains(Lovely Product))",
+            trigger: ".oe_kanban_card:has(.o_kanban_record_title span:contains(Lovely Product))",
             run: "click",
-        },
-        {
-            trigger: ".o_form_view",
-            run: () => {
-                if (!document.querySelector("button[name=action_product_tmpl_forecast_report]")) {
-                    const panelButtons = document.querySelectorAll(
-                        ".o_control_panel_actions button"
-                    );
-                    const moreButton = Array.from(panelButtons).find(
-                        (button) => button.textContent.trim() == "More"
-                    );
-                    moreButton.click();
-                }
-            },
         },
         {
             trigger: "button[name=action_product_tmpl_forecast_report]",
@@ -95,6 +76,7 @@ registry.category("web_tour.tours").add("test_context_from_warehouse_filter", {
         },
         {
             trigger: ".o_graph_view",
+            isCheck: true,
         },
-    ],
+    ]);
 });

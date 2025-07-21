@@ -10,8 +10,10 @@ from odoo.addons.payment.tests.common import PaymentCommon
 class AccountPaymentCommon(PaymentCommon, AccountTestInvoicingCommon):
 
     @classmethod
-    def setUpClass(cls):
+    def setUpClass(cls, *kw):
+        # chart_template_ref is dropped on purpose because not needed for account_payment tests.
         super().setUpClass()
+
         with cls.mocked_get_payment_method_information(cls):
             cls.dummy_provider_method = cls.env['account.payment.method'].sudo().create({
                 'name': 'Dummy method',
@@ -20,7 +22,7 @@ class AccountPaymentCommon(PaymentCommon, AccountTestInvoicingCommon):
             })
             cls.dummy_provider.journal_id = cls.company_data['default_journal_bank']
 
-        cls.account = cls.outbound_payment_method_line.payment_account_id
+        cls.account = cls.company.account_journal_payment_credit_account_id
         cls.invoice = cls.env['account.move'].create({
             'move_type': 'entry',
             'date': '2019-01-01',
@@ -42,10 +44,8 @@ class AccountPaymentCommon(PaymentCommon, AccountTestInvoicingCommon):
             ],
         })
 
-        cls.provider.journal_id.inbound_payment_method_line_ids.filtered(lambda l: l.payment_provider_id == cls.provider).payment_account_id = cls.inbound_payment_method_line.payment_account_id
-
     def setUp(self):
-        self.enable_post_process_patcher = False
+        self.enable_reconcile_after_done_patcher = False
         super().setUp()
 
     #=== Utils ===#
@@ -56,8 +56,39 @@ class AccountPaymentCommon(PaymentCommon, AccountTestInvoicingCommon):
 
         def _get_payment_method_information(*args, **kwargs):
             res = Method_get_payment_method_information()
-            res['none'] = {'mode': 'electronic', 'type': ('bank',)}
+            res['none'] = {'mode': 'electronic', 'domain': [('type', '=', 'bank')]}
             return res
 
         with patch.object(self.env.registry['account.payment.method'], '_get_payment_method_information', _get_payment_method_information):
             yield
+
+    @contextmanager
+    def mocked_get_default_payment_method_id(self):
+
+        def _get_default_payment_method_id(*args, **kwargs):
+            return self.dummy_provider_method.id
+
+        with patch.object(self.env.registry['payment.provider'], '_get_default_payment_method_id', _get_default_payment_method_id):
+            yield
+
+    @classmethod
+    def _prepare_provider(cls, provider_code='none', company=None, update_values=None):
+        """ Override of `payment` to prepare and return the first provider matching the given
+        provider and company.
+
+        If no provider is found in the given company, we duplicate the one from the base company.
+        All other providers belonging to the same company are disabled to avoid any interferences.
+
+        :param str provider_code: The code of the provider to prepare.
+        :param recordset company: The company of the provider to prepare, as a `res.company` record.
+        :param dict update_values: The values used to update the provider.
+        :return: The provider to prepare, if found.
+        :rtype: recordset of `payment.provider`
+        """
+        provider = super()._prepare_provider(provider_code, company, update_values)
+        if not provider.journal_id:
+            provider.journal_id = cls.env['account.journal'].search(
+                [('company_id', '=', provider.company_id.id), ('type', '=', 'bank')],
+                limit=1,
+            )
+        return provider

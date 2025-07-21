@@ -8,12 +8,6 @@ from odoo import Command
 @tagged('post_install', '-at_install')
 class TestAccountTaxDetailsReport(AccountTestInvoicingCommon):
 
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-
-        cls.other_currency = cls.setup_other_currency('EUR', rounding=0.001)
-
     def _dispatch_move_lines(self, moves):
         base_lines = moves.line_ids\
             .filtered(lambda x: x.tax_ids and not x.tax_line_id)\
@@ -25,9 +19,9 @@ class TestAccountTaxDetailsReport(AccountTestInvoicingCommon):
 
     def _get_tax_details(self, fallback=False, extra_domain=None):
         domain = [('company_id', '=', self.env.company.id)] + (extra_domain or [])
-        tax_details_query = self.env['account.move.line']._get_query_tax_details_from_domain(domain, fallback=fallback)
+        tax_details_query, tax_details_params = self.env['account.move.line']._get_query_tax_details_from_domain(domain, fallback=fallback)
         self.env['account.move.line'].flush_model()
-        self.cr.execute(tax_details_query)
+        self.cr.execute(tax_details_query, tax_details_params)
         tax_details_res = self.cr.dictfetchall()
         return sorted(tax_details_res, key=lambda x: (x['base_line_id'], abs(x['base_amount']), abs(x['tax_amount'])))
 
@@ -299,7 +293,7 @@ class TestAccountTaxDetailsReport(AccountTestInvoicingCommon):
                 },
                 {
                     'base_line_id': base_lines[0].id,
-                    'tax_line_id': tax_lines[1].id,
+                    'tax_line_id': tax_lines[0].id,
                     'base_amount': -1000.0,
                     'tax_amount': -100.0,
                 },
@@ -329,7 +323,7 @@ class TestAccountTaxDetailsReport(AccountTestInvoicingCommon):
                 },
                 {
                     'base_line_id': base_lines[1].id,
-                    'tax_line_id': tax_lines[0].id,
+                    'tax_line_id': tax_lines[1].id,
                     'base_amount': -1000.0,
                     'tax_amount': -100.0,
                 },
@@ -907,8 +901,7 @@ class TestAccountTaxDetailsReport(AccountTestInvoicingCommon):
                 Command.create({
                     'name': 'line3',
                     'account_id': self.company_data['default_account_revenue'].id,
-                    'price_unit': 400.0,
-                    'quantity': -1,
+                    'price_unit': -400.0,
                     'tax_ids': [Command.set(fixed_tax.ids)],
                 }),
             ]
@@ -1044,7 +1037,7 @@ class TestAccountTaxDetailsReport(AccountTestInvoicingCommon):
                     'credit': 0.0,
                     'amount_currency': 2400.0,
                     'account_id': self.company_data['default_account_revenue'].id,
-                    'currency_id': self.other_currency.id,
+                    'currency_id': self.currency_data['currency'].id,
                     'tax_ids': [Command.set(percent_tax.ids)],
                 }),
                 Command.create({
@@ -1053,7 +1046,7 @@ class TestAccountTaxDetailsReport(AccountTestInvoicingCommon):
                     'credit': 0.0,
                     'amount_currency': 6000.0,
                     'account_id': self.company_data['default_account_revenue'].id,
-                    'currency_id': self.other_currency.id,
+                    'currency_id': self.currency_data['currency'].id,
                     'tax_ids': [Command.set(percent_tax.ids)],
                 }),
                 # Tax lines
@@ -1063,7 +1056,7 @@ class TestAccountTaxDetailsReport(AccountTestInvoicingCommon):
                     'credit': 0.0,
                     'amount_currency': 360.0,
                     'account_id': self.company_data['default_account_revenue'].id,
-                    'currency_id': self.other_currency.id,
+                    'currency_id': self.currency_data['currency'].id,
                     'tax_repartition_line_id': tax_rep.id,
                 }),
                 Command.create({
@@ -1072,7 +1065,7 @@ class TestAccountTaxDetailsReport(AccountTestInvoicingCommon):
                     'credit': 0.0,
                     'amount_currency': 200.0,
                     'account_id': self.company_data['default_account_revenue'].id,
-                    'currency_id': self.other_currency.id,
+                    'currency_id': self.currency_data['currency'].id,
                     'tax_repartition_line_id': tax_rep.id,
                 }),
                 # Balance
@@ -1259,7 +1252,7 @@ class TestAccountTaxDetailsReport(AccountTestInvoicingCommon):
     def test_amounts_sign(self):
         for tax_sign in (1, -1):
             tax = self.env['account.tax'].create({
-                'name': f"tax {tax_sign}",
+                'name': "tax",
                 'amount_type': 'percent',
                 'amount': tax_sign * 10.0,
             })
@@ -1299,98 +1292,3 @@ class TestAccountTaxDetailsReport(AccountTestInvoicingCommon):
                         for amount in amounts],
                     )
                     self.assertTotalAmounts(invoice, tax_details)
-
-    def test_multiple_same_tax_lines_with_analytic(self):
-        """ One Invoice line with analytic_distribution and another without analytic_distribution with same group of tax"""
-        analytic_plan = self.env['account.analytic.plan'].create({'name': 'Plan with Tax details'})
-        analytic_account = self.env['account.analytic.account'].create({
-            'name': 'Analytic account with Tax details',
-            'plan_id': analytic_plan.id,
-            'company_id': False,
-        })
-        # Don't set analytic to False here. allowed ORM to do it becosue it's set SQL Null
-        child1_tax = self.env['account.tax'].create({
-            'name': "child1_tax",
-            'amount_type': 'percent',
-            'amount': 10.0,
-            'invoice_repartition_line_ids': [
-                Command.create({
-                    'repartition_type': 'base',
-                }),
-                Command.create({
-                    'factor_percent': 100,
-                    'repartition_type': 'tax',
-                    'account_id': self.company_data['default_account_tax_sale'].id,
-                }),
-            ],
-            'refund_repartition_line_ids': [
-                Command.create({
-                    'repartition_type': 'base',
-                }),
-                Command.create({
-                    'factor_percent': 100,
-                    'repartition_type': 'tax',
-                    'account_id': self.company_data['default_account_tax_sale'].id,
-                }),
-            ],
-        })
-        child2_tax = child1_tax.copy({'name': 'child2_tax', 'amount': 5.0})
-        tax_group = self.env['account.tax'].create({
-            'name': "tax_group",
-            'amount_type': 'group',
-            'children_tax_ids': [Command.set((child1_tax + child2_tax).ids)],
-        })
-        invoice = self.env['account.move'].create({
-            'move_type': 'out_invoice',
-            'partner_id': self.partner_a.id,
-            'invoice_date': '2019-01-01',
-            'invoice_line_ids': [
-                Command.create({
-                    'name': 'line1',
-                    'account_id': self.company_data['default_account_revenue'].id,
-                    'price_unit': 1000.0,
-                    'tax_ids': [Command.set(tax_group.ids)],
-                    'analytic_distribution': {
-                        analytic_account.id: 100,
-                    },
-                }),
-                Command.create({
-                    'name': 'line2',
-                    'account_id': self.company_data['default_account_revenue'].id,
-                    'price_unit': 100.0,
-                    'tax_ids': [Command.set(tax_group.ids)],
-                }),
-            ]
-        })
-        base_lines, tax_lines = self._dispatch_move_lines(invoice)
-        tax_details = self._get_tax_details()
-        self.assertTaxDetailsValues(
-            tax_details,
-            [
-                {
-                    'base_line_id': base_lines[0].id,
-                    'tax_line_id': tax_lines[1].id,
-                    'base_amount': -1000.0,
-                    'tax_amount': -50.0,
-                },
-                {
-                    'base_line_id': base_lines[0].id,
-                    'tax_line_id': tax_lines[0].id,
-                    'base_amount': -1000.0,
-                    'tax_amount': -100.0,
-                },
-                {
-                    'base_line_id': base_lines[1].id,
-                    'tax_line_id': tax_lines[1].id,
-                    'base_amount': -100.0,
-                    'tax_amount': -5.0,
-                },
-                {
-                    'base_line_id': base_lines[1].id,
-                    'tax_line_id': tax_lines[0].id,
-                    'base_amount': -100.0,
-                    'tax_amount': -10.0,
-                },
-            ],
-        )
-        self.assertTotalAmounts(invoice, tax_details)

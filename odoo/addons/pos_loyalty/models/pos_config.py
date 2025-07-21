@@ -7,16 +7,19 @@ from odoo.exceptions import UserError
 class PosConfig(models.Model):
     _inherit = 'pos.config'
 
+    gift_card_settings = fields.Selection(
+        [
+            ("create_set", "Generate PDF cards"),
+            ("scan_use", "Scan existing cards"),
+        ],
+        string="Gift Cards settings",
+        default="create_set",
+        help="Defines the way you want to set your gift cards.",
+    )
     # NOTE: this funtions acts as a m2m field with loyalty.program model. We do this to handle an excpetional use case:
     # When no PoS is specified at a loyalty program form, this program is applied to every PoS (instead of none)
     def _get_program_ids(self):
-        today = fields.Date.context_today(self)
-        return self.env['loyalty.program'].search([
-            ('pos_ok', '=', True),
-            '|', ('pos_config_ids', '=', self.id), ('pos_config_ids', '=', False),
-            '|', ('date_from', '=', False), ('date_from', '<=', today),
-            '|', ('date_to', '=', False), ('date_to', '>=', today)
-        ]).filtered(lambda p: not p.limit_usage or p.sudo().total_order_count < p.max_usage)
+        return self.env['loyalty.program'].search(['&', ('pos_ok', '=', True), '|', ('pos_config_ids', '=', self.id), ('pos_config_ids', '=', False)])
 
     def _check_before_creating_new_session(self):
         self.ensure_one()
@@ -60,23 +63,23 @@ class PosConfig(models.Model):
                 reward = gc_program.reward_ids
                 if reward.reward_type != 'discount' or reward.discount_mode != 'per_point' or reward.discount != 1:
                     raise UserError(_('Invalid gift card program reward. Use 1 currency per point discount.'))
-                if not gc_program.mail_template_id:
-                    raise UserError(_('There is no email template on the gift card program and your pos is set to print them.'))
-                if not gc_program.pos_report_print_id:
-                    raise UserError(_('There is no print report on the gift card program and your pos is set to print them.'))
+                if self.gift_card_settings == "create_set":
+                    if not gc_program.mail_template_id:
+                        raise UserError(_('There is no email template on the gift card program and your pos is set to print them.'))
+                    if not gc_program.pos_report_print_id:
+                        raise UserError(_('There is no print report on the gift card program and your pos is set to print them.'))
 
         return super()._check_before_creating_new_session()
 
-    def use_coupon_code(self, code, creation_date, partner_id, pricelist_id):
+    def use_coupon_code(self, code, creation_date, partner_id):
         self.ensure_one()
         # Points desc so that in coupon mode one could use a coupon multiple times
         coupon = self.env['loyalty.card'].search(
             [('program_id', 'in', self._get_program_ids().ids),
-             '|', ('partner_id', 'in', (False, partner_id)), ('program_type', '=', 'gift_card'),
-             ('code', '=', code)],
-            order='partner_id, points desc', limit=1)
-        program = coupon.program_id
-        if not coupon or not program.active:
+            '|', ('partner_id', 'in', (False, partner_id)), ('program_type', '=', 'gift_card'),
+            ('code', '=', code)],
+            order='points desc', limit=1)
+        if not coupon or not coupon.program_id.active:
             return {
                 'successful': False,
                 'payload': {
@@ -84,38 +87,26 @@ class PosConfig(models.Model):
                 },
             }
         check_date = fields.Date.from_string(creation_date[:11])
-        today_date = fields.Date.context_today(self)
-        error_message = False
-        if (
-            (coupon.expiration_date and coupon.expiration_date < check_date)
-            or (program.date_to and program.date_to < today_date)
-            or (program.limit_usage and program.sudo().total_order_count >= program.max_usage)
-        ):
-            error_message = _("This coupon is expired (%s).", code)
-        elif program.date_from and program.date_from > today_date:
-            error_message = _("This coupon is not yet valid (%s).", code)
-        elif (
-            not program.reward_ids or
-            not any(r.required_points <= coupon.points for r in program.reward_ids)
-        ):
-            error_message = _("No reward can be claimed with this coupon.")
-        elif program.pricelist_ids and pricelist_id not in program.pricelist_ids.ids:
-            error_message = _("This coupon is not available with the current pricelist.")
-        elif coupon and program.program_type == 'promo_code':
-            error_message = _("This programs requires a code to be applied.")
-
-        if error_message:
+        if (coupon.expiration_date and coupon.expiration_date < check_date) or\
+            (coupon.program_id.date_to and coupon.program_id.date_to < fields.Date.context_today(self)) or\
+            (coupon.program_id.limit_usage and coupon.program_id.total_order_count >= coupon.program_id.max_usage):
             return {
                 'successful': False,
                 'payload': {
-                    'error_message': error_message,
+                    'error_message': _('This coupon is expired (%s).', code),
                 },
             }
-
+        if not coupon.program_id.reward_ids or not any(reward.required_points <= coupon.points for reward in coupon.program_id.reward_ids):
+            return {
+                'successful': False,
+                'payload': {
+                    'error_message': _('No reward can be claimed with this coupon.'),
+                },
+            }
         return {
             'successful': True,
             'payload': {
-                'program_id': program.id,
+                'program_id': coupon.program_id.id,
                 'coupon_id': coupon.id,
                 'coupon_partner_id': coupon.partner_id.id,
                 'points': coupon.points,

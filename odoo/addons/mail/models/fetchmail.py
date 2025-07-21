@@ -12,7 +12,7 @@ from socket import gaierror, timeout
 from ssl import SSLError
 
 from odoo import api, fields, models, tools, _
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import UserError
 
 
 _logger = logging.getLogger(__name__)
@@ -73,8 +73,8 @@ class FetchmailServer(models.Model):
         ('draft', 'Not Confirmed'),
         ('done', 'Confirmed'),
     ], string='Status', index=True, readonly=True, copy=False, default='draft')
-    server = fields.Char(string='Server Name', readonly=False, help="Hostname or IP of the mail server")
-    port = fields.Integer()
+    server = fields.Char(string='Server Name', readonly=True, help="Hostname or IP of the mail server", states={'draft': [('readonly', False)]})
+    port = fields.Integer(readonly=True, states={'draft': [('readonly', False)]})
     server_type = fields.Selection([
         ('imap', 'IMAP Server'),
         ('pop', 'POP Server'),
@@ -87,13 +87,13 @@ class FetchmailServer(models.Model):
     original = fields.Boolean('Keep Original', help="Whether a full original copy of each email should be kept for reference "
                                                     "and attached to each processed message. This will usually double the size of your message database.")
     date = fields.Datetime(string='Last Fetch Date', readonly=True)
-    user = fields.Char(string='Username', readonly=False)
-    password = fields.Char()
+    user = fields.Char(string='Username', readonly=True, states={'draft': [('readonly', False)]})
+    password = fields.Char(readonly=True, states={'draft': [('readonly', False)]})
     object_id = fields.Many2one('ir.model', string="Create a New Record", help="Process each incoming mail as part of a conversation "
                                                                                 "corresponding to this document type. This will create "
                                                                                 "new documents for new conversations, or attach follow-up "
                                                                                 "emails to the existing conversations (documents).")
-    priority = fields.Integer(string='Server Priority', readonly=False, help="Defines the order of processing, lower values mean higher priority", default=5)
+    priority = fields.Integer(string='Server Priority', readonly=True, states={'draft': [('readonly', False)]}, help="Defines the order of processing, lower values mean higher priority", default=5)
     message_ids = fields.One2many('mail.mail', 'fetchmail_server_id', string='Messages', readonly=True)
     configuration = fields.Text('Configuration', readonly=True)
     script = fields.Char(readonly=True, default='/mail/static/scripts/odoo-mailgate.py')
@@ -179,21 +179,21 @@ odoo_mailgate: "|/path/to/odoo-mailgate.py --host=localhost -u %(uid)d -p PASSWO
 
     def button_confirm_login(self):
         for server in self:
-            connection = None
+            connection = False
             try:
                 connection = server.connect(allow_archived=True)
                 server.write({'state': 'done'})
             except UnicodeError as e:
-                raise UserError(_("Invalid server name!\n %s", tools.exception_to_unicode(e)))
+                raise UserError(_("Invalid server name !\n %s", tools.ustr(e)))
             except (gaierror, timeout, IMAP4.abort) as e:
-                raise UserError(_("No response received. Check server information.\n %s", tools.exception_to_unicode(e)))
+                raise UserError(_("No response received. Check server information.\n %s", tools.ustr(e)))
             except (IMAP4.error, poplib.error_proto) as err:
-                raise UserError(_("Server replied with following exception:\n %s", tools.exception_to_unicode(err)))
+                raise UserError(_("Server replied with following exception:\n %s", tools.ustr(err)))
             except SSLError as e:
-                raise UserError(_("An SSL exception occurred. Check SSL/TLS configuration on server port.\n %s", tools.exception_to_unicode(e)))
+                raise UserError(_("An SSL exception occurred. Check SSL/TLS configuration on server port.\n %s", tools.ustr(e)))
             except (OSError, Exception) as err:
                 _logger.info("Failed to connect to %s server %s.", server.server_type, server.name, exc_info=True)
-                raise UserError(_("Connection test failed: %s", tools.exception_to_unicode(err)))
+                raise UserError(_("Connection test failed: %s", tools.ustr(err)))
             finally:
                 try:
                     if connection:
@@ -210,9 +210,9 @@ odoo_mailgate: "|/path/to/odoo-mailgate.py --host=localhost -u %(uid)d -p PASSWO
     @api.model
     def _fetch_mails(self):
         """ Method called by cron to fetch mails from servers """
-        return self.search([('state', '=', 'done'), ('server_type', '!=', 'local')]).fetch_mail(raise_exception=False)
+        return self.search([('state', '=', 'done'), ('server_type', '!=', 'local')]).fetch_mail()
 
-    def fetch_mail(self, raise_exception=True):
+    def fetch_mail(self):
         """ WARNING: meant for cron usage only - will commit() after each email! """
         additionnal_context = {
             'fetchmail_cron_running': True
@@ -243,17 +243,14 @@ odoo_mailgate: "|/path/to/odoo-mailgate.py --host=localhost -u %(uid)d -p PASSWO
                         self._cr.commit()
                         count += 1
                     _logger.info("Fetched %d email(s) on %s server %s; %d succeeded, %d failed.", count, server.server_type, server.name, (count - failed), failed)
-                except Exception as e:
-                    if raise_exception:
-                        raise ValidationError(_("Couldn't get your emails. Check out the error message below for more info:\n%s", e)) from e
-                    else:
-                        _logger.info("General failure when trying to fetch mail from %s server %s.", server.server_type, server.name, exc_info=True)
+                except Exception:
+                    _logger.info("General failure when trying to fetch mail from %s server %s.", server.server_type, server.name, exc_info=True)
                 finally:
                     if imap_server:
                         try:
                             imap_server.close()
                             imap_server.logout()
-                        except (OSError, IMAP4.abort):
+                        except OSError:
                             _logger.warning('Failed to properly finish imap connection: %s.', server.name, exc_info=True)
             elif connection_type == 'pop':
                 try:
@@ -280,11 +277,8 @@ odoo_mailgate: "|/path/to/odoo-mailgate.py --host=localhost -u %(uid)d -p PASSWO
                         if num_messages < MAX_POP_MESSAGES or failed_in_loop == num:
                             break
                         pop_server.quit()
-                except Exception as e:
-                    if raise_exception:
-                        raise ValidationError(_("Couldn't get your emails. Check out the error message below for more info:\n%s", e)) from e
-                    else:
-                        _logger.info("General failure when trying to fetch mail from %s server %s.", server.server_type, server.name, exc_info=True)
+                except Exception:
+                    _logger.info("General failure when trying to fetch mail from %s server %s.", server.server_type, server.name, exc_info=True)
                 finally:
                     if pop_server:
                         try:

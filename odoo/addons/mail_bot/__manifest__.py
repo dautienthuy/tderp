@@ -14,6 +14,9 @@
         'views/res_users_views.xml',
         'data/mailbot_data.xml',
     ],
+    'demo': [
+        'data/mailbot_demo.xml',
+    ],
     'assets': {
         'web.assets_backend': [
             'mail_bot/static/src/scss/odoobot_style.scss',

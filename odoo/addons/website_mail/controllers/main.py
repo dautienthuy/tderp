@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from collections import defaultdict
 from odoo import http, _
 from odoo.http import request
 from odoo.exceptions import UserError
@@ -19,7 +18,8 @@ class WebsiteMail(http.Controller):
         if not record:
             return False
 
-        record.check_access('read')
+        record.check_access_rights('read')
+        record.check_access_rule('read')
 
         # search partner_id
         if request.env.user != request.website.user_id:
@@ -40,7 +40,7 @@ class WebsiteMail(http.Controller):
             record.sudo().message_subscribe(partner_ids)
             return True
 
-    @http.route(['/website_mail/is_follower'], type='json', auth="public", website=True, readonly=True)
+    @http.route(['/website_mail/is_follower'], type='json', auth="public", website=True)
     def is_follower(self, records, **post):
         """ Given a list of `models` containing a list of res_ids, return
             the res_ids for which the user is follower and some practical info.
@@ -64,16 +64,17 @@ class WebsiteMail(http.Controller):
         elif request.session.get('partner_id'):
             partner = request.env['res.partner'].sudo().browse(request.session.get('partner_id'))
 
-        res = defaultdict(list)
+        res = {}
         if partner:
             for model in records:
-                mail_followers_ids = request.env['mail.followers'].sudo()._read_group([
+                mail_followers_ids = request.env['mail.followers'].sudo().read_group([
                     ('res_model', '=', model),
                     ('res_id', 'in', records[model]),
                     ('partner_id', '=', partner.id)
-                ], ['res_id'])
-                # `_read_group` will filter out the ones not matching the domain
-                res[model].extend(res_id for [res_id] in mail_followers_ids)
+                ], ['res_id', 'follow_count:count(id)'], ['res_id'])
+                # `read_group` will filter out the ones without count result
+                for m in mail_followers_ids:
+                    res.setdefault(model, []).append(m['res_id'])
 
         return [{
             'is_user': user != public_user,

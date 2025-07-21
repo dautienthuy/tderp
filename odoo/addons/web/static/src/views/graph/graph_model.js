@@ -1,17 +1,15 @@
-import { _t } from "@web/core/l10n/translation";
-import { sortBy, groupBy } from "@web/core/utils/arrays";
+/** @odoo-module **/
+
+import { sortBy } from "@web/core/utils/arrays";
 import { KeepLast, Race } from "@web/core/utils/concurrency";
 import { rankInterval } from "@web/search/utils/dates";
 import { getGroupBy } from "@web/search/utils/group_by";
 import { GROUPABLE_TYPES } from "@web/search/utils/misc";
-import { addPropertyFieldDefs, Model } from "@web/model/model";
+import { Model } from "@web/views/model";
 import { computeReportMeasures, processMeasure } from "@web/views/utils";
-import { Domain } from "@web/core/domain";
 
 export const SEP = " / ";
 const DATA_LIMIT = 80;
-
-export const SEQUENTIAL_TYPES = ["date", "datetime"];
 
 /**
  * @typedef {import("@web/search/search_model").SearchParams} SearchParams
@@ -101,8 +99,6 @@ export class GraphModel extends Model {
         this.metaData = params;
         this.data = null;
         this.searchParams = null;
-        // This dataset will be added as a line plot on top of stacked bar chart.
-        this.lineOverlayDataset = null;
     }
 
     //--------------------------------------------------------------------------
@@ -118,14 +114,7 @@ export class GraphModel extends Model {
             this.initialGroupBy = searchParams.context.graph_groupbys || this.metaData.groupBy; // = arch groupBy --> change that
         }
         const metaData = this._buildMetaData();
-        await addPropertyFieldDefs(
-            this.orm,
-            metaData.resModel,
-            searchParams.context,
-            metaData.fields,
-            metaData.groupBy.map((gb) => gb.fieldName)
-        );
-        await this._fetchDataPoints(metaData);
+        return this._fetchDataPoints(metaData);
     }
 
     async forceLoadAll() {
@@ -257,7 +246,7 @@ export class GraphModel extends Model {
             dataPtMapping.set(dataPt, datasetsTmp[datasetLabel]);
 
             const x = dataPt.labels.slice(0, mode === "pie" ? undefined : 1);
-            const trueLabel = x.length ? x.join(SEP) : _t("Total");
+            const trueLabel = x.length ? x.join(SEP) : this.env._t("Total");
             if (dateClasses) {
                 x[0] = dateClasses.classLabel(dataPt.originIndex, x[0]);
             }
@@ -271,7 +260,7 @@ export class GraphModel extends Model {
                         x[0] = dateClasses.representative(x[0]);
                     }
                 }
-                const label = x.length ? x.join(SEP) : _t("Total");
+                const label = x.length ? x.join(SEP) : this.env._t("Total");
                 labels.push(label);
             }
             dataPt.labelIndex = labelMap[key];
@@ -284,16 +273,9 @@ export class GraphModel extends Model {
                 continue;
             }
 
-            const {
-                domain,
-                labelIndex,
-                originIndex,
-                trueLabel,
-                value,
-                identifier,
-                cumulatedStart,
-            } = dataPt;
+            const { domain, labelIndex, originIndex, trueLabel, value } = dataPt;
             const dataset = dataPtMapping.get(dataPt);
+
             if (!dataset.data) {
                 let dataLength = labels.length;
                 if (mode !== "pie" && dateClasses) {
@@ -301,16 +283,13 @@ export class GraphModel extends Model {
                 }
                 Object.assign(dataset, {
                     data: new Array(dataLength).fill(0),
-                    cumulatedStart,
                     trueLabels: labels.slice(0, dataLength), // should be good // check this in case identify = true
                     domains: new Array(dataLength).fill([]),
-                    identifiers: new Set(),
                 });
             }
             dataset.data[labelIndex] = value;
             dataset.domains[labelIndex] = domain;
             dataset.trueLabels[labelIndex] = trueLabel;
-            dataset.identifiers.add(identifier);
         }
         // sort by origin
         let datasets = sortBy(Object.values(datasetsTmp), "originIndex");
@@ -340,40 +319,6 @@ export class GraphModel extends Model {
             labels,
             exceeds,
         };
-    }
-
-    _getLabel(description) {
-        if (!description) {
-            return _t("Sum");
-        } else {
-            return _t("Sum (%s)", description);
-        }
-    }
-
-    _getLineOverlayDataset() {
-        const { domains, stacked } = this.metaData;
-        const data = this.data;
-        let lineOverlayDataset = null;
-        if (stacked) {
-            const stacks = groupBy(data.datasets, (dataset) => dataset.originIndex);
-            if (Object.keys(stacks).length == 1) {
-                const [[originIndex, datasets]] = Object.entries(stacks);
-                if (datasets.length > 1) {
-                    const data = [];
-                    for (const dataset of datasets) {
-                        for (let i = 0; i < dataset.data.length; i++) {
-                            data[i] = (data[i] || 0) + dataset.data[i];
-                        }
-                    }
-                    lineOverlayDataset = {
-                        label: this._getLabel(domains[originIndex].description),
-                        data,
-                        trueLabels: datasets[0].trueLabels,
-                    };
-                }
-            }
-        }
-        return lineOverlayDataset;
     }
 
     /**
@@ -415,14 +360,6 @@ export class GraphModel extends Model {
     }
 
     /**
-     * @protected
-     * @returns {string}
-     */
-    _getDefaultFilterLabel(field) {
-        return _t("None");
-    }
-
-    /**
      * Eventually filters and sort data points.
      * @protected
      * @returns {Object[]}
@@ -432,11 +369,7 @@ export class GraphModel extends Model {
         let processedDataPoints = [];
         if (mode === "line") {
             processedDataPoints = this.dataPoints.filter(
-                (dataPoint) => dataPoint.labels[0] !== this._getDefaultFilterLabel(groupBy[0])
-            );
-        } else if (mode === "pie") {
-            processedDataPoints = this.dataPoints.filter(
-                (dataPoint) => dataPoint.value > 0 && dataPoint.count !== 0
+                (dataPoint) => dataPoint.labels[0] !== this.env._t("Undefined")
             );
         } else {
             processedDataPoints = this.dataPoints.filter((dataPoint) => dataPoint.count !== 0);
@@ -462,6 +395,26 @@ export class GraphModel extends Model {
     }
 
     /**
+     * Determines whether the set of data points is good. If not, this.data will be (re)set to null
+     * @protected
+     * @param {Object[]}
+     * @returns {boolean}
+     */
+    _isValidData(dataPoints) {
+        const { mode } = this.metaData;
+        let somePositive = false;
+        if (mode === "pie") {
+            for (const dataPt of dataPoints) {
+                if (dataPt.value > 0) {
+                    somePositive = true;
+                }
+            }
+            return somePositive;
+        }
+        return true;
+    }
+
+    /**
      * Fetch and process graph data.  It is basically a(some) read_group(s)
      * with correct fields for each domain.  We have to do some light processing
      * to separate date groups in the field list, because they can be defined
@@ -471,131 +424,95 @@ export class GraphModel extends Model {
      * @returns {Object[]}
      */
     async _loadDataPoints(metaData) {
-        const { measure, domains, fields, groupBy, resModel, cumulatedStart } = metaData;
-        const fieldName = groupBy[0]?.fieldName;
-        const sequential_field =
-            cumulatedStart && SEQUENTIAL_TYPES.includes(fields[fieldName]?.type) ? fieldName : null;
-        const sequential_spec = sequential_field && groupBy[0].spec;
+        const { measure, domains, fields, groupBy, resModel } = metaData;
+
         const measures = ["__count"];
         if (measure !== "__count") {
-            let { aggregator, type } = fields[measure];
+            let { group_operator, type } = fields[measure];
             if (type === "many2one") {
-                aggregator = "count_distinct";
+                group_operator = "count_distinct";
             }
-            if (aggregator === undefined) {
+            if (group_operator === undefined) {
                 throw new Error(
                     `No aggregate function has been provided for the measure '${measure}'`
                 );
             }
-            measures.push(`${measure}:${aggregator}`);
+            measures.push(`${measure}:${group_operator}`);
         }
 
+        const proms = [];
         const numbering = {}; // used to avoid ambiguity with many2one with values with same labels:
         // for instance [1, "ABC"] [3, "ABC"] should be distinguished.
+        domains.forEach((domain, originIndex) => {
+            proms.push(
+                this.orm
+                    .webReadGroup(
+                        resModel,
+                        domain.arrayRepr,
+                        measures,
+                        groupBy.map((gb) => gb.spec),
+                        {
+                            lazy: false, // what is this thing???
+                            context: { fill_temporal: true, ...this.searchParams.context },
+                        }
+                    )
+                    .then((data) => {
+                        const dataPoints = [];
+                        for (const group of data.groups) {
+                            const { __domain, __count } = group;
+                            const labels = [];
 
-        const proms = domains.map(async (domain, originIndex) => {
-            const data = await this.orm.webReadGroup(
-                resModel,
-                domain.arrayRepr,
-                measures,
-                groupBy.map((gb) => gb.spec),
-                {
-                    lazy: false, // what is this thing???
-                    context: { fill_temporal: true, ...this.searchParams.context },
-                }
+                            for (const gb of groupBy) {
+                                let label;
+                                const val = group[gb.spec];
+                                const fieldName = gb.fieldName;
+                                const { type } = fields[fieldName];
+                                if (type === "boolean") {
+                                    label = `${val}`; // toUpperCase?
+                                } else if (val === false) {
+                                    label = this.env._t("Undefined");
+                                } else if (["many2many", "many2one"].includes(type)) {
+                                    const [id, name] = val;
+                                    const key = JSON.stringify([fieldName, name]);
+                                    if (!numbering[key]) {
+                                        numbering[key] = {};
+                                    }
+                                    const numbers = numbering[key];
+                                    if (!numbers[id]) {
+                                        numbers[id] = Object.keys(numbers).length + 1;
+                                    }
+                                    const num = numbers[id];
+                                    label = num === 1 ? name : `${name} (${num})`;
+                                } else if (type === "selection") {
+                                    const selected = fields[fieldName].selection.find(
+                                        (s) => s[0] === val
+                                    );
+                                    label = selected[1];
+                                } else {
+                                    label = val;
+                                }
+                                labels.push(label);
+                            }
+
+                            let value = group[measure];
+                            if (value instanceof Array) {
+                                // case where measure is a many2one and is used as groupBy
+                                value = 1;
+                            }
+                            if (!Number.isInteger(value)) {
+                                metaData.allIntegers = false;
+                            }
+                            dataPoints.push({
+                                count: __count,
+                                domain: __domain,
+                                value,
+                                labels,
+                                originIndex,
+                            });
+                        }
+                        return dataPoints;
+                    })
             );
-            let start = false;
-            if (
-                cumulatedStart &&
-                sequential_field &&
-                data.groups.length &&
-                domain.arrayRepr.some((leaf) => leaf.length === 3 && leaf[0] == sequential_field)
-            ) {
-                const first_date = data.groups[0].__range[sequential_spec].from;
-                const new_domain = Domain.combine(
-                    [
-                        new Domain([[sequential_field, "<", first_date]]),
-                        Domain.removeDomainLeaves(domain.arrayRepr, [sequential_field]),
-                    ],
-                    "AND"
-                ).toList();
-                start = await this.orm.webReadGroup(
-                    resModel,
-                    new_domain,
-                    measures,
-                    groupBy.filter((gb) => gb.fieldName != sequential_field).map((gb) => gb.spec),
-                    {
-                        lazy: false, // what is this thing???
-                        context: { ...this.searchParams.context },
-                    }
-                );
-            }
-            const dataPoints = [];
-            const cumulatedStartValue = {};
-            if (start) {
-                for (const group of start.groups) {
-                    const rawValues = [];
-                    for (const gb of groupBy.filter((gb) => gb.fieldName != sequential_field)) {
-                        rawValues.push({ [gb.spec]: group[gb.spec] });
-                    }
-                    cumulatedStartValue[JSON.stringify(rawValues)] = group[measure];
-                }
-            }
-            for (const group of data.groups) {
-                const { __domain, __count } = group;
-                const labels = [];
-                const rawValues = [];
-                for (const gb of groupBy) {
-                    let label;
-                    const val = group[gb.spec];
-                    rawValues.push({ [gb.spec]: val });
-                    const fieldName = gb.fieldName;
-                    const { type } = fields[fieldName];
-                    if (type === "boolean") {
-                        label = `${val}`; // toUpperCase?
-                    } else if (val === false) {
-                        label = this._getDefaultFilterLabel(gb);
-                    } else if (["many2many", "many2one"].includes(type)) {
-                        const [id, name] = val;
-                        const key = JSON.stringify([fieldName, name]);
-                        if (!numbering[key]) {
-                            numbering[key] = {};
-                        }
-                        const numbers = numbering[key];
-                        if (!numbers[id]) {
-                            numbers[id] = Object.keys(numbers).length + 1;
-                        }
-                        const num = numbers[id];
-                        label = num === 1 ? name : `${name} (${num})`;
-                    } else if (type === "selection") {
-                        const selected = fields[fieldName].selection.find((s) => s[0] === val);
-                        label = selected[1];
-                    } else {
-                        label = val;
-                    }
-                    labels.push(label);
-                }
-
-                let value = group[measure];
-                if (value instanceof Array) {
-                    // case where measure is a many2one and is used as groupBy
-                    value = 1;
-                }
-                if (!Number.isInteger(value)) {
-                    metaData.allIntegers = false;
-                }
-                const group_id = JSON.stringify(rawValues.slice(1));
-                dataPoints.push({
-                    count: __count,
-                    domain: __domain,
-                    value,
-                    labels,
-                    originIndex,
-                    identifier: JSON.stringify(rawValues),
-                    cumulatedStart: cumulatedStartValue[group_id] || 0,
-                });
-            }
-            return dataPoints;
         });
         const promResults = await Promise.all(proms);
         return promResults.flat();
@@ -624,16 +541,14 @@ export class GraphModel extends Model {
         const processedGroupBy = [];
         for (const gb of groupBy) {
             const { fieldName, interval } = gb;
-            if (!fieldName.includes(".")) {
-                const { groupable, type } = fields[fieldName];
-                if (
-                    // cf. _description_groupable in odoo/fields.py
-                    !groupable ||
-                    ["id", "__count"].includes(fieldName) ||
-                    !GROUPABLE_TYPES.includes(type)
-                ) {
-                    continue;
-                }
+            const { sortable, type, store } = fields[fieldName];
+            if (
+                // many2many is groupable precisely when it is stored (cf. groupable in odoo/fields.py)
+                (type === "many2many" ? !store : !sortable) ||
+                ["id", "__count"].includes(fieldName) ||
+                !GROUPABLE_TYPES.includes(type)
+            ) {
+                continue;
             }
             const index = processedGroupBy.findIndex((gb) => gb.fieldName === fieldName);
             if (index === -1) {
@@ -654,12 +569,20 @@ export class GraphModel extends Model {
      * @protected
      * @param {boolean} [forceUseAllDataPoints=false]
      */
-    _prepareData(forceUseAllDataPoints = false) {
-        const processedDataPoints = this._getProcessedDataPoints();
-        this.data = this._getData(processedDataPoints, forceUseAllDataPoints);
-        this.lineOverlayDataset = null;
-        if (this.metaData.mode === "bar") {
-            this.lineOverlayDataset = this._getLineOverlayDataset();
+    async _prepareData(forceUseAllDataPoints = false) {
+        let processedDataPoints = this._getProcessedDataPoints();
+        this.data = null;
+        if (this._isValidData(processedDataPoints) && this.metaData.mode === "pie") {
+            const positiveValues = [];
+            for (const dataPt of processedDataPoints) {
+                if (dataPt.value > 0) {
+                    positiveValues.push(dataPt);
+                }
+            }
+            processedDataPoints = positiveValues;
+        } else if (this.metaData.mode === "pie") {
+            processedDataPoints = [];
         }
+        this.data = this._getData(processedDataPoints, forceUseAllDataPoints);
     }
 }

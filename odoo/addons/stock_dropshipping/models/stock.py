@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-
 from odoo import api, models, fields
 from odoo.osv import expression
 
@@ -15,34 +14,26 @@ class StockRule(models.Model):
         """
         return procurement.values.get('sale_line_id'), super(StockRule, self)._get_procurements_to_merge_groupby(procurement)
 
-    def _get_partner_id(self, values, rule):
-        route = self.env.ref('stock_dropshipping.route_drop_shipping', raise_if_not_found=False)
-        if route and rule.route_id == route:
-            return False
-        return super()._get_partner_id(values, rule)
-
 
 class ProcurementGroup(models.Model):
     _inherit = "procurement.group"
 
     @api.model
     def _get_rule_domain(self, location, values):
-        domain = super()._get_rule_domain(location, values)
         if 'sale_line_id' in values and values.get('company_id'):
-            domain = expression.AND([domain, [('company_id', '=', values['company_id'].id)]])
-        return domain
+            return [('location_dest_id', '=', location.id), ('action', '!=', 'push'), ('company_id', '=', values['company_id'].id)]
+        else:
+            return super(ProcurementGroup, self)._get_rule_domain(location, values)
 
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
     is_dropship = fields.Boolean("Is a Dropship", compute='_compute_is_dropship')
 
-    @api.depends('location_dest_id.usage', 'location_dest_id.company_id', 'location_id.usage', 'location_id.company_id')
+    @api.depends('location_dest_id.usage', 'location_id.usage')
     def _compute_is_dropship(self):
         for picking in self:
-            source, dest = picking.location_id, picking.location_dest_id
-            picking.is_dropship = (source.usage == 'supplier' or (source.usage == 'transit' and not source.company_id)) \
-                              and (dest.usage == 'customer' or (dest.usage == 'transit' and not dest.company_id))
+            picking.is_dropship = picking.location_dest_id.usage == 'customer' and picking.location_id.usage == 'supplier'
 
     def _is_to_external_location(self):
         self.ensure_one()
@@ -51,34 +42,11 @@ class StockPicking(models.Model):
 class StockPickingType(models.Model):
     _inherit = 'stock.picking.type'
 
-    code = fields.Selection(
-        selection_add=[('dropship', 'Dropship')], ondelete={'dropship': lambda recs: recs.write({'code': 'outgoing', 'active': False})})
-
-    def _compute_default_location_src_id(self):
-        dropship_types = self.filtered(lambda pt: pt.code == 'dropship')
-        dropship_types.default_location_src_id = self.env.ref('stock.stock_location_suppliers').id
-
-        super(StockPickingType, self - dropship_types)._compute_default_location_src_id()
-
-    def _compute_default_location_dest_id(self):
-        dropship_types = self.filtered(lambda pt: pt.code == 'dropship')
-        dropship_types.default_location_dest_id = self.env.ref('stock.stock_location_customers').id
-
-        super(StockPickingType, self - dropship_types)._compute_default_location_dest_id()
-
     @api.depends('default_location_src_id', 'default_location_dest_id')
     def _compute_warehouse_id(self):
         super()._compute_warehouse_id()
-        for picking_type in self:
-            if picking_type.code == 'dropship':
-                picking_type.warehouse_id = False
-
-    @api.depends('code')
-    def _compute_show_picking_type(self):
-        super()._compute_show_picking_type()
-        for record in self:
-            if record.code == "dropship":
-                record.show_picking_type = True
+        if self.default_location_src_id.usage == 'supplier' and self.default_location_dest_id.usage == 'customer':
+            self.warehouse_id = False
 
 
 class StockLot(models.Model):
@@ -92,21 +60,20 @@ class StockLot(models.Model):
                 if last_delivery.is_dropship:
                     lot.last_delivery_partner_id = last_delivery.sale_id.partner_id
 
+    def _get_delivery_ids_by_lot_domain(self):
+        # TODO master: delete (dead code)
+        return [
+            ('lot_id', 'in', self.ids),
+            ('state', '=', 'done'),
+            '|',
+            '|', ('picking_code', '=', 'outgoing'), ('produce_line_ids', '!=', False),
+            # dropship transfers have an incoming picking_code but should be considered as well
+            ('location_dest_id.usage', '=', 'customer'), ('location_id.usage', '=', 'supplier')
+        ]
+
     def _get_outgoing_domain(self):
         res = super()._get_outgoing_domain()
         return expression.OR([res, [
             ('location_dest_id.usage', '=', 'customer'),
             ('location_id.usage', '=', 'supplier'),
         ]])
-
-
-class StockMove(models.Model):
-    _inherit = 'stock.move'
-
-    def _get_layer_candidates(self):
-        layer_candidates = super()._get_layer_candidates()
-        if self._is_dropshipped():
-            layer_candidates = layer_candidates.filtered(lambda svl: svl.quantity < 0)
-        elif self._is_dropshipped_returned():
-            layer_candidates = layer_candidates.filtered(lambda svl: svl.quantity > 0)
-        return layer_candidates

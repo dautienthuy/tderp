@@ -3,16 +3,20 @@
 # 	* base_install_request
 # 
 # Translators:
-# Wil Odoo, 2024
-# Aleš Pipan, 2025
+# Vida Potočnik <vida.potocnik@mentis.si>, 2022
+# Martin Trigaux, 2022
+# Matjaz Mozetic <m.mozetic@matmoz.si>, 2022
+# laznikd <laznik@mentis.si>, 2022
+# matjaz k <matjaz@mentis.si>, 2022
+# Katja Deržič, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-27 13:03+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Aleš Pipan, 2025\n"
+"POT-Creation-Date: 2023-05-23 08:23+0000\n"
+"PO-Revision-Date: 2022-09-22 05:45+0000\n"
+"Last-Translator: Katja Deržič, 2023\n"
 "Language-Team: Slovenian (https://app.transifex.com/odoo/teams/41243/sl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -26,22 +30,22 @@ msgid ""
 "<div style=\"margin: 0px; padding: 0px;\">\n"
 "    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
 "        Hello,\n"
-"        <br/><br/>\n"
-"        <span style=\"font-weight: bold;\" t-out=\"object.user_id.name\"/> has requested to activate the <span style=\"font-weight: bold;\" t-out=\"object.module_id.shortdesc\"/> module. This module is included in your subscription. It has <span style=\"color: #875A7B; font-weight: bold;\">no extra cost</span>, but an administrator role is required to activate it.\n"
-"        <br/><br/>\n"
-"        </p><blockquote data-o-mail-quote-node=\"1\" data-o-mail-quote=\"1\">\n"
-"            <t t-out=\"object.body_html\"/>\n"
+"        <br><br>\n"
+"        <span style=\"font-weight: bold;\" t-out=\"object.user_id.name\"></span> has requested to activate the <span style=\"font-weight: bold;\" t-out=\"object.module_id.shortdesc\"></span> module. This module is included in your subscription. It has <span style=\"color: #875A7B; font-weight: bold;\">no extra cost</span>, but an administrator role is required to activate it.\n"
+"        <br><br>\n"
+"        <blockquote>\n"
+"            <t t-out=\"object.body_html\"></t>\n"
 "        </blockquote>\n"
-"        <br data-o-mail-quote=\"1\"/><br data-o-mail-quote=\"1\"/>\n"
-"        <a style=\"background-color:#875A7B; padding:8px 16px 8px 16px; text-decoration:none; color:#fff; border-radius:5px\" t-attf-href=\"/odoo/{{ object.module_id.id }}/action-base_install_request.action_base_module_install_review?menu_id={{ ctx['menu_id'] }}\">Review Request</a>\n"
-"        <br/><br/>\n"
+"        <br><br>\n"
+"        <a style=\"background-color:#875A7B; padding:8px 16px 8px 16px; text-decoration:none; color:#fff; border-radius:5px\" t-attf-href=\"/web?#action=base_install_request.action_base_module_install_review&amp;active_id={{ object.module_id.id }}&amp;menu_id={{ ctx['menu_id'] }}\">Review Request</a>\n"
+"        <br><br>\n"
 "        Thanks,\n"
-"        <t t-if=\"not is_html_empty(object.user_id.signature)\" data-o-mail-quote-container=\"1\">\n"
-"            <br/><br/>\n"
-"            <t t-out=\"object.user_id.signature or ''\" data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/>Mitchell Admin</t>\n"
+"        <t t-if=\"not is_html_empty(object.user_id.signature)\">\n"
+"            <br><br>\n"
+"            <t t-out=\"object.user_id.signature or ''\">--<br>Mitchell Admin</t>\n"
 "        </t>\n"
-"        <br/><br/>\n"
-"    \n"
+"        <br><br>\n"
+"    </p>\n"
 "</div>\n"
 "            "
 msgstr ""
@@ -49,8 +53,9 @@ msgstr ""
 #. module: base_install_request
 #. odoo-python
 #: code:addons/base_install_request/models/ir_module_module.py:0
+#, python-format
 msgid "Activation Request of \"%s\""
-msgstr "Zahteva za aktivacijo \"%s\""
+msgstr ""
 
 #. module: base_install_request
 #: model:ir.model.fields,field_description:base_install_request.field_base_module_install_request__body_html
@@ -78,7 +83,7 @@ msgstr "Ustvarjeno"
 #. module: base_install_request
 #: model:ir.model.fields,field_description:base_install_request.field_base_module_install_review__module_ids
 msgid "Depending Apps"
-msgstr "Odvisne aplikacije"
+msgstr ""
 
 #. module: base_install_request
 #: model:ir.model.fields,field_description:base_install_request.field_base_module_install_request__display_name
@@ -95,7 +100,13 @@ msgstr "ID"
 #. module: base_install_request
 #: model_terms:ir.ui.view,arch_db:base_install_request.base_module_install_review_view_form
 msgid "Install App"
-msgstr "Namestite aplikacijo"
+msgstr ""
+
+#. module: base_install_request
+#: model:ir.model.fields,field_description:base_install_request.field_base_module_install_request____last_update
+#: model:ir.model.fields,field_description:base_install_request.field_base_module_install_review____last_update
+msgid "Last Modified on"
+msgstr "Zadnjič spremenjeno"
 
 #. module: base_install_request
 #: model:ir.model.fields,field_description:base_install_request.field_base_module_install_request__write_uid
@@ -112,7 +123,7 @@ msgstr "Zadnjič posodobljeno"
 #. module: base_install_request
 #: model:mail.template,name:base_install_request.mail_template_base_install_request
 msgid "Mail: Install Request"
-msgstr "Pošta: Zahteva za namestitev"
+msgstr ""
 
 #. module: base_install_request
 #: model:ir.model,name:base_install_request.model_ir_module_module
@@ -124,43 +135,44 @@ msgstr "Modul"
 #. module: base_install_request
 #: model:ir.model,name:base_install_request.model_base_module_install_request
 msgid "Module Activation Request"
-msgstr "Zahteva za aktivacijo modula"
+msgstr ""
 
 #. module: base_install_request
 #: model:mail.template,subject:base_install_request.mail_template_base_install_request
 msgid "Module Activation Request for \"{{ object.module_id.shortdesc }}\""
-msgstr "Zahteva za aktivacijo modula za \"{{ object.module_id.shortdesc }}\""
+msgstr ""
 
 #. module: base_install_request
 #: model:ir.model,name:base_install_request.model_base_module_install_review
 msgid "Module Activation Review"
-msgstr "Pregled aktivacije modula"
+msgstr ""
 
 #. module: base_install_request
 #: model:ir.model.fields,field_description:base_install_request.field_base_module_install_review__modules_description
 msgid "Modules Description"
-msgstr "Opis modulov"
+msgstr ""
 
 #. module: base_install_request
 #: model_terms:ir.ui.view,arch_db:base_install_request.base_module_install_review_view_form
 msgid "No extra cost, this application is free."
-msgstr "Brez dodatnih stroškov, ta aplikacija je brezplačna."
+msgstr ""
 
 #. module: base_install_request
 #. odoo-python
 #: code:addons/base_install_request/wizard/base_module_install_request.py:0
+#, python-format
 msgid "No module selected."
-msgstr "Ni izbran noben modul."
+msgstr ""
 
 #. module: base_install_request
 #: model_terms:ir.ui.view,arch_db:base_install_request.ir_module_module_view_kanban
 msgid "Request Access"
-msgstr "Zahteva za dostop"
+msgstr ""
 
 #. module: base_install_request
 #: model_terms:ir.ui.view,arch_db:base_install_request.base_module_install_request_view_form
 msgid "Request Activation"
-msgstr "Zahteva za aktivacijo"
+msgstr ""
 
 #. module: base_install_request
 #: model:ir.model.fields,field_description:base_install_request.field_base_module_install_request__user_ids
@@ -171,13 +183,14 @@ msgstr "Pošlji na:"
 #. module: base_install_request
 #: model_terms:ir.ui.view,arch_db:base_install_request.base_module_install_review_description
 msgid "The following apps will be installed:"
-msgstr "Nameščene bodo naslednje aplikacije:"
+msgstr ""
 
 #. module: base_install_request
 #. odoo-python
 #: code:addons/base_install_request/wizard/base_module_install_request.py:0
+#, python-format
 msgid "The module is already installed."
-msgstr "Modul je že nameščen."
+msgstr ""
 
 #. module: base_install_request
 #: model_terms:ir.ui.view,arch_db:base_install_request.base_module_install_request_view_form
@@ -185,9 +198,6 @@ msgid ""
 "This app is included in your subscription. It's free to activate, but only "
 "an administrator can do it. Fill this form to send an activation request."
 msgstr ""
-"Ta aplikacija je vključena v vašo naročnino. Aktivacija je brezplačna, "
-"vendar jo lahko izvede le skrbnik. Izpolnite ta obrazec, da pošljete zahtevo"
-" za aktivacijo."
 
 #. module: base_install_request
 #: model:ir.model.fields,field_description:base_install_request.field_base_module_install_request__user_id
@@ -196,19 +206,20 @@ msgstr "Uporabnik"
 
 #. module: base_install_request
 #: model_terms:ir.ui.view,arch_db:base_install_request.base_module_install_request_view_form
-msgid "Why do you need this module?"
-msgstr "Zakaj potrebujete ta modul?"
+msgid "Why do you need this module ?"
+msgstr ""
 
 #. module: base_install_request
 #: model:ir.actions.act_window,name:base_install_request.action_base_module_install_review
 msgid "You are about to install an extra application"
-msgstr "Namestili boste dodatno aplikacijo"
+msgstr ""
 
 #. module: base_install_request
 #. odoo-python
 #: code:addons/base_install_request/wizard/base_module_install_request.py:0
+#, python-format
 msgid "Your request has been successfully sent"
-msgstr "Vaša zahteva je bila uspešno poslana"
+msgstr ""
 
 #. module: base_install_request
 #: model_terms:ir.ui.view,arch_db:base_install_request.base_module_install_request_view_form
@@ -216,5 +227,3 @@ msgid ""
 "e.g. I'd like to use the SMS Marketing module to organize the promotion of "
 "our internal events, and exhibitions. I need access for 3 people of my team."
 msgstr ""
-"Npr. rad bi uporabil modul SMS Marketing za organizacijo promocije naših "
-"internih dogodkov in razstav. Potrebujem dostop za 3 osebe iz moje ekipe."

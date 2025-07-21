@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
                 <form string="Bank">
                     <sheet>
-                        <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                        <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                         <group name="bank_details" col="4">
                             <field name="name"/>
                             <field name="bic"/>
@@ -28,6 +28,7 @@
                             <group name="communication_details">
                                 <field name="phone" class="o_force_ltr"/>
                                 <field name="email" widget="email"/>
+                                <field name="active" invisible="1"/>
                             </group>
                         </group>
                     </sheet>
@@ -36,14 +37,14 @@
         </record>
 
         <record id="view_res_bank_tree" model="ir.ui.view">
-            <field name="name">res.bank.list</field>
+            <field name="name">res.bank.tree</field>
             <field name="model">res.bank</field>
             <field name="arch" type="xml">
-                <list string="Banks">
+                <tree string="Banks">
                     <field name="name"/>
                     <field name="bic"/>
                     <field name="country"/>
-                </list>
+                </tree>
             </field>
         </record>
 
@@ -62,7 +63,7 @@
         <record id="action_res_bank_form" model="ir.actions.act_window">
             <field name="name">Banks</field>
             <field name="res_model">res.bank</field>
-            <field name="view_mode">list,form</field>
+            <field name="view_mode">tree,form</field>
             <field name="search_view_id" ref="res_bank_view_search"/>
             <field name="help" type="html">
               <p class="o_view_nocontent_smiling_face">
@@ -80,40 +81,41 @@
             <field name="arch" type="xml">
                 <form string="Bank account" name="bank_account_form">
                 <sheet>
-                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                     <group>
                         <group>
+                            <field name="sequence" invisible="1"/>
+                            <field name="acc_type" invisible="1"/>
                             <field name="acc_number"/>
-                            <field name="bank_id"/>
+                            <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
                             <field name="partner_id"/>
+                            <field name="acc_holder_name"/>
                         </group>
                         <group>
-                            <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                            <field name="bank_id"/>
                             <field name="currency_id" groups="base.group_multi_currency" options="{'no_create': True}"/>
                             <field name="allow_out_payment" widget="boolean_toggle"/>
+                            <field name="active" invisible="1"/>
                         </group>
                     </group>
                 </sheet>
-                <footer replace="0">
-                    <button name="action_archive_bank" type="object" string="Archive" class="btn btn-secondary"/>
-                </footer>
                 </form>
             </field>
         </record>
 
         <record id="view_partner_bank_tree" model="ir.ui.view">
-            <field name="name">res.partner.bank.list</field>
+            <field name="name">res.partner.bank.tree</field>
             <field name="model">res.partner.bank</field>
             <field name="arch" type="xml">
-                <list string="Bank Accounts" multi_edit="1" decoration-muted="(not active)">
+                <tree string="Bank Accounts">
                     <field name="sequence" widget="handle"/>
                     <field name="acc_number"/>
-                    <field name="bank_name" string="Bank" optional="show"/>
-                    <field name="company_id" groups="base.group_multi_company" optional="hide"/>
-                    <field name="partner_id" optional="hide"/>
-                    <field name="allow_out_payment" widget="boolean_toggle" optional="show"/>
-                    <field name="active" widget="boolean_toggle" optional="hide"/>
-                </list>
+                    <field name="bank_name"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                    <field name="partner_id"/>
+                    <field name="acc_holder_name" invisible="1"/>
+                    <field name="allow_out_payment" widget="boolean_toggle"/>
+                </tree>
             </field>
         </record>
 
@@ -125,8 +127,6 @@
                     <field name="bank_name" filter_domain="['|', ('bank_name','ilike',self), ('acc_number','ilike',self)]" string="Bank Name"/>
                     <field name="company_id" invisible="context.get('company_hide', True)"/>
                     <field name="partner_id"/>
-                    <separator/>
-                    <filter name="inactive" string="Archived" domain="[('active','=',False)]" help="Show inactive bank account"/>
                 </search>
             </field>
         </record>
@@ -134,7 +134,7 @@
         <record id="action_res_partner_bank_account_form" model="ir.actions.act_window">
             <field name="name">Bank Accounts</field>
             <field name="res_model">res.partner.bank</field>
-            <field name="view_mode">list,form</field>
+            <field name="view_mode">tree,form</field>
             <field name="help" type="html">
               <p class="o_view_nocontent_smiling_face">
                 Create a Bank Account

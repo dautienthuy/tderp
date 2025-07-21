@@ -3,17 +3,17 @@
 # 	* membership
 # 
 # Translators:
-# Wil Odoo, 2024
-# Manon Rondou, 2025
-# Erwin van der Ploeg <erwin@odooexperts.nl>, 2025
+# Martin Trigaux, 2022
+# Erwin van der Ploeg <erwin@odooexperts.nl>, 2023
+# Jolien De Paepe, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 17.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-26 21:55+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Erwin van der Ploeg <erwin@odooexperts.nl>, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:53+0000\n"
+"Last-Translator: Jolien De Paepe, 2023\n"
 "Language-Team: Dutch (https://app.transifex.com/odoo/teams/41243/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -96,7 +96,7 @@ msgstr "Geassocieerd lid"
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.view_report_membership_search
 msgid "Associated Partner"
-msgstr "Geassocieerde partner"
+msgstr "Geassocieerde relatie"
 
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.view_partner_form
@@ -240,13 +240,13 @@ msgstr "Einddatum lidmaatschap"
 
 #. module: membership
 #: model:ir.model.constraint,message:membership.constraint_product_template_membership_date_greater
-msgid "Error! Ending Date cannot be set before Beginning Date."
-msgstr "Fout! De einddatum kan niet voor de startdatum liggen."
+msgid "Error ! Ending Date cannot be set before Beginning Date."
+msgstr "Fout! De einddatum kan niet voor de begindatum liggen."
 
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.view_report_membership_search
 msgid "Forecast"
-msgstr "Virtueel"
+msgstr "Voorspelling"
 
 #. module: membership
 #: model:ir.model.fields,field_description:membership.field_res_partner__free_member
@@ -320,7 +320,7 @@ msgid ""
 "-Paying member: A member who has paid the membership fee."
 msgstr ""
 "Het geeft de lidmaatschapstatus weer.\n"
-"-Geen lid: Een partner die nog geen lidmaatschap heeft aangevraagd.\n"
+"-Geen lid: Een lid die nog geen lidmaatschap heeft aangevraagd.\n"
 "-Opgezegd lid: Een lid die zijn lidmaatschap heeft opgezegd.\n"
 "-Voormalig lid: Een lid waarvan het lidmaatschap is vervallen.\n"
 "-Wachtend lid: Een lid die lidmaatschap heeft aangevraagd en waarvan de factuur wordt gemaakt.\n"
@@ -364,7 +364,14 @@ msgstr "Boeking"
 #. module: membership
 #: model:ir.model,name:membership.model_account_move_line
 msgid "Journal Item"
-msgstr "Boekingsregel"
+msgstr "Dagboekitem"
+
+#. module: membership
+#: model:ir.model.fields,field_description:membership.field_membership_invoice____last_update
+#: model:ir.model.fields,field_description:membership.field_membership_membership_line____last_update
+#: model:ir.model.fields,field_description:membership.field_report_membership____last_update
+msgid "Last Modified on"
+msgstr "Laatst gewijzigd op"
 
 #. module: membership
 #: model:ir.model.fields,field_description:membership.field_membership_invoice__write_uid
@@ -462,7 +469,7 @@ msgstr "Lidmaatschapregel"
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.view_res_partner_member_filter
 msgid "Membership Partners"
-msgstr "Lidmaatschap partners"
+msgstr "Lidmaatschap relaties"
 
 #. module: membership
 #: model:ir.model.fields,field_description:membership.field_report_membership__membership_id
@@ -504,6 +511,7 @@ msgstr "Producten voor leden"
 
 #. module: membership
 #: model:ir.actions.server,name:membership.ir_cron_update_membership_ir_actions_server
+#: model:ir.cron,cron_name:membership.ir_cron_update_membership
 msgid "Membership: update memberships"
 msgstr "Lidmaatschap: update lidmaatschap"
 
@@ -555,19 +563,21 @@ msgstr "Betaald lid"
 #. module: membership
 #: model:ir.model.fields,field_description:membership.field_membership_membership_line__partner
 msgid "Partner"
-msgstr "Partner"
+msgstr "Relatie"
 
 #. module: membership
 #. odoo-python
 #: code:addons/membership/models/partner.py:0
+#, python-format
 msgid "Partner doesn't have an address to make the invoice."
-msgstr "De partner heeft geen adres om de factuur te maken"
+msgstr "De relatie heeft geen adres om de factuur te maken"
 
 #. module: membership
 #. odoo-python
 #: code:addons/membership/models/partner.py:0
+#, python-format
 msgid "Partner is a free Member."
-msgstr "De partner is een gratis lid."
+msgstr "De relatie is een gratis lid."
 
 #. module: membership
 #: model:ir.model.fields,field_description:membership.field_report_membership__tot_pending
@@ -642,18 +652,18 @@ msgstr "Som van het verdiende bedrag"
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.report_membership_view_tree
 msgid "Sum of Quantity"
-msgstr "Totaalaantal"
+msgstr "Som van hoeveelheid"
 
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.membership_products_form
 msgid "Taxes"
-msgstr "Btw"
+msgstr "BTW"
 
 #. module: membership
 #: model:ir.model.fields,help:membership.field_res_partner__membership_amount
 #: model:ir.model.fields,help:membership.field_res_users__membership_amount
 msgid "The price negotiated by the partner"
-msgstr "De met de partner overeengekomen prijs"
+msgstr "De met de relatie overeengekomen prijs"
 
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.membership_products_form
@@ -691,5 +701,6 @@ msgstr "Wachtend lid"
 #. module: membership
 #. odoo-python
 #: code:addons/membership/models/partner.py:0
+#, python-format
 msgid "You cannot create recursive associated members."
 msgstr "Het is niet mogelijk om recursieve geassocieerde leden te maken."

@@ -1,10 +1,11 @@
-/** @odoo-module **/
+odoo.define('mass_mailing.website_integration', function (require) {
+"use strict";
 
-import { _t } from "@web/core/l10n/translation";
-import publicWidget from "@web/legacy/js/public/public_widget";
-import { session } from "@web/session";
-import {ReCaptcha} from "@google_recaptcha/js/recaptcha";
-import { rpc } from "@web/core/network/rpc";
+var core = require('web.core');
+var publicWidget = require('web.public.widget');
+const {ReCaptcha} = require('google_recaptcha.ReCaptchaV3');
+
+var _t = core._t;
 
 publicWidget.registry.subscribe = publicWidget.Widget.extend({
     selector: ".js_subscribe",
@@ -19,11 +20,6 @@ publicWidget.registry.subscribe = publicWidget.Widget.extend({
     init: function () {
         this._super(...arguments);
         this._recaptcha = new ReCaptcha();
-        this.notification = this.bindService("notification");
-        if (session.turnstile_site_key) {
-            const { turnStile } = odoo.loader.modules.get('@website_cf_turnstile/js/turnstile');
-            this._turnstile = turnStile;
-        }
     },
     /**
      * @override
@@ -44,11 +40,14 @@ publicWidget.registry.subscribe = publicWidget.Widget.extend({
             return def;
         }
         const always = this._updateView.bind(this);
-        const inputName = this.el.querySelector('input').name;
-        return Promise.all([def, rpc('/website_mass_mailing/is_subscriber', {
-            'list_id': this._getListId(),
-            'subscription_type': inputName,
-        }).then(always, always)]);
+        const inputName = this.$target[0].querySelector('input').name;
+        return Promise.all([def, this._rpc({
+            route: '/website_mass_mailing/is_subscriber',
+            params: {
+                'list_id': this._getListId(),
+                'subscription_type': inputName,
+            },
+        }).then(always).guardedCatch(always)]);
     },
     /**
      * @override
@@ -65,52 +64,26 @@ publicWidget.registry.subscribe = publicWidget.Widget.extend({
     /**
      * Modifies the elements to have the view of a subscriber/non-subscriber.
      *
-     * @todo should probably be merged with _updateSubscribeControlsStatus
      * @param {Object} data
      */
     _updateView(data) {
-        this._updateSubscribeControlsStatus(!!data.is_subscriber);
-
-        // js_subscribe_email is kept by compatibility (it was the old name of js_subscribe_value)
-        const valueInputEl = this.el.querySelector('input.js_subscribe_value, input.js_subscribe_email');
-        valueInputEl.value = data.value || '';
-
-        // Compat: remove d-none for DBs that have the button saved with it.
-        this.el.classList.remove('d-none');
-    },
-    /**
-     * Updates the visibility of the subscribe and subscribed buttons.
-     *
-     * @param {boolean} isSubscriber
-     */
-    _updateSubscribeControlsStatus(isSubscriber) {
-        const thanksWrapEl = this.el.querySelector('.js_subscribed_wrap');
-        const subscribeWrapEl = this.el.querySelector('.js_subscribe_wrap');
-        const subscribeBtnEl = this.el.querySelector('.js_subscribe_btn');
+        const isSubscriber = data.is_subscriber;
+        const subscribeBtnEl = this.$target[0].querySelector('.js_subscribe_btn');
+        const thanksBtnEl = this.$target[0].querySelector('.js_subscribed_btn');
+        const valueInputEl = this.$target[0].querySelector('input.js_subscribe_value, input.js_subscribe_email'); // js_subscribe_email is kept by compatibility (it was the old name of js_subscribe_value)
 
         subscribeBtnEl.disabled = isSubscriber;
-        subscribeWrapEl.classList.toggle('d-none', isSubscriber);
-        thanksWrapEl.classList.toggle('d-none', !isSubscriber);
-
-        // js_subscribe_email is kept by compatibility (it was the old name of js_subscribe_value)
-        const valueInputEl = this.el.querySelector('input.js_subscribe_value, input.js_subscribe_email');
+        valueInputEl.value = data.value || '';
         valueInputEl.disabled = isSubscriber;
+        // Compat: remove d-none for DBs that have the button saved with it.
+        this.$target[0].classList.remove('d-none');
 
-        // When the website is in edit mode, window.top != window. We don't want turnstile to render during edit mode
-        // and mess up the DOM and saving it.
-        if (!isSubscriber && this._turnstile && window.top === window) {
-            const el = this._turnstile.addTurnstile('website_mass_mailing_subscribe');
-            if (el) {
-                this._turnstile.addSpinner(subscribeBtnEl);
-                el[0].classList.add('mt-3');
-                el.insertAfter(this.el);
-                this._turnstile.renderTurnstile(el);
-            }
-        }
+        subscribeBtnEl.classList.toggle('d-none', !!isSubscriber);
+        thanksBtnEl.classList.toggle('d-none', !isSubscriber);
     },
 
     _getListId: function () {
-        return this.$el.closest('[data-snippet=s_newsletter_block').data('list-id') || this.$el.data('list-id');
+        return this.$target.closest('[data-snippet=s_newsletter_block').data('list-id') || this.$target.data('list-id');
     },
 
     //--------------------------------------------------------------------------
@@ -125,38 +98,43 @@ publicWidget.registry.subscribe = publicWidget.Widget.extend({
         const inputName = this.$('input').attr('name');
         const $input = this.$(".js_subscribe_value:visible, .js_subscribe_email:visible"); // js_subscribe_email is kept by compatibility (it was the old name of js_subscribe_value)
         if (inputName === 'email' && $input.length && !$input.val().match(/.+@.+/)) {
-            this.$el.addClass('o_has_error').find('.form-control').addClass('is-invalid');
+            this.$target.addClass('o_has_error').find('.form-control').addClass('is-invalid');
             return false;
         }
-        this.$el.removeClass('o_has_error').find('.form-control').removeClass('is-invalid');
+        this.$target.removeClass('o_has_error').find('.form-control').removeClass('is-invalid');
         const tokenObj = await this._recaptcha.getToken('website_mass_mailing_subscribe');
         if (tokenObj.error) {
-            self.notification.add(tokenObj.error, {
+            self.displayNotification({
                 type: 'danger',
                 title: _t("Error"),
+                message: tokenObj.error,
                 sticky: true,
             });
             return false;
         }
-        rpc('/website_mass_mailing/subscribe', {
-            'list_id': this._getListId(),
-            'value': $input.length ? $input.val() : false,
-            'subscription_type': inputName,
-            recaptcha_token_response: tokenObj.token,
-            turnstile_captcha: this.el.parentElement.querySelector('input[name="turnstile_captcha"]')?.value,
+        this._rpc({
+            route: '/website_mass_mailing/subscribe',
+            params: {
+                'list_id': this._getListId(),
+                'value': $input.length ? $input.val() : false,
+                'subscription_type': inputName,
+                recaptcha_token_response: tokenObj.token,
+            },
         }).then(function (result) {
             let toastType = result.toast_type;
             if (toastType === 'success') {
-                self._updateSubscribeControlsStatus(true);
-
-                const $popup = self.$el.closest('.o_newsletter_modal');
+                self.$(".js_subscribe_btn").addClass('d-none');
+                self.$(".js_subscribed_btn").removeClass('d-none');
+                self.$('input.js_subscribe_value, input.js_subscribe_email').prop('disabled', !!result); // js_subscribe_email is kept by compatibility (it was the old name of js_subscribe_value)
+                const $popup = self.$target.closest('.o_newsletter_modal');
                 if ($popup.length) {
                     $popup.modal('hide');
                 }
             }
-            self.notification.add(result.toast_content, {
+            self.displayNotification({
                 type: toastType,
                 title: toastType === 'success' ? _t('Success') : _t('Error'),
+                message: result.toast_content,
                 sticky: true,
             });
         });
@@ -181,4 +159,6 @@ publicWidget.registry.fixNewsletterListClass = publicWidget.Widget.extend({
         this.$target[0].classList.add('s_newsletter_list');
         return this._super(...arguments);
     },
+});
+
 });

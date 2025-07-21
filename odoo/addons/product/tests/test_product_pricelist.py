@@ -16,6 +16,13 @@ class TestProductPricelist(ProductCommon):
     def setUpClass(cls):
         super().setUpClass()
 
+        # Required for some of the tests below
+        # Breaks if run after account installation (and with demo data)
+        # as generic chart of accounts changes company currency to USD
+        # therefore the test must stay at_install until adapted to work with USD
+        # or according to current currency.
+        cls._use_currency('EUR')
+
         cls.category_5_id = cls.env['product.category'].create({
             'name': 'Office Furniture',
             'parent_id': cls.product_category.id
@@ -200,11 +207,11 @@ class TestProductPricelist(ProductCommon):
         product = self.product_multi_price
         price = self.customer_pricelist._get_product_price(product, quantity=1.0)
         msg = "Wrong price: Multi Product Price. should be 99 instead of %s" % price
-        self.assertEqual(float_compare(price, 99, precision_digits=2), 0, msg)
+        self.assertEqual(float_compare(price, 99, precision_digits=2), 0)
 
         price = self.business_pricelist._get_product_price(product, quantity=1.0)
         msg = "Wrong price: Multi Product Price. should be 50 instead of %s" % price
-        self.assertEqual(float_compare(price, 50, precision_digits=2), 0, msg)
+        self.assertEqual(float_compare(price, 50, precision_digits=2), 0)
 
     def test_20_price_different_currency_pricelist(self):
         pricelist = self.env['product.pricelist'].create({
@@ -250,40 +257,6 @@ class TestProductPricelist(ProductCommon):
         # product price use the currency of the pricelist
         self.assertEqual(price, 10090)
 
-    def test_price_without_pricelist_fallback_product_price(self):
-        ProductPricelist = self.env['product.pricelist']
-        spam = self.env['product.product'].create({
-            'name': '1 tonne of spam',
-            'uom_id': self.uom_ton.id,
-            'uom_po_id': self.uom_ton.id,
-            'list_price': 100,
-            'type': 'consu'
-        })
-        self.assertEqual(
-            ProductPricelist._get_product_price(self.monitor, quantity=1.0),
-            self.monitor.list_price,
-            msg="without pricelist, the price should be the same as the list price",
-        )
-        self.assertEqual(
-            ProductPricelist._get_product_price(self.monitor, quantity=1.0, currency=self.new_currency),
-            self.monitor.list_price*10,
-            msg="without pricelist but with a currency different than the product one, the price "
-                "should be the same as the list price converted with the currency rate",
-        )
-        self.assertEqual(
-            ProductPricelist._get_product_price(spam, quantity=1.0, uom=self.uom_kgm),
-            spam.list_price / 1000,
-            msg="the product price should be converted using the specified uom",
-        )
-        self.assertEqual(
-            ProductPricelist._get_product_price(
-                spam, quantity=1.0, currency=self.new_currency, uom=self.uom_kgm
-            ),
-            spam.list_price / 100,
-            msg="the product price should be converted using the specified uom and converted to the"
-                " correct currency",
-        )
-
     def test_30_pricelist_delete(self):
         """ Test that `unlink` on many records doesn't raise a RecursionError. """
         self.customer_pricelist = self.env['product.pricelist'].create({
@@ -310,35 +283,3 @@ class TestProductPricelist(ProductCommon):
 
         # Assert: The set value is kept
         self.assertEqual(pricelist_item.min_quantity, precise_value)
-
-    def test_pricelist_sync_on_partners(self):
-        ResPartner = self.env['res.partner']
-
-        company_1, company_2 = self.env['res.company'].create([
-            {'name': 'company_1'},
-            {'name': 'company_2'},
-        ])
-
-        test_partner_company = ResPartner.create({
-            'name': 'This company',
-            'is_company': True,
-        })
-        test_partner_company.with_company(company_1).property_product_pricelist = self.business_pricelist.id
-        test_partner_company.with_company(company_2).property_product_pricelist = self.customer_pricelist.id
-
-        child_address = ResPartner.create({
-            'name': 'Contact',
-            'parent_id': test_partner_company.id,
-        })
-        self.assertEqual(
-            child_address.property_product_pricelist,
-            test_partner_company.property_product_pricelist,
-        )
-        self.assertEqual(
-            child_address.with_company(company_1).property_product_pricelist,
-            self.business_pricelist,
-        )
-        self.assertEqual(
-            child_address.with_company(company_2).property_product_pricelist,
-            self.customer_pricelist,
-        )

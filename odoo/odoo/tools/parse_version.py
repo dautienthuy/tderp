@@ -1,13 +1,14 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 ## this functions are taken from the setuptools package (version 0.6c8)
 ## http://peak.telecommunity.com/DevCenter/PkgResources#parsing-utilities
 
+from __future__ import print_function
 import re
 
 component_re = re.compile(r'(\d+ | [a-z]+ | \.| -)', re.VERBOSE)
 replace = {'pre':'c', 'preview':'c','-':'final-','_':'final-','rc':'c','dev':'@','saas':'','~':''}.get
-
 
 def _parse_version_parts(s):
     for part in component_re.split(s):
@@ -21,8 +22,7 @@ def _parse_version_parts(s):
 
     yield '*final'  # ensure that alpha/beta/candidate are before final
 
-
-def parse_version(s: str) -> tuple[str, ...]:
+def parse_version(s):
     """Convert a version string to a chronologically-sortable key
 
     This is a rough cross between distutils' StrictVersion and LooseVersion;
@@ -52,7 +52,7 @@ def parse_version(s: str) -> tuple[str, ...]:
     candidates, and therefore are not as new as a version string that does not
     contain them.
     """
-    parts: list[str] = []
+    parts = []
     for part in _parse_version_parts((s or '0.1').lower()):
         if part.startswith('*'):
             if part<'*final':   # remove '-' before a prerelease tag

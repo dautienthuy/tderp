@@ -3,11 +3,13 @@
 {
     "name": "Spreadsheet dashboard",
     "version": "1.0",
-    "category": "Productivity/Dashboard",
+    "category": "Hidden",
     "summary": "Spreadsheet",
     "description": "Spreadsheet",
     "depends": ["spreadsheet"],
+    "demo": [],
     "installable": True,
+    "auto_install": False,
     "license": "LGPL-3",
     "data": [
         "security/security.xml",
@@ -21,15 +23,19 @@
             "spreadsheet_dashboard/static/src/bundle/**/*.js",
             "spreadsheet_dashboard/static/src/bundle/**/*.xml",
         ],
-        'spreadsheet.assets_print': [
-            'spreadsheet_dashboard/static/src/print_assets/**/*',
-        ],
         "web.assets_backend": [
             "spreadsheet_dashboard/static/src/assets/**/*.js",
             "spreadsheet_dashboard/static/src/**/*.scss",
         ],
-        'web.assets_unit_tests': [
+        "web.qunit_suite_tests": [
             "spreadsheet_dashboard/static/tests/**/*",
+            ("include", "spreadsheet.o_spreadsheet"),
+            ("remove", "spreadsheet_dashboard/static/tests/mobile/**/*.js"),
+        ],
+        "web.qunit_mobile_suite_tests": [
+            "spreadsheet_dashboard/static/tests/mobile/**/*.js",
+            "spreadsheet_dashboard/static/tests/utils/**/*.js",
+            ("include", "spreadsheet.o_spreadsheet"),
         ],
     },
 }

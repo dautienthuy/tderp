@@ -1,19 +1,22 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import api, fields, models
 from odoo.osv import expression
 
 
+
 class Partner(models.Model):
     _name = 'res.partner'
     _inherit = 'res.partner'
 
+    team_id = fields.Many2one(
+        'crm.team', string='Sales Team',
+        compute='_compute_team_id',
+        precompute=True,  # avoid queries post-create
+        ondelete='set null', readonly=False, store=True)
     opportunity_ids = fields.One2many('crm.lead', 'partner_id', string='Opportunities', domain=[('type', '=', 'opportunity')])
-    opportunity_count = fields.Integer(
-        string="Opportunity Count",
-        groups='sales_team.group_sale_salesman',
-        compute='_compute_opportunity_count',
-    )
+    opportunity_count = fields.Integer("Opportunity", compute='_compute_opportunity_count')
 
     @api.model
     def default_get(self, fields):
@@ -37,26 +40,27 @@ class Partner(models.Model):
                 )
         return rec
 
-    def _compute_opportunity_count(self):
-        self.opportunity_count = 0
-        if not self.env.user._has_group('sales_team.group_sale_salesman'):
-            return
+    @api.depends('parent_id')
+    def _compute_team_id(self):
+        for partner in self.filtered(lambda partner: not partner.team_id and partner.company_type == 'person' and partner.parent_id.team_id):
+            partner.team_id = partner.parent_id.team_id
 
+    def _compute_opportunity_count(self):
         # retrieve all children partners and prefetch 'parent_id' on them
-        all_partners = self.with_context(active_test=False).search_fetch(
-            [('id', 'child_of', self.ids)], ['parent_id'],
-        )
+        all_partners = self.with_context(active_test=False).search([('id', 'child_of', self.ids)])
+        all_partners.read(['parent_id'])
 
         opportunity_data = self.env['crm.lead'].with_context(active_test=False)._read_group(
             domain=[('partner_id', 'in', all_partners.ids)],
-            groupby=['partner_id'], aggregates=['__count']
+            fields=['partner_id'], groupby=['partner_id']
         )
-        self_ids = set(self._ids)
 
-        for partner, count in opportunity_data:
+        self.opportunity_count = 0
+        for group in opportunity_data:
+            partner = self.browse(group['partner_id'][0])
             while partner:
-                if partner.id in self_ids:
-                    partner.opportunity_count += count
+                if partner in self:
+                    partner.opportunity_count += group['partner_id_count']
                 partner = partner.parent_id
 
     def action_view_opportunity(self):

@@ -3,17 +3,20 @@
 # 	* event_crm
 # 
 # Translators:
-# zakariya moradi, 2025
-# Tiffany Chang, 2025
-# Naser mars, 2025
+# Maziar Niaki <maziarmn@gmail.com>, 2023
+# Hamed Mohammadi <hamed@dehongi.com>, 2023
+# Hamid Darabi, 2023
+# Martin Trigaux, 2023
+# Hanna Kheradroosta, 2024
+# Mostafa Barmshory <mostafa.barmshory@gmail.com>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:55+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Naser mars, 2025\n"
+"POT-Creation-Date: 2022-10-04 09:24+0000\n"
+"PO-Revision-Date: 2022-09-22 05:45+0000\n"
+"Last-Translator: Mostafa Barmshory <mostafa.barmshory@gmail.com>, 2024\n"
 "Language-Team: Persian (https://app.transifex.com/odoo/teams/41243/fa/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -33,18 +36,25 @@ msgid "# Registrations"
 msgstr "#.ثبت نام‌ها"
 
 #. module: event_crm
-#. odoo-python
 #: code:addons/event_crm/models/event_registration.py:0
+#, python-format
 msgid "(updated)"
-msgstr "(به‌روز شده)"
+msgstr ""
+"```\n"
+"(به‌روز شده)\n"
+"```"
 
 #. module: event_crm
 #: model_terms:ir.ui.view,arch_db:event_crm.crm_lead_view_form
 msgid "<span class=\"o_stat_text\"> Attendees</span>"
-msgstr "<span class=\"o_stat_text\"> شرکت‌کنندگان</span>"
+msgstr ""
+"```html\n"
+"<span class=\"o_stat_text\"> شرکت‌کنندگان</span>\n"
+"```"
 
 #. module: event_crm
 #: model_terms:ir.ui.view,arch_db:event_crm.event_registration_view_form
+#: model_terms:ir.ui.view,arch_db:event_crm.event_view_form
 msgid "<span class=\"o_stat_text\"> Leads</span>"
 msgstr "<span class=\"o_stat_text\"> سرنخ‌ها</span>"
 
@@ -60,14 +70,14 @@ msgid "Archived"
 msgstr "بایگانی شده"
 
 #. module: event_crm
+#: model:ir.model.fields.selection,name:event_crm.selection__event_lead_rule__lead_creation_trigger__confirm
+msgid "Attendees are confirmed"
+msgstr ""
+
+#. module: event_crm
 #: model:ir.model.fields.selection,name:event_crm.selection__event_lead_rule__lead_creation_trigger__create
 msgid "Attendees are created"
 msgstr "شرکت‌کنندگان ایجاد شدند"
-
-#. module: event_crm
-#: model:ir.model.fields.selection,name:event_crm.selection__event_lead_rule__lead_creation_trigger__confirm
-msgid "Attendees are registered"
-msgstr "شرکت‌کنندگان ثبت شده‌اند"
 
 #. module: event_crm
 #: model:ir.model.fields.selection,name:event_crm.selection__event_lead_rule__lead_creation_trigger__done
@@ -88,12 +98,6 @@ msgstr "به طور خودکار سرنخ‌های ایجاد شده را به �
 #: model:ir.model.fields,help:event_crm.field_event_lead_rule__lead_user_id
 msgid "Automatically assign the created leads to this Salesperson."
 msgstr "به صورت خودکار سرنخ‌های ایجاد شده را به این کارشناس فروش اختصاص دهید."
-
-#. module: event_crm
-#. odoo-python
-#: code:addons/event_crm/models/event_event.py:0
-msgid "Aww! No Leads created, check your Lead Generation Rules and try again."
-msgstr ""
 
 #. module: event_crm
 #: model:ir.model.fields,field_description:event_crm.field_event_lead_rule__company_id
@@ -139,12 +143,9 @@ msgstr "نوع ایجاد"
 #: model:ir.model.fields,help:event_crm.field_event_lead_rule__lead_creation_trigger
 msgid ""
 "Creation: at attendee creation;\n"
-"Registered: at attendee registration, manually or automatically;\n"
+"Confirmation: when attendee is confirmed, manually or automatically;\n"
 "Attended: when attendance is confirmed and registration set to done;"
 msgstr ""
-"ایجاد: در زمان ایجاد شرکت‌کننده؛  \n"
-"ثبت‌نام شده: در زمان ثبت‌نام شرکت‌کننده، به صورت دستی یا خودکار؛  \n"
-"حضور یافته: زمانی که حضور تأیید می‌شود و ثبت‌نام به اتمام می‌رسد؛"
 
 #. module: event_crm
 #: model:ir.model.fields,help:event_crm.field_event_lead_rule__lead_type
@@ -152,27 +153,20 @@ msgid "Default lead type when this rule is applied."
 msgstr "هنگامی که این قانون اعمال می‌شود، نوع پیش‌فرض سرنخ."
 
 #. module: event_crm
-#: model:ir.model.fields,field_description:event_crm.field_event_lead_request__display_name
 #: model:ir.model.fields,field_description:event_crm.field_event_lead_rule__display_name
 msgid "Display Name"
-msgstr "نام نمایش داده شده"
+msgstr "نام نمایشی"
 
 #. module: event_crm
 #: model:ir.model,name:event_crm.model_event_event
-#: model:ir.model.fields,field_description:event_crm.field_event_lead_request__event_id
 #: model:ir.model.fields,field_description:event_crm.field_event_lead_rule__event_id
 msgid "Event"
 msgstr "رویداد"
 
 #. module: event_crm
-#: model:ir.actions.server,name:event_crm.ir_cron_generate_leads_ir_actions_server
-msgid "Event CRM: Generate Leads based on Rules"
-msgstr ""
-
-#. module: event_crm
-#: model:ir.model,name:event_crm.model_event_lead_request
-msgid "Event Lead Request"
-msgstr ""
+#: model:ir.model.fields,field_description:event_crm.field_event_lead_rule__event_type_ids
+msgid "Event Categories"
+msgstr "طبقه بندیهای رویداد"
 
 #. module: event_crm
 #: model:ir.model,name:event_crm.model_event_lead_rule
@@ -183,11 +177,6 @@ msgstr "قوانین سرنخ رویداد"
 #: model:ir.model,name:event_crm.model_event_registration
 msgid "Event Registration"
 msgstr "ثبت نام رویداد"
-
-#. module: event_crm
-#: model:ir.model.fields,field_description:event_crm.field_event_lead_rule__event_type_ids
-msgid "Event Templates"
-msgstr ""
 
 #. module: event_crm
 #: model:ir.actions.act_window,name:event_crm.event_registration_action_from_lead
@@ -233,18 +222,6 @@ msgid "For any of these Events"
 msgstr "برای هر یک از این رویدادها"
 
 #. module: event_crm
-#: model_terms:ir.ui.view,arch_db:event_crm.event_view_form
-msgid "Generate Leads"
-msgstr "تولید سرنخ"
-
-#. module: event_crm
-#. odoo-python
-#: code:addons/event_crm/models/event_event.py:0
-msgid "Got it! We've noted your request. Your leads will be created soon!"
-msgstr ""
-
-#. module: event_crm
-#: model:ir.model.fields,field_description:event_crm.field_event_lead_request__id
 #: model:ir.model.fields,field_description:event_crm.field_event_lead_rule__id
 msgid "ID"
 msgstr "شناسه"
@@ -255,9 +232,14 @@ msgid "If the Attendees meet these Conditions"
 msgstr "اگر شرکت‌کنندگان این شرایط را رعایت کنند"
 
 #. module: event_crm
+#: model:ir.model.fields,field_description:event_crm.field_event_lead_rule____last_update
+msgid "Last Modified on"
+msgstr "آخرین اصلاح در"
+
+#. module: event_crm
 #: model:ir.model.fields,field_description:event_crm.field_event_lead_rule__write_uid
 msgid "Last Updated by"
-msgstr "آخرین بروز رسانی توسط"
+msgstr "آخرین تغییر توسط"
 
 #. module: event_crm
 #: model:ir.model.fields,field_description:event_crm.field_event_lead_rule__write_date
@@ -310,7 +292,6 @@ msgstr "سرنخ / فرصت"
 #: model:ir.actions.act_window,name:event_crm.crm_lead_action_from_registration
 #: model:ir.model.fields,field_description:event_crm.field_event_event__lead_ids
 #: model:ir.model.fields,field_description:event_crm.field_event_registration__lead_ids
-#: model_terms:ir.ui.view,arch_db:event_crm.event_view_form
 msgid "Leads"
 msgstr "سرنخ ها"
 
@@ -325,8 +306,8 @@ msgid "Name"
 msgstr "نام"
 
 #. module: event_crm
-#. odoo-python
 #: code:addons/event_crm/models/event_lead_rule.py:0
+#, python-format
 msgid "New registrations"
 msgstr "ثبت نام های جدید"
 
@@ -342,24 +323,14 @@ msgid "No registration found"
 msgstr "ثبت‌نامی یافت نشد"
 
 #. module: event_crm
-#: model:ir.model.fields,field_description:event_crm.field_event_event__has_lead_request
-msgid "Ongoing Generation Request"
-msgstr ""
-
-#. module: event_crm
-#. odoo-python
-#: code:addons/event_crm/models/event_event.py:0
-msgid "Only Event Managers are allowed to re-generate all leads."
-msgstr ""
-
-#. module: event_crm
 #: model:ir.model.fields.selection,name:event_crm.selection__event_lead_rule__lead_type__opportunity
 msgid "Opportunity"
 msgstr "فرصت"
 
 #. module: event_crm
-#. odoo-python
 #: code:addons/event_crm/models/event_registration.py:0
+#: code:addons/event_crm/models/event_registration.py:0
+#, python-format
 msgid "Participants"
 msgstr "شرکت‌کنندگان"
 
@@ -371,21 +342,14 @@ msgstr "هر شرکت‌کننده"
 #. module: event_crm
 #: model:ir.model.fields,help:event_crm.field_event_lead_rule__lead_creation_basis
 msgid ""
-"Per Attendee: A Lead is created for each Attendee (B2C).\n"
-"Per Order: A single Lead is created per Ticket Batch/Sale Order (B2B)"
+"Per Attendee : A Lead is created for each Attendee (B2C).\n"
+"Per Order : A single Lead is created per Ticket Batch/Sale Order (B2B)"
 msgstr ""
-"به ازای هر شرکت‌کننده: یک سرنخ برای هر شرکت‌کننده ایجاد می‌شود (B2C).\n"
-"به ازای هر سفارش: یک سرنخ برای هر بچه‌ بلیط/سفارش فروش ایجاد می‌شود (B2B)"
 
 #. module: event_crm
 #: model:ir.model.fields.selection,name:event_crm.selection__event_lead_rule__lead_creation_basis__order
 msgid "Per Order"
 msgstr "به ازای هر سفارش"
-
-#. module: event_crm
-#: model:ir.model.fields,field_description:event_crm.field_event_lead_request__processed_registration_id
-msgid "Processed Registration"
-msgstr ""
 
 #. module: event_crm
 #: model:ir.model.fields,field_description:event_crm.field_crm_lead__event_lead_rule_id
@@ -447,11 +411,6 @@ msgid "Search Lead Generation Rules"
 msgstr "جستجوی قوانین تولید سرنخ"
 
 #. module: event_crm
-#: model:ir.model.fields,help:event_crm.field_event_event__has_lead_request
-msgid "Set to True when a Lead Generation Request is currently running."
-msgstr ""
-
-#. module: event_crm
 #: model:ir.model.fields,field_description:event_crm.field_crm_lead__event_id
 msgid "Source Event"
 msgstr "رویداد منبع"
@@ -467,13 +426,6 @@ msgid "Tags"
 msgstr "برچسب‌ها"
 
 #. module: event_crm
-#: model:ir.model.fields,help:event_crm.field_event_lead_request__processed_registration_id
-msgid ""
-"The ID of the last processed event.registration, used to know where to "
-"resume."
-msgstr ""
-
-#. module: event_crm
 #: model_terms:ir.actions.act_window,help:event_crm.event_lead_rule_action
 msgid "Those automatically create leads when attendees register."
 msgstr ""
@@ -485,8 +437,9 @@ msgid "Trigger Type"
 msgstr "نوع ماشه"
 
 #. module: event_crm
-#. odoo-python
 #: code:addons/event_crm/models/event_registration.py:0
+#: code:addons/event_crm/models/event_registration.py:0
+#, python-format
 msgid "Updated registrations"
 msgstr "به‌روزرسانی ثبت‌نام‌ها"
 
@@ -494,17 +447,6 @@ msgstr "به‌روزرسانی ثبت‌نام‌ها"
 #: model:ir.model.fields,field_description:event_crm.field_event_lead_rule__lead_creation_trigger
 msgid "When"
 msgstr "زمانی که"
-
-#. module: event_crm
-#. odoo-python
-#: code:addons/event_crm/models/event_event.py:0
-msgid "Yee-ha, %(leads_count)s Leads have been created!"
-msgstr ""
-
-#. module: event_crm
-#: model:ir.model.constraint,message:event_crm.constraint_event_lead_request_uniq_event
-msgid "You can only have one generation request per event at a time."
-msgstr ""
 
 #. module: event_crm
 #: model_terms:ir.ui.view,arch_db:event_crm.event_lead_rule_view_form

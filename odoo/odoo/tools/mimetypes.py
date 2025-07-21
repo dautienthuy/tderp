@@ -110,10 +110,6 @@ def _check_svg(data):
     if b'<svg' in data and b'/svg' in data:
         return 'image/svg+xml'
 
-def _check_webp(data):
-    """This checks the presence of the WEBP and VP8 in the RIFF"""
-    if data[8:15] == b'WEBPVP8':
-        return 'image/webp'
 
 # for "master" formats with many subformats, discriminants is a list of
 # functions, tried in order and the first non-falsy value returned is the
@@ -132,9 +128,6 @@ _mime_mappings = (
         _check_svg,
     ]),
     _Entry('image/x-icon', [b'\x00\x00\x01\x00'], []),
-    _Entry('image/webp', [b'RIFF'], [
-        _check_webp,
-    ]),
     # OLECF files in general (Word, Excel, PPT, default to word because why not?)
     _Entry('application/msword', [b'\xD0\xCF\x11\xE0\xA1\xB1\x1A\xE1', b'\x0D\x44\x4F\x43'], [
         _check_olecf
@@ -168,11 +161,6 @@ def _odoo_guess_mimetype(bin_data, default='application/octet-stream'):
                 # if no discriminant or no discriminant matches, return
                 # primary mime type
                 return entry.mimetype
-    try:
-        if bin_data and all(c >= ' ' or c in '\t\n\r' for c in bin_data[:1024].decode()):
-            return 'text/plain'
-    except ValueError:
-        pass
     return default
 
 
@@ -209,14 +197,12 @@ def neuter_mimetype(mimetype, user):
         return 'text/plain'
     return mimetype
 
-
-_extension_pattern = re.compile(r'\w+')
 def get_extension(filename):
     # A file has no extension if it has no dot (ignoring the leading one
     # of hidden files) or that what follow the last dot is not a single
     # word, e.g. "Mr. Doe"
     _stem, dot, ext = filename.lstrip('.').rpartition('.')
-    if not dot or not _extension_pattern.fullmatch(ext):
+    if not dot or not ext.isalnum():
         return ''
 
     # Assume all 4-chars extensions to be valid extensions even if it is
@@ -234,24 +220,3 @@ def get_extension(filename):
 
     # Unknown extension.
     return ''
-
-
-def fix_filename_extension(filename, mimetype):
-    """
-    Make sure the filename ends with an extension of the mimetype.
-
-    :param str filename: the filename with an unsafe extension
-    :param str mimetype: the mimetype detected reading the file's content
-    :returns: the same filename if its extension matches the detected
-        mimetype, otherwise the same filename with the mimetype's
-        extension added at the end.
-    """
-    if mimetypes.guess_type(filename)[0] == mimetype:
-        return filename
-
-    if extension := mimetypes.guess_extension(mimetype):
-        _logger.warning("File %r has an invalid extension for mimetype %r, adding %r", filename, mimetype, extension)
-        return filename + extension
-
-    _logger.warning("File %r has an unknown extension for mimetype %r", filename, mimetype)
-    return filename

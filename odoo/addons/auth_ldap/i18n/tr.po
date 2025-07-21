@@ -3,21 +3,21 @@
 # 	* auth_ldap
 # 
 # Translators:
-# emre oktem, 2024
-# Ediz Duman <neps1192@gmail.com>, 2024
-# Umur Akın <umura@projetgrup.com>, 2024
-# Ertuğrul Güreş <ertugrulg@projetgrup.com>, 2024
-# Murat Kaplan <muratk@projetgrup.com>, 2024
-# Martin Trigaux, 2024
-# Deniz Guvener_Odoo <degu@odoo.com>, 2025
+# Ediz Duman <neps1192@gmail.com>, 2023
+# abc Def <hdogan1974@gmail.com>, 2023
+# Murat Kaplan <muratk@projetgrup.com>, 2023
+# Ertuğrul Güreş <ertugrulg@projetgrup.com>, 2023
+# Umur Akın <umura@projetgrup.com>, 2023
+# Martin Trigaux, 2023
+# Levent Karakaş <levent@mektup.at>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 08:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Deniz Guvener_Odoo <degu@odoo.com>, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2023-07-13 13:02+0000\n"
+"Last-Translator: Levent Karakaş <levent@mektup.at>, 2023\n"
 "Language-Team: Turkish (https://app.transifex.com/odoo/teams/41243/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -41,17 +41,17 @@ msgid ""
 "        (|(mail=%s)(uid=%s))\n"
 "    "
 msgstr ""
-"    LDAP veri tabanında kullanıcı hesaplarını aramak için kullanılan filtredir. Dize    biçiminde, rastgele bir LDAP filtresidir.  `%s` yer tutucusu,    kullanıcı tarafından sağlanan oturum açma bilgisiyle değiştirilir; filtrede en az    bir tane bu tür yer tutucu bulunmalıdır.\n"
+"    LDAP veritabanındaki kullanıcı hesaplarını aramak için kullanılan filtre. Dize gösteriminde rasgele bir LDAP filtresidir. Herhangi bir '%s' yer tutucusu, kullanıcı tarafından sağlanan oturum açma (tanımlayıcı) ile değiştirilecektir, filtre bu tür en az bir yer tutucu içermelidir.\n"
 "\n"
-"    Filtrenin tam olarak bir (1) sonuç döndürmesi gerekir; aksi takdirde oturum açma     geçersiz sayılır.\n"
+"Filtre tam olarak bir (1) sonuçla sonuçlanmalıdır, aksi takdirde oturum açma geçersiz sayılır.\n"
 "\n"
-"    Örnek (gerçek nitelikler LDAP sunucusuna ve yapılandırmaya bağlıdır):\n"
+"Örnek (gerçek özellikler LDAP sunucusuna ve kuruluma bağlıdır):\n"
 "\n"
-"        (&(objectCategory=person)(objectClass=user)(sAMAccountName=%s))\n"
+"(&(objectCategory=person)(objectClass=user)(sAMAccountName=%s))\n"
 "\n"
-"    veya\n"
+"veya\n"
 "\n"
-"        (|(mail=%s)(uid=%s))\n"
+"(| (mail=%s) (uid=%s))\n"
 "    "
 
 #. module: auth_ldap
@@ -71,7 +71,7 @@ msgstr "Şirketler"
 #. module: auth_ldap
 #: model:ir.model.fields,field_description:auth_ldap.field_res_company_ldap__company
 msgid "Company"
-msgstr "Firma"
+msgstr "Şirket"
 
 #. module: auth_ldap
 #: model:ir.model,name:auth_ldap.model_res_company_ldap
@@ -91,12 +91,12 @@ msgstr "Kullanıcı Oluştur"
 #. module: auth_ldap
 #: model:ir.model.fields,field_description:auth_ldap.field_res_company_ldap__create_uid
 msgid "Created by"
-msgstr "Tarafından oluşturuldu"
+msgstr "Oluşturan"
 
 #. module: auth_ldap
 #: model:ir.model.fields,field_description:auth_ldap.field_res_company_ldap__create_date
 msgid "Created on"
-msgstr "Oluşturuldu"
+msgstr "Oluşturulma"
 
 #. module: auth_ldap
 #: model:ir.model.fields,help:auth_ldap.field_res_company_ldap__ldap_base
@@ -110,7 +110,7 @@ msgstr ""
 #. module: auth_ldap
 #: model:ir.model.fields,field_description:auth_ldap.field_res_company_ldap__display_name
 msgid "Display Name"
-msgstr "İsim Göster"
+msgstr "Görünüm Adı"
 
 #. module: auth_ldap
 #: model:ir.model.fields,field_description:auth_ldap.field_res_company_ldap__id
@@ -165,6 +165,11 @@ msgid "LDAP password"
 msgstr "LDAP şifresi"
 
 #. module: auth_ldap
+#: model:ir.model.fields,field_description:auth_ldap.field_res_company_ldap____last_update
+msgid "Last Modified on"
+msgstr "Son Düzenleme"
+
+#. module: auth_ldap
 #: model:ir.model.fields,field_description:auth_ldap.field_res_company_ldap__write_uid
 msgid "Last Updated by"
 msgstr "Son Güncelleyen"
@@ -182,6 +187,7 @@ msgstr "Giriş Bilgileri"
 #. module: auth_ldap
 #. odoo-python
 #: code:addons/auth_ldap/models/res_company_ldap.py:0
+#, python-format
 msgid "No local user found for LDAP login and not configured to create one"
 msgstr ""
 "LDAP girişi için yerel kullanıcı bulunamadı ve bir tane oluşturacak şekilde "

@@ -1,12 +1,11 @@
 /** @odoo-module **/
 
 import { NewContentModal, MODULE_STATUS } from '@website/systray_items/new_content';
-import { rpc } from "@web/core/network/rpc";
-import { patch } from "@web/core/utils/patch";
+import { patch } from 'web.utils';
 
-patch(NewContentModal.prototype, {
+patch(NewContentModal.prototype, 'website_hr_recruitment_new_content', {
     setup() {
-        super.setup();
+        this._super();
 
         const newJobElement = this.state.newContentElements.find(element => element.moduleXmlId === 'base.module_website_hr_recruitment');
         newJobElement.createNewContent = () => this.createNewJob();
@@ -15,7 +14,7 @@ patch(NewContentModal.prototype, {
     },
 
     async createNewJob() {
-        const url = await rpc('/jobs/add');
+        const url = await this.rpc('/jobs/add');
         this.website.goToWebsite({ path: url, edition: true });
         this.websiteContext.showNewContentModal = false;
     }

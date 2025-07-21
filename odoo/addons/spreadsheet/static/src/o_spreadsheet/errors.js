@@ -1,21 +1,12 @@
 /** @odoo-module */
 
-import { registries, EvaluationError } from "@odoo/o-spreadsheet";
+import { _t } from "@web/core/l10n/translation";
+import spreadsheet from "./o_spreadsheet_extended";
 
-const LOADING_ERROR = "Loading...";
-
-registries.errorTypes.add(LOADING_ERROR);
-
-/**
- * @param {{ value: unknown }} valueOrError
- * @returns {boolean}
- */
-export function isLoadingError(valueOrError) {
-    return valueOrError.value === LOADING_ERROR;
-}
+const { EvaluationError, CellErrorLevel } = spreadsheet.helpers;
 
 export class LoadingDataError extends EvaluationError {
     constructor() {
-        super("", LOADING_ERROR);
+        super(_t("Loading..."), _t("Data is loading"), CellErrorLevel.silent);
     }
 }

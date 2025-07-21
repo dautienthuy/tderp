@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import logging
 
@@ -64,11 +65,11 @@ class ResUsers(models.Model):
 
     @api.model
     def _get_signup_invitation_scope(self):
-        current_website = self.env['website'].sudo().get_current_website()
+        current_website = self.env['website'].get_current_website()
         return current_website.auth_signup_uninvited or super(ResUsers, self)._get_signup_invitation_scope()
 
     @classmethod
-    def authenticate(cls, db, credential, user_agent_env):
+    def authenticate(cls, db, login, password, user_agent_env):
         """ Override to link the logged in user's res.partner to website.visitor.
         If a visitor already exists for that user, assign it data from the
         current anonymous visitor (if exists).
@@ -77,13 +78,9 @@ class ResUsers(models.Model):
         visitor_pre_authenticate_sudo = None
         if request and request.env:
             visitor_pre_authenticate_sudo = request.env['website.visitor']._get_visitor_from_request()
-        auth_info = super().authenticate(db, credential, user_agent_env)
-        if auth_info.get('uid') and visitor_pre_authenticate_sudo:
-            env = api.Environment(request.env.cr, auth_info['uid'], {})
-            # user may not always exist in request cursor for auto-provisioning modules like LDAP
-            if not env.user.exists():
-                return auth_info
-
+        uid = super(ResUsers, cls).authenticate(db, login, password, user_agent_env)
+        if uid and visitor_pre_authenticate_sudo:
+            env = api.Environment(request.env.cr, uid, {})
             user_partner = env.user.partner_id
             visitor_current_user_sudo = env['website.visitor'].sudo().search([
                 ('partner_id', '=', user_partner.id)
@@ -97,16 +94,4 @@ class ResUsers(models.Model):
             else:
                 visitor_pre_authenticate_sudo.access_token = user_partner.id
                 visitor_pre_authenticate_sudo._update_visitor_last_visit()
-        return auth_info
-
-    @api.constrains('groups_id')
-    def _check_one_user_type(self):
-        super()._check_one_user_type()
-        internal_users = self.env.ref('base.group_user').users & self
-        if any(user.website_id for user in internal_users):
-            raise ValidationError(_("Remove website on related partner before they become internal user."))
-
-    # The model inherits the publishing fields from res.partner, this implements
-    # the required method.
-    def website_publish_button(self):
-        return self.partner_id.website_publish_button()
+        return uid

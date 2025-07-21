@@ -2,22 +2,9 @@
 
 import { _t } from "@web/core/l10n/translation";
 
-import { Component, useState } from "@odoo/owl";
+const { Component, useState } = owl;
 
 export class DashboardMobileSearchPanel extends Component {
-    static template = "spreadsheet_dashboard.DashboardMobileSearchPanel";
-    static props = {
-        /**
-         * (dashboardId: number) => void
-         */
-        onDashboardSelected: Function,
-        groups: Object,
-        activeDashboard: {
-            type: Object,
-            optional: true,
-        },
-    };
-
     setup() {
         this.state = useState({ isOpen: false });
     }
@@ -40,3 +27,16 @@ export class DashboardMobileSearchPanel extends Component {
         }
     }
 }
+
+DashboardMobileSearchPanel.template = "documents_spreadsheet.DashboardMobileSearchPanel";
+DashboardMobileSearchPanel.props = {
+    /**
+     * (dashboardId: number) => void
+     */
+    onDashboardSelected: Function,
+    groups: Object,
+    activeDashboard: {
+        type: Object,
+        optional: true,
+    },
+};

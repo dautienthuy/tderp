@@ -36,7 +36,7 @@ class TestWebsiteSaleInvoice(AccountPaymentCommon, SaleCommon, TestAr):
             self.amount = self.sale_order.amount_total
             tx = self._create_transaction(flow='redirect', sale_order_ids=[self.sale_order.id], state='done')
             with mute_logger('odoo.addons.sale.models.payment_transaction'):
-                tx.with_context(l10n_ar_invoice_skip_commit=True)._post_process()
+                tx.with_context(l10n_ar_invoice_skip_commit=True)._reconcile_after_done()
 
             invoice = self.sale_order.invoice_ids
             self.assertTrue(invoice, "Do not create the invoice")

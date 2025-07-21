@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import api, models, fields
+from odoo.addons.http_routing.models.ir_http import slug
 from odoo.tools.translate import html_translate
 
 
@@ -13,7 +14,7 @@ class ImLivechatChannel(models.Model):
     def _compute_website_url(self):
         super(ImLivechatChannel, self)._compute_website_url()
         for channel in self:
-            channel.website_url = "/livechat/channel/%s" % (self.env['ir.http']._slug(channel),)
+            channel.website_url = "/livechat/channel/%s" % (slug(channel),)
 
     website_description = fields.Html(
         "Website description", default=False, translate=html_translate,

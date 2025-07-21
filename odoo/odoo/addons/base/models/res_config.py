@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+
+import json
 import logging
 import re
+
 from ast import literal_eval
+from lxml import etree
 
 from odoo import api, models, _
 from odoo.exceptions import AccessError, RedirectWarning, UserError
+from odoo.tools import ustr
 
 _logger = logging.getLogger(__name__)
 
@@ -115,6 +120,206 @@ class ResConfigConfigurable(models.TransientModel):
         return self.cancel() or self.next()
 
 
+class ResConfigInstaller(models.TransientModel, ResConfigModuleInstallationMixin):
+    """ New-style configuration base specialized for addons selection
+    and installation.
+
+    Basic usage
+    -----------
+
+    Subclasses can simply define a number of boolean fields. The field names
+    should be the names of the addons to install (when selected). Upon action
+    execution, selected boolean fields (and those only) will be interpreted as
+    addons to install, and batch-installed.
+
+    Additional addons
+    -----------------
+
+    It is also possible to require the installation of an additional
+    addon set when a specific preset of addons has been marked for
+    installation (in the basic usage only, additionals can't depend on
+    one another).
+
+    These additionals are defined through the ``_install_if``
+    property. This property is a mapping of a collection of addons (by
+    name) to a collection of addons (by name) [#]_, and if all the *key*
+    addons are selected for installation, then the *value* ones will
+    be selected as well. For example::
+
+        _install_if = {
+            ('sale','crm'): ['sale_crm'],
+        }
+
+    This will install the ``sale_crm`` addon if and only if both the
+    ``sale`` and ``crm`` addons are selected for installation.
+
+    You can define as many additionals as you wish, and additionals
+    can overlap in key and value. For instance::
+
+        _install_if = {
+            ('sale','crm'): ['sale_crm'],
+            ('sale','project'): ['sale_service'],
+        }
+
+    will install both ``sale_crm`` and ``sale_service`` if all of
+    ``sale``, ``crm`` and ``project`` are selected for installation.
+
+    Hook methods
+    ------------
+
+    Subclasses might also need to express dependencies more complex
+    than that provided by additionals. In this case, it's possible to
+    define methods of the form ``_if_%(name)s`` where ``name`` is the
+    name of a boolean field. If the field is selected, then the
+    corresponding module will be marked for installation *and* the
+    hook method will be executed.
+
+    Hook methods take the usual set of parameters (cr, uid, ids,
+    context) and can return a collection of additional addons to
+    install (if they return anything, otherwise they should not return
+    anything, though returning any "falsy" value such as None or an
+    empty collection will have the same effect).
+
+    Complete control
+    ----------------
+
+    The last hook is to simply overload the ``modules_to_install``
+    method, which implements all the mechanisms above. This method
+    takes the usual set of parameters (cr, uid, ids, context) and
+    returns a ``set`` of addons to install (addons selected by the
+    above methods minus addons from the *basic* set which are already
+    installed) [#]_ so an overloader can simply manipulate the ``set``
+    returned by ``ResConfigInstaller.modules_to_install`` to add or
+    remove addons.
+
+    Skipping the installer
+    ----------------------
+
+    Unless it is removed from the view, installers have a *skip*
+    button which invokes ``action_skip`` (and the ``cancel`` hook from
+    ``res.config``). Hooks and additionals *are not run* when skipping
+    installation, even for already installed addons.
+
+    Again, setup your hooks accordingly.
+
+    .. [#] note that since a mapping key needs to be hashable, it's
+           possible to use a tuple or a frozenset, but not a list or a
+           regular set
+
+    .. [#] because the already-installed modules are only pruned at
+           the very end of ``modules_to_install``, additionals and
+           hooks depending on them *are guaranteed to execute*. Setup
+           your hooks accordingly.
+    """
+    _name = 'res.config.installer'
+    _inherit = 'res.config'
+    _description = 'Config Installer'
+
+    _install_if = {}
+
+    def already_installed(self):
+        """ For each module, check if it's already installed and if it
+        is return its name
+
+        :returns: a list of the already installed modules in this
+                  installer
+        :rtype: [str]
+        """
+        return [m.name for m in self._already_installed()]
+
+    def _already_installed(self):
+        """ For each module (boolean fields in a res.config.installer),
+        check if it's already installed (either 'to install', 'to upgrade'
+        or 'installed') and if it is return the module's record
+
+        :returns: a list of all installed modules in this installer
+        :rtype: recordset (collection of Record)
+        """
+        selectable = [name for name, field in self._fields.items()
+                      if field.type == 'boolean']
+        return self.env['ir.module.module'].search([('name', 'in', selectable),
+                            ('state', 'in', ['to install', 'installed', 'to upgrade'])])
+
+    def modules_to_install(self):
+        """ selects all modules to install:
+
+        * checked boolean fields
+        * return values of hook methods. Hook methods are of the form
+          ``_if_%(addon_name)s``, and are called if the corresponding
+          addon is marked for installation. They take the arguments
+          cr, uid, ids and context, and return an iterable of addon
+          names
+        * additionals, additionals are setup through the ``_install_if``
+          class variable. ``_install_if`` is a dict of {iterable:iterable}
+          where key and value are iterables of addon names.
+
+          If all the addons in the key are selected for installation
+          (warning: addons added through hooks don't count), then the
+          addons in the value are added to the set of modules to install
+        * not already installed
+        """
+        base = set(module_name
+                   for installer in self.read()
+                   for module_name, to_install in installer.items()
+                   if self._fields[module_name].type == 'boolean' and to_install)
+
+        hooks_results = set()
+        for module in base:
+            hook = getattr(self, '_if_%s'% module, None)
+            if hook:
+                hooks_results.update(hook() or set())
+
+        additionals = set(module
+                          for requirements, consequences in self._install_if.items()
+                          if base.issuperset(requirements)
+                          for module in consequences)
+
+        return (base | hooks_results | additionals) - set(self.already_installed())
+
+    @api.model
+    def default_get(self, fields_list):
+        ''' If an addon is already installed, check it by default
+        '''
+        defaults = super(ResConfigInstaller, self).default_get(fields_list)
+        return dict(defaults, **dict.fromkeys(self.already_installed(), True))
+
+    @api.model
+    def fields_get(self, allfields=None, attributes=None):
+        """ If an addon is already installed, set it to readonly as
+        res.config.installer doesn't handle uninstallations of already
+        installed addons
+        """
+        fields = super().fields_get(allfields=allfields, attributes=attributes)
+
+        for name in self.already_installed():
+            if name not in fields:
+                continue
+            fields[name].update(
+                readonly=True,
+                help= ustr(fields[name].get('help', '')) +
+                     _('\n\nThis addon is already installed on your system'))
+        return fields
+
+    def execute(self):
+        to_install = list(self.modules_to_install())
+        _logger.info('Selecting addons %s to install', to_install)
+
+        IrModule = self.env['ir.module.module']
+        modules = IrModule.search([('name', 'in', to_install)])
+        module_names = {module.name for module in modules}
+        to_install_missing_names = [name for name in to_install if name not in module_names]
+
+        result = self._install_modules(modules)
+        #FIXME: if result is not none, the corresponding todo will be skipped because it was just marked done
+        if to_install_missing_names:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'apps',
+                'params': {'modules': to_install_missing_names},
+            }
+        return result
+
+
 class ResConfigSettings(models.TransientModel, ResConfigModuleInstallationMixin):
     """ Base configuration wizard for application settings.  It provides support for setting
         default values, assigning groups to employee users, and installing modules.
@@ -141,7 +346,7 @@ class ResConfigSettings(models.TransientModel, ResConfigModuleInstallationMixin)
             The attribute 'group' may contain several xml ids, separated by commas.
 
         *   For a selection field like 'group_XXX' composed of 2 string values ('0' and '1'),
-            ``execute`` adds/removes 'implied_group' to/from the implied groups of 'group',
+            ``execute`` adds/removes 'implied_group' to/from the implied groups of 'group', 
             depending on the field's value.
             By default 'group' is the group Employee.  Groups are given by their xml id.
             The attribute 'group' may contain several xml ids, separated by commas.
@@ -149,8 +354,8 @@ class ResConfigSettings(models.TransientModel, ResConfigModuleInstallationMixin)
         *   For a boolean field like 'module_XXX', ``execute`` triggers the immediate
             installation of the module named 'XXX' if the field has value ``True``.
 
-        *   For a selection field like 'module_XXX' composed of 2 string values ('0' and '1'),
-            ``execute`` triggers the immediate installation of the module named 'XXX'
+        *   For a selection field like 'module_XXX' composed of 2 string values ('0' and '1'), 
+            ``execute`` triggers the immediate installation of the module named 'XXX' 
             if the field has the value ``'1'``.
 
         *   For a field with no specific prefix BUT an attribute 'config_parameter',
@@ -261,17 +466,15 @@ class ResConfigSettings(models.TransientModel, ResConfigModuleInstallationMixin)
 
     @api.model
     def default_get(self, fields):
-        res = super().default_get(fields)
-        if not fields:
-            return res
-
         IrDefault = self.env['ir.default']
         IrConfigParameter = self.env['ir.config_parameter'].sudo()
         classified = self._get_classified_fields(fields)
 
+        res = super(ResConfigSettings, self).default_get(fields)
+
         # defaults: take the corresponding default value they set
         for name, model, field in classified['default']:
-            value = IrDefault._get(model, field)
+            value = IrDefault.get(model, field)
             if value is not None:
                 res[name] = value
 
@@ -341,15 +544,16 @@ class ResConfigSettings(models.TransientModel, ResConfigModuleInstallationMixin)
                 IrDefault.set(model, field, value)
 
         # group fields: modify group / implied groups
-        for name, groups, implied_group in sorted(classified['group'], key=lambda k: self[k[0]]):
-            groups = groups.sudo()
-            implied_group = implied_group.sudo()
-            if self[name] == current_settings[name]:
-                continue
-            if int(self[name]):
-                groups._apply_group(implied_group)
-            else:
-                groups._remove_group(implied_group)
+        with self.env.norecompute():
+            for name, groups, implied_group in sorted(classified['group'], key=lambda k: self[k[0]]):
+                groups = groups.sudo()
+                implied_group = implied_group.sudo()
+                if self[name] == current_settings[name]:
+                    continue
+                if int(self[name]):
+                    groups._apply_group(implied_group)
+                else:
+                    groups._remove_group(implied_group)
 
         # config fields: store ir.config_parameters
         IrConfigParameter = self.env['ir.config_parameter'].sudo()
@@ -434,11 +638,12 @@ class ResConfigSettings(models.TransientModel, ResConfigModuleInstallationMixin)
             return actions.read()[0]
         return {}
 
-    def _compute_display_name(self):
-        """ Override display_name method to return an appropriate configuration wizard
+    def name_get(self):
+        """ Override name_get method to return an appropriate configuration wizard
         name, and not the generated name."""
         action = self.env['ir.actions.act_window'].search([('res_model', '=', self._name)], limit=1)
-        self.display_name = action.name or self._name
+        name = action.name or self._name
+        return [(record.id, name) for record in self]
 
     @api.model
     def get_option_path(self, menu_xml_id):

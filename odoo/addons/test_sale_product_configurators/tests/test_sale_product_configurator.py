@@ -3,7 +3,7 @@
 from odoo.tests.common import HttpCase, tagged
 
 from odoo.addons.mail.tests.common import mail_new_test_user
-from odoo.addons.sale.tests.product_configurator_common import TestProductConfiguratorCommon
+from odoo.addons.sale_product_configurator.tests.common import TestProductConfiguratorCommon
 
 
 @tagged('post_install', '-at_install')
@@ -32,7 +32,7 @@ class TestProductConfiguratorUi(HttpCase, TestProductConfiguratorCommon):
         self.product_product_custo_desk.taxes_id = tax
         self.product_product_conf_chair_floor_protect.taxes_id = tax
         self.product_product_conf_chair.taxes_id = tax
-        self.start_tour("/odoo", 'sale_product_configurator_tour', login='salesman')
+        self.start_tour("/web", 'sale_product_configurator_tour', login='salesman')
 
     def test_02_product_configurator_advanced(self):
         # group_delivery_invoice_address: show the shipping address (needed for a trigger)
@@ -78,19 +78,6 @@ class TestProductConfiguratorUi(HttpCase, TestProductConfiguratorCommon):
             'attribute_id': product_attribute.id
         } for i in range(1, 11) for product_attribute in product_attributes])
 
-        product_attribute_no_variant_single_pav = self.env['product.attribute'].create({
-            'name': 'PA9',
-            'display_type': 'radio',
-            'create_variant': 'no_variant'
-        })
-
-        self.env['product.attribute.value'].create({
-            'name': 'Single PAV',
-            'attribute_id': product_attribute_no_variant_single_pav.id
-        })
-
-        product_attributes += product_attribute_no_variant_single_pav
-
         product_template = self.product_product_custo_desk
 
         self.env['product.template.attribute.line'].create([{
@@ -104,16 +91,18 @@ class TestProductConfiguratorUi(HttpCase, TestProductConfiguratorCommon):
             len(product_template.product_variant_ids.product_template_attribute_value_ids), 0,
         )
 
-        self.start_tour("/odoo", 'sale_product_configurator_advanced_tour', login='salesman')
+        self.start_tour("/web", 'sale_product_configurator_advanced_tour', login='salesman')
 
-        # Ensures dynamic create variants have been created by the configurator
-        self.assertEqual(len(product_template.product_variant_ids), 1)
+        # Ensures some dynamic create variants have been created by the configurator
+        self.assertEqual(len(product_template.product_variant_ids), 2)
         self.assertEqual(
-            len(product_template.product_variant_ids.product_template_attribute_value_ids), 5
+            len(product_template.product_variant_ids.product_template_attribute_value_ids),
+            8,
+            "2 variants are created during the tour, with each 5 PAV, but only 8 distinct PAV."
         )
 
     def test_03_product_configurator_edition(self):
-        self.start_tour("/odoo", 'sale_product_configurator_edition_tour', login='salesman')
+        self.start_tour("/web", 'sale_product_configurator_edition_tour', login='salesman')
 
     def test_04_product_configurator_single_custom_value(self):
         # Prepare relevant test data
@@ -139,7 +128,7 @@ class TestProductConfiguratorUi(HttpCase, TestProductConfiguratorCommon):
         }])
 
         self.start_tour(
-            "/odoo",
+            "/web",
             'sale_product_configurator_single_custom_attribute_tour',
             login='salesman'
         )
@@ -150,7 +139,6 @@ class TestProductConfiguratorUi(HttpCase, TestProductConfiguratorCommon):
         Also testing B2C setting: no impact on the backend configurator.
         """
 
-        # Required to see `pricelist_id` in the view
         self.env.ref('base.group_user').write({'implied_ids': [(4, self.env.ref('product.group_product_pricelist').id)]})
         self.env['res.partner'].create({
             'name': 'Azure Interior',
@@ -164,7 +152,7 @@ class TestProductConfiguratorUi(HttpCase, TestProductConfiguratorCommon):
         # Remove tax from Conference Chair and Chair floor protection
         self.product_product_conf_chair.taxes_id = None
         self.product_product_conf_chair_floor_protect.taxes_id = None
-        self.start_tour("/odoo", 'sale_product_configurator_pricelist_tour', login='salesman')
+        self.start_tour("/web", 'sale_product_configurator_pricelist_tour', login='salesman')
 
     def test_06_product_configurator_optional_products(self):
         """The goal of this test is to check that the product configurator window opens correctly
@@ -190,76 +178,5 @@ class TestProductConfiguratorUi(HttpCase, TestProductConfiguratorCommon):
             (4, self.product_product_conf_chair.id)
         ]
         self.start_tour(
-            "/odoo", 'sale_product_configurator_optional_products_tour', login='salesman'
-        )
-
-    def test_07_product_configurator_recursive_optional_products(self):
-        """The goal of this test is to check that the product configurator works correctly with
-        recursive optional products.
-        """
-        # create products with recursive optional products
-        self.product_product_conf_chair_floor_protect.update({
-            'optional_product_ids': [(6, 0, [self.product_product_conf_chair.id])]
-        })
-        self.product_product_conf_chair.optional_product_ids = [
-            (4, self.product_product_conf_chair_floor_protect.id)
-        ]
-        self.product_product_conf_chair_floor_protect.optional_product_ids = [
-            (4, self.product_product_conf_chair.id)
-        ]
-        self.product_product_custo_desk.optional_product_ids = [
-            (4, self.product_product_conf_chair.id)
-        ]
-        self.product_product_conf_chair.optional_product_ids = [
-            (4, self.product_product_custo_desk.id)
-        ]
-        self.start_tour(
-            "/odoo", 'sale_product_configurator_recursive_optional_products_tour', login='salesman'
-        )
-
-    def test_product_configurator_update_custom_values(self):
-        self.start_tour(
-            "/odoo", 'sale_product_configurator_custom_value_update_tour', login='salesman',
-        )
-        order = self.env['sale.order'].search([], order='id desc', limit=1)
-        self.assertEqual(
-            order.order_line.product_custom_attribute_value_ids.custom_value,
-            "123456",
-        )
-
-    def test_product_attribute_multi_type(self):
-        """The goal of this test is to verify that the product configurator dialog box opens
-            correctly when the product attribute display type is set to "multi" and only a
-            single value can be chosen.
-        """
-
-        attribute_topping = self.env['product.attribute'].create({
-            'name': 'Toppings',
-            'display_type': 'multi',
-            'create_variant': 'no_variant',
-            'value_ids': [
-                (0, 0, {'name': 'Cheese'}),
-            ]
-        })
-        attribute_topping_cheese = attribute_topping.value_ids
-
-        product_template = self.env['product.template'].create({
-            'name': 'Big Burger',
-            'attribute_line_ids': [
-                (0, 0, {
-                    'attribute_id': attribute_topping.id,
-                    'value_ids': [(6, 0, [attribute_topping_cheese.id])],
-                }),
-            ],
-        })
-
-        self.start_tour("/odoo", 'product_attribute_multi_type', login="salesman")
-
-        sol = self.env['sale.order.line'].search([
-            ('product_id', '=', product_template.product_variant_id.id),
-        ])
-        self.assertTrue(sol)
-        self.assertEqual(
-            sol.product_no_variant_attribute_value_ids,
-            product_template.attribute_line_ids.product_template_value_ids,
+            "/web", 'sale_product_configurator_optional_products_tour', login='salesman'
         )

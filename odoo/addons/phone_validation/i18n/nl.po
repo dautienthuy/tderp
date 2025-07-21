@@ -3,17 +3,17 @@
 # 	* phone_validation
 # 
 # Translators:
-# Erwin van der Ploeg <erwin@odooexperts.nl>, 2025
-# Manon Rondou, 2025
-# Wil Odoo, 2025
+# Martin Trigaux, 2022
+# Erwin van der Ploeg <erwin@odooexperts.nl>, 2023
+# Jolien De Paepe, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-23 18:40+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Wil Odoo, 2025\n"
+"POT-Creation-Date: 2022-09-20 09:03+0000\n"
+"PO-Revision-Date: 2022-09-22 05:53+0000\n"
+"Last-Translator: Jolien De Paepe, 2023\n"
 "Language-Team: Dutch (https://app.transifex.com/odoo/teams/41243/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,10 +22,11 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: phone_validation
-#. odoo-python
 #: code:addons/phone_validation/models/phone_blacklist.py:0
-msgid "%(error)s Please correct the number and try again."
-msgstr "%(error)s Corrigeer het nummer en probeer het opnieuw."
+#: code:addons/phone_validation/models/phone_blacklist.py:0
+#, python-format
+msgid " Please correct the number and try again."
+msgstr " Corrigeer het nummer en probeer het opnieuw."
 
 #. module: phone_validation
 #: model:ir.model.fields,field_description:phone_validation.field_mail_thread_phone__message_needaction
@@ -50,16 +51,9 @@ msgid "Archived"
 msgstr "Gearchiveerd"
 
 #. module: phone_validation
-#. odoo-python
-#: code:addons/phone_validation/models/mail_thread_phone.py:0
-msgid "Are you sure you want to unblacklist this Phone Number?"
-msgstr ""
-"Ben je zeker dat je dit telefoonnummer van de blacklist wilt verwijderen?"
-
-#. module: phone_validation
-#. odoo-python
 #: code:addons/phone_validation/models/phone_blacklist.py:0
-msgid "Are you sure you want to unblacklist this phone number?"
+#, python-format
+msgid "Are you sure you want to unblacklist this Phone Number?"
 msgstr ""
 "Ben je zeker dat je dit telefoonnummer van de blacklist wilt verwijderen?"
 
@@ -68,11 +62,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist__message_attachment_count
 msgid "Attachment Count"
 msgstr "Aantal bijlagen"
-
-#. module: phone_validation
-#: model:ir.model,name:phone_validation.model_base
-msgid "Base"
-msgstr "Basis"
 
 #. module: phone_validation
 #: model_terms:ir.ui.view,arch_db:phone_validation.phone_blacklist_view_form
@@ -92,7 +81,7 @@ msgstr "Telefoon op blacklist is een mobiel nummer"
 #. module: phone_validation
 #: model:ir.actions.act_window,name:phone_validation.phone_blacklist_action
 msgid "Blacklisted Phone Numbers"
-msgstr "Blacklisted telefoonnummers"
+msgstr "Op de blacklist geplaatste telefoonnummers"
 
 #. module: phone_validation
 #: model:ir.model.fields,field_description:phone_validation.field_mail_thread_phone__phone_blacklisted
@@ -105,14 +94,19 @@ msgid "Blacklisted phone numbers won't receive SMS Mailings anymore."
 msgstr "Telefoonnummers op de blacklist ontvangen geen sms-mailings meer."
 
 #. module: phone_validation
-#. odoo-python
 #: code:addons/phone_validation/models/res_users.py:0
+#, python-format
 msgid ""
 "Blocked by deletion of portal account %(portal_user_name)s by %(user_name)s "
 "(#%(user_id)s)"
 msgstr ""
-"Geblokkeerd door verwijdering van portaalaccount %(portal_user_name)s door "
+"Geblokkeerd door verwijdering van portalaccount %(portal_user_name)s door "
 "%(user_name)s (#%(user_id)s)"
+
+#. module: phone_validation
+#: model_terms:ir.ui.view,arch_db:phone_validation.phone_blacklist_remove_view_form
+msgid "Confirm"
+msgstr "Bevestigen"
 
 #. module: phone_validation
 #: model:ir.model,name:phone_validation.model_res_partner
@@ -161,7 +155,7 @@ msgstr "Volgers"
 #: model:ir.model.fields,field_description:phone_validation.field_mail_thread_phone__message_partner_ids
 #: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist__message_partner_ids
 msgid "Followers (Partners)"
-msgstr "Volgers (Partners)"
+msgstr "Volgers (Relaties)"
 
 #. module: phone_validation
 #: model:ir.model.fields,field_description:phone_validation.field_mail_thread_phone__has_message
@@ -185,7 +179,7 @@ msgstr "Indien aangevinkt vragen nieuwe berichten je aandacht."
 #: model:ir.model.fields,help:phone_validation.field_mail_thread_phone__message_has_error
 #: model:ir.model.fields,help:phone_validation.field_phone_blacklist__message_has_error
 msgid "If checked, some messages have a delivery error."
-msgstr "Indien aangevinkt hebben sommige berichten een leveringsfout."
+msgstr "indien aangevinkt hebben sommige leveringen een fout."
 
 #. module: phone_validation
 #: model:ir.model.fields,help:phone_validation.field_mail_thread_phone__phone_sanitized_blacklisted
@@ -197,28 +191,10 @@ msgstr ""
 "geen mass-sms meer van welke lijst dan ook"
 
 #. module: phone_validation
-#. odoo-python
 #: code:addons/phone_validation/tools/phone_validation.py:0
-msgid "Impossible number %s: not a valid country prefix."
-msgstr "Onmogelijke nummer %s: geen geldig landnummer."
-
-#. module: phone_validation
-#. odoo-python
-#: code:addons/phone_validation/tools/phone_validation.py:0
-msgid "Impossible number %s: not enough digits."
-msgstr "Onmogelijke nummer %s: niet genoeg cijfers."
-
-#. module: phone_validation
-#. odoo-python
-#: code:addons/phone_validation/tools/phone_validation.py:0
+#, python-format
 msgid "Impossible number %s: probably invalid number of digits."
 msgstr "Onmogelijk nummer %s: waarschijnlijk ongeldig aantal cijfers."
-
-#. module: phone_validation
-#. odoo-python
-#: code:addons/phone_validation/tools/phone_validation.py:0
-msgid "Impossible number %s: too many digits."
-msgstr "Onmogelijk nummer %s: te veel cijfers."
 
 #. module: phone_validation
 #: model:ir.model.fields,help:phone_validation.field_mail_thread_phone__mobile_blacklisted
@@ -243,14 +219,15 @@ msgstr ""
 "zowel een mobiel als een telefoon veld bevat."
 
 #. module: phone_validation
-#. odoo-python
 #: code:addons/phone_validation/tools/phone_validation.py:0
+#, python-format
 msgid "Invalid number %s: probably incorrect prefix."
-msgstr "Ongeldig nummer %s: waarschijnlijk foutief kerngetal."
+msgstr "Foutief nummer %s: waarschijnlijk foutief kerngetal."
 
 #. module: phone_validation
-#. odoo-python
 #: code:addons/phone_validation/models/mail_thread_phone.py:0
+#: code:addons/phone_validation/models/mail_thread_phone.py:0
+#, python-format
 msgid "Invalid primary phone field on model %s"
 msgstr "Ongeldig primair telefoonnummer veld op model %s"
 
@@ -259,6 +236,12 @@ msgstr "Ongeldig primair telefoonnummer veld op model %s"
 #: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist__message_is_follower
 msgid "Is Follower"
 msgstr "Is een volger"
+
+#. module: phone_validation
+#: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist____last_update
+#: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist_remove____last_update
+msgid "Last Modified on"
+msgstr "Laatst gewijzigd op"
 
 #. module: phone_validation
 #: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist__write_uid
@@ -273,6 +256,12 @@ msgid "Last Updated on"
 msgstr "Laatst bijgewerkt op"
 
 #. module: phone_validation
+#: model:ir.model.fields,field_description:phone_validation.field_mail_thread_phone__message_main_attachment_id
+#: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "Hoofdbijlage"
+
+#. module: phone_validation
 #: model:ir.model.fields,field_description:phone_validation.field_mail_thread_phone__message_has_error
 #: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist__message_has_error
 msgid "Message Delivery error"
@@ -285,8 +274,8 @@ msgid "Messages"
 msgstr "Berichten"
 
 #. module: phone_validation
-#. odoo-python
 #: code:addons/phone_validation/models/mail_thread_phone.py:0
+#, python-format
 msgid "Missing definition of phone fields."
 msgstr "Ontbrekende definitie van telefoonvelden."
 
@@ -360,8 +349,8 @@ msgid "Phone/Mobile"
 msgstr "Telefoon/mobiel"
 
 #. module: phone_validation
-#. odoo-python
 #: code:addons/phone_validation/models/mail_thread_phone.py:0
+#, python-format
 msgid ""
 "Please enter at least 3 characters when searching a Phone/Mobile number."
 msgstr ""
@@ -376,7 +365,6 @@ msgstr "Reden"
 
 #. module: phone_validation
 #: model:ir.model,name:phone_validation.model_phone_blacklist_remove
-#: model_terms:ir.ui.view,arch_db:phone_validation.phone_blacklist_remove_view_form
 msgid "Remove phone from blacklist"
 msgstr "Verwijder de telefoon van de blacklist"
 
@@ -386,41 +374,26 @@ msgid "Sanitized Number"
 msgstr "Opgeschoond nummer"
 
 #. module: phone_validation
-#. odoo-python
 #: code:addons/phone_validation/tools/phone_validation.py:0
+#, python-format
 msgid "Unable to parse %(phone)s: %(error)s"
 msgstr "Onmogelijk om te zetten %(phone)s:%(error)s"
 
 #. module: phone_validation
 #: model_terms:ir.ui.view,arch_db:phone_validation.phone_blacklist_view_form
 msgid "Unblacklist"
-msgstr "Verwijderen uit blacklist"
+msgstr "Verwijder uit blacklist"
 
 #. module: phone_validation
-#. odoo-python
-#: code:addons/phone_validation/wizard/phone_blacklist_remove.py:0
-msgid "Unblock Reason: %(reason)s"
-msgstr "Reden om ontgrendelen : %(reason)s"
+#: code:addons/phone_validation/models/phone_blacklist.py:0
+#, python-format
+msgid "Unblacklisting Reason: %s"
+msgstr "Reden voor het verwijderen uit blacklist:: %s"
 
 #. module: phone_validation
 #: model:ir.model,name:phone_validation.model_res_users
 msgid "User"
 msgstr "Gebruiker"
-
-#. module: phone_validation
-#. odoo-python
-#: code:addons/phone_validation/models/mail_thread_phone.py:0
-msgid ""
-"You do not have the access right to unblacklist phone numbers. Please "
-"contact your administrator."
-msgstr ""
-"Je hebt geen toegangsrechten om telefoonnummers van de zwarte lijst te "
-"verwijderen. Neem contact op met je beheerder voor hulp."
-
-#. module: phone_validation
-#: model_terms:ir.ui.view,arch_db:phone_validation.phone_blacklist_remove_view_form
-msgid "e.g \"Asked to receive our next newsletters\""
-msgstr "bijv. “Wenst onze volgende nieuwsbrieven te ontvangen”"
 
 #. module: phone_validation
 #: model_terms:ir.ui.view,arch_db:phone_validation.phone_blacklist_remove_view_form

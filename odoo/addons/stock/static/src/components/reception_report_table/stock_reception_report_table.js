@@ -2,23 +2,10 @@
 
 import { useService } from "@web/core/utils/hooks";
 import { ReceptionReportLine } from "../reception_report_line/stock_reception_report_line";
-import { Component } from "@odoo/owl";
+
+const { Component } = owl;
 
 export class ReceptionReportTable extends Component {
-    static template = "stock.ReceptionReportTable";
-    static components = {
-        ReceptionReportLine,
-    };
-    static props = {
-        index: String,
-        scheduledDate: { type: String, optional: true },
-        lines: Array,
-        source: Array,
-        labelReport: Object,
-        showUom: Boolean,
-        precision: Number,
-    };
-
     setup() {
         this.actionService = useService("action");
         this.ormService = useService("orm");
@@ -56,6 +43,7 @@ export class ReceptionReportTable extends Component {
     }
 
     async onClickPrintLabels() {
+        const reportFile = 'stock.report_reception_report_label';
         const modelIds = [];
         const quantities = [];
         for (const line of this.props.lines) {
@@ -68,9 +56,10 @@ export class ReceptionReportTable extends Component {
         }
 
         return this.actionService.doAction({
-            ...this.props.labelReport,
-            context: { active_ids: modelIds },
-            data: { docids: modelIds, quantity: quantities.join(",") },
+            type: "ir.actions.report",
+            report_type: "qweb-pdf",
+            report_name: `${reportFile}?docids=${modelIds}&quantity=${quantities}`,
+            report_file: reportFile,
         });
     }
 
@@ -92,3 +81,16 @@ export class ReceptionReportTable extends Component {
         return this.props.lines.every(line => !line.is_assigned);
     }
 }
+
+ReceptionReportTable.template = "stock.ReceptionReportTable";
+ReceptionReportTable.components = {
+    ReceptionReportLine,
+};
+ReceptionReportTable.props = {
+    index: String,
+    scheduledDate: { type: String, optional: true },
+    lines: Array,
+    source: Array,
+    showUom: Boolean,
+    precision: Number,
+};

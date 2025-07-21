@@ -1,17 +1,15 @@
 /** @odoo-module */
 import { registry } from "@web/core/registry";
 import { usePopover } from "@web/core/popover/popover_hook";
-import { Component } from "@odoo/owl";
-import { standardFieldProps } from "@web/views/fields/standard_field_props";
+const { Component } = owl;
+
 
 /**
  * Extend this to add functionality to Popover (custom methods etc.)
  * need to extend PopoverWidgetField as well and set its Popover Component to new extension
  */
-export class PopoverComponent extends Component {
-    static template = "stock.popoverContent";
-    static props = ["record", "*"];
-}
+export class PopoverComponent extends Component {}
+PopoverComponent.template = 'stock.popoverContent';
 
 /**
  * Widget Popover for JSON field (char), renders a popover above an icon button on click
@@ -27,26 +25,28 @@ export class PopoverComponent extends Component {
  */
 
 export class PopoverWidgetField extends Component {
-    static template = "stock.popoverButton";
-    static components = { Popover: PopoverComponent };
-    static props = {...standardFieldProps};
     setup(){
+        this.popover = usePopover();
+        this.closePopover = null;
         let fieldValue = this.props.record.data[this.props.name];
         this.jsonValue = JSON.parse(fieldValue || "{}");
-        const position = this.jsonValue.position || "top";
-        this.popover = usePopover(this.constructor.components.Popover, { position });
         this.color = this.jsonValue.color || 'text-primary';
         this.icon = this.jsonValue.icon || 'fa-info-circle';
     }
 
     showPopup(ev){
-        this.popover.open(ev.currentTarget, { ...this.jsonValue, record: this.props.record });
+        this.closePopover = this.popover.add(
+            ev.currentTarget,
+            this.constructor.components.Popover,
+            {...this.jsonValue, record: this.props.record},
+            {
+                position: this.jsonValue.position || 'top',
+            }
+            );
     }
 }
 
-export const popoverWidgetField = {
-    component: PopoverWidgetField,
-    supportedTypes: ['char'],
-};
-
-registry.category("fields").add("popover_widget", popoverWidgetField);
+PopoverWidgetField.supportedTypes = ['char'];
+PopoverWidgetField.template = 'stock.popoverButton';
+PopoverWidgetField.components = { Popover: PopoverComponent }
+registry.category("fields").add("popover_widget", PopoverWidgetField);

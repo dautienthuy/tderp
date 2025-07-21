@@ -17,7 +17,7 @@ class ProductPackaging(models.Model):
 
     name = fields.Char('Product Packaging', required=True)
     sequence = fields.Integer('Sequence', default=1, help="The first in the sequence is the default one.")
-    product_id = fields.Many2one('product.product', string='Product', check_company=True, required=True, ondelete="cascade")
+    product_id = fields.Many2one('product.product', string='Product', check_company=True)
     qty = fields.Float('Contained Quantity', default=1, digits='Product Unit of Measure', help="Quantity of products contained in the packaging.")
     barcode = fields.Char('Barcode', copy=False, help="Barcode used for packaging identification. Scan this packaging barcode from a transfer in the Barcode app to move all the contained units")
     product_uom_id = fields.Many2one('uom.uom', related='product_id.uom_id', readonly=True)
@@ -33,7 +33,7 @@ class ProductPackaging(models.Model):
         """ With GS1 nomenclature, products and packagings use the same pattern. Therefore, we need
         to ensure the uniqueness between products' barcodes and packagings' ones"""
         domain = [('barcode', 'in', [b for b in self.mapped('barcode') if b])]
-        if self.env['product.product'].search_count(domain, limit=1):
+        if self.env['product.product'].search(domain, order="id", limit=1):
             raise ValidationError(_("A product already uses the barcode"))
 
     def _check_qty(self, product_qty, uom_id, rounding_method="HALF-UP"):
@@ -65,16 +65,8 @@ class ProductPackaging(models.Model):
                 return packaging
         return self.env['product.packaging']
 
-    def _compute_qty(self, qty, qty_uom=False):
-        """Returns the qty of this packaging that qty converts to.
-        A float is returned because there are edge cases where some users use
-        "part" of a packaging
-
-        :param qty: float of product quantity (given in product UoM if no qty_uom provided)
-        :param qty_uom: Optional uom of quantity
-        :returns: float of packaging qty
-        """
-        self.ensure_one()
-        if qty_uom:
-            qty = qty_uom._compute_quantity(qty, self.product_uom_id)
-        return float_round(qty / self.qty, precision_rounding=self.product_uom_id.rounding)
+    def write(self, vals):
+        res = super().write(vals)
+        if res and not vals.get('product_id', True):
+            self.unlink()
+        return res

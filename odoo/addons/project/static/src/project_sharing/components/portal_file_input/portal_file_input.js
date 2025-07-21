@@ -3,27 +3,18 @@
 import { FileInput } from '@web/core/file_input/file_input';
 
 export class PortalFileInput extends FileInput {
-    static props = {
-        ...FileInput.props,
-        accessToken: { type: String, optional: true },
-    };
-    static defaultProps = {
-        ...FileInput.defaultProps,
-        accessToken: "",
-    };
-
     /**
      * @override
      */
     get httpParams() {
         const {
-            model: thread_model,
-            id: thread_id,
+            model: res_model,
+            id: res_id,
             ...otherParams
         } = super.httpParams;
         return {
-            thread_model,
-            thread_id,
+            res_model,
+            res_id,
             access_token: this.props.accessToken,
             ...otherParams,
         }
@@ -35,9 +26,8 @@ export class PortalFileInput extends FileInput {
             files.map(
                 (file) =>
                     super.uploadFiles({
-                        ufile: [file],
-                        token: otherParams.access_token,
-                        is_pending: true,
+                        file,
+                        name: file.name,
                         ...otherParams,
                     })
             )
@@ -45,3 +35,12 @@ export class PortalFileInput extends FileInput {
         return filesData;
     }
 }
+
+PortalFileInput.props = {
+    ...FileInput.props,
+    accessToken: { type: String, optional: true },
+};
+PortalFileInput.defaultProps = {
+    ...FileInput.defaultProps,
+    accessToken: '',
+};

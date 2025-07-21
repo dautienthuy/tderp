@@ -93,7 +93,7 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
             'name': "15% Tax",
             'amount_type': 'percent',
             'amount': 15,
-            'price_include_override': 'tax_included',
+            'price_include': True,
         })
         p_specific_product = self.env['loyalty.program'].create({
             'name': '20% reduction on Large Cabinet in cart',
@@ -126,9 +126,10 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
 
         self._auto_rewards(order, self.all_programs)
         self.assertEqual(len(order.order_line.ids), 1, "We should not get the reduction line since we dont have 320$ tax excluded (cabinet is 320$ tax included)")
-        sol1.tax_id.price_include_override = 'tax_excluded'
+        sol1.tax_id.price_include = False
         sol1._compute_tax_id()
         self.env.flush_all()
+        self.env['account.tax'].invalidate_model(['price_include'])
         self._auto_rewards(order, self.all_programs)
         self.assertEqual(len(order.order_line.ids), 2, "We should now get the reduction line since we have 320$ tax included (cabinet is 320$ tax included)")
         # Name                 | Qty | price_unit |  Tax     |  HTVA   |   TVAC  |  TVA  |
@@ -216,7 +217,7 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
             'name': "35% Tax incl",
             'amount_type': 'percent',
             'amount': 35,
-            'price_include_override': 'tax_included',
+            'price_include': True,
         })
 
         # Set tax and prices on products as neeed for the test
@@ -329,10 +330,8 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
         # --------------------------------------------------------------------------------
         # TOTAL                                              | 2576.77 | 2946.11 |  369.34
 
-        self.assertRecordValues(order, [{
-            'amount_total': 1901.11,
-            'amount_untaxed': 1594.95,
-        }])
+        self.assertAlmostEqual(order.amount_total, 1901.11, 2, "The order total with programs should be 1901.11")
+        self.assertEqual(order.amount_untaxed, 1594.95, "The order untaxed total without any programs should be 2576.77")
         self.assertEqual(len(order.order_line.ids), 5, "The order without any programs should have 5 lines")
 
         # Apply all the programs
@@ -346,10 +345,8 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
         # --------------------------------------------------------------------------------
         # TOTAL AFTER APPLYING FREE PRODUCT PROGRAMS         | 1594.95 | 1901.11 |  306.16
 
-        self.assertRecordValues(order, [{
-            'amount_total': 1901.11,
-            'amount_untaxed': 1594.95,
-        }])
+        self.assertAlmostEqual(order.amount_total, 1901.11, 2, "The order total with programs should be 1901.11")
+        self.assertEqual(order.amount_untaxed, 1594.95, "The order untaxed total with programs should be 1594.95")
         self.assertEqual(len(order.order_line.ids), 8, "Order should contains 5 regular product lines and 3 free product lines")
 
         # Apply 10% on top of everything
@@ -365,24 +362,18 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
         # --------------------------------------------------------------------------------
         # TOTAL AFTER APPLYING 10% GLOBAL PROGRAM            | 1435.46 | 1711.00 | 275.54
 
-        self.assertRecordValues(order, [{
-            'amount_total': 1711.0,
-            'amount_untaxed': 1435.46,
-        }])
+        self.assertEqual(order.amount_total, 1711, "The order total with programs should be 1711")
+        self.assertEqual(order.amount_untaxed, 1435.46, "The order untaxed total with programs should be 1435.46")
         self.assertEqual(len(order.order_line.ids), 12, "Order should contains 5 regular product lines, 3 free product lines and 4 discount lines (one for every tax)")
 
         # -- This is a test inside the test
         order.order_line._compute_tax_id()
-        self.assertRecordValues(order, [{
-            'amount_total': 1711.0,
-            'amount_untaxed': 1435.46,
-        }])
+        self.assertEqual(order.amount_total, 1711, "Recomputing tax on sale order lines should not change total amount")
+        self.assertEqual(order.amount_untaxed, 1435.46, "Recomputing tax on sale order lines should not change untaxed amount")
         self.assertEqual(len(order.order_line.ids), 12, "Recomputing tax on sale order lines should not change number of order line")
         self._auto_rewards(order, self.all_programs)
-        self.assertRecordValues(order, [{
-            'amount_total': 1711.0,
-            'amount_untaxed': 1435.46,
-        }])
+        self.assertEqual(order.amount_total, 1711, "Recomputing tax on sale order lines should not change total amount")
+        self.assertEqual(order.amount_untaxed, 1435.46, "Recomputing tax on sale order lines should not change untaxed amount")
         self.assertEqual(len(order.order_line.ids), 12, "Recomputing tax on sale order lines should not change number of order line")
         # -- End test inside the test
 
@@ -411,10 +402,8 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
         # --------------------------------------------------------------------------------
         # TOTAL AFTER APPLYING 20% ON LARGE CABINET          | 1363.46 | 1628.2 |  264.74
 
-        self.assertRecordValues(order, [{
-            'amount_total': 1628.2,
-            'amount_untaxed': 1363.46,
-        }])
+        self.assertEqual(order.amount_total, 1628.2, "The order total with programs should be 1628.2")
+        self.assertEqual(order.amount_untaxed, 1363.46, "The order untaxed total with programs should be 1363.45")
         self.assertEqual(len(order.order_line.ids), 13, "Order should have a new discount line for 20% on Large Cabinet")
 
         # Check that if you delete one of the discount tax line, the others tax lines from the same promotion got deleted as well.
@@ -475,10 +464,8 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
         # --------------------------------------------------------------------------------
         # TOTAL                                              | 1118.00 | 1349.00 |  240.20
 
-        self.assertRecordValues(order, [{
-            'amount_total': 1358.2,
-            'amount_untaxed': 1118.0,
-        }])
+        self.assertAlmostEqual(order.amount_total, 1358.2, 2, "The order total with programs should be 1358.20")
+        self.assertEqual(order.amount_untaxed, 1118, "The order untaxed total with programs should be 1118.00")
         self.assertEqual(len(order.order_line.ids), 10, "Order should contains 10 lines: 4 products lines, 2 free products lines and 4 discount lines")
 
     def test_program_numbers_extras(self):
@@ -813,10 +800,10 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
         }).generate_coupons()
         coupon = coupon_program.coupon_ids
         self._apply_promo_code(order, coupon.code)
-        self.assertEqual(order.amount_total, 0, "The promotion program should not make the order total go below 0")
+        self.assertEqual(order.amount_total, 0.0, "The promotion program should not make the order total go below 0")
         self.assertEqual(order.amount_tax, 0)
         self._auto_rewards(order, self.all_programs)
-        self.assertEqual(order.amount_total, 0, "The promotion program should not be altered after recomputation")
+        self.assertEqual(order.amount_total, 0.0, "The promotion program should not be altered after recomputation")
         self.assertEqual(order.amount_tax, 0)
 
         order.order_line[3:].unlink() #remove all coupon
@@ -908,7 +895,7 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
             'name': "30% Tax",
             'amount_type': 'percent',
             'amount': 30,
-            'price_include_override': 'tax_included',
+            'price_include': True,
         })
         sol2.tax_id = percent_tax
 
@@ -1817,61 +1804,3 @@ class TestSaleCouponProgramNumbers(TestSaleCouponNumbersCommon):
         self.assertEqual(order.order_line[0].tax_id, tax_15pc_excl)
         self.assertEqual(order.order_line[1].tax_id, tax_15pc_excl)
         self.assertEqual(order.amount_total, 156.0, '140$ + 15% - 5$ = 156$')
-
-    def test_apply_order_and_specific_discounts(self):
-        """Ensure you can apply a full-order discount, and then a product-specific discount."""
-        order_program, specific_program = self.env['loyalty.program'].create([
-            {
-                'name': "$50 discount",
-                'program_type': 'promotion',
-                'trigger': 'auto',
-                'applies_on': 'current',
-                'rule_ids': [Command.create({})],
-                'reward_ids': [Command.create({
-                    'reward_type': 'discount',
-                    'discount_mode': 'per_order',
-                    'discount': 50,
-                    'discount_applicability': 'order',
-                    'required_points': 1,
-                })],
-            },
-            {
-                'name': "$10 discount on Pedal Bin",
-                'program_type': 'promotion',
-                'trigger': 'auto',
-                'applies_on': 'current',
-                'rule_ids': [Command.create({})],
-                'reward_ids': [Command.create({
-                    'reward_type': 'discount',
-                    'discount_mode': 'per_order',
-                    'discount': 10,
-                    'discount_applicability': 'specific',
-                    'discount_product_ids': self.pedalBin.ids,
-                    'required_points': 1,
-                })],
-            },
-        ])
-        order = self.empty_order
-        order.order_line = [Command.create({
-            'product_id': self.pedalBin.id,
-            'tax_id': self.tax_20pc_excl.ids,
-        })]
-
-        self.assertAlmostEqual(
-            order.amount_total,
-            self.pedalBin.list_price * (1 + self.tax_20pc_excl.amount / 100),  # $56.4
-            msg="Order total should equal product list price plus taxes",
-        )
-
-        self._auto_rewards(order, order_program)
-        self.assertAlmostEqual(
-            order.amount_total,
-            self.pedalBin.list_price * (1 + self.tax_20pc_excl.amount / 100) - 50,  # $6.4
-            msg="The order total should be $50 less than initially after the discount is applied.",
-        )
-
-        self._auto_rewards(order, specific_program)
-        self.assertFalse(
-            order.amount_total,
-            "Order total should be 0, as a specific discount should have been applied.",
-        )

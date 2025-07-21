@@ -3,20 +3,21 @@
 # 	* transifex
 # 
 # Translators:
+# Anders Wallenquist <anders.wallenquist@vertel.se>, 2023
+# Mikael Åkerberg <mikael.akerberg@mariaakerberg.com>, 2023
+# Kim Asplund <kim.asplund@gmail.com>, 2023
+# Simon S, 2023
+# Chrille Hedberg <hedberg.chrille@gmail.com>, 2023
+# Martin Trigaux, 2023
 # Kristoffer Grundström <lovaren@gmail.com>, 2024
-# Mikael Åkerberg <mikael.akerberg@mariaakerberg.com>, 2024
-# Anders Wallenquist <anders.wallenquist@vertel.se>, 2024
-# Martin Trigaux, 2024
-# Kim Asplund <kim.asplund@gmail.com>, 2024
-# Chrille Hedberg <hedberg.chrille@gmail.com>, 2024
 # Jakob Krabbe <jakob.krabbe@vertel.se>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 17.0\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-26 21:56+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
+"POT-Creation-Date: 2023-01-23 14:34+0000\n"
+"PO-Revision-Date: 2023-04-14 06:18+0000\n"
 "Last-Translator: Jakob Krabbe <jakob.krabbe@vertel.se>, 2024\n"
 "Language-Team: Swedish (https://app.transifex.com/odoo/teams/41243/sv/)\n"
 "MIME-Version: 1.0\n"
@@ -38,12 +39,13 @@ msgstr "Kod"
 #. module: transifex
 #: model:ir.model,name:transifex.model_transifex_code_translation
 msgid "Code Translation"
-msgstr "Kodöversättning"
+msgstr "Översättning av kod"
 
 #. module: transifex
 #. odoo-javascript
 #: code:addons/transifex/static/src/views/fields/translation_dialog.xml:0
 #: model_terms:ir.ui.view,arch_db:transifex.transifex_code_translation_tree_view
+#, python-format
 msgid "Contribute"
 msgstr "Bidra"
 
@@ -66,6 +68,11 @@ msgstr "ID"
 #: model:ir.model.fields,field_description:transifex.field_transifex_code_translation__lang
 msgid "Language"
 msgstr "Språk"
+
+#. module: transifex
+#: model:ir.model.fields,field_description:transifex.field_transifex_code_translation____last_update
+msgid "Last Modified on"
+msgstr "Senast redigerad den"
 
 #. module: transifex
 #: model:ir.model.fields,field_description:transifex.field_transifex_code_translation__module
@@ -91,13 +98,14 @@ msgstr "Föreslå en ändring i den officiella versionen av Odoo"
 #. module: transifex
 #. odoo-javascript
 #: code:addons/transifex/static/src/views/reload_code_translations_views.xml:0
+#, python-format
 msgid "Reload"
 msgstr "Ladda om"
 
 #. module: transifex
 #: model_terms:ir.ui.view,arch_db:transifex.transifex_code_translation_view_search
 msgid "Search Code Translations"
-msgstr "Sök kodöversättningar"
+msgstr "Översättningar av sökkoder"
 
 #. module: transifex
 #: model_terms:ir.ui.view,arch_db:transifex.transifex_code_translation_tree_view
@@ -127,10 +135,11 @@ msgstr "Transifex URL"
 
 #. module: transifex
 #: model:ir.actions.server,name:transifex.transifex_code_translation_reload_ir_actions_server
+#: model:ir.cron,cron_name:transifex.transifex_code_translation_reload
 msgid "Transifex: Reload code translations"
-msgstr "Transifex: Ladda om kodöversättningar"
+msgstr "Transifex: Översättning av kod för omladdning"
 
 #. module: transifex
 #: model:ir.model.fields,field_description:transifex.field_transifex_code_translation__value
 msgid "Translation Value"
-msgstr "Översättningsvärde"
+msgstr "Översättning"

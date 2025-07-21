@@ -20,50 +20,52 @@ label.o_wbooth_category_unavailable {
         position: absolute;
     }
 
+    & > input + div {
+        padding: 10px;
+        border: 5px solid mix(map-get($theme-colors, 'secondary'), #e9ecef);
+    }
+
     &:not(.o_wbooth_category_unavailable) > input + div {
         cursor: pointer;
     }
 
     &:not(.o_wbooth_category_unavailable):hover > input + div {
-        opacity: .8;
+        border-color: map-get($theme-colors, 'secondary');
+    }
+
+    &:hover > input + div:before {
+        color: map-get($theme-colors, 'secondary');
     }
 
     & > input:checked + div,
     &:hover > input:checked + div {
-        --o-border-color: #{$primary};
+        border-color: map-get($theme-colors, 'primary');
+    }
 
-        box-shadow: 0 0 0 ($border-width * 2) $primary;
+    & > input:checked + div:before,
+    &:hover > input:checked + div:before {
+        color: map-get($theme-colors, 'primary');
+    }
+
+    & > input:checked + div:before,
+    &:not(.o_wbooth_category_unavailable):hover > input + div:before {
+        content: "\f058";
+        font-family: "FontAwesome";
+        width: 40px;
+        height: 40px;
+        position: absolute;
+        line-height: 40px;
+        top: -16px;
+        right: -16px;
+        background-color: $o-wevent-bg-color-base;
+        font-size: 2em;
+        text-align: center;
     }
 
     & img {
         min-height: 250px;
     }
 
-}
-
-.o_wbooth_booths .form-check{
-    position: relative;
-    padding-left: 0;
-
-    & > input {
-        visibility: hidden;
-        position: absolute;
-    }
-
-    & > input + label {
-        padding: map-get($spacers, 2) map-get($spacers, 3);
-        border: $card-border-width solid $card-border-color;
-        border-radius: $btn-border-radius;
-        background: $card-bg;
-        color: $card-color;
-    }
-
-    & > input:checked + label,
-    &:hover > input:checked + label {
-        --o-border-color: #{$primary};
-
-            box-shadow: 0 0 0 ($border-width) $primary;
-    }
 }
 
 .o_wevent_booth_category {

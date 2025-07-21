@@ -5,7 +5,7 @@ from collections import defaultdict
 
 from odoo import api, fields, models, tools, _
 from odoo.exceptions import UserError
-from odoo.tools import SQL
+from odoo.tools import pycompat
 
 
 class PrivacyLookupWizard(models.TransientModel):
@@ -27,8 +27,8 @@ class PrivacyLookupWizard(models.TransientModel):
         for wizard in self:
             wizard.line_count = len(wizard.line_ids)
 
-    def _compute_display_name(self):
-        self.display_name = _('Privacy Lookup')
+    def name_get(self):
+        return [(w.id, _('Privacy Lookup')) for w in self]
 
     def _get_query_models_blacklist(self):
         return [
@@ -38,18 +38,18 @@ class PrivacyLookupWizard(models.TransientModel):
             # Ondelete Cascade
             'mail.notification',
             'mail.followers',
-            'discuss.channel.member',
+            'mail.channel.member',
             # Special case for direct messages
             'mail.message',
         ]
 
     def _get_query(self):
-        name = self.name.strip()
-        email = f"%{self.email.strip()}%"
+        name = "%s" % (self.name.strip())
+        email = "%%%s%%" % pycompat.to_text(self.email.strip())
         email_normalized = tools.email_normalize(self.email.strip())
 
         # Step 1: Retrieve users/partners liked to email address or name
-        query = SQL("""
+        query = """
             WITH indirect_references AS (
                 SELECT id
                 FROM res_partner
@@ -74,7 +74,18 @@ class PrivacyLookupWizard(models.TransientModel):
                     SELECT id
                     FROM res_partner
                     WHERE email ilike %s or name ilike %s)))
-            -- Step 2: Special case for direct messages
+        """
+        values = [
+            # Indirect references CTE
+            email_normalized, name,
+            # Search on res.partner
+            self.env['ir.model.data']._xmlid_to_res_id('base.model_res_partner'),
+            # Search on res.users
+            self.env['ir.model.data']._xmlid_to_res_id('base.model_res_users'), email, email, name,
+        ]
+
+        # Step 2: Special case for direct messages
+        query += """
             UNION ALL
             SELECT
                 %s AS res_model_id,
@@ -82,88 +93,83 @@ class PrivacyLookupWizard(models.TransientModel):
                 True AS is_active
             FROM mail_message
             WHERE author_id IN (SELECT id FROM indirect_references)
-        """,
-            # Indirect references CTE
-            email_normalized, name,
-            # Search on res.partner
-            self.env['ir.model.data']._xmlid_to_res_id('base.model_res_partner'),
-            # Search on res.users
-            self.env['ir.model.data']._xmlid_to_res_id('base.model_res_users'), email, email, name,
-            # Direct messages
+        """
+        values += [
             self.env['ir.model.data']._xmlid_to_res_id('mail.model_mail_message'),
-        )
+        ]
 
         # Step 3: Retrieve info on other models
         blacklisted_models = self._get_query_models_blacklist()
         for model_name in self.env:
             if model_name in blacklisted_models:
                 continue
+            table_name = model_name.replace('.', '_')
 
             model = self.env[model_name]
-            if model._transient or not model._auto:
+            if model._transient or model._transient or not model._auto:
                 continue
+            res_model_id = self.env['ir.model'].search([('model', '=', model_name)]).id
+            has_active = 'active' in model
+            has_additional_query = False
+            additional_query = """
+                UNION ALL
+                SELECT
+                    %s AS res_model_id,
+                    id AS res_id,
+                    {active} AS is_active
+                FROM {table_name}
+                WHERE
+                """.format(table_name=table_name, active='active' if has_active else True)
+            additional_values = [
+                res_model_id
+            ]
 
-            table_name = model._table
-
-            conditions = []
             # 3.1 Search Basic Personal Data Records (aka email/name usage)
             for field_name in ['email_normalized', 'email', 'email_from', 'company_email']:
                 if field_name in model and model._fields[field_name].store:
+                    has_additional_query = True
                     rec_name = model._rec_name or 'name'
                     is_normalized = field_name == 'email_normalized' or (model_name == 'mailing.trace' and field_name == 'email')
-
-                    conditions.append(SQL(
-                        "%s %s %s",
-                        SQL.identifier(field_name),
-                        SQL('=') if is_normalized else SQL('ilike'),  # Manage Foo Bar <foo@bar.com>
-                        email_normalized if is_normalized else email
-                    ))
-                    if rec_name in model and model._fields[model._rec_name].store and model._fields[model._rec_name].type == 'char' and not model._fields[model._rec_name].translate:
-                        conditions.append(SQL(
-                            "%s ilike %s",
-                            SQL.identifier(rec_name),
-                            name,
-                        ))
+                    if rec_name in model and model._fields[model._rec_name].type == 'char' and not model._fields[model._rec_name].translate:
+                        additional_query += """
+                            {field_name} {search_type} %s OR {rec_name} ilike %s
+                            """.format(
+                                field_name=field_name,
+                                search_type='=' if is_normalized else 'ilike', # Manage Foo Bar <foo@bar.com>
+                                rec_name=rec_name)
+                        additional_values += [email_normalized if is_normalized else email, name]
+                    else:
+                        additional_query += """
+                            {field_name} {search_type} %s
+                            """.format(
+                                field_name=field_name,
+                                search_type='=' if is_normalized else 'ilike') # Manage Foo Bar <foo@bar.com>
+                        additional_values += [email_normalized if is_normalized else email]
                     if is_normalized:
                         break
 
             # 3.2 Search Indirect Personal Data References (aka partner_id)
-            conditions.extend(
-                SQL(
-                    "%s in (SELECT id FROM indirect_references)",
-                    model._field_to_sql(table_name, field_name),
-                )
-                for field_name, field in model._fields.items()
-                if field.comodel_name == 'res.partner'
-                if field.store
-                if field.type == 'many2one'
-                if field.ondelete != 'cascade'
-            )
+            partner_fields = [
+                field_name for field_name, field in model._fields.items() \
+                if field.comodel_name == 'res.partner' and field.store and field.type == 'many2one' and field.ondelete != 'cascade']
+            if partner_fields:
+                for field_name in partner_fields:
+                    additional_query += """
+                        {or_clause}{table_field_name} in (SELECT id FROM indirect_references)""".format(
+                            or_clause='OR ' if has_additional_query else '',
+                            table_field_name='"%s"."%s"' % (table_name, field_name))
+                    has_additional_query = True
 
-            if conditions:
-                query = SQL("""
-                    %s
-                    UNION ALL
-                    SELECT
-                        %s AS res_model_id,
-                        id AS res_id,
-                        %s AS is_active
-                    FROM %s
-                    WHERE %s
-                """,
-                    query,
-                    self.env['ir.model'].search([('model', '=', model_name)]).id,
-                    SQL.identifier('active') if 'active' in model else True,
-                    SQL.identifier(table_name),
-                    SQL(" OR ").join(conditions),
-                )
-        return query
+            if has_additional_query:
+                query += additional_query
+                values += additional_values
+        return query, values
 
     def action_lookup(self):
         self.ensure_one()
-        query = self._get_query()
+        query, values = self._get_query()
         self.env.flush_all()
-        self.env.cr.execute(query)
+        self.env.cr.execute(query, tuple(values))
         results = self.env.cr.dictfetchall()
         self.line_ids = [(5, 0, 0)] + [(0, 0, reference) for reference in results]
         return self.action_open_lines()
@@ -197,7 +203,7 @@ class PrivacyLookupWizard(models.TransientModel):
             for line in wizard.line_ids:
                 records_by_model[line.res_model_id].append(line.res_id)
             wizard.records_description = '\n'.join('{model_name} ({count}): {ids_str}'.format(
-                model_name=(f'{model.name} - {model.model}' if self.env.user.has_group('base.group_no_one') else model.name),
+                model_name=model.name if not self.env.user.user_has_groups('base.group_no_one') else '%s - %s' % (model.name, model.model),
                 count=len(ids),
                 ids_str=', '.join('#%s' % (rec_id) for rec_id in ids),
             ) for model, ids in records_by_model.items())
@@ -252,7 +258,7 @@ class PrivacyLookupWizardLine(models.TransientModel):
             if line.res_model and line.res_model in self.env and not line.is_unlinked:
                 # Exclude records that can't be read (eg: multi-company ir.rule)
                 try:
-                    self.env[line.res_model].browse(line.res_id).check_access('read')
+                    self.env[line.res_model].browse(line.res_id).check_access_rule('read')
                     line.resource_ref = '%s,%s' % (line.res_model, line.res_id or 0)
                 except Exception:
                     line.resource_ref = None
@@ -280,8 +286,8 @@ class PrivacyLookupWizardLine(models.TransientModel):
             record = self.env[line.res_model].sudo().browse(line.res_id)
             if not record.exists():
                 continue
-            name = record.display_name
-            line.res_name = name if name else f'{line.res_model_id.name}/{line.res_id}'
+            name = record.name_get()
+            line.res_name = name[0][1] if name else ('%s/%s') % (line.res_model_id.name, line.res_id)
 
     @api.onchange('is_active')
     def _onchange_is_active(self):

@@ -2,7 +2,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import api, fields, models
-from odoo.osv import expression
 
 
 class SlidePartnerRelation(models.Model):
@@ -27,21 +26,6 @@ class SlidePartnerRelation(models.Model):
             self.filtered('survey_scoring_success').write({
                 'completed': True
             })
-
-    def _recompute_completion(self):
-        super(SlidePartnerRelation, self)._recompute_completion()
-        # Update certified partners
-        certification_success_slides = self.filtered(lambda slide: slide.survey_scoring_success)
-        if not certification_success_slides:
-            return
-        certified_channels_domain = expression.OR([
-            [('partner_id', '=', slide.partner_id.id), ('channel_id', '=', slide.channel_id.id)]
-            for slide in certification_success_slides
-        ])
-        self.env['slide.channel.partner'].search(expression.AND([
-            [("survey_certification_success", "=", False)],
-            certified_channels_domain]
-        )).survey_certification_success = True
 
 class Slide(models.Model):
     _inherit = 'slide.slide'
@@ -80,12 +64,6 @@ class Slide(models.Model):
         for slide in self:
             if slide.slide_category == 'certification' or not slide.is_preview:
                 slide.is_preview = False
-
-    @api.depends('slide_type')
-    def _compute_slide_icon_class(self):
-        certification = self.filtered(lambda slide: slide.slide_type == 'certification')
-        certification.slide_icon_class = 'fa-trophy'
-        super(Slide, self - certification)._compute_slide_icon_class()
 
     @api.depends('slide_category', 'source_type')
     def _compute_slide_type(self):

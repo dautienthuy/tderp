@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//button[@name='action_schedule_meeting']" position="after">
                 <button name="action_redirect_to_page_views" type="object" class="oe_stat_button" icon="fa-tags"
-                        invisible="visitor_page_count == 0">
+                        attrs="{'invisible': [('visitor_page_count', '=', 0)]}">
                     <field name="visitor_page_count" widget="statinfo" string="Page views"/>
                 </button>
             </xpath>
@@ -18,7 +18,7 @@
     <record id="crm_lead_action_from_visitor" model="ir.actions.act_window">
         <field name="name">Leads</field>
         <field name="res_model">crm.lead</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">tree,form</field>
         <field name="domain">[('visitor_ids', 'in', [active_id])]</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_empty_folder">

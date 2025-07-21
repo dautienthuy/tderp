@@ -70,10 +70,10 @@ class TestAPI(SavepointCaseWithUserDemo):
 
     @mute_logger('odoo.models')
     def test_04_query_count(self):
-        """ Test the search_count method. """
+        """ Test the search method with count=True. """
         self.cr.execute("SELECT COUNT(*) FROM res_partner WHERE active")
         count1 = self.cr.fetchone()[0]
-        count2 = self.env['res.partner'].search_count([])
+        count2 = self.env['res.partner'].search([], count=True)
         self.assertIsInstance(count1, int)
         self.assertIsInstance(count2, int)
         self.assertEqual(count1, count2)
@@ -213,6 +213,17 @@ class TestAPI(SavepointCaseWithUserDemo):
         # demo user can no longer access partner data
         with self.assertRaises(AccessError):
             demo_partner.company_id.name
+
+    @mute_logger('odoo.models')
+    def test_55_environment_lang(self):
+        """ Check the record env.lang behavior """
+        partner = self.partner_demo
+        self.env['res.lang']._activate_lang('fr_FR')
+        self.assertEqual(partner.with_context(lang=None).env.lang, None, 'None lang context should have None env.lang')
+        self.assertEqual(partner.with_context(lang='en_US').env.lang, 'en_US', 'en_US active lang context should have en_US env.lang')
+        self.assertEqual(partner.with_context(lang='fr_FR').env.lang, 'fr_FR', 'fr_FR active lang context should have fr_FR env.lang')
+        self.assertEqual(partner.with_context(lang='nl_NL').env.lang, None, 'Inactive lang context lang should have None env.lang')
+        self.assertEqual(partner.with_context(lang='Dummy').env.lang, None, 'Ilegal lang context should have None env.lang')
 
     def test_56_environment_uid_origin(self):
         """Check the expected behavior of `env.uid_origin`"""
@@ -690,34 +701,6 @@ class TestAPI(SavepointCaseWithUserDemo):
         with self.assertQueryCount(1):
             for partner in partners_with_children:
                 partner.child_ids.sorted('id').mapped('name')
-
-    def test_group_on(self):
-        p0, p1, p2 = self.env['res.partner'].create([
-            {'name': "bob", 'function': "guest"},
-            {'name': "james", 'function': "host"},
-            {'name': "rhod", 'function': "guest"}
-        ])
-        pn = self.env['res.partner'].new({'name': 'alex', 'function': "host"})
-
-        with self.subTest("Should work with mixes of db and new records"):
-            self.assertEqual(
-                (p0 | p1 | p2 | pn).grouped('function'),
-                {'guest': p0 | p2, 'host': p1 | pn}
-            )
-            self.assertEqual(
-                (p0 | p1 | p2 | pn).grouped(lambda r: len(r.name)),
-                {3: p0, 4: p2 | pn, 5: p1},
-            )
-
-        with self.subTest("Should allow cross-group prefetching"):
-            byfn = (p0 | p1 | p2).grouped('function')
-            self.env.invalidate_all(flush=False)
-            self.assertFalse(self.env.cache._data, "ensure the cache is empty")
-            self.assertEqual(byfn['guest'].mapped('name'), ['bob', 'rhod'])
-            # name should have been prefetched by previous statement (on guest
-            # group), so should be nothing here
-            with self.assertQueries([]):
-                _ = byfn['host'].name
 
 
 class TestExternalAPI(SavepointCaseWithUserDemo):

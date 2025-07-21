@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import logging
@@ -182,7 +183,6 @@ class ThemePage(models.Model):
     view_id = fields.Many2one('theme.ir.ui.view', required=True, ondelete="cascade")
     website_indexed = fields.Boolean('Page Indexed', default=True)
     is_published = fields.Boolean()
-    is_new_page_template = fields.Boolean(string="New Page Template")
 
     # Page options
     header_overlay = fields.Boolean()
@@ -204,7 +204,6 @@ class ThemePage(models.Model):
             'view_id': view_id.id,
             'website_indexed': self.website_indexed,
             'is_published': self.is_published,
-            'is_new_page_template': self.is_new_page_template,
             'header_overlay': self.header_overlay,
             'header_color': self.header_color,
             'header_visible': self.header_visible,
@@ -223,13 +222,13 @@ class Theme(models.AbstractModel):
         'website.template_header_hamburger',
         'website.template_header_vertical',
         'website.template_header_sidebar',
+        'website.template_header_slogan',
+        'website.template_header_contact',
         'website.template_header_boxed',
-        'website.template_header_stretch',
-        'website.template_header_search',
-        'website.template_header_sales_one',
-        'website.template_header_sales_two',
-        'website.template_header_sales_three',
-        'website.template_header_sales_four',
+        'website.template_header_centered_logo',
+        'website.template_header_image',
+        'website.template_header_hamburger_full',
+        'website.template_header_magazine',
         # Default one, keep it last
         'website.template_header_default',
     ]
@@ -351,6 +350,16 @@ class Theme(models.AbstractModel):
     @api.model
     def disable_view(self, xml_id):
         self._toggle_view(xml_id, False)
+
+    @api.model
+    def enable_header_off_canvas(self):
+        """ Enabling off canvas require to enable quite a lot of template so
+            this shortcut was made to make it easier.
+        """
+        self.enable_view("website.option_header_off_canvas")
+        self.enable_view("website.option_header_off_canvas_template_header_hamburger")
+        self.enable_view("website.option_header_off_canvas_template_header_sidebar")
+        self.enable_view("website.option_header_off_canvas_template_header_hamburger_full")
 
 
 class IrUiView(models.Model):

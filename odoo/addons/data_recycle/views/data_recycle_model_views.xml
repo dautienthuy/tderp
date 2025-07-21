@@ -5,13 +5,13 @@
             <field name="name">Field Recyle Model List</field>
             <field name="model">data_recycle.model</field>
             <field name="arch" type="xml">
-                <list decoration-muted="not active">
+                <tree decoration-muted="not active">
                     <field name="name" />
                     <field name="res_model_id" />
                     <field name="recycle_mode" groups="base.group_no_one" />
                     <field name="recycle_action" groups="base.group_no_one" />
                     <field name="active" widget="boolean_toggle" />
-                </list>
+                </tree>
             </field>
         </record>
 
@@ -44,28 +44,28 @@
                             <group>
                                 <field name="recycle_mode" widget="radio" options="{'horizontal': true}" />
                                 <field name="recycle_action" widget="radio" options="{'horizontal': true}" />
-                                <field name="include_archived" invisible="recycle_action != 'unlink'"/>
+                                <field name="include_archived" attrs="{'invisible': [('recycle_action', '!=', 'unlink')]}"/>
 
                                 <!-- Manual cleaning -->
-                                <label for="notify_user_ids" invisible="recycle_mode == 'automatic'" />
-                                <div invisible="recycle_mode == 'automatic'">
+                                <label for="notify_user_ids" attrs="{'invisible': [('recycle_mode', '=', 'automatic')]}" />
+                                <div attrs="{'invisible': [('recycle_mode', '=', 'automatic')]}">
                                     <field name="notify_user_ids" widget="many2many_tags"  options="{'no_create': True, 'no_edit': True}" domain="[('share', '=', False)]" nolabel="1"/>
-                                    <div class="d-flex w-50" invisible="not notify_user_ids">
+                                    <div class="d-flex w-50" attrs="{'invisible': [('notify_user_ids', '=', [])]}">
                                         <span class="me-1">Every</span>
-                                        <field name="notify_frequency" required="notify_user_ids" />
-                                        <field name="notify_frequency_period" required="notify_user_ids" />
+                                        <field name="notify_frequency" attrs="{'required': [('notify_user_ids', '!=', [])]}" />
+                                        <field name="notify_frequency_period" attrs="{'required': [('notify_user_ids', '!=', [])]}" />
                                     </div>
                                 </div>
                             </group>
                         </group>
-                        <group invisible="res_model_id">
+                        <group attrs="{'invisible': [('res_model_id', '!=', False)]}">
                             <group>
                                 <div class="alert alert-info" role="alert" colspan="2">
                                     Select a model to configure recycling actions
                                 </div>
                             </group>
                         </group>
-                        <group invisible="not res_model_id">
+                        <group attrs="{'invisible': [('res_model_id', '=', False)]}">
                             <field name="domain" widget="domain" options="{'model': 'res_model_name'}"/>
                             <field name="time_field_id"/>
                             <field name="time_field_delta"/>
@@ -79,7 +79,7 @@
         <record model="ir.actions.act_window" id="action_data_recycle_config">
             <field name="name">Recyle Records Rules</field>
             <field name="res_model">data_recycle.model</field>
-            <field name="view_mode">list,form</field>
+            <field name="view_mode">tree,form</field>
             <field name="domain">['|', ('active', '=', False), ('active', '=', True)]</field>
         </record>
     </data>

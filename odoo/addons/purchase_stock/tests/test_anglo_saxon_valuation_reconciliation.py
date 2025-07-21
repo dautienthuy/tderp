@@ -1,26 +1,19 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import timedelta
 from freezegun import freeze_time
 
 from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import ValuationReconciliationTestCommon
-from odoo.tests import Form, tagged
+from odoo.tests.common import Form, tagged
 from odoo import Command, fields
 
 
 
 @tagged('post_install', '-at_install')
 class TestValuationReconciliation(ValuationReconciliationTestCommon):
-
     @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.other_currency = cls.setup_other_currency('EUR', rounding=0.001)
-
-    @classmethod
-    def collect_company_accounting_data(cls, company):
-        company_data = super().collect_company_accounting_data(company)
+    def setup_company_data(cls, company_name, chart_template=None, **kwargs):
+        company_data = super().setup_company_data(company_name, chart_template=chart_template, **kwargs)
 
         # Create stock config.
         company_data.update({
@@ -29,13 +22,14 @@ class TestValuationReconciliation(ValuationReconciliationTestCommon):
                 'code': 'STOCKDIFF',
                 'reconcile': True,
                 'account_type': 'asset_current',
+                'company_id': company_data['company'].id,
             }),
         })
         return company_data
 
     def _create_purchase(self, product, date, quantity=1.0, set_tax=False, price_unit=66.0, currency=False):
         if not currency:
-            currency = self.other_currency
+            currency = self.currency_data['currency']
         with freeze_time(date):
             rslt = self.env['purchase.order'].create({
                 'partner_id': self.partner_a.id,
@@ -60,7 +54,7 @@ class TestValuationReconciliation(ValuationReconciliationTestCommon):
             move_form = Form(self.env['account.move'].with_context(default_move_type='in_invoice', default_date=date))
             move_form.invoice_date = date
             move_form.partner_id = self.partner_a
-            move_form.currency_id = self.other_currency
+            move_form.currency_id = self.currency_data['currency']
             move_form.purchase_vendor_bill_id = self.env['purchase.bill.union'].browse(-purchase_order.id)
             return move_form.save()
 
@@ -105,25 +99,24 @@ class TestValuationReconciliation(ValuationReconciliationTestCommon):
                 active_ids=picking.ids, active_id=picking.ids[0], active_model='stock.picking'))
             stock_return_picking = stock_return_picking_form.save()
             stock_return_picking.product_return_moves.quantity = 1.0
-            stock_return_picking_action = stock_return_picking.action_create_returns()
+            stock_return_picking_action = stock_return_picking.create_returns()
             return_pick = self.env['stock.picking'].browse(stock_return_picking_action['res_id'])
             return_pick.action_assign()
-            return_pick.move_ids.quantity = 1
-            return_pick.move_ids.picked = True
+            return_pick.move_ids.quantity_done = 1
             return_pick._action_done()
 
         # Refund the invoice
         refund_invoice_wiz = self.env['account.move.reversal'].with_context(active_model="account.move", active_ids=[invoice.id]).create({
             'reason': 'test_invoice_shipment_refund',
+            'refund_method': 'cancel',
             'date': '2018-03-15',
             'journal_id': invoice.journal_id.id,
         })
-        new_invoice = self.env['account.move'].browse(refund_invoice_wiz.modify_moves()['res_id'])
-        refund_invoice = invoice.reversal_move_ids
+        refund_invoice = self.env['account.move'].browse(refund_invoice_wiz.reverse_moves()['res_id'])
+
         # Check the result
         self.assertEqual(invoice.payment_state, 'reversed', "Invoice should be in 'reversed' state")
         self.assertEqual(refund_invoice.payment_state, 'paid', "Refund should be in 'paid' state")
-        self.assertEqual(new_invoice.state, 'draft', "New invoice should be in 'draft' state")
         self.check_reconciliation(refund_invoice, return_pick)
 
     def test_multiple_shipments_invoices(self):
@@ -233,7 +226,7 @@ class TestValuationReconciliation(ValuationReconciliationTestCommon):
         date_accounting = '2021-01-03'
         rate_accounting = 26.0
 
-        foreign_currency = self.other_currency
+        foreign_currency = self.currency_data['currency']
         company_currency = self.env.company.currency_id
         self.env['res.currency.rate'].create([
         {
@@ -297,6 +290,7 @@ class TestValuationReconciliation(ValuationReconciliationTestCommon):
             'code': 'cash.basis.base.account',
             'name': 'cash_basis_base_account',
             'account_type': 'income',
+            'company_id': self.company_data['company'].id,
         })
         self.company_data['company'].account_cash_basis_base_account_id = cash_basis_base_account
 
@@ -304,12 +298,14 @@ class TestValuationReconciliation(ValuationReconciliationTestCommon):
             'code': 'cash.basis.transfer.account',
             'name': 'cash_basis_transfer_account',
             'account_type': 'income',
+            'company_id': self.company_data['company'].id,
         })
 
         tax_account_1 = self.env['account.account'].create({
             'code': 'tax.account.1',
             'name': 'tax_account_1',
             'account_type': 'income',
+            'company_id': self.company_data['company'].id,
         })
 
         tax_tags = self.env['account.account.tag'].create({
@@ -322,7 +318,6 @@ class TestValuationReconciliation(ValuationReconciliationTestCommon):
             'amount': 33.3333,
             'company_id': self.company_data['company'].id,
             'cash_basis_transition_account_id': cash_basis_transfer_account.id,
-            'type_tax_use': 'purchase',
             'tax_exigibility': 'on_payment',
             'invoice_repartition_line_ids': [
                 (0, 0, {
@@ -353,7 +348,7 @@ class TestValuationReconciliation(ValuationReconciliationTestCommon):
         product_A = self.env["product.product"].create(
             {
                 "name": "Product A",
-                "is_storable": True,
+                "type": "product",
                 "default_code": "prda",
                 "categ_id": self.stock_account_product_categ.id,
                 "taxes_id": [(5, 0, 0)],
@@ -412,14 +407,14 @@ class TestValuationReconciliation(ValuationReconciliationTestCommon):
         date_po_and_delivery = '2022-03-02'
         self.product_a.write({
             'categ_id': self.stock_account_product_categ,
-            'is_storable': True,
+            'detailed_type': 'product',
         })
         self.product_b.write({
             'categ_id': self.stock_account_product_categ,
-            'is_storable': True,
+            'detailed_type': 'product',
         })
         purchase_order = self.env['purchase.order'].create({
-            'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'order_line': [
                     Command.create({
                         'name': self.product_a.name,
@@ -456,7 +451,7 @@ class TestValuationReconciliation(ValuationReconciliationTestCommon):
         self.product_a.write({
             'standard_price': 27.0,
             'categ_id': self.stock_account_product_categ,
-            'is_storable': True,
+            'detailed_type': 'product',
         })
 
         self.stock_account_product_categ['property_cost_method'] = 'average'
@@ -475,9 +470,9 @@ class TestValuationReconciliation(ValuationReconciliationTestCommon):
             active_model='stock.picking'))
         stock_return_picking = stock_return_picking_form.save()
         stock_return_picking.product_return_moves.write({'quantity': 1000.0})
-        stock_return_picking_action = stock_return_picking.action_create_returns()
+        stock_return_picking_action = stock_return_picking.create_returns()
         return_pick = self.env['stock.picking'].browse(stock_return_picking_action['res_id'])
-        return_pick.move_line_ids.write({'quantity': 1000})
+        return_pick.move_line_ids.write({'qty_done': 1000})
         return_pick.button_validate()
 
         # create vendor bill
@@ -520,103 +515,6 @@ class TestValuationReconciliation(ValuationReconciliationTestCommon):
         picking2 = purchase_order2.picking_ids[0]
         self.assertEqual(picking2.state, 'done')
 
-    def test_currency_exchange_journal_items1(self):
-        """ Do symmetric rounding between receipt valuation journal items and bill journal items.
-        """
-        self.env.company.currency_id = self.env.ref('base.IQD').id
-        # FIXME: when rounding method is `round_per_line` ?
-        self.env.company.tax_calculation_rounding_method = 'round_globally'
-        product = self.test_product_delivery
-        product.standard_price = 500
-        self.stock_account_product_categ.property_cost_method = 'average'
-        self.env['res.currency.rate'].create({
-            'name': fields.Date.today(),
-            'company_rate': .00756,
-            'currency_id': self.env.ref('base.USD').id,
-            'company_id': self.env.company.id,
-        })
-        purchase_order = self.env['purchase.order'].create({
-            'partner_id': self.partner_a.id,
-            'currency_id': self.env.ref('base.USD').id,
-            'order_line': [Command.create({
-                'product_id': product.id,
-                'product_qty': 13,
-                'discount': 1,
-            })],
-        })
-        purchase_order.button_confirm()
-        receipt = purchase_order.picking_ids
-        receipt.button_validate()
-        pre_bill_remaining_value = purchase_order.picking_ids.move_ids.stock_valuation_layer_ids.remaining_value
-        purchase_order.action_create_invoice()
-        purchase_order.invoice_ids.invoice_date = fields.Date.today()
-        purchase_order.invoice_ids.action_post()
-        post_bill_remaining_value = purchase_order.picking_ids.move_ids.stock_valuation_layer_ids.remaining_value
-        self.assertEqual(post_bill_remaining_value, pre_bill_remaining_value)
-        stock_input_account, stock_valuation_account, tax_paid_account, accounts_payable_account = (
-            self.company_data['default_account_stock_in'],
-            self.company_data['default_account_stock_valuation'],
-            self.company_data['default_account_tax_purchase'],
-            self.company_data['default_account_payable'],
-        )
-        amls = self.env['account.move.line'].search([], order='id asc')
-        self.assertRecordValues(
-            amls,
-            [
-                {'account_id': stock_input_account.id,        'debit':    0.00,   'credit': 6435.00},
-                {'account_id': stock_valuation_account.id,    'debit': 6435.00,   'credit':    0.00},
-                {'account_id': stock_input_account.id,        'debit': 6435.00,   'credit':    0.00},
-                {'account_id': tax_paid_account.id,           'debit':  965.25,   'credit':    0.00},
-                {'account_id': accounts_payable_account.id,   'debit':    0.00,   'credit': 7400.25},
-            ]
-        )
-
-    def test_currency_exchange_journal_items2(self):
-        """ ^^^ With billing before reception"""
-        self.env.company.currency_id = self.env.ref('base.IQD').id
-        # FIXME: when rounding method is `round_per_line` ?
-        self.env.company.tax_calculation_rounding_method = 'round_globally'
-        product = self.test_product_order
-        product.write({'purchase_method': 'purchase', 'standard_price': 500})
-        self.env['res.currency.rate'].create({
-            'name': fields.Date.today(),
-            'company_rate': .00756,
-            'currency_id': self.env.ref('base.USD').id,
-            'company_id': self.env.company.id,
-        })
-        purchase_order = self.env['purchase.order'].create({
-            'partner_id': self.partner_a.id,
-            'currency_id': self.env.ref('base.USD').id,
-            'order_line': [Command.create({
-                'product_id': product.id,
-                'product_qty': 13,
-                'discount': 1,
-            })],
-        })
-        purchase_order.button_confirm()
-        purchase_order.action_create_invoice()
-        purchase_order.invoice_ids.invoice_date = fields.Date.today()
-        purchase_order.invoice_ids.action_post()
-        receipt = purchase_order.picking_ids
-        receipt.button_validate()
-        stock_input_account, stock_valuation_account, tax_paid_account, accounts_payable_account = (
-            self.company_data['default_account_stock_in'],
-            self.company_data['default_account_stock_valuation'],
-            self.company_data['default_account_tax_purchase'],
-            self.company_data['default_account_payable'],
-        )
-        amls = self.env['account.move.line'].search([], order='id asc')
-        self.assertRecordValues(
-            amls,
-            [
-                {'account_id': stock_input_account.id,        'debit': 6435.00,   'credit':    0.00},
-                {'account_id': tax_paid_account.id,           'debit':  965.25,   'credit':    0.00},
-                {'account_id': accounts_payable_account.id,   'debit':    0.00,   'credit': 7400.25},
-                {'account_id': stock_input_account.id,        'debit':    0.00,   'credit': 6435.00},
-                {'account_id': stock_valuation_account.id,    'debit': 6435.00,   'credit':    0.00},
-            ]
-        )
-
     def test_manual_cost_adjustment_journal_items_quantity(self):
         """ The quantity field of `account.move.line` should be permitted to be zero, e.g., in the
         case of modifying an automatically valuated product's cost.
@@ -624,7 +522,7 @@ class TestValuationReconciliation(ValuationReconciliationTestCommon):
         self.stock_account_product_categ.property_cost_method = 'average'
         self.product_a.write({
             'categ_id': self.stock_account_product_categ.id,
-            'is_storable': True,
+            'detailed_type': 'product',
         })
 
         purchase_order = self.env['purchase.order'].create({
@@ -636,7 +534,7 @@ class TestValuationReconciliation(ValuationReconciliationTestCommon):
             })],
         })
         purchase_order.button_confirm()
-        purchase_order.picking_ids.move_line_ids.quantity = 5
+        purchase_order.picking_ids.move_line_ids.qty_done = 5
         purchase_order.picking_ids.button_validate()
         with Form(self.product_a) as product_form:
             product_form.standard_price = 3
@@ -656,7 +554,6 @@ class TestValuationReconciliation(ValuationReconciliationTestCommon):
         (A) In the case where that date is in the future (relative to the actual User time) and
         (B) The date has an associated currency rate which differs from the one used at reception
         """
-        self.env.ref('base.EUR').active = True
         product = self.test_product_order
         self.env['res.currency.rate'].create([{
             'name': name,
@@ -665,9 +562,9 @@ class TestValuationReconciliation(ValuationReconciliationTestCommon):
             'company_id': self.env.company.id,
         } for (name, rate) in [('2025-01-06', 0.8), ('2025-01-07', 0.7), ('2025-01-08', 0.8)]])
         for date in ('2025-01-07', '2025-01-06', '2025-01-08'):
-            purchase_order = self._create_purchase(product, '2025-01-07', quantity=1, price_unit=10, currency=self.env.ref('base.EUR'))
+            purchase_order = self._create_purchase(product, '2025-01-07', quantity=1, set_tax=True, price_unit=10, currency=self.env.ref('base.EUR'))
             receipt = purchase_order.picking_ids
-            receipt.move_ids.quantity = 1
+            receipt.move_ids.quantity_done = 1
             receipt.button_validate()
             purchase_order.action_create_invoice()
             bill = purchase_order.invoice_ids
@@ -686,7 +583,7 @@ class TestValuationReconciliation(ValuationReconciliationTestCommon):
         relevant_amls = self.env['account.move.line'].search([
             ('journal_id', 'in', (stock_journal_id, bills_journal_id, exchg_journal_id)),
         ], order='id asc')
-        self.assertEqual(len(relevant_amls), 16)
+        self.assertEqual(len(relevant_amls), 19)
         self.assertEqual(self.env['account.journal'].browse(exchg_journal_id).entries_count, 0)
         self.assertRecordValues(
             relevant_amls,
@@ -695,19 +592,22 @@ class TestValuationReconciliation(ValuationReconciliationTestCommon):
                 {'journal_id': stock_journal_id,    'balance': -14.29},
                 {'journal_id': stock_journal_id,    'balance':  14.29},
                 {'journal_id': bills_journal_id,    'balance':  14.29},
-                {'journal_id': bills_journal_id,    'balance': -14.29},
+                {'journal_id': bills_journal_id,    'balance':   2.14},
+                {'journal_id': bills_journal_id,    'balance': -16.43},
                 # back-dated bill
                 {'journal_id': stock_journal_id,    'balance': -14.29},
                 {'journal_id': stock_journal_id,    'balance':  14.29},
                 {'journal_id': bills_journal_id,    'balance':  12.50},
-                {'journal_id': bills_journal_id,    'balance': -12.50},
+                {'journal_id': bills_journal_id,    'balance':   1.88},
+                {'journal_id': bills_journal_id,    'balance': -14.38},
                 {'journal_id': stock_journal_id,    'balance':   1.79},
                 {'journal_id': stock_journal_id,    'balance':  -1.79},
                 # forward-dated bill
                 {'journal_id': stock_journal_id,    'balance': -14.29},
                 {'journal_id': stock_journal_id,    'balance':  14.29},
                 {'journal_id': bills_journal_id,    'balance':  12.50},
-                {'journal_id': bills_journal_id,    'balance': -12.50},
+                {'journal_id': bills_journal_id,    'balance':   1.88},
+                {'journal_id': bills_journal_id,    'balance': -14.38},
                 {'journal_id': stock_journal_id,    'balance':   1.79},
                 {'journal_id': stock_journal_id,    'balance':  -1.79},
             ],

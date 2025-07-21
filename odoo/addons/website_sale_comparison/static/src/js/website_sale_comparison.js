@@ -1,15 +1,16 @@
-/** @odoo-module **/
+odoo.define('website_sale_comparison.comparison', function (require) {
+'use strict';
 
-import { Mutex } from "@web/core/utils/concurrency";
-import publicWidget from "@web/legacy/js/public/public_widget";
-import { cookie } from "@web/core/browser/cookie";;
-import VariantMixin from "@website_sale/js/sale_variant_mixin";
-import website_sale_utils from "@website_sale/js/website_sale_utils";
-import { _t } from "@web/core/l10n/translation";
-import { rpc } from "@web/core/network/rpc";
-import { renderToString } from "@web/core/utils/render";
-
+var concurrency = require('web.concurrency');
+var core = require('web.core');
+var publicWidget = require('web.public.widget');
+const {getCookie, setCookie} = require('web.utils.cookies');
+var VariantMixin = require('sale.VariantMixin');
+var website_sale_utils = require('website_sale.utils');
 const cartHandlerMixin = website_sale_utils.cartHandlerMixin;
+
+var qweb = core.qweb;
+var _t = core._t;
 
 // VariantMixin events are overridden on purpose here
 // to avoid registering them more than once since they are already registered
@@ -27,9 +28,9 @@ var ProductComparison = publicWidget.Widget.extend(VariantMixin, {
         this._super.apply(this, arguments);
 
         this.product_data = {};
-        this.comparelist_product_ids = JSON.parse(cookie.get('comparelist_product_ids') || '[]');
+        this.comparelist_product_ids = JSON.parse(getCookie('comparelist_product_ids') || '[]');
         this.product_compare_limit = 4;
-        this.guard = new Mutex();
+        this.guard = new concurrency.Mutex();
     },
     /**
      * @override
@@ -51,7 +52,7 @@ var ProductComparison = publicWidget.Widget.extend(VariantMixin, {
             },
             container: '.o_product_feature_panel',
             placement: 'top',
-            template: renderToString('popover'),
+            template: qweb.render('popover'),
             content: function () {
                 return $('#comparelist .o_product_panel_content').html();
             }
@@ -68,7 +69,7 @@ var ProductComparison = publicWidget.Widget.extend(VariantMixin, {
             self._removeFromComparelist(ev);
             self.guard.exec(function() {
                 const newLink = '/shop/compare?products=' + encodeURIComponent(self.comparelist_product_ids);
-                window.location.href = Object.keys(self.comparelist_product_ids || {}).length === 0 ? '/shop' : newLink;
+                window.location.href = _.isEmpty(self.comparelist_product_ids) ? '/shop' : newLink;
             });
         });
 
@@ -106,18 +107,12 @@ var ProductComparison = publicWidget.Widget.extend(VariantMixin, {
                 $form,
                 productId,
                 $form.find('.product_template_id').val(),
+                false
             ).then(function (productId) {
                 productId = parseInt(productId, 10) || parseInt($elem.data('product-product-id'), 10);
                 if (!productId) {
                     return;
                 }
-                // Made changes based on `_hideBottomFixedElements` logic:
-                // bottom-fixed elements (e.g. compare list button) get
-                // hidden if overlapped by modals. In our case, the cookie
-                // modal was hiding it. To avoid the compare button animating
-                // to the top-left, we now ensure it stays visible when an
-                // item is added to the compare list.
-                self.el.classList.remove("o_bottom_fixed_element_hidden");
                 self._addNewProducts(productId).then(function () {
                     website_sale_utils.animateClone(
                         $('#comparelist .o_product_panel_header'),
@@ -142,17 +137,16 @@ var ProductComparison = publicWidget.Widget.extend(VariantMixin, {
      */
     _loadProducts: function (product_ids) {
         var self = this;
-        const cookies = JSON.parse(cookie.get('comparelist_product_ids') || '[]');
-        if (product_ids.length == 0 && cookies.length == 0) {
-            return Promise.resolve(true);
-        }
-        return rpc('/shop/get_product_data', {
-            product_ids: product_ids,
-            cookies: cookies,
+        return this._rpc({
+            route: '/shop/get_product_data',
+            params: {
+                product_ids: product_ids,
+                cookies: JSON.parse(getCookie('comparelist_product_ids') || '[]'),
+            },
         }).then(function (data) {
             self.comparelist_product_ids = JSON.parse(data.cookies);
             delete data.cookies;
-            Object.values(data).forEach((product) => {
+            _.each(data, function (product) {
                 self.product_data[product.product.id] = product;
             });
             if (product_ids.length > Object.keys(data).length) {
@@ -179,9 +173,9 @@ var ProductComparison = publicWidget.Widget.extend(VariantMixin, {
     _addNewProductsImpl: function (product_id) {
         var self = this;
         $('.o_product_feature_panel').addClass('d-md-block');
-        if (!self.comparelist_product_ids.includes(product_id)) {
+        if (!_.contains(self.comparelist_product_ids, product_id)) {
             self.comparelist_product_ids.push(product_id);
-            if (Object.prototype.hasOwnProperty.call(self.product_data, product_id)) {
+            if (_.has(self.product_data, product_id)){
                 self._updateContent();
             } else {
                 return self._loadProducts([product_id]).then(function () {
@@ -198,7 +192,7 @@ var ProductComparison = publicWidget.Widget.extend(VariantMixin, {
     _updateContent: function (force) {
         var self = this;
         this.$('.o_comparelist_products .o_product_row').remove();
-        this.comparelist_product_ids.forEach((res) => {
+        _.each(this.comparelist_product_ids, function (res) {
             if (self.product_data.hasOwnProperty(res)) {
                 // It is possible that we do not have the required product_data for all IDs in
                 // comparelist_product_ids
@@ -221,9 +215,7 @@ var ProductComparison = publicWidget.Widget.extend(VariantMixin, {
     },
     _removeFromComparelistImpl: function (e) {
         var target = $(e.target.closest('.o_comparelist_remove, .o_remove'));
-        this.comparelist_product_ids = this.comparelist_product_ids.filter(
-            (comp) => comp !== target.data("product_product_id")
-        );
+        this.comparelist_product_ids = _.without(this.comparelist_product_ids, target.data('product_product_id'));
         target.parents('.o_product_row').remove();
         this._updateCookie();
         $('.o_comparelist_limit_warning').hide();
@@ -233,7 +225,7 @@ var ProductComparison = publicWidget.Widget.extend(VariantMixin, {
      * @private
      */
     _updateCookie: function () {
-        cookie.set('comparelist_product_ids', JSON.stringify(this.comparelist_product_ids), 24 * 60 * 60 * 365, 'required');
+        setCookie('comparelist_product_ids', JSON.stringify(this.comparelist_product_ids), 24 * 60 * 60 * 365, 'required');
         this._updateComparelistView();
     },
     /**
@@ -242,7 +234,7 @@ var ProductComparison = publicWidget.Widget.extend(VariantMixin, {
     _updateComparelistView: function () {
         this.$('.o_product_circle').text(this.comparelist_product_ids.length);
         this.$('.o_comparelist_button').removeClass('d-md-block');
-        if (Object.keys(this.comparelist_product_ids || {}).length === 0) {
+        if (_.isEmpty(this.comparelist_product_ids)) {
             $('.o_product_feature_panel').removeClass('d-md-block');
         } else {
             $('.o_product_feature_panel').addClass('d-md-block');
@@ -314,7 +306,7 @@ publicWidget.registry.ProductComparison = publicWidget.Widget.extend(cartHandler
         const $form = $(ev.currentTarget);
         const cellIndex = $(ev.currentTarget).closest('td')[0].cellIndex;
         this.getCartHandlerOptions(ev);
-        // Override product image container for animation.
+        // Override product image container for animation. 
         this.$itemImgContainer = this.$('#o_comparelist_table tr').first().find('td').eq(cellIndex);
         const $inputProduct = $form.find('input[type="hidden"][name="product_id"]').first();
         const productId = parseInt($inputProduct.val());
@@ -341,4 +333,5 @@ publicWidget.registry.ProductComparison = publicWidget.Widget.extend(cartHandler
         };
     }
 });
-export default ProductComparison;
+return ProductComparison;
+});

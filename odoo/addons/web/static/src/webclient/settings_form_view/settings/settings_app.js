@@ -1,14 +1,8 @@
+/** @odoo-module **/
+
 import { Component, useState, useEffect, useRef } from "@odoo/owl";
 
 export class SettingsApp extends Component {
-    static template = "web.SettingsApp";
-    static props = {
-        string: String,
-        imgurl: String,
-        key: String,
-        selectedTab: { type: String, optional: 1 },
-        slots: Object,
-    };
     setup() {
         this.state = useState({
             search: this.env.searchState,
@@ -32,3 +26,4 @@ export class SettingsApp extends Component {
         );
     }
 }
+SettingsApp.template = "web.SettingsApp";

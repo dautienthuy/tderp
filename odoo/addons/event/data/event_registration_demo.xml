@@ -17,8 +17,8 @@
         <field name="create_date" eval="DateTime.now() - relativedelta(days=2)"/>
         <field name="event_id" ref="event.event_0"/>
         <field name="event_ticket_id" ref="event.event_0_ticket_0"/>
-        <field name="name">Samar Basra</field>
-        <field name="email">Samar@test.example.com</field>
+        <field name="name">Tucker Carlson</field>
+        <field name="email">tuck@test.example.com</field>
         <field name="partner_id" eval="False"/>
     </record>
 
@@ -157,6 +157,15 @@
         <field name="event_ticket_id" ref="event.event_7_ticket_2"/>
         <field name="partner_id" ref="base.res_partner_address_25"/>
     </record>
+
+    <function model="event.registration"
+        name="action_confirm"
+        context="{'install_mode' : True}"
+        eval="[[ref('event_registration_0_0'), ref('event_registration_0_1'),
+                ref('event_registration_1_0'), ref('event_registration_1_1'), ref('event_registration_1_2'),
+                ref('event_registration_2_0'), ref('event_registration_2_1'), ref('event_registration_2_2'), ref('event_registration_2_3'),
+                ref('event_registration_4_2')]]"
+    />
 
     <function model="event.registration"
         name="action_set_done"

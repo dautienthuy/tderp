@@ -3,23 +3,32 @@
 # 	* website_event_meet
 # 
 # Translators:
-# lhmflexerp <lhm@flexerp.dk>, 2024
+# Martin Trigaux, 2022
 # Sanne Kristensen <sanne@vkdata.dk>, 2024
-# Martin Trigaux, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:56+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: Martin Trigaux, 2024\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:56+0000\n"
+"Last-Translator: Sanne Kristensen <sanne@vkdata.dk>, 2024\n"
 "Language-Team: Danish (https://app.transifex.com/odoo/teams/41243/da/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: da\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: website_event_meet
+#: model_terms:ir.ui.view,arch_db:website_event_meet.meeting_room_card
+msgid "&amp;nbsp;"
+msgstr "&amp;nbsp;"
+
+#. module: website_event_meet
+#: model_terms:ir.ui.view,arch_db:website_event_meet.meeting_room_aside
+msgid "<b>&amp;#9900;&amp;nbsp;</b>"
+msgstr "<b>&amp;#9900;&amp;nbsp;</b>"
 
 #. module: website_event_meet
 #: model_terms:ir.ui.view,arch_db:website_event_meet.meeting_room_main
@@ -34,11 +43,28 @@ msgid "<span class=\"badge text-bg-danger\">Unpublished</span>"
 msgstr ""
 
 #. module: website_event_meet
+#: model_terms:ir.ui.view,arch_db:website_event_meet.meeting_room_aside
+msgid "<span class=\"h5 m-3\">Other Rooms</span>"
+msgstr ""
+
+#. module: website_event_meet
+#: model_terms:ir.ui.view,arch_db:website_event_meet.community_aside
+msgid "<span>Create a Room</span>"
+msgstr "<span>Opret et Rum</span>"
+
+#. module: website_event_meet
+#: model_terms:ir.ui.view,arch_db:website_event_meet.community_main
+msgid "<span>Join a room</span>"
+msgstr "<span>Deltag i et rum</span>"
+
+#. module: website_event_meet
 #: model_terms:ir.ui.view,arch_db:website_event_meet.meeting_room_main
 msgid ""
-"<span>Oops! This room is full!</span><br/>Come back later to have a chat "
+"<span>Oops! This room is full !</span><br/>Come back later to have a chat "
 "with us!"
 msgstr ""
+"<span>Ups! Dette rum er fyldt !</span><br/>Kom tilbag senere for at få en "
+"snak med os!"
 
 #. module: website_event_meet
 #: model_terms:ir.ui.view,arch_db:website_event_meet.meeting_room_card
@@ -65,11 +91,6 @@ msgid "All Languages"
 msgstr "Alle Sprog"
 
 #. module: website_event_meet
-#: model_terms:ir.ui.view,arch_db:website_event_meet.event_meet_main
-msgid "All Rooms"
-msgstr ""
-
-#. module: website_event_meet
 #: model:ir.model.fields,field_description:website_event_meet.field_event_event__meeting_room_allow_creation
 #: model:ir.model.fields,field_description:website_event_meet.field_event_type__meeting_room_allow_creation
 msgid "Allow Room Creation"
@@ -78,14 +99,16 @@ msgstr "Tillad Rum Oprettelse"
 #. module: website_event_meet
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/js/website_event_meeting_room.js:0
-msgid "Are you sure you want to close this room?"
-msgstr ""
+#, python-format
+msgid "Are you sure you want to close this room ?"
+msgstr "Er du sikker på du vil lukke dette rum ?"
 
 #. module: website_event_meet
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/js/website_event_meeting_room.js:0
-msgid "Are you sure you want to duplicate this room?"
-msgstr ""
+#, python-format
+msgid "Are you sure you want to duplicate this room ?"
+msgstr "Er du sikker på du vil kopiere dette rum ?"
 
 #. module: website_event_meet
 #: model:ir.model.fields,field_description:website_event_meet.field_event_meeting_room__target_audience
@@ -94,13 +117,9 @@ msgid "Audience"
 msgstr "Publikum"
 
 #. module: website_event_meet
-#: model_terms:ir.ui.view,arch_db:website_event_meet.event_meet_main
-msgid "Back to all Rooms"
-msgstr ""
-
-#. module: website_event_meet
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
+#, python-format
 msgid ""
 "Be sure you are ready to spend at least 10 minutes in the room if you want "
 "to initiate a new topic."
@@ -121,6 +140,7 @@ msgstr "Kan udgives "
 #. module: website_event_meet
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
+#, python-format
 msgid "Capacity"
 msgstr "Kapacitet"
 
@@ -146,6 +166,7 @@ msgstr "Luk"
 #. module: website_event_meet
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
+#, python-format
 msgid "Create"
 msgstr "Opret"
 
@@ -172,15 +193,9 @@ msgid "Created on"
 msgstr "Oprettet den"
 
 #. module: website_event_meet
-#: model_terms:ir.ui.view,arch_db:website_event_meet.event_meet
-msgid ""
-"DROP BUILDING BLOCKS HERE TO MAKE THEM AVAILABLE ACROSS ALL PROPOSAL PAGES "
-"OF ALL EVENTS"
-msgstr ""
-
-#. module: website_event_meet
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
+#, python-format
 msgid "Discard"
 msgstr "Kassér"
 
@@ -258,11 +273,6 @@ msgid "Is Published"
 msgstr "Er udgivet"
 
 #. module: website_event_meet
-#: model_terms:ir.ui.view,arch_db:website_event_meet.community_main
-msgid "Join a room"
-msgstr ""
-
-#. module: website_event_meet
 #: model_terms:ir.ui.view,arch_db:website_event_meet.meeting_room_card
 #: model_terms:ir.ui.view,arch_db:website_event_meet.meeting_room_main
 msgid "Join us next time to chat about"
@@ -277,6 +287,7 @@ msgstr "Slut dig til os der for at snakke om"
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
 #: model:ir.model.fields,field_description:website_event_meet.field_event_meeting_room__room_lang_id
+#, python-format
 msgid "Language"
 msgstr "Sprog"
 
@@ -284,6 +295,11 @@ msgstr "Sprog"
 #: model_terms:ir.ui.view,arch_db:website_event_meet.community_main
 msgid "Languages Menu"
 msgstr "Sprog Menu"
+
+#. module: website_event_meet
+#: model:ir.model.fields,field_description:website_event_meet.field_event_meeting_room____last_update
+msgid "Last Modified on"
+msgstr "Sidst ændret den"
 
 #. module: website_event_meet
 #: model:ir.model.fields,field_description:website_event_meet.field_event_meeting_room__write_uid
@@ -303,6 +319,7 @@ msgstr "Sidste aktivitet"
 #. module: website_event_meet
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
+#, python-format
 msgid "Launch a new topic"
 msgstr "Start et nyt emne"
 
@@ -337,7 +354,7 @@ msgstr "Mødelokale"
 #. module: website_event_meet
 #: model:ir.model.fields,field_description:website_event_meet.field_event_event__meeting_room_ids
 msgid "Meeting rooms"
-msgstr "Mødelokaler"
+msgstr "Møderum"
 
 #. module: website_event_meet
 #: model:ir.model.fields,field_description:website_event_meet.field_website_event_menu__menu_type
@@ -348,11 +365,6 @@ msgstr "Menutype"
 #: model_terms:ir.ui.view,arch_db:website_event_meet.community_main
 msgid "No Room Open"
 msgstr "Ingen Åbne Rum"
-
-#. module: website_event_meet
-#: model_terms:ir.ui.view,arch_db:website_event_meet.meeting_room_aside
-msgid "Other Rooms"
-msgstr ""
 
 #. module: website_event_meet
 #: model:ir.model.fields,field_description:website_event_meet.field_event_meeting_room__room_participant_count
@@ -366,8 +378,8 @@ msgstr "Højeste antal deltagere"
 
 #. module: website_event_meet
 #: model:event.meeting.room,name:website_event_meet.event_meeting_room_1
-msgid "Reducing the ecological footprint with wood?"
-msgstr ""
+msgid "Reducing the ecological footprint with wood ?"
+msgstr "Reducering af det økologiske fodaftryk via træ ?"
 
 #. module: website_event_meet
 #: model_terms:ir.ui.view,arch_db:website_event_meet.event_meeting_room_view_form
@@ -392,6 +404,7 @@ msgstr "Rum Navn"
 #. module: website_event_meet
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
+#, python-format
 msgid "Room Topic"
 msgstr "Rum Emne"
 
@@ -425,6 +438,7 @@ msgstr "Del dine råd til at reducere det økologiske fodaftryk via træ."
 #. module: website_event_meet
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
+#, python-format
 msgid "Short Summary"
 msgstr "Kort resumé"
 
@@ -442,6 +456,7 @@ msgstr "Opsummering"
 #. module: website_event_meet
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
+#, python-format
 msgid "Target People"
 msgstr "Målret Folk"
 
@@ -453,10 +468,13 @@ msgstr "Begivenheden"
 #. module: website_event_meet
 #. odoo-python
 #: code:addons/website_event_meet/controllers/website_event_main.py:0
+#, python-format
 msgid ""
-"The event %(name)s starts on %(date_begin)s (%(timezone)s).\n"
-"Join us there to chat about \"%(subject)s\"!"
+"The event %s starts on %s (%s). \n"
+"Join us there to chat about \"%s\" !"
 msgstr ""
+"Begivenheden %s starter den %s (%s).\n"
+"Slut dig til os der for at snakke om \"%s\" !"
 
 #. module: website_event_meet
 #: model:ir.model.fields,help:website_event_meet.field_event_meeting_room__website_url
@@ -498,8 +516,8 @@ msgstr "Vos meubles préférés ?"
 
 #. module: website_event_meet
 #: model_terms:ir.ui.view,arch_db:website_event_meet.community_aside
-msgid "Want to create your own discussion room?"
-msgstr ""
+msgid "Want to create your own discussion room ?"
+msgstr "Vil du oprette dit eget diskussions rum ?"
 
 #. module: website_event_meet
 #: model:ir.model,name:website_event_meet.model_website_event_menu
@@ -525,6 +543,7 @@ msgstr "klient(er)"
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
 #: model_terms:ir.ui.view,arch_db:website_event_meet.event_meeting_room_view_form
+#, python-format
 msgid "e.g. Accountants"
 msgstr "f.eks. Revisorer"
 
@@ -532,6 +551,7 @@ msgstr "f.eks. Revisorer"
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
 #: model_terms:ir.ui.view,arch_db:website_event_meet.event_meeting_room_view_form
+#, python-format
 msgid "e.g. Finance"
 msgstr "f.eks. Finans"
 
@@ -539,6 +559,7 @@ msgstr "f.eks. Finans"
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
 #: model_terms:ir.ui.view,arch_db:website_event_meet.event_meeting_room_view_form
+#, python-format
 msgid "e.g. Let's talk about Corporate Finance"
 msgstr "f.eks. Lad os snakke om Selskabs Finans"
 

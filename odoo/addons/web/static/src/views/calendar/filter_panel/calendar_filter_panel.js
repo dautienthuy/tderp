@@ -1,26 +1,21 @@
+/** @odoo-module **/
+
+import { usePopover } from "@web/core/popover/popover_hook";
 import { _t } from "@web/core/l10n/translation";
 import { AutoComplete } from "@web/core/autocomplete/autocomplete";
 import { Transition } from "@web/core/transition";
 import { useOwnedDialogs, useService } from "@web/core/utils/hooks";
+import { sprintf } from "@web/core/utils/strings";
 import { SelectCreateDialog } from "@web/views/view_dialogs/select_create_dialog";
 import { getColor } from "../colors";
 import { Component, useState } from "@odoo/owl";
 
+class CalendarFilterTooltip extends Component {}
+CalendarFilterTooltip.template = "web.CalendarFilterPanel.tooltip";
+
 let nextId = 1;
 
 export class CalendarFilterPanel extends Component {
-    static components = {
-        AutoComplete,
-        Transition,
-    };
-    static template = "web.CalendarFilterPanel";
-    static subTemplates = {
-        filter: "web.CalendarFilterPanel.filter",
-    };
-    static props = {
-        model: Object,
-    };
-
     setup() {
         this.state = useState({
             collapsed: {},
@@ -28,6 +23,8 @@ export class CalendarFilterPanel extends Component {
         });
         this.addDialog = useOwnedDialogs();
         this.orm = useService("orm");
+        this.popover = usePopover();
+        this.removePopover = null;
     }
 
     getFilterColor(filter) {
@@ -38,12 +35,11 @@ export class CalendarFilterPanel extends Component {
         return {
             autoSelect: true,
             resetOnSelect: true,
-            placeholder: _t("+ Add %s", section.label),
+            placeholder: `+ ${_t("Add")} ${section.label}`,
             sources: [
                 {
                     placeholder: _t("Loading..."),
                     options: (request) => this.loadSource(section, request),
-                    optionTemplate: "web.CalendarFilterPanel.autocomplete.options",
                 },
             ],
             onSelect: (option, params = {}) => {
@@ -73,14 +69,12 @@ export class CalendarFilterPanel extends Component {
         const options = records.map((result) => ({
             value: result[0],
             label: result[1],
-            model: resModel,
         }));
 
         if (records.length > 7) {
             options.push({
                 label: _t("Search More..."),
                 action: () => this.onSearchMore(section, resModel, domain, request),
-                classList: "o_calendar_dropdown_option",
             });
         }
 
@@ -105,28 +99,21 @@ export class CalendarFilterPanel extends Component {
                 context: {},
             });
             dynamicFilters.push({
-                description: _t("Quick search: %s", request),
+                description: sprintf(_t("Quick search: %s"), request),
                 domain: [["id", "in", nameGets.map((nameGet) => nameGet[0])]],
             });
         }
-        const title = _t("Search: %s", section.label);
-        const dialogProps = {
+        const title = sprintf(_t("Search: %s"), section.label);
+        this.addDialog(SelectCreateDialog, {
             title,
             noCreate: true,
-            multiSelect: true,
+            multiSelect: false,
             resModel,
             context: {},
             domain,
-            onSelected: (resId) => this.props.model.createFilter(section.fieldName, resId),
+            onSelected: ([resId]) => this.props.model.createFilter(section.fieldName, resId),
             dynamicFilters,
-        };
-
-        const updatedProps = this.updateSelectCreateDialogProps(dialogProps);
-        this.addDialog(SelectCreateDialog, updatedProps);
-    }
-
-    updateSelectCreateDialogProps(props) {
-        return props;
+        });
     }
 
     get nextFilterId() {
@@ -152,15 +139,10 @@ export class CalendarFilterPanel extends Component {
             if (a.type === b.type) {
                 const va = a.value ? -1 : 0;
                 const vb = b.value ? -1 : 0;
-                //Condition to put unvaluable item (eg: Open Shifts) at the end of the sorted list.
                 if (a.type === "dynamic" && va !== vb) {
                     return va - vb;
                 }
-                return a.label.localeCompare(b.label, undefined, {
-                    numeric: true,
-                    sensitivity: "base",
-                    ignorePunctuation: true,
-                });
+                return b.label.localeCompare(a.label);
             } else {
                 return this.getFilterTypePriority(a.type) - this.getFilterTypePriority(b.type);
             }
@@ -175,6 +157,13 @@ export class CalendarFilterPanel extends Component {
 
     isSectionCollapsed(section) {
         return this.state.collapsed[section.fieldName] || false;
+    }
+
+    closeTooltip() {
+        if (this.removePopover) {
+            this.removePopover();
+            this.removePopover = null;
+        }
     }
 
     onFilterInputChange(section, filter, ev) {
@@ -193,6 +182,28 @@ export class CalendarFilterPanel extends Component {
         this.props.model.updateFilters(section.fieldName, filters);
     }
 
+    onFilterMouseEnter(section, filter, ev) {
+        this.closeTooltip();
+        if (!section.hasAvatar || !filter.hasAvatar) {
+            return;
+        }
+
+        this.removePopover = this.popover.add(
+            ev.currentTarget,
+            CalendarFilterTooltip,
+            { section, filter },
+            {
+                closeOnClickAway: false,
+                popoverClass: "o-calendar-filter--tooltip mw-25",
+                position: "top",
+            }
+        );
+    }
+
+    onFilterMouseLeave() {
+        this.closeTooltip();
+    }
+
     onFilterRemoveBtnClick(section, filter) {
         this.props.model.unlinkFilter(section.fieldName, filter.recordId);
     }
@@ -202,3 +213,12 @@ export class CalendarFilterPanel extends Component {
         this.props.model.createFilter(fieldName, filterValue);
     }
 }
+
+CalendarFilterPanel.components = {
+    AutoComplete,
+    Transition,
+};
+CalendarFilterPanel.template = "web.CalendarFilterPanel";
+CalendarFilterPanel.subTemplates = {
+    filter: "web.CalendarFilterPanel.filter",
+};

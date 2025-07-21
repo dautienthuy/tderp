@@ -1,20 +1,18 @@
-import { jsToPyLocale } from "@web/core/l10n/utils";
-import { _t } from "@web/core/l10n/translation";
+/** @odoo-module **/
+
 import { registry } from '@web/core/registry';
-import { user } from "@web/core/user";
-import { loadBundle } from "@web/core/assets";
-import { ensureJQuery } from "@web/core/ensure_jquery";
 import { isVisible } from "@web/core/utils/ui";
+import { getWysiwygClass } from 'web_editor.loader';
 
 import { FullscreenIndication } from '../components/fullscreen_indication/fullscreen_indication';
 import { WebsiteLoader } from '../components/website_loader/website_loader';
-import { reactive, EventBus } from "@odoo/owl";
+
+const { reactive, EventBus } = owl;
 
 const websiteSystrayRegistry = registry.category('website_systray');
 
-// TODO this is duplicated in website_root at least, it should be a shared util
 export const unslugHtmlDataObject = (repr) => {
-    const match = repr && repr.match(/(.+)\((-?\d+),(.*)\)/);
+    const match = repr && repr.match(/(.+)\((\d+),(.*)\)/);
     if (!match) {
         return null;
     }
@@ -27,8 +25,8 @@ export const unslugHtmlDataObject = (repr) => {
 const ANONYMOUS_PROCESS_ID = 'ANONYMOUS_PROCESS_ID';
 
 export const websiteService = {
-    dependencies: ['orm', 'action', 'hotkey'],
-    async start(env, { orm, action, hotkey }) {
+    dependencies: ['orm', 'action', 'user', 'dialog', 'hotkey'],
+    async start(env, { orm, action, user, dialog, hotkey }) {
         let websites = [];
         let currentWebsiteId;
         let currentMetadata = {};
@@ -37,6 +35,7 @@ export const websiteService = {
         let contentWindow;
         let lastUrl;
         let websiteRootInstance;
+        let Wysiwyg;
         let isRestrictedEditor;
         let isDesigner;
         let hasMultiWebsites;
@@ -49,7 +48,7 @@ export const websiteService = {
 
         const context = reactive({
             showNewContentModal: false,
-            showResourceEditor: false,
+            showAceEditor: false,
             edition: false,
             isPublicRootReady: false,
             snippetsLoaded: false,
@@ -126,7 +125,7 @@ export const websiteService = {
                 if (!isWebsitePage) {
                     currentMetadata = {};
                 } else {
-                    const { mainObject, seoObject, isPublished, canOptimizeSeo, canPublish, editableInBackend, translatable, viewXmlid, defaultLangName, langName } = dataset;
+                    const { mainObject, seoObject, isPublished, canOptimizeSeo, canPublish, editableInBackend, translatable, viewXmlid } = dataset;
                     // We ignore multiple menus with the same `content_menu_id`
                     // in the DOM, since it's possible to have different
                     // templates for the same content menu (E.g. used for a
@@ -146,7 +145,9 @@ export const websiteService = {
                         mainObject: unslugHtmlDataObject(mainObject),
                         seoObject: unslugHtmlDataObject(seoObject),
                         isPublished: isPublished === 'True',
-                        canOptimizeSeo: canOptimizeSeo === 'True',
+                        // TODO (master): Remove `undefined` check and replace
+                        // `'1'` by `'True'`. See comment on `website.layout`.
+                        canOptimizeSeo: canOptimizeSeo === undefined ? mainObject : canOptimizeSeo === '1',
                         canPublish: canPublish === 'True',
                         editableInBackend: editableInBackend === 'True',
                         title: document.title,
@@ -158,9 +159,7 @@ export const websiteService = {
                         // denominator of editable pages.
                         editable: !!document.getElementById('wrapwrap'),
                         viewXmlid: viewXmlid,
-                        lang: jsToPyLocale(document.documentElement.getAttribute("lang")),
-                        defaultLangName: defaultLangName,
-                        langName: langName,
+                        lang: document.documentElement.getAttribute('lang').replace('-', '_'),
                         direction: document.documentElement.querySelector('#wrapwrap.o_rtl') ? 'rtl' : 'ltr',
                     };
                 }
@@ -238,8 +237,13 @@ export const websiteService = {
                 websites = [...(await orm.searchRead('website', [], ['domain', 'id', 'name']))];
             },
             async loadWysiwyg() {
-                await ensureJQuery();
-                await loadBundle('website.backend_assets_all_wysiwyg');
+                if (!Wysiwyg) {
+                    Wysiwyg = await getWysiwygClass({
+                        moduleName: 'website.wysiwyg',
+                        additionnalAssets: ['website.assets_wysiwyg']
+                    });
+                }
+                return Wysiwyg;
             },
             blockPreview(showLoader, processId) {
                 if (!blockingProcesses.length) {
@@ -261,9 +265,6 @@ export const websiteService = {
             },
             hideLoader() {
                 bus.trigger('HIDE-WEBSITE-LOADER');
-            },
-            prepareOutLoader() {
-                bus.trigger("PREPARE-OUT-WEBSITE-LOADER");
             },
             /**
              * Returns the (translated) "functional" name of a model
@@ -291,7 +292,7 @@ export const websiteService = {
                         .catch(() => {});
                 }
                 await modelNamesProm;
-                return modelNames[model] || _t("Data");
+                return modelNames[model] || env._t("Data");
             },
         };
     },

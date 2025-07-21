@@ -333,9 +333,6 @@ export async function testEditor(Editor = OdooEditor, spec, options = {}) {
             }
         }
 
-        // Wait for selectionchange handlers to react before any actual testing.
-        await nextTick();
-
         if (spec.stepFunction) {
             try {
                 await spec.stepFunction(editor);
@@ -535,6 +532,10 @@ export async function toggleBold() {
     document.execCommand('bold');
     // Wait for the timeout in the MutationObserver to happen.
     return new Promise(resolve => setTimeout(() => resolve(), 200));
+}
+
+export async function createLink(editor, content) {
+    editor.execCommand('createLink', '#', content);
 }
 
 export async function insertText(editor, text) {

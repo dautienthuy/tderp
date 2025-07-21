@@ -1,42 +1,37 @@
 /** @odoo-module **/
 
-import {
-    clickOnEditAndWaitEditMode,
-    clickOnSave,
-    clickOnSnippet,
-    insertSnippet,
-    goBackToBlocks,
-    registerWebsitePreviewTour,
-} from '@website/js/tours/tour_utils';
-import { stepUtils } from "@web_tour/tour_service/tour_utils";
+import wTourUtils from 'website.tour_utils';
 
 const cover = {
     id: 's_cover',
     name: 'Cover',
-    groupName: "Intro",
 };
 
-registerWebsitePreviewTour('website_click_tour', {
+wTourUtils.registerWebsitePreviewTour('website_click_tour', {
+    test: true,
     url: '/',
-}, () => [
-    stepUtils.waitIframeIsReady(),
+}, [
     {
         content: "trigger a page navigation",
-        trigger: ':iframe a[href="/contactus"]',
-        run: "click",
+        trigger: 'iframe a[href="/contactus"]',
     },
     {
         content: "wait for the page to be loaded",
         trigger: '.o_website_preview[data-view-xmlid="website.contactus"]',
+        run: () => null, // it's a check
     },
-    ...clickOnEditAndWaitEditMode(),
+    ...wTourUtils.clickOnEditAndWaitEditMode(),
     {
         content: "click on a link that would trigger navigation",
-        trigger: ':iframe a[href="/"]',
-        run: "click",
+        trigger: 'iframe a[href="/"]',
     },
-    goBackToBlocks(),
-    ...insertSnippet(cover),
-    ...clickOnSnippet(cover),
-    ...clickOnSave(),
+    wTourUtils.goBackToBlocks(),
+    wTourUtils.dragNDrop(cover),
+    wTourUtils.clickOnSnippet(cover),
+    ...wTourUtils.clickOnSave(),
+    {
+        content: "wait for the iframe to be ready",
+        trigger: 'iframe body:not(.editor_enable)',
+        run: () => null, // it's a check
+    }
 ]);

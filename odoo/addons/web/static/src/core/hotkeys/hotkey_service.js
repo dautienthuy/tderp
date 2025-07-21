@@ -1,3 +1,5 @@
+/** @odoo-module **/
+
 import { isMacOS } from "../browser/feature_detection";
 import { registry } from "../registry";
 import { browser } from "../browser/browser";
@@ -16,12 +18,8 @@ import { getVisibleElements } from "../utils/ui";
  *  allow registration to perform no matter the UI active element
  * @property {() => HTMLElement} [area]
  *  adds a restricted operating area for this hotkey
- * @property {() => boolean} [isAvailable]
+ * @property {(target: EventTarget) => boolean} [validate]
  *  adds a validation before calling the hotkey registration's callback
- * @property {() => HTMLElement} [withOverlay]
- *  provides the element on which the overlay should be displayed
- *  Please note that if provided the hotkey will only work with
- *  the overlay access key, similarly to all [data-hotkey] DOM attributes.
  *
  * @typedef {HotkeyOptions & {
  *  hotkey: string,
@@ -82,12 +80,6 @@ export function getActiveHotkey(ev) {
 
     // ------- Key -------
     let key = ev.key.toLowerCase();
-
-    // The browser space is natively " ", we want "space" for esthetic reasons
-    if (key === " ") {
-        key = "space";
-    }
-
     // Identify if the user has tapped on the number keys above the text keys.
     if (ev.code && ev.code.indexOf("Digit") === 0) {
         key = ev.code.slice(-1);
@@ -100,7 +92,6 @@ export function getActiveHotkey(ev) {
     if (!MODIFIERS.includes(key)) {
         hotkey.push(key);
     }
-
     return hotkey.join("+");
 }
 
@@ -180,8 +171,7 @@ export const hotkeyService = {
             // NB: except for ESC, which is always allowed as hotkey in editables.
             const targetIsEditable =
                 event.target instanceof HTMLElement &&
-                (/input|textarea/i.test(event.target.tagName) || event.target.isContentEditable) &&
-                !event.target.matches("input[type=checkbox], input[type=radio]");
+                (/input|textarea/i.test(event.target.tagName) || event.target.isContentEditable);
             const shouldProtectEditable =
                 targetIsEditable && !event.target.dataset.allowHotkeys && singleKey !== "escape";
 
@@ -240,8 +230,9 @@ export const hotkeyService = {
                     (reg.allowRepeat || !isRepeated) &&
                     (reg.bypassEditableProtection || !shouldProtectEditable) &&
                     (reg.global || reg.activeElement === activeElement) &&
-                    (!reg.isAvailable || reg.isAvailable()) &&
-                    (!reg.area || (target && reg.area() && reg.area().contains(target)))
+                    (!reg.validate || reg.validate(target)) &&
+                    (!reg.area ||
+                        (target instanceof Node && reg.area() && reg.area().contains(target)))
             );
 
             // First candidate
@@ -294,7 +285,6 @@ export const hotkeyService = {
                     if (document.activeElement) {
                         document.activeElement.blur();
                     }
-                    el.focus();
                     setTimeout(() => el.click());
                 },
             }));
@@ -305,30 +295,8 @@ export const hotkeyService = {
          * @param {HTMLElement} activeElement
          */
         function addHotkeyOverlays(activeElement) {
-            // Gather the hotkeys to overlay registered through the useHotkey hook.
-            const hotkeysFromHookToHighlight = [];
-            for (const [, registration] of registrations) {
-                const overlayElement = registration.withOverlay?.();
-                if (overlayElement) {
-                    hotkeysFromHookToHighlight.push({
-                        hotkey: registration.hotkey.replace(
-                            `${hotkeyService.overlayModifier}+`,
-                            ""
-                        ),
-                        el: overlayElement,
-                    });
-                }
-            }
-
-            // Gather the hotkeys to overlay registered through the DOM datasets.
-            const hotkeysFromDomToHighlight = getVisibleElements(
-                activeElement,
-                "[data-hotkey]:not(:disabled)"
-            ).map((el) => ({ hotkey: el.dataset.hotkey, el }));
-
-            const items = [...hotkeysFromDomToHighlight, ...hotkeysFromHookToHighlight];
-            for (const item of items) {
-                const hotkey = item.hotkey;
+            for (const el of getVisibleElements(activeElement, "[data-hotkey]:not(:disabled)")) {
+                const hotkey = el.dataset.hotkey;
                 const overlay = document.createElement("div");
                 overlay.classList.add(
                     "o_web_hotkey_overlay",
@@ -344,20 +312,19 @@ export const hotkeyService = {
                     "bg-black-50",
                     "h6"
                 );
-                overlay.style.zIndex = 1;
                 const overlayKbd = document.createElement("kbd");
                 overlayKbd.className = "small";
                 overlayKbd.appendChild(document.createTextNode(hotkey.toUpperCase()));
                 overlay.appendChild(overlayKbd);
 
                 let overlayParent;
-                if (item.el.tagName.toUpperCase() === "INPUT") {
+                if (el.tagName.toUpperCase() === "INPUT") {
                     // special case for the search input that has an access key
                     // defined. We cannot set the overlay on the input itself,
                     // only on its parent.
-                    overlayParent = item.el.parentElement;
+                    overlayParent = el.parentElement;
                 } else {
-                    overlayParent = item.el;
+                    overlayParent = el;
                 }
 
                 if (overlayParent.style.position !== "absolute") {
@@ -431,8 +398,7 @@ export const hotkeyService = {
                 bypassEditableProtection: options && options.bypassEditableProtection,
                 global: options && options.global,
                 area: options && options.area,
-                isAvailable: options && options.isAvailable,
-                withOverlay: options && options.withOverlay,
+                validate: options && options.validate,
             };
 
             // Due to the way elements are mounted in the DOM by Owl (bottom-to-top),

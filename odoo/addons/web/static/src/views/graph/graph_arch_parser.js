@@ -1,31 +1,28 @@
-import { exprToBoolean } from "@web/core/utils/strings";
-import { visitXML } from "@web/core/utils/xml";
+/** @odoo-module **/
+
+import { XMLParser } from "@web/core/utils/xml";
 import { GROUPABLE_TYPES } from "@web/search/utils/misc";
+import { archParseBoolean } from "@web/views/utils";
 
 const MODES = ["bar", "line", "pie"];
 const ORDERS = ["ASC", "DESC", "asc", "desc", null];
 
-export class GraphArchParser {
+export class GraphArchParser extends XMLParser {
     parse(arch, fields = {}) {
         const archInfo = { fields, fieldAttrs: {}, groupBy: [], measures: [] };
-        visitXML(arch, (node) => {
+        this.visitXML(arch, (node) => {
             switch (node.tagName) {
                 case "graph": {
                     if (node.hasAttribute("disable_linking")) {
-                        archInfo.disableLinking = exprToBoolean(
+                        archInfo.disableLinking = archParseBoolean(
                             node.getAttribute("disable_linking")
                         );
                     }
                     if (node.hasAttribute("stacked")) {
-                        archInfo.stacked = exprToBoolean(node.getAttribute("stacked"));
+                        archInfo.stacked = archParseBoolean(node.getAttribute("stacked"));
                     }
                     if (node.hasAttribute("cumulated")) {
-                        archInfo.cumulated = exprToBoolean(node.getAttribute("cumulated"));
-                    }
-                    if (node.hasAttribute("cumulated_start")) {
-                        archInfo.cumulatedStart = exprToBoolean(
-                            node.getAttribute("cumulated_start")
-                        );
+                        archInfo.cumulated = archParseBoolean(node.getAttribute("cumulated"));
                     }
                     const mode = node.getAttribute("type");
                     if (mode && MODES.includes(mode)) {
@@ -53,17 +50,8 @@ export class GraphArchParser {
                         }
                         archInfo.fieldAttrs[fieldName].string = string;
                     }
-                    const widget = node.getAttribute("widget");
-                    if (widget) {
-                        if (!archInfo.fieldAttrs[fieldName]) {
-                            archInfo.fieldAttrs[fieldName] = {};
-                        }
-                        archInfo.fieldAttrs[fieldName].widget = widget;
-                    }
-                    if (
-                        node.getAttribute("invisible") === "True" ||
-                        node.getAttribute("invisible") === "1"
-                    ) {
+                    const modifiers = JSON.parse(node.getAttribute("modifiers") || "{}");
+                    if (modifiers.invisible === true) {
                         if (!archInfo.fieldAttrs[fieldName]) {
                             archInfo.fieldAttrs[fieldName] = {};
                         }

@@ -1,3 +1,5 @@
+/** @odoo-module **/
+
 // TODO: add this in info props description
 
 // breadcrumbs: { type: Array, optional: true },
@@ -15,10 +17,11 @@ export const standardViewProps = {
         type: Object,
     },
     resModel: String,
-    arch: { type: Element },
+    arch: { type: String },
     bannerRoute: { type: String, optional: true },
     className: { type: String, optional: true },
-    comparison: { type: [Object, { value: null }], optional: true },
+    comparison: { validate: () => true }, // fix problem with validation with type: [Object, null]
+    // Issue OWL: https://github.com/odoo/owl/issues/910
     context: { type: Object },
     createRecord: { type: Function, optional: true },
     display: { type: Object, optional: true },
@@ -36,5 +39,4 @@ export const standardViewProps = {
     selectRecord: { type: Function, optional: true },
     state: { type: Object, optional: true },
     useSampleModel: { type: Boolean },
-    updateActionState: { type: Function, optional: true },
 };

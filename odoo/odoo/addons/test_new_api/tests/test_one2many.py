@@ -1,12 +1,13 @@
+# -*- coding: utf-8 -*-
+from odoo.tests.common import TransactionCase
+from odoo.exceptions import MissingError
 from odoo import Command
-from odoo.addons.base.tests.test_expression import TransactionExpressionCase
-from odoo.exceptions import MissingError, UserError
 from odoo.tools import mute_logger
 
 
-class One2manyCase(TransactionExpressionCase):
+class One2manyCase(TransactionCase):
     def setUp(self):
-        super().setUp()
+        super(One2manyCase, self).setUp()
         self.Line = self.env["test_new_api.multi.line"]
         self.multi = self.env["test_new_api.multi"].create({
             "name": "What is up?"
@@ -126,28 +127,28 @@ class One2manyCase(TransactionExpressionCase):
         movie_editions = movies_with_edition.editions
         one_movie_edition = movie_editions[0]
 
-        res_movies_without_edition = self._search(self.Movie, [('editions', '=', False)])
+        res_movies_without_edition = self.Movie.search([('editions', '=', False)])
         self.assertItemsEqual(t(res_movies_without_edition), t(movies_without_edition))
 
-        res_movies_with_edition = self._search(self.Movie, [('editions', '!=', False)])
+        res_movies_with_edition = self.Movie.search([('editions', '!=', False)])
         self.assertItemsEqual(t(res_movies_with_edition), t(movies_with_edition))
 
-        res_books_with_movie_edition = self._search(self.Book, [('editions', 'in', movie_editions.ids)])
+        res_books_with_movie_edition = self.Book.search([('editions', 'in', movie_editions.ids)])
         self.assertFalse(t(res_books_with_movie_edition))
 
-        res_books_without_movie_edition = self._search(self.Book, [('editions', 'not in', movie_editions.ids)])
+        res_books_without_movie_edition = self.Book.search([('editions', 'not in', movie_editions.ids)])
         self.assertItemsEqual(t(res_books_without_movie_edition), t(books))
 
-        res_books_without_one_movie_edition = self._search(self.Book, [('editions', 'not in', movie_editions[:1].ids)])
+        res_books_without_one_movie_edition = self.Book.search([('editions', 'not in', movie_editions[:1].ids)])
         self.assertItemsEqual(t(res_books_without_one_movie_edition), t(books))
 
-        res_books_with_one_movie_edition_name = self._search(self.Book, [('editions', '=', movie_editions[:1].name)])
+        res_books_with_one_movie_edition_name = self.Book.search([('editions', '=', movie_editions[:1].name)])
         self.assertFalse(t(res_books_with_one_movie_edition_name))
 
-        res_books_without_one_movie_edition_name = self._search(self.Book, [('editions', '!=', movie_editions[:1].name)])
+        res_books_without_one_movie_edition_name = self.Book.search([('editions', '!=', movie_editions[:1].name)])
         self.assertItemsEqual(t(res_books_without_one_movie_edition_name), t(books))
 
-        res_movies_not_of_edition_name = self._search(self.Movie, [('editions', '!=', one_movie_edition.name)])
+        res_movies_not_of_edition_name = self.Movie.search([('editions', '!=', one_movie_edition.name)])
         self.assertItemsEqual(t(res_movies_not_of_edition_name), t(movies.filtered(lambda r: one_movie_edition not in r.editions)))
 
     def test_merge_partner(self):
@@ -187,26 +188,6 @@ class One2manyCase(TransactionExpressionCase):
         self.assertFalse(p1.exists())
         self.assertTrue(p2.exists())
         self.assertFalse(p3.exists())
-
-    def test_partner_merge_wizard_more_than_one_user_error(self):
-        """ Test that partners cannot be merged if linked to more than one user even if only one is active. """
-        p1, p2, dst_partner = self.env['res.partner'].create([{'name': f'test{idx + 1}'} for idx in range(3)])
-        u1, u2 = self.env['res.users'].create([{'name': 'test1', 'login': 'test1', 'partner_id': p1.id},
-                                               {'name': 'test2', 'login': 'test2', 'partner_id': p2.id}])
-        MergeWizard_with_context = self.env['base.partner.merge.automatic.wizard'].with_context(
-            active_ids=(u1.partner_id + u2.partner_id + dst_partner).ids, active_model='res.partner')
-
-        with self.assertRaises(UserError):
-            MergeWizard_with_context.create({}).action_merge()
-
-        u2.action_archive()
-        with self.assertRaises(UserError):
-            MergeWizard_with_context.create({}).action_merge()
-
-        u2.unlink()
-        MergeWizard_with_context.create({}).action_merge()
-        self.assertTrue(dst_partner.exists())
-        self.assertEqual(u1.partner_id.id, dst_partner.id)
 
     def test_cache_invalidation(self):
         """ Cache invalidation for one2many with integer inverse. """
@@ -452,8 +433,8 @@ class One2manyCase(TransactionExpressionCase):
         # Also, test a simple infinite loop if record is marked as a parent of itself
         team1.parent_id = team1.id
         # Check that the search is not stuck in the loop
-        self._search(Team, [('id', 'parent_of', team1.id)])
-        self._search(Team, [('id', 'child_of', team1.id)])
+        Team.search([('id', 'parent_of', team1.id)])
+        Team.search([('id', 'child_of', team1.id)])
 
     @mute_logger('odoo.osv.expression')
     def test_create_one2many_with_unsearchable_field(self):

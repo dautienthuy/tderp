@@ -33,7 +33,6 @@ Cilene Oliveira cilene.oliveira@akretion.com https://github.com/cileneoliveira
 Clément Mombereau clement.mombereau@akretion.com.br https://github.com/clementmbr
 David Beal david.beal@akretion.com https://github.com/bealdav
 Florian da Costa florian.dacosta@akretion.com https://github.com/florian-dacosta
-Florian Mounier florian.mounier@akretion.com https://github.com/paradoxxxzero
 Magno Barcelo da Costa magno.costa@akretion.com.br https://github.com/mbcosta
 Mourad El Hadj Mimoune mourad.elhadj.mimoune@akretion.com https://github.com/mourad-ehm
 Pierrick Brun pierrick.brun@akretion.com https://github.com/PierrickBrun
@@ -46,4 +45,3 @@ Sylvain Legal sylvain.legal@akretion.com https://github.com/legalsylvain
 Thiago Moreira de Souza Arrais thiago.moreira@akretion.com.br https://github.com/thiagomds
 Valentin Chemiere valentin.chemiere@akretion.com https://github.com/viggor
 Vianney da Costa vianney.dacosta@akretion.com.br https://launchpad.net/~vianneydc
-Kevin Roche kevin.roche@akretion.com https://github.com/Kev-Roche

@@ -1,21 +1,18 @@
-/** @odoo-module */
-
-import {
-    URL_REGEX,
-    descendants,
-    setSelection,
-} from '../../src/OdooEditor.js';
+import { URL_REGEX, URL_REGEX_WITH_INFOS, descendants, setSelection } from '../../src/OdooEditor.js';
 import {
     BasicEditor,
     click,
     deleteBackward,
     insertText,
+    insertParagraphBreak,
     insertLineBreak,
     testEditor,
+    createLink,
     undo,
     nextTick
 } from '../utils.js';
 
+const convertToLink = createLink;
 const unlink = async function (editor) {
     editor.execCommand('unlink');
 };
@@ -29,11 +26,13 @@ const testUrlRegex = (content, {expectedUrl} = {}) => {
             window.chai.assert.equal(expectedUrl, match && match[0]);
         }
         window.chai.assert.exists(content.match(URL_REGEX));
+        window.chai.assert.exists(content.match(URL_REGEX_WITH_INFOS));
     });
 }
 const testNotUrlRegex = (url) => {
     it(`should NOT be a link: ${url}`, () => {
         window.chai.assert.notExists(url.match(URL_REGEX));
+        window.chai.assert.notExists(url.match(URL_REGEX_WITH_INFOS));
     });
 }
 
@@ -149,6 +148,131 @@ describe('Link', () => {
         testUrlRegex(`www.google.com/a%b%c`, { expectedUrl: 'www.google.com/a%b%c' });
         testUrlRegex(`http://google.com?a.b.c&d!e#e'f`, { expectedUrl: "http://google.com?a.b.c&d!e#e'f" });
     });
+    describe('insert Link', () => {
+        describe('range collapsed', () => {
+            it('should insert a link and preserve spacing', async () => {
+                await testEditor(BasicEditor, {
+                    contentBefore: '<p>a [] c</p>',
+                    stepFunction: createLink,
+                    // Two consecutive spaces like one so `a [] c` is
+                    // effectively the same as `a []c`.
+                    contentAfter: '<p>a <a href="#">link</a>[]c</p>',
+                });
+            });
+            it('should insert a link and write a character after the link', async () => {
+                await testEditor(BasicEditor, {
+                    contentBefore: '<p>a[]c</p>',
+                    stepFunction: async editor => {
+                        await createLink(editor);
+                        await insertText(editor, 'b');
+                    },
+                    contentAfter: '<p>a<a href="#">link</a>b[]c</p>',
+                });
+            });
+            it('should write two characters after the link', async () => {
+                await testEditor(BasicEditor, {
+                    contentBefore: '<p>a[]d</p>',
+                    stepFunction: async editor => {
+                        await createLink(editor);
+                        await insertText(editor, 'b');
+                        await insertText(editor, 'c');
+                    },
+                    contentAfter: '<p>a<a href="#">link</a>bc[]d</p>',
+                });
+            });
+            it('should insert a link and write a character after the link then create a new <p>', async () => {
+                await testEditor(BasicEditor, {
+                    contentBefore: '<p>a[]c</p>',
+                    stepFunction: async editor => {
+                        await createLink(editor);
+                        await insertText(editor, 'b');
+                        await insertParagraphBreak(editor);
+                    },
+                    contentAfter: '<p>a<a href="#">link</a>b</p><p>[]c</p>',
+                });
+            });
+            it('should insert a link and write a character, a new <p> and another character', async () => {
+                await testEditor(BasicEditor, {
+                    contentBefore: '<p>a[]d</p>',
+                    stepFunction: async editor => {
+                        await createLink(editor);
+                        await insertText(editor, 'b');
+                        await insertParagraphBreak(editor);
+                        await insertText(editor, 'c');
+                    },
+                    contentAfter: '<p>a<a href="#">link</a>b</p><p>c[]d</p>',
+                });
+            });
+            it('should insert a link and write a character at the end of the link then insert a <br>', async () => {
+                await testEditor(BasicEditor, {
+                    contentBefore: '<p>a[]c</p>',
+                    stepFunction: async editor => {
+                        await createLink(editor);
+                        await insertText(editor, 'b');
+                        await insertLineBreak(editor);
+                    },
+                    // Writing at the end of a link writes outside the link.
+                    contentAfter: '<p>a<a href="#">link</a>b<br>[]c</p>',
+                });
+            });
+            it('should insert a link and write a character insert a <br> and another character', async () => {
+                await testEditor(BasicEditor, {
+                    contentBefore: '<p>a[]d</p>',
+                    stepFunction: async editor => {
+                        await createLink(editor);
+                        await insertText(editor, 'b');
+                        await insertLineBreak(editor);
+                        await insertText(editor, 'c');
+                    },
+                    // Writing at the end of a link writes outside the link.
+                    contentAfter: '<p>a<a href="#">link</a>b<br>c[]d</p>',
+                });
+            });
+            it('should insert a <br> inside a link', async () => {
+                await testEditor(BasicEditor, {
+                    contentBefore: '<p><a href="#">a[]b</a></p>',
+                    stepFunction: async editor => {
+                        await insertLineBreak(editor);
+                    },
+                    contentAfter: '<p><a href="#">a<br>[]b</a></p>',
+                });
+            });
+        });
+        describe('range not collapsed', () => {
+            // This succeeds, but why would the cursor stay inside the link
+            // if the next text insert should be outside of the link (see next test)
+            it('should set the link on two existing characters and loose range', async () => {
+                await testEditor(BasicEditor, {
+                    contentBefore: '<p>a[bc]d</p>',
+                    stepFunction: async editor => {
+                        await convertToLink(editor);
+                    },
+                    contentAfter: '<p>a<a href="#">bc</a>[]d</p>',
+                });
+            });
+            it('should set the link on two existing characters, lose range and add a character', async () => {
+                await testEditor(BasicEditor, {
+                    contentBefore: '<p>a[bc]e</p>',
+                    stepFunction: async editor => {
+                        await convertToLink(editor);
+                        await insertText(editor, 'd');
+                    },
+                    contentAfter: '<p>a<a href="#">bc</a>d[]e</p>',
+                });
+            });
+            // This fails, but why would the cursor stay inside the link
+            // if the next text insert should be outside of the link (see previous test)
+            it('should replace selection by a link', async () => {
+                await testEditor(BasicEditor, {
+                    contentBefore: '<p>a[bc]d</p>',
+                    stepFunction: async editor => {
+                        await createLink(editor, '#');
+                    },
+                    contentAfter: '<p>a<a href="#">#</a>[]d</p>',
+                });
+            });
+        });
+    });
     describe('edit link label', () => {
         describe('range collapsed', () => {
             it('should not change the url when a link is not edited', async () => {
@@ -230,7 +354,7 @@ describe('Link', () => {
                     stepFunction: async editor => {
                         await deleteBackward(editor);
                     },
-                    contentAfter: '<p>a<a href="http://hellomoto.com">hello[]moto.com</a></p>',
+                    contentAfter: '<p>a<a href="https://hellomoto.com">hello[]moto.com</a></p>',
                 });
             });
             it('should change the url in one step', async () => {
@@ -593,11 +717,11 @@ describe('Link', () => {
                 stepFunction: async editor => {
                     await clickOnLink(editor);
                     await deleteBackward(editor);
-                    await insertText(editor, 'a');
-                    await insertText(editor, 'b');
-                    await insertText(editor, 'c');
+                    await insertText(editor, '1');
+                    await insertText(editor, '2');
+                    await insertText(editor, '3');
                 },
-                contentAfter: '<p>a<a href="#/">abc[]</a>c</p>',
+                contentAfter: '<p>a<a href="#/">123[]</a>c</p>',
             });
         });
         it('should delete the content from the link when popover is active', async () => {
@@ -699,12 +823,6 @@ describe('Link', () => {
             await testEditor(BasicEditor, {
                 contentBefore: '<p>a<a href="#/" class="nav-link">[]b</a>c</p>',
                 contentBeforeEdit: '<p>a<a href="#/" class="nav-link">[]b</a>c</p>',
-            });
-        });
-        it('should not zwnbsp-pad link if parent is `contenteditable=false`', async () => {
-            await testEditor(BasicEditor, {
-                contentBefore: `<div contenteditable="false">a<a href="#/">[]b</a>c</div>`,
-                contentBeforeEdit: `<div contenteditable="false" data-oe-keep-contenteditable="">a<a href="#/">[]b</a>c</div>`,
             });
         });
         it('should not zwnbsp-pad in nav', async () => {
@@ -866,35 +984,6 @@ describe('Link', () => {
                 contentBeforeEdit: '<p>a\ufeff<a href="exist">\ufeff<span class="fa fa-star" contenteditable="false">\u200b</span>\ufeff</a>\ufeffb</p>',
                 contentAfterEdit: '<p>a\ufeff<a href="exist">\ufeff<span class="fa fa-star" contenteditable="false">\u200b</span>\ufeff</a>\ufeffb</p>',
                 contentAfter: '<p>a<a href="exist"><span class="fa fa-star"></span></a>b</p>',
-            });
-        });
-        it('should not convert to telephone url while inserting digits inside link', async () => {
-            await testEditor(BasicEditor, {
-                contentBefore: '<p><a href="#">[]</a></p>',
-                stepFunction: async editor => {
-                    await insertText(editor, '1');
-                    await insertText(editor, '2');
-                    await insertText(editor, '3');
-                },
-                contentAfter: '<p><a href="#">123[]</a></p>',
-            });
-        });
-        it('should update url if existing url is telephone url while inserting', async () => {
-            await testEditor(BasicEditor, {
-                contentBefore: '<p><a href="tel:123">123[]</a></p>',
-                stepFunction: async editor => {
-                    await insertText(editor, '4');
-                },
-                contentAfter: '<p><a href="tel:1234">1234[]</a></p>',
-            });
-        });
-        it('should convert url to telephone url if label starts with tel protocol', async () => {
-            await testEditor(BasicEditor, {
-                contentBefore: '<p><a href="#">tel://[]</a></p>',
-                stepFunction: async editor => {
-                    await insertText(editor, '1');
-                },
-                contentAfter: '<p><a href="tel://1">tel://1[]</a></p>',
             });
         });
         // it('should select and replace all text and add the next char in bold', async () => {

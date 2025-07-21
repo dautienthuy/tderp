@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.tests.common import TransactionCase
-from odoo.exceptions import AccessError, ValidationError
+from odoo.exceptions import ValidationError
 from odoo import Command
 
 
@@ -33,13 +33,13 @@ class TestHasGroup(TransactionCase):
         self.grp_public = self.env.ref(self.grp_public_xml_id)
 
     def test_env_uid(self):
-        Partner = self.env['res.partner'].with_user(self.test_user)
+        Users = self.env['res.users'].with_user(self.test_user)
         self.assertTrue(
-            Partner.env.user.has_group(self.group0),
+            Users.has_group(self.group0),
             "the test user should belong to group0"
         )
         self.assertFalse(
-            Partner.env.user.has_group(self.group1),
+            Users.has_group(self.group1),
             "the test user should *not* belong to group1"
         )
 
@@ -52,19 +52,6 @@ class TestHasGroup(TransactionCase):
             self.test_user.has_group(self.group1),
             "the test user shoudl not belong to group1"
         )
-
-    def test_other_user(self):
-        internal_user = self.test_user.copy({'groups_id': self.grp_internal})
-        internal_user = internal_user.with_user(internal_user)
-        test_user = self.env['res.users'].with_user(self.test_user).browse(self.test_user.id)
-
-        test_user.has_group(self.group0)
-        with self.assertRaises(AccessError):
-            test_user.browse(internal_user.id).has_group(self.group0)
-        test_user.sudo().browse(internal_user.id).has_group(self.group0)
-
-        internal_user.has_group(self.group0)
-        internal_user.browse(test_user.id).has_group(self.group0)
 
     def test_portal_creation(self):
         """Here we check that portal user creation fails if it tries to create a user
@@ -296,35 +283,26 @@ class TestHasGroup(TransactionCase):
             user_b.write({"groups_id": [Command.link(group_C.id)]})
 
     def test_has_group_cleared_cache_on_write(self):
-        self.env.registry.clear_cache()
-        self.assertFalse(self.registry._Registry__caches['default'], "Ensure ormcache is empty")
+        self.registry._clear_cache()
+        self.assertFalse(self.registry._Registry__cache, "Ensure ormcache is empty")
 
         def populate_cache():
             self.test_user.has_group('test_user_has_group.group0')
-            self.assertTrue(self.registry._Registry__caches['default'], "user._has_group cache must be populated")
+            self.assertTrue(self.registry._Registry__cache, "user.has_group cache must be populated")
 
         populate_cache()
 
         self.env.ref(self.group0).write({"share": True})
-        self.assertFalse(self.registry._Registry__caches['default'], "Writing on group must invalidate user._has_group cache")
+        self.assertFalse(self.registry._Registry__cache, "Writing on group must invalidate user.has_group cache")
 
         populate_cache()
         # call_cache_clearing_methods is called in res.groups.write to invalidate
         # cache before calling its parent class method (`odoo.models.Model.write`)
         # as explain in the `res.group.write` comment.
         # This verifies that calling `call_cache_clearing_methods()` invalidates
-        # the ormcache of method `user._has_group()`
+        # the ormcache of method `user.has_group()`
         self.env['ir.model.access'].call_cache_clearing_methods()
         self.assertFalse(
-            self.registry._Registry__caches['default'],
-            "call_cache_clearing_methods() must invalidate user._has_group cache"
+            self.registry._Registry__cache,
+            "call_cache_clearing_methods() must invalidate user.has_group cache"
         )
-
-    def test_has_group_with_new_id(self):
-        user = self.env['res.users'].new({'partner_id': self.test_user.partner_id.id})
-        self.assertEqual(user.has_group(self.group0), False)
-        self.assertEqual(user.has_group(self.group1), False)
-
-        user2 = self.env['res.users'].new({'partner_id': self.test_user.partner_id.id}, origin=self.test_user)
-        self.assertEqual(user2.has_group(self.group0), True)
-        self.assertEqual(user2.has_group(self.group1), False)

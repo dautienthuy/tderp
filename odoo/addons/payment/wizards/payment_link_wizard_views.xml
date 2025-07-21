@@ -6,42 +6,33 @@
         <field name="model">payment.link.wizard</field>
         <field name="arch" type="xml">
             <form string="Generate Payment Link">
-                <div name="no_partner_email"
-                     class="alert alert-warning fw-bold"
+                <div class="alert alert-warning fw-bold"
                      role="alert"
-                     invisible="partner_email">
+                     attrs="{'invisible': [('partner_email', '!=', False)]}">
                      This partner has no email, which may cause issues with some payment providers.
                      Setting an email for this partner is advised.
                 </div>
-                <div name="payment_link_warning_information"
-                     class="alert alert-warning fw-bold"
-                     role="alert"
-                     invisible="warning_message == ''">
-                    <field name="warning_message"/>
-                </div>
                 <group>
-                    <group name="payment_info" string="Payment Info" class="mt-n4">
+                    <group>
                         <field name="res_id" invisible="1"/>
                         <field name="res_model" invisible="1"/>
                         <field name="partner_id" invisible="1"/>
                         <field name="partner_email" invisible="1"/>
-                        <field name="amount"/>
                         <field name="amount_max" invisible="1"/>
-                        <field name="warning_message" invisible="1"/>
+                        <field name="available_provider_ids" invisible="1"/>
+                        <field name="has_multiple_providers" invisible="1"/>
+                        <field name="description"/>
+                        <field name="amount"/>
                         <field name="currency_id" invisible="1"/>
+                        <field name="payment_provider_selection"
+                            attrs="{'invisible':[('has_multiple_providers', '=', False)]}"/>
                     </group>
                 </group>
+                <group>
+                    <field name="link" readonly="1" widget="CopyClipboardChar"/>
+                </group>
                 <footer>
-                    <field name="link"
-                           string="Generate and Copy Payment Link"
-                           readonly="1"
-                           disabled="bool(warning_message)"
-                           widget="PaymentWizardCopyClipboardButtonField"
-                           data-hotkey="q"/>
-                    <button string="Close"
-                            class="btn btn-secondary rounded-2"
-                            special="cancel"
-                            data-hotkey="x"/>
+                    <button string="Close" class="btn-primary" special="cancel" data-hotkey="z"/>
                 </footer>
             </form>
         </field>

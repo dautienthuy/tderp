@@ -1,20 +1,23 @@
 /** @odoo-module **/
 
-import { _t } from "@web/core/l10n/translation";
 import { browser } from "@web/core/browser/browser";
-import { ConnectionLostError, rpc } from "@web/core/network/rpc";
+import { ConnectionLostError } from "@web/core/network/rpc_service";
 import { registry } from "@web/core/registry";
 
 export const calendarNotificationService = {
-    dependencies: ["action", "bus_service", "notification"],
+    dependencies: ["action", "bus_service", "notification", "rpc"],
 
-    start(env, { action, bus_service, notification }) {
+    start(env, { action, bus_service, notification, rpc }) {
         let calendarNotifTimeouts = {};
         let nextCalendarNotifTimeout = null;
         const displayedNotifications = new Set();
 
-        bus_service.subscribe("calendar.alarm", (payload) => {
-            displayCalendarNotification(payload);
+        bus_service.addEventListener('notification', ({ detail: notifications }) => {
+            for (const { payload, type } of notifications) {
+                if (type === "calendar.alarm") {
+                    displayCalendarNotification(payload);
+                }
+            }
         });
         bus_service.start();
 
@@ -45,7 +48,7 @@ export const calendarNotificationService = {
                         },
                         buttons: [
                             {
-                                name: _t("OK"),
+                                name: env._t("OK"),
                                 primary: true,
                                 onClick: async () => {
                                     await rpc("/calendar/notify_ack");
@@ -53,19 +56,20 @@ export const calendarNotificationService = {
                                 },
                             },
                             {
-                                name: _t("Details"),
+                                name: env._t("Details"),
                                 onClick: async () => {
                                     await action.doAction({
-                                        type: "ir.actions.act_window",
-                                        res_model: "calendar.event",
+                                        type: 'ir.actions.act_window',
+                                        res_model: 'calendar.event',
                                         res_id: notif.event_id,
-                                        views: [[false, "form"]],
-                                    });
+                                        views: [[false, 'form']],
+                                    }
+                                    );
                                     notificationRemove();
                                 },
                             },
                             {
-                                name: _t("Snooze"),
+                                name: env._t("Snooze"),
                                 onClick: () => {
                                     notificationRemove();
                                 },

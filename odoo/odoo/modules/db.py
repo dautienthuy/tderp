@@ -15,7 +15,7 @@ def is_initialized(cr):
     The database can be initialized with the 'initialize' function below.
 
     """
-    return odoo.tools.sql.table_exists(cr, 'ir_module_module')
+    return odoo.tools.table_exists(cr, 'ir_module_module')
 
 def initialize(cr):
     """ Initialize a database with for the ORM.
@@ -25,9 +25,8 @@ def initialize(cr):
     and ir_model_data entries.
 
     """
-    try:
-        f = odoo.tools.misc.file_path('base/data/base_data.sql')
-    except FileNotFoundError:
+    f = odoo.modules.get_module_resource('base', 'data', 'base_data.sql')
+    if not f:
         m = "File not found: 'base.sql' (provided by module 'base')."
         _logger.critical(m)
         raise IOError(m)
@@ -84,7 +83,7 @@ def initialize(cr):
         cr.execute("""
         SELECT m.name FROM ir_module_module m
         WHERE m.auto_install
-        AND state not in ('to install', 'uninstallable')
+        AND state != 'to install'
         AND NOT EXISTS (
             SELECT 1 FROM ir_module_module_dependency d
             JOIN ir_module_module mdep ON (d.name = mdep.name)

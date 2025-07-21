@@ -14,7 +14,7 @@ class GamificationBadgeUser(models.Model):
     @api.constrains('employee_id')
     def _check_employee_related_user(self):
         for badge_user in self:
-            if badge_user.employee_id and badge_user.employee_id not in badge_user.user_id.\
+            if badge_user.employee_id not in badge_user.user_id.\
                 with_context(allowed_company_ids=self.env.user.company_ids.ids).employee_ids:
                 raise ValidationError(_('The selected employee does not correspond to the selected user.'))
 
@@ -45,7 +45,7 @@ class GamificationBadge(models.Model):
         return {
             'type': 'ir.actions.act_window',
             'name': 'Granted Employees',
-            'view_mode': 'kanban,list,form',
+            'view_mode': 'kanban,tree,form',
             'res_model': 'hr.employee.public',
             'domain': [('id', 'in', employee_ids)]
         }

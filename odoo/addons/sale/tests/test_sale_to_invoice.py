@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from unittest.mock import patch
-
 from odoo import fields
 from odoo.fields import Command
 from odoo.tests import Form, tagged
@@ -15,12 +13,11 @@ from odoo.addons.sale.tests.common import TestSaleCommon
 class TestSaleToInvoice(TestSaleCommon):
 
     @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.company_data_2 = cls.setup_other_company()
+    def setUpClass(cls, chart_template_ref=None):
+        super().setUpClass(chart_template_ref=chart_template_ref)
 
         # Create the SO with four order lines
-        cls.sale_order = cls.env['sale.order'].create({
+        cls.sale_order = cls.env['sale.order'].with_context(tracking_disable=True).create({
             'partner_id': cls.partner_a.id,
             'partner_invoice_id': cls.partner_a.id,
             'partner_shipping_id': cls.partner_a.id,
@@ -99,11 +96,13 @@ class TestSaleToInvoice(TestSaleCommon):
         downpayment = self.env['sale.advance.payment.inv'].with_context(self.context).create({
             'advance_payment_method': 'fixed',
             'fixed_amount': 50,
+            'deposit_account_id': self.company_data['default_account_revenue'].id
         })
         downpayment.create_invoices()
         downpayment2 = self.env['sale.advance.payment.inv'].with_context(self.context).create({
             'advance_payment_method': 'fixed',
             'fixed_amount': 50,
+            'deposit_account_id': self.company_data['default_account_revenue'].id
         })
         downpayment2.create_invoices()
         self._check_order_search(self.sale_order, [('invoice_ids', '=', False)], self.env['sale.order'])
@@ -117,7 +116,9 @@ class TestSaleToInvoice(TestSaleCommon):
         self.sol_prod_deliver.write({'qty_delivered': 2.0})
 
         # Let's do an invoice with refunds
-        payment = self.env['sale.advance.payment.inv'].with_context(self.context).create({})
+        payment = self.env['sale.advance.payment.inv'].with_context(self.context).create({
+            'deposit_account_id': self.company_data['default_account_revenue'].id
+        })
         payment.create_invoices()
 
         self.assertEqual(len(self.sale_order.invoice_ids), 3, 'Invoice should be created for the SO')
@@ -141,6 +142,7 @@ class TestSaleToInvoice(TestSaleCommon):
         downpayment = self.env['sale.advance.payment.inv'].with_context(self.context).create({
             'advance_payment_method': 'percentage',
             'amount': 10,
+            'deposit_account_id': self.company_data['default_account_revenue'].id
         })
         downpayment.create_invoices()
         self._check_order_search(self.sale_order, [('invoice_ids', '=', False)], self.env['sale.order'])
@@ -181,10 +183,13 @@ class TestSaleToInvoice(TestSaleCommon):
         downpayment = self.env['sale.advance.payment.inv'].with_context(context).create({
             'advance_payment_method': 'fixed',
             'fixed_amount': 50,
+            'deposit_account_id': self.company_data['default_account_revenue'].id
         })
         downpayment.create_invoices()
         # Let's do the invoice for the remaining amount
-        payment = self.env['sale.advance.payment.inv'].with_context(context).create({})
+        payment = self.env['sale.advance.payment.inv'].with_context(context).create({
+            'deposit_account_id': self.company_data['default_account_revenue'].id
+        })
         payment.create_invoices()
 
         downpayment_line = sale_order.order_line.filtered(lambda l: l.is_downpayment and not l.display_type)
@@ -193,93 +198,21 @@ class TestSaleToInvoice(TestSaleCommon):
         sale_order.invoice_ids.action_post()
         self.assertEqual(downpayment_line[0].price_unit, 50, 'The down payment unit price should not change on SO')
 
-    def test_downpayment_line_name(self):
-        """ Test downpayment's SO line name is updated when invoice is posted. """
-        # Create the SO with one line
-        sale_order = self.env['sale.order'].with_context(tracking_disable=True).create({
-            'partner_id': self.partner_a.id,
-            'partner_invoice_id': self.partner_a.id,
-            'partner_shipping_id': self.partner_a.id,
-            'pricelist_id': self.company_data['default_pricelist'].id,
-            'order_line': [Command.create({
-                'product_id': self.company_data['product_order_no'].id,
-                'product_uom_qty': 5,
-                'tax_id': False,
-            }),]
-        })
-        # Confirm the SO
-        sale_order.action_confirm()
-        # Update delivered quantity of SO line
-        sale_order.order_line.write({'qty_delivered': 5.0})
-        context = {
-            'default_journal_id': self.company_data['default_journal_sale'].id,
-        }
-        # Let's do an invoice for a down payment of 50
-        self.env['sale.advance.payment.inv'].with_context(context).create({
-            'sale_order_ids': [Command.set(sale_order.ids)],
-            'advance_payment_method': 'fixed',
-            'fixed_amount': 50,
-        }).create_invoices()
-        dp_line = sale_order.order_line.filtered(
-            lambda sol: sol.is_downpayment and not sol.display_type
-        )
-
-        dp_line.name = 'whatever'
-
-        # Confirm the invoice
-        invoice = sale_order.invoice_ids
-        invoice.action_post()
-
-        self.assertNotEqual(
-            dp_line.name, 'whatever',
-            "DP lines description should be recomputed when the linked invoice is posted",
-        )
-
-    def test_downpayment_fixed_amount_with_zero_total_amount(self):
-        # Create the SO with one line and amount total is zero
-        sale_order = self.env['sale.order'].with_context(tracking_disable=True).create({
-            'partner_id': self.partner_a.id,
-            'partner_invoice_id': self.partner_a.id,
-            'partner_shipping_id': self.partner_a.id,
-            'pricelist_id': self.company_data['default_pricelist'].id,
-            'order_line': [Command.create({
-                'product_id': self.company_data['product_order_no'].id,
-                'product_uom_qty': 5,
-                'price_unit': 0,
-                'tax_id': False,
-            }), ]
-        })
-        sale_order.action_confirm()
-        sale_order.order_line.write({'qty_delivered': 5.0})
-        context = {
-            'active_model': 'sale.order',
-            'active_ids': [sale_order.id],
-            'active_id': sale_order.id,
-            'default_journal_id': self.company_data['default_journal_sale'].id,
-        }
-        # Let's do an invoice for a down payment of 50
-        downpayment = self.env['sale.advance.payment.inv'].with_context(context).create({
-            'advance_payment_method': 'fixed',
-            'fixed_amount': 50,
-        })
-        # Create invoice
-        downpayment.create_invoices()
-        self.assertEqual(downpayment.amount, 0.0, 'The down payment amount should be 0.0')
-
     def test_downpayment_percentage_tax_icl(self):
         """ Test invoice with a percentage downpayment and an included tax
             Check the total amount of invoice is correct and equal to a respective sale order's total amount
         """
         # Confirm the SO
         self.sale_order.action_confirm()
-        tax_downpayment = self.company_data['default_tax_sale'].copy({
-            'name': 'default price included',
-            'price_include_override': 'tax_included',
-        })
+        tax_downpayment = self.company_data['default_tax_sale'].copy({'price_include': True})
         # Let's do an invoice for a deposit of 100
+        product_id = self.env['ir.config_parameter'].sudo().get_param('sale.default_deposit_product_id')
+        product_id = self.env['product.product'].browse(int(product_id)).exists()
+        product_id.taxes_id = tax_downpayment.ids
         payment = self.env['sale.advance.payment.inv'].with_context(self.context).create({
             'advance_payment_method': 'percentage',
             'amount': 50,
+            'deposit_account_id': self.company_data['default_account_revenue'].id,
         })
         payment.create_invoices()
 
@@ -303,6 +236,7 @@ class TestSaleToInvoice(TestSaleCommon):
         payment = self.env['sale.advance.payment.inv'].with_context(self.context).create({
             'advance_payment_method': 'fixed',
             'fixed_amount': 100,
+            'deposit_account_id': self.company_data['default_account_revenue'].id,
         })
         payment.create_invoices()
 
@@ -322,6 +256,7 @@ class TestSaleToInvoice(TestSaleCommon):
         ).create({
             'date': '2020-02-01',
             'reason': 'no reason',
+            'refund_method': 'refund',
             'journal_id': downpayment_invoice.journal_id.id,
         })
         reversal_action = move_reversal.reverse_moves()
@@ -356,14 +291,8 @@ class TestSaleToInvoice(TestSaleCommon):
         for line in self.sale_order.order_line:
             self.assertTrue(float_is_zero(line.untaxed_amount_invoiced, precision_digits=2), "The invoiced amount should be zero, as the line is in draft state")
 
-        self.assertEqual(
-            self.sol_serv_order.untaxed_amount_to_invoice,
-            297,
-            "The untaxed amount to invoice is wrong")
-        self.assertEqual(
-            self.sol_serv_deliver.untaxed_amount_to_invoice,
-            576,
-            "The untaxed amount to invoice should be qty deli * price reduce, so 4 * (180 - 36)")
+        self.assertEqual(self.sol_serv_order.untaxed_amount_to_invoice, 297, "The untaxed amount to invoice is wrong")
+        self.assertEqual(self.sol_serv_deliver.untaxed_amount_to_invoice, self.sol_serv_deliver.qty_delivered * self.sol_serv_deliver.price_reduce, "The untaxed amount to invoice should be qty deli * price reduce, so 4 * (180 - 36)")
         # 'untaxed_amount_to_invoice' is invalid when 'sale_stock' is installed.
         # self.assertEqual(self.sol_prod_deliver.untaxed_amount_to_invoice, 140, "The untaxed amount to invoice should be qty deli * price reduce, so 4 * (180 - 36)")
 
@@ -533,135 +462,6 @@ class TestSaleToInvoice(TestSaleCommon):
 
         self.assertEqual(invoice.line_ids[0].display_type, 'line_section')
 
-    def test_invoice_combo_product(self):
-        """ Test creating an invoice for a SO with a combo product. """
-        product_a = self._create_product(name="Horse-meat burger", invoice_policy='delivery')
-        product_b = self._create_product(name="French fries", invoice_policy='delivery')
-        combo_a = self.env['product.combo'].create({
-            'name': "Burger",
-            'combo_item_ids': [
-                Command.create({'product_id': product_a.id}),
-            ],
-        })
-        combo_b = self.env['product.combo'].create({
-            'name': "Side",
-            'combo_item_ids': [
-                Command.create({'product_id': product_b.id}),
-            ],
-        })
-        product_combo = self._create_product(
-            name="Meal Menu",
-            list_price=10.0,
-            type='combo',
-            combo_ids=[
-                Command.link(combo_a.id),
-                Command.link(combo_b.id),
-            ],
-        )
-
-        sale_order = self.env['sale.order'].with_context(tracking_disable=True).create({
-            'partner_id': self.partner_a.id,
-            'partner_invoice_id': self.partner_a.id,
-            'partner_shipping_id': self.partner_a.id,
-            'pricelist_id': self.company_data['default_pricelist'].id,
-            'order_line': [
-                Command.create({
-                    'name': 'Meal Menu',
-                    'product_id': product_combo.id,
-                    'product_uom_qty': 3,
-                    'price_unit': 0,
-                    'tax_id': [],
-                }),
-            ]
-        })
-        sale_order.order_line = [Command.create({
-            'product_id': product.id,
-            'product_uom_qty': 3,
-            'price_unit': 5.0,
-            'tax_id': [],
-            'combo_item_id': combo.combo_item_ids.id,
-            'linked_line_id': sale_order.order_line.id,
-        }) for product, combo in zip(product_a + product_b, combo_a + combo_b)]
-
-        # Confirm the SO
-        sale_order.action_confirm()
-
-        self.assertEqual(sale_order.order_line.mapped('qty_to_invoice'), [0.0, 0.0, 0.0])
-        deliverables = sale_order.order_line.filtered(
-            lambda sol: sol.product_id.invoice_policy == 'delivery'
-        )
-        self.assertEqual(
-            deliverables,
-            sale_order.order_line.linked_line_ids,
-            "Only combo item lines should be invoiced on delivery.",
-        )
-        deliverables.qty_delivered = 3
-        self.assertEqual(
-            sale_order.order_line.mapped('qty_to_invoice'),
-            [3.0, 3.0, 3.0],
-            "Delivering the combo items lines should update the combo product line as well.",
-        )
-
-        # Context
-        self.context = {
-            'active_model': 'sale.order',
-            'active_ids': [sale_order.id],
-            'active_id': sale_order.id,
-            'default_journal_id': self.company_data['default_journal_sale'].id,
-        }
-
-        # Let's do an invoice with invoiceable lines
-        payment = self.env['sale.advance.payment.inv'].with_context(self.context).create({
-            'advance_payment_method': 'delivered'
-        })
-        payment.create_invoices()
-
-        invoice = sale_order.invoice_ids[0]
-
-        self.assertRecordValues(invoice.invoice_line_ids, [
-            {
-                'name': 'Meal Menu x 3',
-                'display_type': 'line_section',
-                'product_id': False,
-                'quantity': 3,
-                'price_unit': 0,
-                'sequence': 0,
-            },
-            {
-                'name': 'Horse-meat burger',
-                'display_type': 'product',
-                'product_id': product_a.id,
-                'quantity': 3,
-                'price_unit': 5.0,
-                'sequence': 1,
-            },
-            {
-                'name': 'French fries',
-                'display_type': 'product',
-                'product_id': product_b.id,
-                'quantity': 3,
-                'price_unit': 5.0,
-                'sequence': 2,
-            },
-        ])
-        self.assertRecordValues(sale_order.order_line, [
-            {
-                'product_id': product_combo.id,
-                'qty_to_invoice': 0,
-                'qty_invoiced': 3,
-            },
-            {
-                'product_id': product_a.id,
-                'qty_to_invoice': 0,
-                'qty_invoiced': 3,
-            },
-            {
-                'product_id': product_b.id,
-                'qty_to_invoice': 0,
-                'qty_invoiced': 3,
-            },
-        ])
-
     def test_qty_invoiced(self):
         """Verify uom rounding is correctly considered during qty_invoiced compute"""
         sale_order = self.env['sale.order'].with_context(tracking_disable=True).create({
@@ -750,6 +550,7 @@ class TestSaleToInvoice(TestSaleCommon):
         downpayment = self.env['sale.advance.payment.inv'].with_context(context_for_downpayment).create({
             'advance_payment_method': 'fixed',
             'fixed_amount': 50,
+            'deposit_account_id': self.company_data['default_account_revenue'].id
         })
         downpayment.create_invoices()
         self.assertEqual(so_for_downpayment.invoice_ids[0].company_id.id, so_company_id, "The company of the downpayment invoice should be the same as the one from the SO")
@@ -789,11 +590,50 @@ class TestSaleToInvoice(TestSaleCommon):
         aml = self.env['account.move.line'].search([('move_id', 'in', so.invoice_ids.ids)])[0]
         self.assertRecordValues(aml, [{'analytic_distribution': {str(analytic_account_default.id): 100}}])
 
+    def test_invoice_analytic_account_so_not_default(self):
+        """ Tests whether, when an analytic account rule is set and the so has an analytic account,
+        the default analytic acount doesn't replace the one from the so in the invoice.
+        """
+        # Required for `analytic_account_id` to be visible in the view
+        self.env.user.groups_id += self.env.ref('analytic.group_analytic_accounting')
+        analytic_plan_default = self.env['account.analytic.plan'].create({'name': 'default'})
+        analytic_account_default = self.env['account.analytic.account'].create({'name': 'default', 'plan_id': analytic_plan_default.id})
+        analytic_account_so = self.env['account.analytic.account'].create({'name': 'so', 'plan_id': analytic_plan_default.id})
+
+        self.env['account.analytic.distribution.model'].create({
+            'analytic_distribution': {analytic_account_default.id: 100},
+            'product_id': self.product_a.id,
+        })
+
+        so_form = Form(self.env['sale.order'])
+        so_form.partner_id = self.partner_a
+        so_form.analytic_account_id = analytic_account_so
+
+        with so_form.order_line.new() as sol:
+            sol.product_id = self.product_a
+            sol.product_uom_qty = 1
+
+        so = so_form.save()
+        so.action_confirm()
+        so._force_lines_to_invoice_policy_order()
+
+        so_context = {
+            'active_model': 'sale.order',
+            'active_ids': [so.id],
+            'active_id': so.id,
+            'default_journal_id': self.company_data['default_journal_sale'].id,
+        }
+        down_payment = self.env['sale.advance.payment.inv'].with_context(so_context).create({})
+        down_payment.create_invoices()
+
+        aml = self.env['account.move.line'].search([('move_id', 'in', so.invoice_ids.ids)])[0]
+        self.assertRecordValues(aml, [{'analytic_distribution': {str(analytic_account_default.id): 100, str(analytic_account_so.id): 100}}])
+
     def test_invoice_analytic_rule_with_account_prefix(self):
         """
         Test whether, when an analytic account rule is set within the scope (applicability) of invoice
-        and with an account prefix set, the default analytic account is correctly set during the conversion from
-        so to invoice. An additional analytic account set manually in another plan is also passed to the invoice.
+        and with an account prefix set,
+        the default analytic account is correctly set during the conversion from so to invoice
         """
         self.env.user.groups_id += self.env.ref('analytic.group_analytic_accounting')
         analytic_plan_default = self.env['account.analytic.plan'].create({
@@ -804,10 +644,6 @@ class TestSaleToInvoice(TestSaleCommon):
             })]
         })
         analytic_account_default = self.env['account.analytic.account'].create({'name': 'default', 'plan_id': analytic_plan_default.id})
-        # Create an additional analytic account in another plan
-        analytic_plan_2 = self.env['account.analytic.plan'].create({'name': 'manual'})
-        analytic_account_2 = self.env['account.analytic.account'].create({'name': 'manual', 'plan_id': analytic_plan_2.id})
-        analytic_distribution_manual = {str(analytic_account_2.id): 100}
 
         analytic_distribution_model = self.env['account.analytic.distribution.model'].create({
             'account_prefix': '400000',
@@ -822,11 +658,10 @@ class TestSaleToInvoice(TestSaleCommon):
             'product_id': self.product_a.id
         })
         self.assertFalse(so.order_line.analytic_distribution, "There should be no tag set.")
-        so.order_line.analytic_distribution = analytic_distribution_manual
         so.action_confirm()
         so.order_line.qty_delivered = 1
         aml = so._create_invoices().invoice_line_ids
-        self.assertRecordValues(aml, [{'analytic_distribution': analytic_distribution_model.analytic_distribution | analytic_distribution_manual}])
+        self.assertRecordValues(aml, [{'analytic_distribution': analytic_distribution_model.analytic_distribution}])
 
     def test_invoice_after_product_return_price_not_default(self):
         so = self.env['sale.order'].create({
@@ -902,6 +737,56 @@ class TestSaleToInvoice(TestSaleCommon):
             1,
             'Note SO line should have been pushed to the invoice')
 
+    def test_cost_invoicing(self):
+        """ Test confirming a vendor invoice to reinvoice cost on the so """
+        serv_cost = self.env['product.product'].create({
+            'name': "Ordered at cost",
+            'standard_price': 160,
+            'list_price': 180,
+            'type': 'consu',
+            'invoice_policy': 'order',
+            'expense_policy': 'cost',
+            'default_code': 'PROD_COST',
+            'service_type': 'manual',
+        })
+        prod_gap = self.company_data['product_service_order']
+        so = self.env['sale.order'].create({
+            'partner_id': self.partner_a.id,
+            'partner_invoice_id': self.partner_a.id,
+            'partner_shipping_id': self.partner_a.id,
+            'order_line': [Command.create({
+                'product_id': prod_gap.id,
+                'product_uom_qty': 2,
+                'product_uom': prod_gap.uom_id.id,
+                'price_unit': prod_gap.list_price,
+            })],
+            'pricelist_id': self.company_data['default_pricelist'].id,
+        })
+        so.action_confirm()
+        so._create_analytic_account()
+
+        inv = self.env['account.move'].with_context(default_move_type='in_invoice').create({
+            'partner_id': self.partner_a.id,
+            'invoice_date': so.date_order,
+            'invoice_line_ids': [
+                Command.create({
+                    'name': serv_cost.name,
+                    'product_id': serv_cost.id,
+                    'product_uom_id': serv_cost.uom_id.id,
+                    'quantity': 2,
+                    'price_unit': serv_cost.standard_price,
+                    'analytic_distribution': {so.analytic_account_id.id: 100},
+                }),
+            ],
+        })
+        inv.action_post()
+        sol = so.order_line.filtered(lambda l: l.product_id == serv_cost)
+        self.assertTrue(sol, 'Sale: cost invoicing does not add lines when confirming vendor invoice')
+        self.assertEqual(
+            (sol.price_unit, sol.qty_delivered, sol.product_uom_qty, sol.qty_invoiced),
+            (160, 2, 0, 0),
+            'Sale: line is wrong after confirming vendor invoice')
+
     def test_sale_order_standard_flow_with_invoicing(self):
         """ Test the sales order flow (invoicing and quantity updates)
             - Invoice repeatedly while varrying delivered quantities and check that invoice are always what we expect
@@ -916,10 +801,7 @@ class TestSaleToInvoice(TestSaleCommon):
         # send quotation
         email_act = self.sale_order.action_quotation_send()
         email_ctx = email_act.get('context', {})
-        self.sale_order.with_context(**email_ctx).message_post_with_source(
-            self.env['mail.template'].browse(email_ctx.get('default_template_id')),
-            subtype_xmlid='mail.mt_comment',
-        )
+        self.sale_order.with_context(**email_ctx).message_post_with_template(email_ctx.get('default_template_id'))
         self.assertTrue(self.sale_order.state == 'sent', 'Sale: state after sending is wrong')
         self.sale_order.order_line._compute_product_updatable()
         self.assertTrue(self.sale_order.order_line[0].product_updatable)
@@ -1043,13 +925,11 @@ class TestSaleToInvoice(TestSaleCommon):
         line.qty_delivered = 15
         self.assertEqual(line.qty_invoiced, 10)
         self.assertEqual(line.untaxed_amount_invoiced, 300)
-        self.assertEqual(sale_order.amount_to_invoice, 150)
 
     def test_salesperson_in_invoice_followers(self):
         """
         Test if the salesperson is in the followers list of invoice created from SO
         """
-        self.env = self.env(context={})
         # create a salesperson
         salesperson = self.env['res.users'].create({
             'name': 'Salesperson',
@@ -1073,270 +953,3 @@ class TestSaleToInvoice(TestSaleCommon):
         # check if the salesperson is in the followers list of invoice created from SO
         self.assertIn(salesperson.partner_id, invoice.message_partner_ids, 'Salesperson not in the followers list of '
                                                                            'invoice created from SO')
-    def test_amount_to_invoice_multiple_so(self):
-        """ Testing creating two SOs with the same customer and invoicing them together. We have to ensure
-            that the amount to invoice is correct for each SO.
-        """
-        sale_order_1 = self.env['sale.order'].create({
-            'partner_id': self.partner_a.id,
-            'order_line': [
-                Command.create({
-                    'product_id': self.company_data['product_delivery_no'].id,
-                    'product_uom_qty': 10,
-                }),
-            ],
-        })
-        sale_order_2 = self.env['sale.order'].create({
-            'partner_id': self.partner_a.id,
-            'order_line': [
-                Command.create({
-                    'product_id': self.company_data['product_delivery_no'].id,
-                    'product_uom_qty': 20,
-                }),
-            ],
-        })
-
-        sale_order_1.action_confirm()
-        sale_order_2.action_confirm()
-        sale_order_1.order_line.qty_delivered = 10
-        sale_order_2.order_line.qty_delivered = 20
-
-        self.env['sale.advance.payment.inv'].create({
-            'advance_payment_method': 'delivered',
-            'sale_order_ids': [Command.set((sale_order_1 + sale_order_2).ids)],
-        }).create_invoices()
-
-        sale_order_1.invoice_ids.action_post()
-
-        self.assertEqual(sale_order_1.amount_to_invoice, 0.0)
-        self.assertEqual(sale_order_2.amount_to_invoice, 0.0)
-
-    def test_amount_to_invoice_one_line_multiple_so(self):
-        """ Testing creating two SOs linked to the same invoice line. Drawback: the substracted
-            amount to the amount_total will take both sale order into account.
-        """
-        sale_order_1 = self.env['sale.order'].create({
-            'partner_id': self.partner_a.id,
-            'order_line': [
-                Command.create({
-                    'product_id': self.company_data['product_delivery_no'].id,
-                    'product_uom_qty': 10,
-                }),
-            ],
-        })
-        sale_order_2 = self.env['sale.order'].create({
-            'partner_id': self.partner_a.id,
-            'order_line': [
-                Command.create({
-                    'product_id': self.company_data['product_delivery_no'].id,
-                    'product_uom_qty': 20,
-                }),
-            ],
-        })
-
-        sale_order_1.action_confirm()
-        sale_order_2.action_confirm()
-        sale_order_1.order_line.qty_delivered = 10
-        sale_order_2.order_line.qty_delivered = 20
-
-        self.env['sale.advance.payment.inv'].create({
-            'advance_payment_method': 'delivered',
-            'sale_order_ids': [Command.set((sale_order_2).ids)],
-        }).create_invoices()
-
-        sale_order_1.invoice_ids = sale_order_2.invoice_ids
-        sale_order_1.invoice_ids.line_ids.sale_line_ids += sale_order_1.order_line
-
-        sale_order_1.invoice_ids.action_post()
-
-        self.assertEqual(sale_order_1.amount_to_invoice, -700.0)
-        self.assertEqual(sale_order_2.amount_to_invoice, 0.0)
-
-    def test_amount_to_invoice_price_unit_change(self):
-        """
-        We check that the 'amount_to_invoice' relies only on the posted invoice quantity,
-        and is not affected by price changes that occurred during invoice creation.
-        """
-        so = self.env['sale.order'].create({
-            'partner_id': self.partner_a.id,
-            'partner_invoice_id': self.partner_a.id,
-            'partner_shipping_id': self.partner_a.id,
-            'pricelist_id': self.company_data['default_pricelist'].id,
-        })
-
-        sol_prod_deliver = self.env['sale.order.line'].create({
-            'product_id': self.company_data['product_order_no'].id,
-            'product_uom_qty': 5,
-            'order_id': so.id,
-            'tax_id': False,
-        })
-
-        so.action_confirm()
-        sol_prod_deliver.write({'qty_delivered': 5.0})
-
-        invoice_vals = self.env['sale.advance.payment.inv'].create({
-            'advance_payment_method': 'delivered',
-            'sale_order_ids': [Command.set(so.ids)],
-        }).create_invoices()
-
-        # Invoice is created in draft, which should impact 'qty_invoiced', but not 'amount_to_invoice'.
-        self.assertEqual(sol_prod_deliver.qty_invoiced, 5.0)
-        self.assertEqual(sol_prod_deliver.amount_to_invoice, sol_prod_deliver.price_total)
-        self.assertEqual(sol_prod_deliver.amount_invoiced, 0.0)
-
-        # Then we change the 'price_unit' on the invoice (keeping the quantity untouched).
-        invoice = self.env[invoice_vals['res_model']].browse(invoice_vals['res_id'])
-        invoice.invoice_line_ids.price_unit /= 2
-        invoice.action_post()
-
-        # In the end, the 'amount_to_invoice' should be 0.0, since all quantities have been invoiced,
-        # even if the price was changed manually on the invoice.
-        self.assertEqual(sol_prod_deliver.qty_invoiced, 5.0)
-        self.assertEqual(sol_prod_deliver.amount_to_invoice, 0.0)
-        self.assertEqual(sol_prod_deliver.amount_invoiced, sol_prod_deliver.price_total / 2)
-
-    def test_amount_to_invoice_with_discount(self):
-        """ Test the amount_to_invoice field when a discount is applied on the SO line. """
-
-        so = self.env['sale.order'].create({
-            'partner_id': self.partner_a.id,
-            'order_line': [
-                Command.create({
-                    'product_id': self.company_data['product_order_no'].id,
-                    'product_uom_qty': 5,
-                    'price_unit': 100,
-                    'discount': 10,
-                }),
-            ],
-        })
-
-        so.action_confirm()
-
-        self.assertEqual(so.amount_to_invoice, 450.0, "The amount to invoice should be 450.0")
-
-        invoice = so._create_invoices()
-        invoice.invoice_line_ids.quantity = 3
-        invoice.action_post()
-
-        self.assertEqual(so.amount_to_invoice, 180.0, "The amount to invoice should be 180.0")
-
-    def test_invoice_line_name_has_product_name(self):
-        """ Testing that when invoicing a sales order, the invoice line name ALWAYS contains the product name. """
-        so = self.sale_order
-
-        # Use only invoicable on order products
-        so.order_line[1].product_id = so.order_line[0].product_id
-        so.order_line[3].product_id = so.order_line[2].product_id
-
-        # Adapt the SOL names to test the different cases
-        so.order_line[0].name = "just a description"
-        so.order_line[1].name = so.order_line[1].product_id.display_name
-        so.order_line[2].name = f"{so.order_line[2].product_id.display_name} with more description"
-        so.order_line[3].name = "product"
-
-        # Invoice the sale order
-        so.action_confirm()
-        inv = self.sale_order._create_invoices()
-
-        # Check the invoice line names
-        self.assertEqual(inv.invoice_line_ids[0].name, f"{so.order_line[0].product_id.display_name} {so.order_line[0].name}", "When the description doesn't contain the product name, it should be added to the invoice line name")
-        self.assertEqual(inv.invoice_line_ids[1].name, f"{so.order_line[1].name}", "When the description is the product name, the invoice line name should only be the description")
-        self.assertEqual(inv.invoice_line_ids[2].name, f"{so.order_line[2].name}", "When description contains the product name, the invoice line name should only be the description")
-        self.assertEqual(inv.invoice_line_ids[3].name, f"{so.order_line[3].product_id.display_name} {so.order_line[3].name}", "When the product name contains the description, the invoice line name should contain the product name and the description")
-
-    def test_credit_note_automatic_matching(self):
-        sale_order = self.env['sale.order'].create({
-            'partner_id': self.partner_a.id,
-            'order_line': [
-                Command.create({
-                    'product_id': self.company_data['product_service_delivery'].id,
-                }),
-            ],
-        })
-        sale_order.action_confirm()
-
-        sale_order.order_line.qty_delivered = 1
-
-        invoice = sale_order._create_invoices()
-        invoice.action_post()
-
-        sale_order.order_line.qty_delivered = 0
-
-        with patch.object(self.env.registry['account.move'], '_refunds_origin_required', lambda move: True):
-            wizard_context = {
-                'active_model': 'sale.order',
-                'active_id': sale_order.id,
-            }
-            credit_note = self.env['sale.advance.payment.inv'].with_context(wizard_context).create({})._create_invoices(sale_order)
-        credit_note.action_post()
-
-        self.assertEqual(credit_note.reversed_entry_id.id, invoice.id)
-
-    def test_credit_note_no_automatic_matching(self):
-        product = self.company_data['product_service_delivery']
-
-        sale_order = self.env['sale.order'].create({
-            'partner_id': self.partner_a.id,
-        })
-        sale_line1 = self.env['sale.order.line'].create({
-            'product_id': product.id,
-            'product_uom_qty': 1,
-            'price_unit': 200.0,
-            'order_id': sale_order.id,
-        })
-        sale_line2 = self.env['sale.order.line'].create({
-            'product_id': product.id,
-            'product_uom_qty': 1,
-            'price_unit': 100.0,
-            'order_id': sale_order.id,
-        })
-        sale_order.action_confirm()
-
-        sale_line1.qty_delivered = 1
-
-        invoice = sale_order._create_invoices()
-        invoice.action_post()
-
-        sale_line2.qty_delivered = 1
-        sale_line1.qty_delivered = 0
-
-        with patch.object(self.env.registry['account.move'], '_refunds_origin_required', lambda move: True):
-            wizard_context = {
-                'active_model': 'sale.order',
-                'active_id': sale_order.id,
-            }
-            credit_note = self.env['sale.advance.payment.inv'].with_context(wizard_context).create({})._create_invoices(sale_order)
-        credit_note.action_post()
-
-        # The invoice contains one invoice line
-        self.assertEqual(len(invoice.invoice_line_ids), 1)
-        # the credit note contains 2
-        self.assertEqual(len(credit_note.invoice_line_ids), 2)
-        # so the credit note cannot be considered a reversal of the invoice
-        self.assertFalse(credit_note.reversed_entry_id)
-
-    def test_refund_salesteam(self):
-        """Check that salesperson & sales team doesn't change when creating a refund."""
-        salesperson = self.user
-        team1 = self.company_data['default_sale_team']
-        team2 = team1.copy({'name': "Team 2"})
-        team1.member_ids = salesperson
-        self.sale_order.write({
-            'user_id': salesperson,
-            'team_id': team2.id,
-        })
-
-        # Set all prices to negative values to force a refund
-        self.sale_order.order_line.price_unit = -10
-        self.sale_order.action_confirm()
-        invoice = self.sale_order._create_invoices(final=True)
-
-        self.assertEqual(invoice.move_type, 'out_refund')
-        self.assertEqual(
-            invoice.invoice_user_id, salesperson,
-            "Invoice salesperson should be the same as the order's salesperson",
-        )
-        self.assertEqual(
-            invoice.team_id, team2,
-            "Invoice team should be the same as the order's team",
-        )

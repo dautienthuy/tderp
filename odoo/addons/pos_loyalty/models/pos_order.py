@@ -52,26 +52,6 @@ class PosOrder(models.Model):
             'payload': {},
         }
 
-    def add_loyalty_history_lines(self, coupon_data, coupon_updates):
-        id_mapping = {item['old_id']: int(item['id']) for item in coupon_updates}
-        history_lines_create_vals = []
-        for coupon in coupon_data:
-            card_id = id_mapping.get(int(coupon['card_id'], False)) or int(coupon['card_id'])
-            if not self.env['loyalty.card'].browse(card_id).exists():
-                continue
-            issued = coupon['won']
-            cost = coupon['spent']
-            if (issued or cost) and card_id > 0:
-                history_lines_create_vals.append({
-                    'card_id': card_id,
-                    'order_model': self._name,
-                    'order_id': self.id,
-                    'description': _('Onsite %s', self.display_name),
-                    'used': cost,
-                    'issued': issued,
-                })
-        self.env['loyalty.history'].create(history_lines_create_vals)
-
     def confirm_coupon_programs(self, coupon_data):
         """
         This is called after the order is created.
@@ -80,7 +60,6 @@ class PosOrder(models.Model):
 
         It will also return the points of all concerned coupons to be updated in the cache.
         """
-        get_partner_id = lambda partner_id: partner_id and self.env['res.partner'].browse(partner_id).exists() and partner_id or False
         # Keys are stringified when using rpc
         coupon_data = {int(k): v for k, v in coupon_data.items()}
 
@@ -92,12 +71,11 @@ class PosOrder(models.Model):
         coupons_to_create = {k: v for k, v in coupon_data.items() if k < 0 and not v.get('giftCardId')}
         coupon_create_vals = [{
             'program_id': p['program_id'],
-            'partner_id': get_partner_id(p.get('partner_id', False)),
-            'code': p.get('code') or p.get('barcode') or self.env['loyalty.card']._generate_code(),
+            'partner_id': p.get('partner_id', False),
+            'code': p.get('barcode') or self.env['loyalty.card']._generate_code(),
             'points': 0,
             'expiration_date': p.get('date_to', False),
             'source_pos_order_id': self.id,
-            'expiration_date': p.get('expiration_date')
         } for p in coupons_to_create.values()]
 
         # Pos users don't have the create permission
@@ -111,7 +89,7 @@ class PosOrder(models.Model):
             gift_card.write({
                 'points': coupon_vals['points'],
                 'source_pos_order_id': self.id,
-                'partner_id': get_partner_id(coupon_vals.get('partner_id', False)),
+                'partner_id': coupon_vals.get('partner_id', False),
             })
             updated_gift_cards |= gift_card
 
@@ -119,8 +97,7 @@ class PosOrder(models.Model):
         for old_id, new_id in zip(coupons_to_create.keys(), new_coupons):
             coupon_new_id_map[new_id.id] = old_id
 
-        # We need a sudo here because this can trigger `_compute_order_count` that require access to `sale.order.line`
-        all_coupons = self.env['loyalty.card'].sudo().browse(coupon_new_id_map.keys()).exists()
+        all_coupons = self.env['loyalty.card'].browse(coupon_new_id_map.keys()).exists()
         lines_per_reward_code = defaultdict(lambda: self.env['pos.order.line'])
         for line in self.lines:
             if not line.reward_identifier_code:
@@ -155,7 +132,7 @@ class PosOrder(models.Model):
             } for coupon in all_coupons if coupon.program_id.is_nominative],
             'program_updates': [{
                 'program_id': program.id,
-                'usages': program.sudo().total_order_count,
+                'usages': program.total_order_count,
             } for program in all_coupons.program_id],
             'new_coupon_info': [{
                 'program_name': coupon.program_id.name,
@@ -165,7 +142,7 @@ class PosOrder(models.Model):
                 coupon.program_id.applies_on == 'future'
                 # Don't send the coupon code for the gift card and ewallet programs.
                 # It should not be printed in the ticket.
-                and coupon.program_id.sudo().program_type not in ['gift_card', 'ewallet']
+                and coupon.program_id.program_type not in ['gift_card', 'ewallet']
             )],
             'coupon_report': coupon_per_report,
         }
@@ -189,8 +166,47 @@ class PosOrder(models.Model):
         fields.extend(['is_reward_line', 'reward_id', 'coupon_id', 'reward_identifier_code', 'points_cost'])
         return fields
 
-    def _add_mail_attachment(self, name, ticket, basic_receipt):
-        attachment = super()._add_mail_attachment(name, ticket, basic_receipt)
+    def _prepare_order_line(self, order_line):
+        order_line = super()._prepare_order_line(order_line)
+        for f in ['reward_id', 'coupon_id']:
+            if order_line.get(f):
+                order_line[f] = order_line[f][0]
+        return order_line
+
+    def _add_activated_coupon_to_draft_orders(self, table_orders):
+        table_orders = super()._add_activated_coupon_to_draft_orders(table_orders)
+
+        for order in table_orders:
+            activated_coupon = []
+
+            rewards_list = [{
+                'reward_id': orderline[2]['reward_id'],
+                'coupon_id': orderline[2]['coupon_id']
+                } for orderline in order['lines'] if orderline[2]['is_reward_line'] and orderline[2]['reward_id']
+            ]
+
+            order_reward_ids = self.env['loyalty.reward'].browse(set([reward_id['reward_id'] for reward_id in rewards_list]))
+
+            for reward in rewards_list:
+                order_reward_id = order_reward_ids.filtered(lambda order_reward: order_reward.id == reward['reward_id'])
+
+                if order_reward_id:
+                    if order_reward_id.program_type in ['gift_card', 'ewallet']:
+                        coupon_id = self.env['loyalty.card'].search([('id', '=', reward['coupon_id'])])
+
+                        activated_coupon.append({
+                            'balance': coupon_id.points,
+                            'code': coupon_id.code,
+                            'id': coupon_id.id,
+                            'program_id': coupon_id.program_id.id,
+                        })
+
+            order['codeActivatedCoupons'] = activated_coupon
+
+        return table_orders
+
+    def _add_mail_attachment(self, name, ticket):
+        attachment = super()._add_mail_attachment(name, ticket)
         gift_card_programs = self.config_id._get_program_ids().filtered(lambda p: p.program_type == 'gift_card' and
                                                                                   p.pos_report_print_id)
         if gift_card_programs:

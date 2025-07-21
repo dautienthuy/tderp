@@ -3,15 +3,17 @@
 # 	* account_debit_note
 # 
 # Translators:
+# Martin Trigaux, 2022
+# Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2022
 # Wil Odoo, 2024
 # Larissa Manderfeld, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server saas~15.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 08:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2022-04-19 13:57+0000\n"
+"PO-Revision-Date: 2022-09-22 05:44+0000\n"
 "Last-Translator: Larissa Manderfeld, 2024\n"
 "Language-Team: Spanish (https://app.transifex.com/odoo/teams/41243/es/)\n"
 "MIME-Version: 1.0\n"
@@ -26,6 +28,11 @@ msgid "<span class=\"o_stat_text\">Debit Notes</span>"
 msgstr "<span class=\"o_stat_text\">Notas de débito</span>"
 
 #. module: account_debit_note
+#: model_terms:ir.ui.view,arch_db:account_debit_note.view_move_form_debit
+msgid "Add Debit Note"
+msgstr "Añadir nota débito"
+
+#. module: account_debit_note
 #: model:ir.model,name:account_debit_note.model_account_debit_note
 msgid "Add Debit Note wizard"
 msgstr "Asistente para añadir nota de débito"
@@ -34,15 +41,6 @@ msgstr "Asistente para añadir nota de débito"
 #: model_terms:ir.ui.view,arch_db:account_debit_note.view_account_debit_note
 msgid "Cancel"
 msgstr "Cancelar"
-
-#. module: account_debit_note
-#: model:ir.model.fields,help:account_debit_note.field_account_journal__debit_sequence
-msgid ""
-"Check this box if you don't want to share the same sequence for invoices and"
-" debit notes made from this journal"
-msgstr ""
-"Seleccione esta casilla si no desea compartir la misma secuencia de facturas"
-" y notas de débito de este diario"
 
 #. module: account_debit_note
 #: model:ir.model.fields,field_description:account_debit_note.field_account_debit_note__copy_lines
@@ -71,32 +69,20 @@ msgid "Created on"
 msgstr "Creado el"
 
 #. module: account_debit_note
-#: model:ir.actions.server,name:account_debit_note.action_move_debit_note
-#: model_terms:ir.ui.view,arch_db:account_debit_note.view_account_move_filter_debit
-#: model_terms:ir.ui.view,arch_db:account_debit_note.view_account_move_line_filter_debit
-msgid "Debit Note"
-msgstr "Nota de débito"
-
-#. module: account_debit_note
 #: model:ir.model.fields,field_description:account_debit_note.field_account_debit_note__date
 #: model_terms:ir.ui.view,arch_db:account_debit_note.view_account_debit_note
 msgid "Debit Note Date"
 msgstr "Fecha de nota de débito"
 
 #. module: account_debit_note
-#. odoo-python
 #: code:addons/account_debit_note/models/account_move.py:0
 #: code:addons/account_debit_note/wizard/account_debit_note.py:0
 #: model:ir.model.fields,field_description:account_debit_note.field_account_bank_statement_line__debit_note_ids
 #: model:ir.model.fields,field_description:account_debit_note.field_account_move__debit_note_ids
-#: model_terms:ir.ui.view,arch_db:account_debit_note.view_account_invoice_filter_debit
+#: model:ir.model.fields,field_description:account_debit_note.field_account_payment__debit_note_ids
+#, python-format
 msgid "Debit Notes"
 msgstr "Notas de débito"
-
-#. module: account_debit_note
-#: model:ir.model.fields,field_description:account_debit_note.field_account_journal__debit_sequence
-msgid "Dedicated Debit Note Sequence"
-msgstr "Secuencia de notas de débito dedicada"
 
 #. module: account_debit_note
 #: model:ir.model.fields,field_description:account_debit_note.field_account_debit_note__display_name
@@ -125,11 +111,6 @@ msgstr ""
 "rectificativas."
 
 #. module: account_debit_note
-#: model:ir.model,name:account_debit_note.model_account_journal
-msgid "Journal"
-msgstr "Diario"
-
-#. module: account_debit_note
 #: model:ir.model,name:account_debit_note.model_account_move
 msgid "Journal Entry"
 msgstr "Asiento contable"
@@ -138,6 +119,11 @@ msgstr "Asiento contable"
 #: model:ir.model.fields,field_description:account_debit_note.field_account_debit_note__journal_type
 msgid "Journal Type"
 msgstr "Tipo de diario"
+
+#. module: account_debit_note
+#: model:ir.model.fields,field_description:account_debit_note.field_account_debit_note____last_update
+msgid "Last Modified on"
+msgstr "Última modificación el"
 
 #. module: account_debit_note
 #: model:ir.model.fields,field_description:account_debit_note.field_account_debit_note__write_uid
@@ -162,12 +148,14 @@ msgstr "Tipo de asiento"
 #. module: account_debit_note
 #: model:ir.model.fields,field_description:account_debit_note.field_account_bank_statement_line__debit_note_count
 #: model:ir.model.fields,field_description:account_debit_note.field_account_move__debit_note_count
+#: model:ir.model.fields,field_description:account_debit_note.field_account_payment__debit_note_count
 msgid "Number of Debit Notes"
 msgstr "Número de notas de débito"
 
 #. module: account_debit_note
 #: model:ir.model.fields,field_description:account_debit_note.field_account_bank_statement_line__debit_origin_id
 #: model:ir.model.fields,field_description:account_debit_note.field_account_move__debit_origin_id
+#: model:ir.model.fields,field_description:account_debit_note.field_account_payment__debit_origin_id
 msgid "Original Invoice Debited"
 msgstr "Factura original debitada"
 
@@ -188,12 +176,13 @@ msgstr ""
 #. module: account_debit_note
 #: model:ir.model.fields,help:account_debit_note.field_account_bank_statement_line__debit_note_ids
 #: model:ir.model.fields,help:account_debit_note.field_account_move__debit_note_ids
+#: model:ir.model.fields,help:account_debit_note.field_account_payment__debit_note_ids
 msgid "The debit notes created for this invoice"
 msgstr "Notas de débito creadas para esta factura"
 
 #. module: account_debit_note
-#. odoo-python
 #: code:addons/account_debit_note/wizard/account_debit_note.py:0
+#, python-format
 msgid "This debit note was created from: %s"
 msgstr "Esta nota de débito se creó desde: %s"
 
@@ -203,28 +192,7 @@ msgid "Use Specific Journal"
 msgstr "Usar diario específico"
 
 #. module: account_debit_note
-#. odoo-python
 #: code:addons/account_debit_note/wizard/account_debit_note.py:0
-msgid ""
-"You can make a debit note only for a Customer Invoice, a Customer Credit "
-"Note, a Vendor Bill or a Vendor Credit Note."
-msgstr ""
-"Puede hacer una nota de débito solo para una factura del cliente, una "
-"factura rectificativa del cliente, una factura del proveedor o una factura "
-"rectificativa del proveedor."
-
-#. module: account_debit_note
-#. odoo-python
-#: code:addons/account_debit_note/wizard/account_debit_note.py:0
+#, python-format
 msgid "You can only debit posted moves."
 msgstr "Solo puede debitar asientos publicados."
-
-#. module: account_debit_note
-#. odoo-python
-#: code:addons/account_debit_note/wizard/account_debit_note.py:0
-msgid ""
-"You can't make a debit note for an invoice that is already linked to a debit"
-" note."
-msgstr ""
-"No puede hacer una nota de débito para una factura que ya se encuentra "
-"vinculada a una nota de débito."

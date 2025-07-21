@@ -3,21 +3,21 @@
 # 	* account_debit_note
 # 
 # Translators:
-# digitouch UAB <digitouchagencyeur@gmail.com>, 2024
-# Rolandas <info@paninfo.lt>, 2024
-# Linas Versada <linaskrisiukenas@gmail.com>, 2024
-# Arunas V. <arunas@devoro.com>, 2024
-# UAB "Draugiški sprendimai" <transifex@draugiskisprendimai.lt>, 2024
-# Audrius Palenskis <audrius.palenskis@gmail.com>, 2024
-# Martin Trigaux, 2024
+# Audrius Palenskis <audrius.palenskis@gmail.com>, 2022
+# Arunas V. <arunas@devoro.com>, 2022
+# Rolandas <info@paninfo.lt>, 2022
+# Linas Versada <linaskrisiukenas@gmail.com>, 2022
+# UAB "Draugiški sprendimai" <transifex@draugiskisprendimai.lt>, 2022
+# Martin Trigaux, 2022
+# digitouch UAB <digitouchagencyeur@gmail.com>, 2022
 # Ramunė ViaLaurea <ramune.vialaurea@gmail.com>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server saas~15.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 08:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2022-04-19 13:57+0000\n"
+"PO-Revision-Date: 2022-09-22 05:44+0000\n"
 "Last-Translator: Ramunė ViaLaurea <ramune.vialaurea@gmail.com>, 2024\n"
 "Language-Team: Lithuanian (https://app.transifex.com/odoo/teams/41243/lt/)\n"
 "MIME-Version: 1.0\n"
@@ -32,6 +32,11 @@ msgid "<span class=\"o_stat_text\">Debit Notes</span>"
 msgstr "<span class=\"o_stat_text\">Debetinės sąskaitos</span>"
 
 #. module: account_debit_note
+#: model_terms:ir.ui.view,arch_db:account_debit_note.view_move_form_debit
+msgid "Add Debit Note"
+msgstr "Pridėti Debetinę sąskaitą"
+
+#. module: account_debit_note
 #: model:ir.model,name:account_debit_note.model_account_debit_note
 msgid "Add Debit Note wizard"
 msgstr "Pridėti Debetinę sąskaitą"
@@ -40,13 +45,6 @@ msgstr "Pridėti Debetinę sąskaitą"
 #: model_terms:ir.ui.view,arch_db:account_debit_note.view_account_debit_note
 msgid "Cancel"
 msgstr "Atšaukti"
-
-#. module: account_debit_note
-#: model:ir.model.fields,help:account_debit_note.field_account_journal__debit_sequence
-msgid ""
-"Check this box if you don't want to share the same sequence for invoices and"
-" debit notes made from this journal"
-msgstr ""
 
 #. module: account_debit_note
 #: model:ir.model.fields,field_description:account_debit_note.field_account_debit_note__copy_lines
@@ -75,32 +73,20 @@ msgid "Created on"
 msgstr "Sukurta"
 
 #. module: account_debit_note
-#: model:ir.actions.server,name:account_debit_note.action_move_debit_note
-#: model_terms:ir.ui.view,arch_db:account_debit_note.view_account_move_filter_debit
-#: model_terms:ir.ui.view,arch_db:account_debit_note.view_account_move_line_filter_debit
-msgid "Debit Note"
-msgstr "Debetinė sąskaita"
-
-#. module: account_debit_note
 #: model:ir.model.fields,field_description:account_debit_note.field_account_debit_note__date
 #: model_terms:ir.ui.view,arch_db:account_debit_note.view_account_debit_note
 msgid "Debit Note Date"
 msgstr "Debetinės sąskaitos data"
 
 #. module: account_debit_note
-#. odoo-python
 #: code:addons/account_debit_note/models/account_move.py:0
 #: code:addons/account_debit_note/wizard/account_debit_note.py:0
 #: model:ir.model.fields,field_description:account_debit_note.field_account_bank_statement_line__debit_note_ids
 #: model:ir.model.fields,field_description:account_debit_note.field_account_move__debit_note_ids
-#: model_terms:ir.ui.view,arch_db:account_debit_note.view_account_invoice_filter_debit
+#: model:ir.model.fields,field_description:account_debit_note.field_account_payment__debit_note_ids
+#, python-format
 msgid "Debit Notes"
 msgstr "Debetinės sąskaitos"
-
-#. module: account_debit_note
-#: model:ir.model.fields,field_description:account_debit_note.field_account_journal__debit_sequence
-msgid "Dedicated Debit Note Sequence"
-msgstr ""
 
 #. module: account_debit_note
 #: model:ir.model.fields,field_description:account_debit_note.field_account_debit_note__display_name
@@ -125,11 +111,6 @@ msgid ""
 msgstr ""
 
 #. module: account_debit_note
-#: model:ir.model,name:account_debit_note.model_account_journal
-msgid "Journal"
-msgstr "Žurnalas"
-
-#. module: account_debit_note
 #: model:ir.model,name:account_debit_note.model_account_move
 msgid "Journal Entry"
 msgstr "Žurnalo įrašas"
@@ -138,6 +119,11 @@ msgstr "Žurnalo įrašas"
 #: model:ir.model.fields,field_description:account_debit_note.field_account_debit_note__journal_type
 msgid "Journal Type"
 msgstr "Žurnalo tipas"
+
+#. module: account_debit_note
+#: model:ir.model.fields,field_description:account_debit_note.field_account_debit_note____last_update
+msgid "Last Modified on"
+msgstr "Paskutinį kartą keista"
 
 #. module: account_debit_note
 #: model:ir.model.fields,field_description:account_debit_note.field_account_debit_note__write_uid
@@ -162,12 +148,14 @@ msgstr "Perkėlimo tipas"
 #. module: account_debit_note
 #: model:ir.model.fields,field_description:account_debit_note.field_account_bank_statement_line__debit_note_count
 #: model:ir.model.fields,field_description:account_debit_note.field_account_move__debit_note_count
+#: model:ir.model.fields,field_description:account_debit_note.field_account_payment__debit_note_count
 msgid "Number of Debit Notes"
 msgstr "Debetinių sąskaitų skaičius"
 
 #. module: account_debit_note
 #: model:ir.model.fields,field_description:account_debit_note.field_account_bank_statement_line__debit_origin_id
 #: model:ir.model.fields,field_description:account_debit_note.field_account_move__debit_origin_id
+#: model:ir.model.fields,field_description:account_debit_note.field_account_payment__debit_origin_id
 msgid "Original Invoice Debited"
 msgstr "Originali faktūra, kuri buvo debetuojama"
 
@@ -188,12 +176,13 @@ msgstr ""
 #. module: account_debit_note
 #: model:ir.model.fields,help:account_debit_note.field_account_bank_statement_line__debit_note_ids
 #: model:ir.model.fields,help:account_debit_note.field_account_move__debit_note_ids
+#: model:ir.model.fields,help:account_debit_note.field_account_payment__debit_note_ids
 msgid "The debit notes created for this invoice"
 msgstr "Debetinė sąskaita sukurta iš šios sąskaitos faktūros"
 
 #. module: account_debit_note
-#. odoo-python
 #: code:addons/account_debit_note/wizard/account_debit_note.py:0
+#, python-format
 msgid "This debit note was created from: %s"
 msgstr "Debetinė sąskaita buvo sukurta iš: %s"
 
@@ -203,28 +192,7 @@ msgid "Use Specific Journal"
 msgstr "Naudoti tam tikrą žurnalą"
 
 #. module: account_debit_note
-#. odoo-python
 #: code:addons/account_debit_note/wizard/account_debit_note.py:0
-msgid ""
-"You can make a debit note only for a Customer Invoice, a Customer Credit "
-"Note, a Vendor Bill or a Vendor Credit Note."
-msgstr ""
-"Debetinę faktūrą galite sukurti tik kliento sąskaitai faktūrai, kliento "
-"kreditinei sąskaitai faktūrai, tiekėjo sąskaitai faktūrai arba tiekėjo "
-"kreditinei sąskaitai faktūrai. "
-
-#. module: account_debit_note
-#. odoo-python
-#: code:addons/account_debit_note/wizard/account_debit_note.py:0
+#, python-format
 msgid "You can only debit posted moves."
 msgstr "Debetines sąskaitas galima kurti tik iš pavirtintų įrašų."
-
-#. module: account_debit_note
-#. odoo-python
-#: code:addons/account_debit_note/wizard/account_debit_note.py:0
-msgid ""
-"You can't make a debit note for an invoice that is already linked to a debit"
-" note."
-msgstr ""
-"Negalite sukurti debeto faktūros, iš sąskaitos faktūros kuri jau turi "
-"susietą debeto faktūrą."

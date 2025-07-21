@@ -1,4 +1,5 @@
-import { _t } from "@web/core/l10n/translation";
+/** @odoo-module **/
+
 import { useAutofocus } from "@web/core/utils/hooks";
 import { pick } from "@web/core/utils/objects";
 import { formView } from "@web/views/form/form_view";
@@ -8,19 +9,12 @@ import { SettingsFormRenderer } from "./settings_form_renderer";
 import { useSubEnv, useState, useRef, useEffect } from "@odoo/owl";
 
 export class SettingsFormController extends formView.Controller {
-    static template = "web.SettingsFormView";
-    static components = {
-        ...formView.Controller.components,
-        Renderer: SettingsFormRenderer,
-    };
-
     setup() {
         super.setup();
         useAutofocus();
         this.state = useState({ displayNoContent: false });
         this.searchState = useState({ value: "" });
         this.rootRef = useRef("root");
-        this.canCreate = false;
         useSubEnv({ searchState: this.searchState });
         useEffect(
             () => {
@@ -47,18 +41,7 @@ export class SettingsFormController extends formView.Controller {
             }
         });
 
-        this.initialApp = "module" in this.props.context ? this.props.context.module : "";
-    }
-
-    get modelParams() {
-        const headerFields = Object.values(this.archInfo.fieldNodes)
-            .filter((fieldNode) => fieldNode.options.isHeaderField)
-            .map((fieldNode) => fieldNode.name);
-        return {
-            ...super.modelParams,
-            headerFields,
-            onChangeHeaderFields: () => this._confirmSave(),
-        };
+        this.initialApp = "module" in this.props.context && this.props.context.module;
     }
 
     /**
@@ -69,23 +52,22 @@ export class SettingsFormController extends formView.Controller {
             return true;
         }
         if (
-            (await this.model.root.isDirty()) &&
+            this.model.root.isDirty &&
             !["execute"].includes(clickParams.name) &&
             !clickParams.noSaveDialog
         ) {
             return this._confirmSave();
         } else {
-            return this.model.root.save();
+            return this.model.root.save({ stayInEdition: true });
         }
     }
 
     displayName() {
-        return _t("Settings");
+        return this.env._t("Settings");
     }
 
-    async beforeLeave() {
-        const dirty = await this.model.root.isDirty();
-        if (dirty) {
+    beforeLeave() {
+        if (this.model.root.isDirty) {
             return this._confirmSave();
         }
     }
@@ -93,11 +75,15 @@ export class SettingsFormController extends formView.Controller {
     //This is needed to avoid the auto save when unload
     beforeUnload() {}
 
-    //This is needed to avoid the auto save when visibility change
-    beforeVisibilityChange() {}
+    //This is needed to avoid writing the id on the url
+    updateURL() {}
 
-    async save() {
-        await this.env.onClickViewButton({
+    async saveButtonClicked() {
+        await this._save();
+    }
+
+    async _save() {
+        this.env.onClickViewButton({
             clickParams: {
                 name: "execute",
                 type: "object",
@@ -123,9 +109,9 @@ export class SettingsFormController extends formView.Controller {
         let _continue = true;
         await new Promise((resolve) => {
             this.dialogService.add(SettingsConfirmationDialog, {
-                body: _t("Would you like to save your changes?"),
+                body: this.env._t("Would you like to save your changes?"),
                 confirm: async () => {
-                    await this.save();
+                    await this._save();
                     // It doesn't make sense to do the action of the button
                     // as the res.config.settings `execute` method will trigger a reload.
                     _continue = false;
@@ -133,7 +119,7 @@ export class SettingsFormController extends formView.Controller {
                 },
                 cancel: async () => {
                     await this.model.root.discard();
-                    await this.model.root.save();
+                    await this.model.root.save({ stayInEdition: true });
                     _continue = true;
                     resolve();
                 },
@@ -146,3 +132,9 @@ export class SettingsFormController extends formView.Controller {
         return _continue;
     }
 }
+
+SettingsFormController.components = {
+    ...formView.Controller.components,
+    Renderer: SettingsFormRenderer,
+};
+SettingsFormController.template = "web.SettingsFormView";

@@ -1,23 +1,19 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* account_check_printing
+# * account_check_printing
 # 
 # Translators:
-# Alexandros Kapetanios <alexandros@gnugr.org>, 2024
-# George Tarasidis <george_tarasidis@yahoo.com>, 2024
-# Martin Trigaux, 2024
-# Timos Zacharatos <kokkinopioupiou@hotmail.com>, 2025
-# Kostas Goutoudis <goutoudis@gmail.com>, 2025
-# Gerasimos Kanelatos, 2025
-# 
+# Martin Trigaux, 2018
+# Kostas Goutoudis <goutoudis@gmail.com>, 2018
+# George Tarasidis <george_tarasidis@yahoo.com>, 2018
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server saas~11.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 08:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Gerasimos Kanelatos, 2025\n"
-"Language-Team: Greek (https://app.transifex.com/odoo/teams/41243/el/)\n"
+"POT-Creation-Date: 2018-09-21 13:17+0000\n"
+"PO-Revision-Date: 2018-09-21 13:17+0000\n"
+"Last-Translator: George Tarasidis <george_tarasidis@yahoo.com>, 2018\n"
+"Language-Team: Greek (https://www.transifex.com/odoo/teams/41243/el/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -25,14 +21,20 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: account_check_printing
-#. odoo-python
-#: code:addons/account_check_printing/models/account_journal.py:0
-msgid "%(journal)s: Check Number Sequence"
-msgstr ""
+#: code:addons/account_check_printing/models/account_journal.py:58
+#, python-format
+msgid " : Check Number Sequence"
+msgstr ": Ακολουθία Αρίθμησης Επιταγής"
 
 #. module: account_check_printing
-#: model_terms:ir.ui.view,arch_db:account_check_printing.account_journal_dashboard_kanban_view_inherited
-msgid "<span>&amp;nbsp;</span>"
+#: code:addons/account_check_printing/models/account_payment.py:63
+#, python-format
+msgid "A check memo cannot exceed 60 characters."
+msgstr "Το υπόμνημα επιταγής δεν μπορεί να ξεπερνά τους 60 χαρακτήρες."
+
+#. module: account_check_printing
+#: model:ir.model,name:account_check_printing.model_account_chart_template
+msgid "Account Chart Template"
 msgstr ""
 
 #. module: account_check_printing
@@ -49,14 +51,9 @@ msgstr ""
 
 #. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_account_payment__check_amount_in_words
+#: model:ir.model.fields,field_description:account_check_printing.field_account_register_payments__check_amount_in_words
 msgid "Amount in Words"
 msgstr "Ποσό σε Λέξεις"
-
-#. module: account_check_printing
-#. odoo-python
-#: code:addons/account_check_printing/models/account_payment.py:0
-msgid "Bills"
-msgstr "Λογαριασμοί"
 
 #. module: account_check_printing
 #: model_terms:ir.ui.view,arch_db:account_check_printing.print_pre_numbered_checks_view
@@ -64,7 +61,6 @@ msgid "Cancel"
 msgstr "Ακύρωση"
 
 #. module: account_check_printing
-#: model:ir.model.fields,field_description:account_check_printing.field_account_journal__bank_check_printing_layout
 #: model:ir.model.fields,field_description:account_check_printing.field_res_company__account_check_printing_layout
 #: model:ir.model.fields,field_description:account_check_printing.field_res_config_settings__account_check_printing_layout
 msgid "Check Layout"
@@ -78,6 +74,7 @@ msgstr ""
 
 #. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_account_payment__check_number
+#: model:ir.model.fields,field_description:account_check_printing.field_account_register_payments__check_number
 msgid "Check Number"
 msgstr "Αριθμός Επιταγής"
 
@@ -85,6 +82,11 @@ msgstr "Αριθμός Επιταγής"
 #: model_terms:ir.ui.view,arch_db:account_check_printing.view_account_journal_form_inherited
 msgid "Check Printing"
 msgstr "Εκτύπωση Επιταγής"
+
+#. module: account_check_printing
+#: model:ir.model.fields,field_description:account_check_printing.field_account_journal__check_printing_payment_method_selected
+msgid "Check Printing Payment Method Selected"
+msgstr "Επιλεγμένη Μέθοδος Πληρωμής Εκυπωμένων Επιταγών"
 
 #. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_res_config_settings__account_check_printing_margin_right
@@ -103,14 +105,9 @@ msgid "Check Top Margin"
 msgstr ""
 
 #. module: account_check_printing
-#. odoo-python
-#: code:addons/account_check_printing/models/account_payment.py:0
-msgid "Check numbers can only consist of digits"
-msgstr ""
-
-#. module: account_check_printing
 #: model:ir.model.fields,help:account_check_printing.field_account_journal__check_manual_sequencing
 #: model:ir.model.fields,help:account_check_printing.field_account_payment__check_manual_sequencing
+#: model:ir.model.fields,help:account_check_printing.field_account_register_payments__check_manual_sequencing
 msgid "Check this option if your pre-printed checks are not numbered."
 msgstr ""
 "Ενεργοποιήστε αυτήν την επιλογή εάν οι προεκτυπωμένες επιταγές δεν είναι "
@@ -122,11 +119,14 @@ msgid "Check to print"
 msgstr "Επιταγή προς εκτύπωση"
 
 #. module: account_check_printing
-#. odoo-python
-#: code:addons/account_check_printing/models/account_payment.py:0
 #: model:account.payment.method,name:account_check_printing.account_payment_method_check
 msgid "Checks"
 msgstr "Με Επιταγές"
+
+#. module: account_check_printing
+#: model_terms:ir.ui.view,arch_db:account_check_printing.view_payment_check_printing_search
+msgid "Checks To Print"
+msgstr "Επιταγές Προς Εκτύπωση"
 
 #. module: account_check_printing
 #: model:ir.model.fields,help:account_check_printing.field_account_journal__check_sequence_id
@@ -134,9 +134,8 @@ msgid "Checks numbering sequence."
 msgstr "Ακολουθία αρίθμησης επιταγών."
 
 #. module: account_check_printing
-#. odoo-python
-#: code:addons/account_check_printing/models/account_journal.py:0
-#: model_terms:ir.ui.view,arch_db:account_check_printing.view_payment_check_printing_search
+#: code:addons/account_check_printing/models/account_journal.py:97
+#, python-format
 msgid "Checks to Print"
 msgstr "Επιταγές προς Εκτύπωση"
 
@@ -151,9 +150,14 @@ msgid "Companies"
 msgstr "Εταιρίες"
 
 #. module: account_check_printing
+#: model:ir.model.fields,field_description:account_check_printing.field_res_config_settings__country_code
+msgid "Company Country code"
+msgstr ""
+
+#. module: account_check_printing
 #: model:ir.model,name:account_check_printing.model_res_config_settings
 msgid "Config Settings"
-msgstr "Ρυθμίσεις διαμόρφωσης"
+msgstr ""
 
 #. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_print_prenumbered_checks__create_uid
@@ -166,20 +170,9 @@ msgid "Created on"
 msgstr "Δημιουργήθηκε στις"
 
 #. module: account_check_printing
-#: model_terms:ir.ui.view,arch_db:account_check_printing.view_account_journal_form_inherited
-msgid "Default"
-msgstr "Προεπιλογή"
-
-#. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_print_prenumbered_checks__display_name
 msgid "Display Name"
 msgstr "Εμφάνιση Ονόματος"
-
-#. module: account_check_printing
-#. odoo-python
-#: code:addons/account_check_printing/models/account_payment.py:0
-msgid "Go to the configuration panel"
-msgstr "Μετάβαση στον πίνακα ελέγχου"
 
 #. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_print_prenumbered_checks__id
@@ -187,8 +180,8 @@ msgid "ID"
 msgstr "Κωδικός"
 
 #. module: account_check_printing
-#. odoo-python
-#: code:addons/account_check_printing/models/account_payment.py:0
+#: code:addons/account_check_printing/models/account_payment.py:84
+#, python-format
 msgid ""
 "In order to print multiple checks at once, they must belong to the same bank"
 " journal."
@@ -200,6 +193,11 @@ msgstr ""
 #: model:ir.model,name:account_check_printing.model_account_journal
 msgid "Journal"
 msgstr "Ημερολόγιο"
+
+#. module: account_check_printing
+#: model:ir.model.fields,field_description:account_check_printing.field_print_prenumbered_checks____last_update
+msgid "Last Modified on"
+msgstr "Τελευταία τροποποίηση στις"
 
 #. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_print_prenumbered_checks__write_uid
@@ -214,25 +212,9 @@ msgstr "Τελευταία Ενημέρωση στις"
 #. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_account_journal__check_manual_sequencing
 #: model:ir.model.fields,field_description:account_check_printing.field_account_payment__check_manual_sequencing
+#: model:ir.model.fields,field_description:account_check_printing.field_account_register_payments__check_manual_sequencing
 msgid "Manual Numbering"
 msgstr "Χειροκίνητη Αρίθμηση"
-
-#. module: account_check_printing
-#: model:ir.model.fields,help:account_check_printing.field_account_payment__payment_method_line_id
-msgid ""
-"Manual: Pay or Get paid by any method outside of Odoo.\n"
-"Payment Providers: Each payment provider has its own Payment Method. Request a transaction on/to a card thanks to a payment token saved by the partner when buying or subscribing online.\n"
-"Check: Pay bills by check and print it from Odoo.\n"
-"Batch Deposit: Collect several customer checks at once generating and submitting a batch deposit to your bank. Module account_batch_payment is necessary.\n"
-"SEPA Credit Transfer: Pay in the SEPA zone by submitting a SEPA Credit Transfer file to your bank. Module account_sepa is necessary.\n"
-"SEPA Direct Debit: Get paid in the SEPA zone thanks to a mandate your partner will have granted to you. Module account_sepa is necessary.\n"
-msgstr ""
-"Χειροκίνητη: Πληρώστε ή λάβετε πληρωμές με οποιαδήποτε μέθοδο εκτός του Odoo. \n"
-"Πάροχοι Πληρωμών: Κάθε πάροχος πληρωμών διαθέτει τη δική του μέθοδο πληρωμής. Ζητήστε μια συναλλαγή σε/από μια κάρτα χρησιμοποιώντας έναν κωδικό πληρωμής που έχει αποθηκευτεί από τον συνεργάτη κατά την αγορά ή την εγγραφή online. \n"
-"Επιταγή: Πληρωμή λογαριασμών με επιταγή και εκτύπωση μέσω του Odoo. \n"
-"Ομαδική Κατάθεση: Συγκεντρώστε πολλές επιταγές πελατών ταυτόχρονα, δημιουργώντας και υποβάλλοντας μια ομαδική κατάθεση στην τράπεζά σας. Απαιτείται το module account_batch_payment. \n"
-"SEPA Πιστωτική Μεταφορά: Πληρώστε στην περιοχή SEPA υποβάλλοντας ένα αρχείο SEPA Πιστωτικής Μεταφοράς στην τράπεζά σας. Απαιτείται το module account_sepa. \n"
-"SEPA Άμεση Χρέωση: Λάβετε πληρωμές στην περιοχή SEPA χάρη σε μια εντολή που θα έχει χορηγήσει ο συνεργάτης σας. Απαιτείται το module account_sepa.\n"
 
 #. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_res_company__account_check_printing_multi_stub
@@ -247,26 +229,17 @@ msgid "Next Check Number"
 msgstr "Επόμενος Αριθμός Επιταγής"
 
 #. module: account_check_printing
-#. odoo-python
-#: code:addons/account_check_printing/models/account_journal.py:0
-#: code:addons/account_check_printing/wizard/print_prenumbered_checks.py:0
-msgid "Next Check Number should only contains numbers."
-msgstr ""
-
-#. module: account_check_printing
-#: model:ir.model.fields.selection,name:account_check_printing.selection__res_company__account_check_printing_layout__disabled
+#: selection:res.company,account_check_printing_layout:0
 msgid "None"
 msgstr "Κανένα"
 
 #. module: account_check_printing
-#: model:ir.model.fields,field_description:account_check_printing.field_account_payment__payment_method_line_id
-msgid "Payment Method"
-msgstr "Μέθοδος Πληρωμής"
-
-#. module: account_check_printing
-#: model:ir.model,name:account_check_printing.model_account_payment_method
-msgid "Payment Methods"
-msgstr "Μέθοδοι Πληρωμής"
+#: model:ir.model.fields,help:account_check_printing.field_account_register_payments__check_number
+msgid ""
+"Number of the check corresponding to this payment. If your pre-printed check"
+" are not already numbered, you can manage the numbering in the journal "
+"configuration page."
+msgstr ""
 
 #. module: account_check_printing
 #: model:ir.model,name:account_check_printing.model_account_payment
@@ -274,8 +247,8 @@ msgid "Payments"
 msgstr "Συναλλαγές"
 
 #. module: account_check_printing
-#. odoo-python
-#: code:addons/account_check_printing/models/account_payment.py:0
+#: code:addons/account_check_printing/models/account_payment.py:81
+#, python-format
 msgid ""
 "Payments to print as a checks must have 'Check' selected as payment method "
 "and not have already been reconciled"
@@ -310,18 +283,17 @@ msgid "Print Date Label"
 msgstr ""
 
 #. module: account_check_printing
-#. odoo-python
-#: code:addons/account_check_printing/models/account_payment.py:0
+#: code:addons/account_check_printing/models/account_payment.py:94
 #: model:ir.model,name:account_check_printing.model_print_prenumbered_checks
 #: model_terms:ir.ui.view,arch_db:account_check_printing.print_pre_numbered_checks_view
+#, python-format
 msgid "Print Pre-numbered Checks"
 msgstr "Εκτύπωση προ-αριθμημένων Επιταγών"
 
 #. module: account_check_printing
-#. odoo-python
-#: code:addons/account_check_printing/models/account_payment.py:0
-msgid "Refunds"
-msgstr "Επιστροφές"
+#: model:ir.model,name:account_check_printing.model_account_register_payments
+msgid "Register Payments"
+msgstr ""
 
 #. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_res_company__account_check_printing_margin_right
@@ -337,39 +309,27 @@ msgid ""
 msgstr ""
 
 #. module: account_check_printing
-#: model_terms:ir.ui.view,arch_db:account_check_printing.view_account_payment_form_inherited
-msgid "Sent"
-msgstr "Εστάλη"
-
-#. module: account_check_printing
 #: model:ir.model.fields,help:account_check_printing.field_account_journal__check_next_number
 msgid "Sequence number of the next printed check."
 msgstr "Ακολουθία αριθμού για την επόμενη εκτυπωμένη επιταγή."
 
 #. module: account_check_printing
-#: model:ir.model.fields,field_description:account_check_printing.field_account_payment__show_check_number
-msgid "Show Check Number"
-msgstr ""
-
-#. module: account_check_printing
-#. odoo-python
-#: code:addons/account_check_printing/models/account_payment.py:0
+#: model:ir.model.fields,help:account_check_printing.field_account_journal__check_printing_payment_method_selected
 msgid ""
-"Something went wrong with Check Layout, please select another layout in "
-"Invoicing/Accounting Settings and try again."
+"Technical feature used to know whether check printing was enabled as payment"
+" method."
 msgstr ""
 
 #. module: account_check_printing
-#. odoo-python
-#: code:addons/account_check_printing/models/account_payment.py:0
+#: model:ir.model.fields,help:account_check_printing.field_res_config_settings__country_code
 msgid ""
-"The following numbers are already used:\n"
-"%s"
+"The ISO country code in two chars. \n"
+"You can use this field for quick search."
 msgstr ""
 
 #. module: account_check_printing
-#. odoo-python
-#: code:addons/account_check_printing/models/account_journal.py:0
+#: code:addons/account_check_printing/models/account_journal.py:26
+#, python-format
 msgid ""
 "The last check number was %s. In order to avoid a check being rejected by "
 "the bank, you can only use a greater number."
@@ -395,7 +355,7 @@ msgstr ""
 #: model:ir.model.fields,help:account_check_printing.field_res_company__account_check_printing_date_label
 #: model:ir.model.fields,help:account_check_printing.field_res_config_settings__account_check_printing_date_label
 msgid ""
-"This option allows you to print the date label on the check as per CPA.\n"
+"This option allows you to print the date label on the check as per CPA. "
 "Disable this if your pre-printed check includes the date label."
 msgstr ""
 
@@ -411,14 +371,24 @@ msgid "Unmark Sent"
 msgstr "Σήμανση ως μη Απεσταλμένη"
 
 #. module: account_check_printing
-#: model_terms:ir.ui.view,arch_db:account_check_printing.view_account_payment_form_inherited
-msgid "Void Check"
+#: code:addons/account_check_printing/models/account_payment.py:116
+#, python-format
+msgid ""
+"You have to choose a check layout. For this, go in Apps, search for 'Checks "
+"layout' and install one."
 msgstr ""
 
 #. module: account_check_printing
-#. odoo-python
-#: code:addons/account_check_printing/models/account_payment.py:0
-msgid ""
-"You have to choose a check layout. For this, go in Invoicing/Accounting "
-"Settings, search for 'Checks layout' and set one."
+#: selection:res.company,account_check_printing_layout:0
+msgid "check in middle"
+msgstr ""
+
+#. module: account_check_printing
+#: selection:res.company,account_check_printing_layout:0
+msgid "check on bottom"
+msgstr ""
+
+#. module: account_check_printing
+#: selection:res.company,account_check_printing_layout:0
+msgid "check on top"
 msgstr ""

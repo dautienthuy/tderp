@@ -23,7 +23,7 @@ class MrpProductionSplit(models.TransientModel):
     product_uom_id = fields.Many2one(related='production_id.product_uom_id')
     production_capacity = fields.Float(related='production_id.production_capacity')
     counter = fields.Integer(
-        "Split #", default=2, compute="_compute_counter",
+        "Split #", default=0, compute="_compute_counter",
         store=True, readonly=False)
     production_detailed_vals_ids = fields.One2many(
         'mrp.production.split.line', 'mrp_production_split_id',
@@ -48,13 +48,13 @@ class MrpProductionSplit(models.TransientModel):
                 commands.append(Command.create({
                     'quantity': quantity,
                     'user_id': wizard.production_id.user_id,
-                    'date': wizard.production_id.date_start,
+                    'date': wizard.production_id.date_planned_start,
                 }))
                 remaining_quantity = float_round(remaining_quantity - quantity, precision_rounding=wizard.product_uom_id.rounding)
             commands.append(Command.create({
                 'quantity': remaining_quantity,
                 'user_id': wizard.production_id.user_id,
-                'date': wizard.production_id.date_start,
+                'date': wizard.production_id.date_planned_start,
             }))
             wizard.production_detailed_vals_ids = commands
 
@@ -69,7 +69,7 @@ class MrpProductionSplit(models.TransientModel):
         productions = self.production_id._split_productions({self.production_id: [detail.quantity for detail in self.production_detailed_vals_ids]})
         for production, detail in zip(productions, self.production_detailed_vals_ids):
             production.user_id = detail.user_id
-            production.date_start = detail.date
+            production.date_planned_start = detail.date
         if self.production_split_multi_id:
             saved_production_split_multi_id = self.production_split_multi_id.id
             self.production_split_multi_id.production_ids = [Command.unlink(self.id)]

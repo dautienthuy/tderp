@@ -1,27 +1,24 @@
 /** @odoo-module **/
 
 import { _t } from "@web/core/l10n/translation";
-import * as spreadsheet from "@odoo/o-spreadsheet";
-const { arg, toString, toJsDate, toNumber } = spreadsheet.helpers;
+import spreadsheet from "../o_spreadsheet/o_spreadsheet_extended";
+const { args, toString, toJsDate } = spreadsheet.helpers;
 const { functionRegistry } = spreadsheet.registries;
 
 functionRegistry.add("ODOO.CURRENCY.RATE", {
     description: _t(
         "This function takes in two currency codes as arguments, and returns the exchange rate from the first currency to the second as float."
     ),
-    category: "Odoo",
-    compute: function (currencyFrom, currencyTo, date, companyId) {
+    compute: function (currencyFrom, currencyTo, date) {
         const from = toString(currencyFrom);
         const to = toString(currencyTo);
-        const _date = date ? toJsDate(date, this.locale) : undefined;
-        const _companyId = companyId ? toNumber(companyId) : undefined;
-        return this.getters.getCurrencyRate(from, to, _date, _companyId);
+        const _date = date ? toJsDate(date) : undefined;
+        return this.getters.getCurrencyRate(from, to, _date);
     },
-    args: [
-        arg("currency_from (string)", _t("First currency code.")),
-        arg("currency_to (string)", _t("Second currency code.")),
-        arg("date (date, optional)", _t("Date of the rate.")),
-        arg("company_id (number, optional)", _t("The company to take the exchange rate from.")),
-    ],
+    args: args(`
+            currency_from (string) ${_t("First currency code.")}
+            currency_to (string) ${_t("Second currency code.")}
+            date (date, optional) ${_t("Date of the rate.")}
+        `),
     returns: ["NUMBER"],
 });

@@ -5,15 +5,12 @@
         <field name="name">spreadsheet.dashboard.view.list</field>
         <field name="model">spreadsheet.dashboard</field>
         <field name="arch" type="xml">
-            <list create="false" editable="bottom">
+            <tree create="false" editable="bottom">
                 <field name="sequence" widget="handle" groups="base.group_system"/>
                 <field name="name"/>
-                <field name="group_ids" widget="many2many_tags" required="1"/>
-                <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
-                <field name="spreadsheet_binary_data" groups="base.group_no_one" widget="binary_spreadsheet" filename="spreadsheet_file_name" string="Data" />
-                <field name="is_published" widget="boolean_toggle"/>
+                <field name="group_ids" widget="many2many_tags"/>
                 <field name="dashboard_group_id" optional="hidden"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -21,10 +18,10 @@
         <field name="name">spreadsheet.dashboard.group.view.list</field>
         <field name="model">spreadsheet.dashboard.group</field>
         <field name="arch" type="xml">
-            <list string="Dashboards">
+            <tree string="Dashboards">
                 <field name="sequence" widget="handle" groups="base.group_system"/>
                 <field name="name"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -41,7 +38,7 @@
                     </div>
                     <notebook>
                         <page string="Spreadsheets" name="spreadsheets">
-                            <field name="dashboard_ids" context="{'list_view_ref': 'spreadsheet_dashboard.spreadsheet_dashboard_view_list'}"/>
+                            <field name="dashboard_ids" context="{'tree_view_ref': 'spreadsheet_dashboard.spreadsheet_dashboard_view_list'}"/>
                         </page>
                     </notebook>
                 </sheet>
@@ -49,19 +46,4 @@
         </field>
     </record>
 
-    <record id="spreadsheet_dashboard_view_form" model="ir.ui.view">
-        <field name="name">spreadsheet.dashboard.view.form</field>
-        <field name="model">spreadsheet.dashboard</field>
-        <field name="arch" type="xml">
-            <form>
-                <group>
-                    <field name="name"/>
-                    <field name="dashboard_group_id"/>
-                    <field name="spreadsheet_binary_data"/>
-                    <field name="thumbnail"/>
-                    <field name="group_ids" widget="many2many_tags"/>
-                </group>
-            </form>
-        </field>
-    </record>
 </odoo>

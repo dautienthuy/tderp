@@ -1,13 +1,12 @@
 /** @odoo-module */
 
-import * as spreadsheet from "@odoo/o-spreadsheet";
+import spreadsheet from "@spreadsheet/o_spreadsheet/o_spreadsheet_extended";
 import { _t } from "@web/core/l10n/translation";
 import { OdooChart } from "./odoo_chart";
 
 const { chartRegistry } = spreadsheet.registries;
 
-const { getDefaultChartJsRuntime, chartFontColor, ColorGenerator, formatTickValue } =
-    spreadsheet.helpers;
+const { getDefaultChartJsRuntime, chartFontColor, ChartColors } = spreadsheet.helpers;
 
 chartRegistry.add("odoo_pie", {
     match: (type) => type === "odoo_pie",
@@ -23,14 +22,8 @@ chartRegistry.add("odoo_pie", {
 function createOdooChartRuntime(chart, getters) {
     const background = chart.background || "#FFFFFF";
     const { datasets, labels } = chart.dataSource.getData();
-    const locale = getters.getLocale();
-    const chartJsConfig = getPieConfiguration(chart, labels, locale);
-    chartJsConfig.options = {
-        ...chartJsConfig.options,
-        ...getters.getChartDatasetActionCallbacks(chart),
-    };
-    const dataSetsLength = Math.max(0, ...datasets.map((ds) => ds?.data?.length ?? 0));
-    const colors = new ColorGenerator(dataSetsLength);
+    const chartJsConfig = getPieConfiguration(chart, labels);
+    const colors = new ChartColors();
     for (const { label, data } of datasets) {
         const backgroundColor = getPieColors(colors, datasets);
         const dataset = {
@@ -38,39 +31,32 @@ function createOdooChartRuntime(chart, getters) {
             data,
             borderColor: "#FFFFFF",
             backgroundColor,
-            hoverOffset: 30,
         };
         chartJsConfig.data.datasets.push(dataset);
     }
     return { background, chartJsConfig };
 }
 
-function getPieConfiguration(chart, labels, locale) {
-    const color = chartFontColor(chart.background);
-    const config = getDefaultChartJsRuntime(chart, labels, color, { locale });
+function getPieConfiguration(chart, labels) {
+    const fontColor = chartFontColor(chart.background);
+    const config = getDefaultChartJsRuntime(chart, labels, fontColor);
     config.type = chart.type.replace("odoo_", "");
     const legend = {
         ...config.options.legend,
         display: chart.legendPosition !== "none",
-        labels: { color },
+        labels: { fontColor },
     };
     legend.position = chart.legendPosition;
-    config.options.plugins = config.options.plugins || {};
-    config.options.plugins.legend = legend;
+    config.options.legend = legend;
     config.options.layout = {
         padding: { left: 20, right: 20, top: chart.title ? 10 : 25, bottom: 10 },
     };
-    config.options.plugins.tooltip = {
+    config.options.tooltips = {
         callbacks: {
-            title: function (tooltipItem) {
-                return tooltipItem.label;
+            title: function (tooltipItems, data) {
+                return data.datasets[tooltipItems[0].datasetIndex].label;
             },
         },
-    };
-
-    config.options.plugins.chartShowValuesPlugin = {
-        showValues: chart.showValues,
-        callback: formatTickValue({ locale }),
     };
     return config;
 }

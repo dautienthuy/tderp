@@ -9,15 +9,14 @@ from odoo.exceptions import UserError
 class TestAccruedPurchaseOrders(AccountTestInvoicingCommon):
 
     @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.other_currency = cls.setup_other_currency('XAF')
+    def setUpClass(cls, chart_template_ref=None):
+        super().setUpClass(chart_template_ref=chart_template_ref)
         cls.alt_exp_account = cls.company_data['default_account_expense'].copy()
         # set 'type' to 'service' to allow manualy set 'qty_delivered' even with purchase_stock installed
         cls.product_a.update({'type': 'service', 'purchase_method': 'receive'})
         cls.product_b.update({'type': 'service', 'purchase_method': 'receive'})
         #analytic distribution
-        cls.default_plan = cls.env['account.analytic.plan'].create({'name': 'Default'})
+        cls.default_plan = cls.env['account.analytic.plan'].create({'name': 'Default', 'company_id': False})
         cls.analytic_account_a = cls.env['account.analytic.account'].create({
             'name': 'analytic_account_a',
             'plan_id': cls.default_plan.id,
@@ -97,7 +96,7 @@ class TestAccruedPurchaseOrders(AccountTestInvoicingCommon):
         # 5 qty of each product billeable
         self.purchase_order.order_line.qty_received = 5
         # set currency != company currency
-        self.purchase_order.currency_id = self.other_currency
+        self.purchase_order.currency_id = self.currency_data['currency']
         moves = self.env['account.move'].search(self.wizard.create_entries()['domain'])
         for move in moves:
             self.assertEqual(move.currency_id, self.purchase_order.currency_id)
@@ -131,7 +130,7 @@ class TestAccruedPurchaseOrders(AccountTestInvoicingCommon):
             'name': 'Tax 10% included',
             'amount': 10.0,
             'type_tax_use': 'purchase',
-            'price_include_override': 'tax_included',
+            'price_include': True,
         })
         self.purchase_order.order_line.taxes_id = tax_10_included
         self.purchase_order.order_line.qty_received = 5
@@ -181,26 +180,3 @@ class TestAccruedPurchaseOrders(AccountTestInvoicingCommon):
             {'account_id': self.alt_exp_account.id, 'debit': 0.0, 'credit': 1000.0},
             {'account_id': self.account_revenue.id, 'debit': 6000.0, 'credit': 0.0},
         ])
-    
-    def test_error_when_different_currencies_accrued(self):
-        """
-        Tests that if two Purchase Orders with different currencies are selected for Accrued Expense Entry, 
-        a UserError is raised.
-        """
-        purchase_orders = self.env['purchase.order'].create([
-            {
-                'partner_id': self.partner_a.id,
-                'currency_id': self.company_data['currency'].id,
-            }, 
-            {
-                'partner_id': self.partner_a.id,
-                'currency_id': self.other_currency.id,
-            }
-        ])
-        purchase_orders.button_confirm()
-        accrued_wizard = self.env['account.accrued.orders.wizard'].with_context(
-            active_model='purchase.order',
-            active_ids=purchase_orders.ids,
-        ).new()
-        with self.assertRaises(UserError, msg="An error should be raised if two different currencies are used for Accrued Expense Entry."):
-            accrued_wizard._compute_move_vals()

@@ -10,7 +10,6 @@ from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
-from odoo.tools.misc import clean_context
 
 from odoo.addons.base.models.res_partner import _tz_get
 
@@ -120,7 +119,6 @@ class RecurrenceRule(models.Model):
     weekday = fields.Selection(WEEKDAY_SELECTION, string='Weekday')
     byday = fields.Selection(BYDAY_SELECTION, string='By day')
     until = fields.Date('Repeat Until')
-    trigger_id = fields.Many2one('ir.cron.trigger')
 
     _sql_constraints = [
         ('month_day',
@@ -199,8 +197,11 @@ class RecurrenceRule(models.Model):
 
     @api.depends('calendar_event_ids.start')
     def _compute_dtstart(self):
-        groups = self.env['calendar.event']._read_group([('recurrence_id', 'in', self.ids)], ['recurrence_id'], ['start:min'])
-        start_mapping = {recurrence.id: start_min for recurrence, start_min in groups}
+        groups = self.env['calendar.event'].read_group([('recurrence_id', 'in', self.ids)], ['start:min'], ['recurrence_id'])
+        start_mapping = {
+            group['recurrence_id'][0]: group['start']
+            for group in groups
+        }
         for recurrence in self:
             recurrence.dtstart = start_mapping.get(recurrence.id)
 
@@ -274,43 +275,8 @@ class RecurrenceRule(models.Model):
 
         events = self.calendar_event_ids - keep
         detached_events = self._detach_events(events)
-        context = {
-            **clean_context(self.env.context),
-            **{'no_mail_to_attendees': True, 'mail_create_nolog': True},
-        }
-        self.env['calendar.event'].with_context(context).create(event_vals)
+        self.env['calendar.event'].with_context(no_mail_to_attendees=True, mail_create_nolog=True).create(event_vals)
         return detached_events
-
-    def _setup_alarms(self, recurrence_update=False):
-        """ Schedule cron triggers for future events
-        Create one ir.cron.trigger per recurrence.
-        :param recurrence_update: boolean: if true, update all recurrences in self, else only the recurrences
-               without trigger
-        """
-        now = self.env.context.get('date') or fields.Datetime.now()
-        # get next events
-        self.env['calendar.event'].flush_model(fnames=['recurrence_id', 'start'])
-        if not self.calendar_event_ids.ids:
-            return
-
-        self.env.cr.execute("""
-            SELECT DISTINCT ON (recurrence_id) id event_id, recurrence_id
-                    FROM calendar_event 
-                   WHERE start > %s
-                     AND id IN %s
-                ORDER BY recurrence_id,start ASC;
-        """, (now, tuple(self.calendar_event_ids.ids)))
-        result = self.env.cr.dictfetchall()
-        if not result:
-            return
-        events = self.env['calendar.event'].browse(value['event_id'] for value in result)
-        triggers_by_events = events._setup_alarms()
-        for vals in result:
-            trigger_id = triggers_by_events.get(vals['event_id'])
-            if not trigger_id:
-                continue
-            recurrence = self.env['calendar.recurrence'].browse(vals['recurrence_id'])
-            recurrence.trigger_id = trigger_id
 
     def _split_from(self, event, recurrence_values=None):
         """Stops the current recurrence at the given event and creates a new one starting
@@ -365,7 +331,7 @@ class RecurrenceRule(models.Model):
     def _detach_events(self, events):
         events.with_context(dont_notify=True).write({
             'recurrence_id': False,
-            'recurrency': True,
+            'recurrency': False,
         })
         return events
 
@@ -429,9 +395,14 @@ class RecurrenceRule(models.Model):
             data['month_by'] = 'day'
             data['rrule_type'] = 'monthly'
 
-        if rule._bymonthday and data['rrule_type'] == 'monthly':
+        if rule._bymonthday:
             data['day'] = list(rule._bymonthday)[0]
             data['month_by'] = 'date'
+            data['rrule_type'] = 'monthly'
+
+        # Repeat yearly but for odoo it's monthly, take same information as monthly but interval is 12 times
+        if rule._bymonth:
+            data['interval'] *= 12
 
         if data.get('until'):
             data['end_type'] = 'end_date'
@@ -442,7 +413,7 @@ class RecurrenceRule(models.Model):
         return data
 
     def _get_lang_week_start(self):
-        lang = self.env['res.lang']._get_data(code=self.env.user.lang)
+        lang = self.env['res.lang']._lang_get(self.env.user.lang)
         week_start = int(lang.week_start)  # lang.week_start ranges from '1' to '7'
         return rrule.weekday(week_start - 1) # rrule expects an int from 0 to 6
 
@@ -602,20 +573,4 @@ class RecurrenceRule(models.Model):
             rrule_params['until'] = datetime.combine(self.until, time.max)
         return rrule.rrule(
             freq_to_rrule(freq), **rrule_params
-        )
-
-    def _is_event_over(self):
-        """Check if all events in this recurrence are in the past.
-        :return: True if all events are over, False otherwise
-        """
-        self.ensure_one()
-        if not self.calendar_event_ids:
-            return False
-
-        now = fields.Datetime.now()
-        today = fields.Date.today()
-
-        return all(
-            (event.stop_date < today if event.allday else event.stop < now)
-            for event in self.calendar_event_ids
         )

@@ -3,7 +3,7 @@
 
 {
     'name': 'SMS gateway',
-    'version': '3.0',
+    'version': '2.4',
     'category': 'Hidden/Tools',
     'summary': 'SMS Text Messaging',
     'description': """
@@ -19,11 +19,7 @@ The service is provided by the In App Purchase Odoo platform.
         'phone_validation'
     ],
     'data': [
-        'data/iap_service_data.xml',
         'data/ir_cron_data.xml',
-        'wizard/sms_account_code_views.xml',
-        'wizard/sms_account_phone_views.xml',
-        'wizard/sms_account_sender_views.xml',
         'wizard/sms_composer_views.xml',
         'wizard/sms_template_preview_views.xml',
         'wizard/sms_resend_views.xml',
@@ -32,7 +28,6 @@ The service is provided by the In App Purchase Odoo platform.
         'views/mail_notification_views.xml',
         'views/res_config_settings_views.xml',
         'views/res_partner_views.xml',
-        'views/iap_account_views.xml',
         'views/sms_sms_views.xml',
         'views/sms_template_views.xml',
         'security/ir.model.access.csv',
@@ -45,11 +40,19 @@ The service is provided by the In App Purchase Odoo platform.
     'installable': True,
     'auto_install': True,
     'assets': {
-        'web.assets_backend': [
-            'sms/static/src/**/*',
+        'mail.assets_messaging': [
+            'sms/static/src/models/*.js',
         ],
-        'web.assets_unit_tests': [
-            'sms/static/tests/**/*',
+        'mail.assets_discuss_public': [
+            'sms/static/src/components/sms_button/*',
+        ],
+        'web.assets_backend': [
+            'sms/static/src/js/fields_phone_widget.js',
+            'sms/static/src/components/*/*',
+        ],
+        'web.qunit_suite_tests': [
+            'sms/static/tests/sms_widget_test.js',
+            'sms/static/tests/qunit_suite_tests/**/*.js',
         ],
     },
     'license': 'LGPL-3',

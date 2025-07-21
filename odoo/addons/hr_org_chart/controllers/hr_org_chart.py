@@ -14,16 +14,21 @@ class HrOrgChartController(http.Controller):
             return None
         employee_id = int(employee_id)
 
-        context = kw.get('context', request.env.context)
-        if 'allowed_company_ids' in context:
-            cids = context['allowed_company_ids']
+        if 'allowed_company_ids' in request.env.context:
+            cids = request.env.context['allowed_company_ids']
         else:
             cids = [request.env.company.id]
 
         Employee = request.env['hr.employee.public'].with_context(allowed_company_ids=cids)
-        employee = Employee.browse(employee_id)
         # check and raise
-        return employee if employee.has_access('read') else None
+        if not Employee.check_access_rights('read', raise_exception=False):
+            return None
+        try:
+            Employee.browse(employee_id).check_access_rule('read')
+        except AccessError:
+            return None
+        else:
+            return Employee.browse(employee_id)
 
     def _prepare_employee_data(self, employee):
         job = employee.sudo().job_id
@@ -40,7 +45,7 @@ class HrOrgChartController(http.Controller):
 
     @http.route('/hr/get_redirect_model', type='json', auth='user')
     def get_redirect_model(self):
-        if request.env['hr.employee'].has_access('read'):
+        if request.env['hr.employee'].check_access_rights('read', raise_exception=False):
             return 'hr.employee'
         return 'hr.employee.public'
 

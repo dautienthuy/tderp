@@ -3,21 +3,20 @@
 # 	* product_images
 # 
 # Translators:
-# Chrille Hedberg <hedberg.chrille@gmail.com>, 2024
-# Haojun Zou <apollo_zhj@msn.com>, 2024
-# Robin Calvin, 2024
-# Simon S, 2024
-# Anders Wallenquist <anders.wallenquist@vertel.se>, 2024
-# Martin Trigaux, 2024
-# Mikael Åkerberg <mikael.akerberg@mariaakerberg.com>, 2024
+# Haojun Zou <apollo_zhj@msn.com>, 2022
+# Chrille Hedberg <hedberg.chrille@gmail.com>, 2022
+# Anders Wallenquist <anders.wallenquist@vertel.se>, 2022
+# Martin Trigaux, 2022
+# Simon S, 2022
+# Mikael Åkerberg <mikael.akerberg@mariaakerberg.com>, 2023
 # Jakob Krabbe <jakob.krabbe@vertel.se>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:55+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:54+0000\n"
 "Last-Translator: Jakob Krabbe <jakob.krabbe@vertel.se>, 2024\n"
 "Language-Team: Swedish (https://app.transifex.com/odoo/teams/41243/sv/)\n"
 "MIME-Version: 1.0\n"
@@ -29,6 +28,7 @@ msgstr ""
 #. module: product_images
 #. odoo-python
 #: code:addons/product_images/wizard/product_fetch_image_wizard.py:0
+#, python-format
 msgid ""
 "%(matching_images_count)s matching images have been found for "
 "%(product_count)s products."
@@ -39,19 +39,16 @@ msgstr ""
 #. module: product_images
 #: model_terms:ir.ui.view,arch_db:product_images.product_fetch_image_wizard_view_form
 msgid ""
-"<span invisible=\"nb_products_selected &lt;= 10000\">\n"
+"<span attrs=\"{'invisible': [('nb_products_selected', '&lt;=', 10000)]}\">\n"
 "                            As only 10,000 products can be processed per day, the remaining will be\n"
 "                            done tomorrow.\n"
 "                        </span>"
 msgstr ""
-"<span invisible=\"nb_products_selected &lt;= 10000\">\n"
-"                            Eftersom endast 10.000 produkter kan bearbetas per dag, kommer de återstående att\n"
-"                            göras i morgon.\n"
-"                        </span>"
 
 #. module: product_images
 #. odoo-python
 #: code:addons/product_images/wizard/product_fetch_image_wizard.py:0
+#, python-format
 msgid ""
 "A task to process products in the background is already running. Please try "
 "againlater."
@@ -82,7 +79,7 @@ msgstr "Skapad av"
 #. module: product_images
 #: model:ir.model.fields,field_description:product_images.field_product_fetch_image_wizard__create_date
 msgid "Created on"
-msgstr "Skapad den"
+msgstr "Skapad"
 
 #. module: product_images
 #: model:ir.model.fields,field_description:product_images.field_product_fetch_image_wizard__display_name
@@ -125,6 +122,11 @@ msgid "Image Fetch Pending"
 msgstr "Bildhämtning pågår"
 
 #. module: product_images
+#: model:ir.model.fields,field_description:product_images.field_product_fetch_image_wizard____last_update
+msgid "Last Modified on"
+msgstr "Senast redigerad den"
+
+#. module: product_images
 #: model:ir.model.fields,field_description:product_images.field_product_fetch_image_wizard__write_uid
 msgid "Last Updated by"
 msgstr "Senast uppdaterad av"
@@ -132,7 +134,7 @@ msgstr "Senast uppdaterad av"
 #. module: product_images
 #: model:ir.model.fields,field_description:product_images.field_product_fetch_image_wizard__write_date
 msgid "Last Updated on"
-msgstr "Senast uppdaterad den"
+msgstr "Senast uppdaterad på"
 
 #. module: product_images
 #: model:ir.model.fields,field_description:product_images.field_product_fetch_image_wizard__nb_products_unable_to_process
@@ -160,6 +162,7 @@ msgstr ""
 
 #. module: product_images
 #: model:ir.actions.server,name:product_images.ir_cron_fetch_image_ir_actions_server
+#: model:ir.cron,cron_name:product_images.ir_cron_fetch_image
 msgid "Product Images: Get product images from Google"
 msgstr "Produktbilder: Hämta produktbilder från Google"
 
@@ -171,6 +174,7 @@ msgstr "Produktvariant"
 #. module: product_images
 #. odoo-python
 #: code:addons/product_images/wizard/product_fetch_image_wizard.py:0
+#, python-format
 msgid "Product images"
 msgstr "Produktbilder"
 
@@ -182,6 +186,7 @@ msgstr "Produkter till process"
 #. module: product_images
 #. odoo-python
 #: code:addons/product_images/wizard/product_fetch_image_wizard.py:0
+#, python-format
 msgid ""
 "Products are processed in the background. Images will be updated "
 "progressively."
@@ -196,6 +201,7 @@ msgstr "Sökmotor-ID"
 #. module: product_images
 #. odoo-python
 #: code:addons/product_images/wizard/product_fetch_image_wizard.py:0
+#, python-format
 msgid "The API Key and Search Engine ID must be set in the General Settings."
 msgstr ""
 "API-nyckeln och sökmotor-ID:t måste anges i de allmänna inställningarna."
@@ -203,6 +209,7 @@ msgstr ""
 #. module: product_images
 #. odoo-python
 #: code:addons/product_images/wizard/product_fetch_image_wizard.py:0
+#, python-format
 msgid ""
 "The Custom Search API is not enabled in your Google project. Please visit "
 "your Google Cloud Platform project page and enable it, then retry. If you "
@@ -230,6 +237,8 @@ msgstr ""
 #. module: product_images
 #. odoo-python
 #: code:addons/product_images/wizard/product_fetch_image_wizard.py:0
+#: code:addons/product_images/wizard/product_fetch_image_wizard.py:0
+#, python-format
 msgid ""
 "The scheduled action \"Product Images: Get product images from Google\" has "
 "been deleted. Please contact your administrator to have the action restored "
@@ -242,6 +251,7 @@ msgstr ""
 #. module: product_images
 #. odoo-python
 #: code:addons/product_images/models/ir_cron_trigger.py:0
+#, python-format
 msgid "This action is already scheduled. Please try again later."
 msgstr "Denna åtgärd är redan planerad. Vänligen försök igen senare."
 
@@ -263,6 +273,7 @@ msgstr "Du valde"
 #. module: product_images
 #. odoo-python
 #: code:addons/product_images/wizard/product_fetch_image_wizard.py:0
+#, python-format
 msgid "Your API Key or your Search Engine ID is incorrect."
 msgstr "Din API-nyckel eller ditt sökmotor-ID är felaktigt."
 

@@ -8,12 +8,12 @@
                 <sheet>
                     <group>
                         <field name="name"/>
-                        <field name="tag_ids" context="{'default_category_id': id}">
-                            <list string="Tags" editable="bottom">
+                        <field name="tag_ids" context="{'default_category_id': active_id}">
+                            <tree string="Tags" editable="bottom">
                                 <field name="sequence" widget="handle"/>
                                 <field name="name"/>
                                 <field name="color" widget="color_picker"/>
-                            </list>
+                            </tree>
                         </field>
                     </group>
                 </sheet>
@@ -25,18 +25,18 @@
         <field name="name">event.track.tag.category.view.list</field>
         <field name="model">event.track.tag.category</field>
         <field name="arch" type="xml">
-            <list string="Track Tags Category">
+            <tree string="Track Tags Category">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
-            </list>
+            </tree>
         </field>
     </record>
 
     <record id="event_track_tag_category_action" model="ir.actions.act_window">
         <field name="name">Track Tag Categories</field>
         <field name="res_model">event.track.tag.category</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">tree,form</field>
     </record>
 
     <record model="ir.ui.view" id="view_event_track_tag_form">
@@ -59,12 +59,12 @@
         <field name="name">Tracks Tag</field>
         <field name="model">event.track.tag</field>
         <field name="arch" type="xml">
-            <list string="Event Track Tag" editable="bottom">
+            <tree string="Event Track Tag" editable="bottom">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="category_id"/>
                 <field name="color" widget="color_picker"/>
-            </list>
+            </tree>
         </field>
     </record>
 

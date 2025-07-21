@@ -3,17 +3,22 @@
 # 	* hr_work_entry_contract
 # 
 # Translators:
-# Nadia Martynova, 2024
-# Wil Odoo, 2025
-# Anastasiia Koroleva, 2025
+# Irina Fedulova <istartlin@gmail.com>, 2022
+# ILMIR <karamov@it-projects.info>, 2022
+# Martin Trigaux, 2022
+# Alena Vlasova, 2023
+# Сергей Шебанин <sergey@shebanin.ru>, 2023
+# Ivan Kropotkin <yelizariev@itpp.dev>, 2023
+# alenafairy, 2023
+# Wil Odoo, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 08:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Anastasiia Koroleva, 2025\n"
+"POT-Creation-Date: 2023-04-14 05:51+0000\n"
+"PO-Revision-Date: 2022-09-22 05:52+0000\n"
+"Last-Translator: Wil Odoo, 2024\n"
 "Language-Team: Russian (https://app.transifex.com/odoo/teams/41243/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -36,27 +41,28 @@ msgstr ""
 "\n"
 "        Определяет источник для создания рабочих записей\n"
 "\n"
-"        Рабочее расписание: Рабочие записи будут генерироваться на основе указанных ниже рабочих часов.\n"
-"        Посещения: Рабочие записи будут генерироваться на основе посещений сотрудника. (требуется приложение Attendance)\n"
-"        Планирование: Рабочие записи будут генерироваться на основе планирования сотрудника. (требуется приложение \"Планирование\")\n"
+"        Рабочий график: Рабочие записи будут генерироваться на основе рабочего времени, указанного ниже.\n"
+"        Посещения: Рабочие записи будут генерироваться на основе посещений сотрудника. (требуется модуль Посещаемость)\n"
+"        Планирование: Рабочие записи будут генерироваться на основе планирования сотрудника. (требуется модуль Планирование)\n"
 "    "
 
 #. module: hr_work_entry_contract
 #. odoo-python
 #: code:addons/hr_work_entry_contract/models/hr_work_entry.py:0
-msgid ""
-"%(employee)s does not have a contract from %(date_start)s to %(date_end)s."
-msgstr "у %(employee)s нет контракта с %(date_start)s на %(date_end)s."
+#, python-format
+msgid "%s does not have a contract from %s to %s."
+msgstr "у %s нет контракта с %s на %s."
 
 #. module: hr_work_entry_contract
 #. odoo-python
 #: code:addons/hr_work_entry_contract/models/hr_work_entry.py:0
+#, python-format
 msgid ""
-"%(employee)s has multiple contracts from %(date_start)s to %(date_end)s. A "
-"work entry cannot overlap multiple contracts."
+"%s has multiple contracts from %s to %s. A work entry cannot overlap "
+"multiple contracts."
 msgstr ""
-"у %(employee)s есть несколько контрактов от %(date_start)s до %(date_end)s. "
-"Запись о работе не может перекрывать несколько контрактов."
+"у %s есть несколько контрактов от %s до %s. Запись о работе не может "
+"перекрывать несколько контрактов."
 
 #. module: hr_work_entry_contract
 #: model_terms:ir.ui.view,arch_db:hr_work_entry_contract.hr_work_entry_regeneration_wizard
@@ -89,7 +95,7 @@ msgstr "Позволяет связать тип записи о работе с
 #. module: hr_work_entry_contract
 #: model_terms:ir.ui.view,arch_db:hr_work_entry_contract.hr_work_entry_regeneration_wizard
 msgid "Cancel"
-msgstr "Отменить"
+msgstr "Отмена"
 
 #. module: hr_work_entry_contract
 #: model:hr.work.entry.type,name:hr_work_entry_contract.work_entry_type_compensatory
@@ -104,12 +110,12 @@ msgstr "Договор"
 #. module: hr_work_entry_contract
 #: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_work_entry_regeneration_wizard__create_uid
 msgid "Created by"
-msgstr "Создано:"
+msgstr "Создал"
 
 #. module: hr_work_entry_contract
 #: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_work_entry_regeneration_wizard__create_date
 msgid "Created on"
-msgstr "Дата создания:"
+msgstr "Дата создания"
 
 #. module: hr_work_entry_contract
 #: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_work_entry_regeneration_wizard__display_name
@@ -135,7 +141,7 @@ msgstr "Сотрудник"
 #. module: hr_work_entry_contract
 #: model:ir.model,name:hr_work_entry_contract.model_hr_contract
 msgid "Employee Contract"
-msgstr "Договор с Сотрудником"
+msgstr "Договор с сотрудником"
 
 #. module: hr_work_entry_contract
 #: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_work_entry_regeneration_wizard__employee_ids
@@ -145,6 +151,7 @@ msgstr "Сотрудники"
 #. module: hr_work_entry_contract
 #. odoo-javascript
 #: code:addons/hr_work_entry_contract/static/src/views/work_entry_calendar/work_entry_calendar_model.js:0
+#, python-format
 msgid "Everybody's work entries"
 msgstr "Все записи о работе"
 
@@ -156,15 +163,11 @@ msgstr "Дополнительные часы"
 #. module: hr_work_entry_contract
 #: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_work_entry_regeneration_wizard__date_from
 msgid "From"
-msgstr "От"
-
-#. module: hr_work_entry_contract
-#: model_terms:ir.ui.view,arch_db:hr_work_entry_contract.hr_contract_view_form_inherit_work_entry
-msgid "Fully Flexible"
-msgstr "Полностью гибкий"
+msgstr "Из"
 
 #. module: hr_work_entry_contract
 #: model:ir.actions.server,name:hr_work_entry_contract.ir_cron_generate_missing_work_entries_ir_actions_server
+#: model:ir.cron,cron_name:hr_work_entry_contract.ir_cron_generate_missing_work_entries
 msgid "Generate Missing Work Entries"
 msgstr "Создание записей о пропущенных работах"
 
@@ -186,7 +189,7 @@ msgstr "Общее время отдыха"
 #. module: hr_work_entry_contract
 #: model:ir.model,name:hr_work_entry_contract.model_hr_work_entry
 msgid "HR Work Entry"
-msgstr "HR Ввод данных о работе"
+msgstr "Рабочая запись HR"
 
 #. module: hr_work_entry_contract
 #: model:ir.model,name:hr_work_entry_contract.model_hr_work_entry_type
@@ -196,16 +199,17 @@ msgstr "HR Тип Ввода данных о работе"
 #. module: hr_work_entry_contract
 #: model:hr.work.entry.type,name:hr_work_entry_contract.work_entry_type_home_working
 msgid "Home Working"
-msgstr "Работа на дому"
+msgstr "Работа удаленно"
 
 #. module: hr_work_entry_contract
 #: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_work_entry_regeneration_wizard__id
 msgid "ID"
-msgstr "ID"
+msgstr "Идентификатор"
 
 #. module: hr_work_entry_contract
 #. odoo-python
 #: code:addons/hr_work_entry_contract/wizard/hr_work_entry_regeneration_wizard.py:0
+#, python-format
 msgid ""
 "In order to regenerate the work entries, you need to provide the wizard with"
 " an employee_id, a date_from and a date_to. In addition to that, the time "
@@ -218,27 +222,24 @@ msgstr ""
 "записей о работе."
 
 #. module: hr_work_entry_contract
-#. odoo-javascript
-#: code:addons/hr_work_entry_contract/static/src/components/work_entry_source_field/work_entry_source_field.js:0
-msgid ""
-"Invalid option: For fully flexible calendars, the work entry source cannot "
-"be 'Working Hours'."
-msgstr ""
-
-#. module: hr_work_entry_contract
 #: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_contract__last_generation_date
 msgid "Last Generation Date"
 msgstr "Дата последнего поколения"
 
 #. module: hr_work_entry_contract
+#: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_work_entry_regeneration_wizard____last_update
+msgid "Last Modified on"
+msgstr "Последнее изменение"
+
+#. module: hr_work_entry_contract
 #: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_work_entry_regeneration_wizard__write_uid
 msgid "Last Updated by"
-msgstr "Последнее обновление:"
+msgstr "Последний раз обновил"
 
 #. module: hr_work_entry_contract
 #: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_work_entry_regeneration_wizard__write_date
 msgid "Last Updated on"
-msgstr "Дата последнего обновления:"
+msgstr "Последнее обновление"
 
 #. module: hr_work_entry_contract
 #: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_work_entry_regeneration_wizard__latest_available_date_message
@@ -258,25 +259,22 @@ msgstr "Долгосрочный отпуск"
 #. module: hr_work_entry_contract
 #: model:hr.work.entry.type,name:hr_work_entry_contract.work_entry_type_legal_leave
 msgid "Paid Time Off"
-msgstr "Оплачиваемое отсутствие"
+msgstr "Оплачиваемый отпуск"
 
 #. module: hr_work_entry_contract
 #: model:ir.model,name:hr_work_entry_contract.model_hr_work_entry_regeneration_wizard
 #: model_terms:ir.ui.view,arch_db:hr_work_entry_contract.hr_work_entry_regeneration_wizard
 msgid "Regenerate Employee Work Entries"
-msgstr "Регенерация записей о работе сотрудников"
+msgstr "Создать заново рабочие записи сотрудников"
 
 #. module: hr_work_entry_contract
 #. odoo-javascript
+#: code:addons/hr_work_entry_contract/static/src/js/work_entries_controller_mixin.js:0
 #: code:addons/hr_work_entry_contract/static/src/views/work_entry_calendar/work_entry_calendar.xml:0
 #: model_terms:ir.ui.view,arch_db:hr_work_entry_contract.hr_work_entry_regeneration_wizard
+#, python-format
 msgid "Regenerate Work Entries"
 msgstr "Регенерация рабочих записей"
-
-#. module: hr_work_entry_contract
-#: model:ir.model,name:hr_work_entry_contract.model_resource_calendar
-msgid "Resource Working Time"
-msgstr "Рабочее время"
 
 #. module: hr_work_entry_contract
 #: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_work_entry_regeneration_wizard__search_criteria_completed
@@ -286,11 +284,12 @@ msgstr "Критерии поиска выполнены"
 #. module: hr_work_entry_contract
 #: model:hr.work.entry.type,name:hr_work_entry_contract.work_entry_type_sick_leave
 msgid "Sick Time Off"
-msgstr "Отсутствие по болезни"
+msgstr "Отпуск по болезни"
 
 #. module: hr_work_entry_contract
 #. odoo-python
 #: code:addons/hr_work_entry_contract/models/hr_contract.py:0
+#, python-format
 msgid ""
 "Sorry, generating work entries from cancelled contracts is not allowed."
 msgstr ""
@@ -300,6 +299,7 @@ msgstr ""
 #. module: hr_work_entry_contract
 #. odoo-python
 #: code:addons/hr_work_entry_contract/wizard/hr_work_entry_regeneration_wizard.py:0
+#, python-format
 msgid ""
 "The from date must be >= '%(earliest_available_date)s' and the to date must "
 "be <= '%(latest_available_date)s', which correspond to the generated work "
@@ -319,27 +319,27 @@ msgstr ""
 #. module: hr_work_entry_contract
 #: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_work_entry_type__is_leave
 msgid "Time Off"
-msgstr "Отпуск"
+msgstr "Отсутствие"
 
 #. module: hr_work_entry_contract
 #: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_work_entry_regeneration_wizard__date_to
 msgid "To"
-msgstr "Кому"
+msgstr "По"
 
 #. module: hr_work_entry_contract
 #: model:hr.work.entry.type,name:hr_work_entry_contract.work_entry_type_unpaid_leave
 msgid "Unpaid"
-msgstr "Неоплаченный"
+msgstr "Без оплаты"
 
 #. module: hr_work_entry_contract
 #: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_work_entry_regeneration_wizard__valid
 msgid "Valid"
-msgstr "Действительный"
+msgstr "Корректный"
 
 #. module: hr_work_entry_contract
 #: model_terms:ir.ui.view,arch_db:hr_work_entry_contract.hr_work_entry_regeneration_wizard
 msgid "Work Entries"
-msgstr "Записи о работе"
+msgstr "Рабочие записи"
 
 #. module: hr_work_entry_contract
 #: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_work_entry_regeneration_wizard__validated_work_entry_ids
@@ -355,12 +355,7 @@ msgstr "Регенерация рабочих мест"
 #: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_contract__work_entry_source
 #: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_work_entry__work_entry_source
 msgid "Work Entry Source"
-msgstr "Источник информации об отработанном времени"
-
-#. module: hr_work_entry_contract
-#: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_contract__work_entry_source_calendar_invalid
-msgid "Work Entry Source Calendar Invalid"
-msgstr ""
+msgstr "Источник рабочей записи"
 
 #. module: hr_work_entry_contract
 #: model:ir.model.fields.selection,name:hr_work_entry_contract.selection__hr_contract__work_entry_source__calendar

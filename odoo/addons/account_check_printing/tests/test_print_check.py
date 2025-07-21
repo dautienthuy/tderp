@@ -12,15 +12,13 @@ import math
 class TestPrintCheck(AccountTestInvoicingCommon):
 
     @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.other_currency = cls.setup_other_currency('EUR')
+    def setUpClass(cls, chart_template_ref=None):
+        super().setUpClass(chart_template_ref=chart_template_ref)
 
         bank_journal = cls.company_data['default_journal_bank']
 
         cls.payment_method_line_check = bank_journal.outbound_payment_method_line_ids\
             .filtered(lambda l: l.code == 'check_printing')
-        cls.payment_method_line_check.payment_account_id = cls.inbound_payment_method_line.payment_account_id
 
     def test_in_invoice_check_manual_sequencing(self):
         ''' Test the check generation for vendor bills. '''
@@ -130,7 +128,7 @@ class TestPrintCheck(AccountTestInvoicingCommon):
         # Partial payment in foreign currency.
         payment = self.env['account.payment.register'].with_context(active_model='account.move', active_ids=invoice.ids).create({
             'payment_method_line_id': self.payment_method_line_check.id,
-            'currency_id': self.other_currency.id,
+            'currency_id': self.currency_data['currency'].id,
             'amount': 150.0,
             'payment_date': '2017-01-01',
         })._create_payments()
@@ -142,7 +140,7 @@ class TestPrintCheck(AccountTestInvoicingCommon):
             'number': invoice.name,
             'amount_total': f'${NON_BREAKING_SPACE}150.00',
             'amount_residual': f'${NON_BREAKING_SPACE}75.00',
-            'amount_paid': f'150.00{NON_BREAKING_SPACE}€',
+            'amount_paid': f'150.000{NON_BREAKING_SPACE}☺',
             'currency': invoice.currency_id,
         }]])
 
@@ -177,20 +175,6 @@ class TestPrintCheck(AccountTestInvoicingCommon):
 
         self.assertEqual(set(payments.mapped('check_number')), {str(x) for x in range(11111, 11111 + nb_invoices_to_test)})
 
-    def test_check_label(self):
-        payment = self.env['account.payment'].create({
-            'check_number': '2147483647',
-            'payment_type': 'outbound',
-            'partner_type': 'supplier',
-            'amount': 100.0,
-            'journal_id': self.company_data['default_journal_bank'].id,
-            'payment_method_line_id': self.payment_method_line_check.id,
-        })
-        payment.action_post()
-
-        for move in payment.move_id:
-            self.assertRecordValues(move.line_ids, [{'name': "Checks - 2147483647"}] * len(move.line_ids))
-
     def test_print_great_pre_number_check(self):
         """
         Make sure we can use integer of more than 2147483647 in check sequence
@@ -212,72 +196,3 @@ class TestPrintCheck(AccountTestInvoicingCommon):
         payment_2.action_post()
         action_window = payment_2.print_checks()
         self.assertEqual(action_window['context']['default_next_check_number'], '2147483649', "Check number should have been incremented without error.")
-
-    def test_print_check_with_branch(self):
-        """
-        Test that we don't get access error when printing a check with a branch
-        """
-        company = self.env.company
-        branch = self.env['res.company'].create({
-            'name': 'Branch',
-            'parent_id': company.id,
-        })
-        self.cr.precommit.run()  # load the CoA
-        self.env.user.write({'company_id': company.id, 'company_ids': [Command.set(company.ids)]})
-
-        vals = {
-            'payment_type': 'outbound',
-            'partner_type': 'supplier',
-            'amount': 100.0,
-            'journal_id': self.company_data['default_journal_bank'].id,
-            'payment_method_line_id': self.payment_method_line_check.id,
-        }
-        payment = self.env['account.payment'].create(vals)
-        payment.action_post()
-        self.assertTrue(payment.write({'check_number': '00001'}))
-        payment.invalidate_recordset(['check_number'])
-
-        self.env.user.write({'company_id': branch.id, 'company_ids': [Command.set(branch.ids)]})
-
-        payment_2 = self.env['account.payment'].create(vals)
-        payment_2.action_post()
-
-        action_window = payment_2.print_checks()
-        self.assertTrue(action_window)
-
-    def test_draft_invoice_payment_check_printing(self):
-        nb_invoices_to_test = INV_LINES_PER_STUB + 1
-
-        accounting_installed = self.env['account.move']._get_invoice_in_payment_state() == 'in_payment'
-        if not accounting_installed:
-            self.skipTest('Accounting not installed')  # There is an implicit outstanding account in this case, which makes it avoid the error
-
-        self.company_data['default_journal_bank'].write({
-            'check_manual_sequencing': True,
-            'check_next_number': '00042',
-        })
-        self.payment_method_line_check.payment_account_id = None  # Needed to trigger the error
-
-        in_invoices = self.env['account.move'].create([{
-            'move_type': 'in_invoice',
-            'partner_id': self.partner_a.id,
-            'date': '2017-01-01',
-            'invoice_date': '2017-01-01',
-            'invoice_line_ids': [Command.create({
-                'product_id': self.product_a.id,
-                'price_unit': 100.0,
-                'tax_ids': []
-            })]
-        } for _ in range(nb_invoices_to_test)])
-        payment = self.env['account.payment.register'].with_context(active_model='account.move', active_ids=in_invoices.ids).create({
-            'group_payment': True,
-            'payment_method_line_id': self.payment_method_line_check.id,
-        })._create_payments()
-        self.assertRecordValues(payment, [{
-            'payment_method_line_id': self.payment_method_line_check.id,
-            'check_amount_in_words': payment.currency_id.amount_to_text(100.0 * nb_invoices_to_test),
-            'check_number': '00042',
-        }])
-
-        report_pages = payment._check_get_pages()
-        self.assertEqual(len(report_pages), 1)

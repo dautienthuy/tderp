@@ -1,72 +1,65 @@
-import { markRaw } from "@odoo/owl";
-import { Popover } from "@web/core/popover/popover";
-import { registry } from "@web/core/registry";
+/** @odoo-module **/
 
-/**
- * @typedef {{
- *   animation?: Boolean;
- *   arrow?: Boolean;
- *   closeOnClickAway?: boolean | (target: HTMLElement) => boolean;
- *   closeOnEscape?: boolean;
- *   env?: object;
- *   fixedPosition?: boolean;
- *   onClose?: () => void;
- *   onPositioned?: import("@web/core/position/position_hook").UsePositionOptions["onPositioned"];
- *   popoverClass?: string;
- *   popoverRole?: string;
- *   position?: import("@web/core/position/position_hook").UsePositionOptions["position"];
- *   ref?: Function;
- * }} PopoverServiceAddOptions
- *
- * @typedef {ReturnType<popoverService["start"]>["add"]} PopoverServiceAddFunction
- */
+import { registry } from "../registry";
+import { PopoverContainer } from "./popover_container";
+
+import { EventBus } from "@odoo/owl";
 
 export const popoverService = {
-    dependencies: ["overlay"],
-    start(_, { overlay }) {
+    start() {
+        let nextId = 0;
+        const popovers = {};
+        const bus = new EventBus();
+
+        registry
+            .category("main_components")
+            .add("PopoverContainer", { Component: PopoverContainer, props: { bus, popovers } });
+
         /**
          * Signals the manager to add a popover.
          *
-         * @param {HTMLElement} target
-         * @param {typeof import("@odoo/owl").Component} component
-         * @param {object} [props]
-         * @param {PopoverServiceAddOptions} [options]
-         * @returns {() => void}
+         * @param {string | HTMLElement}    target
+         * @param {any}                     Component
+         * @param {Object}                  props
+         * @param {Object}                  [options]
+         * @param {boolean}                 [options.closeOnClickAway=true]
+         * @param {function(): void}        [options.onClose]
+         * @param {string}                  [options.popoverClass]
+         * @param {string}                  [options.position]
+         * @param {function}                [options.onPositioned]
+         * @returns {function(): void}
          */
-        const add = (target, component, props = {}, options = {}) => {
-            const closeOnClickAway =
-                typeof options.closeOnClickAway === "function"
-                    ? options.closeOnClickAway
-                    : () => options.closeOnClickAway ?? true;
-            const remove = overlay.add(
-                Popover,
-                {
-                    target,
-                    close: () => remove(),
-                    closeOnClickAway,
-                    closeOnEscape: options.closeOnEscape,
-                    component,
-                    componentProps: markRaw(props),
-                    ref: options.ref,
-                    class: options.popoverClass,
-                    animation: options.animation,
-                    arrow: options.arrow,
-                    role: options.popoverRole,
-                    position: options.position,
-                    onPositioned: options.onPositioned,
-                    fixedPosition: options.fixedPosition,
-                    holdOnHover: options.holdOnHover,
-                    setActiveElement: options.setActiveElement ?? true,
-                },
-                {
-                    env: options.env,
-                    onRemove: options.onClose,
-                    rootId: target.getRootNode()?.host?.id,
-                }
-            );
+        function add(target, Component, props, options = {}) {
+            const id = ++nextId;
+            const closeFn = () => close(id);
+            const popover = {
+                id,
+                target,
+                Component,
+                props,
+                close: closeFn,
+                onClose: options.onClose,
+                position: options.position,
+                onPositioned: options.onPositioned,
+                popoverClass: options.popoverClass,
+                closeOnClickAway: options.closeOnClickAway,
+                preventClose: options.preventClose,
+            };
+            popovers[id] = popover;
+            bus.trigger("UPDATE");
+            return closeFn;
+        }
 
-            return remove;
-        };
+        function close(id) {
+            if (id in popovers) {
+                const popover = popovers[id];
+                if (popover.onClose) {
+                    popover.onClose();
+                }
+                delete popovers[id];
+                bus.trigger("UPDATE");
+            }
+        }
 
         return { add };
     },

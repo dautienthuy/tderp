@@ -1,3 +1,5 @@
+/** @odoo-module **/
+
 import {
     append,
     combineAttributes,
@@ -17,24 +19,80 @@ import { toInterpolatedStringExpression, ViewCompiler } from "@web/views/view_co
  */
 
 const ACTION_TYPES = ["action", "object"];
-const SPECIAL_TYPES = [
-    ...ACTION_TYPES,
-    "edit",
-    "open",
-    "delete",
-    "url",
-    "set_cover",
-    "archive",
-    "unarchive",
-];
+const SPECIAL_TYPES = [...ACTION_TYPES, "edit", "open", "delete", "url", "set_cover"];
 
+let currentDropdownId = 1;
 export class KanbanCompiler extends ViewCompiler {
     setup() {
         this.ctx.readonly = "read_only_mode";
         this.compilers.push(
-            { selector: "t[t-call]", fn: this.compileTCall },
-            { selector: "img", fn: this.compileImage }
+            { selector: ".oe_kanban_colorpicker", fn: this.compileColorPicker },
+            {
+                selector: ".dropdown:not(.kanban_ignore_dropdown),.o_kanban_manage_button_section",
+                fn: this.compileDropdown,
+                doNotCopyAttributes: true,
+            },
+            {
+                selector: ".dropdown-menu:not(.kanban_ignore_dropdown)",
+                fn: this.compileDropdownMenu,
+                doNotCopyAttributes: true,
+            },
+            {
+                selector:
+                    ".dropdown-toggle:not(.kanban_ignore_dropdown),.o_kanban_manage_toggle_button",
+                fn: this.compileDropdownToggler,
+                doNotCopyAttributes: true,
+            },
+            { selector: "t[t-call]", fn: this.compileTCall }
         );
+        /** @type {Record<number, DropdownDef>} */
+        this.dropdowns = {};
+    }
+
+    /**
+     * Renders a Dropdown component node definition object. It works as follows:
+     *
+     * The first time a node defining a dropdown component or component slot (dropdown
+     * root, toggler or default=menu), a new dropdown object will be generated,
+     * taking note of what parts have already been defined.
+     *
+     * It also creates the Dropdown component node that will be inserted in the
+     * template, at the position of the first node defining either the root dropdown
+     * or the dropdown toggler.
+     *
+     * Each next component or slot still not defined on the current dropdown object
+     * will be added to it.
+     *
+     * If a duplicate part or component is found, a new dropdown object is created
+     * and set as the new current dropdown.
+     *
+     * @param {"dropdown" | "toggler" | "menu"} part
+     * @returns {DropdownDef}
+     */
+    renderDropdown(part) {
+        if (!this.dropdowns[currentDropdownId]) {
+            this.dropdowns[currentDropdownId] = {
+                parts: [],
+                inserted: false,
+                shouldInsert: false,
+                el: createElement("Dropdown", {
+                    class: toStringExpression("o_dropdown_kanban"),
+                    position: toStringExpression("bottom-end"),
+                }),
+            };
+        }
+        const dropdown = this.dropdowns[currentDropdownId];
+        if (dropdown.parts.includes(part)) {
+            // Duplicate part: generate new dropdown
+            currentDropdownId++;
+            return this.renderDropdown(part);
+        }
+        dropdown.parts.push(part);
+        if (part !== "menu" || dropdown.parts.includes("dropdown")) {
+            dropdown.shouldInsert = !dropdown.inserted;
+            dropdown.inserted = true;
+        }
+        return dropdown;
     }
 
     //-----------------------------------------------------------------------------
@@ -45,13 +103,28 @@ export class KanbanCompiler extends ViewCompiler {
      * @override
      */
     compileButton(el, params) {
+        /**
+         * WOWL FIXME
+         * For some reason, buttons in some arch have a data-something instead of just a normal attribute.
+         * The new system only uses normal attributes.
+         * This is an ugly small compatibility trick to fix this.
+         */
+        if (el.hasAttribute("data-type")) {
+            for (const { name, value } of el.attributes) {
+                el.setAttribute(name.replace(/^data-/, ""), value);
+            }
+        }
+
         const type = el.getAttribute("type");
         if (!SPECIAL_TYPES.includes(type)) {
-            // Not a kanban-specific action type.
+            // Not a supported action type.
             return super.compileButton(el, params);
         }
 
-        combineAttributes(el, "class", ["oe_kanban_action"]);
+        combineAttributes(el, "class", [
+            "oe_kanban_action",
+            `oe_kanban_action_${getTag(el, true)}`,
+        ]);
 
         if (ACTION_TYPES.includes(type)) {
             if (!el.hasAttribute("debounce")) {
@@ -72,7 +145,7 @@ export class KanbanCompiler extends ViewCompiler {
         const strParams = Object.entries(nodeParams)
             .map(([k, v]) => [k, toStringExpression(v)].join(":"))
             .join(",");
-        el.setAttribute("t-on-click", `()=>__comp__.triggerAction({${strParams}})`);
+        el.setAttribute("t-on-click", `()=>this.triggerAction({${strParams}})`);
 
         const compiled = createElement(el.nodeName);
         for (const { name, value } of el.attributes) {
@@ -87,13 +160,71 @@ export class KanbanCompiler extends ViewCompiler {
 
         return compiled;
     }
+
     /**
      * @returns {Element}
      */
-    compileImage(el) {
-        const element = el.cloneNode(true);
-        element.setAttribute("loading", "lazy");
-        return element;
+    compileColorPicker() {
+        return createElement("t", { "t-call": "web.KanbanColorPicker" });
+    }
+
+    /**
+     * @param {Element} el
+     * @param {Object} params
+     * @returns {Element | null}
+     */
+    compileDropdown(el, params) {
+        const { shouldInsert, el: dropdownEl } = this.renderDropdown("dropdown");
+        const classes = [...el.classList].filter((cls) => cls && cls !== "dropdown").join(" ");
+
+        combineAttributes(dropdownEl, "class", toStringExpression(classes), "+' '+");
+
+        for (const child of el.childNodes) {
+            append(dropdownEl, this.compileNode(child, params));
+        }
+
+        return shouldInsert && dropdownEl;
+    }
+
+    /**
+     * @param {Element} el
+     * @param {Object} params
+     * @returns {Element | null}
+     */
+    compileDropdownMenu(el, params) {
+        const { shouldInsert, el: dropdownEl } = this.renderDropdown("menu");
+        const cls = el.getAttribute("class") || "";
+
+        combineAttributes(dropdownEl, "menuClass", toStringExpression(cls), "+' '+");
+        const wrapper = createElement("KanbanDropdownMenuWrapper");
+
+        for (const child of el.childNodes) {
+            append(wrapper, this.compileNode(child, params));
+        }
+
+        append(dropdownEl, wrapper);
+
+        return shouldInsert && dropdownEl;
+    }
+
+    /**
+     * @param {Element} el
+     * @param {Object} params
+     * @returns {Element | null}
+     */
+    compileDropdownToggler(el, params) {
+        const { shouldInsert, el: dropdownEl } = this.renderDropdown("toggler");
+        const classes = ["btn", ...el.classList].filter(Boolean).join(" ");
+        const togglerSlot = createElement("t", { "t-set-slot": "toggler" });
+
+        combineAttributes(dropdownEl, "togglerClass", toStringExpression(classes), "+' '+");
+
+        for (const child of el.childNodes) {
+            append(togglerSlot, this.compileNode(child, params));
+        }
+        append(dropdownEl, togglerSlot);
+
+        return shouldInsert && dropdownEl;
     }
 
     /**
@@ -102,51 +233,33 @@ export class KanbanCompiler extends ViewCompiler {
     compileField(el, params) {
         let compiled;
         let isSpan = false;
-        const recordExpr = params.recordExpr || "__comp__.props.record";
-        const dataPointIdExpr = params.dataPointIdExpr || `${recordExpr}.id`;
         if (!el.hasAttribute("widget")) {
             isSpan = true;
             // fields without a specified widget are rendered as simple spans in kanban records
-            const fieldId = el.getAttribute("field_id");
-            compiled = createElement("span", {
-                "t-out": params.formattedValueExpr || `__comp__.getFormattedValue("${fieldId}")`,
-            });
+            const fieldName = el.getAttribute("name");
+            compiled = createElement("span", { "t-out": `getFormattedValue("${fieldName}")` });
         } else {
             compiled = super.compileField(el, params);
-            const fieldId = el.getAttribute("field_id");
-            compiled.setAttribute("id", `'${fieldId}_' + ${dataPointIdExpr}`);
-            // In x2many kanban, records can be edited in a dialog. The same record as the one of
-            // the kanban is used for the form view dialog, so its mode is switched to "edit", but
-            // we don't want to see it in edition in the background. For that reason, we force its
-            // fields to be readonly when the record is in edition, i.e. when it is opened in a form
-            // view dialog.
-            const readonlyAttr = compiled.getAttribute("readonly");
-            if (readonlyAttr) {
-                compiled.setAttribute("readonly", `${recordExpr}.isInEdition || (${readonlyAttr})`);
-            } else {
-                compiled.setAttribute("readonly", `${recordExpr}.isInEdition`);
-            }
+            const fieldId = el.getAttribute("field_id") || el.getAttribute("name");
+            compiled.setAttribute("id", `'${fieldId}_' + props.record.id`);
         }
 
-        if (params.isLegacy) {
-            const { bold, display } = extractAttributes(el, ["bold", "display"]);
-            const classNames = [];
-            if (display === "right") {
-                classNames.push("float-end");
-            } else if (display === "full") {
-                classNames.push("o_text_block");
-            }
-            if (bold) {
-                classNames.push("o_text_bold");
-            }
-            if (classNames.length > 0) {
-                const clsFormatted = isSpan
-                    ? classNames.join(" ")
-                    : toStringExpression(classNames.join(" "));
-                compiled.setAttribute("class", clsFormatted);
-            }
+        const { bold, display } = extractAttributes(el, ["bold", "display"]);
+        const classNames = [];
+        if (display === "right") {
+            classNames.push("float-end");
+        } else if (display === "full") {
+            classNames.push("o_text_block");
         }
-
+        if (bold) {
+            classNames.push("o_text_bold");
+        }
+        if (classNames.length > 0) {
+            const clsFormatted = isSpan
+                ? classNames.join(" ")
+                : toStringExpression(classNames.join(" "));
+            compiled.setAttribute("class", clsFormatted);
+        }
         const attrs = {};
         for (const attr of el.attributes) {
             attrs[attr.name] = attr.value;
@@ -188,7 +301,7 @@ export class KanbanCompiler extends ViewCompiler {
         const compiled = this.compileGenericNode(el, params);
         const tname = el.getAttribute("t-call");
         if (tname in this.templates) {
-            compiled.setAttribute("t-call", `{{__comp__.templates[${toStringExpression(tname)}]}}`);
+            compiled.setAttribute("t-call", `{{templates[${toStringExpression(tname)}]}}`);
         }
         return compiled;
     }
@@ -208,4 +321,5 @@ KanbanCompiler.OWL_DIRECTIVE_WHITELIST = [
     "t-key",
     "t-att.*",
     "t-call",
+    "t-translation",
 ];

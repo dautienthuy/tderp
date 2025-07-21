@@ -3,7 +3,6 @@
 
 from ast import literal_eval
 from contextlib import contextmanager
-from datetime import timedelta
 from unittest.mock import patch
 
 from odoo.addons.crm.models.crm_lead import PARTNER_ADDRESS_FIELDS_TO_SYNC
@@ -38,7 +37,7 @@ Content-Transfer-Encoding: 8bit
 
 This is an example email. All sensitive content has been stripped out.
 
-ALL GLORY TO THE HYPNOTOAD!
+ALL GLORY TO THE HYPNOTOAD !
 
 Cheers,
 
@@ -52,7 +51,7 @@ class TestCrmCommon(TestSalesCommon, MailCase):
         'team_id', 'state_id', 'stage_id', 'medium_id', 'source_id', 'user_id',
         'title', 'city', 'contact_name', 'mobile', 'partner_name',
         'phone', 'probability', 'expected_revenue', 'street', 'street2', 'zip',
-        'create_date', 'date_automation_last', 'email_from', 'email_cc', 'website'
+        'create_date', 'date_action_last', 'email_from', 'email_cc', 'website'
     ]
     merge_fields = ['description', 'type', 'priority']
 
@@ -254,6 +253,10 @@ class TestCrmCommon(TestSalesCommon, MailCase):
             'res_id': cls.activity_type_1.id,
         })
 
+    def setUp(self):
+        super(TestCrmCommon, self).setUp()
+        self.flush_tracking()
+
     @classmethod
     def _activate_multi_company(cls):
         cls.company_2 = cls.env['res.company'].create({
@@ -261,18 +264,6 @@ class TestCrmCommon(TestSalesCommon, MailCase):
             'currency_id': cls.env.ref('base.AUD').id,
             'email': 'company.2@test.example.com',
             'name': 'New Test Company',
-        })
-        cls.alias_bounce_c2 = 'bounce.c2'
-        cls.alias_catchall_c2 = 'catchall.c2'
-        cls.alias_default_from_c2 = 'notifications.c2'
-        cls.alias_domain_c2_name = 'test.mycompany2.com'
-        cls.mail_alias_domain_c2 = cls.env['mail.alias.domain'].create({
-            'bounce_alias': cls.alias_bounce_c2,
-            'catchall_alias': cls.alias_catchall_c2,
-            'company_ids': [(4, cls.company_2.id)],
-            'default_from': cls.alias_default_from_c2,
-            'name': cls.alias_domain_c2_name,
-            'sequence': 2,
         })
 
         cls.user_sales_manager_mc = mail_new_test_user(
@@ -641,12 +632,8 @@ class TestLeadConvertCommon(TestCrmCommon):
 
     def assertMemberAssign(self, member, count):
         """ Check assign result and that domains are effectively taken into account """
-        self.assertEqual(member.lead_day_count, count)
-        member_leads = self.env['crm.lead'].search([
-            ('user_id', '=', member.user_id.id),
-            ('team_id', '=', member.crm_team_id.id),
-            ('date_open', '>=', Datetime.now() - timedelta(hours=24)),
-        ])
+        self.assertEqual(member.lead_month_count, count)
+        member_leads = self.env['crm.lead'].search(member._get_lead_month_domain())
         self.assertEqual(len(member_leads), count)
         if member.assignment_domain:
             self.assertEqual(

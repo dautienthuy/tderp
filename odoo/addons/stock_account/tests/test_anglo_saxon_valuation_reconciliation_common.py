@@ -15,10 +15,8 @@ class ValuationReconciliationTestCommon(AccountTestInvoicingCommon):
     """
 
     @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-
-        cls.env.user.groups_id += cls.env.ref('stock_account.group_stock_accounting_automatic')
+    def setUpClass(cls, chart_template_ref=None):
+        super().setUpClass(chart_template_ref=chart_template_ref)
 
         cls.stock_account_product_categ = cls.env['product.category'].create({
             'name': 'Test category',
@@ -34,7 +32,7 @@ class ValuationReconciliationTestCommon(AccountTestInvoicingCommon):
         cls.test_product_order = cls.env['product.product'].create({
             'name': "Test product template invoiced on order",
             'standard_price': 42.0,
-            'is_storable': True,
+            'type': 'product',
             'categ_id': cls.stock_account_product_categ.id,
             'uom_id': uom_unit.id,
             'uom_po_id': uom_unit.id,
@@ -42,7 +40,7 @@ class ValuationReconciliationTestCommon(AccountTestInvoicingCommon):
         cls.test_product_delivery = cls.env['product.product'].create({
             'name': 'Test product template invoiced on delivery',
             'standard_price': 42.0,
-            'is_storable': True,
+            'type': 'product',
             'categ_id': cls.stock_account_product_categ.id,
             'uom_id': uom_unit.id,
             'uom_po_id': uom_unit.id,
@@ -56,31 +54,34 @@ class ValuationReconciliationTestCommon(AccountTestInvoicingCommon):
             })
 
     @classmethod
-    def collect_company_accounting_data(cls, company):
-        company_data = super().collect_company_accounting_data(company)
+    def setup_company_data(cls, company_name, chart_template=None, **kwargs):
+        company_data = super().setup_company_data(company_name, chart_template=chart_template, **kwargs)
 
         # Create stock config.
         company_data.update({
-            'default_account_stock_in': cls.env['account.account'].with_company(company).create({
+            'default_account_stock_in': cls.env['account.account'].create({
                 'name': 'default_account_stock_in',
                 'code': 'STOCKIN',
                 'reconcile': True,
                 'account_type': 'asset_current',
+                'company_id': company_data['company'].id,
             }),
-            'default_account_stock_out': cls.env['account.account'].with_company(company).create({
+            'default_account_stock_out': cls.env['account.account'].create({
                 'name': 'default_account_stock_out',
                 'code': 'STOCKOUT',
                 'reconcile': True,
                 'account_type': 'asset_current',
+                'company_id': company_data['company'].id,
             }),
-            'default_account_stock_valuation': cls.env['account.account'].with_company(company).create({
+            'default_account_stock_valuation': cls.env['account.account'].create({
                 'name': 'default_account_stock_valuation',
                 'code': 'STOCKVAL',
                 'reconcile': True,
                 'account_type': 'asset_current',
+                'company_id': company_data['company'].id,
             }),
             'default_warehouse': cls.env['stock.warehouse'].search(
-                [('company_id', '=', company.id)],
+                [('company_id', '=', company_data['company'].id)],
                 limit=1,
             ),
         })
@@ -114,11 +115,9 @@ class ValuationReconciliationTestCommon(AccountTestInvoicingCommon):
         def do_picking():
             pickings.action_confirm()
             pickings.action_assign()
-            if quantity:
-                for picking in pickings:
-                    for ml in picking.move_line_ids:
-                        ml.quantity = quantity
-            pickings.move_ids.picked = True
+            for picking in pickings:
+                for ml in picking.move_line_ids:
+                    ml.qty_done = quantity or ml.reserved_qty
             pickings._action_done()
 
         if not date:

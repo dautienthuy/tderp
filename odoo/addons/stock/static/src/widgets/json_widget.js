@@ -1,29 +1,28 @@
 /** @odoo-module */
 
 import { registry } from "@web/core/registry";
-import { _t } from "@web/core/l10n/translation";
-import { user } from "@web/core/user";
-import { Component, onWillStart } from "@odoo/owl";
-import { standardFieldProps } from "@web/views/fields/standard_field_props";
+import { _lt } from "@web/core/l10n/translation";
+import { useService } from "@web/core/utils/hooks";
+
+const { Component, onWillStart, onWillUpdateProps } = owl;
 
 export class JsonPopOver extends Component {
-    static template = "";
-    static props = {...standardFieldProps};
-    get jsonValue() {
-        return JSON.parse(this.props.record.data[this.props.name]);
+    
+    setup(){
+        this.jsonValue = JSON.parse(this.props.value);
+        onWillUpdateProps(nextProps => {
+            this.jsonValue = JSON.parse(nextProps.value);
+        });
     }
 }
 
-export const jsonPopOver = {
-    component: JsonPopOver,
-    displayName: _t("Json Popup"),
-    supportedTypes: ["char"],
-};
+JsonPopOver.displayName = _lt("Json Popup");
+JsonPopOver.supportedTypes = ["char"];
 
 export class PopOverLeadDays extends JsonPopOver {
-    static template = "stock.leadDays";
     setup() {
         super.setup();
+        const user = useService("user");
         onWillStart(async () => {
             this.displayUOM = await user.hasGroup("uom.group_uom");
         });
@@ -49,20 +48,10 @@ export class PopOverLeadDays extends JsonPopOver {
     }
 }
 
+PopOverLeadDays.template = "stock.leadDays";
 
-export const popOverLeadDays = {
-    ...jsonPopOver,
-    component: PopOverLeadDays,
-};
-registry.category("fields").add("lead_days_widget", popOverLeadDays);
+export class ReplenishmentHistoryWidget extends JsonPopOver {}
+ReplenishmentHistoryWidget.template = "stock.replenishmentHistory";
 
-export class ReplenishmentHistoryWidget extends JsonPopOver {
-    static template = "stock.replenishmentHistory";
-}
-
-export const replenishmentHistoryWidget = {
-    ...jsonPopOver,
-    component: ReplenishmentHistoryWidget,
-};
-
-registry.category("fields").add("replenishment_history_widget", replenishmentHistoryWidget);
+registry.category("fields").add("lead_days_widget", PopOverLeadDays);
+registry.category("fields").add("replenishment_history_widget", ReplenishmentHistoryWidget);

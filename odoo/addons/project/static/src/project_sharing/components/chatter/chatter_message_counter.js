@@ -1,10 +1,10 @@
 /** @odoo-module */
 
-import { Component } from "@odoo/owl";
+const { Component } = owl;
 
-export class ChatterMessageCounter extends Component {
-    static template = "project.ChatterMessageCounter";
-    static props = {
-        count: Number,
-    };
-}
+export class ChatterMessageCounter extends Component { }
+
+ChatterMessageCounter.props = {
+    count: Number,
+};
+ChatterMessageCounter.template = 'project.ChatterMessageCounter';

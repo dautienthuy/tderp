@@ -6,8 +6,8 @@ import { formView } from "@web/views/form/form_view";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { ViewButton } from "@web/views/view_button/view_button";
-import { useSubEnv, onMounted, useEnv } from "@odoo/owl";
 
+const { useSubEnv, useEnv } = owl;
 /*
 * Common code for theme installation/update handler.
 * It overrides the onClickViewButton function that's present in the env.
@@ -51,22 +51,12 @@ export function useLoaderOnClick() {
 }
 
 class ThemePreviewFormController extends FormController {
-    static components = { ...FormController.components, ViewButton };
-    static template = "website.ThemePreviewFormController";
     /**
      * @override
      */
     setup() {
         super.setup();
         useLoaderOnClick();
-
-        // TODO adapt theme previews then remove this
-        // ... or remove the feature entirely ? See task-3454790.
-        onMounted(() => {
-            setTimeout(() => {
-                document.querySelector('button[name="button_choose_theme"]')?.click();
-            }, 0);
-        });
     }
     /**
      * @override
@@ -81,9 +71,9 @@ class ThemePreviewFormController extends FormController {
         this.env.config.historyBack();
     }
 }
+ThemePreviewFormController.components = { ...FormController.components, ViewButton };
 
 class ThemePreviewFormControlPanel extends ControlPanel {
-    static template = "website.ThemePreviewForm.ControlPanel";
     /**
      * Triggers an event on the main bus.
      * @see {FieldIframePreview} for the event handler.
@@ -97,16 +87,18 @@ class ThemePreviewFormControlPanel extends ControlPanel {
     onDesktopClick() {
         this.env.bus.trigger('THEME_PREVIEW:SWITCH_MODE', {mode: 'desktop'});
     }
-    /**
-     * Handler called when user click on Go Back button.
-     */
-    back() {
-        this.env.config.historyBack();
-    }
 }
+ThemePreviewFormControlPanel.template = 'website.ThemePreviewForm.ControlPanel';
 
 const ThemePreviewFormView = {
     ...formView,
+    display: {
+        controlPanel: {
+            'top-right': false,
+            'bottom-right': true,
+        }
+    },
+    buttonTemplate: 'website.ThemePreview.Buttons',
     Controller: ThemePreviewFormController,
     ControlPanel: ThemePreviewFormControlPanel,
 };

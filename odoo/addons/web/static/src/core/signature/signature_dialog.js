@@ -1,22 +1,13 @@
+/** @odoo-module **/
+
 import { Dialog } from "@web/core/dialog/dialog";
 import { NameAndSignature } from "./name_and_signature";
 
 import { Component, useState } from "@odoo/owl";
 
 export class SignatureDialog extends Component {
-    static template = "web.SignatureDialog";
-    static components = { Dialog, NameAndSignature };
-    static props = {
-        defaultName: { type: String, optional: true },
-        nameAndSignatureProps: Object,
-        uploadSignature: Function,
-        close: Function,
-    };
-    static defaultProps = {
-        defaultName: "",
-    };
-
     setup() {
+        this.title = this.env._t("Adopt Your Signature");
         this.signature = useState({
             name: this.props.defaultName,
             isSignatureEmpty: true,
@@ -43,3 +34,9 @@ export class SignatureDialog extends Component {
         };
     }
 }
+
+SignatureDialog.template = "web.SignatureDialog";
+SignatureDialog.components = { Dialog, NameAndSignature };
+SignatureDialog.defaultProps = {
+    defaultName: "",
+};

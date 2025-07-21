@@ -3,15 +3,16 @@
 # 	* membership
 # 
 # Translators:
+# Martin Trigaux, 2022
 # Wil Odoo, 2024
 # Larissa Manderfeld, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 17.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-26 21:55+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:53+0000\n"
 "Last-Translator: Larissa Manderfeld, 2024\n"
 "Language-Team: Spanish (https://app.transifex.com/odoo/teams/41243/es/)\n"
 "MIME-Version: 1.0\n"
@@ -239,10 +240,8 @@ msgstr "Fecha de finalización de la afiliación"
 
 #. module: membership
 #: model:ir.model.constraint,message:membership.constraint_product_template_membership_date_greater
-msgid "Error! Ending Date cannot be set before Beginning Date."
-msgstr ""
-"¡Error! No puede establecer la fecha de finalización antes de la fecha de "
-"inicio."
+msgid "Error ! Ending Date cannot be set before Beginning Date."
+msgstr "¡Error! La fecha de fin no puede ser anterior a la fecha de inicio."
 
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.view_report_membership_search
@@ -366,6 +365,13 @@ msgstr "Asiento contable"
 #: model:ir.model,name:membership.model_account_move_line
 msgid "Journal Item"
 msgstr "Apunte contable"
+
+#. module: membership
+#: model:ir.model.fields,field_description:membership.field_membership_invoice____last_update
+#: model:ir.model.fields,field_description:membership.field_membership_membership_line____last_update
+#: model:ir.model.fields,field_description:membership.field_report_membership____last_update
+msgid "Last Modified on"
+msgstr "Última modificación el"
 
 #. module: membership
 #: model:ir.model.fields,field_description:membership.field_membership_invoice__write_uid
@@ -505,6 +511,7 @@ msgstr "Productos para afiliaciones"
 
 #. module: membership
 #: model:ir.actions.server,name:membership.ir_cron_update_membership_ir_actions_server
+#: model:ir.cron,cron_name:membership.ir_cron_update_membership
 msgid "Membership: update memberships"
 msgstr "Afiliación: actualizar afiliaciones"
 
@@ -561,12 +568,14 @@ msgstr "Contacto"
 #. module: membership
 #. odoo-python
 #: code:addons/membership/models/partner.py:0
+#, python-format
 msgid "Partner doesn't have an address to make the invoice."
 msgstr "El contacto no tiene una dirección para facturar."
 
 #. module: membership
 #. odoo-python
 #: code:addons/membership/models/partner.py:0
+#, python-format
 msgid "Partner is a free Member."
 msgstr "El contacto es un miembro gratuito."
 
@@ -691,5 +700,6 @@ msgstr "Miembro en espera"
 #. module: membership
 #. odoo-python
 #: code:addons/membership/models/partner.py:0
+#, python-format
 msgid "You cannot create recursive associated members."
 msgstr "No puede crear miembros asociados recursivamente."

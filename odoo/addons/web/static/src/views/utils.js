@@ -1,10 +1,14 @@
+/** @odoo-module */
+
+import { Domain } from "@web/core/domain";
 import { _t } from "@web/core/l10n/translation";
 import { registry } from "@web/core/registry";
-import { exprToBoolean } from "@web/core/utils/strings";
-import { combineModifiers } from "@web/model/relational_model/utils";
 
 export const X2M_TYPES = ["one2many", "many2many"];
+const RELATIONAL_TYPES = [...X2M_TYPES, "many2one"];
 const NUMERIC_TYPES = ["integer", "float", "monetary"];
+
+/** @typedef {import("./relational_model").OrderTerm} OrderTerm */
 
 /**
  * @typedef ViewActiveActions {
@@ -19,16 +23,13 @@ export const BUTTON_CLICK_PARAMS = [
     "name",
     "type",
     "args",
-    "block-ui", // Blocks UI with a spinner until the action is done
     "context",
     "close",
-    "cancel-label",
     "confirm",
-    "confirm-title",
-    "confirm-label",
     "special",
     "effect",
     "help",
+    "modifiers",
     // WOWL SAD: is adding the support for debounce attribute here justified or should we
     // just override compileButton in kanban compiler to add the debounce?
     "debounce",
@@ -38,32 +39,35 @@ export const BUTTON_CLICK_PARAMS = [
 ];
 
 /**
- * @param {string?} type
- * @returns {string | false}
+ * Add dependencies to activeFields
+ *
+ * @param {Object} activeFields
+ * @param {Object} [dependencies={}]
  */
-function getViewClass(type) {
-    const isValidType = Boolean(type) && registry.category("views").contains(type);
-    return isValidType && `o_${type}_view`;
+export function addFieldDependencies(activeFields, fields, dependencies = {}) {
+    for (const [name, dependency] of Object.entries(dependencies)) {
+        if (!(name in activeFields)) {
+            activeFields[name] = Object.assign({ name, rawAttrs: {} }, dependency, {
+                modifiers: { invisible: true },
+            });
+        }
+        if (!(name in fields)) {
+            fields[name] = { ...dependency };
+        }
+    }
 }
 
 /**
- * @param {string?} viewType
- * @param {Element?} rootNode
- * @param {string[]} additionalClassList
- * @returns {string}
+ * Parse the arch to check if is true or false
+ * If the string is empty, 0, False or false it's considered as false
+ * The rest is considered as true
+ *
+ * @param {string} str
+ * @param {boolean} [trueIfEmpty=false]
+ * @returns {boolean}
  */
-export function computeViewClassName(viewType, rootNode, additionalClassList = []) {
-    const subType = rootNode?.getAttribute("js_class");
-    const classList = rootNode?.getAttribute("class")?.split(" ") || [];
-    const uniqueClasses = new Set([
-        getViewClass(viewType),
-        getViewClass(subType),
-        ...classList,
-        ...additionalClassList,
-    ]);
-    return Array.from(uniqueClasses)
-        .filter((c) => c) // remove falsy values
-        .join(" ");
+export function archParseBoolean(str, trueIfEmpty = false) {
+    return str ? !/^false|0$/i.test(str) : trueIfEmpty;
 }
 
 /**
@@ -74,17 +78,12 @@ export function computeViewClassName(viewType, rootNode, additionalClassList = [
  * @param {string[]} activeMeasures
  * @returns {Object}
  */
-export const computeReportMeasures = (
-    fields,
-    fieldAttrs,
-    activeMeasures,
-    { sumAggregatorOnly = false } = {}
-) => {
+export const computeReportMeasures = (fields, fieldAttrs, activeMeasures) => {
     const measures = {
         __count: { name: "__count", string: _t("Count"), type: "integer" },
     };
     for (const [fieldName, field] of Object.entries(fields)) {
-        if (fieldName === "id") {
+        if (fieldName === "id" || !field.store) {
             continue;
         }
         const { isInvisible } = fieldAttrs[fieldName] || {};
@@ -93,8 +92,7 @@ export const computeReportMeasures = (
         }
         if (
             ["integer", "float", "monetary"].includes(field.type) &&
-            ((sumAggregatorOnly && field.aggregator === "sum") ||
-                (!sumAggregatorOnly && field.aggregator))
+            field.group_operator !== undefined
         ) {
             measures[fieldName] = field;
         }
@@ -130,23 +128,34 @@ export const computeReportMeasures = (
 };
 
 /**
- * @param {Record} record
+ * @param {Array[] | boolean} modifier
+ * @param {Object} evalContext
+ * @returns {boolean}
+ */
+export function evalDomain(modifier, evalContext) {
+    if (modifier && typeof modifier !== "boolean") {
+        modifier = new Domain(modifier).contains(evalContext);
+    }
+    return Boolean(modifier);
+}
+
+/**
  * @param {String} fieldName
- * @param {Object} [fieldInfo]
+ * @param {Object} rawAttrs
+ * @param {Record} record
  * @returns {String}
  */
-export function getFormattedValue(record, fieldName, fieldInfo = null) {
+export function getFormattedValue(record, fieldName, rawAttrs) {
     const field = record.fields[fieldName];
     const formatter = registry.category("formatters").get(field.type, (val) => val);
-    const formatOptions = {};
-    if (fieldInfo && formatter.extractOptions) {
-        Object.assign(formatOptions, formatter.extractOptions(fieldInfo));
-    }
-    formatOptions.data = record.data;
-    formatOptions.field = field;
-    return record.data[fieldName] !== undefined
-        ? formatter(record.data[fieldName], formatOptions)
-        : "";
+    const formatOptions = {
+        escape: false,
+        data: record.data,
+        isPassword: "password" in rawAttrs,
+        digits: rawAttrs.digits ? JSON.parse(rawAttrs.digits) : field.digits,
+        field: record.fields[fieldName],
+    };
+    return formatter(record.data[fieldName], formatOptions);
 }
 
 /**
@@ -154,15 +163,13 @@ export function getFormattedValue(record, fieldName, fieldInfo = null) {
  * @returns {ViewActiveActions}
  */
 export function getActiveActions(rootNode) {
-    const activeActions = {
+    return {
         type: "view",
-        edit: exprToBoolean(rootNode.getAttribute("edit"), true),
-        create: exprToBoolean(rootNode.getAttribute("create"), true),
-        delete: exprToBoolean(rootNode.getAttribute("delete"), true),
+        edit: archParseBoolean(rootNode.getAttribute("edit"), true),
+        create: archParseBoolean(rootNode.getAttribute("create"), true),
+        delete: archParseBoolean(rootNode.getAttribute("delete"), true),
+        duplicate: archParseBoolean(rootNode.getAttribute("duplicate"), true),
     };
-    activeActions.duplicate =
-        activeActions.create && exprToBoolean(rootNode.getAttribute("duplicate"), true);
-    return activeActions;
 }
 
 export function getClassNameFromDecoration(decoration) {
@@ -185,6 +192,32 @@ export function getDecoration(rootNode) {
         }
     }
     return decorations;
+}
+
+/**
+ * @param {number | number[]} idsList
+ * @returns {number[]}
+ */
+export function getIds(idsList) {
+    if (Array.isArray(idsList)) {
+        if (idsList.length === 2 && typeof idsList[1] === "string") {
+            return [idsList[0]];
+        } else {
+            return idsList;
+        }
+    } else if (idsList) {
+        return [idsList];
+    } else {
+        return [];
+    }
+}
+
+/**
+ * @param {any} field
+ * @returns {boolean}
+ */
+export function isRelational(field) {
+    return field && RELATIONAL_TYPES.includes(field.type);
 }
 
 /**
@@ -213,16 +246,13 @@ export function isNull(value) {
 
 export function processButton(node) {
     const withDefault = {
-        close: (val) => exprToBoolean(val, false),
+        close: (val) => archParseBoolean(val, false),
         context: (val) => val || "{}",
     };
     const clickParams = {};
-    const attrs = {};
     for (const { name, value } of node.attributes) {
         if (BUTTON_CLICK_PARAMS.includes(name)) {
             clickParams[name] = withDefault[name] ? withDefault[name](value) : value;
-        } else {
-            attrs[name] = value;
         }
     }
     return {
@@ -232,17 +262,8 @@ export function processButton(node) {
         title: node.getAttribute("title") || undefined,
         string: node.getAttribute("string") || undefined,
         options: JSON.parse(node.getAttribute("options") || "{}"),
-        display: node.getAttribute("display") || "selection",
+        modifiers: JSON.parse(node.getAttribute("modifiers") || "{}"),
         clickParams,
-        column_invisible: node.getAttribute("column_invisible"),
-        invisible: combineModifiers(
-            node.getAttribute("column_invisible"),
-            node.getAttribute("invisible"),
-            "OR"
-        ),
-        readonly: node.getAttribute("readonly"),
-        required: node.getAttribute("required"),
-        attrs,
     };
 }
 
@@ -266,6 +287,30 @@ export function processMeasure(measure) {
         return measure.map(processMeasure);
     }
     return measure === "__count__" ? "__count" : measure;
+}
+
+/**
+ * @param {any} string
+ * @return {OrderTerm[]}
+ */
+export function stringToOrderBy(string) {
+    if (!string) {
+        return [];
+    }
+    return string.split(",").map((order) => {
+        const splitOrder = order.trim().split(" ");
+        if (splitOrder.length === 2) {
+            return {
+                name: splitOrder[0],
+                asc: splitOrder[1].toLowerCase() === "asc",
+            };
+        } else {
+            return {
+                name: splitOrder[0],
+                asc: true,
+            };
+        }
+    });
 }
 
 /**

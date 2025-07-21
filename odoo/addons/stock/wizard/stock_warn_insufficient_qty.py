@@ -2,7 +2,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import api, fields, models
-from odoo.tools.misc import clean_context
 
 
 class StockWarnInsufficientQty(models.AbstractModel):
@@ -21,11 +20,10 @@ class StockWarnInsufficientQty(models.AbstractModel):
     @api.depends('product_id')
     def _compute_quant_ids(self):
         for quantity in self:
-            company = quantity._get_reference_document_company_id()
             quantity.quant_ids = self.env['stock.quant'].search([
-                *self.env['stock.quant']._check_company_domain(company),
                 ('product_id', '=', quantity.product_id.id),
                 ('location_id.usage', '=', 'internal'),
+                ('company_id', '=', quantity._get_reference_document_company_id().id)
             ])
 
     def action_done(self):
@@ -43,7 +41,7 @@ class StockWarnInsufficientQtyScrap(models.TransientModel):
         return self.scrap_id.company_id
 
     def action_done(self):
-        return self.with_context(clean_context(self.env.context)).scrap_id.do_scrap()
+        return self.scrap_id.do_scrap()
 
     def action_cancel(self):
         # FIXME in master: we should not have created the scrap in a first place

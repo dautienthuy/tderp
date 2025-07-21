@@ -2,14 +2,13 @@ import pytz
 from datetime import datetime, timedelta
 from markupsafe import Markup
 from unittest.mock import patch, MagicMock
-from contextlib import contextmanager
-from freezegun import freeze_time
 
 from odoo import fields
 
 from odoo.tests.common import HttpCase
 
 from odoo.addons.microsoft_calendar.models.microsoft_sync import MicrosoftSync
+from odoo.addons.microsoft_calendar.utils.event_id_storage import combine_ids
 
 def mock_get_token(user):
     return f"TOKEN_FOR_USER_{user.id}"
@@ -38,7 +37,6 @@ class TestCommon(HttpCase):
     @patch_api
     def setUp(self):
         super(TestCommon, self).setUp()
-        self.env.user.unpause_microsoft_synchronization()
 
         # prepare users
         self.organizer_user = self.env["res.users"].search([("name", "=", "Mike Organizer")])
@@ -249,8 +247,7 @@ class TestCommon(HttpCase):
             "start": self.start_date,
             "stop": self.end_date,
             "user_id": self.organizer_user,
-            "microsoft_id": "123",
-            "ms_universal_event_id": "456",
+            "microsoft_id": combine_ids("123", "456"),
             "partner_ids": [self.organizer_user.partner_id.id, self.attendee_user.partner_id.id],
         }
         self.expected_odoo_recurrency_from_outlook = {
@@ -267,8 +264,7 @@ class TestCommon(HttpCase):
             'fri': False,
             'interval': self.recurrent_event_interval,
             'month_by': 'date',
-            "microsoft_id": "REC123",
-            "ms_universal_event_id": "REC456",
+            'microsoft_id': combine_ids('REC123', 'REC456'),
             'name': "Every %s Days until %s" % (
                 self.recurrent_event_interval, self.recurrence_end_date.strftime("%Y-%m-%d")
             ),
@@ -407,8 +403,7 @@ class TestCommon(HttpCase):
                 "stop": self.end_date + timedelta(days=i * self.recurrent_event_interval),
                 "until": self.recurrence_end_date.date(),
                 "microsoft_recurrence_master_id": "REC123",
-                "microsoft_id": f"REC123_EVENT_{i+1}",
-                "ms_universal_event_id": f"REC456_EVENT_{i+1}",
+                'microsoft_id': combine_ids(f"REC123_EVENT_{i+1}", f"REC456_EVENT_{i+1}"),
                 "recurrency": True,
                 "follow_recurrence": True,
                 "active": True,
@@ -416,17 +411,6 @@ class TestCommon(HttpCase):
             for i in range(self.recurrent_events_count)
         ]
         self.env.cr.postcommit.clear()
-
-    @contextmanager
-    def mock_datetime_and_now(self, mock_dt):
-        """
-        Used when synchronization date (using env.cr.now()) is important
-        in addition to standard datetime mocks. Used mainly to detect sync
-        issues.
-        """
-        with freeze_time(mock_dt), \
-                patch.object(self.env.cr, 'now', lambda: mock_dt):
-            yield
 
     def sync_odoo_recurrences_with_outlook_feature(self):
         """
@@ -448,8 +432,7 @@ class TestCommon(HttpCase):
             self.simple_event = self.env["calendar.event"].with_user(self.organizer_user).create(
                 dict(
                     self.simple_event_values,
-                    microsoft_id="123",
-                    ms_universal_event_id="456",
+                    microsoft_id=combine_ids("123", "456"),
                 )
             )
 
@@ -460,8 +443,7 @@ class TestCommon(HttpCase):
                 dict(
                     self.simple_event_values,
                     name=f"event{i}",
-                    microsoft_id=f"e{i}",
-                    ms_universal_event_id=f"u{i}"
+                    microsoft_id=combine_ids(f"e{i}", f"u{i}"),
                 )
                 for i in range(1, 4)
             ])
@@ -488,13 +470,11 @@ class TestCommon(HttpCase):
         # set ids set by Outlook
         if not already_created:
             self.recurrence.with_context(dont_notify=True).write({
-                "microsoft_id": "REC123",
-                "ms_universal_event_id": "REC456"
+                "microsoft_id": combine_ids("REC123", "REC456"),
             })
             for i, e in enumerate(self.recurrence.calendar_event_ids.sorted(key=lambda r: r.start)):
                 e.with_context(dont_notify=True).write({
-                    "microsoft_id": f"REC123_EVENT_{i+1}",
-                    "ms_universal_event_id": f"REC456_EVENT_{i+1}",
+                    "microsoft_id": combine_ids(f"REC123_EVENT_{i+1}", f"REC456_EVENT_{i+1}"),
                     "microsoft_recurrence_master_id": "REC123",
                 })
             self.recurrence.invalidate_recordset()

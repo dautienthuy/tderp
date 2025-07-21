@@ -9,4 +9,3 @@ declaration.
 Signed,
 
 Enric Tobella etobella@creublanca.es https://github.com/etobella
-Enric Tobella enric.tobella@dixmit.com https://github.com/etobella

@@ -31,7 +31,6 @@ A synchronization with an internal agenda (Meetings of the CRM module) is also p
         'data/mail_message_subtype_data.xml',
         'data/hr_holidays_data.xml',
         'data/ir_cron_data.xml',
-        'data/hr_holidays_tour.xml',
 
         'security/hr_holidays_security.xml',
         'security/ir.model.access.csv',
@@ -41,14 +40,12 @@ A synchronization with an internal agenda (Meetings of the CRM module) is also p
         'views/hr_leave_type_views.xml',
         'views/hr_leave_allocation_views.xml',
         'views/hr_leave_accrual_views.xml',
-        'views/hr_leave_mandatory_day_views.xml',
+        'views/hr_leave_stress_day_views.xml',
         'views/mail_activity_views.xml',
-        'views/calendar_views.xml',
 
         'wizard/hr_holidays_cancel_leave_views.xml',
         'wizard/hr_holidays_summary_employees_views.xml',
-        'wizard/hr_leave_generate_multi_wizard_views.xml',
-        'wizard/hr_leave_allocation_generate_multi_wizard_views.xml',
+        'wizard/hr_departure_wizard_views.xml',
 
         'report/hr_holidays_templates.xml',
         'report/hr_holidays_reports.xml',
@@ -65,26 +62,45 @@ A synchronization with an internal agenda (Meetings of the CRM module) is also p
     'installable': True,
     'application': True,
     'assets': {
+        'mail.assets_messaging': [
+            'hr_holidays/static/src/models/*.js',
+        ],
+        'mail.assets_discuss_public': [
+            'hr_holidays/static/src/components/*/*',
+        ],
         'web.assets_backend': [
-            'hr_holidays/static/src/**/*',
+            'hr_holidays/static/src/views/**/*.js',
+            'hr_holidays/static/src/views/**/*.scss',
+            'hr_holidays/static/src/views/**/*.xml',
+            'hr_holidays/static/src/components/*/*.scss',
+            'hr_holidays/static/src/components/*/*.xml',
+            'hr_holidays/static/src/dashboard/**/*.js',
+            'hr_holidays/static/src/dashboard/**/*.scss',
+            'hr_holidays/static/src/dashboard/**/*.xml',
+            'hr_holidays/static/src/leave_stats/**/*.js',
+            'hr_holidays/static/src/leave_stats/**/*.xml',
+            'hr_holidays/static/src/scss/*.scss',
+            'hr_holidays/static/src/tours/*.js',
+            'hr_holidays/static/src/radio_image_field/*.js',
+            'hr_holidays/static/src/radio_image_field/*.xml',
+
             # Don't include dark mode files in light mode
-            ('remove', 'hr_holidays/static/src/**/*.dark.scss'),
+            ('remove', 'hr_holidays/static/src/views/**/*.dark.scss'),
+            ('remove', 'hr_holidays/static/src/dashboard/**/*.dark.scss'),
         ],
-        "web.assets_web_dark": [
-            'hr_holidays/static/src/**/*.dark.scss',
+        "web.dark_mode_assets_backend": [
+            'hr_holidays/static/src/views/**/*.dark.scss',
+            'hr_holidays/static/src/dashboard/**/*.dark.scss',
         ],
-        'web.assets_unit_tests': [
-            'hr_holidays/static/tests/**/*',
-            ('remove', 'hr_holidays/static/tests/tours/**/*'),
-            ('remove', 'hr_holidays/static/tests/legacy/**/*'),
+        'web.tests_assets': [
+            'hr_holidays/static/tests/helpers/**/*',
         ],
         'web.qunit_suite_tests': [
-            'hr_holidays/static/tests/legacy/**/*',
+            'hr_holidays/static/tests/qunit_suite_tests/**/*.js',
         ],
         'web.assets_tests': [
-            '/hr_holidays/static/tests/tours/**/*'
+            '/hr_holidays/static/tests/tours/**/**.js'
         ],
     },
-    'post_init_hook': '_hr_holiday_post_init',
     'license': 'LGPL-3',
 }

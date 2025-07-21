@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import json
@@ -6,8 +7,8 @@ from werkzeug.urls import url_encode
 
 from unittest.mock import patch, Mock
 from odoo import tests
-from odoo.tools.misc import mute_logger, submap
 from odoo.addons.website.controllers.main import Website
+from odoo.tools import mute_logger, submap
 
 
 @tests.tagged('post_install', '-at_install')
@@ -65,9 +66,9 @@ class TestControllers(tests.HttpCase):
         self.authenticate("admin", "admin")
         for url in urls:
             resp = self.url_open(f'/@{url}')
-            backend_params = url_encode(dict(path=url))
+            backend_params = url_encode(dict(action='website.website_preview', path=url))
             self.assertURLEqual(
-                resp.url, f'/odoo/action-website.website_preview?{backend_params}',
+                resp.url, f'/web#{backend_params}',
                 "Internal user should have landed in the backend")
 
     def test_03_website_image(self):
@@ -172,24 +173,3 @@ class TestControllers(tests.HttpCase):
                 # Verify that the returned result contains the expected
                 # suggestion "test suggestion"
                 self.assertIn('test suggestion', result)
-
-    def test_06_website_action(self):
-        """
-        Test the website action controller to ensure it correctly handles
-        different action types and returns the expected results.
-        """
-        self.authenticate("admin", "admin")
-        self.env['ir.actions.server'].create({
-            'name': 'Test Action',
-            'website_published': True,
-            'website_path': 'my_test_action',
-            'model_id': self.ref('base.model_res_partner'),
-            'code': """response = request.make_response("{'message': 'Succeeded'}")""",
-            'state': 'code',
-            'type': 'ir.actions.server',
-        })
-
-        # Test that the action response is correctly returned when accessed
-        res = self.url_open('/website/action/my_test_action')
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(res.text, "{'message': 'Succeeded'}")

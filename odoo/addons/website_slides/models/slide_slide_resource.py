@@ -11,7 +11,6 @@ from odoo.tools.mimetypes import get_extension
 class SlideResource(models.Model):
     _name = 'slide.slide.resource'
     _description = "Additional resource for a particular slide"
-    _order = "sequence, id"
 
     slide_id = fields.Many2one('slide.slide', required=True, ondelete='cascade')
     resource_type = fields.Selection([('file', 'File'), ('url', 'Link')], required=True)
@@ -19,8 +18,6 @@ class SlideResource(models.Model):
     data = fields.Binary('Resource', compute='_compute_reset_resources', store=True, readonly=False)
     file_name = fields.Char(store=True)
     link = fields.Char('Link', compute='_compute_reset_resources', store=True, readonly=False)
-    download_url = fields.Char('Download URL', compute='_compute_download_url')
-    sequence = fields.Integer(string="Sequence")
 
     _sql_constraints = [
         ('check_url', "CHECK (resource_type != 'url' OR link IS NOT NULL)", 'A resource of type url must contain a link.'),
@@ -49,21 +46,17 @@ class SlideResource(models.Model):
                     new_name = resource.link
                 resource.name = new_name
 
-    @api.depends('name', 'file_name')
-    def _compute_download_url(self):
-        for resource in self:
-            extension = get_extension(resource.file_name) if resource.file_name else ''
-            if not resource.name:
-                resource.download_url = False
-                continue
-            file_name = resource.name if resource.name.endswith(extension) else resource.name + extension
-            resource.download_url = f'/web/content/slide.slide.resource/{resource.id}/data?' + url_encode({
-                'download': 'true',
-                'filename': file_name,
-            })
-
     @api.constrains('data')
     def _check_link_type(self):
         for record in self:
             if record.resource_type != 'file' and record.data:
                 raise ValidationError(_("Resource %(resource_name)s is a link and should not contain a data file", resource_name=record.name))
+
+    def _get_download_url(self):
+        self.ensure_one()
+        extension_file_name = get_extension(self.file_name) if self.file_name else ''
+        file_name = self.name if self.name.endswith(extension_file_name) else self.name + extension_file_name
+        return f'/web/content/slide.slide.resource/{self.id}/data?' + url_encode({
+            'download': 'true',
+            'filename': file_name
+        })

@@ -12,15 +12,11 @@
                                     string="Routes"
                                     icon="fa-refresh"
                                     class="oe_stat_button"
-                                    type="object">
-                                    <div class="o_stat_info">
-                                        <span class="o_stat_text">Routes</span>
-                                    </div>
-                            </button>
+                                    type="object"/>
                         </div>
-                        <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                        <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                         <label for="name"/>
-                        <h1><field name="name" placeholder="e.g. Central Warehouse" class="w-100"/></h1>
+                        <h1><field name="name" placeholder="e.g. Central Warehouse"/></h1>
                         <group>
                             <group>
                                 <field name="active" invisible="1"/>
@@ -55,14 +51,11 @@
                                         <field name="wh_output_stock_loc_id" readonly="1"/>
                                     </group>
                                     <group string="Operation Types">
-                                        <field name="int_type_id" readonly="1"/>
                                         <field name="in_type_id" readonly="1"/>
-                                        <field name="qc_type_id" readonly="1"/>
-                                        <field name="store_type_id" readonly="1"/>
+                                        <field name="int_type_id" readonly="1"/>
                                         <field name="pick_type_id" readonly="1"/>
                                         <field name="pack_type_id" readonly="1"/>
                                         <field name="out_type_id" readonly="1"/>
-                                        <field name="xdock_type_id" readonly="1"/>
                                     </group>
                                 </group>
                             </page>
@@ -73,17 +66,17 @@
         </record>
 
         <record id="view_warehouse_tree" model="ir.ui.view">
-            <field name="name">stock.warehouse.list</field>
+            <field name="name">stock.warehouse.tree</field>
             <field name="model">stock.warehouse</field>
             <field name="arch" type="xml">
-                <list string="Warehouse">
+                <tree string="Warehouse">
                     <field name="sequence" widget="handle"/>
                     <field name="name"/>
-                    <field name="active" column_invisible="True"/>
+                    <field name="active" invisible="1"/>
                     <field name="lot_stock_id" groups="stock.group_stock_multi_locations"/>
                     <field name="partner_id"/>
                     <field name="company_id" groups="base.group_multi_company"/>
-                </list>
+                </tree>
             </field>
         </record>
 
@@ -101,6 +94,7 @@
         <record id="action_warehouse_form" model="ir.actions.act_window">
             <field name="name">Warehouses</field>
             <field name="res_model">stock.warehouse</field>
+            <field name="type">ir.actions.act_window</field>
             <field name="view_id" ref="view_warehouse_tree"/>
             <field name="help" type="html">
               <p class="o_view_nocontent_smiling_face">

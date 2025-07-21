@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import itertools
 from odoo import api, fields, models, _
 from odoo.tools.float_utils import float_is_zero
 from odoo.tools.misc import groupby
@@ -32,37 +31,34 @@ class StockQuant(models.Model):
     def _compute_value(self):
         """ (Product.value_svl / Product.quantity_svl) * quant.quantity, i.e. average unit cost * on hand qty
         """
-        self.fetch(['company_id', 'location_id', 'owner_id', 'product_id', 'quantity', 'lot_id'])
-        self.value = 0
         for quant in self:
             quant.currency_id = quant.company_id.currency_id
             if not quant.location_id or not quant.product_id or\
                     not quant.location_id._should_be_valued() or\
                     quant._should_exclude_for_valuation() or\
                     float_is_zero(quant.quantity, precision_rounding=quant.product_id.uom_id.rounding):
+                quant.value = 0
                 continue
-            if quant.product_id.lot_valuated:
-                quantity = quant.lot_id.with_company(quant.company_id).quantity_svl
-                value_svl = quant.lot_id.with_company(quant.company_id).value_svl
-            else:
-                quantity = quant.product_id.with_company(quant.company_id).quantity_svl
-                value_svl = quant.product_id.with_company(quant.company_id).value_svl
+            quantity = quant.product_id.with_company(quant.company_id).quantity_svl
             if float_is_zero(quantity, precision_rounding=quant.product_id.uom_id.rounding):
+                quant.value = 0.0
                 continue
-            quant.value = quant.quantity * value_svl / quantity
+            quant.value = quant.quantity * quant.product_id.with_company(quant.company_id).value_svl / quantity
 
-    def _read_group_select(self, aggregate_spec, query):
-        # flag value as aggregatable, and manually sum the values from the
-        # records in the group
-        if aggregate_spec == 'value:sum':
-            return super()._read_group_select('id:recordset', query)
-        return super()._read_group_select(aggregate_spec, query)
-
-    def _read_group_postprocess_aggregate(self, aggregate_spec, raw_values):
-        if aggregate_spec == 'value:sum':
-            column = super()._read_group_postprocess_aggregate('id:recordset', raw_values)
-            return (sum(records.mapped('value')) for records in column)
-        return super()._read_group_postprocess_aggregate(aggregate_spec, raw_values)
+    @api.model
+    def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
+        """ This override is done in order for the grouped list view to display the total value of
+        the quants inside a location. This doesn't work out of the box because `value` is a computed
+        field.
+        """
+        if 'value' not in fields:
+            return super(StockQuant, self).read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
+        res = super(StockQuant, self).read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
+        for group in res:
+            if group.get('__domain'):
+                quants = self.search(group['__domain'])
+                group['value'] = sum(quant.value for quant in quants)
+        return res
 
     def _apply_inventory(self):
         for accounting_date, inventory_ids in groupby(self, key=lambda q: q.accounting_date):
@@ -73,8 +69,8 @@ class StockQuant(models.Model):
             else:
                 super(StockQuant, inventories)._apply_inventory()
 
-    def _get_inventory_move_values(self, qty, location_id, location_dest_id, package_id=False, package_dest_id=False):
-        res_move = super()._get_inventory_move_values(qty, location_id, location_dest_id, package_id, package_dest_id)
+    def _get_inventory_move_values(self, qty, location_id, location_dest_id, out=False):
+        res_move = super()._get_inventory_move_values(qty, location_id, location_dest_id, out)
         if not self.env.context.get('inventory_name'):
             force_period_date = self.env.context.get('force_period_date', False)
             if force_period_date:

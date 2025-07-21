@@ -1,8 +1,8 @@
-import time
+from freezegun import freeze_time
 
 from odoo import Command
 from odoo.exceptions import UserError
-from odoo.tests import tagged, freeze_time
+from odoo.tests import tagged
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
 
@@ -11,15 +11,10 @@ from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 class TestAccountUpdateTaxTagsWizard(AccountTestInvoicingCommon):
 
     @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+    def setUpClass(cls, chart_template_ref=None):
+        super().setUpClass(chart_template_ref=chart_template_ref)
 
         be_country_id = cls.env.ref('base.be').id
-        cls.partner_agrolait = cls.env['res.partner'].create({
-            'name': 'Deco Agrolait',
-            'is_company': True,
-            'country_id': cls.env.ref('base.us').id,
-        })
         cls.company = cls.company_data['company']
         cls.company.write({'country_id': be_country_id})
         cls.tag_names = {
@@ -31,109 +26,11 @@ class TestAccountUpdateTaxTagsWizard(AccountTestInvoicingCommon):
         cls.tax_1 = cls._create_tax('update_test_tax', 15, tag_names=cls.tag_names)
         cls.wizard = cls.env['account.update.tax.tags.wizard'].create({'date_from': '2023-02-01'})
 
-    def _create_invoice(self, move_type='out_invoice', invoice_amount=50, currency_id=None, partner_id=None, date_invoice=None, payment_term_id=False, auto_validate=False, taxes=None, state=None):
-        if move_type == 'entry':
-            raise AssertionError("Unexpected move_type : 'entry'.")
-
-        if not taxes:
-            taxes = self.env['account.tax']
-
-        date_invoice = date_invoice or time.strftime('%Y') + '-07-01'
-
-        invoice_vals = {
-            'move_type': move_type,
-            'partner_id': partner_id or self.partner_agrolait.id,
-            'invoice_date': date_invoice,
-            'date': date_invoice,
-            'invoice_line_ids': [Command.create({
-                'name': 'product that cost %s' % invoice_amount,
-                'quantity': 1,
-                'price_unit': invoice_amount,
-                'tax_ids': [Command.set(taxes.ids)],
-            })]
-        }
-
-        if payment_term_id:
-            invoice_vals['invoice_payment_term_id'] = payment_term_id
-
-        if currency_id:
-            invoice_vals['currency_id'] = currency_id
-
-        invoice = self.env['account.move'].with_context(default_move_type=move_type).create(invoice_vals)
-
-        if state == 'cancel':
-            invoice.write({'state': 'cancel'})
-        elif auto_validate or state == 'posted':
-            invoice.action_post()
-        return invoice
-
-    def create_invoice(self, move_type='out_invoice', invoice_amount=50, currency_id=None):
-        return self._create_invoice(move_type=move_type, invoice_amount=invoice_amount, currency_id=currency_id, auto_validate=True)
-
-    @classmethod
-    def _create_or_get_tax_tag(cls, name, country_id=None):
-        country_id = country_id or cls.company_data['company'].country_id.id
-        tag = cls.env['account.account.tag'].search([
-            ('name', '=', name),
-            ('applicability', '=', 'taxes'),
-            ('country_id', '=', country_id),
-        ])
-        if tag:
-            return tag
-        return cls.env['account.account.tag'].create({
-            'name': name,
-            'applicability': 'taxes',
-            'country_id': country_id,
-        })
-
-    @classmethod
-    def _create_tax(cls, name, amount, amount_type='percent', type_tax_use='sale', tag_names=None, children_taxes=None, tax_exigibility='on_invoice', **kwargs):
-        if not tag_names:
-            tag_names = {}
-        tag_commands = {
-            type_rep_line: [(Command.set(cls._create_or_get_tax_tag(tags).ids))]
-            for type_rep_line, tags in tag_names.items()
-        }
-        vals = {
-            'name': name,
-            'amount': amount,
-            'amount_type': amount_type,
-            'type_tax_use': type_tax_use,
-            'tax_exigibility': tax_exigibility,
-            'children_tax_ids': [Command.set(children_taxes.ids)] if children_taxes else None,
-            'invoice_repartition_line_ids': [
-                Command.create({
-                    'factor_percent': 100,
-                    'repartition_type': 'base',
-                    'tag_ids': tag_commands.get('invoice_base'),
-                }),
-                Command.create({
-                    'factor_percent': 100,
-                    'repartition_type': 'tax',
-                    'tag_ids': tag_commands.get('invoice_tax'),
-                }),
-            ] if not children_taxes else [],
-            'refund_repartition_line_ids': [
-                Command.create({
-                    'factor_percent': 100,
-                    'repartition_type': 'base',
-                    'tag_ids': tag_commands.get('refund_base'),
-                }),
-                Command.create({
-                    'factor_percent': 100,
-                    'repartition_type': 'tax',
-                    'tag_ids': tag_commands.get('refund_tax'),
-                }),
-            ] if not children_taxes else [],
-            **kwargs,
-        }
-        return cls.env['account.tax'].create(vals)
-
     @classmethod
     def _change_tax_tag(cls, tax, new_tag, invoice=True, base=True):
         rep_lines = tax.invoice_repartition_line_ids if invoice else tax.refund_repartition_line_ids
         filtered_rep_lines = rep_lines.filtered(lambda rep_line: rep_line.repartition_type == ('base' if base else 'tax'))
-        filtered_rep_lines.write({'tag_ids': [Command.set(cls._create_or_get_tax_tag(new_tag).ids)]})
+        filtered_rep_lines.write({'tag_ids': [Command.set(cls._create_tax_tag(new_tag).ids)]})
 
     def _get_amls_by_type(self, moves):
         invoice_lines = moves.invoice_line_ids
@@ -150,6 +47,7 @@ class TestAccountUpdateTaxTagsWizard(AccountTestInvoicingCommon):
         self.wizard.update_amls_tax_tags()
 
         invoice_lines, tax_lines, counterpart_lines = self._get_amls_by_type(moves)
+        self.assertTrue(all('invoice_tax_tag_changed' in tax_line.tax_audit for tax_line in tax_lines), 'Tax audit string should have changed.')
         self.assertEqual(invoice_lines.tax_tag_ids.name, 'invoice_base_tag', 'Base lines tags should not have changed.')
         self.assertEqual(tax_lines.tax_tag_ids.name, 'invoice_tax_tag_changed', 'Tax lines tags should have changed.')
         self.assertFalse(counterpart_lines.tax_tag_ids, 'Counterpart lines should not have changed.')
@@ -197,8 +95,7 @@ class TestAccountUpdateTaxTagsWizard(AccountTestInvoicingCommon):
         move_1 = self._create_invoice(taxes=self.tax_1)
         self._change_tax_tag(self.tax_1, 'invoice_tax_tag_changed_for_company_1', invoice=True, base=False)
         be_country_id = self.env.ref('base.be').id
-
-        company_2 = self.setup_other_company()['company']
+        company_2 = self.company_data_2['company']
         company_2.write({'country_id': be_country_id})
         self.env.user.company_id = company_2
         tax_2 = self._create_tax(
@@ -231,7 +128,7 @@ class TestAccountUpdateTaxTagsWizard(AccountTestInvoicingCommon):
             for line_type in ['base', 'tax']:
                 with self.subTest(f'Update tax tag on {move_type}-{line_type}'):
                     type_tax_use = 'sale' if move_type.startswith('out_') else 'purchase'
-                    tax_2 = self._create_tax(f'update_test_tax_2_{move_type}_{line_type}', 15, type_tax_use=type_tax_use, tag_names={
+                    tax_2 = self._create_tax('update_test_tax_2', 15, type_tax_use=type_tax_use, tag_names={
                         'invoice_base': 'test_tag_invoice_base',
                         'invoice_tax': 'test_tag_invoice_tax',
                         'refund_base': 'test_tag_refund_base',

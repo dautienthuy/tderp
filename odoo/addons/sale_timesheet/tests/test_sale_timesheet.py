@@ -1,13 +1,14 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from datetime import date, timedelta
 
-from odoo import Command
 from odoo.fields import Date
 from odoo.tools import float_is_zero
-from odoo.exceptions import AccessError, UserError, ValidationError
+from odoo.exceptions import UserError
 from odoo.addons.hr_timesheet.tests.test_timesheet import TestCommonTimesheet
 from odoo.addons.sale_timesheet.tests.common import TestCommonSaleTimesheet
-from odoo.tests import Form, tagged
+from odoo.tests import tagged
+
 
 @tagged('-at_install', 'post_install')
 class TestSaleTimesheet(TestCommonSaleTimesheet):
@@ -50,7 +51,7 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
 
         self.assertEqual(sale_order.tasks_count, 1, "One task should have been created on SO confirmation")
         self.assertEqual(len(sale_order.project_ids), 2, "One project should have been created by the SO, when confirmed + the one from SO line 2 'task in global project'")
-        self.assertEqual(sale_order.project_account_id, project_serv1.account_id, "The created project should be linked to the analytic account of the SO")
+        self.assertEqual(sale_order.analytic_account_id, project_serv1.analytic_account_id, "The created project should be linked to the analytic account of the SO")
 
         # create invoice
         invoice1 = sale_order._create_invoices()[0]
@@ -182,10 +183,10 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
         self.assertTrue(task_serv1, "Sale Timesheet: on SO confirmation, a task should have been created in global project")
         self.assertTrue(task_serv2, "Sale Timesheet: on SO confirmation, a task should have been created in a new project")
         self.assertEqual(sale_order.invoice_status, 'no', 'Sale Timesheet: "invoice on delivery" should not need to be invoiced on so confirmation')
-        self.assertEqual(sale_order.project_account_id, task_serv2.project_id.account_id, "SO should have create a project")
+        self.assertEqual(sale_order.analytic_account_id, task_serv2.project_id.analytic_account_id, "SO should have create a project")
         self.assertEqual(sale_order.tasks_count, 2, "Two tasks (1 per SO line) should have been created on SO confirmation")
         self.assertEqual(len(sale_order.project_ids), 2, "One project should have been created by the SO, when confirmed + the one from SO line 1 'task in global project'")
-        self.assertEqual(sale_order.project_account_id, project_serv2.account_id, "The created project should be linked to the analytic account of the SO")
+        self.assertEqual(sale_order.analytic_account_id, project_serv2.analytic_account_id, "The created project should be linked to the analytic account of the SO")
 
         # let's log some timesheets
         timesheet1 = self.env['account.analytic.line'].create({
@@ -302,7 +303,7 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
 
         project_serv2 = so_line_manual_only_project.project_id
         self.assertTrue(project_serv2, "A second project is created when selling 'project only' after SO confirmation.")
-        self.assertEqual(sale_order.project_account_id, project_serv2.account_id, "The created project should be linked to the analytic account of the SO")
+        self.assertEqual(sale_order.analytic_account_id, project_serv2.analytic_account_id, "The created project should be linked to the analytic account of the SO")
 
         # let's log some timesheets (on task and project)
         timesheet1 = self.env['account.analytic.line'].create({
@@ -381,11 +382,6 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
             'product_uom_qty': 20,
             'order_id': sale_order.id,
         })
-        so_line_deliver_timesheet = self.env['sale.order.line'].create({
-            'product_id': self.product_delivery_timesheet1.id,
-            'product_uom_qty': 5,
-            'order_id': sale_order.id,
-        })
 
         # confirm SO
         sale_order.action_confirm()
@@ -427,22 +423,6 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
             'unit_amount': 30,
             'employee_id': self.employee_manager.id
         })
-        
-        with self.assertRaises(AccessError, msg="The user should not have access to the SOL"):
-            so_line_deliver_timesheet.with_user(self.user_employee_without_sales_access).read(['name'])
-    
-        # invalidate cache to make sure the SOL set on the timesheet is not in the cache since the user
-        # should not be able to access on the SOL.
-        self.env['sale.order.line'].invalidate_model()
-        timesheet5 = self.env['account.analytic.line'].with_user(self.user_employee_without_sales_access).create({
-            'name': 'Test Line 5',
-            'project_id': task_serv2.project_id.id,
-            'task_id': task_serv2.id,
-            'unit_amount': 10,
-            'employee_id': self.employee_without_sales_access.id,
-            'so_line': so_line_deliver_timesheet.id,
-        })
-
         self.assertEqual(so_line_deliver_global_project.invoice_status, 'to invoice')
         self.assertEqual(so_line_deliver_task_project.invoice_status, 'to invoice')
         self.assertEqual(sale_order.invoice_status, 'to invoice')
@@ -521,7 +501,7 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
         task = Task.with_context(default_project_id=self.project_template.id).create({
             'name': 'first task',
             'partner_id': self.partner_b.id,
-            'allocated_hours': 10,
+            'planned_hours': 10,
             'sale_line_id': self.so.order_line[0].id
         })
 
@@ -538,7 +518,7 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
         self.assertEqual(timesheet_count2, 1, "One timesheet in project_template")
         self.assertEqual(len(task.timesheet_ids), 1, "The timesheet should be linked to task")
 
-        # change project of task, non-validated timesheets will follow the project of task
+        # change project of task, as the timesheet is not yet invoiced, the timesheet will change his project
         task.write({
             'project_id': self.project_global.id
         })
@@ -572,14 +552,14 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
 
         self.assertEqual(Timesheet.search_count([('project_id', '=', self.project_global.id)]), 2, "2 timesheets in project_global")
 
-        # change project of task, only the timesheet not billed gets its project changed
+        # change project of task, the timesheet not yet invoiced will change its project. The timesheet already invoiced will not change his project.
         task.write({
             'project_id': self.project_template.id
         })
 
         timesheet_count1 = Timesheet.search_count([('project_id', '=', self.project_global.id)])
         timesheet_count2 = Timesheet.search_count([('project_id', '=', self.project_template.id)])
-        self.assertEqual(timesheet_count1, 1, "One timesheet in project_global")
+        self.assertEqual(timesheet_count1, 1, "Still one timesheet in project_global")
         self.assertEqual(timesheet_count2, 1, "One timesheet in project_template")
         self.assertEqual(len(task.timesheet_ids), 2, "The 2 timesheets still should be linked to task")
 
@@ -652,7 +632,7 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
     def test_timesheet_upsell(self):
         """ Test timesheet upselling and email """
 
-        sale_order = self.env['sale.order'].create({
+        sale_order = self.env['sale.order'].with_context(mail_notrack=True, mail_create_nolog=True).create({
             'partner_id': self.partner_a.id,
             'partner_invoice_id': self.partner_a.id,
             'partner_shipping_id': self.partner_a.id,
@@ -716,7 +696,7 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
     def test_timesheet_upsell_copied_so(self):
         """ Test that copying a SO which had an upsell activity still create an upsell activity on the copy. """
 
-        sale_order = self.env['sale.order'].create({
+        sale_order = self.env['sale.order'].with_context(mail_notrack=True, mail_create_nolog=True).create({
             'partner_id': self.partner_a.id,
             'partner_invoice_id': self.partner_a.id,
             'partner_shipping_id': self.partner_a.id,
@@ -859,38 +839,9 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
         move.with_context(check_move_validity=False).line_ids[0].unlink()
         self.assertFalse(analytic_line.timesheet_invoice_id, "The timesheet should have been unlinked from move")
 
-    def test_update_sol_price(self):
-        """ This test ensure that when the price of a sol is updated, the project_profitability panel from the project linked to the SO of that sol is correctly updated too.
-        1) create new SO
-        2) add a sol with a service product with 'invoice on prepaid' and 'create project & task' setting.
-        3) confirm SO and check the project_profitability panel
-        4) update the price of the sol and check the project_profitability panel
-        """
-        sale_order = self.env['sale.order'].create({
-            'partner_id': self.partner_a.id,
-        })
-        product_price = self.product_order_timesheet3.list_price
-        so_line = self.env['sale.order.line'].create({
-            'name': self.product_order_timesheet3.name,
-            'product_id': self.product_order_timesheet3.id,
-            'product_uom_qty': 1,
-            'product_uom': self.product_order_timesheet3.uom_id.id,
-            'price_unit': product_price,
-            'order_id': sale_order.id,
-        })
-        sale_order.action_confirm()
-        project = sale_order.project_ids[0]
-
-        items = project._get_profitability_items(with_action=False)
-        self.assertEqual(items['revenues']['data'][0]['to_invoice'], product_price, "The quantity to_invoice should be equal to the price of the product")
-
-        so_line.price_unit = 2*product_price
-        items = project._get_profitability_items(with_action=False)
-        self.assertEqual(items['revenues']['data'][0]['to_invoice'], 2*product_price, "The quantity to_invoice should be equal to twice the price of the product")
-
     def test_sale_order_with_multiple_project_templates(self):
         """Test when creating multiple projects for one sale order every project has its own allocated hours"""
-        sale_order = self.env['sale.order'].create({
+        sale_order = self.env['sale.order'].with_context(tracking_disable=True).create({
             'partner_id': self.partner_a.id,
             'partner_invoice_id': self.partner_a.id,
             'partner_shipping_id': self.partner_a.id,
@@ -951,258 +902,10 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
         self.assertEqual(10, sale_order_line_template_1.project_id.allocated_hours)
         self.assertEqual(5, sale_order_line_template_2.project_id.allocated_hours)
 
-    def test_onchange_uom_service_product(self):
-        uom_unit = self.env.ref('uom.product_uom_unit')
-        uom_kg = self.env.ref('uom.product_uom_kgm')
 
-        # Create product (consumable that will be switch to service)
-        product_1 = self.env['product.template'].create([
-            {
-                'name': "Consumable to convert to service 1",
-                'standard_price': 10,
-            },
+class TestSaleTimesheetView(TestCommonTimesheet):
+    def test_get_view_timesheet_encode_uom(self):
+        """ Test the label of timesheet time spent fields according to the company encoding timesheet uom """
+        self.assert_get_view_timesheet_encode_uom([
+            ('sale_timesheet.project_project_view_form', '//field[@name="display_cost"]', [None, 'Daily Cost']),
         ])
-        product_2 = self.env['product.product'].create({
-                'name': "Consumable to convert to service 2",
-                'standard_price': 15,
-        })
-
-        # Initial uom should be unit
-        self.assertEqual([product_1.uom_id.id, product_2.uom_id.id], [uom_unit.id]*2)
-        products = [product_1, product_2] #perform the tests for both product and variants
-        for product in products:
-            # 1. product.template form: [uom: unit] --> change to service --> [uom: hour]
-            with Form(product, view="sale_timesheet.view_product_timesheet_form") as product_form:
-                product_form.type = 'service'
-                product_form.service_policy = 'delivered_timesheet'
-                self.assertEqual(product_form.uom_id.id, self.uom_hour.id)
-
-            # 2. product.template form: [uom: kgm] --> change to service --> [uom: hour] --> change to consumable --> [uom: kgm]
-            product.write({
-                'type': 'consu',
-                'uom_id': uom_kg.id,
-            })
-            with Form(product, view="sale_timesheet.view_product_timesheet_form") as product_form:
-                product_form.type = 'service'
-                product_form.service_policy = 'delivered_timesheet'
-                self.assertEqual(product_form.uom_id.id, self.uom_hour.id)
-                product_form.type = 'consu'
-                self.assertEqual(product_form.uom_id.id, uom_kg.id)
-
-    def test_allocated_hours_copy(self):
-        """ This test ensures that the generated project's allocated_hours field is copied from the project template when it is set."""
-        project_template = self.env['project.project'].create({
-            'name': 'Template',
-            'allocated_hours': 65,
-        })
-        product = self.env['product.product'].create({
-            'name': "Service with template",
-            'standard_price': 10,
-            'list_price': 20,
-            'type': 'service',
-            'invoice_policy': 'order',
-            'uom_id': self.uom_hour.id,
-            'uom_po_id': self.uom_hour.id,
-            'default_code': 'c1',
-            'service_tracking': 'task_in_project',
-            'project_id': False,  # will create a project,
-            'project_template_id': project_template.id,
-        })
-        sale_order = self.env['sale.order'].create({
-            'partner_id': self.partner_a.id,
-        })
-        sale_order_line = self.env['sale.order.line'].create({
-            'order_id': sale_order.id,
-            'name': product.name,
-            'product_id': product.id,
-            'product_uom_qty': 10,
-            'product_uom': product.uom_id.id,
-            'price_unit': product.list_price,
-        })
-        project = sale_order_line._timesheet_create_project()
-        self.assertTrue(
-            project.allocated_hours == project_template.allocated_hours != sale_order_line.product_uom_qty,
-            "The project's allocated hours should have been copied from its template, rather than the sale order line",
-        )
-
-    def test_non_consolidated_billing_service_timesheet(self):
-        """
-        When consolidated_billing is set to False, an invoice is created for each sale order
-        Makes sure it works with sales orders linked to timesheets
-        """
-
-        sale_orders = self.env['sale.order'].create([{
-            'partner_id': self.partner_a.id,
-            'order_line': [Command.create({
-                'product_id': self.product_delivery_timesheet2.id,
-            })],
-        }, {
-            'partner_id': self.partner_a.id,
-            'order_line': [Command.create({
-                'product_id': self.product_delivery_timesheet2.id,
-            })],
-        }])
-        sale_orders.action_confirm()
-
-        self.env['account.analytic.line'].create([{
-            'name': 'Timesheet',
-            'task_id': task.id,
-            'project_id': task.project_id.id,
-            'unit_amount': 2,
-            'employee_id': self.employee_user.id,
-        } for task in sale_orders.tasks_ids])
-
-        advance_payment = self.env['sale.advance.payment.inv'].with_context(active_ids=sale_orders.ids).create({
-            'consolidated_billing': False,
-        })
-
-        invoices = advance_payment._create_invoices(sale_orders)
-
-        self.assertEqual(len(invoices), 2, "The number of invoices created should be equal to the number of sales orders.")
-
-    def test_timesheet_with_negative_time_spent(self):
-        """ Check the billable type of a timesheet with negative time spent """
-        sale_order = self.env['sale.order'].create([{
-            'partner_id': self.partner_a.id,
-            'order_line': [Command.create({
-                'product_id': self.product_delivery_timesheet2.id,
-            })],
-        }])
-        sale_order.action_confirm()
-        task1 = sale_order.tasks_ids
-        timesheet = self.env['account.analytic.line'].create([
-            {
-                'name': 'Timesheet',
-                'task_id': task1.id,
-                'project_id': task1.project_id.id,
-                'unit_amount': -1,
-                'employee_id': self.employee_user.id,
-            },
-        ])
-        self.assertEqual(timesheet.timesheet_invoice_type, 'billable_time')
-
-
-@tagged('-at_install', 'post_install')
-class TestSaleTimesheetAnalyticPlan(TestCommonSaleTimesheet):
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-
-        cls.plan_b, cls.plan_c = cls.env['account.analytic.plan'].create([
-            {'name': 'plan 2'},
-            {'name': 'plan 3'},
-        ])
-
-    def test_timesheet_get_accounts_from_sol(self):
-        project_analytic_plan, _other_plans = self.env['account.analytic.plan']._get_all_plans()
-        other_analytic_plan2 = self.plan_b
-        analytic_account1, analytic_account2 = self.env['account.analytic.account'].create([
-            {
-                'name': 'Analytic Account 1',
-                'plan_id': project_analytic_plan.id,
-            },
-            {
-                'name': 'Analytic Account 2',
-                'plan_id': other_analytic_plan2.id,
-            },
-        ])
-        sale_order = self.env['sale.order'].create({
-            'name': 'SO Test',
-            'partner_id': self.partner_a.id,
-        })
-        so_line1 = self.env['sale.order.line'].create({
-            'product_id': self.product_order_timesheet4.id,
-            'product_uom_qty': 10,
-            'order_id': sale_order.id,
-            'analytic_distribution': {f'{analytic_account1.id}, {analytic_account2.id}': 100},
-        })
-        timesheet = self.env['account.analytic.line'].create({
-            'name': 'Test Line',
-            'project_id': self.project_global.id,
-            'unit_amount': 50,
-            'employee_id': self.employee_manager.id,
-            'so_line': so_line1.id,
-        })
-        self.assertEqual(timesheet.account_id, analytic_account1)
-        self.assertEqual(timesheet[other_analytic_plan2._column_name()], analytic_account2)
-
-        # Create another analytic account and a new SOL to assign it to the timesheet
-        other_analytic_plan3 = self.plan_c
-        analytic_account3 = self.env['account.analytic.account'].create({
-            'name': 'Analytic Account 3',
-            'plan_id': other_analytic_plan3.id,
-        })
-        so_line2 = self.env['sale.order.line'].create({
-            'product_id': self.product_order_timesheet4.id,
-            'product_uom_qty': 10,
-            'order_id': sale_order.id,
-            'analytic_distribution': {f'{analytic_account1.id}, {analytic_account3.id}': 100},
-        })
-        timesheet.so_line = so_line2
-        self.assertEqual(timesheet.account_id, analytic_account1)
-        self.assertFalse(timesheet[other_analytic_plan2._column_name()])
-        self.assertEqual(timesheet[other_analytic_plan3._column_name()], analytic_account3)
-
-    def test_timesheet_get_accounts_from_sol_fallback_on_project(self):
-        _project_analytic_plan, other_plans = self.env['account.analytic.plan']._get_all_plans()
-        other_analytic_plan2 = self.plan_b
-        analytic_account2 = self.env['account.analytic.account'].create({
-            'name': 'Analytic Account 2',
-            'plan_id': other_analytic_plan2.id,
-        })
-        sale_order = self.env['sale.order'].create({
-            'name': 'SO Test',
-            'partner_id': self.partner_a.id,
-        })
-        so_line = self.env['sale.order.line'].create({
-            'product_id': self.product_order_timesheet3.id,
-            'order_id': sale_order.id,
-        })
-        sale_order.action_confirm()
-        so_project = sale_order.project_id
-        so_line.analytic_distribution = {str(analytic_account2.id): 100}
-        timesheet = self.env['account.analytic.line'].create({
-            'name': 'Timesheet',
-            'project_id': so_project.id,
-            'unit_amount': 1,
-            'employee_id': self.employee_manager.id,
-            'so_line': so_line.id,
-        })
-        self.assertEqual(
-            timesheet._get_analytic_accounts(),
-            so_project.account_id | analytic_account2,
-            "The analytic accounts should be the account_id from the project and the accounts from the SOL's distribution",
-        )
-
-    def test_mandatory_plan_timesheet_applicability_from_sol(self):
-        plan_a = self.analytic_plan
-        plan_b = self.plan_b
-        analytic_account, _dummy = self.env['account.analytic.account'].create([{
-            'name': 'account',
-            'plan_id': plan.id,
-        } for plan in (plan_a, plan_b)])
-        self.env['account.analytic.applicability'].create({
-            'business_domain': 'timesheet',
-            'applicability': 'mandatory',
-            'analytic_plan_id': plan_b.id,
-        })
-        sale_order = self.env['sale.order'].create({
-            'name': 'SO Test',
-            'partner_id': self.partner_a.id,
-        })
-        so_line = self.env['sale.order.line'].create({
-            'product_id': self.product_order_timesheet4.id,
-            'product_uom_qty': 10,
-            'order_id': sale_order.id,
-            'analytic_distribution': {f'{analytic_account.id}': 100},
-        })
-        with self.assertRaises(ValidationError):
-            # The analytic plan 'other_analytic_plan' is mandatory on the sale order line linked to the timesheet
-            self.env['account.analytic.line'].create({
-            'name': 'Test Line',
-            'project_id': self.project_global.id,
-            'unit_amount': 50,
-            'employee_id': self.employee_manager.id,
-            'so_line': so_line.id,
-        })

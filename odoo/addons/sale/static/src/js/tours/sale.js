@@ -1,113 +1,129 @@
-/** @odoo-module **/
+odoo.define('sale.tour', function(require) {
+"use strict";
 
-import { _t } from "@web/core/l10n/translation";
-import { registry } from "@web/core/registry";
-import { stepUtils } from "@web_tour/tour_service/tour_utils";
-import { markup } from "@odoo/owl";
+const {_t} = require('web.core');
+const {Markup} = require('web.utils');
+var tour = require('web_tour.tour');
 
-registry.category("web_tour.tours").add("sale_tour", {
-    url: "/odoo",
-    steps: () => [
-        stepUtils.showAppsMenuItem(),
-        {
-            isActive: ["community"],
-            trigger: ".o_app[data-menu-xmlid='sale.sale_menu_root']",
-            content: _t("Let’s create a beautiful quotation in a few clicks ."),
-            tooltipPosition: "right",
-            run: "click",
+const { markup } = owl;
+
+tour.register("sale_tour", {
+    url: "/web",
+    rainbowMan: false,
+    sequence: 20,
+}, [tour.stepUtils.showAppsMenuItem(), {
+    trigger: ".o_app[data-menu-xmlid='sale.sale_menu_root']",
+    content: _t("Open Sales app to send your first quotation in a few clicks."),
+    position: "right",
+    edition: "community"
+}, {
+    trigger: ".o_app[data-menu-xmlid='sale.sale_menu_root']",
+    content: _t("Open Sales app to send your first quotation in a few clicks."),
+    position: "bottom",
+    edition: "enterprise"
+}, {
+    trigger: 'a.o_onboarding_step_action.btn[data-method=action_open_base_onboarding_company]',
+    extra_trigger: ".o_sale_order",
+    content: _t("Start by checking your company's data."),
+    position: "bottom",
+    skip_trigger: 'a[data-method=action_open_base_onboarding_company].o_onboarding_step_action__done',
+}, {
+    trigger: 'input[id=street]',
+    content: _t("Complete your company's data"),
+    position: "bottom",
+    skip_trigger: 'a[data-method=action_open_base_onboarding_company].o_onboarding_step_action__done',
+}, {
+    trigger: ".modal-content button[name='action_save_onboarding_company_step']",
+    content: _t("Looks good. Let's continue."),
+    position: "left",
+    skip_trigger: 'a[data-method=action_open_base_onboarding_company].o_onboarding_step_action__done',
+}, {
+    trigger: 'a.o_onboarding_step_action.btn[data-method=action_open_base_document_layout]',
+    extra_trigger: ".o_sale_order",
+    content: _t("Customize your quotes and orders."),
+    position: "bottom",
+    skip_trigger: 'a[data-method=action_open_base_document_layout].o_onboarding_step_action__done',
+}, {
+    trigger: "button[name='document_layout_save']",
+    extra_trigger: ".o_sale_order",
+    content: _t("Good job, let's continue."),
+    position: "top", // dot NOT move to bottom, it would cause a resize flicker
+    skip_trigger: 'a[data-method=action_open_base_document_layout].o_onboarding_step_action__done',
+}, {
+    trigger: 'a.o_onboarding_step_action.btn[data-method=action_open_sale_onboarding_payment_provider]',
+    extra_trigger: ".o_sale_order",
+    content: _t("To speed up order confirmation, we can activate electronic signatures or payments."),
+    position: "bottom",
+    skip_trigger: 'a[data-method=action_open_sale_onboarding_payment_provider].o_onboarding_step_action__done',
+}, {
+    trigger: "button[name='add_payment_methods']",
+    extra_trigger: ".o_sale_order",
+    content: _t("Lets keep electronic signature for now."),
+    position: "bottom",
+    skip_trigger: 'a[data-method=action_open_sale_onboarding_payment_provider].o_onboarding_step_action__done',
+}, {
+    trigger: 'a.o_onboarding_step_action.btn[data-method=action_open_sale_onboarding_sample_quotation]',
+    extra_trigger: ".o_sale_order",
+    content: _t("Now, we'll create a sample quote."),
+    position: "bottom",
+}]);
+
+tour.register("sale_quote_tour", {
+        url: "/web#action=sale.action_quotations_with_onboarding&view_type=form",
+        rainbowMan: true,
+        rainbowManMessage: markup(_t("<b>Congratulations</b>, your first quotation is sent!<br>Check your email to validate the quote.")),
+        sequence: 30,
+    }, [{
+        trigger: ".o_field_res_partner_many2one[name='partner_id']",
+        extra_trigger: ".o_sale_order",
+        content: _t("Write a company name to create one, or see suggestions."),
+        position: "right",
+        run: function (actions) {
+            actions.text("Agrolait", this.$anchor.find("input"));
         },
-        {
-            isActive: ["enterprise"],
-            trigger: ".o_app[data-menu-xmlid='sale.sale_menu_root']",
-            content: _t("Let’s create a beautiful quotation in a few clicks ."),
-            tooltipPosition: "bottom",
-            run: "click",
+    }, {
+        trigger: ".ui-menu-item > a:contains('Agrolait')",
+        auto: true,
+        in_modal: false,
+    }, {
+        trigger: ".o_field_x2many_list_row_add > a",
+        content: _t("Click here to add some products or services to your quotation."),
+        position: "bottom",
+    }, {
+        trigger: ".o_field_widget[name='product_id'], .o_field_widget[name='product_template_id']",
+        extra_trigger: ".o_sale_order",
+        content: _t("Select a product, or create a new one on the fly."),
+        position: "right",
+        run: function (actions) {
+            var $input = this.$anchor.find("input");
+            actions.text("DESK0001", $input.length === 0 ? this.$anchor : $input);
+            // fake keydown to trigger search
+            var keyDownEvent = jQuery.Event("keydown");
+            keyDownEvent.which = 42;
+            this.$anchor.trigger(keyDownEvent);
+            var $descriptionElement = $(".o_form_editable textarea[name='name']");
+            // when description changes, we know the product has been created
+            $descriptionElement.change(function () {
+                $descriptionElement.addClass("product_creation_success");
+            });
         },
-        {
-            trigger: ".o_sale_order",
-        },
-        {
-            trigger: "button.o_list_button_add",
-            content: _t("Build your first quotation right here!"),
-            tooltipPosition: "bottom",
-            run: "click",
-        },
-        {
-            trigger: ".o_sale_order",
-        },
-        {
-            trigger: ".o_field_res_partner_many2one[name='partner_id'] input",
-            content: _t("Search a customer name, or create one on the fly."),
-            tooltipPosition: "right",
-            run: "edit Agrolait",
-        },
-        {
-            isActive: ["auto"],
-            trigger: ".ui-menu-item > a:contains('Agrolait')",
-            run: "click",
-        },
-        {
-            trigger: ".o_field_x2many_list_row_add > a",
-            content: _t("Click here to add some products or services to your quotation."),
-            tooltipPosition: "bottom",
-            run: "click",
-        },
-        {
-            trigger: ".o_sale_order",
-        },
-        {
-            trigger: `
-                .o_field_widget[name='product_id'] input,
-                .o_field_widget[name='product_template_id'] input
-            `,
-            content: _t("Select a product, or create a new one on the fly."),
-            tooltipPosition: "right",
-            run: "edit DESK0001",
-        },
-        {
-            isActive: ["auto"],
-            trigger: "a:contains('DESK0001')",
-            run: "click",
-        },
-        {
-            trigger: ".oi-arrow-right", // Wait for product creation
-        },
-        {
-            trigger: ".o_field_widget[name='price_unit'] input",
-            content: _t("add the price of your product."),
-            tooltipPosition: "right",
-            run: "edit 10.0 && click body",
-        },
-        {
-            isActive: ["auto"],
-            trigger: ".o_field_cell[name='price_subtotal']:contains(10.00)",
-            run: "click",
-        },
-        {
-            isActive: ["auto", "mobile"],
-            trigger: ".o_statusbar_buttons button[name='action_quotation_send']",
-        },
-        ...stepUtils.statusbarButtonsSteps(
-            "Send by Email",
-            markup(_t("<b>Send the quote</b> to yourself and check what the customer will receive.")),
-        ),
-        {
-            isActive: ["body:not(:has(.modal-footer button.o_mail_send))"],
-            trigger: ".modal-footer button[name='document_layout_save']",
-            content: _t("let's continue"),
-            tooltipPosition: "bottom",
-            run: "click",
-        },
-        {
-            trigger: ".modal-footer button.o_mail_send",
-            content: _t("Go ahead and send the quotation."),
-            tooltipPosition: "bottom",
-            run: "click",
-        },
-        {
-            isActive: ["auto"],
-            trigger: "body:not(.modal-open)",
-            run: "click",
-        },
-    ],
+        id: "product_selection_step"
+    }, {
+        trigger: "a:contains('DESK0001')",
+        auto: true,
+    }, {
+        trigger: ".o_field_widget[name='price_unit'] ",
+        extra_trigger: ".fa-arrow-right",  // Wait for product creation
+        content: Markup(_t("<b>Set a price</b>.")),
+        position: "right",
+        run: "text 10.0"
+    },
+    ...tour.stepUtils.statusbarButtonsSteps("Send by Email", Markup(_t("<b>Send the quote</b> to yourself and check what the customer will receive.")), ".o_statusbar_buttons button[name='action_quotation_send']"),
+    {
+        trigger: ".modal-footer button[name='action_send_mail']",
+        extra_trigger: ".modal-footer button[name='action_send_mail']",
+        content: _t("Let's send the quote."),
+        position: "bottom",
+    }]);
+
 });

@@ -11,7 +11,7 @@
                     <div class="d-flex gap-2">
                         <field name="l10n_id_buyer_document_type" />
                         <span class="d-flex gap-2 w-10">
-                            <field name="l10n_id_buyer_document_number" invisible="l10n_id_buyer_document_type == 'TIN'" placeholder="e.g. 0123456"/>
+                            <field name="l10n_id_buyer_document_number" attrs="{'invisible': [('l10n_id_buyer_document_type', '=', 'TIN')]}" placeholder="e.g. 0123456"/>
                         </span>
                     </div>
             </xpath>

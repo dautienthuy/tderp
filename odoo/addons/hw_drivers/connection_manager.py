@@ -3,16 +3,17 @@
 
 from datetime import datetime, timedelta
 import logging
+import subprocess
 import requests
 from threading import Thread
 import time
 import urllib3
 
+from odoo.modules.module import get_resource_path
 from odoo.addons.hw_drivers.main import iot_devices, manager
 from odoo.addons.hw_drivers.tools import helpers
 
 _logger = logging.getLogger(__name__)
-
 
 class ConnectionManager(Thread):
     def __init__(self):
@@ -23,7 +24,7 @@ class ConnectionManager(Thread):
     def run(self):
         if not helpers.get_odoo_server_url() and not helpers.access_point():
             end_time = datetime.now() + timedelta(minutes=5)
-            while datetime.now() < end_time:
+            while (datetime.now() < end_time):
                 self._connect_box()
                 time.sleep(10)
             self.pairing_code = False
@@ -46,7 +47,6 @@ class ConnectionManager(Thread):
             if all(key in result for key in ['pairing_code', 'pairing_uuid']):
                 self.pairing_code = result['pairing_code']
                 self.pairing_uuid = result['pairing_uuid']
-                self._refresh_displays()
             elif all(key in result for key in ['url', 'token', 'db_uuid', 'enterprise_code']):
                 self._connect_to_server(result['url'], result['token'], result['db_uuid'], result['enterprise_code'])
         except Exception:
@@ -67,7 +67,6 @@ class ConnectionManager(Thread):
                 iot_devices[d].action({
                     'action': 'display_refresh'
                 })
-
 
 connection_manager = ConnectionManager()
 connection_manager.daemon = True

@@ -15,7 +15,7 @@ class TestMicrosoftEvent(TestCommon):
     def test_already_mapped_events(self):
 
         # arrange
-        event_id = self.simple_event.microsoft_id
+        event_id = self.simple_event.ms_organizer_event_id
         event_uid = self.simple_event.ms_universal_event_id
         events = MicrosoftEvent([{
             "type": "singleInstance",
@@ -32,8 +32,9 @@ class TestMicrosoftEvent(TestCommon):
         self.assertEqual(mapped._events[event_id]["_odoo_id"], self.simple_event.id)
 
     def test_map_an_event_using_global_id(self):
+
         # arrange
-        event_id = self.simple_event.microsoft_id
+        event_id = self.simple_event.ms_organizer_event_id
         event_uid = self.simple_event.ms_universal_event_id
         events = MicrosoftEvent([{
             "type": "singleInstance",
@@ -54,7 +55,7 @@ class TestMicrosoftEvent(TestCommon):
         Here, the Odoo event has an uid but the Outlook event has not.
         """
         # arrange
-        event_id = self.simple_event.microsoft_id
+        event_id = self.simple_event.ms_organizer_event_id
         events = MicrosoftEvent([{
             "type": "singleInstance",
             "_odoo_id": False,
@@ -75,7 +76,7 @@ class TestMicrosoftEvent(TestCommon):
         """
 
         # arrange
-        event_id = self.simple_event.microsoft_id
+        event_id = self.simple_event.ms_organizer_event_id
         event_uid = self.simple_event.ms_universal_event_id
         self.simple_event.ms_universal_event_id = False
         events = MicrosoftEvent([{
@@ -99,7 +100,7 @@ class TestMicrosoftEvent(TestCommon):
         """
 
         # arrange
-        event_id = self.simple_event.microsoft_id
+        event_id = self.simple_event.ms_organizer_event_id
         self.simple_event.ms_universal_event_id = False
         events = MicrosoftEvent([{
             "type": "singleInstance",
@@ -119,7 +120,7 @@ class TestMicrosoftEvent(TestCommon):
     def test_map_a_recurrence_using_global_id(self):
 
         # arrange
-        rec_id = self.recurrence.microsoft_id
+        rec_id = self.recurrence.ms_organizer_event_id
         rec_uid = self.recurrence.ms_universal_event_id
         events = MicrosoftEvent([{
             "type": "seriesMaster",
@@ -138,7 +139,7 @@ class TestMicrosoftEvent(TestCommon):
     def test_map_a_recurrence_using_instance_id(self):
 
         # arrange
-        rec_id = self.recurrence.microsoft_id
+        rec_id = self.recurrence.ms_organizer_event_id
         events = MicrosoftEvent([{
             "type": "seriesMaster",
             "_odoo_id": False,
@@ -156,9 +157,9 @@ class TestMicrosoftEvent(TestCommon):
     def test_try_to_map_mixed_of_single_events_and_recurrences(self):
 
         # arrange
-        event_id = self.simple_event.microsoft_id
+        event_id = self.simple_event.ms_organizer_event_id
         event_uid = self.simple_event.ms_universal_event_id
-        rec_id = self.recurrence.microsoft_id
+        rec_id = self.recurrence.ms_organizer_event_id
         rec_uid = self.recurrence.ms_universal_event_id
 
         events = MicrosoftEvent([
@@ -183,7 +184,7 @@ class TestMicrosoftEvent(TestCommon):
     def test_match_event_only(self):
 
         # arrange
-        event_id = self.simple_event.microsoft_id
+        event_id = self.simple_event.ms_organizer_event_id
         event_uid = self.simple_event.ms_universal_event_id
         events = MicrosoftEvent([{
             "type": "singleInstance",
@@ -202,7 +203,7 @@ class TestMicrosoftEvent(TestCommon):
     def test_match_recurrence_only(self):
 
         # arrange
-        rec_id = self.recurrence.microsoft_id
+        rec_id = self.recurrence.ms_organizer_event_id
         rec_uid = self.recurrence.ms_universal_event_id
         events = MicrosoftEvent([{
             "type": "seriesMaster",
@@ -225,7 +226,7 @@ class TestMicrosoftEvent(TestCommon):
         recurrence.
         """
         # arrange
-        rec_id = self.recurrence.microsoft_id
+        rec_id = self.recurrence.ms_organizer_event_id
         rec_uid = self.recurrence.ms_universal_event_id
         events = MicrosoftEvent([{
             "@removed": {
@@ -246,9 +247,9 @@ class TestMicrosoftEvent(TestCommon):
     def test_match_mix_of_events_and_recurrences(self):
 
         # arrange
-        event_id = self.simple_event.microsoft_id
+        event_id = self.simple_event.ms_organizer_event_id
         event_uid = self.simple_event.ms_universal_event_id
-        rec_id = self.recurrence.microsoft_id
+        rec_id = self.recurrence.ms_organizer_event_id
         rec_uid = self.recurrence.ms_universal_event_id
 
         events = MicrosoftEvent([
@@ -295,10 +296,11 @@ class TestMicrosoftEvent(TestCommon):
     def test_search_set_ms_universal_event_id(self):
         not_synced_events = self.env['calendar.event'].search([('ms_universal_event_id', '=', False)])
         synced_events = self.env['calendar.event'].search([('ms_universal_event_id', '!=', False)])
+
         self.assertIn(self.simple_event, synced_events)
         self.assertNotIn(self.simple_event, not_synced_events)
 
-        self.simple_event.ms_universal_event_id = False
+        self.simple_event.ms_universal_event_id = ''
         not_synced_events = self.env['calendar.event'].search([('ms_universal_event_id', '=', False)])
         synced_events = self.env['calendar.event'].search([('ms_universal_event_id', '!=', False)])
 

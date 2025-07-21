@@ -1,26 +1,16 @@
-from odoo import models, _
-from odoo.exceptions import RedirectWarning
+from odoo import models, api, _
+from odoo.exceptions import ValidationError
 
 
 class PosConfig(models.Model):
     _inherit = 'pos.config'
 
-    def open_ui(self):
+    @api.constrains('company_id', 'invoice_journal_id')
+    def _check_company_invoice_journal(self):
+        """
+            Override to make sure POS invoice journal was probably onboarded before being used
+        """
+        super()._check_company_invoice_journal()
         for config in self:
-            if (
-                    config.company_id.country_id.code == 'SA'
-                    and config.invoice_journal_id
-                    and (config.invoice_journal_id.edi_format_ids.filtered(lambda f: f.code == "sa_zatca")
-                         and not config.invoice_journal_id._l10n_sa_ready_to_submit_einvoices())
-            ):
-                msg = _("The invoice journal of the point of sale %s must be properly onboarded "
-                        "according to ZATCA specifications.\n", config.name)
-                action = {
-                    "view_mode": "form",
-                    "res_model": "account.journal",
-                    "type": "ir.actions.act_window",
-                    "res_id": config.invoice_journal_id.id,
-                    "views": [[False, "form"]],
-                }
-                raise RedirectWarning(msg, action, _('Go to Journal configuration'))
-        return super().open_ui()
+            if config.company_id.country_id.code == 'SA' and config.invoice_journal_id and not config.invoice_journal_id._l10n_sa_ready_to_submit_einvoices():
+                raise ValidationError(_("The invoice journal of the point of sale %s must be properly onboarded according to ZATCA specifications.", config.name))

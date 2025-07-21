@@ -1,116 +1,92 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from base64 import b64decode, b64encode
+from datetime import datetime
+from re import sub as regex_sub
 from collections import defaultdict
 
-from markupsafe import Markup
-from psycopg2.errors import LockNotAvailable
-
+from lxml import etree
 from odoo import _, api, fields, models
+from odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_agencies import get_key
 from odoo.exceptions import UserError
 
-TBAI_REFUND_REASONS = [
-    ('R1', "R1: Art. 80.1, 80.2, 80.6 and rights founded error"),
-    ('R2', "R2: Art. 80.3"),
-    ('R3', "R3: Art. 80.4"),
-    ('R4', "R4: Art. 80 - other"),
-    ('R5', "R5: Factura rectificativa en facturas simplificadas"),
+L10N_ES_TBAI_CRC8_TABLE = [
+    0x00, 0x07, 0x0E, 0x09, 0x1C, 0x1B, 0x12, 0x15, 0x38, 0x3F, 0x36, 0x31, 0x24, 0x23, 0x2A, 0x2D,
+    0x70, 0x77, 0x7E, 0x79, 0x6C, 0x6B, 0x62, 0x65, 0x48, 0x4F, 0x46, 0x41, 0x54, 0x53, 0x5A, 0x5D,
+    0xE0, 0xE7, 0xEE, 0xE9, 0xFC, 0xFB, 0xF2, 0xF5, 0xD8, 0xDF, 0xD6, 0xD1, 0xC4, 0xC3, 0xCA, 0xCD,
+    0x90, 0x97, 0x9E, 0x99, 0x8C, 0x8B, 0x82, 0x85, 0xA8, 0xAF, 0xA6, 0xA1, 0xB4, 0xB3, 0xBA, 0xBD,
+    0xC7, 0xC0, 0xC9, 0xCE, 0xDB, 0xDC, 0xD5, 0xD2, 0xFF, 0xF8, 0xF1, 0xF6, 0xE3, 0xE4, 0xED, 0xEA,
+    0xB7, 0xB0, 0xB9, 0xBE, 0xAB, 0xAC, 0xA5, 0xA2, 0x8F, 0x88, 0x81, 0x86, 0x93, 0x94, 0x9D, 0x9A,
+    0x27, 0x20, 0x29, 0x2E, 0x3B, 0x3C, 0x35, 0x32, 0x1F, 0x18, 0x11, 0x16, 0x03, 0x04, 0x0D, 0x0A,
+    0x57, 0x50, 0x59, 0x5E, 0x4B, 0x4C, 0x45, 0x42, 0x6F, 0x68, 0x61, 0x66, 0x73, 0x74, 0x7D, 0x7A,
+    0x89, 0x8E, 0x87, 0x80, 0x95, 0x92, 0x9B, 0x9C, 0xB1, 0xB6, 0xBF, 0xB8, 0xAD, 0xAA, 0xA3, 0xA4,
+    0xF9, 0xFE, 0xF7, 0xF0, 0xE5, 0xE2, 0xEB, 0xEC, 0xC1, 0xC6, 0xCF, 0xC8, 0xDD, 0xDA, 0xD3, 0xD4,
+    0x69, 0x6E, 0x67, 0x60, 0x75, 0x72, 0x7B, 0x7C, 0x51, 0x56, 0x5F, 0x58, 0x4D, 0x4A, 0x43, 0x44,
+    0x19, 0x1E, 0x17, 0x10, 0x05, 0x02, 0x0B, 0x0C, 0x21, 0x26, 0x2F, 0x28, 0x3D, 0x3A, 0x33, 0x34,
+    0x4E, 0x49, 0x40, 0x47, 0x52, 0x55, 0x5C, 0x5B, 0x76, 0x71, 0x78, 0x7F, 0x6A, 0x6D, 0x64, 0x63,
+    0x3E, 0x39, 0x30, 0x37, 0x22, 0x25, 0x2C, 0x2B, 0x06, 0x01, 0x08, 0x0F, 0x1A, 0x1D, 0x14, 0x13,
+    0xAE, 0xA9, 0xA0, 0xA7, 0xB2, 0xB5, 0xBC, 0xBB, 0x96, 0x91, 0x98, 0x9F, 0x8A, 0x8D, 0x84, 0x83,
+    0xDE, 0xD9, 0xD0, 0xD7, 0xC2, 0xC5, 0xCC, 0xCB, 0xE6, 0xE1, 0xE8, 0xEF, 0xFA, 0xFD, 0xF4, 0xF3
 ]
-
 
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
-    l10n_es_tbai_state = fields.Selection([
-            ('to_send', 'To Send'),
-            ('sent', 'Sent'),
-            ('cancelled', 'Cancelled'),
-        ],
-        string='TicketBAI status',
-        compute='_compute_l10n_es_tbai_state',
-    )
+    # Stored fields
     l10n_es_tbai_chain_index = fields.Integer(
         string="TicketBAI chain index",
         help="Invoice index in chain, set if and only if an in-chain XML was submitted and did not error",
-        related='l10n_es_tbai_post_document_id.chain_index',
+        copy=False, readonly=True,
     )
 
-    l10n_es_tbai_post_document_id = fields.Many2one(
-        comodel_name='l10n_es_edi_tbai.document',
-        readonly=True,
-        copy=False,
+    # Stored XML Binaries
+    l10n_es_tbai_post_xml = fields.Binary(
+        attachment=True, readonly=True, copy=False,
+        string="Submission XML",
+        help="Submission XML sent to TicketBAI. Kept if accepted or no response (timeout), cleared otherwise.",
     )
-    l10n_es_tbai_cancel_document_id = fields.Many2one(
-        comodel_name='l10n_es_edi_tbai.document',
-        readonly=True,
-        copy=False,
-    )
-
-    l10n_es_tbai_post_file = fields.Binary(
-        string="TicketBAI Post File",
-        related='l10n_es_tbai_post_document_id.xml_attachment_id.datas',
-    )
-    l10n_es_tbai_post_file_name = fields.Char(
-        string="TicketBAI Post Attachment Name",
-        related="l10n_es_tbai_post_document_id.xml_attachment_id.name",
-    )
-    l10n_es_tbai_cancel_file = fields.Binary(
-        string="TicketBAI Cancel File",
-        related='l10n_es_tbai_cancel_document_id.xml_attachment_id.datas',
-    )
-    l10n_es_tbai_cancel_file_name = fields.Char(
-        string="TicketBAI Cancel File Name",
-        related='l10n_es_tbai_cancel_document_id.xml_attachment_id.name',
+    l10n_es_tbai_cancel_xml = fields.Binary(
+        attachment=True, readonly=True, copy=False,
+        string="Cancellation XML",
+        help="Cancellation XML sent to TicketBAI. Kept if accepted or no response (timeout), cleared otherwise.",
     )
 
+    # Non-stored fields
     l10n_es_tbai_is_required = fields.Boolean(
         string="TicketBAI required",
         help="Is the Basque EDI (TicketBAI) needed ?",
-        compute='_compute_l10n_es_tbai_is_required',
+        compute="_compute_l10n_es_tbai_is_required",
     )
 
+    # Optional fields
     l10n_es_tbai_refund_reason = fields.Selection(
-        selection=TBAI_REFUND_REASONS,
+        selection=[
+            ('R1', "R1: Art. 80.1, 80.2, 80.6 and rights founded error"),
+            ('R2', "R2: Art. 80.3"),
+            ('R3', "R3: Art. 80.4"),
+            ('R4', "R4: Art. 80 - other"),
+            ('R5', "R5: Factura rectificativa en facturas simplificadas"),
+        ],
         string="Invoice Refund Reason Code (TicketBai)",
         help="BOE-A-1992-28740. Ley 37/1992, de 28 de diciembre, del Impuesto sobre el "
         "Valor Añadido. Artículo 80. Modificación de la base imponible.",
         copy=False,
-    )
-    l10n_es_tbai_reversed_ids = fields.Many2many(
-        'account.move', 'account_move_tbai_reversed_moves', 'refund_id', 'reversed_move_id',
-        string="Refunded Vendor Bills",
-        domain="[('move_type', '=', 'in_invoice'), ('commercial_partner_id', '=', commercial_partner_id)]",
-        help="In the case where a vendor refund has multiple original invoices, you can set them here. ",
     )
 
     # -------------------------------------------------------------------------
     # API-DECORATED & EXTENDED METHODS
     # -------------------------------------------------------------------------
 
-    @api.depends('l10n_es_tbai_post_document_id.state', 'l10n_es_tbai_cancel_document_id.state')
-    def _compute_l10n_es_tbai_state(self):
-        for move in self:
-            state = 'to_send' if move.l10n_es_tbai_is_required else None
-            if move.l10n_es_tbai_post_document_id and move.l10n_es_tbai_post_document_id.state == 'accepted':
-                state = 'sent'
-            if move.l10n_es_tbai_cancel_document_id and move.l10n_es_tbai_cancel_document_id.state == 'accepted':
-                state = 'cancelled'
-
-            move.l10n_es_tbai_state = state
-
     @api.depends('move_type', 'company_id')
     def _compute_l10n_es_tbai_is_required(self):
         for move in self:
-            move.l10n_es_tbai_is_required = (
-                move.company_id.l10n_es_tbai_is_enabled
-                and (
-                    move.is_sale_document()
-                    or move.is_purchase_document() and move.company_id.l10n_es_tbai_tax_agency == 'bizkaia'
-                )
-                and any(not line._l10n_es_tbai_is_ignored() for line in move.invoice_line_ids)
-            )
+            move.l10n_es_tbai_is_required = (move.is_sale_document() or move.is_purchase_document() and move.company_id.l10n_es_tbai_tax_agency == 'bizkaia'
+                                             and not any(t.l10n_es_type == 'ignore' for t in move.invoice_line_ids.tax_ids))\
+                and move.country_code == 'ES' \
+                and move.company_id.l10n_es_tbai_tax_agency
 
-    @api.depends('l10n_es_tbai_post_document_id.chain_index')
+    @api.depends('state', 'edi_document_ids.state')
     def _compute_show_reset_to_draft_button(self):
         # EXTENDS account_edi account.move
         super()._compute_show_reset_to_draft_button()
@@ -122,10 +98,10 @@ class AccountMove(models.Model):
     def button_draft(self):
         # EXTENDS account account.move
         for move in self:
-            if move.l10n_es_tbai_chain_index and move.l10n_es_tbai_state != 'cancelled':
+            if move.l10n_es_tbai_chain_index and not move.edi_state == 'cancelled':
                 # NOTE this last condition (state is cancelled) is there because
-                # button_cancel calls button_draft.
-                # Draft button does not appear for user.
+                # _postprocess_cancel_edi_results calls button_draft before
+                # calling button_cancel. Draft button does not appear for user.
                 raise UserError(_("You cannot reset to draft an entry that has been posted to TicketBAI's chain"))
         super().button_draft()
 
@@ -139,214 +115,139 @@ class AccountMove(models.Model):
     # HELPER METHODS
     # -------------------------------------------------------------------------
 
-    def _l10n_es_tbai_check_can_send(self):
-        # Ensure the move is posted
-        if self.state != 'posted':
-            return _("Cannot send an entry that is not posted to TicketBAI.")
-        if self.l10n_es_tbai_state in ('sent', 'cancelled'):
-            return _("This entry has already been posted.")
-        if self.company_id.l10n_es_tbai_tax_agency == 'bizkaia' and self.is_purchase_document() and not self.ref:
-            return _("You need to fill in the Reference field as the invoice number from your vendor.")
+    def _l10n_es_tbai_is_in_chain(self):
+        """
+        True iff invoice has been posted to the chain and confirmed by govt.
+        Note that cancelled invoices remain part of the chain.
+        """
+        tbai_doc_ids = self.edi_document_ids.filtered(lambda d: d.edi_format_id.code == 'es_tbai')
+        return self.l10n_es_tbai_is_required \
+            and len(tbai_doc_ids) > 0 \
+            and not any(tbai_doc_ids.filtered(lambda d: d.state == 'to_send'))
 
+    def _get_l10n_es_tbai_sequence_and_number(self):
+        """Get the TicketBAI sequence a number values for this invoice."""
+        self.ensure_one()
+        if self.is_purchase_document(): # Batuz
+            # Check if we are cancelling or not
+            doc = self.env['account.edi.document'].search([('state', '=', 'to_cancel'),
+                                                           ('edi_format_id.code', '=', 'es_tbai')], limit=1)
+            if doc and self.l10n_es_tbai_post_xml:
+                vals = self._get_l10n_es_tbai_values_from_xml({
+                    'sequence': './/CabeceraFactura/SerieFactura',
+                    'number': './/CabeceraFactura/NumFactura',
+                })
+                if vals['sequence'] and vals['number']:
+                    return vals['sequence'], vals['number']
 
-    def _l10n_es_tbai_get_attachment_name(self, cancel=False):
-        return self.name + ('_post.xml' if not cancel else '_cancel.xml')
+            number = self.ref
+            sequence = "TEST" if self.company_id.l10n_es_edi_test_env else ""
+        else:
+            sequence = self.sequence_prefix.rstrip('/')
 
-    def _l10n_es_tbai_create_edi_document(self, cancel=False):
-        name = self.name
-        if self.is_purchase_document():
-            name = self.ref
-        return self.env['l10n_es_edi_tbai.document'].sudo().create({
-            'name': name,
-            'date': self.date,
-            'company_id': self.company_id.id,
-            'is_cancel': cancel,
+            # NOTE non-decimal characters should not appear in the number
+            seq_length = self._get_sequence_format_param(self.name)[1]['seq_length']
+            number = f"{self.sequence_number:0{seq_length}d}"
+
+            sequence = regex_sub(r"[^0-9A-Za-z.\_\-\/]", "", sequence)  # remove forbidden characters
+            sequence = regex_sub(r"\s+", " ", sequence)  # no more than one consecutive whitespace allowed
+            # NOTE (optional) not recommended to use chars out of ([0123456789ABCDEFGHJKLMNPQRSTUVXYZ.\_\-\/ ])
+            sequence += "TEST" if self.company_id.l10n_es_edi_test_env else ""
+        return sequence, number
+
+    def _get_l10n_es_tbai_signature_and_date(self):
+        """
+        Get the TicketBAI signature and registration date for this invoice.
+        Values are read directly from the 'post' XMLs submitted to the government \
+            (the 'cancel' XML is ignored).
+        The registration date is the date the invoice was registered into the govt's TicketBAI servers.
+        """
+        self.ensure_one()
+        vals = self._get_l10n_es_tbai_values_from_xml({
+            'signature': r'.//{http://www.w3.org/2000/09/xmldsig#}SignatureValue',
+            'registration_date': r'.//CabeceraFactura//FechaExpedicionFactura'
         })
+        # RFC2045 - Base64 Content-Transfer-Encoding (page 25)
+        # Any characters outside of the base64 alphabet are to be ignored in base64-encoded data.
+        signature = vals['signature'].replace("\n", "")
+        registration_date = datetime.strptime(vals['registration_date'], '%d-%m-%Y')
+        return signature, registration_date
 
-    def _l10n_es_tbai_post_document_in_chatter(self, message, cancel=False):
-        test_suffix = '(test mode)' if self.company_id.l10n_es_tbai_test_env else ''
-        self.with_context(no_new_invoice=True).message_post(
-            body=Markup("<pre>TicketBAI: posted {document_type} XML {test_suffix}\n{message}</pre>").format(
-                document_type='emission' if not cancel else 'cancellation',
-                test_suffix=test_suffix,
-                message=message,
-            ),
-            attachment_ids=[self.l10n_es_tbai_post_document_id.xml_attachment_id.id] if not cancel else [self.l10n_es_tbai_cancel_document_id.xml_attachment_id.id],
-        )
-
-    def _l10n_es_tbai_lock_move(self):
-        """ Acquire a write lock on the invoices in self. """
+    def _get_l10n_es_tbai_id(self):
+        """Get the TicketBAI ID (TBAID) as defined in the TicketBAI doc."""
         self.ensure_one()
+        if not self._l10n_es_tbai_is_in_chain():
+            return ''
 
-        try:
-            with self.env.cr.savepoint(flush=False):
-                self.env.cr.execute('SELECT * FROM account_move WHERE id = %s FOR UPDATE NOWAIT', [self.id])
-        except LockNotAvailable:
-            raise UserError(_('Cannot send this entry as it is already being processed.'))
+        signature, registration_date = self._get_l10n_es_tbai_signature_and_date()
+        company = self.company_id
+        tbai_id_no_crc = '-'.join([
+            'TBAI',
+            str(company.vat[2:] if company.vat.startswith('ES') else company.vat),
+            datetime.strftime(registration_date, '%d%m%y'),
+            signature[:13],
+            ''  # CRC
+        ])
+        return tbai_id_no_crc + self._l10n_es_edi_tbai_crc8(tbai_id_no_crc)
 
-    # -------------------------------------------------------------------------
-    # WEB SERVICE CALLS
-    # -------------------------------------------------------------------------
-
-    def l10n_es_tbai_send_bill(self):
-        for bill in self:
-            error = bill._l10n_es_tbai_post()
-            if self.env['account.move.send']._can_commit():
-                self._cr.commit()
-            if error:
-                raise UserError(error)
-
-    def l10n_es_tbai_cancel(self):
-        for invoice in self:
-            invoice._l10n_es_tbai_lock_move()
-
-            if invoice.l10n_es_tbai_cancel_document_id and invoice.l10n_es_tbai_cancel_document_id.state == 'rejected':
-                invoice.l10n_es_tbai_cancel_document_id.sudo().unlink()
-
-            if not invoice.l10n_es_tbai_cancel_document_id:
-                invoice.l10n_es_tbai_cancel_document_id = invoice._l10n_es_tbai_create_edi_document(cancel=True)
-
-            edi_document = invoice.l10n_es_tbai_cancel_document_id
-
-            error = edi_document._post_to_web_service(invoice._l10n_es_tbai_get_values(cancel=True))
-            if error:
-                raise UserError(error)
-
-            if edi_document.state == 'accepted':
-                invoice.button_cancel()
-                invoice._l10n_es_tbai_post_document_in_chatter(edi_document.response_message, cancel=True)
-
-            if self.env['account.move.send']._can_commit():
-                self._cr.commit()
-
-            if edi_document.state != 'accepted':
-                raise UserError(edi_document.response_message)
-
-    def _l10n_es_tbai_post(self):
+    def _get_l10n_es_tbai_qr(self):
+        """Returns the URL for the invoice's QR code.  We can not use url_encode because it escapes / e.g."""
         self.ensure_one()
+        if not self._l10n_es_tbai_is_in_chain():
+            return ''
 
-        # Avoid the move to be sent if it is being modified by a parallel transaction (for example reset to draft)
-        # It will also avoid the move to be sent by different parallel transactions
-        self._l10n_es_tbai_lock_move()
+        company = self.company_id
+        sequence, number = self._get_l10n_es_tbai_sequence_and_number()
+        tbai_qr_no_crc = get_key(company.l10n_es_tbai_tax_agency, 'qr_url_', company.l10n_es_edi_test_env) + '?' + '&'.join([
+            'id=' + self._get_l10n_es_tbai_id(),
+            's=' + sequence,
+            'nf=' + number,
+            'i=' + self._get_l10n_es_tbai_values_from_xml({'importe': r'.//ImporteTotalFactura'})['importe']
+        ])
+        qr_url = tbai_qr_no_crc + '&cr=' + self._l10n_es_edi_tbai_crc8(tbai_qr_no_crc)
+        return qr_url
 
-        error = self._l10n_es_tbai_check_can_send()
-        if error:
-            return error
+    def _l10n_es_edi_tbai_crc8(self, data):
+        crc = 0x0
+        for c in data:
+            crc = L10N_ES_TBAI_CRC8_TABLE[(crc ^ ord(c)) & 0xFF]
+        return '{:03d}'.format(crc & 0xFF)
 
-        if self.l10n_es_tbai_post_document_id and self.l10n_es_tbai_post_document_id.state == 'rejected':
-            self.l10n_es_tbai_post_document_id.sudo().unlink()
+    def _get_l10n_es_tbai_values_from_xml(self, xpaths):
+        """
+        This function reads values directly from the 'post' XML submitted to the government \
+            (the 'cancel' XML is ignored).
+        """
+        res = dict.fromkeys(xpaths, '')
+        doc_xml = self._get_l10n_es_tbai_submitted_xml()
+        if doc_xml is None:
+            return res
+        for key, value in xpaths.items():
+            res[key] = doc_xml.find(value).text
+        return res
 
-        if not self.l10n_es_tbai_post_document_id:
-            self.l10n_es_tbai_post_document_id = self._l10n_es_tbai_create_edi_document()
-
-        edi_document = self.l10n_es_tbai_post_document_id
-
-        error = edi_document._post_to_web_service(self._l10n_es_tbai_get_values())
-        if error:
-            return error
-
-        if edi_document.state == 'accepted':
-            self._l10n_es_tbai_post_document_in_chatter(edi_document.response_message)
-            return
-
-        # Return the error message if the xml document was not accepted
-        return edi_document.response_message
-
-    # -------------------------------------------------------------------------
-    # XML DOCUMENT
-    # -------------------------------------------------------------------------
-
-    def _l10n_es_tbai_get_values(self, cancel=False):
-        values = {
-            'is_sale': self.is_sale_document(),
-            'partner': self.commercial_partner_id,
-            'is_simplified': self.l10n_es_is_simplified,
-            'delivery_date': self.delivery_date if self.delivery_date and self.delivery_date != self.invoice_date else None,
-            **self._l10n_es_tbai_get_attachment_values(cancel),
-        }
-        if values['is_sale']:
-            values.update(self._l10n_es_tbai_get_invoice_values(cancel=cancel))
-
-        elif self.company_id.l10n_es_tbai_tax_agency == 'bizkaia':
-            values.update(self._l10n_es_tbai_get_vendor_bill_values_batuz())
-
-        return values
-
-    def _l10n_es_tbai_get_attachment_values(self, cancel=False):
-        return {
-            'attachment_name': self._l10n_es_tbai_get_attachment_name(cancel=cancel),
-            'res_model': 'account.move',
-            'res_id': self.id,
-        }
-
-    def _l10n_es_tbai_get_invoice_values(self, cancel=False):
+    def _get_l10n_es_tbai_submitted_xml(self, cancel=False):
+        """Returns the XML object representing the post or cancel document."""
         self.ensure_one()
-        base_amls = self.line_ids.filtered(lambda x: x.display_type == 'product')
-        base_lines = [self._prepare_product_base_line_for_taxes_computation(x) for x in base_amls]
-        for base_line in base_lines:
-            base_line['name'] = base_line['record'].name
-        tax_amls = self.line_ids.filtered('tax_repartition_line_id')
-        tax_lines = [self._prepare_tax_line_for_taxes_computation(x) for x in tax_amls]
-        self.env['l10n_es_edi_tbai.document']._add_base_lines_tax_amounts(base_lines, self.company_id, tax_lines=tax_lines)
-        for base_line in base_lines:
-            sign = base_line['is_refund'] and -1 or 1
-            base_line['gross_price_unit'] = sign * base_line['gross_price_unit']
-            base_line['discount_amount'] = sign * base_line['discount_amount']
-            base_line['price_total'] = sign * base_line['price_total']
-        taxes = self.invoice_line_ids.tax_ids.flatten_taxes_hierarchy()
-        is_oss = any(tax._l10n_es_get_regime_code() == '17' for tax in taxes)
+        self = self.with_context(bin_size=False)
+        doc = self.l10n_es_tbai_cancel_xml if cancel else self.l10n_es_tbai_post_xml
+        if not doc:
+            return None
+        return etree.fromstring(b64decode(doc))
 
-        return {
-            **self._l10n_es_tbai_get_credit_note_values(),
-            'origin': self.invoice_origin and self.invoice_origin[:250] or 'manual',
-            'taxes': taxes,
-            'rate':  abs(self.amount_total / self.amount_total_signed) if self.amount_total else 1,
-            'base_lines': base_lines,
-            'nosujeto_causa': 'IE' if is_oss else 'RL',
-            **({'post_doc': self.l10n_es_tbai_post_document_id} if cancel else {}),
-        }
-
-    def _l10n_es_tbai_get_credit_note_values(self):
-        return {
-            'is_refund': self.move_type == 'out_refund',
-            'refund_reason': self.l10n_es_tbai_refund_reason,
-            'refunded_doc': self.reversed_entry_id.l10n_es_tbai_post_document_id,
-            'refunded_doc_invoice_date': self.reversed_entry_id.invoice_date if self.reversed_entry_id else False,
-        }
-
-    def _l10n_es_tbai_get_vendor_bill_values_batuz(self):
-        """ For the vendor bills for Bizkaia, the structure is different than the regular Ticketbai XML (LROE)"""
-        values = {
-            'ref': self.ref,
-            'is_refund': self.move_type == 'in_refund',
-            'invoice_date': self.invoice_date,
-             **self._l10n_es_tbai_get_vendor_bill_tax_values(),
-        }
-        # Check if intracom
-        mod_303_10 = self.env.ref('l10n_es.mod_303_casilla_10_balance')._get_matching_tags()
-        mod_303_11 = self.env.ref('l10n_es.mod_303_casilla_11_balance')._get_matching_tags()
-        tax_tags = self.invoice_line_ids.tax_ids.flatten_taxes_hierarchy().repartition_line_ids.tag_ids
-        intracom = bool(tax_tags & (mod_303_10 + mod_303_11))
-        reagyp = self.invoice_line_ids.tax_ids.filtered(lambda t: t.l10n_es_type == 'sujeto_agricultura')
-        if intracom:
-            values['regime_key'] = ['09']
-        elif reagyp:
-            values['regime_key'] = ['19']
+    def _update_l10n_es_tbai_submitted_xml(self, xml_doc, cancel):
+        """Updates the binary data of the post or cancel document, from its XML object."""
+        self.ensure_one()
+        b64_doc = b'' if xml_doc is None else b64encode(etree.tostring(xml_doc, encoding='UTF-8'))
+        if cancel:
+            self.l10n_es_tbai_cancel_xml = b64_doc
         else:
-            values['regime_key'] = ['01']
-        # Credit notes (factura rectificativa)
-        if values['is_refund']:
-            values['refund_reason'] = self.l10n_es_tbai_refund_reason
-            values['credit_note_invoices'] = self.reversed_entry_id | self.l10n_es_tbai_reversed_ids
-        if reagyp:
-            values['tipofactura'] = 'F6'
-        elif self._l10n_es_is_dua():
-            values['tipofactura'] = 'F5'
-        else:
-            values['tipofactura'] = 'F1'
-        return values
+            self.l10n_es_tbai_post_xml = b64_doc
 
-    def _l10n_es_tbai_get_vendor_bill_tax_values(self):
+    def _is_l10n_es_tbai_simplified(self):
+        return self.commercial_partner_id == self.env.ref("l10n_es_edi_sii.partner_simplified")
+
+    def _get_vendor_bill_tax_values(self):
         self.ensure_one()
         results = defaultdict(lambda: {'base_amount': 0.0, 'tax_amount': 0.0})
         amount_total = 0.0
@@ -358,24 +259,20 @@ class AccountMove(models.Model):
             for tax in line.tax_ids.filtered(lambda t: t.l10n_es_type not in ('recargo', 'retencion')):
                 results[tax]['base_amount'] += line.balance
 
-            if ((tax := line.tax_line_id) and tax.l10n_es_type not in ('recargo', 'retencion') and
+            tax = line.tax_line_id
+            if (tax and tax.l10n_es_type not in ('recargo', 'retencion') and
                 line.tax_repartition_line_id.factor_percent != -100.0):
                 results[tax]['tax_amount'] += line.balance
         iva_values = []
         for tax in results:
-            code = "C"  # Bienes Corrientes
+            code = "C" # Bienes Corrientes
             if tax.l10n_es_bien_inversion:
-                code = "I"  # Investment Goods
+                code = "I" # Investment Goods
             if tax.tax_scope == 'service':
-                code = 'G'  # Gastos
+                code = 'G' # Gastos
             iva_values.append({'base': results[tax]['base_amount'],
                                'code': code,
                                'tax': results[tax]['tax_amount'],
                                'rec': tax})
         return {'iva_values': iva_values,
                 'amount_total': amount_total}
-
-    def _refunds_origin_required(self):
-        if self.l10n_es_tbai_is_required:
-            return True
-        return super()._refunds_origin_required()

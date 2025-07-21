@@ -4,12 +4,9 @@
 from datetime import datetime, timedelta, time
 
 from odoo.addons.base.tests.common import HttpCaseWithUserDemo, HttpCaseWithUserPortal
-from odoo.addons.base.tests.test_ir_cron import CronMixinCase
-from odoo.addons.event.tests.common import EventCase
 from odoo.addons.event_crm.tests.common import EventCrmCase
-from odoo.addons.mail.tests.common import mail_new_test_user, MailCommon
+from odoo.addons.mail.tests.common import mail_new_test_user
 from odoo.addons.sales_team.tests.common import TestSalesCommon
-from odoo.addons.sms.tests.common import SMSCase
 from odoo.addons.website.tests.test_website_visitor import MockVisitor
 
 
@@ -18,6 +15,7 @@ class TestEventFullCommon(EventCrmCase, TestSalesCommon, MockVisitor):
     @classmethod
     def setUpClass(cls):
         super(TestEventFullCommon, cls).setUpClass()
+        cls._init_mail_gateway()
 
         # Context data: dates
         # ------------------------------------------------------------
@@ -39,7 +37,6 @@ class TestEventFullCommon(EventCrmCase, TestSalesCommon, MockVisitor):
         # set country in order to format Belgian numbers
         cls.company_admin.write({
             'country_id': cls.env.ref('base.be').id,
-            'email': 'info@yourcompany.com',
         })
         cls.event_user = mail_new_test_user(
             cls.env,
@@ -71,16 +68,14 @@ class TestEventFullCommon(EventCrmCase, TestSalesCommon, MockVisitor):
 
         cls.ticket_product = cls.env['product.product'].create({
             'description_sale': 'Ticket Product Description',
-            'type': 'service',
-            'service_tracking': 'event',
+            'detailed_type': 'event',
             'list_price': 10,
             'name': 'Test Registration Product',
             'standard_price': 30.0,
         })
         cls.booth_product = cls.env['product.product'].create({
             'description_sale': 'Booth Product Description',
-            'type': 'service',
-            'service_tracking': 'event_booth',
+            'detailed_type': 'event_booth',
             'list_price': 20,
             'name': 'Test Booth Product',
             'standard_price': 60.0,
@@ -125,8 +120,9 @@ class TestEventFullCommon(EventCrmCase, TestSalesCommon, MockVisitor):
         # ------------------------------------------------------------
         test_registration_report = cls.env.ref('test_event_full.event_registration_report_test')
         subscription_template = cls.env.ref('event.event_subscription')
-        subscription_template.write({'report_template_ids': [(6, 0, test_registration_report.ids)]})
+        subscription_template.write({'report_template': test_registration_report.id})
         cls.test_event_type = cls.env['event.type'].create({
+            'auto_confirm': True,
             'default_timezone': 'Europe/Paris',
             'event_type_booth_ids': [
                 (0, 0, {'booth_category_id': cls.event_booth_categories[0].id,
@@ -149,18 +145,21 @@ class TestEventFullCommon(EventCrmCase, TestSalesCommon, MockVisitor):
             'event_type_mail_ids': [
                 (0, 0, {'interval_unit': 'now',  # right at subscription
                         'interval_type': 'after_sub',
+                        'notification_type': 'mail',
                         'template_ref': 'mail.template,%i' % subscription_template.id,
                        }
                 ),
                 (0, 0, {'interval_nbr': 1,  # 1 days before event
                         'interval_unit': 'days',
                         'interval_type': 'before_event',
+                        'notification_type': 'mail',
                         'template_ref': 'mail.template,%i' % cls.env['ir.model.data']._xmlid_to_res_id('event.event_reminder'),
                        }
                 ),
                 (0, 0, {'interval_nbr': 1,  # 1 days after event
                         'interval_unit': 'days',
                         'interval_type': 'after_event',
+                        'notification_type': 'sms',
                         'template_ref': 'sms.template,%i' % cls.env['ir.model.data']._xmlid_to_res_id('event_sms.sms_template_data_event_reminder'),
                        }
                 ),
@@ -229,15 +228,15 @@ class TestEventFullCommon(EventCrmCase, TestSalesCommon, MockVisitor):
             'is_published': True,
         }
 
-        with cls.mock_datetime_and_now(cls, cls.reference_now):
-            cls.test_event = cls.env['event.event'].create({
-                'name': 'Test Event',
-                'date_begin': datetime.now() + timedelta(days=1),
-                'date_end': datetime.now() + timedelta(days=5),
-                'date_tz': 'Europe/Brussels',
-                'event_type_id': cls.test_event_type.id,
-                'is_published': True,
-            })
+        cls.test_event = cls.env['event.event'].create({
+            'name': 'Test Event',
+            'auto_confirm': True,
+            'date_begin': datetime.now() + timedelta(days=1),
+            'date_end': datetime.now() + timedelta(days=5),
+            'date_tz': 'Europe/Brussels',
+            'event_type_id': cls.test_event_type.id,
+            'is_published': True,
+        })
         # update post-synchronize data
         ticket_1 = cls.test_event.event_ticket_ids.filtered(lambda t: t.name == 'Ticket1')
         ticket_2 = cls.test_event.event_ticket_ids.filtered(lambda t: t.name == 'Ticket2')
@@ -252,37 +251,39 @@ class TestEventFullCommon(EventCrmCase, TestSalesCommon, MockVisitor):
         ], limit=1)
 
         cls.customer_data = [
-            {'email': f'customer.email.{idx:02d}@test.example.com',
-             'name': f'My Customer {idx:02d}',
+            {'email': 'customer.email.%02d@test.example.com' % x,
+             'name': 'My Customer %02d' % x,
+             'mobile': '04569999%02d' % x,
              'partner_id': False,
-             'phone': f'04560000{idx:02d}',
-            } for idx in range(0, 10)
+             'phone': '04560000%02d' % x,
+            } for x in range(0, 10)
         ]
         cls.website_customer_data = [
-            {'email': f'website.email.{idx:02d}@test.example.com',
-             'name': f'My Customer {idx:02d}',
+            {'email': 'website.email.%02d@test.example.com' % x,
+             'name': 'My Customer %02d' % x,
+             'mobile': '04569999%02d' % x,
              'partner_id': cls.env.ref('base.public_partner').id,
-             'phone': f'04560000{idx:02d}',
+             'phone': '04560000%02d' % x,
              'registration_answer_ids': [
                 (0, 0, {
                     'question_id': cls.test_event.question_ids[0].id,
-                    'value_answer_id': cls.test_event.question_ids[0].answer_ids[(idx % 2)].id,
+                    'value_answer_id': cls.test_event.question_ids[0].answer_ids[(x % 2)].id,
                 }), (0, 0, {
                     'question_id': cls.test_event.question_ids[1].id,
-                    'value_answer_id': cls.test_event.question_ids[1].answer_ids[(idx % 2)].id,
+                    'value_answer_id': cls.test_event.question_ids[1].answer_ids[(x % 2)].id,
                 }), (0, 0, {
                     'question_id': cls.test_event.question_ids[2].id,
-                    'value_text_box': f'CustomerAnswer{idx}',
+                    'value_text_box': 'CustomerAnswer%s' % x,
                 })
              ],
-            } for idx in range(0, 10)
+            } for x in range(0, 10)
         ]
         cls.partners = cls.env['res.partner'].create([
-            {'email': f'partner.email.{idx:02d}@test.example.com',
-             'name': f'PartnerCustomer {idx:02d}',
-             'mobile': f'04569999{idx:02d}',
-             'phone': f'04560000{idx:02d}',
-            } for idx in range(0, 10)
+            {'email': 'partner.email.%02d@test.example.com' % x,
+             'name': 'PartnerCustomer',
+             'mobile': '04569999%02d' % x,
+             'phone': '04560000%02d' % x,
+            } for x in range(0, 10)
         ])
 
     def assertLeadConvertion(self, rule, registrations, partner=None, **expected):
@@ -303,98 +304,6 @@ class TestEventFullCommon(EventCrmCase, TestSalesCommon, MockVisitor):
                     self.assertIn(answer.value_text_box, lead.description)  # better: check multi line
 
 
-class TestEventMailCommon(EventCase, SMSCase, MailCommon, CronMixinCase):
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-
-        cls.event_cron_id = cls.env.ref('event.event_mail_scheduler')
-        # deactivate other schedulers to avoid messing with crons
-        cls.env['event.mail'].search([]).unlink()
-        # consider asynchronous sending as default sending
-        cls.env["ir.config_parameter"].set_param("event.event_mail_async", False)
-
-        cls.env.company.write({
-            'email': 'info@yourcompany.example.com',
-            'name': 'YourCompany',
-        })
-
-        # prepare SMS templates
-        cls.sms_template_sub = cls.env['sms.template'].create({
-            'name': 'Test SMS Subscription',
-            'model_id': cls.env.ref('event.model_event_registration').id,
-            'body': '{{ object.event_id.organizer_id.name }} registration confirmation.',
-            'lang': '{{ object.partner_id.lang }}'
-        })
-        cls.sms_template_rem = cls.env['sms.template'].create({
-            'name': 'Test SMS Reminder',
-            'model_id': cls.env.ref('event.model_event_registration').id,
-            'body': '{{ object.event_id.organizer_id.name }} reminder',
-            'lang': '{{ object.partner_id.lang }}'
-        })
-
-        # freeze some datetimes, and ensure more than 1D+1H before event starts
-        # to ease time-based scheduler check
-        # Since `now` is used to set the `create_date` of an event and create_date
-        # has often microseconds, we set it to ensure that the scheduler we still be
-        # launched if scheduled_date == create_date - microseconds
-        cls.reference_now = datetime(2021, 3, 20, 14, 30, 15, 123456)
-        cls.event_date_begin = datetime(2021, 3, 25, 8, 0, 0)
-        cls.event_date_end = datetime(2021, 3, 28, 18, 0, 0)
-
-        cls._setup_test_reports()
-        with cls.mock_datetime_and_now(cls, cls.reference_now):
-            cls.test_event = cls.env['event.event'].create({
-                'name': 'TestEventMail',
-                'user_id': cls.user_eventmanager.id,
-                'date_begin': cls.event_date_begin,
-                'date_end': cls.event_date_end,
-                'event_mail_ids': [
-                    (0, 0, {  # right at subscription: mail
-                        'interval_unit': 'now',
-                        'interval_type': 'after_sub',
-                        'notification_type': 'mail',
-                        'template_ref': f'mail.template,{cls.template_subscription.id}',
-                    }),
-                    (0, 0, {  # right at subscription: sms
-                        'interval_unit': 'now',
-                        'interval_type': 'after_sub',
-                        'notification_type': 'sms',
-                        'template_ref': f'sms.template,{cls.sms_template_sub.id}',
-                    }),
-                    (0, 0, {  # 3 days before event: mail
-                        'interval_nbr': 3,
-                        'interval_unit': 'days',
-                        'interval_type': 'before_event',
-                        'notification_type': 'mail',
-                        'template_ref': f'mail.template,{cls.template_reminder.id}',
-                    }),
-                    (0, 0, {  # 3 days before event: SMS
-                        'interval_nbr': 3,
-                        'interval_unit': 'days',
-                        'interval_type': 'before_event',
-                        'notification_type': 'sms',
-                        'template_ref': f'sms.template,{cls.sms_template_rem.id}',
-                    }),
-                    (0, 0, {  # 1h after event: mail
-                        'interval_nbr': 1,
-                        'interval_unit': 'hours',
-                        'interval_type': 'after_event',
-                        'notification_type': 'mail',
-                        'template_ref': f'mail.template,{cls.template_reminder.id}',
-                    }),
-                    (0, 0, {  # 1h after event: SMS
-                        'interval_nbr': 1,
-                        'interval_unit': 'hours',
-                        'interval_type': 'after_event',
-                        'notification_type': 'sms',
-                        'template_ref': f'sms.template,{cls.sms_template_rem.id}',
-                    }),
-                ],
-            })
-
-
 class TestWEventCommon(HttpCaseWithUserDemo, HttpCaseWithUserPortal, MockVisitor):
 
     def setUp(self):
@@ -413,8 +322,7 @@ class TestWEventCommon(HttpCaseWithUserDemo, HttpCaseWithUserPortal, MockVisitor
             'description_sale': 'Mighty Description',
             'list_price': 10,
             'standard_price': 30.0,
-            'type': 'service',
-            'service_tracking': 'event',
+            'detailed_type': 'event',
         })
 
         self.event_tag_category_1 = self.env['event.tag.category'].create({
@@ -428,12 +336,13 @@ class TestWEventCommon(HttpCaseWithUserDemo, HttpCaseWithUserPortal, MockVisitor
             'color': 8,
         })
         self.env['event.event'].search(
-            [('name', 'like', 'Online Reveal')]
+            [('name', 'like', '%Online Reveal%')]
         ).write(
             {'name': 'Do not click on me'}
         )
         self.event = self.env['event.event'].create({
             'name': 'Online Reveal TestEvent',
+            'auto_confirm': True,
             'stage_id': self.env.ref('event.event_stage_booked').id,
             'address_id': False,
             'user_id': self.user_demo.id,
@@ -524,7 +433,7 @@ class TestWEventCommon(HttpCaseWithUserDemo, HttpCaseWithUserPortal, MockVisitor
             'partner_id': self.event_speaker.id,
         })
         self.track_2 = self.env['event.track'].create({
-            'name': 'Our Last Day Together!',
+            'name': 'Our Last Day Together !',
             'event_id': self.event.id,
             'stage_id': self.env.ref('website_event_track.event_track_stage3').id,
             'date': self.reference_now + timedelta(days=1),

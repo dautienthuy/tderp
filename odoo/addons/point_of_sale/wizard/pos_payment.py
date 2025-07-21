@@ -22,8 +22,8 @@ class PosMakePayment(models.TransientModel):
             order = self.env['pos.order'].browse(active_id)
             amount_total = order.amount_total
             # If we refund the entire order, we refund what was paid originally, else we refund the value of the items returned
-            if float_is_zero(order.refunded_order_id.amount_total + order.amount_total, precision_rounding=order.currency_id.rounding):
-                amount_total = -order.refunded_order_id.amount_paid
+            if float_is_zero(order.refunded_order_ids.amount_total + order.amount_total, precision_rounding=order.currency_id.rounding):
+                amount_total = -order.refunded_order_ids.amount_paid
             return amount_total - order.amount_paid
         return False
 
@@ -57,19 +57,18 @@ class PosMakePayment(models.TransientModel):
         currency = order.currency_id
 
         init_data = self.read()[0]
-        payment_method = self.env['pos.payment.method'].browse(init_data['payment_method_id'][0])
         if not float_is_zero(init_data['amount'], precision_rounding=currency.rounding):
             order.add_payment({
                 'pos_order_id': order.id,
-                'amount': order._get_rounded_amount(init_data['amount'], payment_method.is_cash_count or not self.config_id.only_round_cash_method),
+                'amount': order._get_rounded_amount(init_data['amount']),
                 'name': init_data['payment_name'],
                 'payment_method_id': init_data['payment_method_id'][0],
             })
 
-        if order.state == 'draft' and order._is_pos_order_paid():
-            order._process_saved_order(False)
-            if order.state in {'paid', 'done', 'invoiced'}:
-                order._send_order()
+        if order._is_pos_order_paid():
+            order.action_pos_order_paid()
+            order._create_order_picking()
+            order._compute_total_cost_in_real_time()
             return {'type': 'ir.actions.act_window_close'}
 
         return self.launch_payment()

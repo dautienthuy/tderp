@@ -3,17 +3,17 @@
 # 	* auth_signup
 # 
 # Translators:
-# Daye Jeong, 2025
-# Wil Odoo, 2025
-# Sarah Park, 2025
+# Martin Trigaux, 2022
+# Sarah Park, 2023
+# Daye Jeong, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-19 20:36+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Sarah Park, 2025\n"
+"POT-Creation-Date: 2023-05-23 08:23+0000\n"
+"PO-Revision-Date: 2022-09-22 05:45+0000\n"
+"Last-Translator: Daye Jeong, 2023\n"
 "Language-Team: Korean (https://app.transifex.com/odoo/teams/41243/ko/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,91 +22,18 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: auth_signup
-#: model_terms:ir.ui.view,arch_db:auth_signup.reset_password_email
-msgid "+1 650-123-4567"
-msgstr "+1 650-123-4567"
-
-#. module: auth_signup
-#: model_terms:ir.ui.view,arch_db:auth_signup.reset_password_email
+#: model_terms:ir.ui.view,arch_db:auth_signup.res_users_view_form
 msgid ""
-",<br/><br/>\n"
-"                                A password reset was requested for the Odoo account linked to this email.\n"
-"                                You may change your password by following this link which will remain valid during"
-msgstr ""
-",<br/><br/>\n"
-"                                 이 이메일에 연결된 Odoo 계정에 대한 비밀번호 재설정이 요청되었습니다.\n"
-"                                 유효 기간 내에 다음 링크에 접속하여 비밀번호를 변경해 주세요."
+"<strong>A password reset has been requested for this user. An email "
+"containing the following link has been sent:</strong>"
+msgstr "<strong>이 사용자가 비밀번호 재설정을 요청하였습니다. 다음 링크가 포함된 이메일을 전송하였습니다.</strong>"
 
 #. module: auth_signup
-#: model_terms:ir.ui.view,arch_db:auth_signup.alert_login_new_device
+#: model_terms:ir.ui.view,arch_db:auth_signup.res_users_view_form
 msgid ""
-",<br/><br/>\n"
-"                        A new device was used to sign in to your account. <br/><br/>\n"
-"                        Here are some details about the connection:<br/>"
-msgstr ""
-",<br/><br/>\n"
-"                        새로운 기기를 사용하여 계정에 로그인했습니다. <br/><br/>\n"
-"                        로그인에 관한 몇 가지 정보입니다:<br/>"
-
-#. module: auth_signup
-#: model_terms:ir.ui.view,arch_db:auth_signup.reset_password_email
-msgid "--<br/>Mitchell Admin"
-msgstr "--<br/>Mitchell Admin"
-
-#. module: auth_signup
-#: model_terms:ir.ui.view,arch_db:auth_signup.alert_login_new_device
-msgid "111.222.333.444"
-msgstr "111.222.333.444"
-
-#. module: auth_signup
-#: model_terms:ir.ui.view,arch_db:auth_signup.reset_password_email
-msgid "<span style=\"font-size: 10px;\">Your Account</span><br/>"
-msgstr "<span style=\"font-size: 10px;\">내 계정</span><br/>"
-
-#. module: auth_signup
-#: model_terms:ir.ui.view,arch_db:auth_signup.alert_login_new_device
-msgid ""
-"<span style=\"font-weight: bold;\">\n"
-"                                    Browser:</span>"
-msgstr ""
-"<span style=\"font-weight: bold;\">\n"
-"                                    브라우저:</span>"
-
-#. module: auth_signup
-#: model_terms:ir.ui.view,arch_db:auth_signup.alert_login_new_device
-msgid ""
-"<span style=\"font-weight: bold;\">\n"
-"                                    Location:</span>"
-msgstr ""
-"<span style=\"font-weight: bold;\">\n"
-"                                    위치:</span>"
-
-#. module: auth_signup
-#: model_terms:ir.ui.view,arch_db:auth_signup.alert_login_new_device
-msgid ""
-"<span style=\"font-weight: bold;\">\n"
-"                                    Platform:</span>"
-msgstr ""
-"<span style=\"font-weight: bold;\">\n"
-"                                    플랫폼:</span>"
-
-#. module: auth_signup
-#: model_terms:ir.ui.view,arch_db:auth_signup.alert_login_new_device
-msgid ""
-"<span style=\"font-weight: bold;\">\n"
-"                                Date:</span>"
-msgstr ""
-"<span style=\"font-weight: bold;\">\n"
-"                                날짜:</span>"
-
-#. module: auth_signup
-#: model_terms:ir.ui.view,arch_db:auth_signup.alert_login_new_device
-msgid ""
-"<span style=\"font-weight: bold;\">\n"
-"                                IP Address:</span>"
-msgstr ""
-"<span style=\"font-weight: bold;\">\n"
-"                                IP 주소:</span>"
+"<strong>An invitation email containing the following subscription link has "
+"been sent:</strong>"
+msgstr "<strong>가입 링크가 포함된 초대장을 아래와 같이 발급하였습니다 :</strong>"
 
 #. module: auth_signup
 #: model:mail.template,body_html:auth_signup.mail_template_data_unregistered_users
@@ -118,15 +45,15 @@ msgid ""
 "    <tr>\n"
 "        <td align=\"center\" style=\"min-width: 590px;\">\n"
 "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
-"                <t t-set=\"invited_users\" t-value=\"ctx.get('invited_users', [])\"/>\n"
+"                <t t-set=\"invited_users\" t-value=\"ctx.get('invited_users', [])\"></t>\n"
 "                <td style=\"text-align : left\">\n"
 "                    <span style=\"font-size: 20px; font-weight: bold;\">\n"
 "                        Pending Invitations\n"
-"                    </span><br/><br/>\n"
+"                    </span><br><br>\n"
 "                </td>\n"
 "                <tr><td valign=\"top\" style=\"font-size: 13px;\">\n"
 "                    <div>\n"
-"                        Dear <t t-out=\"object.name or ''\">Mitchell Admin</t>,<br/> <br/>\n"
+"                        Dear <t t-out=\"object.name or ''\">Mitchell Admin</t>,<br> <br>\n"
 "                        You added the following user(s) to your database but they haven't registered yet:\n"
 "                        <ul>\n"
 "                            <t t-foreach=\"invited_users\" t-as=\"invited_user\">\n"
@@ -134,13 +61,13 @@ msgid ""
 "                            </t>\n"
 "                        </ul>\n"
 "                        Follow up with them so they can access your database and start working with you.\n"
-"                        <br/><br/>\n"
-"                        Have a nice day!<br/>\n"
-"                        --<br/>The <t t-out=\"object.company_id.name or ''\">YourCompany</t> Team\n"
+"                        <br><br>\n"
+"                        Have a nice day!<br>\n"
+"                        --<br>The <t t-out=\"object.company_id.name or ''\">YourCompany</t> Team\n"
 "                    </div>\n"
 "                </td></tr>\n"
 "                <tr><td style=\"text-align:center;\">\n"
-"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\">\n"
 "                </td></tr>\n"
 "            </table>\n"
 "        </td>\n"
@@ -158,29 +85,29 @@ msgstr ""
 "    <tr>\n"
 "        <td align=\"center\" style=\"min-width: 590px;\">\n"
 "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
-"                <t t-set=\"invited_users\" t-value=\"ctx.get('invited_users', [])\"/>\n"
+"                <t t-set=\"invited_users\" t-value=\"ctx.get('invited_users', [])\"></t>\n"
 "                <td style=\"text-align : left\">\n"
 "                    <span style=\"font-size: 20px; font-weight: bold;\">\n"
 "                        초대 대기 알림\n"
-"                    </span><br/><br/>\n"
+"                    </span><br><br>\n"
 "                </td>\n"
 "                <tr><td valign=\"top\" style=\"font-size: 13px;\">\n"
 "                    <div>\n"
-"                        안녕하세요 <t t-out=\"object.name or ''\">Mitchell Admin</t>님,<br/> <br/>\n"
-"                        다음 사용자가 데이터베이스에 추가되었으나 아직 등록하지 않았습니다:\n"
+"                        안녕하세요, <t t-out=\"object.name or ''\">Mitchell Admin</t>님.<br> <br>\n"
+"                        하기 이메일 주소가 데이터베이스에 추가되었으나 아직 사용자로 등록되지 않았습니다:\n"
 "                        <ul>\n"
 "                            <t t-foreach=\"invited_users\" t-as=\"invited_user\">\n"
 "                                <li t-out=\"invited_user or ''\">demo@example.com</li>\n"
 "                            </t>\n"
 "                        </ul>\n"
-"                        데이터베이스에 접속하여 작업을 시작할 수 있도록 후속조치를 진행하십시오.\n"
-"                        <br/><br/>\n"
-"                        좋은 하루 보내시기 바랍니다!<br/>\n"
-"                        --<br/>The <t t-out=\"object.company_id.name or ''\">YourCompany</t> Team\n"
+"                        데이터베이스에 접속하여 작업을 시작할 수 있도록 다음 조치를 진행해 주십시오.\n"
+"                        <br><br>\n"
+"                        좋은 하루 보내시길 바랍니다.<br>\n"
+"                        --<br>The <t t-out=\"object.company_id.name or ''\">YourCompany</t> Team\n"
 "                    </div>\n"
 "                </td></tr>\n"
 "                <tr><td style=\"text-align:center;\">\n"
-"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\">\n"
 "                </td></tr>\n"
 "            </table>\n"
 "        </td>\n"
@@ -202,15 +129,15 @@ msgid ""
 "        <td align=\"center\" style=\"min-width: 590px;\">\n"
 "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
 "                <tr><td valign=\"middle\">\n"
-"                    <span style=\"font-size: 10px;\">Welcome to Odoo</span><br/>\n"
+"                    <span style=\"font-size: 10px;\">Welcome to Odoo</span><br>\n"
 "                    <span style=\"font-size: 20px; font-weight: bold;\">\n"
 "                        <t t-out=\"object.name or ''\">Marc Demo</t>\n"
 "                    </span>\n"
-"                </td><td valign=\"middle\" align=\"right\" t-if=\"not object.company_id.uses_default_logo\">\n"
-"                    <img t-attf-src=\"/logo.png?company={{ object.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"object.company_id.name\"/>\n"
+"                </td><td valign=\"middle\" align=\"right\">\n"
+"                    <img t-attf-src=\"/logo.png?company={{ object.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"object.company_id.name\">\n"
 "                </td></tr>\n"
 "                <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
-"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\">\n"
 "                </td></tr>\n"
 "            </table>\n"
 "        </td>\n"
@@ -221,27 +148,26 @@ msgid ""
 "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
 "                <tr><td valign=\"top\" style=\"font-size: 13px;\">\n"
 "                    <div>\n"
-"                        Dear <t t-out=\"object.name or ''\">Marc Demo</t>,<br/><br/>\n"
+"                        Dear <t t-out=\"object.name or ''\">Marc Demo</t>,<br><br>\n"
 "                        You have been invited by <t t-out=\"object.create_uid.name or ''\">OdooBot</t> of <t t-out=\"object.company_id.name or ''\">YourCompany</t> to connect on Odoo.\n"
 "                        <div style=\"margin: 16px 0px 16px 0px;\">\n"
-"                            <a t-att-href=\"object.partner_id._get_signup_url()\" t-attf-style=\"background-color: {{object.company_id.email_secondary_color or '#875A7B'}}; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;\">\n"
+"                            <a t-att-href=\"object.signup_url\" style=\"background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;\">\n"
 "                                Accept invitation\n"
 "                            </a>\n"
 "                        </div>\n"
-"                        <b>  This link will remain valid during <t t-out=\"int(int(object.env['ir.config_parameter'].sudo().get_param('auth_signup.signup.validity.hours',144))/24)\"/> days </b> <br/>\n"
-"                        <t t-set=\"website_url\" t-value=\"object.get_base_url()\"/>\n"
-"                        Your Odoo domain is: <b><a t-att-href=\"website_url\" t-out=\"website_url or ''\">http://yourcompany.odoo.com</a></b><br/>\n"
-"                        Your sign in email is: <b><a t-attf-href=\"/web/login?login={{ object.email }}\" target=\"_blank\" t-out=\"object.email or ''\">mark.brown23@example.com</a></b><br/><br/>\n"
+"                        <t t-set=\"website_url\" t-value=\"object.get_base_url()\"></t>\n"
+"                        Your Odoo domain is: <b><a t-att-href=\"website_url\" t-out=\"website_url or ''\">http://yourcompany.odoo.com</a></b><br>\n"
+"                        Your sign in email is: <b><a t-attf-href=\"/web/login?login={{ object.email }}\" target=\"_blank\" t-out=\"object.email or ''\">mark.brown23@example.com</a></b><br><br>\n"
 "                        Never heard of Odoo? It’s an all-in-one business software loved by 7+ million users. It will considerably improve your experience at work and increase your productivity.\n"
-"                        <br/><br/>\n"
+"                        <br><br>\n"
 "                        Have a look at the <a href=\"https://www.odoo.com/page/tour?utm_source=db&amp;utm_medium=auth\" style=\"color: #875A7B;\">Odoo Tour</a> to discover the tool.\n"
-"                        <br/><br/>\n"
-"                        Enjoy Odoo!<br/>\n"
-"                        --<br/>The <t t-out=\"object.company_id.name or ''\">YourCompany</t> Team\n"
+"                        <br><br>\n"
+"                        Enjoy Odoo!<br>\n"
+"                        --<br>The <t t-out=\"object.company_id.name or ''\">YourCompany</t> Team\n"
 "                    </div>\n"
 "                </td></tr>\n"
 "                <tr><td style=\"text-align:center;\">\n"
-"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\">\n"
 "                </td></tr>\n"
 "            </table>\n"
 "        </td>\n"
@@ -278,6 +204,10 @@ msgid ""
 "</td></tr>\n"
 "</table>"
 msgstr ""
+
+#. module: auth_signup
+#: model:mail.template,body_html:auth_signup.reset_password_email
+msgid ""
 "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #FFFFFF; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;\"><tr><td align=\"center\">\n"
 "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"padding: 16px; background-color: #FFFFFF; color: #454748; border-collapse:separate;\">\n"
 "<tbody>\n"
@@ -286,15 +216,15 @@ msgstr ""
 "        <td align=\"center\" style=\"min-width: 590px;\">\n"
 "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
 "                <tr><td valign=\"middle\">\n"
-"                    <span style=\"font-size: 10px;\">Odoo를 이용해 주셔서 감사합니다!</span><br/>\n"
+"                    <span style=\"font-size: 10px;\">Your Account</span><br>\n"
 "                    <span style=\"font-size: 20px; font-weight: bold;\">\n"
-"                        <t t-out=\"object.name or ''\">Marc Demo</t>님.\n"
+"                        <t t-out=\"object.name or ''\">Marc Demo</t>\n"
 "                    </span>\n"
-"                </td><td valign=\"middle\" align=\"right\" t-if=\"not object.company_id.uses_default_logo\">\n"
-"                    <img t-attf-src=\"/logo.png?company={{ object.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"object.company_id.name\"/>\n"
+"                </td><td valign=\"middle\" align=\"right\">\n"
+"                    <img t-attf-src=\"/logo.png?company={{ object.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"object.company_id.name\">\n"
 "                </td></tr>\n"
 "                <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
-"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\">\n"
 "                </td></tr>\n"
 "            </table>\n"
 "        </td>\n"
@@ -305,27 +235,24 @@ msgstr ""
 "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
 "                <tr><td valign=\"top\" style=\"font-size: 13px;\">\n"
 "                    <div>\n"
-"                        안녕하세요, <t t-out=\"object.name or ''\">Marc Demo</t>님.<br/><br/>\n"
-"                        <t t-out=\"object.create_uid.name or ''\">OdooBot</t>이 <t t-out=\"object.company_id.name or ''\">YourCompany</t>에 연결하기 위해 초대를 보냈습니다.\n"
+"                        Dear <t t-out=\"object.name or ''\">Marc Demo</t>,<br><br>\n"
+"                        A password reset was requested for the Odoo account linked to this email.\n"
+"                        You may change your password by following this link which will remain valid during 24 hours:<br>\n"
 "                        <div style=\"margin: 16px 0px 16px 0px;\">\n"
-"                            <a t-att-href=\"object.partner_id._get_signup_url()\" t-attf-style=\"background-color: {{object.company_id.email_secondary_color or '#875A7B'}}; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;\">\n"
-"                                초대 수락하기\n"
+"                            <a t-att-href=\"object.signup_url\" style=\"background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;\">\n"
+"                                Change password\n"
 "                            </a>\n"
 "                        </div>\n"
-"                        <b> 이 링크는 <t t-out=\"int(int(object.env['ir.config_parameter'].sudo().get_param('auth_signup.signup.validity.hours',144))/24)\"/>일간 유효합니다.</b> <br/>\n"
-"                        <t t-set=\"website_url\" t-value=\"object.get_base_url()\"/>\n"
-"                        Odoo 도메인: <b><a t-att-href=\"website_url\" t-out=\"website_url or ''\">http://yourcompany.odoo.com</a></b><br/>\n"
-"                        로그인 이메일: <b><a t-attf-href=\"/web/login?login={{ object.email }}\" target=\"_blank\" t-out=\"object.email or ''\">mark.brown23@example.com</a></b><br/><br/>\n"
-"                        Odoo에 대해 더 자세히 알고싶으신가요? 자그마치 7백만 명이 넘는 사용자로부터 사랑받고 있는 올인원 비즈니스 소프트웨어입니다. Odoo를 통해 직장에서의 업무 능력을 크게 향상시키고 생산성을 높여보세요.\n"
-"                        <br/><br/>\n"
-"                        <a href=\"https://www.odoo.com/page/tour?utm_source=db&amp;utm_medium=auth\" style=\"color: #875A7B;\">Odoo 투어</a> 기능을 통해 필요한 도구들을 확인할 수 있습니다.\n"
-"                        <br/><br/>\n"
-"                        Odoo를 마음껏 즐겨보세요!<br/>\n"
-"                        --<br/><t t-out=\"object.company_id.name or ''\">YourCompany</t> 팀\n"
+"                        If you do not expect this, you can safely ignore this email.<br><br>\n"
+"                        Thanks,\n"
+"                        <t t-if=\"user.signature\">\n"
+"                            <br>\n"
+"                            <t t-out=\"user.signature or ''\">--<br>Mitchell Admin</t>\n"
+"                        </t>\n"
 "                    </div>\n"
 "                </td></tr>\n"
 "                <tr><td style=\"text-align:center;\">\n"
-"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\">\n"
 "                </td></tr>\n"
 "            </table>\n"
 "        </td>\n"
@@ -339,6 +266,7 @@ msgstr ""
 "                </td></tr>\n"
 "                <tr><td valign=\"middle\" align=\"left\" style=\"opacity: 0.7;\">\n"
 "                    <t t-out=\"object.company_id.phone or ''\">+1 650-123-4567</t>\n"
+"\n"
 "                    <t t-if=\"object.company_id.email\">\n"
 "                        | <a t-att-href=\"'mailto:%s' % object.company_id.email\" style=\"text-decoration:none; color: #454748;\" t-out=\"object.company_id.email or ''\">info@yourcompany.com</a>\n"
 "                    </t>\n"
@@ -360,7 +288,9 @@ msgstr ""
 "      </td></tr>\n"
 "    </table>\n"
 "</td></tr>\n"
-"</table>"
+"</table>\n"
+"            "
+msgstr ""
 
 #. module: auth_signup
 #: model:mail.template,body_html:auth_signup.mail_template_user_signup_account_created
@@ -373,15 +303,15 @@ msgid ""
 "        <td align=\"center\" style=\"min-width: 590px;\">\n"
 "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
 "                <tr><td valign=\"middle\">\n"
-"                    <span style=\"font-size: 10px;\">Your Account</span><br/>\n"
+"                    <span style=\"font-size: 10px;\">Your Account</span><br>\n"
 "                    <span style=\"font-size: 20px; font-weight: bold;\">\n"
 "                        <t t-out=\"object.name or ''\">Marc Demo</t>\n"
 "                    </span>\n"
-"                </td><td valign=\"middle\" align=\"right\" t-if=\"not object.company_id.uses_default_logo\">\n"
-"                    <img t-attf-src=\"/logo.png?company={{ object.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"object.company_id.name\"/>\n"
+"                </td><td valign=\"middle\" align=\"right\">\n"
+"                    <img t-attf-src=\"/logo.png?company={{ object.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"object.company_id.name\">\n"
 "                </td></tr>\n"
 "                <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
-"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\">\n"
 "                </td></tr>\n"
 "            </table>\n"
 "        </td>\n"
@@ -392,24 +322,24 @@ msgid ""
 "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
 "                <tr><td valign=\"top\" style=\"font-size: 13px;\">\n"
 "                    <div>\n"
-"                        Dear <t t-out=\"object.name or ''\">Marc Demo</t>,<br/><br/>\n"
-"                        Your account has been successfully created!<br/>\n"
-"                        Your login is <strong><t t-out=\"object.email or ''\">mark.brown23@example.com</t></strong><br/>\n"
+"                        Dear <t t-out=\"object.name or ''\">Marc Demo</t>,<br><br>\n"
+"                        Your account has been successfully created!<br>\n"
+"                        Your login is <strong><t t-out=\"object.email or ''\">mark.brown23@example.com</t></strong><br>\n"
 "                        To gain access to your account, you can use the following link:\n"
 "                        <div style=\"margin: 16px 0px 16px 0px;\">\n"
 "                            <a t-attf-href=\"/web/login?auth_login={{object.email}}\" style=\"background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;\">\n"
 "                                Go to My Account\n"
 "                            </a>\n"
 "                        </div>\n"
-"                        Thanks,<br/>\n"
-"                        <t t-if=\"user.signature\" data-o-mail-quote-container=\"1\">\n"
-"                            <br/>\n"
-"                            <t t-out=\"user.signature or ''\" data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/>Mitchell Admin</t>\n"
+"                        Thanks,<br>\n"
+"                        <t t-if=\"user.signature\">\n"
+"                            <br>\n"
+"                            <t t-out=\"user.signature or ''\">--<br>Mitchell Admin</t>\n"
 "                        </t>\n"
 "                    </div>\n"
 "                </td></tr>\n"
 "                <tr><td style=\"text-align:center;\">\n"
-"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\">\n"
 "                </td></tr>\n"
 "            </table>\n"
 "        </td>\n"
@@ -448,100 +378,6 @@ msgid ""
 "</td></tr>\n"
 "</table>"
 msgstr ""
-"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #FFFFFF; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;\"><tr><td align=\"center\">\n"
-"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"padding: 16px; background-color: #FFFFFF; color: #454748; border-collapse:separate;\">\n"
-"<tbody>\n"
-"    <!-- HEADER -->\n"
-"    <tr>\n"
-"        <td align=\"center\" style=\"min-width: 590px;\">\n"
-"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
-"                <tr><td valign=\"middle\">\n"
-"                    <span style=\"font-size: 10px;\">계정 관련 안내</span><br/>\n"
-"                    <span style=\"font-size: 20px; font-weight: bold;\">\n"
-"                        <t t-out=\"object.name or ''\">Marc Demo</t>\n"
-"                    </span>\n"
-"                </td><td valign=\"middle\" align=\"right\" t-if=\"not object.company_id.uses_default_logo\">\n"
-"                    <img t-attf-src=\"/logo.png?company={{ object.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"object.company_id.name\"/>\n"
-"                </td></tr>\n"
-"                <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
-"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
-"                </td></tr>\n"
-"            </table>\n"
-"        </td>\n"
-"    </tr>\n"
-"    <!-- CONTENT -->\n"
-"    <tr>\n"
-"        <td align=\"center\" style=\"min-width: 590px;\">\n"
-"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
-"                <tr><td valign=\"top\" style=\"font-size: 13px;\">\n"
-"                    <div>\n"
-"                        안녕하세요,<t t-out=\"object.name or ''\">Marc Demo</t>님.<br/><br/>\n"
-"                        귀하의 계정이 성공적으로 생성되었습니다!<br/>\n"
-"                        로그인 정보는 다음과 같습니다: <strong><t t-out=\"object.email or ''\">mark.brown23@example.com</t></strong><br/>\n"
-"                        아래 링크를 통해 계정에 로그인하실 수 있습니다:\n"
-"                        <div style=\"margin: 16px 0px 16px 0px;\">\n"
-"                            <a t-attf-href=\"/web/login?auth_login={{object.email}}\" style=\"background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;\">\n"
-"                                내 계정으로 이동하기\n"
-"                            </a>\n"
-"                        </div>\n"
-"                        감사합니다.<br/>\n"
-"                        <t t-if=\"user.signature\" data-o-mail-quote-container=\"1\">\n"
-"                            <br/>\n"
-"                            <t t-out=\"user.signature or ''\" data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/>Mitchell Admin</t>\n"
-"                        </t>\n"
-"                    </div>\n"
-"                </td></tr>\n"
-"                <tr><td style=\"text-align:center;\">\n"
-"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
-"                </td></tr>\n"
-"            </table>\n"
-"        </td>\n"
-"    </tr>\n"
-"    <!-- FOOTER -->\n"
-"    <tr>\n"
-"        <td align=\"center\" style=\"min-width: 590px;\">\n"
-"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; font-size: 11px; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
-"                <tr><td valign=\"middle\" align=\"left\">\n"
-"                    <t t-out=\"object.company_id.name or ''\">YourCompany</t>\n"
-"                </td></tr>\n"
-"                <tr><td valign=\"middle\" align=\"left\" style=\"opacity: 0.7;\">\n"
-"                    <t t-out=\"object.company_id.phone or ''\">+1 650-123-4567</t>\n"
-"                    <t t-if=\"object.company_id.email\">\n"
-"                        | <a t-attf-href=\"'mailto:%s' % {{ object.company_id.email }}\" style=\"text-decoration:none; color: #454748;\"><t t-out=\"object.company_id.email or ''\">info@yourcompany.com</t></a>\n"
-"                    </t>\n"
-"                    <t t-if=\"object.company_id.website\">\n"
-"                        | <a t-attf-href=\"'%s' % {{ object.company_id.website }}\" style=\"text-decoration:none; color: #454748;\">\n"
-"                            <t t-out=\"object.company_id.website or ''\">http://www.example.com</t>\n"
-"                        </a>\n"
-"                    </t>\n"
-"                </td></tr>\n"
-"            </table>\n"
-"        </td>\n"
-"    </tr>\n"
-"</tbody>\n"
-"</table>\n"
-"</td></tr>\n"
-"<!-- POWERED BY -->\n"
-"<tr><td align=\"center\" style=\"min-width: 590px;\">\n"
-"    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: #F1F1F1; color: #454748; padding: 8px; border-collapse:separate;\">\n"
-"      <tr><td style=\"text-align: center; font-size: 13px;\">\n"
-"        Powered by <a target=\"_blank\" href=\"https://www.odoo.com?utm_source=db&amp;utm_medium=auth\" style=\"color: #875A7B;\">Odoo</a>\n"
-"      </td></tr>\n"
-"    </table>\n"
-"</td></tr>\n"
-"</table>"
-
-#. module: auth_signup
-#. odoo-python
-#: code:addons/auth_signup/models/res_users.py:0
-msgid "A reset password link was send by email"
-msgstr "비밀번호 재설정 링크가 이메일로 전송되었습니다."
-
-#. module: auth_signup
-#. odoo-python
-#: code:addons/auth_signup/models/res_users.py:0
-msgid "A signup link was send by email"
-msgstr "가입 링크가 이메일로 전송되었습니다."
 
 #. module: auth_signup
 #: model_terms:ir.ui.view,arch_db:auth_signup.signup
@@ -551,8 +387,16 @@ msgstr "계정이 이미 있습니까?"
 #. module: auth_signup
 #. odoo-python
 #: code:addons/auth_signup/controllers/main.py:0
+#, python-format
 msgid "Another user is already registered using this email address."
-msgstr "이미 등록되어 있는 이메일 주소입니다."
+msgstr "이 이메일 주소는 이미 다른 사용자가 등록한 것입니다."
+
+#. module: auth_signup
+#. odoo-python
+#: code:addons/auth_signup/controllers/main.py:0
+#, python-format
+msgid "Authentication Failed."
+msgstr "인증에 실패하였습니다"
 
 #. module: auth_signup
 #: model_terms:ir.ui.view,arch_db:auth_signup.reset_password
@@ -560,30 +404,21 @@ msgid "Back to Login"
 msgstr "로그인 화면으로 돌아가기"
 
 #. module: auth_signup
-#: model_terms:ir.ui.view,arch_db:auth_signup.alert_login_new_device
-msgid "Browser"
-msgstr "브라우저"
-
-#. module: auth_signup
 #. odoo-python
 #: code:addons/auth_signup/models/res_users.py:0
+#, python-format
 msgid "Cannot send email: user %s has no email address."
 msgstr "이메일을 보낼 수 없습니다 :  %s 사용자는 이메일 주소가 없습니다."
 
 #. module: auth_signup
-#: model_terms:ir.ui.view,arch_db:auth_signup.reset_password_email
-msgid "Change password"
-msgstr "비밀번호 변경"
-
-#. module: auth_signup
-#: model_terms:ir.ui.view,arch_db:auth_signup.alert_login_new_device
-msgid "City, Region, Country"
-msgstr "시/도, 지역, 국가"
+#: model_terms:ir.ui.view,arch_db:auth_signup.res_users_view_form
+msgid "Close"
+msgstr "닫기"
 
 #. module: auth_signup
 #: model:ir.model,name:auth_signup.model_res_config_settings
 msgid "Config Settings"
-msgstr "환경 설정"
+msgstr "설정 구성"
 
 #. module: auth_signup
 #: model_terms:ir.ui.view,arch_db:auth_signup.fields
@@ -602,21 +437,15 @@ msgstr "연락처"
 
 #. module: auth_signup
 #. odoo-python
-#: code:addons/auth_signup/models/res_users.py:0
-msgid ""
-"Could not contact the mail server, please check your outgoing email server "
-"configuration"
-msgstr "메일 서버에 연결할 수 없습니다. 발신 이메일 서버 설정을 확인하세요."
-
-#. module: auth_signup
-#. odoo-python
 #: code:addons/auth_signup/controllers/main.py:0
+#, python-format
 msgid "Could not create a new account."
 msgstr "새 계정을 만들 수 없습니다."
 
 #. module: auth_signup
 #. odoo-python
 #: code:addons/auth_signup/controllers/main.py:0
+#, python-format
 msgid "Could not reset your password"
 msgstr "비밀번호를 재설정하지 못했습니다."
 
@@ -626,12 +455,6 @@ msgid "Customer Account"
 msgstr "고객 계정"
 
 #. module: auth_signup
-#: model_terms:ir.ui.view,arch_db:auth_signup.alert_login_new_device
-#: model_terms:ir.ui.view,arch_db:auth_signup.reset_password_email
-msgid "Dear"
-msgstr "안녕하세요,"
-
-#. module: auth_signup
 #: model_terms:ir.ui.view,arch_db:auth_signup.res_config_settings_view_form
 msgid "Default Access Rights"
 msgstr "기본 사용 권한"
@@ -639,7 +462,7 @@ msgstr "기본 사용 권한"
 #. module: auth_signup
 #: model_terms:ir.ui.view,arch_db:auth_signup.login
 msgid "Don't have an account?"
-msgstr "사용자 계정 만들기"
+msgstr "아직 계정이 없으십니까?"
 
 #. module: auth_signup
 #: model:ir.model.fields,field_description:auth_signup.field_res_config_settings__auth_signup_reset_password
@@ -650,7 +473,7 @@ msgstr "로그인 페이지에서 비밀번호 재설정 허용"
 #. module: auth_signup
 #: model:ir.model.fields.selection,name:auth_signup.selection__res_config_settings__auth_signup_uninvited__b2c
 msgid "Free sign up"
-msgstr "누구나 가입 허용"
+msgstr "자유 가입"
 
 #. module: auth_signup
 #: model:ir.model,name:auth_signup.model_ir_http
@@ -658,61 +481,22 @@ msgid "HTTP Routing"
 msgstr "HTTP 라우팅"
 
 #. module: auth_signup
-#: model_terms:ir.ui.view,arch_db:auth_signup.reset_password_email
-msgid ""
-"If you do not expect this, you can safely ignore this email.<br/><br/>\n"
-"                                Thanks,"
-msgstr ""
-"원치 않는 경우 이 이메일은 무시하셔도 됩니다.<br/><br/>\n"
-"                                감사합니다."
-
-#. module: auth_signup
-#: model_terms:ir.ui.view,arch_db:auth_signup.alert_login_new_device
-msgid ""
-"If you don't recognize it, you should change your password immediately via "
-"this link:<br/>"
-msgstr "비밀번호를 모르는 경우 이 링크를 통해 즉시 비밀번호를 변경해 주세요:<br/>"
-
-#. module: auth_signup
-#. odoo-python
-#: code:addons/auth_signup/models/res_users.py:0
-msgid "In %(country)s"
-msgstr "%(country)s"
-
-#. module: auth_signup
 #. odoo-python
 #: code:addons/auth_signup/controllers/main.py:0
+#, python-format
 msgid "Invalid signup token"
 msgstr "잘못된 가입 토큰"
 
 #. module: auth_signup
 #: model_terms:ir.ui.view,arch_db:auth_signup.res_config_settings_view_form
 msgid "Let your customers log in to see their documents"
-msgstr "고객이 로그인하여 문서를 볼 수 있도록 허용합니다."
+msgstr "고객이 로그인하여 문서를 확인할 수 있습니다."
 
 #. module: auth_signup
-#: model_terms:ir.ui.view,arch_db:auth_signup.alert_login_new_device
-#: model_terms:ir.ui.view,arch_db:auth_signup.reset_password_email
-msgid "Marc Demo"
-msgstr "Marc Demo"
-
-#. module: auth_signup
-#. odoo-python
 #: code:addons/auth_signup/models/res_users.py:0
+#, python-format
 msgid "Multiple accounts found for this login"
 msgstr "이 로그인에 대해 여러 개의 계정이 발견되었습니다."
-
-#. module: auth_signup
-#. odoo-python
-#: code:addons/auth_signup/models/res_users.py:0
-msgid "Near %(city)s, %(region)s, %(country)s"
-msgstr "%(city)s, %(region)s, %(country)s 인근"
-
-#. module: auth_signup
-#. odoo-python
-#: code:addons/auth_signup/models/res_users.py:0
-msgid "Near %(region)s, %(country)s"
-msgstr "%(region)s, %(country)s 인근"
 
 #. module: auth_signup
 #: model:ir.model.fields.selection,name:auth_signup.selection__res_users__state__new
@@ -722,41 +506,21 @@ msgstr "미접속"
 #. module: auth_signup
 #. odoo-python
 #: code:addons/auth_signup/models/res_users.py:0
-msgid "New Connection to your Account"
-msgstr "계정에 새로 로그인함"
-
-#. module: auth_signup
-#. odoo-python
-#: code:addons/auth_signup/models/res_users.py:0
+#, python-format
 msgid "No account found for this login"
 msgstr "로그인한 계정이 없습니다"
 
 #. module: auth_signup
 #. odoo-python
 #: code:addons/auth_signup/controllers/main.py:0
+#, python-format
 msgid "No login provided."
 msgstr "로그인 계정이 제공되지 않습니다."
-
-#. module: auth_signup
-#: model_terms:ir.ui.view,arch_db:auth_signup.alert_login_new_device
-msgid "OS"
-msgstr "OS"
-
-#. module: auth_signup
-#: model_terms:ir.ui.view,arch_db:auth_signup.alert_login_new_device
-#: model_terms:ir.ui.view,arch_db:auth_signup.reset_password_email
-msgid "Odoo"
-msgstr "Odoo"
 
 #. module: auth_signup
 #: model:ir.model.fields.selection,name:auth_signup.selection__res_config_settings__auth_signup_uninvited__b2b
 msgid "On invitation"
 msgstr "초대한 사람만"
-
-#. module: auth_signup
-#: model_terms:ir.ui.view,arch_db:auth_signup.alert_login_new_device
-msgid "Otherwise, you can safely ignore this email."
-msgstr "그렇지 않은 경우 이 이메일은 무시하셔도 됩니다."
 
 #. module: auth_signup
 #: model_terms:ir.ui.view,arch_db:auth_signup.fields
@@ -769,28 +533,23 @@ msgid "Password Reset"
 msgstr "비밀번호 재설정"
 
 #. module: auth_signup
-#. odoo-python
-#: code:addons/auth_signup/models/res_users.py:0
+#: model:mail.template,subject:auth_signup.reset_password_email
 msgid "Password reset"
 msgstr "비밀번호 재설정"
 
 #. module: auth_signup
 #. odoo-python
 #: code:addons/auth_signup/controllers/main.py:0
+#, python-format
 msgid "Password reset instructions sent to your email"
 msgstr "이메일로 전송된 비밀번호 재설정 안내"
 
 #. module: auth_signup
 #. odoo-python
 #: code:addons/auth_signup/controllers/main.py:0
+#, python-format
 msgid "Passwords do not match; please retype them."
 msgstr "비밀번호가 일치하지 않으므로 다시 입력하십시오."
-
-#. module: auth_signup
-#: model_terms:ir.ui.view,arch_db:auth_signup.alert_login_new_device
-#: model_terms:ir.ui.view,arch_db:auth_signup.reset_password_email
-msgid "Powered by"
-msgstr "저작권자"
 
 #. module: auth_signup
 #: model_terms:ir.ui.view,arch_db:auth_signup.login_successful
@@ -803,7 +562,6 @@ msgid "Reminder for unregistered users"
 msgstr "미등록 사용자에 대해 미리 알림"
 
 #. module: auth_signup
-#: model_terms:ir.ui.view,arch_db:auth_signup.alert_login_new_device
 #: model_terms:ir.ui.view,arch_db:auth_signup.login
 #: model_terms:ir.ui.view,arch_db:auth_signup.reset_password
 msgid "Reset Password"
@@ -837,12 +595,17 @@ msgid "Sent to portal user who registered themselves"
 msgstr "등록한 포털 사용자에게 전송"
 
 #. module: auth_signup
-#: model:mail.template,name:auth_signup.mail_template_user_signup_account_created
-msgid "Settings: New Portal Sign Up"
-msgstr "설정: 신규 포털 회원 가입"
+#: model:mail.template,description:auth_signup.reset_password_email
+msgid "Sent to user who requested a password reset"
+msgstr "요청한 사용자에게 비밀번호 재설정 전송"
 
 #. module: auth_signup
 #: model:mail.template,name:auth_signup.set_password_email
+msgid "Settings: New Portal Signup"
+msgstr "설정: 신규 포털 가입"
+
+#. module: auth_signup
+#: model:mail.template,name:auth_signup.mail_template_user_signup_account_created
 msgid "Settings: New User Invite"
 msgstr "설정: 새로운 사용자 초대"
 
@@ -852,9 +615,26 @@ msgid "Settings: Unregistered User Reminder"
 msgstr "설정: 미등록 사용자 알림"
 
 #. module: auth_signup
+#: model:mail.template,name:auth_signup.reset_password_email
+msgid "Settings: User Reset Password"
+msgstr "설정: 사용자 비밀번호 재설정"
+
+#. module: auth_signup
 #: model_terms:ir.ui.view,arch_db:auth_signup.signup
 msgid "Sign up"
 msgstr "가입"
+
+#. module: auth_signup
+#: model:ir.model.fields,field_description:auth_signup.field_res_partner__signup_expiration
+#: model:ir.model.fields,field_description:auth_signup.field_res_users__signup_expiration
+msgid "Signup Expiration"
+msgstr "가입 기한"
+
+#. module: auth_signup
+#: model:ir.model.fields,field_description:auth_signup.field_res_partner__signup_token
+#: model:ir.model.fields,field_description:auth_signup.field_res_users__signup_token
+msgid "Signup Token"
+msgstr "가입 토큰"
 
 #. module: auth_signup
 #: model:ir.model.fields,field_description:auth_signup.field_res_partner__signup_type
@@ -863,32 +643,56 @@ msgid "Signup Token Type"
 msgstr "가입 토큰 유형"
 
 #. module: auth_signup
+#: model:ir.model.fields,field_description:auth_signup.field_res_partner__signup_valid
+#: model:ir.model.fields,field_description:auth_signup.field_res_users__signup_valid
+msgid "Signup Token is Valid"
+msgstr "가입 토큰이 유효합니다"
+
+#. module: auth_signup
+#: model:ir.model.fields,field_description:auth_signup.field_res_partner__signup_url
+#: model:ir.model.fields,field_description:auth_signup.field_res_users__signup_url
+msgid "Signup URL"
+msgstr "가입 URL"
+
+#. module: auth_signup
 #. odoo-python
 #: code:addons/auth_signup/models/res_users.py:0
+#, python-format
 msgid "Signup is not allowed for uninvited users"
 msgstr "초대 받지 않은 사용자는 가입할 수 없습니다."
 
 #. module: auth_signup
 #. odoo-python
 #: code:addons/auth_signup/models/res_partner.py:0
-msgid "Signup token '%s' is not valid or expired"
-msgstr "가입 토큰 '%s'이 올바르지 않거나 만료되었습니다."
+#, python-format
+msgid "Signup token '%s' is no longer valid"
+msgstr "'%s' 가입 토큰은 더 이상 유효하지 않습니다."
+
+#. module: auth_signup
+#. odoo-python
+#: code:addons/auth_signup/models/res_partner.py:0
+#, python-format
+msgid "Signup token '%s' is not valid"
+msgstr "'%s' 가입 토큰이 유효하지 않습니다."
 
 #. module: auth_signup
 #. odoo-python
 #: code:addons/auth_signup/models/res_users.py:0
+#, python-format
 msgid "Signup: invalid template user"
 msgstr "로그인 : 잘못된 사용자 서식"
 
 #. module: auth_signup
 #. odoo-python
 #: code:addons/auth_signup/models/res_users.py:0
+#, python-format
 msgid "Signup: no login given for new user"
 msgstr "가입 : 신규 사용자에 대한 로그인이 제공되지 않습니다."
 
 #. module: auth_signup
 #. odoo-python
 #: code:addons/auth_signup/models/res_users.py:0
+#, python-format
 msgid "Signup: no name or partner given for new user"
 msgstr "가입 : 신규 사용자에게 할당된 이름 또는 협력사 없음"
 
@@ -898,12 +702,6 @@ msgid "Status"
 msgstr "상태"
 
 #. module: auth_signup
-#. odoo-python
-#: code:addons/auth_signup/controllers/main.py:0
-msgid "Suspicious activity detected by Google reCaptcha."
-msgstr "구글 reCaptcha에서 의심스러운 활동이 감지되었습니다."
-
-#. module: auth_signup
 #: model:ir.model.fields,field_description:auth_signup.field_res_config_settings__auth_signup_template_user_id
 msgid "Template user for new users created through signup"
 msgstr "가입을 통해 생성된 새로운 사용자를 위한 사용자 서식"
@@ -911,16 +709,9 @@ msgstr "가입을 통해 생성된 새로운 사용자를 위한 사용자 서�
 #. module: auth_signup
 #. odoo-python
 #: code:addons/auth_signup/controllers/main.py:0
+#, python-format
 msgid "The form was not properly filled in."
 msgstr "서식이 제대로 채워지지 않았습니다."
-
-#. module: auth_signup
-#. odoo-python
-#: code:addons/auth_signup/models/res_users.py:0
-msgid ""
-"There was an error when trying to deliver your Email, please check your "
-"configuration"
-msgstr "이메일을 전송하는 동안 오류가 발생했습니다. 설정을 확인해 주세요."
 
 #. module: auth_signup
 #: model_terms:ir.ui.view,arch_db:auth_signup.res_config_settings_view_form
@@ -929,8 +720,8 @@ msgid ""
 "list view and click on 'Portal Access Management' option in the dropdown "
 "menu *Action*."
 msgstr ""
-"B2B 모드에서 초대장을 보내려면 연락처를 열거나 목록보기에서 연락처를 선택하고 드롭 다운 메뉴 *작업*에서 '포털 사용 권한 관리' "
-"옵션을 클릭합니다."
+"B2B 모드로 초대장을 보내려면 연락처보기를 열거 나 목록보기에서 연락처를 선택하고 드롭 다운 메뉴 *작업*에서 '포탈 사용 권한 관리'"
+" 선택 사항을 클릭하십시오."
 
 #. module: auth_signup
 #: model:ir.model,name:auth_signup.model_res_users
@@ -939,17 +730,19 @@ msgstr "사용자"
 
 #. module: auth_signup
 #: model:ir.actions.server,name:auth_signup.ir_cron_auth_signup_send_pending_user_reminder_ir_actions_server
+#: model:ir.cron,cron_name:auth_signup.ir_cron_auth_signup_send_pending_user_reminder
 msgid "Users: Notify About Unregistered Users"
 msgstr "사용자 : 등록되지 않은 사용자 알림"
 
 #. module: auth_signup
 #: model:mail.template,subject:auth_signup.mail_template_user_signup_account_created
 msgid "Welcome to {{ object.company_id.name }}!"
-msgstr "{{ object.company_id.name }}!에 오신 것을 환영합니다!"
+msgstr "{{ object.company_id.name }}! 에 오신 것을 환영합니다!"
 
 #. module: auth_signup
 #. odoo-python
 #: code:addons/auth_signup/models/res_users.py:0
+#, python-format
 msgid "You cannot perform this action on an archived user."
 msgstr "보관 처리된 사용자에 대해서는 이 작업을 수행할 수 없습니다."
 
@@ -965,34 +758,9 @@ msgid "Your Name"
 msgstr "성명"
 
 #. module: auth_signup
-#: model_terms:ir.ui.view,arch_db:auth_signup.reset_password_email
-msgid "YourCompany"
-msgstr "YourCompany"
-
-#. module: auth_signup
-#: model_terms:ir.ui.view,arch_db:auth_signup.alert_login_new_device
-msgid "day, month dd, yyyy - hh:mm:ss (GMT)"
-msgstr "day, month dd, yyyy - hh:mm:ss (GMT)"
-
-#. module: auth_signup
 #: model_terms:ir.ui.view,arch_db:auth_signup.fields
 msgid "e.g. John Doe"
-msgstr "예: 홍길동"
-
-#. module: auth_signup
-#: model_terms:ir.ui.view,arch_db:auth_signup.reset_password_email
-msgid "hours:<br/>"
-msgstr "시간:<br/>"
-
-#. module: auth_signup
-#: model_terms:ir.ui.view,arch_db:auth_signup.reset_password_email
-msgid "http://www.example.com"
-msgstr "http://www.example.com"
-
-#. module: auth_signup
-#: model_terms:ir.ui.view,arch_db:auth_signup.reset_password_email
-msgid "info@yourcompany.com"
-msgstr "info@yourcompany.com"
+msgstr "예시 : 홍길동"
 
 #. module: auth_signup
 #: model:mail.template,subject:auth_signup.set_password_email
@@ -1000,5 +768,5 @@ msgid ""
 "{{ object.create_uid.name }} from {{ object.company_id.name }} invites you "
 "to connect to Odoo"
 msgstr ""
-"{{ object.company_id.name }}의 {{ object.create_uid.name }}님께서 귀하를 Odoo로 "
-"초대하셨습니다."
+"{{ object.company_id.name }} 의 {{ object.create_uid.name }} 이(가) Odoo에 연결할 수"
+" 있도록 귀하를 초대합니다."

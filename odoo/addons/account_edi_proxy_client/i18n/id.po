@@ -3,32 +3,22 @@
 # 	* account_edi_proxy_client
 # 
 # Translators:
-# Wil Odoo, 2024
-# Abe Manyo, 2025
+# Martin Trigaux, 2023
+# Abe Manyo, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-19 20:36+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Abe Manyo, 2025\n"
+"POT-Creation-Date: 2023-04-14 05:51+0000\n"
+"PO-Revision-Date: 2022-09-22 05:44+0000\n"
+"Last-Translator: Abe Manyo, 2023\n"
 "Language-Team: Indonesian (https://app.transifex.com/odoo/teams/41243/id/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: id\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-
-#. module: account_edi_proxy_client
-#. odoo-python
-#: code:addons/account_edi_proxy_client/models/account_edi_proxy_user.py:0
-msgid ""
-"A user already exists with theses credentials on our server. Please check "
-"your information."
-msgstr ""
-"User udah tersedia dengan kresendial tersebut pada server kami. Silakan "
-"periksa informasi Anda."
 
 #. module: account_edi_proxy_client
 #: model:ir.model,name:account_edi_proxy_client.model_account_edi_proxy_client_user
@@ -51,6 +41,11 @@ msgid "Active"
 msgstr "Aktif"
 
 #. module: account_edi_proxy_client
+#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__edi_format_code
+msgid "Code"
+msgstr "Kode"
+
+#. module: account_edi_proxy_client
 #: model:ir.model,name:account_edi_proxy_client.model_res_company
 msgid "Companies"
 msgstr "Perusahaan"
@@ -71,16 +66,6 @@ msgid "Created on"
 msgstr "Dibuat pada"
 
 #. module: account_edi_proxy_client
-#: model:ir.model,name:account_edi_proxy_client.model_certificate_key
-msgid "Cryptographic Keys"
-msgstr "Kunci-Kunci Kriptografi"
-
-#. module: account_edi_proxy_client
-#: model:ir.model.fields.selection,name:account_edi_proxy_client.selection__account_edi_proxy_client_user__edi_mode__demo
-msgid "Demo mode"
-msgstr "Mode demo"
-
-#. module: account_edi_proxy_client
 #: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__display_name
 msgid "Display Name"
 msgstr "Nama Tampilan"
@@ -96,9 +81,14 @@ msgid "EDI Proxy Users"
 msgstr "User Proxy EDI"
 
 #. module: account_edi_proxy_client
-#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__edi_mode
-msgid "EDI operating mode"
-msgstr "Mode pengoperasian EDI"
+#: model:ir.model,name:account_edi_proxy_client.model_account_edi_format
+msgid "EDI format"
+msgstr "Format EDI"
+
+#. module: account_edi_proxy_client
+#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__edi_format_id
+msgid "Edi Format"
+msgstr "Format EDI"
 
 #. module: account_edi_proxy_client
 #: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__edi_identification
@@ -116,16 +106,9 @@ msgid "Id Client"
 msgstr "Klien ID"
 
 #. module: account_edi_proxy_client
-#. odoo-python
-#: code:addons/account_edi_proxy_client/models/account_edi_proxy_user.py:0
-msgid ""
-"Invalid signature for request. This might be due to another connection to odoo Access Point server. It can occur if you have duplicated your database. \n"
-"\n"
-"If you are not sure how to fix this, please contact our support."
-msgstr ""
-"Tanda tangan untuk permintaan tidak valid. Ini mungkin karena hubungan lain ke Access Point server Odoo. Ini dapat terjadi bila Anda telah menduplikasi database Anda. \n"
-"\n"
-"Bila Anda tidak yakin bagaimana memperbaiki ini, silakan hubungi bantuan kami."
+#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user____last_update
+msgid "Last Modified on"
+msgstr "Terakhir Diubah pada"
 
 #. module: account_edi_proxy_client
 #: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__write_uid
@@ -138,19 +121,14 @@ msgid "Last Updated on"
 msgstr "Terakhir Diperbarui pada"
 
 #. module: account_edi_proxy_client
-#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__private_key_id
+#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__private_key
 msgid "Private Key"
 msgstr "Kunci Pribadi"
 
 #. module: account_edi_proxy_client
-#: model:ir.model.fields.selection,name:account_edi_proxy_client.selection__account_edi_proxy_client_user__edi_mode__prod
-msgid "Production mode"
-msgstr "Mode produksi"
-
-#. module: account_edi_proxy_client
-#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__proxy_type
-msgid "Proxy Type"
-msgstr "Tipe Proxy"
+#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__private_key_filename
+msgid "Private Key Filename"
+msgstr "Nama File Kunci Pribadi"
 
 #. module: account_edi_proxy_client
 #: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__refresh_token
@@ -158,33 +136,21 @@ msgid "Refresh Token"
 msgstr "Refresh Token"
 
 #. module: account_edi_proxy_client
-#: model:ir.model.fields.selection,name:account_edi_proxy_client.selection__account_edi_proxy_client_user__edi_mode__test
-msgid "Test mode"
-msgstr "Mode testing"
-
-#. module: account_edi_proxy_client
-#: model:ir.model.fields,help:account_edi_proxy_client.field_account_edi_proxy_client_user__private_key_id
+#: model:ir.model.fields,help:account_edi_proxy_client.field_account_edi_proxy_client_user__private_key
 msgid "The key to encrypt all the user's data"
 msgstr "Key untuk mengenkripsi semua data user"
 
 #. module: account_edi_proxy_client
 #: model:ir.model.fields,help:account_edi_proxy_client.field_account_edi_proxy_client_user__edi_identification
-msgid "The unique id that identifies this user, typically the vat"
-msgstr "Id unik yang mengidentifikasi user ini, biasanya ppn"
-
-#. module: account_edi_proxy_client
-#. odoo-python
-#: code:addons/account_edi_proxy_client/models/account_edi_proxy_user.py:0
 msgid ""
-"The url that this service requested returned an error. The url it tried to "
-"contact was %(url)s. %(error_message)s"
-msgstr ""
-"URL yang layanan ini minta mengembalikkan error. URL yang layanan ini coba "
-"hubungi adalah %(url)s. %(error_message)s"
+"The unique id that identifies this user for on the edi format, typically the"
+" vat"
+msgstr "ID unik yang mengidentifikasi user ini pada format edi, biasanya PPN"
 
 #. module: account_edi_proxy_client
 #. odoo-python
 #: code:addons/account_edi_proxy_client/models/account_edi_proxy_user.py:0
+#, python-format
 msgid ""
 "The url that this service requested returned an error. The url it tried to "
 "contact was %s"
@@ -195,22 +161,28 @@ msgstr ""
 #. module: account_edi_proxy_client
 #. odoo-python
 #: code:addons/account_edi_proxy_client/models/account_edi_proxy_user.py:0
+#, python-format
 msgid ""
-"The url that this service tried to contact does not exist. The url was “%s”"
+"The url that this service requested returned an error. The url it tried to "
+"contact was %s. %s"
 msgstr ""
-"URL yang layanan ini coba untuk hubungi sudah tidak ada. URL sebelumnya "
-"adalah “%s”"
+"Url yang layanan ini minta dikembalikkan dengan error. Url yang layanan ini "
+"coba hubungi adalah %s. %s"
 
 #. module: account_edi_proxy_client
-#: model:ir.model.constraint,message:account_edi_proxy_client.constraint_account_edi_proxy_client_user_unique_active_company_proxy
-msgid "This company has an active user already created for this EDI type"
+#. odoo-python
+#: code:addons/account_edi_proxy_client/models/account_edi_proxy_user.py:0
+#, python-format
+msgid ""
+"The url that this service tried to contact does not exist. The url was %r"
 msgstr ""
-"Perusahaan ini memiliki user aktif yang sudah dibuat untuk tipe EDI ini"
+"Url yang layanan ini coba hubungi sudah tidak ada. Url yang dimaksud adalah "
+"%r"
 
 #. module: account_edi_proxy_client
-#: model:ir.model.constraint,message:account_edi_proxy_client.constraint_account_edi_proxy_client_user_unique_active_edi_identification
-msgid "This edi identification is already assigned to an active user"
-msgstr "Identifikasi edi ini sudah ditetapkan ke user aktif"
+#: model:ir.model.constraint,message:account_edi_proxy_client.constraint_account_edi_proxy_client_user_unique_edi_identification_per_format
+msgid "This edi identification is already assigned to a user"
+msgstr "Identifikasi edi ini sudah ditetapkan ke user"
 
 #. module: account_edi_proxy_client
 #: model:ir.model.constraint,message:account_edi_proxy_client.constraint_account_edi_proxy_client_user_unique_id_client

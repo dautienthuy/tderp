@@ -3,17 +3,17 @@
 # 	* partner_autocomplete
 # 
 # Translators:
-# Wil Odoo, 2024
-# Erwin van der Ploeg <erwin@odooexperts.nl>, 2024
-# Manon Rondou, 2025
+# Martin Trigaux, 2022
+# Erwin van der Ploeg <erwin@odooexperts.nl>, 2023
+# Jolien De Paepe, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-07 20:37+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Manon Rondou, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:53+0000\n"
+"Last-Translator: Jolien De Paepe, 2023\n"
 "Language-Team: Dutch (https://app.transifex.com/odoo/teams/41243/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -28,13 +28,9 @@ msgid "Additional info"
 msgstr "Aanvullende informatie"
 
 #. module: partner_autocomplete
-#: model:iap.service,description:partner_autocomplete.iap_service_partner_autocomplete
-msgid "Automatically enrich your contact base with corporate data."
-msgstr "Verrijk je contactbestand automatisch met bedrijfsgegevens."
-
-#. module: partner_autocomplete
 #. odoo-javascript
 #: code:addons/partner_autocomplete/static/src/xml/partner_autocomplete.xml:0
+#, python-format
 msgid "Buy more credits"
 msgstr "Koop meer credits"
 
@@ -42,6 +38,13 @@ msgstr "Koop meer credits"
 #: model:ir.model,name:partner_autocomplete.model_res_company
 msgid "Companies"
 msgstr "Bedrijven"
+
+#. module: partner_autocomplete
+#. odoo-python
+#: code:addons/partner_autocomplete/models/res_company.py:0
+#, python-format
+msgid "Company auto-completed by Odoo Partner Autocomplete Service"
+msgstr "Bedrijf automatisch ingevuld door Odoo Relatie Autocomplete Service"
 
 #. module: partner_autocomplete
 #: model:ir.model.fields,field_description:partner_autocomplete.field_res_company__partner_gid
@@ -53,7 +56,7 @@ msgstr "Database ID van bedrijf"
 #. module: partner_autocomplete
 #: model:ir.model,name:partner_autocomplete.model_res_config_settings
 msgid "Config Settings"
-msgstr "Configuratie-instellingen"
+msgstr "Configuratie instellingen"
 
 #. module: partner_autocomplete
 #: model:ir.model,name:partner_autocomplete.model_res_partner
@@ -81,11 +84,6 @@ msgid "Enrich Done"
 msgstr "Verrijken klaar"
 
 #. module: partner_autocomplete
-#: model:iap.service,unit_name:partner_autocomplete.iap_service_partner_autocomplete
-msgid "Enrichments"
-msgstr "Verrijkingen"
-
-#. module: partner_autocomplete
 #: model:ir.model,name:partner_autocomplete.model_ir_http
 msgid "HTTP Routing"
 msgstr "HTTP routing"
@@ -93,13 +91,14 @@ msgstr "HTTP routing"
 #. module: partner_autocomplete
 #. odoo-javascript
 #: code:addons/partner_autocomplete/static/src/js/partner_autocomplete_core.js:0
+#, python-format
 msgid "IAP Account Token missing"
 msgstr "IAP account token ontbreekt"
 
 #. module: partner_autocomplete
 #: model:ir.model,name:partner_autocomplete.model_iap_autocomplete_api
 msgid "IAP Partner Autocomplete API"
-msgstr "IAP Partner Autocomplete API"
+msgstr "API voor automatisch aanvullen van relaties"
 
 #. module: partner_autocomplete
 #: model:ir.model.fields,field_description:partner_autocomplete.field_res_partner_autocomplete_sync__id
@@ -117,6 +116,11 @@ msgid "Is synched"
 msgstr "Is gesynchroniseerd"
 
 #. module: partner_autocomplete
+#: model:ir.model.fields,field_description:partner_autocomplete.field_res_partner_autocomplete_sync____last_update
+msgid "Last Modified on"
+msgstr "Laatst gewijzigd op"
+
+#. module: partner_autocomplete
 #: model:ir.model.fields,field_description:partner_autocomplete.field_res_partner_autocomplete_sync__write_uid
 msgid "Last Updated by"
 msgstr "Laatst bijgewerkt door"
@@ -129,59 +133,67 @@ msgstr "Laatst bijgewerkt op"
 #. module: partner_autocomplete
 #. odoo-python
 #: code:addons/partner_autocomplete/models/iap_autocomplete_api.py:0
+#, python-format
 msgid "No account token"
 msgstr "Geen accounttoken"
 
 #. module: partner_autocomplete
 #. odoo-javascript
 #: code:addons/partner_autocomplete/static/src/js/partner_autocomplete_core.js:0
+#, python-format
 msgid "Not enough credits for Partner Autocomplete"
-msgstr "Niet genoeg credits voor Partner Autocomplete"
+msgstr "Niet genoeg credits voor automatisch aanvullen van relatie"
 
 #. module: partner_autocomplete
 #: model:ir.model.fields,field_description:partner_autocomplete.field_res_partner_autocomplete_sync__partner_id
 msgid "Partner"
-msgstr "Partner"
+msgstr "Relatie"
+
+#. module: partner_autocomplete
+#: model:ir.actions.server,name:partner_autocomplete.ir_cron_partner_autocomplete_ir_actions_server
+#: model:ir.cron,cron_name:partner_autocomplete.ir_cron_partner_autocomplete
+msgid "Partner Autocomplete : Sync with remote DB"
+msgstr "Automatisch aanvullen van relatie: Synchroniseer met externe DB"
 
 #. module: partner_autocomplete
 #: model:ir.model,name:partner_autocomplete.model_res_partner_autocomplete_sync
 msgid "Partner Autocomplete Sync"
-msgstr "Sync Partner Autocomplete"
+msgstr "Automatische aanvullen van relatie synchronisatie"
 
 #. module: partner_autocomplete
-#: model:ir.actions.server,name:partner_autocomplete.ir_cron_partner_autocomplete_ir_actions_server
-msgid "Partner Autocomplete: Sync with remote DB"
-msgstr "Partner Autocomplete: Synchroniseer met externe DB"
+#. odoo-python
+#: code:addons/partner_autocomplete/models/res_partner.py:0
+#, python-format
+msgid "Partner created by Odoo Partner Autocomplete Service"
+msgstr ""
+"Relatie aangemaakt door automatische aanvullen van relatie synchronisatie"
 
 #. module: partner_autocomplete
 #. odoo-javascript
 #: code:addons/partner_autocomplete/static/src/xml/partner_autocomplete.xml:0
-msgid "Search Worldwide 🌎"
-msgstr "Zoek wereldwijd 🌎"
+#: code:addons/partner_autocomplete/static/src/xml/partner_autocomplete.xml:0
+#, python-format
+msgid "Placeholder"
+msgstr "Placeholder"
 
 #. module: partner_autocomplete
 #. odoo-javascript
 #: code:addons/partner_autocomplete/static/src/js/partner_autocomplete_fieldchar.js:0
 #: code:addons/partner_autocomplete/static/src/js/partner_autocomplete_many2one.js:0
+#, python-format
 msgid "Searching Autocomplete..."
 msgstr "Automatisch aanvullen wordt uitgevoerd .."
 
 #. module: partner_autocomplete
 #. odoo-javascript
 #: code:addons/partner_autocomplete/static/src/xml/partner_autocomplete.xml:0
+#, python-format
 msgid "Set Your Account Token"
 msgstr "Stel je account token in"
 
 #. module: partner_autocomplete
 #. odoo-python
 #: code:addons/partner_autocomplete/models/iap_autocomplete_api.py:0
+#, python-format
 msgid "Test mode"
 msgstr "Test mode"
-
-#. module: partner_autocomplete
-#. odoo-python
-#: code:addons/partner_autocomplete/models/res_partner.py:0
-msgid "Unable to enrich company (no credit was consumed)."
-msgstr ""
-"Het is niet mogelijk om het bedrijf te verrijken (er is geen krediet "
-"gebruikt)."

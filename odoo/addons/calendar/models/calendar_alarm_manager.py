@@ -1,11 +1,14 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import logging
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models
 from odoo.tools import plaintext2html
-from odoo.tools.sql import SQL
+
+_logger = logging.getLogger(__name__)
 
 
 class AlarmManager(models.AbstractModel):
@@ -37,7 +40,7 @@ class AlarmManager(models.AbstractModel):
                         END as last_alarm,
                         cal.start as first_event_date,
                         CASE
-                            WHEN cal.recurrency AND rrule.end_type = 'end_date' THEN rrule.until
+                            WHEN cal.recurrency THEN rrule.until
                             ELSE cal.stop
                         END as last_event_date,
                         calcul_delta.min_delta,
@@ -102,7 +105,7 @@ class AlarmManager(models.AbstractModel):
         events = self.env['calendar.event'].browse(result)
         result = {
             key: result[key]
-            for key in events._filtered_access('read').ids
+            for key in set(events._filter_access_rules('read').ids)
         }
         return result
 
@@ -138,14 +141,6 @@ class AlarmManager(models.AbstractModel):
             })
         return result
 
-    @api.model
-    def _get_notify_alert_extra_conditions(self):
-        """
-        To be overriden on inherited modules
-        adding extra conditions to extract only the unsynced events
-        """
-        return SQL("")
-
     def _get_events_by_alarm_to_notify(self, alarm_type):
         """
         Get the events with an alarm of the given type between the cron
@@ -157,26 +152,20 @@ class AlarmManager(models.AbstractModel):
         already.
         """
         lastcall = self.env.context.get('lastcall', False) or fields.date.today() - relativedelta(weeks=1)
-        extra_conditions = self._get_notify_alert_extra_conditions()
-        now = fields.Datetime.now()
-        self.env.cr.execute(SQL("""
-            SELECT alarm.id, event.id
-              FROM calendar_event AS event
-              JOIN calendar_alarm_calendar_event_rel AS event_alarm_rel
-                ON event.id = event_alarm_rel.calendar_event_id
-              JOIN calendar_alarm AS alarm
-                ON event_alarm_rel.calendar_alarm_id = alarm.id
-             WHERE alarm.alarm_type = %s
-               AND event.active
-               AND event.start - CAST(alarm.duration || ' ' || alarm.interval AS Interval) >= %s
-               AND event.start - CAST(alarm.duration || ' ' || alarm.interval AS Interval) < %s
-               %s
-        """,
-            alarm_type,
-            lastcall,
-            now,
-            extra_conditions,
-        ))
+        self.env.cr.execute('''
+            SELECT "alarm"."id", "event"."id"
+              FROM "calendar_event" AS "event"
+              JOIN "calendar_alarm_calendar_event_rel" AS "event_alarm_rel"
+                ON "event"."id" = "event_alarm_rel"."calendar_event_id"
+              JOIN "calendar_alarm" AS "alarm"
+                ON "event_alarm_rel"."calendar_alarm_id" = "alarm"."id"
+             WHERE (
+                   "alarm"."alarm_type" = %s
+               AND "event"."active"
+               AND "event"."start" - CAST("alarm"."duration" || ' ' || "alarm"."interval" AS Interval) >= %s
+               AND "event"."start" - CAST("alarm"."duration" || ' ' || "alarm"."interval" AS Interval) < now() at time zone 'utc'
+               AND "event"."stop" > now() at time zone 'utc'
+             )''', [alarm_type, lastcall])
 
         events_by_alarm = {}
         for alarm_id, event_id in self.env.cr.fetchall():
@@ -190,31 +179,20 @@ class AlarmManager(models.AbstractModel):
         if not events_by_alarm:
             return
 
-        # force_send limit should apply to the total nb of attendees, not per alarm
-        force_send_limit = int(self.env['ir.config_parameter'].sudo().get_param('mail.mail_force_send_limit', 100))
-
         event_ids = list(set(event_id for event_ids in events_by_alarm.values() for event_id in event_ids))
         events = self.env['calendar.event'].browse(event_ids)
-        now = fields.Datetime.now()
-        attendees = events.filtered(lambda e: e.stop > now).attendee_ids.filtered(lambda a: a.state != 'declined')
+        attendees = events.attendee_ids.filtered(lambda a: a.state != 'declined')
         alarms = self.env['calendar.alarm'].browse(events_by_alarm.keys())
         for alarm in alarms:
             alarm_attendees = attendees.filtered(lambda attendee: attendee.event_id.id in events_by_alarm[alarm.id])
             alarm_attendees.with_context(
+                mail_notify_force_send=True,
                 calendar_template_ignore_recurrence=True,
-                mail_notify_author=True,
+                mail_notify_author=True
             )._send_mail_to_attendees(
                 alarm.mail_template_id,
-                force_send=len(attendees) <= force_send_limit
+                force_send=True
             )
-
-        for event in events:
-            if event.recurrence_id:
-                next_date = event.get_next_alarm_date(events_by_alarm)
-                # In cron, setup alarm only when there is a next date on the target. Otherwise the 'now()'
-                # check in the call below can generate undeterministic behavior and setup random alarms.
-                if next_date:
-                    event.recurrence_id.with_context(date=next_date)._setup_alarms()
 
     @api.model
     def get_next_notif(self):
@@ -259,10 +237,13 @@ class AlarmManager(models.AbstractModel):
 
     def _notify_next_alarm(self, partner_ids):
         """ Sends through the bus the next alarm of given partners """
+        notifications = []
         users = self.env['res.users'].search([
             ('partner_id', 'in', tuple(partner_ids)),
             ('groups_id', 'in', self.env.ref('base.group_user').ids),
         ])
         for user in users:
             notif = self.with_user(user).with_context(allowed_company_ids=user.company_ids.ids).get_next_notif()
-            user._bus_send("calendar.alarm", notif)
+            notifications.append([user.partner_id, 'calendar.alarm', notif])
+        if len(notifications) > 0:
+            self.env['bus.bus']._sendmany(notifications)

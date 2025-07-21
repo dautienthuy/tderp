@@ -42,7 +42,7 @@ class TestPosMargin(TestPoSCommon):
                   self.create_ui_order_data([(product1, 2), (product2, 2)])]
 
         # sync orders
-        self.env['pos.order'].sync_from_ui(orders)
+        self.env['pos.order'].create_from_ui(orders)
 
         # check margins
         self.assertEqual(self.pos_session.order_ids[0].margin, 5)
@@ -74,7 +74,7 @@ class TestPosMargin(TestPoSCommon):
                   self.create_ui_order_data([(product1, 2), (product2, 2)])]
 
         # sync orders
-        self.env['pos.order'].sync_from_ui(orders)
+        self.env['pos.order'].create_from_ui(orders)
 
         # check margins
         self.assertEqual(self.pos_session.order_ids[0].margin, -5)
@@ -106,7 +106,7 @@ class TestPosMargin(TestPoSCommon):
                   self.create_ui_order_data([(product1, 2), (product2, 2)])]
 
         # sync orders
-        self.env['pos.order'].sync_from_ui(orders)
+        self.env['pos.order'].create_from_ui(orders)
 
         # check margins
         self.assertEqual(self.pos_session.order_ids[0].margin, 10)
@@ -140,7 +140,7 @@ class TestPosMargin(TestPoSCommon):
                   self.create_ui_order_data([(product1, 2), (product2, 2)])]
 
         # sync orders
-        self.env['pos.order'].sync_from_ui(orders)
+        self.env['pos.order'].create_from_ui(orders)
 
         # check margins
         self.assertEqual(self.pos_session.order_ids[0].margin, 5)
@@ -178,7 +178,7 @@ class TestPosMargin(TestPoSCommon):
                   self.create_ui_order_data([(product1, 2), (product2, 2)])]
 
         # sync orders
-        self.env['pos.order'].sync_from_ui(orders)
+        self.env['pos.order'].create_from_ui(orders)
 
         # check margins in the config currency
         self.assertEqual(self.pos_session.order_ids[0].margin, 2.5)
@@ -220,7 +220,7 @@ class TestPosMargin(TestPoSCommon):
                   self.create_ui_order_data([(product1, 2), (product2, 2)])]
 
         # sync orders
-        self.env['pos.order'].sync_from_ui(orders)
+        self.env['pos.order'].create_from_ui(orders)
 
         # check margins in the config currency
         self.assertEqual(self.pos_session.order_ids[0].margin, 2.5)
@@ -255,7 +255,7 @@ class TestPosMargin(TestPoSCommon):
                   self.create_ui_order_data([(product1, -2), (product2, -2)])]
 
         # sync orders
-        self.env['pos.order'].sync_from_ui(orders)
+        self.env['pos.order'].create_from_ui(orders)
 
         # check margins
         self.assertEqual(self.pos_session.order_ids[0].margin, -5)
@@ -289,8 +289,7 @@ class TestPosMargin(TestPoSCommon):
         }).sudo()
         move1._action_confirm()
         move1._action_assign()
-        move1.move_line_ids.quantity = 2
-        move1.picked = True
+        move1.move_line_ids.qty_done = 2
         move1._action_done()
 
         move2 = self.env['stock.move'].create({
@@ -304,8 +303,7 @@ class TestPosMargin(TestPoSCommon):
         }).sudo()
         move2._action_confirm()
         move2._action_assign()
-        move2.move_line_ids.quantity = 1
-        move2.picked = True
+        move2.move_line_ids.qty_done = 1
         move2._action_done()
 
         # open a session
@@ -316,7 +314,7 @@ class TestPosMargin(TestPoSCommon):
                   self.create_ui_order_data([(product1, 2)])]
 
         # sync orders
-        self.env['pos.order'].sync_from_ui(orders)
+        self.env['pos.order'].create_from_ui(orders)
 
         # check margins
         self.assertEqual(self.pos_session.order_ids[0].margin, 27)
@@ -351,8 +349,7 @@ class TestPosMargin(TestPoSCommon):
         }).sudo()
         move1._action_confirm()
         move1._action_assign()
-        move1.move_line_ids.quantity = 2
-        move1.picked = True
+        move1.move_line_ids.qty_done = 2
         move1._action_done()
 
         move2 = self.env['stock.move'].create({
@@ -366,8 +363,7 @@ class TestPosMargin(TestPoSCommon):
         }).sudo()
         move2._action_confirm()
         move2._action_assign()
-        move2.move_line_ids.quantity = 1
-        move2.picked = True
+        move2.move_line_ids.qty_done = 1
         move2._action_done()
 
         # open a session
@@ -378,7 +374,7 @@ class TestPosMargin(TestPoSCommon):
                   self.create_ui_order_data([(product1, 2)])]
 
         # sync orders
-        self.env['pos.order'].sync_from_ui(orders)
+        self.env['pos.order'].create_from_ui(orders)
 
         # check margins which are not really computed so it should be 0
         self.assertEqual(self.pos_session.order_ids[0].margin, 0)

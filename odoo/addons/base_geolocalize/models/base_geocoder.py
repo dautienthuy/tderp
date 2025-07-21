@@ -14,7 +14,7 @@ class GeoProvider(models.Model):
     _name = "base.geo_provider"
     _description = "Geo Provider"
 
-    tech_name = fields.Char(string="Technical Name")
+    tech_name = fields.Char()
     name = fields.Char()
 
 
@@ -67,8 +67,8 @@ class GeoCoder(models.AbstractModel):
             result = service(addr, **kw)
         except AttributeError:
             raise UserError(_(
-                'Provider %s is not implemented for geolocation service.',
-                provider))
+                'Provider %s is not implemented for geolocation service.'
+            ) % provider)
         except UserError:
             raise
         except Exception:
@@ -128,7 +128,7 @@ class GeoCoder(models.AbstractModel):
                               '\n\nGoogle made this a paid feature.\n'
                               'You should first enable billing on your Google account.\n'
                               'Then, go to Developer Console, and enable the APIs:\n'
-                              'Geocoding, Maps Static, Maps Javascript.\n', result.get('error_message'))
+                              'Geocoding, Maps Static, Maps Javascript.\n') % result.get('error_message')
                 raise UserError(error_msg)
             geo = result['results'][0]['geometry']['location']
             return float(geo['lat']), float(geo['lng'])
@@ -144,7 +144,8 @@ class GeoCoder(models.AbstractModel):
             state,
             country
         ]
-        return ', '.join(filter(None, address_list))
+        address_list = [item for item in address_list if item]
+        return tools.ustr(', '.join(address_list))
 
     @api.model
     def _geo_query_address_googlemap(self, street=None, zip=None, city=None, state=None, country=None):
@@ -156,4 +157,4 @@ class GeoCoder(models.AbstractModel):
         return self._geo_query_address_default(street=street, zip=zip, city=city, state=state, country=country)
 
     def _raise_query_error(self, error):
-        raise UserError(_('Error with geolocation server: %s', error))
+        raise UserError(_('Error with geolocation server:') + ' %s' % error)

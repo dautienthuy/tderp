@@ -118,13 +118,14 @@ class LunchSupplier(models.Model):
          'Automatic Email Sending Time should be between 0 and 12'),
     ]
 
-    @api.depends('phone')
-    def _compute_display_name(self):
+    def name_get(self):
+        res = []
         for supplier in self:
             if supplier.phone:
-                supplier.display_name = f'{supplier.name} {supplier.phone}'
+                res.append((supplier.id, '%s %s' % (supplier.name, supplier.phone)))
             else:
-                supplier.display_name = supplier.name
+                res.append((supplier.id, supplier.name))
+        return res
 
     def _sync_cron(self):
         for supplier in self:
@@ -164,6 +165,8 @@ class LunchSupplier(models.Model):
                 'active': False,
                 'interval_type': 'days',
                 'interval_number': 1,
+                'numbercall': -1,
+                'doall': False,
                 'name': "Lunch: send automatic email",
                 'model_id': self.env['ir.model']._get_id(self._name),
                 'state': 'code',
@@ -188,33 +191,28 @@ class LunchSupplier(models.Model):
 
     def write(self, values):
         for topping in values.get('topping_ids_2', []):
-            topping_values = topping[2] if len(topping) > 2 else False
+            topping_values = topping[2]
             if topping_values:
                 topping_values.update({'topping_category': 2})
         for topping in values.get('topping_ids_3', []):
-            topping_values = topping[2] if len(topping) > 2 else False
+            topping_values = topping[2]
             if topping_values:
                 topping_values.update({'topping_category': 3})
         if values.get('company_id'):
             self.env['lunch.order'].search([('supplier_id', 'in', self.ids)]).write({'company_id': values['company_id']})
-        res = super().write(values)
+        super().write(values)
         if not CRON_DEPENDS.isdisjoint(values):
             # flush automatic_email_time field to call _sql_constraints
             if 'automatic_email_time' in values:
                 self.flush_model(['automatic_email_time'])
             self._sync_cron()
-        days_removed = [val for val in values if val in ('mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun') and not values[val]]
-        if days_removed:
-            self._cancel_future_days(days_removed)
-        return res
 
     def unlink(self):
         crons = self.cron_id.sudo()
         server_actions = crons.ir_actions_server_id
-        res = super().unlink()
+        super().unlink()
         crons.unlink()
         server_actions.unlink()
-        return res
 
     def toggle_active(self):
         """ Archiving related lunch product """
@@ -226,14 +224,6 @@ class LunchSupplier(models.Model):
         Product.search([('supplier_id', 'in', inactive_suppliers.ids)]).write({'active': False})
         return res
 
-    def _cancel_future_days(self, weekdays):
-        weekdays_n = [WEEKDAY_TO_NAME.index(wd) for wd in weekdays]
-        self.env['lunch.order'].search([
-            ('supplier_id', 'in', self.ids),
-            ('state', 'in', ('new', 'ordered')),
-            ('date', '>=', fields.Date.context_today(self.with_context(tz=self.tz))),
-        ]).filtered(lambda lo: lo.date.weekday() in weekdays_n).write({'state': 'cancelled'})
-
     def _get_current_orders(self, state='ordered'):
         """ Returns today's orders """
         available_today = self.filtered('available_today')
@@ -244,7 +234,7 @@ class LunchSupplier(models.Model):
             ('supplier_id', 'in', available_today.ids),
             ('state', '=', state),
             ('date', '=', fields.Date.context_today(self.with_context(tz=self.tz))),
-        ], order="user_id, product_id")
+        ], order="user_id, name")
         return orders
 
     def _send_auto_email(self):
@@ -300,8 +290,9 @@ class LunchSupplier(models.Model):
         now = fields.Datetime.now().replace(tzinfo=pytz.UTC)
 
         for supplier in self:
-            supplier_date = now.astimezone(pytz.timezone(supplier.tz))
-            supplier.available_today = supplier._available_on_date(supplier_date)
+            now = now.astimezone(pytz.timezone(supplier.tz))
+
+            supplier.available_today = supplier._available_on_date(now)
 
     def _available_on_date(self, date):
         self.ensure_one()

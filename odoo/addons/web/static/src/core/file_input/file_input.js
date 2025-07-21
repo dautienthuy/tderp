@@ -1,5 +1,9 @@
-import { Component, onMounted, useRef, useState } from "@odoo/owl";
-import { useFileUploader } from "@web/core/utils/files";
+/** @odoo-module **/
+
+import { useService } from "@web/core/utils/hooks";
+import { checkFileSize } from "@web/core/utils/files";
+
+import { Component, onMounted, useRef } from "@odoo/owl";
 
 /**
  * Custom file input
@@ -20,35 +24,9 @@ import { useFileUploader } from "@web/core/utils/files";
  *      to upload multiple files at once.
  */
 export class FileInput extends Component {
-    static template = "web.FileInput";
-    static defaultProps = {
-        acceptedFileExtensions: "*",
-        hidden: false,
-        multiUpload: false,
-        onUpload: () => {},
-        route: "/web/binary/upload_attachment",
-        beforeOpen: async () => true,
-    };
-    static props = {
-        acceptedFileExtensions: { type: String, optional: true },
-        autoOpen: { type: Boolean, optional: true },
-        hidden: { type: Boolean, optional: true },
-        multiUpload: { type: Boolean, optional: true },
-        onUpload: { type: Function, optional: true },
-        beforeOpen: { type: Function, optional: true },
-        resId: { type: Number, optional: true },
-        resModel: { type: String, optional: true },
-        route: { type: String, optional: true },
-        "*": true,
-    };
-
     setup() {
-        this.uploadFiles = useFileUploader();
+        this.http = useService("http");
         this.fileInputRef = useRef("file-input");
-        this.state = useState({
-            // Disables upload button if currently uploading.
-            isDisable: false,
-        });
 
         onMounted(() => {
             if (this.props.autoOpen) {
@@ -72,6 +50,28 @@ export class FileInput extends Component {
         return params;
     }
 
+    async uploadFiles(params) {
+        if ((params.ufile && params.ufile.length) || params.file) {
+            const fileSize = (params.ufile && params.ufile[0].size) || params.file.size;
+            if (!checkFileSize(fileSize, this.env.services.notification)) {
+                // FIXME
+                // Note that the notification service is not added as a
+                // dependency of this component (through useService hook),
+                // in order to avoid introducing a breaking change in a stable version.
+                // If the notification service is not available, the
+                // checkFileSize function will not display any notification
+                // but will still return the correct value.
+                return null;
+            }
+        }
+        const fileData = await this.http.post(this.props.route, params, "text");
+        const parsedFileData = JSON.parse(fileData);
+        if (parsedFileData.error) {
+            throw new Error(parsedFileData.error);
+        }
+        return parsedFileData;
+    }
+
     //--------------------------------------------------------------------------
     // Handlers
     //--------------------------------------------------------------------------
@@ -84,19 +84,10 @@ export class FileInput extends Component {
      * - resId: the id of the resModel target instance
      */
     async onFileInputChange() {
-        this.state.isDisable = true;
-        const parsedFileData = await this.uploadFiles(this.props.route, this.httpParams);
+        const parsedFileData = await this.uploadFiles(this.httpParams);
         if (parsedFileData) {
-            // When calling onUpload, also pass the files to allow to get data like their names
-            this.props.onUpload(
-                parsedFileData,
-                this.fileInputRef.el ? this.fileInputRef.el.files : []
-            );
-            // Because the input would not trigger this method if the same file name is uploaded,
-            // we must clear the value after handling the upload
-            this.fileInputRef.el.value = null;
+            this.props.onUpload(parsedFileData);
         }
-        this.state.isDisable = false;
     }
 
     /**
@@ -108,3 +99,25 @@ export class FileInput extends Component {
         }
     }
 }
+
+FileInput.defaultProps = {
+    acceptedFileExtensions: "*",
+    hidden: false,
+    multiUpload: false,
+    onUpload: () => {},
+    route: "/web/binary/upload_attachment",
+    beforeOpen: async () => true,
+};
+FileInput.props = {
+    acceptedFileExtensions: { type: String, optional: true },
+    autoOpen: { type: Boolean, optional: true },
+    hidden: { type: Boolean, optional: true },
+    multiUpload: { type: Boolean, optional: true },
+    onUpload: { type: Function, optional: true },
+    beforeOpen: { type: Function, optional: true },
+    resId: { type: Number, optional: true },
+    resModel: { type: String, optional: true },
+    route: { type: String, optional: true },
+    "*": true,
+};
+FileInput.template = "web.FileInput";

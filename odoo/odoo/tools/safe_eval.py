@@ -19,11 +19,13 @@ import functools
 import logging
 import sys
 import types
-from opcode import opmap, opname
+from opcode import HAVE_ARGUMENT, opmap, opname
 from types import CodeType
 
 import werkzeug
 from psycopg2 import OperationalError
+
+from .misc import ustr
 
 import odoo
 
@@ -60,7 +62,7 @@ _UNSAFE_ATTRIBUTES = [
     # Tracebacks
     'tb_frame',
     # Generators
-    'gi_code', 'gi_frame', 'gi_yieldfrom',
+    'gi_code', 'gi_frame', 'g_yieldfrom'
     # Coroutines
     'cr_await', 'cr_code', 'cr_frame',
     # Coroutine generators
@@ -259,7 +261,7 @@ def test_expr(expr, allowed_codes, mode="eval", filename=None):
     except (SyntaxError, TypeError, ValueError):
         raise
     except Exception as e:
-        raise ValueError('%r while compiling\n%r' % (e, expr))
+        raise ValueError('"%s" while compiling\n%r' % (ustr(e), expr))
     assert_valid_codeobj(allowed_codes, code_obj, expr)
     return code_obj
 
@@ -387,7 +389,7 @@ def safe_eval(expr, globals_dict=None, locals_dict=None, mode="eval", nocopy=Fal
     if globals_dict is None:
         globals_dict = {}
 
-    globals_dict['__builtins__'] = dict(_BUILTINS)
+    globals_dict['__builtins__'] = _BUILTINS
     if locals_builtins:
         if locals_dict is None:
             locals_dict = {}
@@ -408,7 +410,7 @@ def safe_eval(expr, globals_dict=None, locals_dict=None, mode="eval", nocopy=Fal
     except ZeroDivisionError:
         raise
     except Exception as e:
-        raise ValueError('%r while evaluating\n%r' % (e, expr))
+        raise ValueError('%s: "%s" while evaluating\n%r' % (ustr(type(e)), ustr(e), expr))
 def test_python_expr(expr, mode="eval"):
     try:
         test_expr(expr, _SAFE_OPCODES, mode=mode)
@@ -423,7 +425,7 @@ def test_python_expr(expr, mode="eval"):
             }
             msg = "%s : %s at line %d\n%s" % (type(err).__name__, error['message'], error['lineno'], error['error_line'])
         else:
-            msg = str(err)
+            msg = ustr(err)
         return msg
     return False
 
@@ -472,10 +474,6 @@ import dateutil
 mods = ['parser', 'relativedelta', 'rrule', 'tz']
 for mod in mods:
     __import__('dateutil.%s' % mod)
-# make sure to patch pytz before exposing
-from odoo._monkeypatches.pytz import patch_pytz  # noqa: E402, F401
-patch_pytz()
-
 datetime = wrap_module(__import__('datetime'), ['date', 'datetime', 'time', 'timedelta', 'timezone', 'tzinfo', 'MAXYEAR', 'MINYEAR'])
 dateutil = wrap_module(dateutil, {
     "tz": ["UTC", "tzutc"],

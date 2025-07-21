@@ -3,17 +3,27 @@
 # 	* sale_stock
 # 
 # Translators:
-# zakariya moradi, 2025
-# Tiffany Chang, 2025
-# Naser mars, 2025
+# mehdi samadi <mehsamadi@gmail.com>, 2023
+# M.Hossein S.Farvashani <Farvashani@gmail.com>, 2023
+# Mohammad Tahmasebi <hit.tah75@gmail.com>, 2023
+# Morovat Guivi <tarjomac@gmail.com>, 2023
+# سید محمد آذربرا <mohammadazarbara98@gmail.com>, 2023
+# Hamid Darabi, 2023
+# Mohsen Mohammadi <iammohsen.123@gmail.com>, 2023
+# F Hariri <fhari1234@gmail.com>, 2023
+# Martin Trigaux, 2023
+# Hamed Mohammadi <hamed@dehongi.com>, 2023
+# Hanna Kheradroosta, 2023
+# Ali Reza Feizi Derakhshi, 2023
+# Mostafa Barmshory <mostafa.barmshory@gmail.com>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-19 20:37+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Naser mars, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:55+0000\n"
+"Last-Translator: Mostafa Barmshory <mostafa.barmshory@gmail.com>, 2024\n"
 "Language-Team: Persian (https://app.transifex.com/odoo/teams/41243/fa/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -32,28 +42,37 @@ msgstr ""
 
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_portal_content_inherit_sale_stock
-msgid "<i class=\"fa fa-fw fa-clock-o\"/> Awaiting arrival"
-msgstr "<i class=\"fa fa-fw fa-clock-o\"/> در انتظار ورود"
+msgid "<i class=\"fa fa-fw fa-clock-o\"/> <b>Preparation</b>"
+msgstr "<i class=\"fa fa-fw fa-clock-o\"/> <b>آماده سازی</b>"
 
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_portal_content_inherit_sale_stock
-msgid "<i class=\"fa fa-fw fa-clock-o\"/>Preparation"
-msgstr "<i class=\"fa fa-fw fa-clock-o\"/>آماده‌سازی"
+msgid "<i class=\"fa fa-fw fa-times\"/> <b>Cancelled</b>"
+msgstr "<i class=\"fa fa-fw fa-times\"/> <b>لغو شده</b>"
 
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_portal_content_inherit_sale_stock
-msgid "<i class=\"fa fa-fw fa-times\"/> Cancelled"
-msgstr "<i class=\"fa fa-fw fa-times\"/> لغو شد"
+msgid "<i class=\"fa fa-fw fa-truck\"/> <b>Shipped</b>"
+msgstr "<i class=\"fa fa-fw fa-truck\"/> <b>ارسال شده</b>"
 
 #. module: sale_stock
-#: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_portal_content_inherit_sale_stock
-msgid "<i class=\"fa fa-fw fa-times\"/>Cancelled"
-msgstr "<i class=\"fa fa-fw fa-times\"/>لغو شد"
+#: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_cancel_view_form_inherit
+msgid ""
+"<span attrs=\"{'invisible': [('display_delivery_alert', '=', False)]}\">\n"
+"                    Some deliveries are already done. Returns can be created from the Delivery Orders.\n"
+"                </span>"
+msgstr ""
 
 #. module: sale_stock
-#: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_portal_content_inherit_sale_stock
-msgid "<i class=\"fa fa-fw fa-truck\"/> Received"
-msgstr "<i class=\"fa fa-fw fa-truck\"/> دریافت شده است"
+#: model_terms:ir.ui.view,arch_db:sale_stock.res_config_settings_view_form_stock
+msgid ""
+"<span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-"
+"specific.\" role=\"img\" aria-label=\"Values set here are company-"
+"specific.\" groups=\"base.group_multi_company\"/>"
+msgstr ""
+"<span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-"
+"specific.\" role=\"img\" aria-label=\"Values set here are company-"
+"specific.\" groups=\"base.group_multi_company\"/>"
 
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.stock_production_lot_view_form
@@ -61,46 +80,30 @@ msgid "<span class=\"o_stat_text\">Sales</span>"
 msgstr "<span class=\"o_stat_text\">فروش‌ها</span>"
 
 #. module: sale_stock
+#: model_terms:ir.ui.view,arch_db:sale_stock.report_delivery_document_inherit_sale_stock
+msgid "<strong>Customer Reference:</strong>"
+msgstr "<strong>منبع مشتری:</strong>"
+
+#. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_portal_content_inherit_sale_stock
-msgid ""
-"<span class=\"small badge rounded-pill text-bg-success orders_label_text_align\">\n"
-"                                        <i class=\"fa fa-fw fa-truck\"/> Shipped\n"
-"                                    </span>"
-msgstr ""
-"<span class=\"small badge rounded-pill text-bg-success orders_label_text_align\">\n"
-"                                        <i class=\"fa fa-fw fa-truck\"/> ارسال شد\n"
-"                                    </span>"
+msgid "<strong>Delivery Orders</strong>"
+msgstr "<strong>درخواستهای تحویلی</strong>"
 
 #. module: sale_stock
-#: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_cancel_view_form_inherit
-msgid ""
-"<span invisible=\"not display_delivery_alert\">\n"
-"                    Some deliveries are already done. Returns can be created from the Delivery Orders.\n"
-"                </span>"
-msgstr ""
-"<span invisible=\"not display_delivery_alert\"> برخی تحویل‌ها از قبل انجام "
-"شده‌اند. می‌توان بازگشت‌ها را از سفارش‌های تحویل ایجاد کرد. </span>"
+#: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_portal_content_inherit_sale_stock
+msgid "<strong>Incoterm: </strong>"
+msgstr "<strong>نحوه تحویل : </strong>"
 
 #. module: sale_stock
-#: model_terms:ir.ui.view,arch_db:sale_stock.report_delivery_document_inherit_sale_stock
-msgid "<strong>Customer Reference</strong>"
-msgstr "<strong>مرجع مشتری</strong>"
-
-#. module: sale_stock
-#: model_terms:ir.ui.view,arch_db:sale_stock.report_delivery_document_inherit_sale_stock
+#: model_terms:ir.ui.view,arch_db:sale_stock.report_invoice_document_inherit_sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.report_saleorder_document_inherit_sale_stock
-msgid "<strong>Incoterm</strong>"
-msgstr "<strong>اینکوترمز</strong>"
-
-#. module: sale_stock
-#: model:ir.model.fields,help:sale_stock.field_sale_order_line__is_storable
-msgid "A storable product is a product for which you manage stock."
-msgstr "محصول قابل ذخیره سازی محصولی است که شما سهام آن را مدیریت می کنید."
+msgid "<strong>Incoterm:</strong>"
+msgstr "<strong>اینکوترم:</strong>"
 
 #. module: sale_stock
 #: model:ir.model.fields,help:sale_stock.field_sale_order_line__qty_delivered_method
 msgid ""
-"According to product configuration, the delivered quantity can be automatically computed by mechanism:\n"
+"According to product configuration, the delivered quantity can be automatically computed by mechanism :\n"
 "  - Manual: the quantity is set manually on the line\n"
 "  - Analytic From expenses: the quantity is the quantity sum from posted expenses\n"
 "  - Timesheet: the quantity is the sum of hours recorded on tasks linked to this sale line\n"
@@ -114,7 +117,9 @@ msgstr ""
 
 #. module: sale_stock
 #. odoo-javascript
+#: code:addons/sale_stock/static/src/legacy/qty_at_date_widget.xml:0
 #: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.xml:0
+#, python-format
 msgid "All planned operations included"
 msgstr "همه عملیات برنامه ریزی شده شامل می شود"
 
@@ -130,29 +135,27 @@ msgstr "در اسرع وقت"
 
 #. module: sale_stock
 #. odoo-javascript
+#: code:addons/sale_stock/static/src/legacy/qty_at_date_widget.js:0
 #: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.xml:0
+#, python-format
 msgid "Availability"
 msgstr "دسترسی"
 
 #. module: sale_stock
 #. odoo-javascript
+#: code:addons/sale_stock/static/src/legacy/qty_at_date_widget.xml:0
 #: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.xml:0
+#, python-format
 msgid "Available"
 msgstr "در دسترس"
 
 #. module: sale_stock
 #. odoo-javascript
+#: code:addons/sale_stock/static/src/legacy/qty_at_date_widget.xml:0
 #: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.xml:0
+#, python-format
 msgid "Available in stock"
 msgstr "موجود در انبار"
-
-#. module: sale_stock
-#: model:ir.model.fields,help:sale_stock.field_sale_order__delivery_status
-msgid ""
-"Blue: Not Delivered/Started\n"
-"            Orange: Partially Delivered\n"
-"            Green: Fully Delivered"
-msgstr ""
 
 #. module: sale_stock
 #: model:ir.model.fields,help:sale_stock.field_stock_rules_report__so_route_ids
@@ -162,7 +165,7 @@ msgstr "برای اعمال مسیرهای خاص سطرهای سفارش فرو
 #. module: sale_stock
 #: model:ir.model,name:sale_stock.model_res_company
 msgid "Companies"
-msgstr "شرکت‌ها"
+msgstr "شرکت"
 
 #. module: sale_stock
 #: model:ir.model.fields,help:sale_stock.field_sale_order__effective_date
@@ -173,11 +176,6 @@ msgstr "تاریخ تکمیل اولین سفارش تحویل."
 #: model:ir.model,name:sale_stock.model_res_config_settings
 msgid "Config Settings"
 msgstr "تنظیمات پیکربندی"
-
-#. module: sale_stock
-#: model_terms:ir.ui.view,arch_db:sale_stock.report_delivery_document_inherit_sale_stock
-msgid "Customer reference"
-msgstr "مراجعه مشتری"
 
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_portal_content_inherit_sale_stock
@@ -218,9 +216,9 @@ msgid ""
 "either use the minimum or maximum lead time of the order lines."
 msgstr ""
 "تاریخ تحویلی که شما می توانید به مشتری وعده دهید، در صورتی که محصولات خدماتی"
-" باشند، از حداقل زمان مورد نیاز سطرهای سفارش حساب محاسبه می‌شود. در صورت "
-"حمل، سیاست حمل و نقل از سفارش در نظر گرفته خواهد شد تا یا حداقل یا حداکثر "
-"زمان تدارک از سطرهای سفارش استفاده شود."
+" باشند، از حداقل زمان مورد نیاز سطرهای سفارش محاسبه می‌شود. در صورت حمل، "
+"سیاست حمل و نقل از سفارش در نظر گرفته خواهد شد تا یا حداقل یا حداکثر زمان "
+"تدارک از سطرهای سفارش استفاده شود."
 
 #. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order_line__display_qty_widget
@@ -228,11 +226,27 @@ msgid "Display Qty Widget"
 msgstr "ویجت تعداد نمایش"
 
 #. module: sale_stock
+#: model:res.groups,name:sale_stock.group_display_incoterm
+msgid "Display incoterms on Sales Order and related invoices"
+msgstr "نمایش قواعد بین المللی نافذ بر سفارشات خرید و فاکتورهای مربوطه"
+
+#. module: sale_stock
+#: model_terms:ir.ui.view,arch_db:sale_stock.res_config_settings_view_form_sale
+msgid "Display incoterms on orders &amp; invoices"
+msgstr "نمایش قواعد بین المللی سفارشات و فاکتورها"
+
+#. module: sale_stock
 #. odoo-python
 #: code:addons/sale_stock/models/sale_order.py:0
+#, python-format
 msgid ""
 "Do not forget to change the partner on the following delivery orders: %s"
 msgstr "فراموش نکنید که شریک را در سفارشات تحویل زیر تغییر دهید: %s"
+
+#. module: sale_stock
+#: model_terms:ir.ui.view,arch_db:sale_stock.res_config_settings_view_form_stock
+msgid "Documentation"
+msgstr "مستندات"
 
 #. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order__effective_date
@@ -262,7 +276,9 @@ msgstr "تاریخ مورد انتظار"
 
 #. module: sale_stock
 #. odoo-javascript
+#: code:addons/sale_stock/static/src/legacy/qty_at_date_widget.xml:0
 #: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.xml:0
+#, python-format
 msgid "Expected Delivery"
 msgstr "تحویل مورد انتظار"
 
@@ -278,7 +294,9 @@ msgstr "پیش‌بینی تاریخ مورد انتظار"
 
 #. module: sale_stock
 #. odoo-javascript
+#: code:addons/sale_stock/static/src/legacy/qty_at_date_widget.xml:0
 #: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.xml:0
+#, python-format
 msgid "Forecasted Stock"
 msgstr "موجودی‌کالای پیش‌بینی‌شده"
 
@@ -323,14 +341,10 @@ msgid "Incoterm Location"
 msgstr "محل اصطلاحات بازرگانی"
 
 #. module: sale_stock
-#: model_terms:ir.ui.view,arch_db:sale_stock.report_delivery_document_inherit_sale_stock
-msgid "Incoterm details"
-msgstr "جزئیات اینکوترمز"
-
-#. module: sale_stock
-#: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_portal_content_inherit_sale_stock
-msgid "Incoterm:"
-msgstr "اینکوترم:"
+#: model:ir.model.fields,field_description:sale_stock.field_res_config_settings__group_display_incoterm
+#: model_terms:ir.ui.view,arch_db:sale_stock.res_config_settings_view_form_sale
+msgid "Incoterms"
+msgstr "شرایط و استانداردهای بین المللی"
 
 #. module: sale_stock
 #: model:ir.model.fields,help:sale_stock.field_sale_order__incoterm
@@ -364,17 +378,12 @@ msgstr "داده های JSON برای ویجت popover"
 #. module: sale_stock
 #: model:ir.model,name:sale_stock.model_account_move
 msgid "Journal Entry"
-msgstr "سند دفترروزنامه‌"
+msgstr "داده روزنامه"
 
 #. module: sale_stock
 #: model:ir.model,name:sale_stock.model_account_move_line
 msgid "Journal Item"
-msgstr "آیتم دفترروزنامه"
-
-#. module: sale_stock
-#: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_portal_content_inherit_sale_stock
-msgid "Last Delivery Orders"
-msgstr "آخرین سفارشات تحویل"
+msgstr "آیتم روزنامه"
 
 #. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order_line__customer_lead
@@ -385,6 +394,13 @@ msgstr "زمان سرنخ"
 #: model:ir.model,name:sale_stock.model_stock_lot
 msgid "Lot/Serial"
 msgstr "سری/سریال"
+
+#. module: sale_stock
+#. odoo-python
+#: code:addons/sale_stock/models/sale_order_line.py:0
+#, python-format
+msgid "Make To Order"
+msgstr "تولید بر اساس سفارش"
 
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.exception_on_so
@@ -426,15 +442,25 @@ msgid "Move forward expected delivery dates by"
 msgstr "تاریخ های تحویل مورد انتظار تا"
 
 #. module: sale_stock
-#: model_terms:ir.ui.view,arch_db:sale_stock.sale_stock_help_message_template
-msgid "No delivery yet! Automate them with sales orders."
-msgstr "هنوز تحویل داده نشده است! آنها را با سفارشات فروش خودکار کنید."
+#. odoo-javascript
+#: code:addons/sale_stock/static/src/legacy/qty_at_date_widget.xml:0
+#, python-format
+msgid "No enough future availaibility"
+msgstr "عدم تکافو موجودی در آینده"
 
 #. module: sale_stock
 #. odoo-javascript
 #: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.xml:0
+#, python-format
 msgid "No future availability"
 msgstr "عدم دسترسی در آینده"
+
+#. module: sale_stock
+#. odoo-javascript
+#: code:addons/sale_stock/static/src/legacy/qty_at_date_widget.xml:0
+#, python-format
+msgid "No future availaibility"
+msgstr "عدم موجودی در آینده"
 
 #. module: sale_stock
 #: model:ir.model.fields.selection,name:sale_stock.selection__sale_order__delivery_status__pending
@@ -444,6 +470,7 @@ msgstr "تحویل داده نشده"
 #. module: sale_stock
 #. odoo-javascript
 #: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.xml:0
+#, python-format
 msgid "Not enough future availability"
 msgstr "عدم موجودی کافی در آینده"
 
@@ -456,7 +483,9 @@ msgstr "تعداد روزهای بین تایید سفارش و ارسال مح�
 
 #. module: sale_stock
 #. odoo-javascript
+#: code:addons/sale_stock/static/src/legacy/qty_at_date_widget.xml:0
 #: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.xml:0
+#, python-format
 msgid "On"
 msgstr "روشن"
 
@@ -482,11 +511,6 @@ msgid "Product"
 msgstr "محصول"
 
 #. module: sale_stock
-#: model:ir.model,name:sale_stock.model_stock_move_line
-msgid "Product Moves (Stock Move Line)"
-msgstr "انتقال محصول (مسیر انتقال موجودی)"
-
-#. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order_line__qty_available_today
 msgid "Qty Available Today"
 msgstr "تعداد موجود امروز"
@@ -499,50 +523,25 @@ msgstr "تعداد برای تحویل"
 #. module: sale_stock
 #. odoo-javascript
 #: code:addons/sale_stock/static/src/sale_stock_forecasted/forecasted_details.xml:0
+#, python-format
 msgid "Quotations"
 msgstr "پیش‌فاکتور"
 
 #. module: sale_stock
-#: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_portal_content_inherit_sale_stock
-msgid "RETURN"
-msgstr "بازگشت"
-
-#. module: sale_stock
-#: model_terms:ir.ui.view,arch_db:sale_stock.sale_stock_help_message_template
-msgid ""
-"Reduce back orders with reservations, locations management, smart\n"
-"                replenishment propositions, shipping connectors, barcode scanner, etc."
-msgstr ""
-"با رزرو، مدیریت مکان، پیشنهادهای تکمیل هوشمند،\n"
-"                اتصال دهنده های حمل و نقل، اسکنر بارکد و غیره، سفارشات برگشتی را کاهش دهید."
-
-#. module: sale_stock
 #. odoo-javascript
+#: code:addons/sale_stock/static/src/legacy/qty_at_date_widget.xml:0
 #: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.xml:0
+#, python-format
 msgid "Remaining demand available at"
 msgstr "تقاضای باقی‌مانده موجود در"
 
 #. module: sale_stock
-#. odoo-python
-#: code:addons/sale_stock/models/sale_order_line.py:0
-msgid "Replenish on Order (MTO)"
-msgstr "پر کردن به سفارش (ساخت به سفارش)"
-
-#. module: sale_stock
 #. odoo-javascript
+#: code:addons/sale_stock/static/src/legacy/qty_at_date_widget.xml:0
 #: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.xml:0
+#, python-format
 msgid "Reserved"
 msgstr "رزرو شده"
-
-#. module: sale_stock
-#: model:ir.model,name:sale_stock.model_stock_return_picking
-msgid "Return Picking"
-msgstr "برداشت بازگشت"
-
-#. module: sale_stock
-#: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_portal_content_inherit_sale_stock
-msgid "Returns"
-msgstr "بازگشت ها"
 
 #. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order_line__route_id
@@ -597,7 +596,6 @@ msgstr "سطرهای سفارش‌فروش"
 
 #. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_stock_lot__sale_order_ids
-#: model_terms:ir.ui.view,arch_db:sale_stock.sale_stock_help_message_template
 msgid "Sales Orders"
 msgstr "سفارشات فروش"
 
@@ -649,7 +647,7 @@ msgstr "سیاست حمل و نقل"
 #. module: sale_stock
 #: model:ir.model.fields.selection,name:sale_stock.selection__sale_order__delivery_status__started
 msgid "Started"
-msgstr "شروع شده"
+msgstr ""
 
 #. module: sale_stock
 #: model:ir.model,name:sale_stock.model_stock_move
@@ -663,7 +661,7 @@ msgid "Stock Moves"
 msgstr "انتقالهای موجودی"
 
 #. module: sale_stock
-#: model:ir.model,name:sale_stock.model_stock_forecasted_product_product
+#: model:ir.model,name:sale_stock.model_report_stock_report_product_product_replenishment
 msgid "Stock Replenishment Report"
 msgstr "گزارش جایگزینی انبار"
 
@@ -685,34 +683,27 @@ msgstr "گزارش قانون موجودی انبار"
 #. module: sale_stock
 #. odoo-javascript
 #: code:addons/sale_stock/static/src/xml/delay_alert.xml:0
+#, python-format
 msgid "The delivery"
 msgstr "تحویل"
 
 #. module: sale_stock
 #. odoo-python
 #: code:addons/sale_stock/models/sale_order.py:0
+#, python-format
 msgid ""
 "The delivery address has been changed on the Sales Order<br/>\n"
-"                        From <strong>\"%(old_address)s\"</strong> to <strong>\"%(new_address)s\"</strong>,\n"
+"                        From <strong>\"%s\"</strong> To <strong>\"%s\"</strong>,\n"
 "                        You should probably update the partner on this document."
 msgstr ""
 "آدرس تحویل در سفارش فروش تغییر کرده است<br/>\n"
-"                        از <strong>\"%(old_address)s\"</strong> به <strong>\"%(new_address)s\"</strong>,\n"
-"                        احتمالاً باید شریک را در این سند به روز کنید."
-
-#. module: sale_stock
-#. odoo-javascript
-#: code:addons/sale_stock/static/src/product_catalog/sale_order_line/sale_order_line.js:0
-msgid ""
-"The ordered quantity cannot be decreased below the amount already delivered."
-" Instead, create a return in your inventory."
-msgstr ""
-"مقدار سفارش داده شده نمی‌تواند به کمتر از مقدار تحویل داده شده کاهش یابد. در"
-" عوض، یک مرجوعی در موجودی خود ایجاد کنید."
+"                         از <strong>\"%s\"</strong> تا <strong>\"%s\"</strong>،\n"
+"                         احتمالاً باید شریک را در این سند بروز کنید."
 
 #. module: sale_stock
 #. odoo-python
 #: code:addons/sale_stock/models/sale_order_line.py:0
+#, python-format
 msgid ""
 "The ordered quantity of a sale order line cannot be decreased below the "
 "amount already delivered. Instead, create a return in your inventory."
@@ -722,14 +713,11 @@ msgstr ""
 
 #. module: sale_stock
 #. odoo-javascript
+#: code:addons/sale_stock/static/src/legacy/qty_at_date_widget.xml:0
 #: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.xml:0
+#, python-format
 msgid "This product is replenished on demand."
 msgstr "این محصول در صورت تقاضا موجودی آن دوباره پر می شود."
-
-#. module: sale_stock
-#: model:ir.model.fields,field_description:sale_stock.field_sale_order_line__is_storable
-msgid "Track Inventory"
-msgstr "ردیابی موجودی"
 
 #. module: sale_stock
 #: model:ir.model,name:sale_stock.model_stock_picking
@@ -748,7 +736,9 @@ msgstr "کاربر"
 
 #. module: sale_stock
 #. odoo-javascript
+#: code:addons/sale_stock/static/src/legacy/qty_at_date_widget.xml:0
 #: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.xml:0
+#, python-format
 msgid "View Forecast"
 msgstr "مشاهده پیش‌بینی"
 
@@ -758,7 +748,6 @@ msgid "Virtual Available At Date"
 msgstr "موجودی مجازی در تاریخ"
 
 #. module: sale_stock
-#: model:ir.model,name:sale_stock.model_stock_warehouse
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order__warehouse_id
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order_line__warehouse_id
 #: model:ir.model.fields,field_description:sale_stock.field_sale_report__warehouse_id
@@ -768,6 +757,7 @@ msgstr "انبار"
 #. module: sale_stock
 #. odoo-python
 #: code:addons/sale_stock/models/sale_order.py:0
+#, python-format
 msgid "Warning!"
 msgstr "هشدار!"
 
@@ -780,21 +770,6 @@ msgstr "وقتی همه محصولات آماده شد"
 #: model_terms:ir.ui.view,arch_db:sale_stock.res_config_settings_view_form_stock
 msgid "When to start shipping"
 msgstr "زمان شروع حمل و نقل"
-
-#. module: sale_stock
-#. odoo-python
-#: code:addons/sale_stock/models/sale_order.py:0
-msgid ""
-"You must have a warehouse for line using a delivery in different company."
-msgstr ""
-"شما باید یک انبار برای خط، با استفاده از تحویل در شرکت های مختلف، داشته "
-"باشید."
-
-#. module: sale_stock
-#. odoo-python
-#: code:addons/sale_stock/models/sale_order.py:0
-msgid "You must set a warehouse on your sale order to proceed."
-msgstr "برای ادامه، باید یک انبار در سفارش فروش خود تنظیم کنید."
 
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.exception_on_so
@@ -825,5 +800,6 @@ msgstr "پردازش شده به جای"
 #. module: sale_stock
 #. odoo-javascript
 #: code:addons/sale_stock/static/src/xml/delay_alert.xml:0
+#, python-format
 msgid "will be late."
 msgstr "دیر خواهد شد."

@@ -1,15 +1,10 @@
+/** @odoo-module **/
+
+import { isBrowserFirefox } from "@web/core/browser/feature_detection";
 import { browser } from "../browser/browser";
+import { _lt } from "../l10n/translation";
 import { registry } from "../registry";
 import { completeUncaughtError, getErrorTechnicalName } from "./error_utils";
-import { isBrowserFirefox, isBrowserChrome } from "@web/core/browser/feature_detection";
-
-export class HTMLElementLoadingError extends Error {
-    static message = "Error loading an HTML Element";
-    constructor(message = HTMLElementLoadingError.message, event) {
-        super(message);
-        this.event = event;
-    }
-}
 
 /**
  * Uncaught Errors have 4 properties:
@@ -28,20 +23,22 @@ export class UncaughtError extends Error {
 }
 
 export class UncaughtClientError extends UncaughtError {
-    constructor(message = "Uncaught Javascript Error") {
+    constructor(message = _lt("Uncaught Javascript Error")) {
         super(message);
     }
 }
 
 export class UncaughtPromiseError extends UncaughtError {
-    constructor(message = "Uncaught Promise") {
+    constructor(message = _lt("Uncaught Promise")) {
         super(message);
         this.unhandledRejectionEvent = null;
     }
 }
 
-export class ThirdPartyScriptError extends UncaughtError {
-    constructor(message = "Third-Party Script Error") {
+// FIXME: this error is misnamed and actually represends errors in third-party scripts
+// rename this in master
+export class UncaughtCorsError extends UncaughtError {
+    constructor(message = _lt("Uncaught CORS Error")) {
         super(message);
     }
 }
@@ -49,39 +46,28 @@ export class ThirdPartyScriptError extends UncaughtError {
 export const errorService = {
     start(env) {
         function handleError(uncaughtError, retry = true) {
-            function shouldLogError() {
-                // Only log errors that are relevant business-wise, following the heuristics:
-                // Error.event and Error.traceback have been assigned
-                // in one of the two error event listeners below.
-                // If preventDefault was already executed on the event, don't log it.
-                return (
-                    uncaughtError.event &&
-                    !uncaughtError.event.defaultPrevented &&
-                    uncaughtError.traceback
-                );
-            }
             let originalError = uncaughtError;
             while (originalError instanceof Error && "cause" in originalError) {
                 originalError = originalError.cause;
             }
-            for (const [name, handler] of registry.category("error_handlers").getEntries()) {
-                try {
-                    if (handler(env, uncaughtError, originalError)) {
-                        break;
-                    }
-                } catch (e) {
-                    if (shouldLogError()) {
-                        uncaughtError.event.preventDefault();
-                        console.error(
-                            `@web/core/error_service: handler "${name}" failed with "${
-                                e.cause || e
-                            }" while trying to handle:\n` + uncaughtError.traceback
-                        );
-                    }
-                    return;
+            const services = env.services;
+            if (!services.dialog || !services.notification || !services.rpc) {
+                // here, the environment is not ready to provide feedback to the user.
+                // We simply wait 1 sec and try again, just in case the application can
+                // recover.
+                if (retry) {
+                    browser.setTimeout(() => {
+                        handleError(uncaughtError, false);
+                    }, 1000);
+                }
+                return;
+            }
+            for (const handler of registry.category("error_handlers").getAll()) {
+                if (handler(env, uncaughtError, originalError)) {
+                    break;
                 }
             }
-            if (shouldLogError()) {
+            if (uncaughtError.event && !uncaughtError.event.defaultPrevented) {
                 // Log the full traceback instead of letting the browser log the incomplete one
                 uncaughtError.event.preventDefault();
                 console.error(uncaughtError.traceback);
@@ -111,11 +97,13 @@ export const errorService = {
             }
             let uncaughtError;
             if (isRedactedError) {
-                uncaughtError = new ThirdPartyScriptError();
-                uncaughtError.traceback =
-                    `An error whose details cannot be accessed by the Odoo framework has occurred.\n` +
-                    `The error probably originates from a JavaScript file served from a different origin.\n` +
-                    `The full error is available in the browser console.`;
+                uncaughtError = new UncaughtCorsError();
+                uncaughtError.traceback = env._t(
+                    `Unknown CORS error\n\n` +
+                        `An unknown CORS error occured.\n` +
+                        `The error probably originates from a JavaScript file served from a different origin.\n` +
+                        `(Opening your browser console might give you a hint on the error.)`
+                );
             } else {
                 uncaughtError = new UncaughtClientError();
                 uncaughtError.event = ev;
@@ -130,49 +118,10 @@ export const errorService = {
         });
 
         browser.addEventListener("unhandledrejection", async (ev) => {
-            let error = ev.reason;
-
-            if (error && error.type === "error" && "eventPhase" in error) {
-                // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/error_event
-                // See also MDN's img, script and iframe docs. The error Event *doesn't* bubble.
-                // We sometimes reject a promise with the Event dispatched by the "error" handler
-                // of an HTMLElement. If the code throwing that at us doesn't wrap the event in an
-                // actual Error, there is no reason to do more than the spec: we do not handle
-                // this error bubbling to us via the Promise being rejected.
-                if (!error.bubbles) {
-                    ev.preventDefault();
-                    return;
-                }
-                // If for some reason the error Event bubbles then do something
-                // a bit meaningful.
-                let message;
-                if (error.target) {
-                    message = `${HTMLElementLoadingError.message}: ${error.target.nodeName}`;
-                }
-                error = new HTMLElementLoadingError(message, error);
-            }
-
-            let traceback;
-            if (isBrowserChrome() && ev instanceof CustomEvent && error === undefined) {
-                // This fix is ad-hoc to a bug in the Honey Paypal extension
-                // They throw a CustomEvent instead of the specified PromiseRejectionEvent
-                // https://developer.mozilla.org/en-US/docs/Web/API/Window/unhandledrejection_event
-                // Moreover Chrome doesn't seem to sandbox enough the extension, as it seems irrelevant
-                // to have extension's errors in the main business page.
-                // We want to ignore those errors as they are not produced by us, and are parasiting
-                // the navigation. We do this according to the heuristic expressed in the if.
-                if (!odoo.debug) {
-                    return;
-                }
-                traceback =
-                    `Uncaught unknown Error\n` +
-                    `An unknown error occured. This may be due to a Chrome extension meddling with Odoo.\n` +
-                    `(Opening your browser console might give you a hint on the error.)`;
-            }
+            const error = ev.reason;
             const uncaughtError = new UncaughtPromiseError();
             uncaughtError.unhandledRejectionEvent = ev;
             uncaughtError.event = ev;
-            uncaughtError.traceback = traceback;
             if (error instanceof Error) {
                 error.errorEvent = ev;
                 const annotated = env.debug && env.debug.includes("assets");

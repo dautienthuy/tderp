@@ -25,7 +25,7 @@ class TestDeleteEvents(TestCommon):
 
     @patch.object(MicrosoftCalendarService, 'delete')
     def test_delete_simple_event_from_odoo_organizer_calendar(self, mock_delete):
-        event_id = self.simple_event.microsoft_id
+        event_id = self.simple_event.ms_organizer_event_id
 
         self.simple_event.with_user(self.organizer_user).unlink()
         self.call_post_commit_hooks()
@@ -40,7 +40,7 @@ class TestDeleteEvents(TestCommon):
 
     @patch.object(MicrosoftCalendarService, 'delete')
     def test_delete_simple_event_from_odoo_attendee_calendar(self, mock_delete):
-        event_id = self.simple_event.microsoft_id
+        event_id = self.simple_event.ms_organizer_event_id
 
         self.simple_event.with_user(self.attendee_user).unlink()
         self.call_post_commit_hooks()
@@ -55,7 +55,7 @@ class TestDeleteEvents(TestCommon):
 
     @patch.object(MicrosoftCalendarService, 'delete')
     def test_archive_simple_event_from_odoo_organizer_calendar(self, mock_delete):
-        event_id = self.simple_event.microsoft_id
+        event_id = self.simple_event.ms_organizer_event_id
 
         self.simple_event.with_user(self.organizer_user).write({'active': False})
         self.call_post_commit_hooks()
@@ -71,7 +71,7 @@ class TestDeleteEvents(TestCommon):
 
     @patch.object(MicrosoftCalendarService, 'delete')
     def test_archive_simple_event_from_odoo_attendee_calendar(self, mock_delete):
-        event_id = self.simple_event.microsoft_id
+        event_id = self.simple_event.ms_organizer_event_id
 
         self.simple_event.with_user(self.attendee_user).write({'active': False})
         self.call_post_commit_hooks()
@@ -101,7 +101,7 @@ class TestDeleteEvents(TestCommon):
         self.assertFalse(all(e.active for e in several_simple_events))
 
         mock_delete.assert_has_calls([
-            call(e.microsoft_id, token=ANY, timeout=ANY)
+            call(e.ms_organizer_event_id, token=ANY, timeout=ANY)
             for e in several_simple_events
         ])
 
@@ -110,7 +110,7 @@ class TestDeleteEvents(TestCommon):
         """
         In his Outlook calendar, the organizer cannot delete the event, he can only cancel it.
         """
-        event_id = self.simple_event.microsoft_id
+        event_id = self.simple_event.ms_organizer_event_id
         mock_get_events.return_value = (
             MicrosoftEvent([{
                 "id": event_id,
@@ -142,7 +142,7 @@ class TestDeleteEvents(TestCommon):
             return
         # arrange
         idx = 2
-        event_id = self.recurrent_events[idx].microsoft_id
+        event_id = self.recurrent_events[idx].ms_organizer_event_id
 
         # act
         self.recurrent_events[idx].with_user(self.organizer_user).unlink()
@@ -163,7 +163,7 @@ class TestDeleteEvents(TestCommon):
             return
         # arrange
         idx = 0
-        event_id = self.recurrent_events[idx].microsoft_id
+        event_id = self.recurrent_events[idx].ms_organizer_event_id
 
         # act
         self.recurrent_events[idx].with_user(self.organizer_user).unlink()
@@ -261,7 +261,7 @@ class TestDeleteEvents(TestCommon):
         # arrange
         mock_get_events.return_value = (
             MicrosoftEvent([{
-                "id": self.recurrence.microsoft_id,
+                "id": self.recurrence.ms_organizer_event_id,
                 "@removed": {"reason": "deleted"}
             }]),
             None
@@ -289,7 +289,7 @@ class TestDeleteEvents(TestCommon):
             return
         # arrange
         idx = 0
-        event_id = self.recurrent_events[idx].microsoft_id
+        event_id = self.recurrent_events[idx].ms_organizer_event_id
 
         # act
         self.recurrent_events[idx].with_user(self.organizer_user).action_mass_archive('self_only')
@@ -304,26 +304,6 @@ class TestDeleteEvents(TestCommon):
             token=mock_get_token(self.organizer_user),
             timeout=ANY
         )
-
-    @patch.object(MicrosoftCalendarService, 'delete')
-    def test_delete_synced_event_with_sync_config_paused(self, mock_delete):
-        """
-        Deletes an event with the Outlook Calendar synchronization paused, the event must be archived completely.
-        """
-        # Set user synchronization configuration as active and pause it.
-        self.organizer_user.microsoft_synchronization_stopped = False
-        self.organizer_user.pause_microsoft_synchronization()
-
-        # Try to delete a simple event in Odoo Calendar.
-        self.simple_event.with_user(self.organizer_user).unlink()
-        self.call_post_commit_hooks()
-        self.simple_event.invalidate_recordset()
-
-        # Ensure that synchronization is paused, delete wasn't called and record doesn't exist anymore.
-        self.assertFalse(self.organizer_user.microsoft_synchronization_stopped)
-        self.assertEqual(self.organizer_user._get_microsoft_sync_status(), "sync_paused")
-        self.assertFalse(self.simple_event.exists(), "Event must be deleted from Odoo even though sync configuration is off")
-        mock_delete.assert_not_called()
 
     @patch.object(MicrosoftCalendarService, 'delete')
     def test_delete_recurrence_previously_synced(self, mock_delete):

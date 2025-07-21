@@ -1,7 +1,7 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import json
 
-from odoo import Command
 from odoo.addons.website.tools import MockRequest
 from odoo.tests import tagged
 from odoo.addons.base.tests.common import HttpCaseWithUserDemo
@@ -10,10 +10,19 @@ from odoo.addons.base.tests.common import HttpCaseWithUserDemo
 @tagged('post_install', '-at_install')
 class TestGetCurrentWebsite(HttpCaseWithUserDemo):
 
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.website = cls.env.ref('website.default_website')
+    def setUp(self):
+        super().setUp()
+        # Unlink unused website(s) to avoid messing with the expected results
+        self.website = self.env.ref('website.default_website')
+        for w in self.env['website'].search([('id', '!=', self.website.id)]):
+            try:
+                # Website are impossible to delete most often than not, as if
+                # there is critical business data linked to it, it will prevent
+                # the unlink. Could easily happen with a bridge module adding
+                # some custom data.
+                w.unlink()
+            except Exception:
+                pass
 
     def test_01_get_current_website_id(self):
         """Make sure `_get_current_website_id works`."""
@@ -73,29 +82,11 @@ class TestGetCurrentWebsite(HttpCaseWithUserDemo):
         self.assertEqual(Website._get_current_website_id('site-1.com:82'), website1.id)
         self.assertEqual(Website._get_current_website_id('site-1.com'), website1.id)
 
-        # CASE: Unicode domain (IDNA) support
-        website2.domain = 'düsseldorf.com'
-        self.assertEqual(Website._get_current_website_id('xn--dsseldorf-q9a.com'), website2.id)
-        self.assertEqual(Website._get_current_website_id('düsseldorf.com'), website2.id)
-
-        # CASE: domain stored as punycode
-        website2.domain = 'xn--dsseldorf-q9a.com'
-        self.assertEqual(Website._get_current_website_id('xn--dsseldorf-q9a.com'), website2.id)
-        self.assertEqual(Website._get_current_website_id('düsseldorf.com'), website2.id)
-
     def test_02_signup_user_website_id(self):
         website = self.website
         website.specific_user_account = True
 
-        user = self.env['res.users'].create({
-            'website_id': website.id,
-            'login': 'sad@mail.com',
-            'name': 'Hope Fully',
-            'groups_id': [
-                Command.link(self.env.ref('base.group_portal').id),
-                Command.unlink(self.env.ref('base.group_user').id),
-            ],
-        })
+        user = self.env['res.users'].create({'website_id': website.id, 'login': 'sad@mail.com', 'name': 'Hope Fully'})
         self.assertTrue(user.website_id == user.partner_id.website_id == website)
 
     def test_03_rpc_signin_user_website_id(self):
@@ -139,7 +130,7 @@ class TestGetCurrentWebsite(HttpCaseWithUserDemo):
         # Ensure the cache is invalidated, it is not needed at the time but some
         # code might one day go through get_current_website_id before reaching
         # this code, making this test useless
-        self.env.registry.clear_cache()
+        Website.clear_caches()
         failed = False
         # website is added in ir.rule context only when in frontend
         with MockRequest(self.env, website=self.website):

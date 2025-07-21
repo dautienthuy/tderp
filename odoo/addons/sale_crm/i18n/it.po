@@ -3,15 +3,16 @@
 # 	* sale_crm
 # 
 # Translators:
-# Wil Odoo, 2024
+# Martin Trigaux, 2022
+# Sergio Zanchetta <primes2h@gmail.com>, 2023
 # Marianna Ciofani, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:56+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2022-09-20 09:02+0000\n"
+"PO-Revision-Date: 2022-09-22 05:54+0000\n"
 "Last-Translator: Marianna Ciofani, 2024\n"
 "Language-Team: Italian (https://app.transifex.com/odoo/teams/41243/it/)\n"
 "MIME-Version: 1.0\n"
@@ -28,7 +29,7 @@ msgstr "<span class=\"o_stat_text\"> ordini</span>"
 #. module: sale_crm
 #: model:ir.model.fields,field_description:sale_crm.field_crm_quotation_partner__lead_id
 msgid "Associated Lead"
-msgstr "Contatto associato"
+msgstr "Lead associato"
 
 #. module: sale_crm
 #: model_terms:ir.ui.view,arch_db:sale_crm.crm_quotation_partner_view_form
@@ -81,14 +82,6 @@ msgid "Do not link to a customer"
 msgstr "Non collegare a un cliente"
 
 #. module: sale_crm
-#. odoo-python
-#: code:addons/sale_crm/models/crm_lead.py:0
-msgid "Expected revenue has been updated based on the linked Sales Orders."
-msgstr ""
-"I ricavi previsti sono stati aggiornati in base agli ordini di vendita "
-"collegati."
-
-#. module: sale_crm
 #: model:ir.model.fields,field_description:sale_crm.field_crm_quotation_partner__id
 msgid "ID"
 msgstr "ID"
@@ -97,6 +90,11 @@ msgstr "ID"
 #: model:ir.model.fields,field_description:sale_crm.field_res_users__target_sales_invoiced
 msgid "Invoiced in Sales Orders Target"
 msgstr "Fatturato per obiettivo ordini di vendita"
+
+#. module: sale_crm
+#: model:ir.model.fields,field_description:sale_crm.field_crm_quotation_partner____last_update
+msgid "Last Modified on"
+msgstr "Ultima modifica il"
 
 #. module: sale_crm
 #: model:ir.model.fields,field_description:sale_crm.field_crm_quotation_partner__write_uid
@@ -111,12 +109,18 @@ msgstr "Ultimo aggiornamento il"
 #. module: sale_crm
 #: model:ir.model,name:sale_crm.model_crm_lead
 msgid "Lead/Opportunity"
-msgstr "Contatto/Opportunità"
+msgstr "Lead/Opportunità"
 
 #. module: sale_crm
 #: model:ir.model.fields.selection,name:sale_crm.selection__crm_quotation_partner__action__exist
 msgid "Link to an existing customer"
 msgstr "Collega a un cliente esistente"
+
+#. module: sale_crm
+#: model_terms:ir.ui.view,arch_db:sale_crm.sale_view_inherit123
+msgid "Log in the chatter from which opportunity the order originates"
+msgstr ""
+"Annota nel registro comunicazioni da quale opportunità proviene l'ordine"
 
 #. module: sale_crm
 #: model:ir.ui.menu,name:sale_crm.sale_order_menu_quotations_crm
@@ -171,8 +175,8 @@ msgid "Sale Orders"
 msgstr "Ordini di vendita"
 
 #. module: sale_crm
-#. odoo-python
 #: code:addons/sale_crm/models/crm_team.py:0
+#, python-format
 msgid "Sales Analysis"
 msgstr "Analisi vendite"
 
@@ -187,8 +191,8 @@ msgid "Sales Team"
 msgstr "Team di vendita"
 
 #. module: sale_crm
-#. odoo-python
 #: code:addons/sale_crm/models/crm_team.py:0
+#, python-format
 msgid "Sales: Untaxed Total"
 msgstr "Vendite: totale imponibile"
 
@@ -208,7 +212,7 @@ msgid "User"
 msgstr "Utente"
 
 #. module: sale_crm
-#. odoo-python
 #: code:addons/sale_crm/wizard/crm_opportunity_to_quotation.py:0
+#, python-format
 msgid "You can only apply this action from a lead."
 msgstr "L'azione può essere applicata solo da un lead."

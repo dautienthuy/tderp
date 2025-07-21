@@ -3,25 +3,25 @@
 # 	* barcodes
 # 
 # Translators:
-# Retropikzel, 2024
-# Marko Happonen <marko.happonen@sprintit.fi>, 2024
-# Kari Lindgren <kari.lindgren@emsystems.fi>, 2024
-# Jarmo Kortetjärvi <jarmo.kortetjarvi@gmail.com>, 2024
-# Martin Trigaux, 2024
-# Eino Mäkitalo <eino.makitalo@netitbe.fi>, 2024
-# Veikko Väätäjä <veikko.vaataja@gmail.com>, 2024
-# Tuomo Aura <tuomo.aura@web-veistamo.fi>, 2024
-# Tuomas Lyyra <tuomas.lyyra@legenda.fi>, 2024
+# MIka Pakkanen <mika.pakkanen@gmail.com>, 2022
+# Retropikzel, 2022
+# Marko Happonen <marko.happonen@sprintit.fi>, 2022
+# Jarmo Kortetjärvi <jarmo.kortetjarvi@gmail.com>, 2022
+# Kari Lindgren <kari.lindgren@emsystems.fi>, 2022
+# Martin Trigaux, 2022
+# Eino Mäkitalo <eino.makitalo@netitbe.fi>, 2022
+# Veikko Väätäjä <veikko.vaataja@gmail.com>, 2022
+# Tuomo Aura <tuomo.aura@web-veistamo.fi>, 2022
+# Tuomas Lyyra <tuomas.lyyra@legenda.fi>, 2022
 # Ossi Mantylahti <ossi.mantylahti@obs-solutions.fi>, 2024
-# Jessica Jakara, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-23 18:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Jessica Jakara, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2022-09-22 05:45+0000\n"
+"Last-Translator: Ossi Mantylahti <ossi.mantylahti@obs-solutions.fi>, 2024\n"
 "Language-Team: Finnish (https://app.transifex.com/odoo/teams/41243/fi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -32,8 +32,9 @@ msgstr ""
 #. module: barcodes
 #. odoo-python
 #: code:addons/barcodes/models/barcode_rule.py:0
-msgid " '*' is not a valid Regex Barcode Pattern. Did you mean '.*'?"
-msgstr " '*' ei ole kelvollinen Regex-viivakoodikuvio. Tarkoititko '.*'?"
+#, python-format
+msgid " '*' is not a valid Regex Barcode Pattern. Did you mean '.*' ?"
+msgstr "'*' ei ole validi Regex viivakoodi malli. Tarkoititko '.*' ?"
 
 #. module: barcodes
 #: model_terms:ir.ui.view,arch_db:barcodes.view_barcode_nomenclature_form
@@ -89,12 +90,6 @@ msgid "Any"
 msgstr "Mikä tahansa"
 
 #. module: barcodes
-#. odoo-javascript
-#: code:addons/barcodes/static/src/components/barcode_scanner.xml:0
-msgid "Barcode"
-msgstr "Viivakoodi"
-
-#. module: barcodes
 #: model:ir.model,name:barcodes.model_barcodes_barcode_events_mixin
 msgid "Barcode Event Mixin"
 msgstr "Viivakoodi tapahtuman Mixin"
@@ -132,8 +127,9 @@ msgstr "Viivakoodi skannattu"
 #. module: barcodes
 #. odoo-javascript
 #: code:addons/barcodes/static/src/barcode_handlers.js:0
-msgid "Barcode: %(barcode)s"
-msgstr "Viivakoodi: %(barcode)s"
+#, python-format
+msgid "Barcode: "
+msgstr "Viivakoodi: "
 
 #. module: barcodes
 #: model:ir.model,name:barcodes.model_res_company
@@ -190,14 +186,10 @@ msgid "ID"
 msgstr "ID"
 
 #. module: barcodes
-#. odoo-python
-#: code:addons/barcodes/models/barcode_events_mixin.py:0
-msgid ""
-"In order to use barcodes.barcode_events_mixin, method on_barcode_scanned "
-"must be implemented"
-msgstr ""
-"Jotta voit käyttää barcodes.barcode_events_mixin, menettelytapa "
-"on_barcode_scanned tulee olla implementoitu"
+#: model:ir.model.fields,field_description:barcodes.field_barcode_nomenclature____last_update
+#: model:ir.model.fields,field_description:barcodes.field_barcode_rule____last_update
+msgid "Last Modified on"
+msgstr "Viimeksi muokattu"
 
 #. module: barcodes
 #: model:ir.model.fields,field_description:barcodes.field_barcode_nomenclature__write_uid
@@ -226,23 +218,17 @@ msgstr "Nimikkeistö"
 msgid ""
 "Patterns can also define how numerical values, such as weight or price, can be\n"
 "                                encoded into the barcode. They are indicated by <code>{NNN}</code> where the N's\n"
-"                                define where the number's digits are encoded. Floats are also supported with the\n"
-"                                decimals indicated with D's, such as <code>{NNNDD}</code>. In these cases,\n"
-"                                the barcode field on the associated records <i>must</i> show these digits as\n"
+"                                define where the number's digits are encoded. Floats are also supported with the \n"
+"                                decimals indicated with D's, such as <code>{NNNDD}</code>. In these cases, \n"
+"                                the barcode field on the associated records <i>must</i> show these digits as \n"
 "                                zeroes."
 msgstr ""
 "Kuviot voivat myös määritellä, miten numeeriset arvot, kuten paino tai hinta, voidaan olla\n"
-"                                koodata viivakoodiin. Ne osoitetaan <code>{NNN}</code> jossa N:t\n"
-"                                määrittelevät, mihin numeron numerot koodataan. Liukulukuja on myös mahdollista käyttää kirjoittamalla\n"
-"                                desimaaleja, jotka on merkitty D-kirjaimilla. Esimerkiksi <code>{NNNDD}</code>. Näissä tapauksissa,\n"
-"                                tietueiden viivakoodikentän <i>on</i> näytettävä nämä numerot\n"
+"                                koodata viivakoodiin. Ne osoitetaan <code>{NNN}</code> jossa N-kirjaimet\n"
+"                                määrittelevät, mihin numeron numerot koodataan. Myös liukulukuja tuetaan \n"
+"                                desimaaliluvut, jotka on merkitty D:llä, kuten esim <code>{NNNDD}</code>. Näissä tapauksissa, \n"
+"                                liittyvien tietueiden viivakoodikentän <i>on</i> näytettävä nämä numerot muodossa \n"
 "                                nollina."
-
-#. module: barcodes
-#. odoo-javascript
-#: code:addons/barcodes/static/src/components/barcode_scanner.js:0
-msgid "Please, Scan again!"
-msgstr "Skannaa uudelleen!"
 
 #. module: barcodes
 #: model:ir.model.fields,field_description:barcodes.field_barcode_rule__name
@@ -265,19 +251,13 @@ msgid "Tables"
 msgstr "Pöydät"
 
 #. module: barcodes
-#. odoo-javascript
-#: code:addons/barcodes/static/src/components/barcode_scanner.xml:0
-msgid "Tap to scan"
-msgstr "Skannaa"
-
-#. module: barcodes
 #: model:ir.model.fields,help:barcodes.field_barcode_rule__pattern
 msgid "The barcode matching pattern"
 msgstr "Viivakoodin vastaavuusmalli"
 
 #. module: barcodes
-#. odoo-python
 #: code:addons/barcodes/models/barcode_rule.py:0
+#, python-format
 msgid ""
 "The barcode pattern %(pattern)s does not lead to a valid regular expression."
 msgstr ""
@@ -296,6 +276,7 @@ msgstr "Sovitettu kuvio on alias tälle viivakoodille"
 #. module: barcodes
 #. odoo-python
 #: code:addons/barcodes/models/barcode_rule.py:0
+#, python-format
 msgid ""
 "There is a syntax error in the barcode pattern %(pattern)s: a rule can only "
 "contain one pair of braces."
@@ -306,6 +287,7 @@ msgstr ""
 #. module: barcodes
 #. odoo-python
 #: code:addons/barcodes/models/barcode_rule.py:0
+#, python-format
 msgid ""
 "There is a syntax error in the barcode pattern %(pattern)s: braces can only "
 "contain N's followed by D's."
@@ -316,6 +298,7 @@ msgstr ""
 #. module: barcodes
 #. odoo-python
 #: code:addons/barcodes/models/barcode_rule.py:0
+#, python-format
 msgid ""
 "There is a syntax error in the barcode pattern %(pattern)s: empty braces."
 msgstr "Viivakoodikuviossa %(pattern)s on syntaksivirhe: tyhjät sulkeet."
@@ -368,6 +351,7 @@ msgstr "Yksikkötuote"
 #. module: barcodes
 #. odoo-javascript
 #: code:addons/barcodes/static/src/barcode_handlers.js:0
+#, python-format
 msgid "Unknown barcode command"
 msgstr "Tuntematon viivakoodikomento"
 

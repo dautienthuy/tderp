@@ -10,9 +10,7 @@ from odoo.tools import float_round, float_repr
 
 class LunchController(http.Controller):
     @http.route('/lunch/infos', type='json', auth='user')
-    def infos(self, user_id=None, context=None):
-        if context:
-            request.update_context(**context)
+    def infos(self, user_id=None):
         self._check_user_impersonification(user_id)
         user = request.env['res.users'].browse(user_id) if user_id else request.env.user
 
@@ -21,38 +19,24 @@ class LunchController(http.Controller):
         lines = self._get_current_lines(user)
         if lines:
             translated_states = dict(request.env['lunch.order']._fields['state']._description_selection(request.env))
-            lines = [{
-                'id': line.id,
-                'product': (line.product_id.id, line.product_id.name, float_repr(
-                    float_round(line.product_id.price, 2) * line.quantity, 2),
-                float_round(line.product_id.price, 2)),
-                'toppings': [(topping.name, float_repr(float_round(topping.price, 2) * line.quantity, 2),
-                float_round(topping.price, 2))
-                    for topping in line.topping_ids_1 | line.topping_ids_2 | line.topping_ids_3],
-                'quantity': line.quantity,
-                'price': line.price,
-                'raw_state': line.state,
-                'state': translated_states[line.state],
-                'date': line.date,
-                'location': line.lunch_location_id.name,
-                'note': line.note
-                } for line in lines.sorted('date')]
-            total = float_round(sum(line['price'] for line in lines), 2)
-            paid_subtotal = float_round(sum(line['price'] for line in lines if line['raw_state'] != 'new'), 2)
-            unpaid_subtotal = total - paid_subtotal
+            lines = [{'id': line.id,
+                      'product': (line.product_id.id, line.product_id.name, float_repr(float_round(line.price, 2), 2)),
+                      'toppings': [(topping.name, float_repr(float_round(topping.price, 2), 2))
+                                   for topping in line.topping_ids_1 | line.topping_ids_2 | line.topping_ids_3],
+                      'quantity': line.quantity,
+                      'price': line.price,
+                      'raw_state': line.state,
+                      'state': translated_states[line.state],
+                      'note': line.note} for line in lines.sorted('date')]
             infos.update({
-                'total': float_repr(total, 2),
-                'paid_subtotal': float_repr(paid_subtotal, 2),
-                'unpaid_subtotal': float_repr(unpaid_subtotal, 2),
+                'total': float_repr(float_round(sum(line['price'] for line in lines), 2), 2),
                 'raw_state': self._get_state(lines),
                 'lines': lines,
             })
         return infos
 
     @http.route('/lunch/trash', type='json', auth='user')
-    def trash(self, user_id=None, context=None):
-        if context:
-            request.update_context(**context)
+    def trash(self, user_id=None):
         self._check_user_impersonification(user_id)
         user = request.env['res.users'].browse(user_id) if user_id else request.env.user
 
@@ -62,15 +46,14 @@ class LunchController(http.Controller):
         lines.unlink()
 
     @http.route('/lunch/pay', type='json', auth='user')
-    def pay(self, user_id=None, context=None):
-        if context:
-            request.update_context(**context)
+    def pay(self, user_id=None):
         self._check_user_impersonification(user_id)
         user = request.env['res.users'].browse(user_id) if user_id else request.env.user
 
         lines = self._get_current_lines(user)
         if lines:
             lines = lines.filtered(lambda line: line.state == 'new')
+
             lines.action_order()
             return True
 
@@ -81,9 +64,7 @@ class LunchController(http.Controller):
         return {'message': request.env['ir.qweb']._render('lunch.lunch_payment_dialog', {})}
 
     @http.route('/lunch/user_location_set', type='json', auth='user')
-    def set_user_location(self, location_id=None, user_id=None, context=None):
-        if context:
-            request.update_context(**context)
+    def set_user_location(self, location_id=None, user_id=None):
         self._check_user_impersonification(user_id)
         user = request.env['res.users'].browse(user_id) if user_id else request.env.user
 
@@ -91,9 +72,7 @@ class LunchController(http.Controller):
         return True
 
     @http.route('/lunch/user_location_get', type='json', auth='user')
-    def get_user_location(self, user_id=None, context=None):
-        if context:
-            request.update_context(**context)
+    def get_user_location(self, user_id=None):
         self._check_user_impersonification(user_id)
         user = request.env['res.users'].browse(user_id) if user_id else request.env.user
 
@@ -147,7 +126,7 @@ class LunchController(http.Controller):
 
     def _get_current_lines(self, user):
         return request.env['lunch.order'].search(
-            [('user_id', '=', user.id), ('date', '>=', fields.Date.context_today(user)), ('state', '!=', 'cancelled')]
+            [('user_id', '=', user.id), ('date', '=', fields.Date.context_today(user)), ('state', '!=', 'cancelled')]
             )
 
     def _get_state(self, lines):

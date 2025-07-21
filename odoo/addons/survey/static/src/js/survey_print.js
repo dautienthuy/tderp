@@ -1,13 +1,11 @@
-/** @odoo-module **/
+odoo.define('survey.print', function (require) {
+'use strict';
 
-import publicWidget from "@web/legacy/js/public/public_widget";
-import { resizeTextArea } from "@web/core/utils/autoresize";
+var publicWidget = require('web.public.widget');
+var dom = require('web.dom');
 
 publicWidget.registry.SurveyPrintWidget = publicWidget.Widget.extend({
     selector: '.o_survey_print',
-    events: {
-        'click .o_survey_user_results_print': '_onPrintUserResultsClick',
-    },
 
     //--------------------------------------------------------------------------
     // Widget
@@ -21,19 +19,13 @@ publicWidget.registry.SurveyPrintWidget = publicWidget.Widget.extend({
         return this._super.apply(this, arguments).then(function () {
             // Will allow the textarea to resize if any carriage return instead of showing scrollbar.
             self.$('textarea').each(function () {
-                resizeTextArea(this);
+                dom.autoresize($(this));
             });
         });
     },
 
-    // -------------------------------------------------------------------------
-    // Handlers
-    // -------------------------------------------------------------------------
-
-    _onPrintUserResultsClick: function () {
-        window.print();
-    },
-
 });
 
-export default publicWidget.registry.SurveyPrintWidget;
+return publicWidget.registry.SurveyPrintWidget;
+
+});

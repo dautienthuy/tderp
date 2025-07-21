@@ -3,15 +3,16 @@
 # 	* hr_gamification
 # 
 # Translators:
-# Wil Odoo, 2024
+# Martin Trigaux, 2022
+# Ryoko Tsuda <ryoko@quartile.co>, 2022
 # Junko Augias, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:55+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2022-09-23 08:02+0000\n"
+"PO-Revision-Date: 2022-09-22 05:46+0000\n"
 "Last-Translator: Junko Augias, 2025\n"
 "Language-Team: Japanese (https://app.transifex.com/odoo/teams/41243/ja/)\n"
 "MIME-Version: 1.0\n"
@@ -77,7 +78,7 @@ msgstr "基本社員"
 #. module: hr_gamification
 #: model_terms:ir.ui.view,arch_db:hr_gamification.view_badge_wizard_reward
 msgid "Cancel"
-msgstr "キャンセル"
+msgstr "取消"
 
 #. module: hr_gamification
 #: model:ir.actions.act_window,name:hr_gamification.challenge_list_action2
@@ -136,7 +137,7 @@ msgstr "ゲーミフィケーションのバッジ"
 #. module: hr_gamification
 #: model:ir.model,name:hr_gamification.model_gamification_badge_user
 msgid "Gamification User Badge"
-msgstr "ゲーミフィケーションユーザのバッジ"
+msgstr "ゲーミフィケーションのバッジ"
 
 #. module: hr_gamification
 #: model:ir.model,name:hr_gamification.model_gamification_badge_user_wizard
@@ -181,13 +182,18 @@ msgstr "付与済の従業員数"
 #: model:ir.model.fields,field_description:hr_gamification.field_hr_employee_base__has_badges
 #: model:ir.model.fields,field_description:hr_gamification.field_hr_employee_public__has_badges
 msgid "Has Badges"
-msgstr "バッジあり"
+msgstr "バッジを所有しているか"
 
 #. module: hr_gamification
 #: model_terms:ir.ui.view,arch_db:hr_gamification.hr_employee_public_view_form
 #: model_terms:ir.ui.view,arch_db:hr_gamification.hr_hr_employee_view_form
 msgid "Received Badges"
 msgstr "受け取ったバッジ"
+
+#. module: hr_gamification
+#: model:ir.model.fields,help:hr_gamification.field_gamification_badge_user_wizard__user_id
+msgid "Related user name for the resource to manage its access."
+msgstr "そのアクセスを管理するためのリソースに関連するユーザ名"
 
 #. module: hr_gamification
 #: model:ir.actions.act_window,name:hr_gamification.action_reward_wizard
@@ -201,8 +207,8 @@ msgid "Reward Employee with"
 msgstr "従業員にリワード付与"
 
 #. module: hr_gamification
-#. odoo-python
 #: code:addons/hr_gamification/models/gamification.py:0
+#, python-format
 msgid "The selected employee does not correspond to the selected user."
 msgstr "選択した従業員が選択されたユーザに対応していません。"
 
@@ -218,10 +224,16 @@ msgid "What are you thankful for?"
 msgstr "あなたは何のために感謝していますか？"
 
 #. module: hr_gamification
-#. odoo-python
 #: code:addons/hr_gamification/wizard/gamification_badge_user_wizard.py:0
+#, python-format
 msgid "You can not send a badge to yourself."
 msgstr "自分自身にバッジを付与することはできません。"
+
+#. module: hr_gamification
+#: code:addons/hr_gamification/wizard/gamification_badge_user_wizard.py:0
+#, python-format
+msgid "You can send badges only to employees linked to a user."
+msgstr "バッジは、ユーザにリンクされている従業員にのみ送信できます。"
 
 #. module: hr_gamification
 #: model_terms:ir.ui.view,arch_db:hr_gamification.hr_employee_public_view_form

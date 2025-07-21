@@ -3,16 +3,16 @@
 # 	* account_check_printing
 # 
 # Translators:
-# Wil Odoo, 2025
-# Alina Lisnenko <alina.lisnenko@erp.co.ua>, 2025
+# Martin Trigaux, 2022
+# Alina Lisnenko <alina.lisnenko@erp.co.ua>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 08:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Alina Lisnenko <alina.lisnenko@erp.co.ua>, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2022-09-22 05:44+0000\n"
+"Last-Translator: Alina Lisnenko <alina.lisnenko@erp.co.ua>, 2024\n"
 "Language-Team: Ukrainian (https://app.transifex.com/odoo/teams/41243/uk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -23,8 +23,9 @@ msgstr ""
 #. module: account_check_printing
 #. odoo-python
 #: code:addons/account_check_printing/models/account_journal.py:0
-msgid "%(journal)s: Check Number Sequence"
-msgstr "%(journal)s: Номер послідовності чеків"
+#, python-format
+msgid " : Check Number Sequence"
+msgstr ": Порядковий Номер Чеку"
 
 #. module: account_check_printing
 #: model_terms:ir.ui.view,arch_db:account_check_printing.account_journal_dashboard_kanban_view_inherited
@@ -51,18 +52,11 @@ msgid "Amount in Words"
 msgstr "Сума словами"
 
 #. module: account_check_printing
-#. odoo-python
-#: code:addons/account_check_printing/models/account_payment.py:0
-msgid "Bills"
-msgstr "Рахунки"
-
-#. module: account_check_printing
 #: model_terms:ir.ui.view,arch_db:account_check_printing.print_pre_numbered_checks_view
 msgid "Cancel"
 msgstr "Скасувати"
 
 #. module: account_check_printing
-#: model:ir.model.fields,field_description:account_check_printing.field_account_journal__bank_check_printing_layout
 #: model:ir.model.fields,field_description:account_check_printing.field_res_company__account_check_printing_layout
 #: model:ir.model.fields,field_description:account_check_printing.field_res_config_settings__account_check_printing_layout
 msgid "Check Layout"
@@ -103,6 +97,7 @@ msgstr "Верхнє поле чеку"
 #. module: account_check_printing
 #. odoo-python
 #: code:addons/account_check_printing/models/account_payment.py:0
+#, python-format
 msgid "Check numbers can only consist of digits"
 msgstr "Номери чеків можуть містити лише цифри"
 
@@ -119,8 +114,6 @@ msgid "Check to print"
 msgstr "Роздрукувати чек"
 
 #. module: account_check_printing
-#. odoo-python
-#: code:addons/account_check_printing/models/account_payment.py:0
 #: model:account.payment.method,name:account_check_printing.account_payment_method_check
 msgid "Checks"
 msgstr "Чеки"
@@ -134,6 +127,7 @@ msgstr "Порядковий номер чеків"
 #. odoo-python
 #: code:addons/account_check_printing/models/account_journal.py:0
 #: model_terms:ir.ui.view,arch_db:account_check_printing.view_payment_check_printing_search
+#, python-format
 msgid "Checks to Print"
 msgstr "Роздрукувати чеки"
 
@@ -153,6 +147,11 @@ msgid "Config Settings"
 msgstr "Налаштування"
 
 #. module: account_check_printing
+#: model:ir.model,name:account_check_printing.model_res_partner
+msgid "Contact"
+msgstr "Контакт"
+
+#. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_print_prenumbered_checks__create_uid
 msgid "Created by"
 msgstr "Створив"
@@ -163,11 +162,6 @@ msgid "Created on"
 msgstr "Створено"
 
 #. module: account_check_printing
-#: model_terms:ir.ui.view,arch_db:account_check_printing.view_account_journal_form_inherited
-msgid "Default"
-msgstr "За замовчуванням"
-
-#. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_print_prenumbered_checks__display_name
 msgid "Display Name"
 msgstr "Назва для відображення"
@@ -175,6 +169,8 @@ msgstr "Назва для відображення"
 #. module: account_check_printing
 #. odoo-python
 #: code:addons/account_check_printing/models/account_payment.py:0
+#: code:addons/account_check_printing/models/account_payment.py:0
+#, python-format
 msgid "Go to the configuration panel"
 msgstr "Перейти до панелі налаштувань"
 
@@ -186,6 +182,7 @@ msgstr "ID"
 #. module: account_check_printing
 #. odoo-python
 #: code:addons/account_check_printing/models/account_payment.py:0
+#, python-format
 msgid ""
 "In order to print multiple checks at once, they must belong to the same bank"
 " journal."
@@ -197,6 +194,16 @@ msgstr ""
 #: model:ir.model,name:account_check_printing.model_account_journal
 msgid "Journal"
 msgstr "Журнал"
+
+#. module: account_check_printing
+#: model:ir.model,name:account_check_printing.model_account_move
+msgid "Journal Entry"
+msgstr "Запис у журналі"
+
+#. module: account_check_printing
+#: model:ir.model.fields,field_description:account_check_printing.field_print_prenumbered_checks____last_update
+msgid "Last Modified on"
+msgstr "Остання модифікація"
 
 #. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_print_prenumbered_checks__write_uid
@@ -247,6 +254,7 @@ msgstr "Наступний номер чеку"
 #. odoo-python
 #: code:addons/account_check_printing/models/account_journal.py:0
 #: code:addons/account_check_printing/wizard/print_prenumbered_checks.py:0
+#, python-format
 msgid "Next Check Number should only contains numbers."
 msgstr "Наступний номер чеку повинен містити лише цифри."
 
@@ -257,6 +265,8 @@ msgstr "Немає"
 
 #. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_account_payment__payment_method_line_id
+#: model:ir.model.fields,field_description:account_check_printing.field_res_partner__property_payment_method_id
+#: model:ir.model.fields,field_description:account_check_printing.field_res_users__property_payment_method_id
 msgid "Payment Method"
 msgstr "Спосіб оплати"
 
@@ -273,6 +283,7 @@ msgstr "Платежі"
 #. module: account_check_printing
 #. odoo-python
 #: code:addons/account_check_printing/models/account_payment.py:0
+#, python-format
 msgid ""
 "Payments to print as a checks must have 'Check' selected as payment method "
 "and not have already been reconciled"
@@ -288,6 +299,26 @@ msgid ""
 msgstr ""
 "Будь ласка, оберіть номер першого чеку для друку, на якому ви збираєтеся "
 "роздрукувати."
+
+#. module: account_check_printing
+#: model:ir.model.fields,field_description:account_check_printing.field_account_bank_statement_line__preferred_payment_method_id
+#: model:ir.model.fields,field_description:account_check_printing.field_account_move__preferred_payment_method_id
+#: model:ir.model.fields,field_description:account_check_printing.field_account_payment__preferred_payment_method_id
+msgid "Preferred Payment Method"
+msgstr "Переважний метод оплати"
+
+#. module: account_check_printing
+#: model:ir.model.fields,help:account_check_printing.field_res_partner__property_payment_method_id
+#: model:ir.model.fields,help:account_check_printing.field_res_users__property_payment_method_id
+msgid ""
+"Preferred payment method when paying this vendor. This is used to filter "
+"vendor bills by preferred payment method to register payments in mass. Use "
+"cases: create bank files for batch wires, check runs."
+msgstr ""
+"Переважний метод оплати під час оплати цьому постачальнику. Він "
+"використовується для фільтру рахунків постачальників за переважним методом "
+"оплати в загальному. Використовуйте випадки: створювати банківські файли для"
+" групових з'єднань, перевіряйте запуски."
 
 #. module: account_check_printing
 #: model_terms:ir.ui.view,arch_db:account_check_printing.print_pre_numbered_checks_view
@@ -315,14 +346,14 @@ msgstr "Мітка дати друку"
 #: code:addons/account_check_printing/models/account_payment.py:0
 #: model:ir.model,name:account_check_printing.model_print_prenumbered_checks
 #: model_terms:ir.ui.view,arch_db:account_check_printing.print_pre_numbered_checks_view
+#, python-format
 msgid "Print Pre-numbered Checks"
 msgstr "Друк попередньо пронумерованих чеків"
 
 #. module: account_check_printing
-#. odoo-python
-#: code:addons/account_check_printing/models/account_payment.py:0
-msgid "Refunds"
-msgstr "Відшкодування"
+#: model:ir.model,name:account_check_printing.model_account_payment_register
+msgid "Register Payment"
+msgstr "Зареєструвати платіж"
 
 #. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_res_company__account_check_printing_margin_right
@@ -357,6 +388,7 @@ msgstr "Показати номер чеку"
 #. module: account_check_printing
 #. odoo-python
 #: code:addons/account_check_printing/models/account_payment.py:0
+#, python-format
 msgid ""
 "Something went wrong with Check Layout, please select another layout in "
 "Invoicing/Accounting Settings and try again."
@@ -367,6 +399,7 @@ msgstr ""
 #. module: account_check_printing
 #. odoo-python
 #: code:addons/account_check_printing/models/account_payment.py:0
+#, python-format
 msgid ""
 "The following numbers are already used:\n"
 "%s"
@@ -377,6 +410,7 @@ msgstr ""
 #. module: account_check_printing
 #. odoo-python
 #: code:addons/account_check_printing/models/account_journal.py:0
+#, python-format
 msgid ""
 "The last check number was %s. In order to avoid a check being rejected by "
 "the bank, you can only use a greater number."
@@ -434,6 +468,7 @@ msgstr "Порожній чек"
 #. module: account_check_printing
 #. odoo-python
 #: code:addons/account_check_printing/models/account_payment.py:0
+#, python-format
 msgid ""
 "You have to choose a check layout. For this, go in Invoicing/Accounting "
 "Settings, search for 'Checks layout' and set one."

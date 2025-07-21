@@ -2,20 +2,24 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import time
+from psycopg2 import IntegrityError
 
 from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Command
-from odoo.tests import tagged
+from odoo.tests import tagged, TransactionCase
 from odoo.tools import mute_logger
 
-from odoo.addons.base.tests.common import BaseCommon
+from odoo.addons.base.tests.common import DISABLED_MAIL_CONTEXT
 
 
-class TestProductAttributeValueCommon(BaseCommon):
+class TestProductAttributeValueCommon(TransactionCase):
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+
+        cls.env = cls.env['base'].with_context(**DISABLED_MAIL_CONTEXT).env
+        cls.env.company.country_id = cls.env.ref('base.us')
 
         cls.computer = cls.env['product.template'].create({
             'name': 'Super Computer',
@@ -27,7 +31,6 @@ class TestProductAttributeValueCommon(BaseCommon):
             cls.ram_attribute,
             cls.hdd_attribute,
             cls.size_attribute,
-            cls.extras_attribute,
         ) = cls.env['product.attribute'].create([{
             'name': 'Memory',
             'sequence': 1,
@@ -92,28 +95,12 @@ class TestProductAttributeValueCommon(BaseCommon):
                     'sequence': 3,
                 }),
             ],
-        }, {
-            'name': "Extras",
-            'sequence': 5,
-            'display_type': 'multi',
-            'create_variant': 'no_variant',
-            'value_ids': [
-                Command.create({
-                    'name': "CPU overclock",
-                    'sequence': 1,
-                }),
-                Command.create({
-                    'name': "RAM overclock",
-                    'sequence': 2,
-                }),
-            ],
         }])
 
         cls.ssd_256, cls.ssd_512 = cls.ssd_attribute.value_ids
         cls.ram_8, cls.ram_16, cls.ram_32 = cls.ram_attribute.value_ids
         cls.hdd_1, cls.hdd_2, cls.hdd_4 = cls.hdd_attribute.value_ids
         cls.size_m, cls.size_l, cls.size_xl = cls.size_attribute.value_ids
-        cls.extra_cpu, cls.extra_ram = cls.extras_attribute.value_ids
 
         cls.COMPUTER_SSD_PTAL_VALUES = {
             'product_tmpl_id': cls.computer.id,
@@ -129,11 +116,6 @@ class TestProductAttributeValueCommon(BaseCommon):
             'product_tmpl_id': cls.computer.id,
             'attribute_id': cls.hdd_attribute.id,
             'value_ids': [Command.set([cls.hdd_1.id, cls.hdd_2.id, cls.hdd_4.id])],
-        }
-        cls.COMPUTER_EXTRAS_PTAL_VALUES = {
-            'product_tmpl_id': cls.computer.id,
-            'attribute_id': cls.extras_attribute.id,
-            'value_ids': [Command.set([cls.extra_cpu.id, cls.extra_ram.id])],
         }
 
         cls._add_computer_attribute_lines()
@@ -155,12 +137,10 @@ class TestProductAttributeValueCommon(BaseCommon):
             cls.computer_ssd_attribute_lines,
             cls.computer_ram_attribute_lines,
             cls.computer_hdd_attribute_lines,
-            cls.computer_extras_attribute_lines,
         ) = cls.env['product.template.attribute.line'].create([
             cls.COMPUTER_SSD_PTAL_VALUES,
             cls.COMPUTER_RAM_PTAL_VALUES,
             cls.COMPUTER_HDD_PTAL_VALUES,
-            cls.COMPUTER_EXTRAS_PTAL_VALUES,
         ])
 
         # Setup extra prices
@@ -737,6 +717,12 @@ class TestProductAttributeValueConfig(TestProductAttributeValueCommon):
         with self.assertRaises(UserError, msg="can't change the product of a product template attribute value"):
             self.computer_ram_attribute_lines.product_template_value_ids[0].product_tmpl_id = self.computer_case.id
 
+        with mute_logger('odoo.sql_db'), self.assertRaises(IntegrityError, msg="can't have two values with the same name for the same attribute"):
+            self.env['product.attribute.value'].create({
+                'name': '32 GB',
+                'attribute_id': self.ram_attribute.id,
+            })
+
     @mute_logger('odoo.models.unlink')
     def test_inactive_related_product_update(self):
         """
@@ -782,53 +768,3 @@ class TestProductAttributeValueConfig(TestProductAttributeValueCommon):
             'price_extra'
         )
         self.assertEqual(extra_prices, copied_extra_prices)
-
-    def test_04_create_product_variant_non_dynamic(self):
-        """The goal of this test is to make sure the _create_product_variant does
-        not create variant if the type is not dynamic. It can however return a
-        variant if it already exists."""
-        computer_ssd_256 = self._get_product_template_attribute_value(self.ssd_256)
-        computer_ram_8 = self._get_product_template_attribute_value(self.ram_8)
-        computer_ram_16 = self._get_product_template_attribute_value(self.ram_16)
-        computer_hdd_1 = self._get_product_template_attribute_value(self.hdd_1)
-        self._add_exclude(computer_ram_16, computer_hdd_1)
-
-        # CASE: variant is already created, it should return it
-        combination = computer_ssd_256 + computer_ram_8 + computer_hdd_1
-        variant1 = self.computer._get_variant_for_combination(combination)
-        self.assertEqual(self.computer._create_product_variant(combination), variant1)
-
-        # CASE: variant does not exist, but template is non-dynamic, so it
-        # should not create it
-        Product = self.env['product.product']
-        variant1.unlink()
-        self.assertEqual(self.computer._create_product_variant(combination), Product)
-
-    def test_05_create_product_variant_dynamic(self):
-        """The goal of this test is to make sure the _create_product_variant does
-        work with dynamic. If the combination is possible, it should create it.
-        If it's not possible, it should not create it."""
-        self.computer_hdd_attribute_lines.write({'active': False})
-        self.hdd_attribute.create_variant = 'dynamic'
-        self._add_hdd_attribute_line()
-
-        computer_ssd_256 = self._get_product_template_attribute_value(self.ssd_256)
-        computer_ram_8 = self._get_product_template_attribute_value(self.ram_8)
-        computer_ram_16 = self._get_product_template_attribute_value(self.ram_16)
-        computer_hdd_1 = self._get_product_template_attribute_value(self.hdd_1)
-        self._add_exclude(computer_ram_16, computer_hdd_1)
-
-        # CASE: variant does not exist, but combination is not possible
-        # so it should not create it
-        impossible_combination = computer_ssd_256 + computer_ram_16 + computer_hdd_1
-        Product = self.env['product.product']
-        self.assertEqual(self.computer._create_product_variant(impossible_combination), Product)
-
-        # CASE: the variant does not exist, and the combination is possible, so
-        # it should create it
-        combination = computer_ssd_256 + computer_ram_8 + computer_hdd_1
-        variant = self.computer._create_product_variant(combination)
-        self.assertTrue(variant)
-
-        # CASE: the variant already exists, so it should return it
-        self.assertEqual(variant, self.computer._create_product_variant(combination))

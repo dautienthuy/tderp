@@ -2,42 +2,38 @@
 
 import ast
 import collections
+import datetime
 import functools
 import inspect
+import json
 import logging
+import math
 import pprint
 import re
+import time
 import uuid
 import warnings
 
 from lxml import etree
 from lxml.etree import LxmlError
 from lxml.builder import E
-from markupsafe import Markup
 
+import odoo
 from odoo import api, fields, models, tools, _
 from odoo.exceptions import ValidationError, AccessError, UserError
 from odoo.http import request
-from odoo.modules.module import get_resource_from_path
-from odoo.service.model import get_public_method
-from odoo.osv.expression import expression
-from odoo.tools import config, lazy_property, frozendict, SQL
+from odoo.modules.module import get_resource_from_path, get_resource_path
+from odoo.tools import config, ConstantMapping, get_diff, pycompat, apply_inheritance_specs, locate_node, str2bool
 from odoo.tools.convert import _fix_multiple_roots
-from odoo.tools.misc import file_path, get_diff, ConstantMapping
-from odoo.tools.template_inheritance import apply_inheritance_specs, locate_node
+from odoo.tools import safe_eval, lazy, lazy_property, frozendict
+from odoo.tools.view_validation import valid_view, get_variable_names, get_domain_identifiers, get_dict_asts
 from odoo.tools.translate import xml_translate, TRANSLATED_ATTRS
-from odoo.tools.view_validation import valid_view, get_domain_value_names, get_expression_field_names, get_dict_asts
+from odoo.models import check_method_name
+from odoo.osv.expression import expression
 
 _logger = logging.getLogger(__name__)
 
 MOVABLE_BRANDING = ['data-oe-model', 'data-oe-id', 'data-oe-field', 'data-oe-xpath', 'data-oe-source-id']
-VIEW_MODIFIERS = ('column_invisible', 'invisible', 'readonly', 'required')
-
-# Some views have a js compiler that generates an owl template from the arch. In that template,
-# `__comp__` is a reserved keyword giving access to the component instance (e.g. the form renderer
-# or the kanban record). However, we don't want to see implementation details leaking in archs, so
-# we use the following regex to detect the use of `__comp__` in dynamic attributes, to forbid it.
-COMP_REGEX = r'(^|[^\w])\s*__comp__\s*([^\w]|$)'
 
 ref_re = re.compile(r"""
 # first match 'form_view_ref' key, backrefs are used to handle single or
@@ -61,6 +57,94 @@ def att_names(name):
     yield name
     yield f"t-att-{name}"
     yield f"t-attf-{name}"
+
+
+def transfer_field_to_modifiers(field, modifiers, attributes):
+    default_values = {}
+    state_exceptions = {}
+    for attr in attributes:
+        state_exceptions[attr] = []
+        default_values[attr] = bool(field.get(attr))
+    for state, modifs in field.get("states", {}).items():
+        for modif in modifs:
+            if modif[0] in attributes and default_values[modif[0]] != modif[1]:
+                state_exceptions[modif[0]].append(state)
+
+    for attr, default_value in default_values.items():
+        if state_exceptions[attr]:
+            modifiers[attr] = [("state", "not in" if default_value else "in", state_exceptions[attr])]
+        else:
+            modifiers[attr] = default_value
+
+
+def transfer_node_to_modifiers(node, modifiers):
+    # Don't deal with groups, it is done by check_group().
+    attrs = node.attrib.pop('attrs', None)
+    if attrs:
+        modifiers.update(ast.literal_eval(attrs.strip()))
+        for a in ('invisible', 'readonly', 'required'):
+            if a in modifiers and isinstance(modifiers[a], int):
+                modifiers[a] = bool(modifiers[a])
+
+    states = node.attrib.pop('states', None)
+    if states:
+        states = states.split(',')
+        if 'invisible' in modifiers and isinstance(modifiers['invisible'], list):
+            # TODO combine with AND or OR, use implicit AND for now.
+            modifiers['invisible'].append(('state', 'not in', states))
+        else:
+            modifiers['invisible'] = [('state', 'not in', states)]
+
+    context_dependent_modifiers = {}
+    for attr in ('invisible', 'readonly', 'required'):
+        value_str = node.attrib.pop(attr, None)
+        if value_str:
+
+            if (attr == 'invisible'
+                    and any(parent.tag == 'tree' for parent in node.iterancestors())
+                    and not any(parent.tag == 'header' for parent in node.iterancestors())):
+                # Invisible in a tree view has a specific meaning, make it a
+                # new key in the modifiers attribute.
+                attr = 'column_invisible'
+
+            # TODO: for invisible="context.get('...')", delegate to the web client.
+            try:
+                # most (~95%) elements are 1/True/0/False
+                value = str2bool(value_str)
+            except ValueError:
+                # if str2bool fails, it means it's something else than 1/True/0/False,
+                # meaning most-likely `context.get('...')`,
+                # which should be evaluated after retrieving the view arch from the cache
+                context_dependent_modifiers[attr] = value_str
+                continue
+
+            if value or (attr not in modifiers or not isinstance(modifiers[attr], list)):
+                # Don't set the attribute to False if a dynamic value was
+                # provided (i.e. a domain from attrs or states).
+                modifiers[attr] = value
+
+    if context_dependent_modifiers:
+        node.set('context-dependent-modifiers', json.dumps(context_dependent_modifiers))
+
+
+def simplify_modifiers(modifiers):
+    for a in ('column_invisible', 'invisible', 'readonly', 'required'):
+        if a in modifiers and not modifiers[a]:
+            del modifiers[a]
+
+
+def transfer_modifiers_to_node(modifiers, node):
+    if modifiers:
+        simplify_modifiers(modifiers)
+        if modifiers:
+            node.set('modifiers', json.dumps(modifiers))
+
+
+@lazy
+def keep_query():
+    mod = odoo.addons.base.models.ir_qweb
+    warnings.warn(f"keep_query has been moved to {mod}", DeprecationWarning)
+    return mod.keep_query
 
 
 class ViewCustom(models.Model):
@@ -150,11 +234,12 @@ class View(models.Model):
     model = fields.Char(index=True)
     key = fields.Char(index='btree_not_null')
     priority = fields.Integer(string='Sequence', default=16, required=True)
-    type = fields.Selection([('list', 'List'),
+    type = fields.Selection([('tree', 'Tree'),
                              ('form', 'Form'),
                              ('graph', 'Graph'),
                              ('pivot', 'Pivot'),
                              ('calendar', 'Calendar'),
+                             ('gantt', 'Gantt'),
                              ('kanban', 'Kanban'),
                              ('search', 'Search'),
                              ('qweb', 'QWeb')], string='View Type')
@@ -172,6 +257,7 @@ class View(models.Model):
                                                                          Useful to (soft) reset a broken view.""")
     inherit_id = fields.Many2one('ir.ui.view', string='Inherited View', ondelete='restrict', index=True)
     inherit_children_ids = fields.One2many('ir.ui.view', 'inherit_id', string='Views which inherit from this one')
+    field_parent = fields.Char(string='Child Field')
     model_data_id = fields.Many2one('ir.model.data', string="Model Data",
                                     compute='_compute_model_data_id', search='_search_model_data_id')
     xml_id = fields.Char(string="External ID", compute='_compute_xml_id',
@@ -191,8 +277,6 @@ different model than this one), then this view's inheritance specs
 actual arch.
 """)
 
-    warning_info = fields.Html(string="Warning information", compute='_compute_warning_info')
-
     # The "active" field is not updated during updates if <template> is used
     # instead of <record> to define the view in XML, see _tag_template. For
     # qweb views, you should not rely on the active field being updated anyway
@@ -204,10 +288,9 @@ actual arch.
 * if True, the view always extends its parent
 * if False, the view currently does not extend its parent but can be enabled
          """)
-    model_id = fields.Many2one("ir.model", string="Model of the view", compute='_compute_model_id', inverse='_inverse_compute_model_id')
 
     @api.depends('arch_db', 'arch_fs', 'arch_updated')
-    @api.depends_context('read_arch_from_file', 'lang', 'edit_translations', 'check_translations')
+    @api.depends_context('read_arch_from_file', 'lang', 'edit_translations')
     def _compute_arch(self):
         def resolve_external_ids(arch_fs, view_xml_id):
             def replacer(m):
@@ -228,25 +311,23 @@ actual arch.
             if read_file and view.arch_fs and (view.xml_id or view.key):
                 xml_id = view.xml_id or view.key
                 # It is safe to split on / herebelow because arch_fs is explicitely stored with '/'
-                try:
-                    fullpath = file_path(view.arch_fs)
-                except FileNotFoundError:
+                fullpath = get_resource_path(*view.arch_fs.split('/'))
+                if fullpath:
+                    arch_fs = get_view_arch_from_file(fullpath, xml_id)
+                    # replace %(xml_id)s, %(xml_id)d, %%(xml_id)s, %%(xml_id)d by the res_id
+                    if arch_fs:
+                        arch_fs = resolve_external_ids(arch_fs, xml_id).replace('%%', '%')
+                        translation_dictionary = field_arch_db.get_translation_dictionary(
+                            view.with_env(env_en).arch_db, {lang: view.with_env(env_lang).arch_db}
+                        )
+                        arch_fs = field_arch_db.translate(
+                            lambda term: translation_dictionary[term][lang],
+                            arch_fs
+                        )
+                else:
                     _logger.warning("View %s: Full path [%s] cannot be found.", xml_id, view.arch_fs)
                     arch_fs = False
-                    continue
-
-                arch_fs = get_view_arch_from_file(fullpath, xml_id)
-                # replace %(xml_id)s, %(xml_id)d, %%(xml_id)s, %%(xml_id)d by the res_id
-                if arch_fs:
-                    arch_fs = resolve_external_ids(arch_fs, xml_id).replace('%%', '%')
-                    translation_dictionary = field_arch_db.get_translation_dictionary(
-                        view.with_env(env_en).arch_db, {lang: view.with_env(env_lang).arch_db}
-                    )
-                    arch_fs = field_arch_db.translate(
-                        lambda term: translation_dictionary[term][lang],
-                        arch_fs
-                    )
-            view.arch = arch_fs or view.arch_db
+            view.arch = pycompat.to_text(arch_fs or view.arch_db)
 
     def _inverse_arch(self):
         for view in self:
@@ -310,15 +391,6 @@ actual arch.
         data = self.env['ir.model.data'].sudo().search(domain)
         return [('id', 'in', data.mapped('res_id'))]
 
-    @api.depends('model')
-    def _compute_model_id(self):
-        for record in self:
-            record.model_id = self.env['ir.model']._get(record.model)
-
-    def _inverse_compute_model_id(self):
-        for record in self:
-            record.model = record.model_id.model
-
     def _compute_xml_id(self):
         xml_ids = collections.defaultdict(list)
         domain = [('model', '=', 'ir.ui.view'), ('res_id', 'in', self.ids)]
@@ -360,16 +432,15 @@ actual arch.
             try:
                 # verify the view is valid xml and that the inheritance resolves
                 if view.inherit_id:
-                    view_arch = etree.fromstring(view.arch or '<data/>')
+                    view_arch = etree.fromstring(view.arch)
                     view._valid_inheritance(view_arch)
                 combined_arch = view._get_combined_arch()
                 if view.type == 'qweb':
                     continue
-            except (etree.ParseError, ValueError) as e:
+            except ValueError as e:
                 err = ValidationError(_(
-                    "Error while parsing or validating view:\n\n%(error)s",
-                    error=e,
-                    view=view.key or view.id,
+                    "Error while validating view:\n\n%(error)s",
+                    error=tools.ustr(e),
                 )).with_traceback(e.__traceback__)
                 err.context = getattr(e, 'context', None)
                 raise err from None
@@ -378,15 +449,6 @@ actual arch.
                 # verify that all fields used are valid, etc.
                 view._validate_view(combined_arch, view.model)
                 combined_archs = [combined_arch]
-
-                if combined_arch.xpath('//*[@attrs]') or combined_arch.xpath('//*[@states]'):
-                    view_name = f'{view.name} ({view.xml_id})' if view.xml_id else view.name
-                    err = ValidationError(_('Since 17.0, the "attrs" and "states" attributes are no longer used.\nView: %(name)s in %(file)s',
-                        name=view_name, file=view.arch_fs
-                    ))
-                    err.context = {'name': 'invalid view'}
-                    raise err
-
                 if combined_archs[0].tag == 'data':
                     # A <data> element is a wrapper for multiple root nodes
                     combined_archs = combined_archs[0]
@@ -395,35 +457,27 @@ actual arch.
                         del node.attrib['__validate__']
                     check = valid_view(view_arch, env=self.env, model=view.model)
                     if not check:
-                        view_name = f'{view.name} ({view.xml_id})' if view.xml_id else view.name
+                        view_name = ('%s (%s)' % (view.name, view.xml_id)) if view.xml_id else view.name
                         raise ValidationError(_(
                             'Invalid view %(name)s definition in %(file)s',
                             name=view_name, file=view.arch_fs
                         ))
+                    if check == "Warning":
+                        view_name = ('%s (%s)' % (view.name, view.xml_id)) if view.xml_id else view.name
+                        _logger.warning('Invalid view %s definition in %s \n%s', view_name, view.arch_fs, view.arch)
             except ValueError as e:
-                if hasattr(e, 'context'):
-                    lines = etree.tostring(combined_arch, encoding='unicode').splitlines(keepends=True)
-                    fivelines = "".join(lines[max(0, e.context["line"]-3):e.context["line"]+2])
-                    err = ValidationError(_(
-                        "Error while validating view near:\n\n%(fivelines)s\n%(error)s",
-                        fivelines=fivelines, error=e,
-                    ))
-                    err.context = e.context
-                    raise err.with_traceback(e.__traceback__) from None
-                elif e.__context__:
-                    err = ValidationError(_(
-                        "Error while validating view (%(view)s):\n\n%(error)s", view=view.key or view.id, error=e.__context__,
-                    ))
-                    err.context = {'name': 'invalid view'}
-                    raise err.with_traceback(e.__context__.__traceback__) from None
-                else:
-                    raise ValidationError(_(
-                        "Error while validating view (%(view)s):\n\n%(error)s", view=view.key or view.id, error=e,
-                    ))
+                lines = etree.tostring(combined_arch, encoding='unicode').splitlines(keepends=True)
+                fivelines = "".join(lines[max(0, e.context["line"]-3):e.context["line"]+2])
+                err = ValidationError(_(
+                    "Error while validating view near:\n\n%(fivelines)s\n%(error)s",
+                    fivelines=fivelines, error=tools.ustr(e),
+                ))
+                err.context = e.context
+                raise err.with_traceback(e.__traceback__) from None
 
         return True
 
-    @api.constrains('groups_id', 'inherit_id', 'mode')
+    @api.constrains('type', 'groups_id', 'inherit_id')
     def _check_groups(self):
         for view in self:
             if (view.groups_id and
@@ -435,7 +489,7 @@ actual arch.
     def _check_000_inheritance(self):
         # NOTE: constraints methods are check alphabetically. Always ensure this method will be
         #       called before other constraint methods to avoid infinite loop in `_get_combined_arch`.
-        if self._has_cycle('inherit_id'):
+        if not self._check_recursion(parent='inherit_id'):
             raise ValidationError(_('You cannot create recursive inherited views.'))
 
     _sql_constraints = [
@@ -461,20 +515,6 @@ actual arch.
             if not values['inherit_id'] or all(not view.inherit_id for view in self):
                 values.setdefault('mode', 'extension' if values['inherit_id'] else 'primary')
         return values
-
-    @api.depends('arch')
-    def _compute_warning_info(self):
-        for view in self:
-            view.warning_info = ''
-            try:
-                if view.inherit_id:
-                    view_arch = etree.fromstring(view.arch)
-                    view._valid_inheritance(view_arch)
-                combined_arch = view._get_combined_arch()
-                if view.type != 'qweb':
-                    view._postprocess_view(combined_arch, view.model, is_compute_warning_info=True)
-            except (etree.ParseError, ValueError) as e:
-                view.warning_info = str(e)
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -514,7 +554,7 @@ actual arch.
                         values['arch_updated'] = False
             values.update(self._compute_defaults(values))
 
-        self.env.registry.clear_cache('templates')
+        self.clear_caches()
         result = super(View, self.with_context(ir_ui_view_partial_validation=True)).create(vals_list)
         return result.with_env(self.env)
 
@@ -526,11 +566,11 @@ actual arch.
 
         # drop the corresponding view customizations (used for dashboards for example), otherwise
         # not all users would see the updated views
-        custom_view = self.env['ir.ui.view.custom'].sudo().search([('ref_id', 'in', self.ids)])
+        custom_view = self.env['ir.ui.view.custom'].search([('ref_id', 'in', self.ids)])
         if custom_view:
             custom_view.unlink()
 
-        self.env.registry.clear_cache('templates')
+        self.clear_caches()
         if 'arch_db' in vals and not self.env.context.get('no_save_prev'):
             vals['arch_prev'] = self.arch_db
 
@@ -553,20 +593,18 @@ actual arch.
         # if in uninstall mode and has children views, emulate an ondelete cascade
         if self.env.context.get('_force_unlink', False) and self.inherit_children_ids:
             self.inherit_children_ids.unlink()
-        self.env.registry.clear_cache('templates')
         return super(View, self).unlink()
 
-    def _update_field_translations(self, fname, translations, digest=None, source_lang=None):
-        return super(View, self.with_context(no_save_prev=True))._update_field_translations(fname, translations, digest=digest, source_lang=source_lang)
+    def _update_field_translations(self, fname, translations, digest=None):
+        return super(View, self.with_context(no_save_prev=True))._update_field_translations(fname, translations, digest)
 
-    def copy_data(self, default=None):
-        has_default_without_key = default and 'key' not in default
-        default = dict(default or {})
-        vals_list = super().copy_data(default=default)
-        for view, vals in zip(self, vals_list):
-            if view.key and has_default_without_key:
-                vals['key'] = default.get('key', view.key + '_%s' % str(uuid.uuid4())[:6])
-        return vals_list
+    @api.returns('self', lambda value: value.id)
+    def copy(self, default=None):
+        self.ensure_one()
+        if self.key and default and 'key' not in default:
+            new_key = self.key + '_%s' % str(uuid.uuid4())[:6]
+            default = dict(default or {}, key=new_key)
+        return super(View, self).copy(default)
 
     # default view selection
     @api.model
@@ -603,20 +641,18 @@ actual arch.
         Determine the views that inherit from the current recordset, and return
         them as a recordset, ordered by priority then by id.
         """
-        if not self.ids:
-            return self.browse()
-        self.browse().check_access('read')
+        self.check_access_rights('read')
         domain = self._get_inheriting_views_domain()
         e = expression(domain, self.env['ir.ui.view'])
-        where_clause = e.query.where_clause
-        assert e.query.from_clause == SQL.identifier('ir_ui_view'), f"Unexpected from clause: {e.query.from_clause}"
+        from_clause, where_clause, where_params = e.query.get_sql()
+        assert from_clause == '"ir_ui_view"', f"Unexpected from clause: {from_clause}"
 
-        self.flush_model(['inherit_id', 'priority', 'model', 'mode'])
-        query = SQL("""
+        self._flush_search(domain, fields=['inherit_id', 'priority', 'model', 'mode'], order='id')
+        query = f"""
             WITH RECURSIVE ir_ui_view_inherits AS (
                 SELECT id, inherit_id, priority, mode, model
                 FROM ir_ui_view
-                WHERE id IN %(ids)s AND (%(where_clause)s)
+                WHERE id IN %s AND ({where_clause})
             UNION
                 SELECT ir_ui_view.id, ir_ui_view.inherit_id, ir_ui_view.priority,
                        ir_ui_view.mode, ir_ui_view.model
@@ -624,13 +660,13 @@ actual arch.
                 INNER JOIN ir_ui_view_inherits parent ON parent.id = ir_ui_view.inherit_id
                 WHERE coalesce(ir_ui_view.model, '') = coalesce(parent.model, '')
                       AND ir_ui_view.mode = 'extension'
-                      AND (%(where_clause)s)
+                      AND ({where_clause})
             )
             SELECT
                 v.id, v.inherit_id, v.mode
             FROM ir_ui_view_inherits v
             ORDER BY v.priority, v.id
-        """, ids=tuple(self.ids), where_clause=where_clause)
+        """
         # ORDER BY v.priority, v.id:
         # 1/ sort by priority: abritrary value set by developers on some
         #    views to solve "dependency hell" problems and force a view
@@ -639,7 +675,9 @@ actual arch.
         # 2/ sort by view id: the order the views were inserted in the
         #    database. e.g. base views are placed before stock ones.
 
-        rows = self.env.execute_query(query)
+        self.env.cr.execute(query, [tuple(self.ids)] + where_params + where_params)
+        rows = self.env.cr.fetchall()
+
         views = self.browse(row[0] for row in rows)
 
         # optimization: fill in cache of inherit_id and mode
@@ -663,14 +701,14 @@ actual arch.
         initialization phase is completely finished.
         """
         # check that all found ids have a corresponding xml_id in a loaded module
-        check_view_ids = set(self.env.context['check_view_ids'])
+        check_view_ids = self.env.context['check_view_ids']
         ids_to_check = [vid for vid in self.ids if vid not in check_view_ids]
         if not ids_to_check:
             return self
         loaded_modules = tuple(self.pool._init_modules) + (self._context.get('install_module'),)
         query = self._get_filter_xmlid_query()
-        sql = SQL(query, res_ids=tuple(ids_to_check), modules=loaded_modules)
-        valid_view_ids = {id_ for id_, in self.env.execute_query(sql)} | check_view_ids
+        self.env.cr.execute(query, {'res_ids': tuple(ids_to_check), 'modules': loaded_modules})
+        valid_view_ids = {r[0] for r in self.env.cr.fetchall()} | set(check_view_ids)
         return self.browse(vid for vid in self.ids if vid in valid_view_ids)
 
     def _check_view_access(self):
@@ -896,7 +934,7 @@ actual arch.
         queue = collections.deque(sorted(hierarchy[self], key=lambda v: v.mode))
         while queue:
             view = queue.popleft()
-            arch = etree.fromstring(view.arch or '<data/>')
+            arch = etree.fromstring(view.arch)
             if view.env.context.get('inherit_branding'):
                 view.inherit_branding(arch)
             self._add_validation_flag(combined_arch, view, arch)
@@ -909,6 +947,23 @@ actual arch.
                     queue.appendleft(child_view)
 
         return combined_arch
+
+    def read_combined(self, fields=None):
+        """
+        Utility function to get a view combined with its inherited views.
+
+        * Gets the top of the view tree if a sub-view is requested
+        * Applies all inherited archs on the root view
+        * Returns the view with all requested fields
+          .. note:: ``arch`` is always added to the fields list even if not
+                    requested (similar to ``id``)
+        """
+        warnings.warn("use get_combined_arch() instead", DeprecationWarning, stacklevel=2)
+        if fields:
+            fields = list({'arch', 'model'}.union(fields))
+        [result] = self.read(fields)
+        result['arch'] = self.get_combined_arch()
+        return result
 
     def get_combined_arch(self):
         """ Return the arch of ``self`` (as a string) combined with its inherited views. """
@@ -980,6 +1035,7 @@ actual arch.
         self and self.ensure_one()      # self is at most one view
 
         name_manager = self._postprocess_view(node, model or self.model, **options)
+
         arch = etree.tostring(node, encoding="unicode").replace('\t', '')
 
         models = {}
@@ -987,7 +1043,6 @@ actual arch.
         for name_manager in name_managers:
             models.setdefault(name_manager.model._name, set()).update(name_manager.available_fields)
             name_managers.extend(name_manager.children)
-
         return arch, models
 
     def _postprocess_access_rights(self, tree):
@@ -999,25 +1054,12 @@ actual arch.
         views can add additional specific rights like creating columns for
         many2one-based grouping views.
         """
-        group_definitions = self.env['res.groups']._get_group_definitions()
 
-        user_group_ids = self.env.user._get_group_ids()
-        # The 'base.group_no_one' is not actually involved by any other group because it is session dependent.
-        group_no_one_id = group_definitions.get_id('base.group_no_one')
-        if group_no_one_id in user_group_ids and not (request and request.session.debug):
-            user_group_ids = [g for g in user_group_ids if g != group_no_one_id]
-
-        # check the read/visibility access
-        @functools.cache
-        def has_access(groups_key):
-            groups = group_definitions.from_key(groups_key)
-            return groups.matches(user_group_ids)
-
-        # check the read/visibility access
-        for node in tree.xpath('//*[@__groups_key__]'):
-            if not has_access(node.attrib.pop('__groups_key__')):
+        for node in tree.xpath('//*[@groups]'):
+            attrib_groups = node.attrib.pop('groups')
+            if attrib_groups and not self.user_has_groups(attrib_groups):
                 node.getparent().remove(node)
-            elif node.tag == 't' and not node.attrib:
+            elif node.tag == 't' and (not node.attrib or node.get('postprocess_added')):
                 # Move content of <t groups=""> blocks
                 # and remove the <t> node.
                 # This is to keep the structure
@@ -1026,44 +1068,72 @@ actual arch.
                 #   <field name="bar"/>
                 # <group>
                 # so the web client adds the label as expected.
-                # This is also to avoid having <t> nodes in list views
+                # This is also to avoid having <t> nodes in tree views
                 # e.g.
-                # <list>
+                # <tree>
                 #   <field name="foo"/>
                 #   <t groups="foo">
                 #     <field name="bar" groups="bar"/>
                 #   </t>
-                # </list>
+                # </tree>
                 for child in reversed(node):
                     node.addnext(child)
                 node.getparent().remove(node)
 
-        # check the create and write access
         base_model = tree.get('model_access_rights')
         for node in tree.xpath('//*[@model_access_rights]'):
             model = self.env[node.attrib.pop('model_access_rights')]
             if node.tag == 'field':
-                can_create = model.has_access('create')
-                can_write = model.has_access('write')
-                node.set('can_create', str(bool(can_create)))
-                node.set('can_write', str(bool(can_write)))
+                can_create = model.check_access_rights('create', raise_exception=False)
+                can_write = model.check_access_rights('write', raise_exception=False)
+                node.set('can_create', 'true' if can_create else 'false')
+                node.set('can_write', 'true' if can_write else 'false')
             else:
                 is_base_model = base_model == model._name
                 for action, operation in (('create', 'create'), ('delete', 'unlink'), ('edit', 'write')):
-                    if not node.get(action) and not model.has_access(operation):
-                        node.set(action, 'False')
+                    if (not node.get(action) and
+                            not model.check_access_rights(operation, raise_exception=False) or
+                            not self._context.get(action, True) and is_base_model):
+                        node.set(action, 'false')
                 if node.tag == 'kanban':
                     group_by_name = node.get('default_group_by')
                     group_by_field = model._fields.get(group_by_name)
                     if group_by_field and group_by_field.type == 'many2one':
                         group_by_model = model.env[group_by_field.comodel_name]
                         for action, operation in (('group_create', 'create'), ('group_delete', 'unlink'), ('group_edit', 'write')):
-                            if not node.get(action) and not group_by_model.has_access(operation):
-                                node.set(action, 'False')
+                            if (not node.get(action) and
+                                    not group_by_model.check_access_rights(operation, raise_exception=False) or
+                                    not self._context.get(action, True) and is_base_model):
+                                node.set(action, 'false')
 
         return tree
 
-    def _postprocess_view(self, node, model_name, editable=True, node_info=None, **options):
+    def _postprocess_context_dependent(self, tree):
+        """
+        Evaluate the modifiers which depends on the context after retrieving the view from the cache.
+
+        e.g.
+        <field name="date_approve" invisible="context.get('quotation_only', False)"
+
+        For such modifiers, which cannot be cached, the modifier has been stored under it's non-evaluated expression,
+        along with a temporary technical attribute `context-dependent-modifiers`
+        to tell which modifier should be evaluated after retrieving the view from the cache.
+        e.g.
+        <field
+            name="date_approve"
+            modifiers="{&quot;invisible&quot;: &quot;context.get('quotation_only')&quot;}"
+            context-dependent-modifiers="invisible"/>
+        """
+        for node in tree.xpath('//*[@context-dependent-modifiers]'):
+            modifiers = json.loads(node.attrib.pop('modifiers', '{}'))
+            for attr, value in json.loads(node.attrib.pop('context-dependent-modifiers')).items():
+                value = bool(safe_eval.safe_eval(value, {'context': self._context}))
+                if value or (attr not in modifiers or not isinstance(modifiers[attr], list)):
+                    modifiers[attr] = value
+            transfer_modifiers_to_node(modifiers, node)
+        return tree
+
+    def _postprocess_view(self, node, model_name, editable=True, parent_name_manager=None, **options):
         """ Process the given architecture, modifying it in-place to add and
         remove stuff.
 
@@ -1079,42 +1149,27 @@ actual arch.
             self._raise_view_error(_('Model not found: %(model)s', model=model_name), root)
         model = self.env[model_name]
 
-        group_definitions = self.env['res.groups']._get_group_definitions()
+        if self._onchange_able_view(root):
+            self._postprocess_on_change(root, model)
 
-        # model_groups/view_groups: access groups for the model/view
-        model_groups = node_info['model_groups'] if node_info else group_definitions.universe
-        view_groups = node_info['view_groups'] if node_info else group_definitions.universe
-        parent_name_manager = node_info['name_manager'] if node_info else None
-
-        # combine model access groups with this model's access groups
-        model_groups &= self.env['ir.model.access']._get_access_groups(model_name)
-
-        name_manager = NameManager(model, parent=parent_name_manager, model_groups=model_groups)
+        name_manager = NameManager(model, parent=parent_name_manager)
 
         root_info = {
             'view_type': root.tag,
             'view_editable': editable and self._editable_node(root, name_manager),
+            'view_modifiers_from_model': self._modifiers_from_model(root),
             'mobile': options.get('mobile'),
-            'model_groups': model_groups,
-            'view_groups': view_groups,
-            'name_manager': name_manager,
         }
 
-        is_compute_warning_info = options.get('is_compute_warning_info')
-
         # use a stack to recursively traverse the tree
-        stack = [(root, view_groups, editable)]
+        stack = [(root, editable)]
         while stack:
-            node, view_groups, editable = stack.pop()
+            node, editable = stack.pop()
 
             # compute default
             tag = node.tag
             had_parent = node.getparent() is not None
-            node_info = dict(root_info, view_groups=view_groups, editable=editable and self._editable_node(node, name_manager))
-
-            node_groups = node.get('groups')
-            if node_groups:
-                node_info['view_groups'] &= group_definitions.parse(node_groups, raise_if_not_found=False)
+            node_info = dict(root_info, modifiers={}, editable=editable and self._editable_node(node, name_manager))
 
             # tag-specific postprocessing
             postprocessor = getattr(self, f"_postprocess_tag_{tag}", None)
@@ -1124,77 +1179,17 @@ actual arch.
                     # the node has been removed, stop processing here
                     continue
 
+            transfer_node_to_modifiers(node, node_info['modifiers'])
+            transfer_modifiers_to_node(node_info['modifiers'], node)
+
             # if present, iterate on node_info['children'] instead of node
             for child in reversed(node_info.get('children', node)):
-                stack.append((child, node_info['view_groups'], node_info['editable']))
-
-            if node_groups or root_info['model_groups'] != node_info['model_groups']:
-                groups = node_info['model_groups'] & node_info['view_groups']
-                node.set('__groups_key__', groups.key)
-
-            self._postprocess_attributes(node, name_manager, node_info)
-
-            if node_groups and is_compute_warning_info:
-                # reset the groups attributes to display in log
-                node.attrib['groups'] = node_groups
-
-        missing_fields = self._add_missing_fields(root, name_manager)
-
-        if is_compute_warning_info:
-            for name, (missing_groups, reasons) in missing_fields.items():
-                error_message = name_manager._error_message_group_inconsistency(name, missing_groups, reasons)[0]
-                if error_message:
-                    if self.warning_info:
-                        self.warning_info += Markup('<br/>\n<br/>\n')
-                    self.warning_info += error_message.replace('\n', Markup('<br/>\n'))
+                stack.append((child, node_info['editable']))
 
         name_manager.update_available_fields()
-
         root.set('model_access_rights', model._name)
 
-        if self._onchange_able_view(root):
-            self._postprocess_on_change(root, model)
-
         return name_manager
-
-    def _add_missing_fields(self, node, name_manager):
-        """ Add the fields required for evaluating expressions in the view given by ``node``. """
-        root = node
-        missing_fields = name_manager.get_missing_fields()
-        for name, (missing_groups, reasons) in missing_fields.items():
-            if name not in name_manager.field_info:
-                continue
-
-            # If the available fields have different groups then to avoid it being missing for
-            # certain users, we virtually add a field with common groups.
-            name_manager.available_fields[name].setdefault('info', {})
-            name_manager.available_fields[name].setdefault('groups', []).append(missing_groups)
-            name_manager.available_names.add(name)
-
-            # If the field is not in the view without any group restriction,
-            # add the field node with all mandatory groups (or without group if
-            # the mandatory field does not have groups).
-            attrs = {
-                'name': name,
-                'invisible' if root.tag != 'list' else 'column_invisible': 'True',
-                'readonly': 'True',
-                'data-used-by': '; '.join(
-                    f"{attr}={expr!r} ({node.tag},{node.get('name')})"
-                    for _groups, (attr, expr), node in reasons
-                ),
-            }
-
-            if missing_groups is not False:
-                subset_groups = missing_groups.invert_intersect(name_manager.model_groups)
-                if subset_groups is None:
-                    subset_groups = missing_groups
-                if not subset_groups.is_universal():
-                    attrs['__groups_key__'] = subset_groups.key
-
-            item = etree.Element('field', attrs)
-            item.tail = '\n'
-            root.append(item)
-        return missing_fields
 
     def _postprocess_on_change(self, arch, model):
         """ Add attribute on_change="1" on fields that are dependencies of
@@ -1232,9 +1227,9 @@ actual arch.
         """
         current_view_types = [el.tag for el in field_node.xpath("./*[descendant::field]")]
         missing_view_types = []
-        if not any(view_type in current_view_types for view_type in field_node.get('mode', 'kanban,list').split(',')):
+        if not any(view_type in current_view_types for view_type in field_node.get('mode', 'kanban,tree').split(',')):
             missing_view_types.append(
-                field_node.get('mode', 'kanban' if node_info.get('mobile') else 'list').split(',')[0]
+                field_node.get('mode', 'kanban' if node_info.get('mobile') else 'tree').split(',')[0]
             )
 
         if not missing_view_types:
@@ -1250,76 +1245,66 @@ actual arch.
 
         return [comodel._get_view(view_type=view_type) for view_type in missing_view_types]
 
-    def _postprocess_attributes(self, node, name_manager, node_info):
-        # get mandatory fields
-        for attr, expr in node.items():
-            if attr in VIEW_MODIFIERS or attr.startswith('decoration-'):
-                vnames = get_expression_field_names(expr)
-                name_manager.must_have_fields(node, vnames, node_info, (attr, expr))
-            elif attr == 'groups':
-                node.attrib.pop('groups')
-
     #------------------------------------------------------
     # Specific node postprocessors
     #------------------------------------------------------
     def _postprocess_tag_calendar(self, node, name_manager, node_info):
         for additional_field in ('date_start', 'date_delay', 'date_stop', 'color', 'all_day'):
-            if fnames := node.get(additional_field):
-                name_manager.has_field(node, fnames.split('.', 1)[0], node_info)
+            if node.get(additional_field):
+                name_manager.has_field(node, node.get(additional_field).split('.', 1)[0])
         for f in node:
             if f.tag == 'filter':
-                name_manager.has_field(node, f.get('name'), node_info)
+                name_manager.has_field(node, f.get('name'))
 
     def _postprocess_tag_field(self, node, name_manager, node_info):
-        name = node.get('name')
-        if not name:
-            return
+        if node.get('name'):
+            attrs = {'id': node.get('id'), 'select': node.get('select')}
+            field = name_manager.model._fields.get(node.get('name'))
+            if field:
+                if field.groups:
+                    if node.get('groups'):
+                        # if the node has a group (e.g. "base.group_no_one")
+                        # and the field in the Python model has a group as well (e.g. "base.group_system")
+                        # the user must have both group to see the field.
+                        # groups="base.group_no_one,base.group_system" directly on the node
+                        # would be one of the two groups, not both (OR instead of AND).
+                        # To make mandatory to have both groups, wrap the field node in a <t> node with the group
+                        # set on the field in the Python model
+                        # e.g. <t groups="base.group_system"><field name="foo" groups="base.group_no_one"/></t>
+                        # The <t> node will be removed later, in _postprocess_access_rights.
+                        node_t = E.t(groups=field.groups, postprocess_added='1')
+                        node.getparent().replace(node, node_t)
+                        node_t.append(node)
+                    else:
+                        node.set('groups', field.groups)
+                if (
+                    node_info.get('view_type') == 'form'
+                    and field.type in ('one2many', 'many2many')
+                    and not node.get('widget')
+                    and not node.get('invisible')
+                    and not name_manager.parent
+                ):
+                    # Embed kanban/tree/form views for visible x2many fields in form views
+                    # if no widget or the widget requires it.
+                    # So the web client doesn't have to call `get_views` for x2many fields not embedding their view
+                    # in the main form view.
+                    for arch, _view in self._get_x2many_missing_view_archs(field, node, node_info):
+                        node.append(arch)
 
-        attrs = {'id': node.get('id'), 'select': node.get('select')}
-        field = name_manager.model._fields.get(name)
+                for child in node:
+                    if child.tag in ('form', 'tree', 'graph', 'kanban', 'calendar'):
+                        node_info['children'] = []
+                        self._postprocess_view(
+                            child, field.comodel_name, editable=node_info['editable'], parent_name_manager=name_manager,
+                        )
+                if node_info['editable'] and field.type in ('many2one', 'many2many'):
+                    node.set('model_access_rights', field.comodel_name)
 
-        if field:
-            if field.groups:
-                group_definitions = self.env['res.groups']._get_group_definitions()
-                node_info['model_groups'] &= group_definitions.parse(field.groups, raise_if_not_found=False)
-            if (
-                node_info.get('view_type') == 'form'
-                and field.type in ('one2many', 'many2many')
-                and not node.get('widget')
-                and node.get('invisible') not in ('1', 'True')
-                and not name_manager.parent
-            ):
-                # Embed kanban/list/form views for visible x2many fields in form views
-                # if no widget or the widget requires it.
-                # So the web client doesn't have to call `get_views` for x2many fields not embedding their view
-                # in the main form view.
-                for arch, _view in self._get_x2many_missing_view_archs(field, node, node_info):
-                    node.append(arch)
+            name_manager.has_field(node, node.get('name'), attrs)
 
-            if field.relational:
-                domain = (
-                    node.get('domain')
-                    or node_info['editable'] and field._description_domain(self.env)
-                )
-                if isinstance(domain, str):
-                    vnames = get_expression_field_names(domain)
-                    name_manager.must_have_fields(node, vnames, node_info, ('domain', domain))
-            if field.type == 'properties':
-                name_manager.must_have_fields(node, [field.definition_record], node_info, ('fieldname', field.name))
-            context = node.get('context')
-            if context:
-                vnames = get_expression_field_names(context)
-                name_manager.must_have_fields(node, vnames, node_info, ('context', context))
-
-            for child in node:
-                if child.tag in ('form', 'list', 'graph', 'kanban', 'calendar'):
-                    node_info['children'] = []
-                    self._postprocess_view(child, field.comodel_name, editable=node_info['editable'], node_info=node_info)
-
-            if node_info['editable'] and field.type in ('many2one', 'many2many'):
-                node.set('model_access_rights', field.comodel_name)
-
-        name_manager.has_field(node, name, node_info, attrs)
+            field_info = name_manager.field_info.get(node.get('name'))
+            if field_info:
+                transfer_field_to_modifiers(field_info, node_info['modifiers'], node_info['view_modifiers_from_model'])
 
     def _postprocess_tag_form(self, node, name_manager, node_info):
         result = name_manager.model.view_header_get(False, node.tag)
@@ -1334,25 +1319,30 @@ actual arch.
         if not field or not field.comodel_name:
             return
         # post-process the node as a nested view, and associate it to the field
-        node_info['children'] = []
-        self._postprocess_view(node, field.comodel_name, editable=False, node_info=node_info)
-        name_manager.has_field(node, name, node_info)
+        self._postprocess_view(node, field.comodel_name, editable=False, parent_name_manager=name_manager)
+        name_manager.has_field(node, name)
 
     def _postprocess_tag_label(self, node, name_manager, node_info):
-        if not node.get('for'):
-            return
-        field = name_manager.model._fields.get(node.get('for'))
-        if field and field.groups:
-            group_definitions = self.env['res.groups']._get_group_definitions()
-            node_info['model_groups'] &= group_definitions.parse(field.groups, raise_if_not_found=False)
+        if node.get('for'):
+            field = name_manager.model._fields.get(node.get('for'))
+            if field and field.groups:
+                if node.get('groups'):
+                    # See the comment for this in `_postprocess_tag_field`
+                    node_t = E.t(groups=field.groups, postprocess_added="1")
+                    node.getparent().replace(node, node_t)
+                    node_t.append(node)
+                else:
+                    node.set('groups', field.groups)
 
     def _postprocess_tag_search(self, node, name_manager, node_info):
         searchpanel = [child for child in node if child.tag == 'searchpanel']
         if searchpanel:
-            self._postprocess_view(searchpanel[0], name_manager.model._name, editable=False, node_info=node_info)
+            self._postprocess_view(
+                searchpanel[0], name_manager.model._name, editable=False, parent_name_manager=name_manager
+            )
             node_info['children'] = [child for child in node if child.tag != 'searchpanel']
 
-    def _postprocess_tag_list(self, node, name_manager, node_info):
+    def _postprocess_tag_tree(self, node, name_manager, node_info):
         # reuse form view post-processing
         self._postprocess_tag_form(node, name_manager, node_info)
 
@@ -1371,12 +1361,15 @@ actual arch.
     def _editable_tag_form(self, node, name_manager):
         return True
 
-    def _editable_tag_list(self, node, name_manager):
+    def _editable_tag_tree(self, node, name_manager):
         return node.get('editable') or node.get('multi_edit')
 
     def _editable_tag_field(self, node, name_manager):
         field = name_manager.model._fields.get(node.get('name'))
-        return field is None or field.is_editable() and node.get('readonly') not in ('1', 'True')
+        return field is None or field.is_editable() and (
+            node.get('readonly') not in ('1', 'True')
+            or get_dict_asts(node.get('attrs') or "{}")
+        )
 
     def _onchange_able_view(self, node):
         func = getattr(self, f"_onchange_able_view_{node.tag}", None)
@@ -1386,15 +1379,15 @@ actual arch.
     def _onchange_able_view_form(self, node):
         return True
 
-    def _onchange_able_view_list(self, node):
+    def _onchange_able_view_tree(self, node):
         return True
 
     def _onchange_able_view_kanban(self, node):
         return True
 
     def _modifiers_from_model(self, node):
-        modifier_names = []
-        if node.tag in ('kanban', 'list', 'form'):
+        modifier_names = ['invisible']
+        if node.tag in ('kanban', 'tree', 'form'):
             modifier_names += ['readonly', 'required']
         return modifier_names
 
@@ -1402,7 +1395,7 @@ actual arch.
     # view validation
     #-------------------------------------------------------------------
 
-    def _validate_view(self, node, model_name, view_type=None, editable=True, node_info=None):
+    def _validate_view(self, node, model_name, editable=True, full=False):
         """ Validate the given architecture node, and return its corresponding
         NameManager.
 
@@ -1415,36 +1408,17 @@ actual arch.
         """
         self.ensure_one()
 
-        view_type = view_type or self.type
-        if node.tag != view_type:
-            self._raise_view_error(_(
-                'The root node of a %(view_type)s view should be a <%(view_type)s>, not a <%(tag)s>',
-                view_type=view_type, tag=node.tag,
-            ), node)
-
         if model_name not in self.env:
             self._raise_view_error(_('Model not found: %(model)s', model=model_name), node)
 
-        group_definitions = self.env['res.groups']._get_group_definitions()
-
-        # model_groups/view_groups: access groups for the model/view
-        validate = node_info['validate'] if node_info else False
-        model_groups = node_info['model_groups'] if node_info else group_definitions.universe
-        view_groups = node_info['view_groups'] if node_info else group_definitions.universe
-        parent_name_manager = node_info['name_manager'] if node_info else None
-
-        # combine model access groups with this model's access groups
-        model_groups &= self.env['ir.model.access']._get_access_groups(model_name)
-
         # fields_get() optimization: validation does not require translations
         model = self.env[model_name].with_context(lang=None)
-        name_manager = NameManager(model, parent=parent_name_manager, model_groups=model_groups)
+        name_manager = NameManager(model)
 
-        view_type = node.tag
         # use a stack to recursively traverse the tree
-        stack = [(node, view_groups, editable, validate)]
+        stack = [(node, editable, full)]
         while stack:
-            node, view_groups, editable, validate = stack.pop()
+            node, editable, validate = stack.pop()
 
             # compute default
             tag = node.tag
@@ -1452,16 +1426,7 @@ actual arch.
             node_info = {
                 'editable': editable and self._editable_node(node, name_manager),
                 'validate': validate,
-                'view_type': view_type,
-                'model_groups': model_groups,
-                'view_groups': view_groups,
-                'name_manager': name_manager,
             }
-
-            if groups := node.get('groups'):
-                for group_name in groups.replace('!', '').split(','):
-                    name_manager.must_exist_group(group_name, node)
-                node_info['view_groups'] &= group_definitions.parse(groups, raise_if_not_found=False)
 
             # tag-specific validation
             validator = getattr(self, f"_validate_tag_{tag}", None)
@@ -1469,10 +1434,10 @@ actual arch.
                 validator(node, name_manager, node_info)
 
             if validate:
-                self._validate_attributes(node, name_manager, node_info)
+                self._validate_attrs(node, name_manager, node_info)
 
             for child in reversed(node):
-                stack.append((child, node_info['view_groups'], node_info['editable'], validate))
+                stack.append((child, node_info['editable'], validate))
 
         name_manager.check(self)
 
@@ -1482,31 +1447,18 @@ actual arch.
     # Node validator
     #------------------------------------------------------
     def _validate_tag_form(self, node, name_manager, node_info):
-        self._validate_tag_kanban(node, name_manager, node_info)
+        pass
 
-    def _validate_tag_kanban(self, node, name_manager, node_info):
-        if node.xpath("//t[@t-name='kanban-box']"):
-            _logger.warning("'kanban-box' is deprecated, define a 'card' template instead")
-
-    def _validate_tag_list(self, node, name_manager, node_info):
+    def _validate_tag_tree(self, node, name_manager, node_info):
         # reuse form view validation
         self._validate_tag_form(node, name_manager, node_info)
         if not node_info['validate']:
             return
-        # inline list views inside form views aren't rng validated, so we must validate the
-        # editable attribute in python
-        editable_attr = node.get("editable")
-        if editable_attr and editable_attr not in ["top", "bottom"]:
-            msg = _(
-                'The "editable" attribute of list views must be "top" or "bottom", received %(value)s',
-                value=editable_attr,
-            )
-            self._raise_view_error(msg, node)
         allowed_tags = ('field', 'button', 'control', 'groupby', 'widget', 'header')
         for child in node.iterchildren(tag=etree.Element):
             if child.tag not in allowed_tags and not isinstance(child, etree._Comment):
                 msg = _(
-                    'List child can only have one of %(tags)s tag (not %(wrong_tag)s)',
+                    'Tree child can only have one of %(tags)s tag (not %(wrong_tag)s)',
                     tags=', '.join(allowed_tags), wrong_tag=child.tag,
                 )
                 self._raise_view_error(msg, child)
@@ -1521,11 +1473,11 @@ actual arch.
 
     def _validate_tag_calendar(self, node, name_manager, node_info):
         for additional_field in ('date_start', 'date_delay', 'date_stop', 'color', 'all_day'):
-            if fnames := node.get(additional_field):
-                name_manager.has_field(node, fnames.split('.', 1)[0], node_info)
+            if node.get(additional_field):
+                name_manager.has_field(node, node.get(additional_field).split('.', 1)[0])
         for f in node:
             if f.tag == 'filter':
-                name_manager.has_field(node, f.get('name'), node_info)
+                name_manager.has_field(node, f.get('name'))
 
     def _validate_tag_search(self, node, name_manager, node_info):
         if node_info['validate'] and not node.iterdescendants(tag="field"):
@@ -1539,8 +1491,8 @@ actual arch.
             if len(searchpanels) > 1:
                 self._raise_view_error(_('Search tag can only contain one search panel'), node)
             node.remove(searchpanels[0])
-            self._validate_view(searchpanels[0], name_manager.model._name, view_type="searchpanel",
-                                node_info=node_info, editable=False)
+            self._validate_view(searchpanels[0], name_manager.model._name,
+                                editable=False, full=node_info['validate'])
 
     def _validate_tag_field(self, node, name_manager, node_info):
         validate = node_info['validate']
@@ -1551,10 +1503,6 @@ actual arch.
 
         field = name_manager.model._fields.get(name)
         if field:
-            if field.groups:
-                group_definitions = self.env['res.groups']._get_group_definitions()
-                node_info['model_groups'] &= group_definitions.parse(field.groups, raise_if_not_found=False)
-
             if validate and field.relational:
                 domain = (
                     node.get('domain')
@@ -1564,14 +1512,11 @@ actual arch.
                     # dynamic domain: in [('foo', '=', bar)], field 'foo' must
                     # exist on the comodel and field 'bar' must be in the view
                     desc = (f'domain of <field name="{name}">' if node.get('domain')
-                            else f"domain of python field {name!r}")
-                    try:
-                        self._validate_domain_identifiers(node, name_manager, domain, desc, field.comodel_name, node_info)
-                    except ValueError as e:
-                        if 'Modifier must be a domain' in str(e):
-                            warnings.warn(f"Non-domain syntaxes are deprecated for attribute 'domain': {desc}\n{domain!r}", DeprecationWarning, 2)
-                        else:
-                            raise
+                            else f"domain of field '{name}'")
+                    fnames, vnames = self._get_domain_identifiers(node, domain, desc)
+                    self._check_field_paths(node, fnames, field.comodel_name, f"{desc} ({domain})")
+                    if vnames:
+                        name_manager.must_have_fields(node, vnames, f"{desc} ({domain})")
 
             elif validate and node.get('domain'):
                 msg = _(
@@ -1580,17 +1525,16 @@ actual arch.
                 )
                 self._raise_view_error(msg, node)
 
-            if field.type == 'properties' and node_info['view_type'] != 'search':
-                name_manager.must_have_fields(node, {field._description_definition_record}, node_info, use=f"definition record of {field.name}")
-
             for child in node:
-                if child.tag not in ('form', 'list', 'graph', 'kanban', 'calendar'):
+                if child.tag not in ('form', 'tree', 'graph', 'kanban', 'calendar'):
                     continue
                 node.remove(child)
-                self._validate_view(
-                    child, field.comodel_name, view_type=child.tag, editable=node_info['editable'],
-                    node_info=node_info,
+                sub_manager = self._validate_view(
+                    child, field.comodel_name, editable=node_info['editable'], full=validate,
                 )
+                for fname, groups_uses in sub_manager.mandatory_parent_fields.items():
+                    for groups, use in groups_uses.items():
+                        name_manager.must_have_field(node, fname, use, groups=groups)
 
         elif validate and name not in name_manager.field_info:
             msg = _(
@@ -1599,7 +1543,23 @@ actual arch.
             )
             self._raise_view_error(msg, node)
 
-        name_manager.has_field(node, name, node_info, {'id': node.get('id'), 'select': node.get('select')})
+        name_manager.has_field(node, name, {'id': node.get('id'), 'select': node.get('select')})
+
+        if validate:
+            for attribute in ('invisible', 'readonly', 'required'):
+                val = node.get(attribute)
+                if val:
+                    try:
+                        # most (~95%) elements are 1/True/0/False
+                        res = str2bool(val)
+                    except ValueError:
+                        res = safe_eval.safe_eval(val, {'context': self._context})
+                    if res not in (1, 0, True, False, None):
+                        msg = _(
+                            'Attribute %(attribute)s evaluation expects a boolean, got %(value)s',
+                            attribute=attribute, value=val,
+                        )
+                        self._raise_view_error(msg, node)
 
     def _validate_tag_filter(self, node, name_manager, node_info):
         if not node_info['validate']:
@@ -1608,17 +1568,10 @@ actual arch.
         if domain:
             name = node.get('name')
             desc = f'domain of <filter name="{name}">' if name else 'domain of <filter>'
-            self._validate_domain_identifiers(node, name_manager, domain, desc, name_manager.model._name, node_info)
-        if node.get("date") and (default_periods := node.get("default_period")):
-            custom_options = {f'custom_{child.attrib["name"]}' for child in node.getchildren()}
-            for default_period in default_periods.split(","):
-                if not re.fullmatch(r"(year|month)((-|\+)[1-9]\d*)?", default_period)\
-                    and default_period not in custom_options | {"first_quarter", "second_quarter", "third_quarter", "fourth_quarter"}:
-                    msg = _(
-                        "Invalid default period %(default_period)s for date filter",
-                        default_period=default_period,
-                    )
-                    self._raise_view_error(msg, node)
+            fnames, vnames = self._get_domain_identifiers(node, domain, desc)
+            self._check_field_paths(node, fnames, name_manager.model._name, f"{desc} ({domain})")
+            if vnames:
+                name_manager.must_have_fields(node, vnames, f"{desc} ({domain})")
 
     def _validate_tag_button(self, node, name_manager, node_info):
         if not node_info['validate']:
@@ -1643,8 +1596,8 @@ actual arch.
                     )
                     self._raise_view_error(msg, node)
                 try:
-                    get_public_method(name_manager.model, name)
-                except (AttributeError, AccessError):
+                    check_method_name(name)
+                except AccessError:
                     msg = _(
                         "%(method)s on %(model)s is private and cannot be called from a button",
                         method=name, model=name_manager.model._name,
@@ -1656,7 +1609,28 @@ actual arch.
                     msg = "%s on %s has parameters and cannot be called from a button"
                     self._log_view_warning(msg % (name, name_manager.model._name), node)
             elif type_ == 'action':
-                name_manager.must_exist_action(name, node)
+                # logic mimics /web/action/load behaviour
+                action = False
+                try:
+                    action_id = int(name)
+                except ValueError:
+                    model, action_id = self.env['ir.model.data']._xmlid_to_res_model_res_id(name, raise_if_not_found=False)
+                    if not action_id:
+                        msg = _("Invalid xmlid %(xmlid)s for button of type action.", xmlid=name)
+                        self._raise_view_error(msg, node)
+                    if not issubclass(self.pool[model], self.pool['ir.actions.actions']):
+                        msg = _(
+                            "%(xmlid)s is of type %(xmlid_model)s, expected a subclass of ir.actions.actions",
+                            xmlid=name, xmlid_model=model,
+                        )
+                        self._raise_view_error(msg, node)
+                action = self.env['ir.actions.actions'].browse(action_id).exists()
+                if not action:
+                    msg = _(
+                        "Action %(action_reference)s (id: %(action_id)s) does not exist for button of type action.",
+                        action_reference=name, action_id=action_id,
+                    )
+                    self._raise_view_error(msg, node)
 
             name_manager.has_action(name)
 
@@ -1681,17 +1655,22 @@ actual arch.
                     self._raise_view_error(msg, node)
                 domain = node_info['editable'] and field._description_domain(self.env)
                 if isinstance(domain, str):
-                    desc = f"domain of python field '{name}'"
-                    self._validate_domain_identifiers(node, name_manager, domain, desc, field.comodel_name, node_info)
+                    desc = f"domain of field '{name}'"
+                    fnames, vnames = self._get_domain_identifiers(node, domain, desc)
+                    self._check_field_paths(node, fnames, field.comodel_name, f"{desc} ({domain})")
+                    if vnames:
+                        name_manager.must_have_fields(node, vnames, f"{desc} ({domain})")
 
             # move all children nodes into a new node <groupby>
             groupby_node = E.groupby(*node)
             # validate the node as a nested view
-            self._validate_view(
-                groupby_node, field.comodel_name, view_type="groupby", editable=False,
-                node_info=node_info,
+            sub_manager = self._validate_view(
+                groupby_node, field.comodel_name, editable=False, full=node_info['validate'],
             )
-            name_manager.has_field(node, name, node_info)
+            name_manager.has_field(node, name)
+            for fname, groups_uses in sub_manager.mandatory_parent_fields.items():
+                for groups, use in groups_uses.items():
+                    name_manager.must_have_field(node, fname, use, groups=groups)
 
         elif node_info['validate']:
             msg = _(
@@ -1731,7 +1710,7 @@ actual arch.
             self._log_view_warning('<img> tag must contain an alt attribute', node)
 
     def _validate_tag_a(self, node, name_manager, node_info):
-        # ('calendar', 'form', 'graph', 'kanban', 'pivot', 'search', 'list', 'activity')
+        #('calendar', 'form', 'graph', 'kanban', 'pivot', 'search', 'tree', 'activity')
         if node_info['validate'] and any('btn' in node.get(cl, '') for cl in att_names('class')):
             if node.get('role') != 'button':
                 msg = '"<a>" tag with "btn" class must have "button" role'
@@ -1752,7 +1731,7 @@ actual arch.
     #------------------------------------------------------
 
     def _check_dropdown_menu(self, node):
-        # ('calendar', 'form', 'graph', 'kanban', 'pivot', 'search', 'list', 'activity')
+        #('calendar', 'form', 'graph', 'kanban', 'pivot', 'search', 'tree', 'activity')
         if any('dropdown-menu' in node.get(cl, '') for cl in att_names('class')):
             if node.get('role') != 'menu':
                 msg = 'dropdown-menu class must have menu role'
@@ -1773,62 +1752,68 @@ actual arch.
                 msg = 'o_progressbar class must have aria-valuemaxattribute'
                 self._log_view_warning(msg, node)
 
-    def _is_qweb_based_view(self, view_type):
-        return view_type == 'kanban'
-
-    def _validate_attributes(self, node, name_manager, node_info):
-        """ Generic validation of node attributes. """
-
-        # python expression used in for readonly, invisible, ...
-        # and thus are only executed client side
-        for attr in VIEW_MODIFIERS:
-            py_expression = node.attrib.get(attr)
-            if py_expression:
-                self._validate_expression(node, name_manager, py_expression, f"modifier {attr!r}", node_info)
-
+    def _validate_attrs(self, node, name_manager, node_info):
+        """ Generic validation of node attrs. """
         for attr, expr in node.items():
             if attr in ('class', 't-att-class', 't-attf-class'):
                 self._validate_classes(node, expr)
 
+            elif attr == 'attrs':
+                for key, val_ast in get_dict_asts(expr).items():
+                    if isinstance(val_ast, ast.List):
+                        # domains in attrs are used for readonly, invisible, ...
+                        # and thus are only executed client side
+                        fnames, vnames = self._get_domain_identifiers(node, val_ast, attr, expr)
+                        name_manager.must_have_fields(node, fnames | vnames, f"attrs ({expr})")
+                    else:
+                        vnames = get_variable_names(val_ast)
+                        if vnames:
+                            name_manager.must_have_fields(node, vnames, f"attrs ({expr})")
+
             elif attr == 'context':
-                try:
-                    vnames = get_expression_field_names(expr)
-                except SyntaxError as e:
-                    message = _('Invalid context: “%(expr)s” is not a valid Python expression \n\n %(error)s', expr=expr, error=e)
-                    self._raise_view_error(message)
-                if vnames:
-                    name_manager.must_have_fields(node, vnames, node_info, f"context ({expr})")
                 for key, val_ast in get_dict_asts(expr).items():
                     if key == 'group_by':  # only in context
-                        if not isinstance(val_ast, ast.Constant) or not isinstance(val_ast.value, str):
+                        if not isinstance(val_ast, ast.Str):
                             msg = _(
-                                '"group_by" value must be a string %(attribute)s=“%(value)s”',
+                                '"group_by" value must be a string %(attribute)s=%(value)r',
                                 attribute=attr, value=expr,
                             )
                             self._raise_view_error(msg, node)
-                        group_by = val_ast.value
+                        group_by = val_ast.s
                         fname = group_by.split(':')[0]
                         if fname not in name_manager.model._fields:
                             msg = _(
-                                'Unknown field “%(field)s” in "group_by" value in %(attribute)s=“%(value)s”',
+                                'Unknown field "%(field)s" in "group_by" value in %(attribute)s=%(value)r',
                                 field=fname, attribute=attr, value=expr,
                             )
                             self._raise_view_error(msg, node)
+                    else:
+                        vnames = get_variable_names(val_ast)
+                        if vnames:
+                            name_manager.must_have_fields(node, vnames, f"context ({expr})")
+
+            elif attr == 'groups':
+                for group in expr.replace('!', '').split(','):
+                    # further improvement: add all groups to name_manager in
+                    # order to batch check them at the end
+                    if not self.env['ir.model.data']._xmlid_to_res_id(group.strip(), raise_if_not_found=False):
+                        msg = "The group %r defined in view does not exist!"
+                        self._log_view_warning(msg % group, node)
 
             elif attr in ('col', 'colspan'):
                 # col check is mainly there for the tag 'group', but previous
                 # check was generic in view form
                 if not expr.isdigit():
                     self._raise_view_error(
-                        _('“%(attribute)s” value must be an integer (%(value)s)',
+                        _('%(attribute)r value must be an integer (%(value)s)',
                           attribute=attr, value=expr),
                         node,
                     )
 
             elif attr.startswith('decoration-'):
-                vnames = get_expression_field_names(expr)
+                vnames = get_variable_names(expr)
                 if vnames:
-                    name_manager.must_have_fields(node, vnames, node_info, f"{attr}={expr!r}")
+                    name_manager.must_have_fields(node, vnames, f"{attr}={expr}")
 
             elif attr == 'data-bs-toggle' and expr == 'tab':
                 if node.get('role') != 'tab':
@@ -1850,14 +1835,6 @@ actual arch.
             elif attr == 'group':
                 msg = "attribute 'group' is not valid.  Did you mean 'groups'?"
                 self._log_view_warning(msg, node)
-
-            elif (re.match(r'^(t\-att\-|t\-attf\-)?data-tooltip(-template|-info)?$', attr)):
-                self._raise_view_error(_("Forbidden attribute used in arch (%s).", attr), node)
-
-            elif (attr.startswith("t-")):
-                self._validate_qweb_directive(node, attr, node_info["view_type"])
-                if (re.search(COMP_REGEX, expr)):
-                    self._raise_view_error(_("Forbidden use of `__comp__` in arch."), node)
 
     def _validate_classes(self, node, expr):
         """ Validate the classes present on node. """
@@ -1908,14 +1885,12 @@ actual arch.
                 pass
             elif node.tag == 'input' and node.get('type') in ('button', 'submit', 'reset'):
                 pass
-            elif any(klass in classes for klass in ('btn-group', 'btn-toolbar', 'btn-addr')):
-                pass
-            elif node.tag == 'field' and node.get('widget') == 'url':
+            elif any(klass in classes for klass in ('btn-group', 'btn-toolbar', 'btn-ship')):
                 pass
             else:
                 msg = ("A simili button must be in tag a/button/select or tag `input` "
                         "with type button/submit/reset or have class in "
-                        "btn-group/btn-toolbar/btn-addr")
+                        "btn-group/btn-toolbar/btn-ship")
                 self._log_view_warning(msg, node)
 
     def _validate_fa_class_accessibility(self, node, description):
@@ -1934,8 +1909,6 @@ actual arch.
             if elem is None:
                 return False
             if elem.tag == 'span' and elem.text:
-                return True
-            if elem.tag in ['field', 'label'] and elem.get('string'):
                 return True
             if elem.tag == 't' and (elem.get('t-esc') or elem.get('t-raw')):
                 return True
@@ -1974,53 +1947,12 @@ actual arch.
         msg = '%s must have title in its tag, parents, descendants or have text'
         self._log_view_warning(msg % description, node)
 
-    def _validate_qweb_directive(self, node, directive, view_type):
-        """Some views (e.g. kanban, form) generate owl templates from the archs.
-        However, we don't want to see owl directives directly written in archs.
-        There are exceptions though, e.g. the kanban arch defines qweb templates.
-        We thus here validate that the given directive is allowed, according to the view_type.
-        """
-        allowed_directives = ["t-translation"]
-        if self._is_qweb_based_view(view_type):
-            allowed_directives.extend([
-                "t-name",
-                "t-esc",
-                "t-out",
-                "t-set",
-                "t-value",
-                "t-if",
-                "t-else",
-                "t-elif",
-                "t-foreach",
-                "t-as",
-                "t-key",
-                "t-att.*",
-                "t-call",
-                "t-debug",
-            ])
-        if (not next(filter(lambda regex: re.match(regex, directive), allowed_directives), None)):
-            self._raise_view_error(_("Forbidden owl directive used in arch (%s).", directive), node)
-
-    def _validate_expression(self, node, name_manager, py_expression, use, node_info):
+    def _get_domain_identifiers(self, node, domain, use, expr=None):
         try:
-            if py_expression.lower() in ("0", "false", "1", "true"):
-                # most (~95%) elements are 1/True/0/False
-                return
-            fnames = get_expression_field_names(py_expression)
-        except (SyntaxError, ValueError, AttributeError) as e:
-            msg = _("Invalid %(use)s: “%(expr)s”\n%(error)s", use=use, expr=py_expression, error=e)
-            self._raise_view_error(msg, node, from_exception=e)
-        name_manager.must_have_fields(node, fnames, node_info, f"{use} ({py_expression})")
-
-    def _validate_domain_identifiers(self, node, name_manager, domain, use, target_model, node_info):
-        try:
-            fnames, vnames = get_domain_value_names(domain)
-        except (SyntaxError, ValueError, AttributeError) as e:
-            msg = _("Invalid %(use)s: “%(expr)s”\n%(error)s", use=use, expr=domain, error=e)
-            self._raise_view_error(msg, node, from_exception=e)
-
-        self._check_field_paths(node, fnames, target_model, f"{use} ({domain})")
-        name_manager.must_have_fields(node, vnames, node_info, f"{use} ({domain})")
+            return get_domain_identifiers(domain)
+        except ValueError:
+            msg = _("Invalid domain format %(expr)s in %(use)s", expr=expr or domain, use=use)
+            self._raise_view_error(msg, node)
 
     def _check_field_paths(self, node, field_paths, model_name, use):
         """ Check whether the given field paths (dot-separated field names)
@@ -2029,12 +1961,10 @@ actual arch.
         for field_path in field_paths:
             names = field_path.split('.')
             Model = self.pool[model_name]
-            if names[0] == 'parent':
-                continue
             for index, name in enumerate(names):
                 if Model is None:
                     msg = _(
-                        'Non-relational field “%(field)s” in path “%(field_path)s” in %(use)s)',
+                        'Non-relational field %(field)r in path %(field_path)r in %(use)s)',
                         field=names[index - 1], field_path=field_path, use=use,
                     )
                     self._raise_view_error(msg, node)
@@ -2048,7 +1978,7 @@ actual arch.
                     self._raise_view_error(msg, node)
                 if not field._description_searchable:
                     msg = _(
-                        'Unsearchable field “%(field)s” in path “%(field_path)s” in %(use)s)',
+                        'Unsearchable field %(field)r in path %(field_path)r in %(use)s)',
                         field=name, field_path=field_path, use=use,
                     )
                     self._raise_view_error(msg, node)
@@ -2062,6 +1992,7 @@ actual arch.
         """ Return the list of context keys to use for caching ``_read_template``. """
         return ['lang', 'inherit_branding', 'edit_translations']
 
+    # apply ormcache_context decorator unless in dev mode...
     @api.model
     def _read_template(self, view_id):
         arch_tree = self.browse(view_id)._get_combined_arch()
@@ -2091,6 +2022,11 @@ actual arch.
         view ID or an XML ID.
         """
         return self.browse(self._get_view_id(view_ref))
+
+    def clear_cache(self):
+        """ Deprecated, use `clear_caches` instead. """
+        if 'xml' not in config['dev_mode']:
+            self.clear_caches()
 
     def _contains_branded(self, node):
         return node.tag == 't'\
@@ -2207,15 +2143,16 @@ actual arch.
         """Validate architecture of custom views (= without xml id) for a given model.
             This method is called at the end of registry update.
         """
-        rec = self.browse(id_ for id_, in self.env.execute_query(SQL("""
-                   SELECT max(v.id)
+        query = """SELECT max(v.id)
                      FROM ir_ui_view v
                 LEFT JOIN ir_model_data md ON (md.model = 'ir.ui.view' AND md.res_id = v.id)
                     WHERE md.module IN (SELECT name FROM ir_module_module) IS NOT TRUE
                       AND v.model = %s
                       AND v.active = true
-                 GROUP BY coalesce(v.inherit_id, v.id)
-                 """, model)))
+                 GROUP BY coalesce(v.inherit_id, v.id)"""
+        self._cr.execute(query, [model])
+
+        rec = self.browse(it[0] for it in self._cr.fetchall())
         return rec.with_context({'load_all_views': True})._check_xml()
 
     @api.model
@@ -2238,12 +2175,14 @@ actual arch.
 
         # retrieve the views with an XML id that has not been checked yet, i.e.,
         # the views with noupdate=True on their xml id
-        views = self.browse(id_ for id_, in self.env.execute_query(SQL("""
+        query = """
             SELECT v.id
             FROM ir_ui_view v
             JOIN ir_model_data md ON (md.model = 'ir.ui.view' AND md.res_id = v.id)
             WHERE md.module = %s AND md.name IN %s AND md.noupdate
-        """, module, names)))
+        """
+        self._cr.execute(query, (module, names))
+        views = self.browse([row[0] for row in self._cr.fetchall()])
 
         for view in views:
             view._check_xml()
@@ -2366,7 +2305,7 @@ class ResetViewArchWizard(models.TransientModel):
                     (view_arch, get_table_name(view.view_id) if view.reset_mode == 'other_view' else _("Current Arch")),
                     (diff_to, diff_to_name),
                     custom_style=False,
-                    dark_color_scheme=request and request.cookies.get('color_scheme') == 'dark',
+                    dark_color_scheme=request and request.httprequest.cookies.get('color_scheme') == 'dark',
                 )
                 view.has_diff = view_arch != diff_to
 
@@ -2433,8 +2372,6 @@ class Model(models.AbstractModel):
         for fname, field in self._fields.items():
             if field.automatic:
                 continue
-            elif field.type == "binary" and not isinstance(field, fields.Image) and not field.store:
-                continue
             elif field.type in ('one2many', 'many2many', 'text', 'html'):
                 # append to sheet left and right group if needed
                 if len(left_group) > 0:
@@ -2465,21 +2402,21 @@ class Model(models.AbstractModel):
     def _get_default_search_view(self):
         """ Generates a single-field search view, based on _rec_name.
 
-        :returns: a search view as an lxml document
+        :returns: a tree view as an lxml document
         :rtype: etree._Element
         """
         element = E.field(name=self._rec_name_fallback())
         return E.search(element, string=self._description)
 
     @api.model
-    def _get_default_list_view(self):
-        """ Generates a single-field list view, based on _rec_name.
+    def _get_default_tree_view(self):
+        """ Generates a single-field tree view, based on _rec_name.
 
-        :returns: a list view as an lxml document
+        :returns: a tree view as an lxml document
         :rtype: etree._Element
         """
         element = E.field(name=self._rec_name_fallback())
-        return E.list(element, string=self._description)
+        return E.tree(element, string=self._description)
 
     @api.model
     def _get_default_pivot_view(self):
@@ -2499,8 +2436,10 @@ class Model(models.AbstractModel):
         """
 
         field = E.field(name=self._rec_name_fallback())
-        kanban_card = E.t(field, {'t-name': "card"})
-        templates = E.templates(kanban_card)
+        content_div = E.div(field, {'class': "o_kanban_card_content"})
+        card_div = E.div(content_div, {'t-attf-class': "oe_kanban_card oe_kanban_global_click"})
+        kanban_box = E.t(card_div, {'t-name': "kanban-box"})
+        templates = E.templates(kanban_box)
         return E.kanban(templates, string=self._description)
 
     @api.model
@@ -2556,18 +2495,9 @@ class Model(models.AbstractModel):
         return view
 
     @api.model
-    @api.readonly
     def get_views(self, views, options=None):
         """ Returns the fields_views of given views, along with the fields of
         the current model, and optionally its filters for the given action.
-
-        The return of the method can only depend on the requested view types,
-        access rights (views or other records), view access rules, options,
-        context lang and TYPE_view_ref (other context values cannot be used).
-
-        Python expressions contained in views or representing domains (on
-        python fields) will be evaluated by the client with all the context
-        values as well as the record values it has.
 
         :param views: list of [view_id, view_type]
         :param dict options: a dict optional boolean flags, set to enable:
@@ -2587,7 +2517,7 @@ class Model(models.AbstractModel):
 
         result['views'] = {
             v_type: self.get_view(
-                v_id, v_type,
+                v_id, v_type if v_type != 'list' else 'tree',
                 **options
             )
             for [v_id, v_type] in views
@@ -2601,9 +2531,9 @@ class Model(models.AbstractModel):
         result['models'] = {}
 
         for model, model_fields in models.items():
-            result['models'][model] = {"fields": self.env[model].fields_get(
+            result['models'][model] = self.env[model].fields_get(
                 allfields=model_fields, attributes=self._get_view_field_attributes()
-            )}
+            )
 
         # Add related action information if asked
         if options.get('toolbar'):
@@ -2619,29 +2549,33 @@ class Model(models.AbstractModel):
                         else result['views'].keys()
                     )
                     for view_type in view_types:
+                        view_type = view_type if view_type != 'tree' else 'list'
                         if view_type in result['views']:
                             result['views'][view_type]['toolbar'].setdefault(key, []).append(action)
 
         if options.get('load_filters') and 'search' in result['views']:
             result['views']['search']['filters'] = self.env['ir.filters'].get_filters(
-                self._name, options.get('action_id'), options.get('embedded_action_id'), options.get('embedded_parent_res_id')
+                self._name, options.get('action_id')
             )
 
         return result
 
     @api.model
     def _get_view(self, view_id=None, view_type='form', **options):
-        """Get the model view combined architecture (the view along all its inheriting views).
+        """_get_view([view_id | view_type='form'])
+
+        Get the model view combined architecture (the view along all its inheriting views).
 
         :param int view_id: id of the view or None
-        :param str view_type: type of the view to return if view_id is None ('form', 'list', ...)
+        :param str view_type: type of the view to return if view_id is None ('form', 'tree', ...)
         :param dict options: bool options to return additional features:
             - bool mobile: true if the web client is currently using the responsive mobile view
               (to use kanban views instead of list views for x2many fields)
         :return: architecture of the view as an etree node, and the browse record of the view used
         :rtype: tuple
         :raise AttributeError:
-            if no view exists for that model, and no method `_get_default_[view_type]_view` exists for the view type
+
+            * if no view exists for that model, and no method `_get_default_[view_type]_view` exists for the view type
 
         """
         View = self.env['ir.ui.view'].sudo()
@@ -2654,13 +2588,11 @@ class Model(models.AbstractModel):
             if view_ref:
                 if '.' in view_ref:
                     module, view_ref = view_ref.split('.', 1)
-
-                    sql = SQL(
-                        "SELECT res_id FROM ir_model_data WHERE model='ir.ui.view' AND module=%s AND name=%s",
-                        module, view_ref,
-                    )
-                    if view_ref_res := self.env.execute_query(sql):
-                        [[view_id]] = view_ref_res
+                    query = "SELECT res_id FROM ir_model_data WHERE model='ir.ui.view' AND module=%s AND name=%s"
+                    self._cr.execute(query, (module, view_ref))
+                    view_ref_res = self._cr.fetchone()
+                    if view_ref_res:
+                        view_id = view_ref_res[0]
                 else:
                     _logger.warning(
                         '%r requires a fully-qualified external id (got: %r for model %s). '
@@ -2682,31 +2614,8 @@ class Model(models.AbstractModel):
             try:
                 arch = getattr(self, '_get_default_%s_view' % view_type)()
             except AttributeError:
-                raise UserError(_("No default view of type '%s' could be found!", view_type))
+                raise UserError(_("No default view of type '%s' could be found !", view_type))
         return arch, view
-
-    def _get_view_postprocessed(self, view, arch, **options):
-        """
-        Get the post-processed view architecture and the corresponding fields.
-
-        This method uses the view's ``postprocess_and_fields`` function to process
-        the view architecture. It applies access control rules, field modifiers,
-        and tag-specific logic. It also automatically embeds subviews for
-        ``one2many`` and ``many2many`` fields when required, and collects all
-        fields used across the view and its subviews.
-
-        :param view: an ``ir.ui.view`` record
-        :param arch: the view architecture as a string
-        :param options: bool options to return additional features:
-                        ``mobile`` (bool): true if the web client is currently using
-                        the responsive mobile view (to use kanban views instead of
-                        list views for x2many fields)
-        :return: a tuple containing:
-                - the post-processed view architecture as a string
-                - a dictionary of models and the fields used in the view
-        :rtype: tuple(str, dict)
-        """
-        return view.postprocess_and_fields(arch, model=self._name, **options)
 
     @api.model
     def _get_view_cache_key(self, view_id=None, view_type='form', **options):
@@ -2715,7 +2624,7 @@ class Model(models.AbstractModel):
         This method is meant to be overriden by models needing additional keys.
 
         :param int view_id: id of the view or None
-        :param str view_type: type of the view to return if view_id is None ('form', 'list', ...)
+        :param str view_type: type of the view to return if view_id is None ('form', 'tree', ...)
         :param dict options: bool options to return additional features:
             - bool mobile: true if the web client is currently using the responsive mobile view
               (to use kanban views instead of list views for x2many fields)
@@ -2729,7 +2638,7 @@ class Model(models.AbstractModel):
     @api.model
     @tools.conditional(
         'xml' not in config['dev_mode'],
-        tools.ormcache('self._get_view_cache_key(view_id, view_type, **options)', cache='templates'),
+        tools.ormcache('self._get_view_cache_key(view_id, view_type, **options)'),
     )
     def _get_view_cache(self, view_id=None, view_type='form', **options):
         """ Get the view information ready to be cached
@@ -2739,7 +2648,7 @@ class Model(models.AbstractModel):
         for users not part of the given groups.
 
         :param int view_id: id of the view or None
-        :param str view_type: type of the view to return if view_id is None ('form', 'list', ...)
+        :param str view_type: type of the view to return if view_id is None ('form', 'tree', ...)
         :param dict options: boolean options to return additional features:
             - bool mobile: true if the web client is currently using the responsive mobile view
               (to use kanban views instead of list views for x2many fields)
@@ -2754,7 +2663,7 @@ class Model(models.AbstractModel):
         arch, view = self._get_view(view_id, view_type, **options)
 
         # Apply post processing, groups and modifiers etc...
-        arch, models = self._get_view_postprocessed(view, arch, **options)
+        arch, models = view.postprocess_and_fields(arch, model=self._name, **options)
         models = self._get_view_fields(view_type or view.type, models)
         result = {
             'arch': arch,
@@ -2773,14 +2682,10 @@ class Model(models.AbstractModel):
     def get_view(self, view_id=None, view_type='form', **options):
         """ get_view([view_id | view_type='form'])
 
-        Get the detailed composition of the requested view like model, view architecture.
-
-        The return of the method can only depend on the requested view types,
-        access rights (views or other records), view access rules, options,
-        context lang and TYPE_view_ref (other context values cannot be used).
+        Get the detailed composition of the requested view like model, view architecture
 
         :param int view_id: id of the view or None
-        :param str view_type: type of the view to return if view_id is None ('form', 'list', ...)
+        :param str view_type: type of the view to return if view_id is None ('form', 'tree', ...)
         :param dict options: boolean options to return additional features:
             - bool mobile: true if the web client is currently using the responsive mobile view
             (to use kanban views instead of list views for x2many fields)
@@ -2791,14 +2696,15 @@ class Model(models.AbstractModel):
             * if the inherited view has unknown position to work with other than 'before', 'after', 'inside', 'replace'
             * if some tag other than 'position' is found in parent view
 
-        :raise Invalid ArchitectureError: if there is view type other than form, list, calendar, search etc... defined on the structure
+        :raise Invalid ArchitectureError: if there is view type other than form, tree, calendar, search etc... defined on the structure
         """
-        self.browse().check_access('read')
+        self.check_access_rights('read')
 
         result = dict(self._get_view_cache(view_id, view_type, **options))
 
         node = etree.fromstring(result['arch'])
         node = self.env['ir.ui.view']._postprocess_access_rights(node)
+        node = self.env['ir.ui.view']._postprocess_context_dependent(node)
         result['arch'] = etree.tostring(node, encoding="unicode").replace('\t', '')
 
         return result
@@ -2815,17 +2721,15 @@ class Model(models.AbstractModel):
         :return: dict holding the models and field required by the web client given the view type.
         :rtype: list
         """
-        if view_type in ('kanban', 'list', 'form'):
-            for model, model_fields in models.items():
-                model_fields.add('id')
-                if 'write_date' in self.env[model]._fields:
-                    model_fields.add('write_date')
+        if view_type in ('kanban', 'tree', 'form'):
+            for model_fields in models.values():
+                model_fields.update({'id', self.CONCURRENCY_CHECK_FIELD})
         elif view_type == 'search':
             models[self._name] = list(self._fields.keys())
         elif view_type == 'graph':
             models[self._name].union(fname for fname, field in self._fields.items() if field.type in ('integer', 'float'))
         elif view_type == 'pivot':
-            models[self._name].union(fname for fname, field in self._fields.items() if field._description_groupable(self.env))
+            models[self._name].union(fname for fname, field in self._fields.items() if field.groupable)
         return models
 
     @api.model
@@ -2839,10 +2743,70 @@ class Model(models.AbstractModel):
         :rtype: list
         """
         return [
-            'change_default', 'context', 'currency_field', 'definition_record', 'definition_record_field', 'digits', 'domain', 'aggregator', 'groups',
-            'help', 'model_field', 'name', 'readonly', 'related', 'relation', 'relation_field', 'required', 'searchable', 'selection', 'size',
-            'sortable', 'store', 'string', 'translate', 'trim', 'type', 'groupable',
+            'change_default', 'context', 'currency_field', 'definition_record', 'digits', 'domain', 'group_operator', 'groups',
+            'help', 'name', 'readonly', 'related', 'relation', 'relation_field', 'required', 'searchable', 'selection', 'size',
+            'sortable', 'store', 'string', 'translate', 'trim', 'type',
         ]
+
+    @api.model
+    def load_views(self, views, options=None):
+        warnings.warn(
+            '`load_views` method is deprecated, use `get_views` instead',
+            DeprecationWarning, stacklevel=2,
+        )
+        return self.get_views(views, options=options)
+
+    @api.model
+    def _fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
+        warnings.warn(
+            'Method `_fields_view_get` is deprecated, use `_get_view` instead',
+            DeprecationWarning, stacklevel=2,
+        )
+        arch, view = self._get_view(view_id, view_type, toolbar=toolbar, submenu=submenu)
+        result = {
+            'arch': etree.tostring(arch, encoding='unicode'),
+            'model': self._name,
+            'field_parent': False,
+        }
+        if view:
+            result['name'] = view.name
+            result['type'] = view.type
+            result['view_id'] = view.id
+            result['field_parent'] = view.field_parent
+            result['base_model'] = view.model
+        else:
+            result['type'] = view_type
+            result['name'] = 'default'
+        return result
+
+    @api.model
+    def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
+        """
+        .. deprecated:: saas-15.4
+
+            Use :meth:`~odoo.models.Model.get_view()` instead.
+        """
+        warnings.warn(
+            'Method `fields_view_get` is deprecated, use `get_view` instead',
+            DeprecationWarning, stacklevel=2,
+        )
+        result = self.get_views([(view_id, view_type)], {'toolbar': toolbar, 'submenu': submenu})['views'][view_type]
+        node = etree.fromstring(result['arch'])
+        view_fields = set(el.get('name') for el in node.xpath('.//field[not(ancestor::field)]'))
+        result['fields'] = self.fields_get(view_fields)
+        result.pop('models', None)
+        if 'id' in result:
+            view = self.env['ir.ui.view'].sudo().browse(result.pop('id'))
+            result['name'] = view.name
+            result['type'] = view.type
+            result['view_id'] = view.id
+            result['field_parent'] = view.field_parent
+            result['base_model'] = view.model
+        else:
+            result['type'] = view_type
+            result['name'] = 'default'
+            result['field_parent'] = False
+        return result
 
     def get_formview_id(self, access_uid=None):
         """ Return a view id to open the document ``self`` with. This method is
@@ -2865,33 +2829,12 @@ class Model(models.AbstractModel):
         return {
             'type': 'ir.actions.act_window',
             'res_model': self._name,
+            'view_type': 'form',
+            'view_mode': 'form',
             'views': [(view_id, 'form')],
             'target': 'current',
             'res_id': self.id,
             'context': dict(self._context),
-        }
-
-    def _get_records_action(self, **kwargs):
-        """ Return an action to open given records.
-            If there's more than one record, it will be a List, otherwise it's a Form.
-            Given keyword arguments will overwrite default ones. """
-        match self.ids:  # `self.ids` will silently filter out new records (`NewId`s)
-            case []:
-                length_dependent = {'views': [(False, 'form')]}
-            case [res_id]:
-                length_dependent = {'views': [(False, 'form')], 'res_id': res_id}
-            case ids:
-                length_dependent = {
-                    'views': [(False, 'list'), (False, 'form')],
-                    'domain': [('id', 'in', ids)]
-                }
-        return {
-            'type': 'ir.actions.act_window',
-            'res_model': self._name,
-            'target': 'current',
-            'context': dict(self._context),
-            **length_dependent,
-            **kwargs
         }
 
     @api.model
@@ -2920,135 +2863,71 @@ class Model(models.AbstractModel):
         process(etree.fromstring(view_info['arch']), view_info, '')
         return result
 
-    @api.model
-    def _get_fields_spec(self, view_info=None):
-        """ Return the fields specification from a view description; if not
-        given, the result of ``self.get_view()`` is used.
-        """
-        def fill_spec(node, model, fields_spec):
-            if node.tag == 'field':
-                field_name = node.attrib['name']
-                field_spec = fields_spec.setdefault(field_name, {})
-                field = model._fields.get(field_name)
-                if field is not None:
-                    sub_fields_spec = {}
-                    if field.type == 'many2one':
-                        sub_fields_spec.setdefault('display_name', {})
-                    if field.relational:
-                        comodel = model.env[field.comodel_name]
-                        for child in node:
-                            fill_spec(child, comodel, sub_fields_spec)
-                    if field.type == 'one2many':
-                        sub_fields_spec.pop(field.inverse_name, None)
-                    if sub_fields_spec:
-                        field_spec.setdefault('fields', {}).update(sub_fields_spec)
-            else:
-                for child in node:
-                    fill_spec(child, model, fields_spec)
-
-        if view_info is None:
-            view_info = self.get_view()
-
-        result = {}
-        fill_spec(etree.fromstring(view_info['arch']), self, result)
-        return result
-
 
 class NameManager:
     """ An object that manages all the named elements in a view. """
 
-    def __init__(self, model, parent=None, model_groups=None):
+    def __init__(self, model, parent=None):
         self.model = model
-        self.env = model.env  # for dynamically-resolved translations
         self.available_fields = collections.defaultdict(dict)  # {field_name: {'groups': groups, 'info': field_info}}
         self.available_actions = set()
         self.available_names = set()
-        self.used_fields = collections.defaultdict(dict)  # {field_name: {'groups': '(use, node)}}
-        self.used_names = dict()           # {name: use}
-        self.must_exist_actions = {}
-        self.must_exist_groups = {}
+        self.mandatory_fields = collections.defaultdict(dict)  # {field_name: {'groups': 'use}}
+        self.mandatory_parent_fields = collections.defaultdict(dict)  # {field_name: {'groups': use}}
+        self.mandatory_names = dict()           # {name: use}
         self.parent = parent
         self.children = []
         if self.parent:
             self.parent.children.append(self)
 
-        # group_definitions is the factory for making group expression objects
-        self.group_definitions = self.model.env['res.groups']._get_group_definitions()
-
-        # this represents the group of users that have access to this model
-        self.model_groups = self.group_definitions.universe if model_groups is None else model_groups
-
-        # this maps field names to the group of users that have access to the field
-        self.field_groups = {}
-
     @lazy_property
     def field_info(self):
-        field_info = self.model.fields_get(attributes=['readonly', 'required'])
-        if not (self.model.has_access('write') or self.model.has_access('create')):
+        field_info = self.model.fields_get(attributes=['invisible', 'states', 'readonly', 'required'])
+        has_access = functools.partial(self.model.check_access_rights, raise_exception=False)
+        if not (has_access('write') or has_access('create')):
             for info in field_info.values():
                 info['readonly'] = True
+                info['states'] = {}
         return field_info
 
-    def has_field(self, node, name, node_info, info=frozendict()):
+    def has_field(self, node, name, info=frozendict()):
+        groups = self._get_node_groups(node)
         self.available_fields[name].setdefault('info', {}).update(info)
-        self.field_groups[name] = node_info['model_groups']
-        self.available_fields[name].setdefault('groups', []).append(node_info['view_groups'])
+        self.available_fields[name].setdefault('groups', []).append(groups)
         self.available_names.add(info.get('id') or name)
 
     def has_action(self, name):
         self.available_actions.add(name)
 
-    def must_have_fields(self, node, names, node_info, use):
-        access_groups = node_info['model_groups'] & node_info['view_groups']
+    def must_have_field(self, node, name, use, groups=None):
+        node_groups = self._get_node_groups(node)
+        if groups:
+            groups = groups + node_groups
+        else:
+            groups = node_groups
+        if name.startswith('parent.'):
+            self.mandatory_parent_fields[name[7:]][groups] = use
+        else:
+            self.mandatory_fields[name][groups] = use
+
+    def must_have_fields(self, node, names, use, groups=None):
         for name in names:
-            if name == 'id':
-                continue
-            if not name.startswith('parent.'):
-                self.used_fields[name][access_groups] = (use, node)
-            elif self.parent:
-                self.parent.must_have_fields(node, {name[7:]}, node_info, use)
+            self.must_have_field(node, name, use, groups=groups)
 
     def must_have_name(self, name, use):
-        self.used_names[name] = use
+        self.mandatory_names[name] = use
 
-    def must_exist_action(self, action_id, node):
-        self.must_exist_actions[action_id] = node
-
-    def must_exist_group(self, name, node):
-        self.must_exist_groups[name] = node
-
-    def _get_field_groups(self, name):
-        """ Return the group expression representing the users having read access to the field. """
-        if name in self.field_groups:
-            return self.field_groups[name]
-
-        access_groups = self.model_groups
-
-        field = self.model._fields.get(name)
-        if not field and name not in self.available_names and name not in self.field_info:
-            access_groups = self.group_definitions.empty
-        elif field and field.groups:
-            access_groups &= self.group_definitions.parse(field.groups, raise_if_not_found=False)
-
-        self.field_groups[name] = access_groups
-        return access_groups
+    def _get_node_groups(self, node):
+        return tuple(tuple(n.get('groups').split(',')) for n in node.xpath('ancestor-or-self::*[@groups]'))
 
     def check(self, view):
-        for name, use in self.used_names.items():
-            if (
-                name not in self.available_actions
-                and name not in self.available_names
-                and name not in self.model._fields
-                and name not in self.field_info
-            ):
-                msg = _(
-                    "Name or id “%(name_or_id)s” in %(use)s does not exist.",
-                    name_or_id=name, use=use,
-                )
-                view._raise_view_error(msg)
+        # context for translations below
+        context = view.env.context          # pylint: disable=unused-variable
+
+        for name, use in self.mandatory_names.items():
             if name not in self.available_actions and name not in self.available_names:
                 msg = _(
-                    "Name or id “%(name_or_id)s” in %(use)s must be present in view but is missing.",
+                    "Name or id %(name_or_id)r in %(use)s must be present in view but is missing.",
                     name_or_id=name, use=use,
                 )
                 view._raise_view_error(msg)
@@ -3058,37 +2937,8 @@ class NameManager:
                 message = _("Field `%(name)s` does not exist", name=name)
                 view._raise_view_error(message)
 
-        for name, node in self.must_exist_actions.items():
-            # logic mimics /web/action/load behaviour
-            action = False
-            try:
-                action_id = int(name)
-            except ValueError:
-                model, action_id = view.env['ir.model.data']._xmlid_to_res_model_res_id(name, raise_if_not_found=False)
-                if not action_id:
-                    msg = _("Invalid xmlid %(xmlid)s for button of type action.", xmlid=name)
-                    view._raise_view_error(msg, node)
-                if not issubclass(view.pool[model], view.pool['ir.actions.actions']):
-                    msg = _(
-                        "%(xmlid)s is of type %(xmlid_model)s, expected a subclass of ir.actions.actions",
-                        xmlid=name, xmlid_model=model,
-                    )
-                    view._raise_view_error(msg, node)
-            action = view.env['ir.actions.actions'].browse(action_id).exists()
-            if not action:
-                msg = _(
-                    "Action %(action_reference)s (id: %(action_id)s) does not exist for button of type action.",
-                    action_reference=name, action_id=action_id,
-                )
-                view._raise_view_error(msg, node)
-
-        for name, node in self.must_exist_groups.items():
-            if self.group_definitions.get_id(name) is None:
-                msg = _("The group “%(name)s” defined in view does not exist!", name=name)
-                view._log_view_warning(msg, node)
-
-        for name, groups_uses in self.used_fields.items():
-            use, node = next(iter(groups_uses.values()))
+        for name, groups_uses in self.mandatory_fields.items():
+            use = next(iter(groups_uses.values()))
             if name == 'id':  # always available
                 continue
             if "." in name:
@@ -3098,152 +2948,117 @@ class NameManager:
                 )
                 view._raise_view_error(msg)
             info = self.available_fields[name].get('info')
-
             if info is None:
-                if name in ['false', 'true']:
-                    _logger.warning("Using Javascript syntax 'true, 'false' in expressions is deprecated, found %s", name)
-                    continue
-            elif info.get('select') == 'multi':  # mainly for searchpanel, but can be a generic behaviour.
                 msg = _(
-                    "Field “%(name)s” used in %(use)s is present in view but is in select multi.",
+                    "Field %(name)r used in %(use)s must be present in view but is missing.",
+                    name=name, use=use,
+                )
+                view._raise_view_error(msg)
+            if info.get('select') == 'multi':  # mainly for searchpanel, but can be a generic behaviour.
+                msg = _(
+                    "Field %(name)r used in %(use)s is present in view but is in select multi.",
                     name=name, use=use,
                 )
                 view._raise_view_error(msg)
 
-        for name, (missing_groups, reasons) in self.get_missing_fields().items():
-            message, error_type = self._error_message_group_inconsistency(name, missing_groups, reasons)
-            if error_type == 'does_not_exist':
-                view._raise_view_error(message)
-            elif error_type:
-                view._log_view_warning(message, None)
+            def combinate(groups):
+                # [['A'], ['B', 'C'], ['D', 'E']]
+                # returns
+                # [['A', 'B', 'D'], ['A', 'C', 'D'], ['A', 'B', 'E'], ['A', 'C', 'E']]
 
-    def _error_message_group_inconsistency(self, name, missing_groups, reasons):
-        does_not_exist = name not in self.model._fields and name not in self.available_names
-        if not (does_not_exist or missing_groups is False):
-            return None, None
+                # [['!A', '!B'], ['C', 'D']]
+                # returns
+                # [['!A', '!B', 'C'], ['!A', '!B', 'D']]
 
-        elements = [
-            f'<field name="{node.get("name")}"/>' if node.tag == 'field' else f'<{node.tag}>'
-            for _item_groups, _use, node in reasons
-        ]
+                # [['A', 'B'], ['!C', '!D']]
+                # returns
+                # [['A', '!C', '!D'], ['B', '!C', '!D']]
 
-        debug = []
-        if does_not_exist:
-            debug.append(_(
-                "- field “%(name)s” does not exist in model “%(model)s”.",
-                name=name,
-                model=self.model._name,
-            ))
-        else:
-            field_groups = self._get_field_groups(name)
-            debug.append(_(
-                "- field “%(name)s” is accessible for groups: %(field_groups)s",
-                name=name,
-                field_groups=_('Only super user has access') if field_groups.is_empty() else field_groups,
-            ))
+                # [['!A', '!B', 'C', 'D'], ['E', 'F']]
+                # returns
+                # [['!A', '!B', 'C', 'E'], ['!A', '!B', 'D', 'E'], ['!A', '!B', 'C', 'F'], ['!A', '!B', 'D', 'F']]
+                if not groups:
+                    return []
+                positive = [(group,) for group in groups[0] if not group or not group.startswith('!')]
+                negative = tuple(group for group in groups[0] if group and group.startswith('!'))
+                combinations = [negative + p for p in positive] if positive else [negative]
+                if len(groups) > 1:
+                    combinations = [group + tuple(c) for c in combinate(groups[1:]) for group in combinations]
+                return [set(combination) for combination in set(tuple(combination) for combination in combinations)]
 
-        for item_groups, _use, node in reasons:
-            clone = etree.Element(node.tag, node.attrib)
-            clone.attrib.pop('__validate__', None)
-            clone.attrib.pop('__groups_key__', None)
-            debug.append(_(
-                "- element “%(node)s” is shown in the view for groups: %(groups)s",
-                node=etree.tostring(clone, encoding='unicode'),
-                groups=(
-                    _('Free access') if item_groups.is_universal() else
-                    _('Accessible only for the super user') if item_groups.is_empty() else
-                    item_groups
-                ),
-            ))
-
-        message = Markup(
-            "<b>{header}</b><br/>{body}<br/>{footer}<br/>{debug}"
-        ).format(
-            header=_("Access Rights Inconsistency"),
-            body=_(
-                "This view may not work for all users: some users may have a "
-                "combination of groups where the elements %(elements)s are displayed, "
-                "but they depend on the field %(field)s that is not accessible. "
-                "You might fix this by modifying user groups to make sure that all users "
-                "who have access to those elements also have access to the field, "
-                "typically via group implications. Alternatively, you could "
-                "adjust the “%(groups)s” or “%(invisible)s” attributes for these fields, "
-                "to make sure they are always available together.",
-                elements=Markup(", ").join(
-                    Markup("<b><tt>%s</tt></b>") % element for element in elements
-                ),
-                field=Markup("<b><tt>%s</tt></b>") % name,
-                groups=Markup("<i>groups</i>"),
-                invisible=Markup("<i>invisible</i>"),
-            ),
-            footer=_("Debugging information:"),
-            debug=Markup("<br/>").join(debug),
-        )
-
-        return message, 'does_not_exist' if does_not_exist else 'inconsistency'
+            for mandatory_for_groups, use in groups_uses.items():
+                mandatory_combinations = combinate(mandatory_for_groups or [(None,)])
+                available_combinations = [
+                    combination
+                    for available_for_groups in self.available_fields[name]['groups']
+                    for combination in combinate(available_for_groups or [(None,)])
+                ]
+                if (
+                    # If (None,) is in available_combinations,
+                    # it means the field is in the view without any group restriction,
+                    # and is therefore available for anyone / any group
+                    {None} not in available_combinations
+                    # If there are two mutually exclusive combinations,
+                    # it means the field is available for anyone / any group
+                    and not any(
+                        {group[1:] if group.startswith('!') else '!' + group for group in combination}
+                        in available_combinations
+                        for combination in available_combinations
+                    )
+                    # For all mandatory combinations, find an available combination
+                    # which is included in the mandatory combination
+                    # e.g.
+                    # mandatory combination: A B C
+                    # available combination: A B
+                    # The above is valid, the field will be available for users having both A and B groups
+                    # and the field is mandatory only for users having A B and C groups.
+                    and not all(
+                        any(
+                            available_combination.issubset(mandatory_combination)
+                            for available_combination in available_combinations
+                        ) for mandatory_combination in mandatory_combinations
+                    )
+                    # Same than above but take into account implied groups (e.g. group_system includes group_erp_manager and group_user)
+                    # for positive groups
+                    and not all(
+                        any(
+                            available_combination.issubset(combination)
+                            for available_combination in available_combinations
+                            for combination in
+                            (
+                                mandatory_combination - {group} | {trans_group}
+                                for group in mandatory_combination if group and not group.startswith('!')
+                                for trans_group in view.env.ref(group).trans_implied_ids.get_external_id().values()
+                            )
+                        )
+                        for mandatory_combination in mandatory_combinations
+                    )
+                    # Same than above but take into account implied groups (e.g. group_system includes group_erp_manager and group_user)
+                    # for negative groups
+                    and not all(
+                        any(
+                            combination.issubset(mandatory_combination)
+                            for available_combination in available_combinations
+                            for combination in
+                            (
+                                available_combination - {group} | {'!' + trans_group}
+                                for group in available_combination if group and group.startswith('!')
+                                for trans_group in view.env.ref(group[1:]).trans_implied_ids.get_external_id().values()
+                            )
+                        ) for mandatory_combination in mandatory_combinations
+                    )
+                ):
+                    msg = _(
+                        "Field %(name)r used in %(use)s is restricted to the group(s) %(groups)s.",
+                        name=name, use=use, groups=','.join(
+                            group
+                            for availability in self.available_fields[name]['groups']
+                            for combination in availability
+                            for group in combination
+                        )
+                    )
+                    view._raise_view_error(msg)
 
     def update_available_fields(self):
         for name, info in self.available_fields.items():
             info.update(self.field_info.get(name, ()))
-
-    def get_missing_fields(self):
-        """
-        return {'field_name': (missing_groups | False, [mandatory_groups, use, node])}
-        """
-        # model has read access for group E and F
-        # field_a has a (python) group G
-        # <div groups="A,B">
-        #   <field name="field_a" invisible="field_b" groups="A,C"/>
-        #   <field name="field_a" groups="B"/>
-        #   <field name="field_c" required="field_a" groups="B1"/>
-        #   <field name="field_c" required="field_a" groups="B2"/>
-        # </div>
-        #
-
-        # views have many elements with the same groups
-        parent = self
-        while parent.parent:
-            parent = parent.parent
-
-        missing_fields = {}
-        for name, groups_uses in self.used_fields.items():
-            errors = []
-            used = []
-
-            for used_groups, (use, node) in groups_uses.items():
-                available_info = self.available_fields.get(name, {})
-                # Access is restricted to the administrator only. There is no need to check
-                # groups as they are not used.
-                if used_groups.is_empty():
-                    if not available_info.get('groups', []):
-                        used.append((used_groups, use, node))
-                    continue
-
-                # No match possible using only access right and groups on the field.
-                if not (used_groups <= self._get_field_groups(name)):
-                    errors.append((used_groups, use, node))
-                    continue
-
-                # At least one field in view match match with the used combinations.
-                available_combined_groups = self.group_definitions.empty
-                nodes_groups = available_info.get('groups', [])
-                for groups in nodes_groups:
-                    available_combined_groups |= groups
-
-                if not (used_groups <= available_combined_groups):
-                    used.append((used_groups, use, node))
-
-            if errors:
-                missing_fields[name] = (False, errors)
-                continue
-
-            if not used:
-                continue
-
-            missing_groups = self.group_definitions.empty
-            for groups, use, node in used:
-                missing_groups |= groups
-
-            missing_fields[name] = (missing_groups, used)
-
-        return missing_fields

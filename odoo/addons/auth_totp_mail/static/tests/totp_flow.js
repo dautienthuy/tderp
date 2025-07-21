@@ -1,21 +1,19 @@
-/** @odoo-module **/
+odoo.define('auth_totp_mail.tours', function(require) {
+"use strict";
 
-import { registry } from "@web/core/registry";
-import { stepUtils } from "@web_tour/tour_service/tour_utils";
-import { queryFirst } from "@odoo/hoot-dom";
+const tour = require('web_tour.tour');
 
 function openAccountSettingsTab() {
     return [{
         content: 'Go to settings',
-        trigger: '[data-menu-xmlid="base.menu_administration"]',
-        run: "click",
+        trigger: '[data-menu-xmlid="base.menu_administration"]'
     }, {
         content: 'Wait for page',
         trigger: '.o_menu_brand:contains("Settings")',
+        run: () => {}
     }, {
         content: "Open Users menu",
-        trigger: '[data-menu-xmlid="base.menu_users"]',
-        run: "click",
+        trigger: '[data-menu-xmlid="base.menu_users"]'
     }, {
         content: "Open Users view",
         trigger: '[data-menu-xmlid="base.menu_action_res_users"]',
@@ -26,53 +24,53 @@ function openAccountSettingsTab() {
             // selection get discarded by the action reloading, so here try to
             // see if we're already on the users action through the breadcrumb and
             // just close the menu if so
-            const breadcrumb = document.querySelector('.breadcrumb');
-            if (!breadcrumb || !breadcrumb.textContent.includes("Users")) {
+            const $crumb = $('.breadcrumb');
+            if ($crumb.text().indexOf('Users') === -1) {
                 // on general settings page, click menu
                 helpers.click();
             } else {
                 // else close menu
-                helpers.click('[data-menu-xmlid="base.menu_users"]');
+                helpers.click($('[data-menu-xmlid="base.menu_users"]'));
             }
         }
     }];
 }
 
-registry.category("web_tour.tours").add('totp_admin_self_invite', {
-    url: '/odoo',
-    steps: () => [stepUtils.showAppsMenuItem(), ...openAccountSettingsTab(), {
+tour.register('totp_admin_self_invite', {
+    test: true,
+    url: '/web'
+}, [tour.stepUtils.showAppsMenuItem(), ...openAccountSettingsTab(), {
     content: "open the user's form",
     trigger: "td.o_data_cell:contains(admin)",
-    run: "click",
 }, {
     content: "go to Account security Tab",
     trigger: "a.nav-link:contains(Account Security)",
-    run: "click",
 }, {
     content: "check that user cannot invite themselves to use 2FA.",
     trigger: "body",
     run: function () {
-        const inviteBtn = queryFirst('button:contains(Invite to use 2FA)');
+        const inviteBtn = $('button:contains(Invite to use 2FA)')[0];
         if (!inviteBtn) {
-            document.body.classList.add('CannotInviteYourself');
+            $('body').addClass('CannotInviteYourself');
         }
     }
 }, {
     content: "check that user cannot invite themself.",
-    trigger: "body.CannotInviteYourself",
-}]});
+    trigger: "body.CannotInviteYourself"
+}]);
 
-registry.category("web_tour.tours").add('totp_admin_invite', {
-    url: '/odoo',
-    steps: () => [stepUtils.showAppsMenuItem(), ...openAccountSettingsTab(), {
+tour.register('totp_admin_invite', {
+    test: true,
+    url: '/web'
+}, [tour.stepUtils.showAppsMenuItem(), ...openAccountSettingsTab(), {
     content: "open the user's form",
-    trigger: "td.o_data_cell:contains(test_user)",
-    run: "click",
+    trigger: "td.o_data_cell:contains(demo)",
 }, {
     content: "go to Account security Tab",
     trigger: "a.nav-link:contains(Account Security)",
-    run: "click",
 }, {
-    content: "check that test_user user can be invited to use 2FA.",
+    content: "check that demo user can be invited to use 2FA.",
     trigger: "button:contains(Invite to use 2FA)",
-}]});
+}]);
+
+});

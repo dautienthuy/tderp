@@ -1,112 +1,87 @@
-/** @odoo-module **/
+odoo.define('website_sale.tour_shop_cart_recovery', function (require) {
+'use strict';
 
-import { queryOne } from "@odoo/hoot-dom";
-import { browser } from "@web/core/browser/browser";
-import { registry } from "@web/core/registry";
-import * as tourUtils from "@website_sale/js/tours/tour_utils";
+var localStorage = require('web.local_storage');
+var tour = require('web_tour.tour');
+const tourUtils = require('website_sale.tour_utils');
+require('web.dom_ready');
 
 var orderIdKey = 'website_sale.tour_shop_cart_recovery.orderId';
 var recoveryLinkKey = 'website_sale.tour_shop_cart_recovery.recoveryLink';
 
-registry.category("web_tour.tours").add('shop_cart_recovery', {
-    url: '/shop',
-    steps: () => [
-        ...tourUtils.addToCart({ productName: "Acoustic Bloc Screens", expectUnloadPage: true }),
+tour.register('shop_cart_recovery', {
+    test: true,
+    url: '/shop?search=Acoustic Bloc Screens',
+},
+[
+    {
+        content: "select Acoustic Bloc Screens",
+        trigger: '.oe_product_cart a:containsExact("Acoustic Bloc Screens")',
+    },
+    {
+        content: "click add to cart",
+        trigger: '#product_details #add_to_cart',
+    },
         tourUtils.goToCart(),
     {
         content: "check product is in cart, get cart id, logout, go to login",
-        trigger: 'div:has(a>h6:contains("Acoustic Bloc Screens"))',
+        trigger: 'td.td-product_name:contains("Acoustic Bloc Screens")',
         run: function () {
-            const orderId = document.querySelector(".my_cart_quantity").dataset["orderId"];
-            browser.localStorage.setItem(orderIdKey, orderId);
+            var orderId = $('.my_cart_quantity').data('order-id');
+            localStorage.setItem(orderIdKey, orderId);
             window.location.href = "/web/session/logout?redirect=/web/login";
         },
-        expectUnloadPage: true,
-    },
-    {
-        content: "edit login input",
-        trigger: '.oe_login_form input[name="login"]',
-        run: "edit admin",
-    },
-    {
-        content: "edit password input",
-        trigger: '.oe_login_form input[name="password"]',
-        run: "edit admin",
-    },
-    {
-        content: "edit hidden redirect input",
-        trigger: '.oe_login_form input[name="redirect"]:hidden',
-        run() {
-            const orderId = browser.localStorage.getItem(orderIdKey);
-            const url = "/odoo/action-sale.action_orders/" + orderId;
-            this.anchor.value = url;
-        }
     },
     {
         content: "login as admin and go to the SO (backend)",
-        trigger: ".oe_login_form .oe_login_buttons button:contains(log in)",
-        run: "click",
-        expectUnloadPage: true,
+        trigger: '.oe_login_form',
+        run: function () {
+            var orderId = localStorage.getItem(orderIdKey);
+            var url = "/web#action=sale.action_orders&view_type=form&id=" + orderId;
+            var $loginForm = $('.oe_login_form');
+            $loginForm.find('input[name="login"]').val("admin");
+            $loginForm.find('input[name="password"]').val("admin");
+            $loginForm.find('input[name="redirect"]').val(url);
+            $loginForm.submit();
+        },
     },
     {
         content: "click action",
-        trigger: '.o_cp_action_menus .dropdown-toggle',
-        run: "click",
+        trigger: '.dropdown-toggle:contains("Action")',
     },
     {
-        content: "click Send an Email",
-        trigger: "span:contains(/^Send an email$/)",
-        run: "click",
-    },
-    {
-        content: "Wait the modal is opened and form is fullfilled",
-        trigger: ".modal main .o_form_view_container [name=subject] input:value(/^S0/)",
-    },
-    {
-        content: "select template",
-        trigger: ".mail-composer-template-dropdown-btn",
-        run: "click",
-    },
-    {
-        content: 'Select the "Ecommerce: Cart Recovery" template from the list.',
-        trigger: '.mail-composer-template-dropdown.popover .o-dropdown-item:contains("Ecommerce: Cart Recovery")',
-        run: 'click'
+        content: "click Send a Cart Recovery Email",
+        trigger: 'span:containsExact("Send a Cart Recovery Email")',
     },
     {
         content: "click Send email",
-        trigger: '.btn.o_mail_send',
-        run: "click",
+        trigger: '.btn[name="action_send_mail"]',
     },
     {
         content: "check the mail is sent, grab the recovery link, and logout",
-        trigger: ".o-mail-Message-body a:contains(/^Resume order$/)",
+        trigger: '.o_Message_content a:containsExact("Resume order")',
         run: function () {
-            var link = queryOne('.o-mail-Message-body a:contains("Resume order")').getAttribute('href');
-            browser.localStorage.setItem(recoveryLinkKey, link);
+            var link = $('.o_Message_content a:containsExact("Resume order")').attr('href');
+            localStorage.setItem(recoveryLinkKey, link);
             window.location.href = "/web/session/logout?redirect=/";
-        },
-        expectUnloadPage: true,
+        }
     },
     {
         content: "go to the recovery link",
         trigger: 'a[href="/web/login"]',
         run: function () {
-            const localStorage = browser.localStorage;
             window.location.href = localStorage.getItem(recoveryLinkKey);
         },
-        expectUnloadPage: true,
-    },
-    {
-        trigger: 'p:contains("This is your current cart")',
     },
     {
         content: "check the page is working, click on restore",
+        extra_trigger: 'p:contains("This is your current cart")',
         trigger: 'p:contains("restore") a:contains("Click here")',
-        run: "click",
-        expectUnloadPage: true,
     },
     {
         content: "check product is in restored cart",
-        trigger: 'div>a>h6:contains("Acoustic Bloc Screens")',
+        trigger: 'td.td-product_name:contains("Acoustic Bloc Screens")',
+        run: function () {},
     },
-]});
+]);
+});

@@ -1,11 +1,11 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-import threading
 
+from odoo.addons.http_routing.models.ir_http import slugify, unslug
 from odoo.tests.common import BaseCase
-from odoo.modules.registry import Registry
 
 
-class TestSlugUnslug(BaseCase):
+class TestUnslug(BaseCase):
 
     def test_unslug(self):
         tests = {
@@ -21,32 +21,10 @@ class TestSlugUnslug(BaseCase):
             '--1': (None, None),
             'foo---1': (None, None),
             'foo1': (None, None),
-            # qs & anchor & trailing slash
-            'foo-1/': ('foo', 1),
-            'foo-1/?qs=1': ('foo', 1),
-            'foo-1/#anchor': ('foo', 1),
-            'foo-1?qs=1': ('foo', 1),
-            'foo-1#anchor': ('foo', 1),
         }
-
-        unslug = Registry(threading.current_thread().dbname)['ir.http']._unslug
 
         for slug, expected in tests.items():
-            self.assertEqual(unslug(slug), expected, "%r case failed" % slug)
-
-    def test_slug(self):
-        tests = {
-            'foo-1': (1, 'foo'),
-            'foo-bar-1': (1, 'foo-bar'),
-            'foo--1': (-1, 'foo'),
-            '1-2': (2, '1'),
-        }
-
-        slug = Registry(threading.current_thread().dbname)['ir.http']._slug
-
-        for expected, value in tests.items():
-            self.assertEqual(slug(value), expected, "%r case failed" % (value,))
-
+            self.assertEqual(unslug(slug), expected)
 
 class TestTitleToSlug(BaseCase):
     """
@@ -54,54 +32,50 @@ class TestTitleToSlug(BaseCase):
     See website/models/website.py slugify method
     """
 
-    def _slugify(self, value):
-        _slugify = Registry(threading.current_thread().dbname)['ir.http']._slugify
-        return _slugify(value)
-
     def test_spaces(self):
         self.assertEqual(
             "spaces",
-            self._slugify("   spaces   ")
+            slugify(u"   spaces   ")
         )
 
     def test_unicode(self):
         self.assertEqual(
             "heterogeneite",
-            self._slugify("hétérogénéité")
+            slugify(u"hétérogénéité")
         )
 
     def test_underscore(self):
         self.assertEqual(
             "one-two",
-            self._slugify("one_two")
+            slugify(u"one_two")
         )
 
     def test_caps(self):
         self.assertEqual(
             "camelcase",
-            self._slugify("CamelCase")
+            slugify(u"CamelCase")
         )
 
     def test_special_chars(self):
         self.assertEqual(
             "o-d-o-o",
-            self._slugify(r"o!#d{|\o/@~o&%^?")
+            slugify(r"o!#d{|\o/@~o&%^?")
         )
 
     def test_str_to_unicode(self):
         self.assertEqual(
             "espana",
-            self._slugify("España")
+            slugify("España")
         )
 
     def test_numbers(self):
         self.assertEqual(
             "article-1",
-            self._slugify("Article 1")
+            slugify(u"Article 1")
         )
 
     def test_all(self):
         self.assertEqual(
             "do-you-know-martine-a-la-plage",
-            self._slugify("Do YOU know 'Martine à la plage' ?")
+            slugify(u"Do YOU know 'Martine à la plage' ?")
         )

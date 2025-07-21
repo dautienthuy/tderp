@@ -4,10 +4,8 @@
 # decorator makes wrappers that have the same API as their wrapped function
 from collections import Counter, defaultdict
 from decorator import decorator
-from inspect import signature, Parameter
+from inspect import signature
 import logging
-import time
-import warnings
 
 unsafe_eval = eval
 
@@ -16,14 +14,12 @@ _logger = logging.getLogger(__name__)
 
 class ormcache_counter(object):
     """ Statistic counters for cache entries. """
-    __slots__ = ['hit', 'miss', 'err', 'gen_time', 'cache_name']
+    __slots__ = ['hit', 'miss', 'err']
 
     def __init__(self):
         self.hit = 0
         self.miss = 0
         self.err = 0
-        self.gen_time = 0
-        self.cache_name = None
 
     @property
     def ratio(self):
@@ -56,33 +52,19 @@ class ormcache(object):
     def __init__(self, *args, **kwargs):
         self.args = args
         self.skiparg = kwargs.get('skiparg')
-        self.cache_name = kwargs.get('cache', 'default')
 
     def __call__(self, method):
         self.method = method
         self.determine_key()
         lookup = decorator(self.lookup, method)
-        lookup.__cache__ = self
+        lookup.clear_cache = self.clear
         return lookup
-
-    def add_value(self, *args, cache_value=None, **kwargs):
-        model = args[0]
-        d, key0, counter = self.lru(model)
-        counter.cache_name = self.cache_name
-        key = key0 + self.key(*args, **kwargs)
-        d[key] = cache_value
 
     def determine_key(self):
         """ Determine the function that computes a cache key from arguments. """
         if self.skiparg is None:
             # build a string that represents function code and evaluate it
-            args = ', '.join(
-                # remove annotations because lambdas can't be type-annotated,
-                # and defaults because they are redundant (defaults are present
-                # in the wrapper function itself)
-                str(params.replace(annotation=Parameter.empty, default=Parameter.empty))
-                for params in signature(self.method).parameters.values()
-            )
+            args = str(signature(self.method))[1:-1]
             if self.args:
                 code = "lambda %s: (%s,)" % (args, ", ".join(self.args))
             else:
@@ -94,7 +76,7 @@ class ormcache(object):
 
     def lru(self, model):
         counter = STAT[(model.pool.db_name, model._name, self.method)]
-        return model.pool._Registry__caches[self.cache_name], (model._name, self.method), counter
+        return model.pool._Registry__cache, (model._name, self.method), counter
 
     def lookup(self, method, *args, **kwargs):
         d, key0, counter = self.lru(args[0])
@@ -105,10 +87,7 @@ class ormcache(object):
             return r
         except KeyError:
             counter.miss += 1
-            counter.cache_name = self.cache_name
-            start = time.time()
             value = d[key] = self.method(*args, **kwargs)
-            counter.gen_time += time.time() - start
             return value
         except TypeError:
             _logger.warning("cache lookup error on %r", key, exc_info=True)
@@ -117,8 +96,8 @@ class ormcache(object):
 
     def clear(self, model, *args):
         """ Clear the registry cache """
-        warnings.warn('Deprecated method ormcache.clear(model, *args), use registry.clear_cache() instead')
-        model.pool.clear_all_caches()
+        model.pool._clear_cache()
+
 
 class ormcache_context(ormcache):
     """ This LRU cache decorator is a variant of :class:`ormcache`, with an
@@ -135,10 +114,7 @@ class ormcache_context(ormcache):
         assert self.skiparg is None, "ormcache_context() no longer supports skiparg"
         # build a string that represents function code and evaluate it
         sign = signature(self.method)
-        args = ', '.join(
-            str(params.replace(annotation=Parameter.empty, default=Parameter.empty))
-            for params in sign.parameters.values()
-        )
+        args = str(sign)[1:-1]
         cont_expr = "(context or {})" if 'context' in sign.parameters else "self._context"
         keys_expr = "tuple(%s.get(k) for k in %r)" % (cont_expr, self.keys)
         if self.args:
@@ -148,35 +124,106 @@ class ormcache_context(ormcache):
         self.key = unsafe_eval(code)
 
 
-def log_ormcache_stats(sig=None, frame=None):   # noqa: ARG001 (arguments are there for signals)
+class ormcache_multi(ormcache):
+    """ This LRU cache decorator is a variant of :class:`ormcache`, with an
+    extra parameter ``multi`` that gives the name of a parameter. Upon call, the
+    corresponding argument is iterated on, and every value leads to a cache
+    entry under its own key.
+    """
+    def __init__(self, *args, **kwargs):
+        super(ormcache_multi, self).__init__(*args, **kwargs)
+        self.multi = kwargs['multi']
+
+    def determine_key(self):
+        """ Determine the function that computes a cache key from arguments. """
+        assert self.skiparg is None, "ormcache_multi() no longer supports skiparg"
+        assert isinstance(self.multi, str), "ormcache_multi() parameter multi must be an argument name"
+
+        super(ormcache_multi, self).determine_key()
+
+        # key_multi computes the extra element added to the key
+        sign = signature(self.method)
+        args = str(sign)[1:-1]
+        code_multi = "lambda %s: %s" % (args, self.multi)
+        self.key_multi = unsafe_eval(code_multi)
+
+        # self.multi_pos is the position of self.multi in args
+        self.multi_pos = list(sign.parameters).index(self.multi)
+
+    def lookup(self, method, *args, **kwargs):
+        d, key0, counter = self.lru(args[0])
+        base_key = key0 + self.key(*args, **kwargs)
+        ids = self.key_multi(*args, **kwargs)
+        result = {}
+        missed = []
+
+        # first take what is available in the cache
+        for i in ids:
+            key = base_key + (i,)
+            try:
+                result[i] = d[key]
+                counter.hit += 1
+            except Exception:
+                counter.miss += 1
+                missed.append(i)
+
+        if missed:
+            # call the method for the ids that were not in the cache; note that
+            # thanks to decorator(), the multi argument will be bound and passed
+            # positionally in args.
+            args = list(args)
+            args[self.multi_pos] = missed
+            result.update(method(*args, **kwargs))
+
+            # store those new results back in the cache
+            for i in missed:
+                key = base_key + (i,)
+                d[key] = result[i]
+
+        return result
+
+
+class dummy_cache(object):
+    """ Cache decorator replacement to actually do no caching. """
+    def __init__(self, *l, **kw):
+        pass
+
+    def __call__(self, fn):
+        fn.clear_cache = self.clear
+        return fn
+
+    def clear(self, *l, **kw):
+        pass
+
+
+def log_ormcache_stats(sig=None, frame=None):
     """ Log statistics of ormcache usage by database, model, and method. """
     from odoo.modules.registry import Registry
-    cache_entries = {}
-    current_db = None
-    cache_stats = ['Caches stats:']
-    for (dbname, model, method), stat in sorted(STAT.items(), key=lambda k: (k[0][0] or '~', k[0][1], k[0][2].__name__)):
-        dbname_display = dbname or "<no_db>"
-        if current_db != dbname_display:
-            current_db = dbname_display
-            cache_stats.append(f"Database {dbname_display}")
-        if dbname:   # mainly for MockPool
-            if (dbname, stat.cache_name) not in cache_entries:
-                cache = Registry.registries.d[dbname]._Registry__caches[stat.cache_name]
-                cache_entries[dbname, stat.cache_name] = Counter(k[:2] for k in cache.d)
-            nb_entries = cache_entries[dbname, stat.cache_name][model, method]
-        else:
-            nb_entries = 0
-        cache_name = stat.cache_name.rjust(25)
-        cache_stats.append(
-            f"{cache_name}, {nb_entries:6d} entries, {stat.hit:6d} hit, {stat.miss:6d} miss, {stat.err:6d} err, {stat.gen_time:10.3f}s time, {stat.ratio:6.1f}% ratio for {model}.{method.__name__}"
-        )
-    _logger.info('\n'.join(cache_stats))
+    import threading
+
+    me = threading.current_thread()
+    me_dbname = getattr(me, 'dbname', 'n/a')
+
+    for dbname, reg in sorted(Registry.registries.d.items()):
+        # set logger prefix to dbname
+        me.dbname = dbname
+        entries = Counter(k[:2] for k in reg._Registry__cache.d)
+        # show entries sorted by model name, method name
+        for key in sorted(entries, key=lambda key: (key[0], key[1].__name__)):
+            model, method = key
+            stat = STAT[(dbname, model, method)]
+            _logger.info(
+                "%6d entries, %6d hit, %6d miss, %6d err, %4.1f%% ratio, for %s.%s",
+                entries[key], stat.hit, stat.miss, stat.err, stat.ratio, model, method.__name__,
+            )
+
+    me.dbname = me_dbname
 
 
 def get_cache_key_counter(bound_method, *args, **kwargs):
     """ Return the cache, key and stat counter for the given call. """
     model = bound_method.__self__
-    ormcache = bound_method.__cache__
+    ormcache = bound_method.clear_cache.__self__
     cache, key0, counter = ormcache.lru(model)
     key = key0 + ormcache.key(model, *args, **kwargs)
     return cache, key, counter

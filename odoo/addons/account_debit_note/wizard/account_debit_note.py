@@ -24,7 +24,7 @@ class AccountDebitNote(models.TransientModel):
                                      "We won't copy them for debit notes from credit notes. ")
     # computed fields
     move_type = fields.Char(compute="_compute_from_moves")
-    journal_type = fields.Char(compute="_compute_journal_type")
+    journal_type = fields.Char(compute="_compute_from_moves")
     country_code = fields.Char(related='move_ids.company_id.country_id.code')
 
     @api.model
@@ -33,10 +33,6 @@ class AccountDebitNote(models.TransientModel):
         move_ids = self.env['account.move'].browse(self.env.context['active_ids']) if self.env.context.get('active_model') == 'account.move' else self.env['account.move']
         if any(move.state != "posted" for move in move_ids):
             raise UserError(_('You can only debit posted moves.'))
-        elif any(move.debit_origin_id for move in move_ids):
-            raise UserError(_("You can't make a debit note for an invoice that is already linked to a debit note."))
-        elif any(move.move_type not in ['out_invoice', 'in_invoice', 'out_refund', 'in_refund'] for move in move_ids):
-            raise UserError(_("You can make a debit note only for a Customer Invoice, a Customer Credit Note, a Vendor Bill or a Vendor Credit Note."))
         res['move_ids'] = [(6, 0, move_ids.ids)]
         return res
 
@@ -45,10 +41,6 @@ class AccountDebitNote(models.TransientModel):
         for record in self:
             move_ids = record.move_ids
             record.move_type = move_ids[0].move_type if len(move_ids) == 1 or not any(m.move_type != move_ids[0].move_type for m in move_ids) else False
-
-    @api.depends('move_type')
-    def _compute_journal_type(self):
-        for record in self:
             record.journal_type = record.move_type in ['in_refund', 'in_invoice'] and 'purchase' or 'sale'
 
     def _prepare_default_values(self, move):
@@ -75,7 +67,10 @@ class AccountDebitNote(models.TransientModel):
         for move in self.move_ids.with_context(include_business_fields=True): #copy sale/purchase links
             default_values = self._prepare_default_values(move)
             new_move = move.copy(default=default_values)
-            move_msg = _("This debit note was created from: %s", move._get_html_link())
+            move_msg = _(
+                "This debit note was created from: %s",
+                move._get_html_link(),
+            )
             new_move.message_post(body=move_msg)
             new_moves |= new_move
 
@@ -92,7 +87,7 @@ class AccountDebitNote(models.TransientModel):
             })
         else:
             action.update({
-                'view_mode': 'list,form',
+                'view_mode': 'tree,form',
                 'domain': [('id', 'in', new_moves.ids)],
             })
         return action

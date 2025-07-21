@@ -1,37 +1,31 @@
-/** @odoo-module **/
+odoo.define("website_sale.tour_shop_custom_attribute_value", function (require) {
+    "use strict";
 
-    import { registry } from "@web/core/registry";
+    var tour = require("web_tour.tour");
+    const tourUtils = require('website_sale.tour_utils');
 
-    registry.category("web_tour.tours").add("shop_custom_attribute_value", {
+    tour.register("shop_custom_attribute_value", {
         url: "/shop?search=Customizable Desk",
-        steps: () => [{
+        test: true,
+    }, [{
         content: "click on Customizable Desk",
         trigger: '.oe_product_cart a:contains("Customizable Desk (TEST)")',
-        run: "click",
-        expectUnloadPage: true,
-    },
-    {
-        trigger: "li.js_attribute_value",
-    },
-    {
-        trigger: 'li.js_attribute_value span:contains(Custom)',
+    }, {
+        trigger: 'li.js_attribute_value span:contains(Custom TEST)',
+        extra_trigger: 'li.js_attribute_value',
         run: 'click',
     }, {
         trigger: 'input.variant_custom_value',
-        run: "edit Wood",
+        run: 'text Wood',
     }, {
         id: 'add_cart_step',
-        trigger: 'a:contains(Add to cart)',
+        trigger: 'a:contains(ADD TO CART)',
         run: 'click',
     },
+        tourUtils.goToCart(),
     {
-        trigger: 'button:contains(Proceed to Checkout)',
-        run: 'click',
-        expectUnloadPage: true,
-    },
-    {
-        trigger: "#cart_products",
-    },
-    {
-        trigger: 'span:contains(Custom: Wood)',
-    }]});
+        trigger: 'span:contains(Custom TEST: Wood)',
+        extra_trigger: '#cart_products',
+        run: function (){}, // check
+    }]);
+});

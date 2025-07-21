@@ -1,4 +1,7 @@
-# Part of Odoo. See LICENSE file for full copyright and licensing details.
+# -*- coding: utf-8 -*-
+
+from contextlib import nullcontext
+from unittest.mock import patch
 
 from odoo.fields import Command
 
@@ -15,53 +18,46 @@ class ProductCommon(
     def setUpClass(cls):
         super().setUpClass()
 
+        # Ideally, this logic should be moved into sthg like a NoAccountCommon in account :D
+        # Since tax fields are specified in account module, cannot be given as create values
+        NO_TAXES_CONTEXT = {
+            'default_taxes_id': False
+        }
+
         cls.product_category = cls.env['product.category'].create({
             'name': 'Test Category',
         })
-        cls.product, cls.service_product = cls.env['product.product'].create([{
+        cls.product = cls.env['product.product'].with_context(**NO_TAXES_CONTEXT).create({
             'name': 'Test Product',
-            'type': 'consu',
+            'detailed_type': 'consu',
             'list_price': 20.0,
             'categ_id': cls.product_category.id,
-        }, {
+        })
+        cls.service_product = cls.env['product.product'].with_context(**NO_TAXES_CONTEXT).create({
             'name': 'Test Service Product',
-            'type': 'service',
+            'detailed_type': 'service',
             'list_price': 50.0,
             'categ_id': cls.product_category.id,
-        }])
+        })
+        cls.consumable_product = cls.product
         cls.pricelist = cls.env['product.pricelist'].create({
             'name': 'Test Pricelist',
         })
         cls._archive_other_pricelists()
 
     @classmethod
-    def get_default_groups(cls):
-        groups = super().get_default_groups()
-        return groups | cls.env.ref('base.group_system')  # For the management/creation of products
-
-    @classmethod
     def _archive_other_pricelists(cls):
-        cls.env['product.pricelist'].search([
-            ('id', '!=', cls.pricelist.id),
-        ]).action_archive()
+        """Do not raise if there is no pricelist(s) for a given website"""
+        website_sale = cls.env['ir.module.module']._get('website_sale')
+        if website_sale.state == 'installed':
+            archive_context = patch('odoo.addons.website_sale.models.product_pricelist.ProductPricelist._check_website_pricelist')
+        else:
+            archive_context = nullcontext()
 
-    @classmethod
-    def _create_pricelist(cls, **create_vals):
-        return cls.env['product.pricelist'].create({
-            'name': "Test Pricelist",
-            **create_vals,
-        })
-
-    @classmethod
-    def _create_product(cls, **create_vals):
-        return cls.env['product.product'].create({
-            'name': "Test Product",
-            'type': 'consu',
-            'list_price': 100.0,
-            'standard_price': 50.0,
-            'categ_id': cls.product_category.id,
-            **create_vals,
-        })
+        with archive_context:
+            cls.env['product.pricelist'].search([
+                ('id', '!=', cls.pricelist.id),
+            ]).action_archive()
 
 
 class ProductAttributesCommon(ProductCommon):
@@ -97,28 +93,6 @@ class ProductAttributesCommon(ProductCommon):
             cls.color_attribute_blue,
             cls.color_attribute_green,
         ) = cls.color_attribute.value_ids
-
-        cls.no_variant_attribute = cls.env['product.attribute'].create({
-            'name': 'No variant',
-            'create_variant': 'no_variant',
-            'value_ids': [
-                Command.create({'name': 'extra'}),
-                Command.create({'name': 'second'}),
-            ]
-        })
-        (
-            cls.no_variant_attribute_extra,
-            cls.no_variant_attribute_second,
-        ) = cls.no_variant_attribute.value_ids
-
-        cls.dynamic_attribute = cls.env['product.attribute'].create({
-            'name': 'Dynamic',
-            'create_variant': 'dynamic',
-            'value_ids': [
-                Command.create({'name': 'dyn1'}),
-                Command.create({'name': 'dyn2'}),
-            ]
-        })
 
 
 class ProductVariantsCommon(ProductAttributesCommon):

@@ -1,16 +1,8 @@
 /** @odoo-module */
-// @ts-check
 
 import { LoadingDataError } from "@spreadsheet/o_spreadsheet/errors";
-import { RPCError } from "@web/core/network/rpc";
+import { RPCError } from "@web/core/network/rpc_service";
 import { KeepLast } from "@web/core/utils/concurrency";
-import { CellErrorType, EvaluationError } from "@odoo/o-spreadsheet";
-import { _t } from "@web/core/l10n/translation";
-
-/**
- * @typedef {import("./odoo_data_provider").OdooDataProvider} OdooDataProvider
- * @typedef {import("./server_data").ServerData} ServerData
- */
 
 /**
  * DataSource is an abstract class that contains the logic of fetching and
@@ -23,13 +15,11 @@ import { _t } from "@web/core/l10n/translation";
  * particular data.
  */
 export class LoadableDataSource {
-    /**
-     * @param {Object} param0
-     * @param {OdooDataProvider} param0.odooDataProvider
-     */
-    constructor({ odooDataProvider }) {
-        /** @protected */
-        this.odooDataProvider = odooDataProvider;
+    constructor(params) {
+        this._orm = params.orm;
+        this._metadataRepository = params.metadataRepository;
+        this._notifyWhenPromiseResolves = params.notifyWhenPromiseResolves;
+        this._cancelPromise = params.cancelPromise;
 
         /**
          * Last time that this dataSource has been updated
@@ -43,16 +33,7 @@ export class LoadableDataSource {
         this._loadPromise = undefined;
         this._isFullyLoaded = false;
         this._isValid = true;
-        this._loadError = undefined;
-        this._isModelValid = true;
-    }
-
-    get _orm() {
-        return this.odooDataProvider.orm;
-    }
-
-    get serverData() {
-        return this.odooDataProvider.serverData;
+        this._loadErrorMessage = "";
     }
 
     /**
@@ -64,39 +45,24 @@ export class LoadableDataSource {
      */
     async load(params) {
         if (params && params.reload) {
-            this.odooDataProvider.cancelPromise(this._loadPromise);
+            this._cancelPromise(this._loadPromise);
             this._loadPromise = undefined;
         }
         if (!this._loadPromise) {
             this._isFullyLoaded = false;
             this._isValid = true;
-            this._loadError = undefined;
+            this._loadErrorMessage = "";
             this._loadPromise = this._concurrency
                 .add(this._load())
                 .catch((e) => {
                     this._isValid = false;
-                    if (e instanceof ModelNotFoundError) {
-                        this._isModelValid = false;
-                        this._loadError = Object.assign(
-                            new EvaluationError(
-                                _t(`The model "%(model)s" does not exist.`, { model: e.message })
-                            ),
-                            {
-                                cause: e,
-                            }
-                        );
-                        return;
-                    }
-                    this._loadError = Object.assign(
-                        new EvaluationError(e instanceof RPCError ? e.data.message : e.message),
-                        { cause: e }
-                    );
+                    this._loadErrorMessage = e instanceof RPCError ? e.data.message : e.message;
                 })
                 .finally(() => {
                     this._lastUpdate = Date.now();
                     this._isFullyLoaded = true;
                 });
-            await this.odooDataProvider.notifyWhenPromiseResolves(this._loadPromise);
+            await this._notifyWhenPromiseResolves(this._loadPromise);
         }
         return this._loadPromise;
     }
@@ -112,31 +78,16 @@ export class LoadableDataSource {
         return this._isFullyLoaded;
     }
 
-    isLoading() {
-        return !!this._loadPromise && !this.isReady();
-    }
-
-    isValid() {
-        return this.isReady() && this._isValid;
-    }
-
-    isModelValid() {
-        return this.isReady() && this._isModelValid;
-    }
-
-    assertIsValid({ throwOnError } = { throwOnError: true }) {
+    /**
+     * @protected
+     */
+    _assertDataIsLoaded() {
         if (!this._isFullyLoaded) {
             this.load();
-            if (throwOnError) {
-                throw LOADING_ERROR;
-            }
-            return LOADING_ERROR;
+            throw LOADING_ERROR;
         }
         if (!this._isValid) {
-            if (throwOnError) {
-                throw this._loadError;
-            }
-            return { value: CellErrorType.GenericError, message: this._loadError.message };
+            throw new Error(this._loadErrorMessage);
         }
     }
 
@@ -149,26 +100,4 @@ export class LoadableDataSource {
     async _load() {}
 }
 
-export const LOADING_ERROR = new LoadingDataError();
-
-export class ModelNotFoundError extends Error {}
-
-/**
- * Perform a `fields_get` on the given model and return the fields.
- * If the model is not found, a `ModelNotFoundError` is thrown.
- *
- * @param {ServerData} serverData
- * @param {string} model
- * @returns {Promise<import("@spreadsheet").OdooFields>}
- */
-export async function getFields(serverData, model) {
-    try {
-        const fields = await serverData.fetch(model, "fields_get");
-        return fields;
-    } catch (e) {
-        if (e instanceof RPCError && e.code === 404) {
-            throw new ModelNotFoundError(model);
-        }
-        throw e;
-    }
-}
+const LOADING_ERROR = new LoadingDataError();

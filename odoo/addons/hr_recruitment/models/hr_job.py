@@ -3,10 +3,7 @@
 import ast
 from collections import defaultdict
 
-from dateutil.relativedelta import relativedelta
 from odoo import api, fields, models, SUPERUSER_ID, _
-from odoo.tools import SQL
-from odoo.tools.convert import convert_file
 
 
 class Job(models.Model):
@@ -33,7 +30,7 @@ class Job(models.Model):
     address_id = fields.Many2one(
         'res.partner', "Job Location", default=_default_address_id,
         domain=lambda self: self._address_id_domain(),
-        help="Select the location where the applicant will work. Addresses listed here are defined on the company's contact information.")
+        help="Address where employees are working")
     application_ids = fields.One2many('hr.applicant', 'job_id', "Job Applications")
     application_count = fields.Integer(compute='_compute_application_count', string="Application Count")
     all_application_count = fields.Integer(compute='_compute_all_application_count', string="All Application Count")
@@ -46,48 +43,23 @@ class Job(models.Model):
     manager_id = fields.Many2one(
         'hr.employee', related='department_id.manager_id', string="Department Manager",
         readonly=True, store=True)
-    user_id = fields.Many2one('res.users', "Recruiter",
-        domain="[('share', '=', False), ('company_ids', 'in', company_id)]", default=lambda self: self.env.user,
-        tracking=True, help="The Recruiter will be the default value for all Applicants in this job \
-            position. The Recruiter is automatically added to all meetings with the Applicant.")
+    user_id = fields.Many2one('res.users', "Recruiter", domain="[('share', '=', False), ('company_ids', 'in', company_id)]", tracking=True, help="The Recruiter will be the default value for all Applicants Recruiter's field in this job position. The Recruiter is automatically added to all meetings with the Applicant.")
+    hr_responsible_id = fields.Many2one(
+        'res.users', "HR Responsible", tracking=True,
+        help="Person responsible of validating the employee's contracts.")
     document_ids = fields.One2many('ir.attachment', compute='_compute_document_ids', string="Documents", readonly=True)
     documents_count = fields.Integer(compute='_compute_document_ids', string="Document Count")
-    alias_id = fields.Many2one(help="Email alias for this job position. New emails will automatically create new applicants for this job position.")
+    alias_id = fields.Many2one(
+        'mail.alias', "Alias", ondelete="restrict", required=True,
+        help="Email alias for this job position. New emails will automatically create new applicants for this job position.")
     color = fields.Integer("Color Index")
     is_favorite = fields.Boolean(compute='_compute_is_favorite', inverse='_inverse_is_favorite')
     favorite_user_ids = fields.Many2many('res.users', 'job_favorite_user_rel', 'job_id', 'user_id', default=_get_default_favorite_user_ids)
     interviewer_ids = fields.Many2many('res.users', string='Interviewers', domain="[('share', '=', False), ('company_ids', 'in', company_id)]", help="The Interviewers set on the job position can see all Applicants in it. They have access to the information, the attachments, the meeting management and they can refuse him. You don't need to have Recruitment rights to be set as an interviewer.")
     extended_interviewer_ids = fields.Many2many('res.users', 'hr_job_extended_interviewer_res_users', compute='_compute_extended_interviewer_ids', store=True)
-    industry_id = fields.Many2one('res.partner.industry', 'Industry')
-    date_from = fields.Date(help="Is set, update candidates availability once hired for that specific mission.")
-    date_to = fields.Date()
 
     activities_overdue = fields.Integer(compute='_compute_activities')
     activities_today = fields.Integer(compute='_compute_activities')
-
-    job_properties = fields.Properties('Properties', definition='company_id.job_properties_definition')
-
-    applicant_properties_definition = fields.PropertiesDefinition('Applicant Properties')
-    no_of_hired_employee = fields.Integer(
-        compute='_compute_no_of_hired_employee',
-        string='Hired', copy=False,
-        help='Number of hired employees for this job position during recruitment phase.',
-        store=True)
-
-    @api.depends('application_ids.date_closed')
-    def _compute_no_of_hired_employee(self):
-        counts = dict(self.env['hr.applicant']._read_group(
-            domain=[
-                ('job_id', 'in', self.ids),
-                ('date_closed', '!=', False),
-                '|',
-                    ('active', '=', False),
-                    ('active', '=', True),
-            ],
-            groupby=['job_id'],
-            aggregates=['__count']))
-        for job in self:
-            job.no_of_hired_employee = counts.get(job, 0)
 
     @api.depends_context('uid')
     def _compute_activities(self):
@@ -147,7 +119,7 @@ class Job(models.Model):
         unfavorited_jobs.write({'favorite_user_ids': [(3, self.env.uid)]})
 
     def _compute_document_ids(self):
-        applicants = self.mapped('application_ids').filtered(lambda self: not self.employee_id)
+        applicants = self.mapped('application_ids').filtered(lambda self: not self.emp_id)
         app_to_job = dict((applicant.id, applicant.job_id.id) for applicant in applicants)
         attachments = self.env['ir.attachment'].search([
             '|',
@@ -171,14 +143,14 @@ class Job(models.Model):
                 ('active', '=', True),
                 '&',
                 ('active', '=', False), ('refuse_reason_id', '!=', False),
-        ], ['job_id'], ['__count'])
-        result = {job.id: count for job, count in read_group_result}
+        ], ['job_id'], ['job_id'])
+        result = dict((data['job_id'][0], data['job_id_count']) for data in read_group_result)
         for job in self:
             job.all_application_count = result.get(job.id, 0)
 
     def _compute_application_count(self):
-        read_group_result = self.env['hr.applicant']._read_group([('job_id', 'in', self.ids)], ['job_id'], ['__count'])
-        result = {job.id: count for job, count in read_group_result}
+        read_group_result = self.env['hr.applicant']._read_group([('job_id', 'in', self.ids)], ['job_id'], ['job_id'])
+        result = dict((data['job_id'][0], data['job_id_count']) for data in read_group_result)
         for job in self:
             job.application_count = result.get(job.id, 0)
 
@@ -213,8 +185,7 @@ class Job(models.Model):
                     ON s.job_id = a.job_id
                    AND a.stage_id = s.stage_id
                    AND a.active IS TRUE
-                 WHERE a.company_id in %s
-                    OR a.company_id is NULL
+                   WHERE a.company_id in %s
               GROUP BY s.job_id
             """, [tuple(self.ids), tuple(self.env.companies.ids)]
         )
@@ -228,8 +199,8 @@ class Job(models.Model):
         hired_data = self.env['hr.applicant']._read_group([
             ('job_id', 'in', self.ids),
             ('stage_id', 'in', hired_stages.ids),
-        ], ['job_id'], ['__count'])
-        job_hires = {job.id: count for job, count in hired_data}
+        ], ['job_id'], ['job_id'])
+        job_hires = {data['job_id'][0]: data['job_id_count'] for data in hired_data}
         for job in self:
             job.applicant_hired = job_hires.get(job.id, 0)
 
@@ -239,7 +210,7 @@ class Job(models.Model):
             job.old_application_count = job.application_count - job.new_application_count
 
     def _alias_get_creation_values(self):
-        values = super()._alias_get_creation_values()
+        values = super(Job, self)._alias_get_creation_values()
         values['alias_model_id'] = self.env['ir.model']._get('hr.applicant').id
         if self.id:
             values['alias_defaults'] = defaults = ast.literal_eval(self.alias_defaults or "{}")
@@ -254,7 +225,9 @@ class Job(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
-            vals["favorite_user_ids"] = vals.get("favorite_user_ids", [])
+            vals['favorite_user_ids'] = vals.get('favorite_user_ids', []) + [(4, self.env.uid)]
+            if vals.get('alias_name'):
+                vals['alias_user_id'] = False
         jobs = super().create(vals_list)
         utm_linkedin = self.env.ref("utm.utm_source_linkedin", raise_if_not_found=False)
         if utm_linkedin:
@@ -264,21 +237,10 @@ class Job(models.Model):
             } for job in jobs]
             self.env['hr.recruitment.source'].create(source_vals)
         jobs.sudo().interviewer_ids._create_recruitment_interviewers()
-        # Automatically subscribe the department manager and the recruiter to a job position.
-        for job in jobs:
-            job.message_subscribe(
-                job.manager_id._get_related_partners().ids + job.user_id.partner_id.ids
-            )
-
         return jobs
 
     def write(self, vals):
         old_interviewers = self.interviewer_ids
-        old_managers = {}
-        old_recruiters = {}
-        for job in self:
-            old_managers[job] = job.manager_id
-            old_recruiters[job] = job.user_id
         if 'active' in vals and not vals['active']:
             self.application_ids.active = False
         res = super().write(vals)
@@ -286,35 +248,6 @@ class Job(models.Model):
             interviewers_to_clean = old_interviewers - self.interviewer_ids
             interviewers_to_clean._remove_recruitment_interviewers()
             self.sudo().interviewer_ids._create_recruitment_interviewers()
-
-        # Subscribe the department manager if the department has changed
-        if "department_id" in vals:
-            for job in self:
-                to_unsubscribe = [
-                    partner
-                    for partner in old_managers[job]._get_related_partners().ids
-                    if partner not in job.user_id.partner_id.ids
-                ]
-                job.message_unsubscribe(to_unsubscribe)
-                job.message_subscribe(job.manager_id._get_related_partners().ids)
-
-        # Subscribe the recruiter if it has changed.
-        if "user_id" in vals:
-            for job in self:
-                to_unsubscribe = [
-                    partner
-                    for partner in old_recruiters[job].partner_id.ids
-                    if partner not in job.manager_id._get_related_partners().ids
-                ]
-                job.message_unsubscribe(to_unsubscribe)
-                job.message_subscribe(job.user_id.partner_id.ids)
-
-        # Update the availability on all hired candidates if the mission end date is changed
-        if "date_to" in vals:
-            for job in self:
-                hired_candidates = job.application_ids.filtered(lambda a: a.application_status == 'hired')
-                for candidate in hired_candidates:
-                    candidate.availability = job.date_to + relativedelta(days=1)
 
         # Since the alias is created upon record creation, the default values do not reflect the current values unless
         # specifically rewritten
@@ -325,16 +258,6 @@ class Job(models.Model):
                 alias_default_vals = job._alias_get_creation_values().get('alias_defaults', '{}')
                 job.alias_defaults = alias_default_vals
         return res
-
-    def _order_field_to_sql(self, alias, field_name, direction, nulls, query):
-        if field_name == 'is_favorite':
-            sql_field = SQL(
-                "%s IN (SELECT job_id FROM job_favorite_user_rel WHERE user_id = %s)",
-                SQL.identifier(alias, 'id'), self.env.uid,
-            )
-            return SQL("%s %s %s", sql_field, direction, nulls)
-
-        return super()._order_field_to_sql(alias, field_name, direction, nulls, query)
 
     def _creation_subtype(self):
         return self.env.ref('hr_recruitment.mt_job_new')
@@ -349,9 +272,9 @@ class Job(models.Model):
                 'default_res_id': self.ids[0],
                 'show_partner_name': 1,
             },
-            'view_mode': 'list',
+            'view_mode': 'tree',
             'views': [
-                (self.env.ref('hr_recruitment.ir_attachment_hr_recruitment_list_view').id, 'list')
+                (self.env.ref('hr_recruitment.ir_attachment_hr_recruitment_list_view').id, 'tree')
             ],
             'search_view_id': self.env.ref('hr_recruitment.ir_attachment_view_search_inherit_hr_recruitment').ids,
             'domain': ['|',
@@ -395,24 +318,7 @@ class Job(models.Model):
             'name': _('Job'),
             'res_model': 'hr.job',
             'res_id': self.id,
-            'views': [(form_view.id, 'form')],
+            'views': [(form_view.id, 'form'),],
             'type': 'ir.actions.act_window',
             'target': 'inline'
-        }
-
-    @api.model
-    def _action_load_recruitment_scenario(self):
-
-        convert_file(
-            self.sudo().env,
-            "hr_recruitment",
-            "data/scenarios/hr_recruitment_scenario.xml",
-            None,
-            mode="init",
-            kind="data",
-        )
-
-        return {
-            "type": "ir.actions.client",
-            "tag": "reload",
         }

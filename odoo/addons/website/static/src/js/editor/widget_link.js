@@ -1,53 +1,43 @@
-/** @odoo-module **/
+odoo.define('website.editor.link', function (require) {
+'use strict';
 
-import { LinkTools } from '@web_editor/js/wysiwyg/widgets/link_tools';
-import { patch } from "@web/core/utils/patch";
-import { useService } from "@web/core/utils/hooks";
+var weWidgets = require('wysiwyg.widgets');
+var wUtils = require('website.utils');
 
-import { onWillStart, status, useEffect } from '@odoo/owl';
-import wUtils from "@website/js/utils";
-import { debounce } from "@web/core/utils/timing";
-import { Wysiwyg } from "@web_editor/js/wysiwyg/wysiwyg";
+weWidgets.LinkTools.include({
+    custom_events: _.extend({}, weWidgets.LinkTools.prototype.custom_events || {}, {
+        website_url_chosen: '_onAutocompleteClose',
+    }),
+    LINK_DEBOUNCE: 1000,
 
-const LINK_DEBOUNCE = 1000;
-
-patch(LinkTools.prototype, {
+    /**
+     * @constructor
+     */
+    init: function () {
+        this._super.apply(this, arguments);
+        this._adaptPageAnchor = _.debounce(this._adaptPageAnchor, this.LINK_DEBOUNCE);
+    },
     /**
      * Allows the URL input to propose existing website pages.
      *
      * @override
      */
-    async start() {
-        var def = await super.start(...arguments);
+    start: async function () {
+        var def = await this._super.apply(this, arguments);
+        const options = {
+            position: {
+                collision: 'flip flipfit',
+            },
+            classes: {
+                "ui-autocomplete": 'o_website_ui_autocomplete'
+            },
+            body: this.$editable[0].ownerDocument.body,
+        };
+        wUtils.autocompleteWithPages(this, this.$('input[name="url"]'), options);
         this._adaptPageAnchor();
         return def;
     },
 
-    setup() {
-        super.setup();
-
-        this.websiteService = useService("website");
-
-        onWillStart(() => {
-            this._adaptPageAnchor = debounce(this._adaptPageAnchor, LINK_DEBOUNCE);
-        });
-        useEffect((container) => {
-            const input = container?.querySelector(`input[name="url"]`);
-            if (!input) {
-                return;
-            }
-            const options = {
-                classes: {
-                    "ui-autocomplete": 'o_website_ui_autocomplete'
-                },
-                body: this.$editable[0].ownerDocument.body,
-                urlChosen: this._onAutocompleteClose.bind(this),
-                isDestroyed: () => status(this) === 'destroyed',
-            };
-            const unmountAutocompleteWithPages = wUtils.autocompleteWithPages(input, options);
-            return () => unmountAutocompleteWithPages();
-            }, () => [this.linkComponentWrapperRef.el]);
-    },
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
@@ -55,11 +45,11 @@ patch(LinkTools.prototype, {
     /**
      * @private
      */
-    _adaptPageAnchor() {
-        const urlInputValue = this.$el.find('input[name="url"]').val();
-        const $pageAnchor = this.$el.find('.o_link_dialog_page_anchor');
-        const showAnchorSelector = (urlInputValue[0] === '/') && (!urlInputValue.startsWith("/web/content/"));
-        const $selectMenu = this.$el.find('we-selection-items[name="link_anchor"]');
+    _adaptPageAnchor: function () {
+        const urlInputValue = this.$('input[name="url"]').val();
+        const $pageAnchor = this.$('.o_link_dialog_page_anchor');
+        const showAnchorSelector = urlInputValue[0] === '/';
+        const $selectMenu = this.$('we-selection-items[name="link_anchor"]');
 
         if ($selectMenu.data("anchor-for") !== urlInputValue) { // avoid useless query
             $pageAnchor.toggleClass('d-none', !showAnchorSelector);
@@ -84,37 +74,11 @@ patch(LinkTools.prototype, {
                         $option.data('value', anchor);
                         $selectMenu.append($option);
                     }
-                }).finally(always);
+                    always();
+                }).guardedCatch(always);
             }
         }
         $selectMenu.data("anchor-for", urlInputValue);
-    },
-    /**
-     * @override
-     */
-    _isAbsoluteURLInCurrentDomain(url) {
-        const res = super._isAbsoluteURLInCurrentDomain(url);
-        if (res) {
-            return true;
-        }
-
-        const w = this.websiteService.currentWebsite;
-        if (!w) {
-            return false;
-        }
-
-        // Make sure that while being on abc.odoo.com, if you edit a link and
-        // enter an absolute URL using your real domain, it is still considered
-        // to be added as relative, preferably.
-        // In the past, you could not edit your website from abc.odoo.com if you
-        // properly configured your real domain already.
-        let origin;
-        try { // Needed: "http:" would crash
-            origin = new URL(url, window.location.origin).origin;
-        } catch {
-            return false;
-        }
-        return `${origin}/`.startsWith(w.domain);
     },
 
     //--------------------------------------------------------------------------
@@ -124,14 +88,28 @@ patch(LinkTools.prototype, {
     /**
      * @private
      */
-    _onAutocompleteClose() {
-        this.__onURLInput();
+    _onAutocompleteClose: function () {
+        this._onURLInput();
+    },
+    /**
+     * @todo this should not be an event handler anymore in master
+     * @private
+     * @param {Event} ev
+     */
+    _onAnchorChange: function (ev) {
+        const anchorValue = $(ev.currentTarget).data('value');
+        const $urlInput = this.$('[name="url"]');
+        let urlInputValue = $urlInput.val();
+        if (urlInputValue.indexOf('#') > -1) {
+            urlInputValue = urlInputValue.substr(0, urlInputValue.indexOf('#'));
+        }
+        $urlInput.val(urlInputValue + anchorValue);
     },
     /**
      * @override
      */
-    _onURLInput() {
-        super._onURLInput(...arguments);
+    _onURLInput: function () {
+        this._super.apply(this, arguments);
         this._adaptPageAnchor();
     },
     /**
@@ -140,25 +118,9 @@ patch(LinkTools.prototype, {
      */
     _onPickSelectOption(ev) {
         if (ev.currentTarget.closest('[name="link_anchor"]')) {
-            const anchorValue = $(ev.currentTarget).data('value');
-            const $urlInput = this.$el.find('[name="url"]');
-            let urlInputValue = $urlInput.val();
-            if (urlInputValue.indexOf('#') > -1) {
-                urlInputValue = urlInputValue.substr(0, urlInputValue.indexOf('#'));
-            }
-            $urlInput.val(urlInputValue + anchorValue);
-            // Updates the link in the DOM with the chosen anchor.
-            this.__onURLInput();
+            this._onAnchorChange(ev);
         }
-        super._onPickSelectOption(...arguments);
+        this._super(...arguments);
     },
 });
-
-patch(Wysiwyg.prototype, {
-    /**
-     * @override
-     */
-    _getDelayBlurSelectors() {
-        return super._getDelayBlurSelectors().concat([".ui-autocomplete"]);
-    },
 });

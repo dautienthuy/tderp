@@ -9,8 +9,8 @@
             <page name="order_lines" position="after">
                 <page string="Optional Products"
                     name="optional_products"
-                    invisible="state not in ['draft', 'sent']">
-                    <field name="sale_order_option_ids" mode="list,kanban" readonly="state in ['cancel', 'sale']">
+                    attrs="{'invisible': [('state', 'not in', ['draft', 'sent'])]}">
+                    <field name="sale_order_option_ids" mode="tree,form,kanban">
                         <form string="Optional Products">
                             <group>
                                 <field name="product_id"
@@ -20,35 +20,57 @@
                                 <field name="product_uom_category_id" invisible="1"/>
                                 <field name="uom_id" groups="uom.group_uom"/>
                                 <field name="price_unit"/>
-                                <field name="discount" groups="sale.group_discount_per_so_line"/>
+                                <field name="discount" groups="product.group_discount_per_so_line"/>
                                 <field name="is_present" />
                             </group>
                         </form>
                         <kanban class="o_kanban_mobile">
+                            <field name="product_id"/>
+                            <field name="quantity"/>
+                            <field name="uom_id" groups="uom.group_uom"/>
+                            <field name="price_unit"/>
                             <field name="is_present" />
                             <templates>
-                                <t t-name="card">
-                                    <div class="row">
-                                        <field name="product_id" class="col-10 fw-bolder"/>
-                                        <button name="button_add_to_order"
-                                            class="col-2 btn btn-link oe_link fa fa-shopping-cart"
-                                            title="Add to order lines"
-                                            type="object"
-                                            invisible="is_present"/>
-                                    </div>
-                                    <div class="text-muted">
-                                        Quantity:
-                                        <field name="quantity"/>
-                                        <field name="uom_id" groups="uom.group_uom"/>
-                                    </div>
-                                    <div class="text-muted">
-                                        Unit Price:
-                                        <field name="price_unit"/>
+                                <t t-name="kanban-box">
+                                    <div class="oe_kanban_card oe_kanban_global_click">
+                                        <div class="row">
+                                            <div class="col-10">
+                                                <strong>
+                                                    <span>
+                                                        <t t-out="record.product_id.value"/>
+                                                    </span>
+                                                </strong>
+                                            </div>
+                                            <div class="col-2">
+                                                <button name="button_add_to_order"
+                                                    class="btn btn-link oe_link fa fa-shopping-cart"
+                                                    title="Add to order lines"
+                                                    type="object"
+                                                    attrs="{'invisible': [('is_present', '=', True)]}"/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 text-muted">
+                                                <span>
+                                                    Quantity:
+                                                    <t t-out="record.quantity.value"/>
+                                                    <t t-out="record.uom_id.value" groups="uom.group_uom"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 text-muted">
+                                                <span>
+                                                    Unit Price:
+                                                    <t t-out="record.price_unit.value"/>
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </t>
                             </templates>
                         </kanban>
-                        <list string="Sales Quotation Template Lines"
+                        <tree string="Sales Quotation Template Lines"
                             editable="bottom"
                             decoration-success="is_present == True">
                             <control>
@@ -60,21 +82,20 @@
                             <field name="name" optional="show"/>
                             <field name="quantity"/>
                             <field name="uom_id" string="UoM" groups="uom.group_uom" optional="show"/>
-                            <field name="product_uom_category_id" column_invisible="True"/>
+                            <field name="product_uom_category_id" invisible="1"/>
                             <field name="price_unit"/>
                             <field name="discount"
-                                width="50px"
                                 string="Disc.%"
-                                groups="sale.group_discount_per_so_line"
+                                groups="product.group_discount_per_so_line"
                                 optional="show"/>
-                            <field name="is_present" column_invisible="True" />
+                            <field name="is_present" invisible="1" />
                             <button name="button_add_to_order"
                                 type="object"
                                 class="oe_link"
                                 icon="fa-shopping-cart"
                                 title="Add to order lines"
-                                invisible="is_present"/>
-                        </list>
+                                attrs="{'invisible': [('is_present', '=', True)]}"/>
+                        </tree>
                     </field>
                 </page>
             </page>
@@ -83,7 +104,7 @@
                 <field name="sale_order_template_id"
                     options="{'no_create': True}"
                     groups="sale_management.group_sale_order_template"
-                 readonly="state in ['cancel', 'sale']"/>
+                />
             </field>
         </field>
     </record>

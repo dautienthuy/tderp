@@ -21,7 +21,6 @@ class TestLandedCosts(TestStockLandedCostsCommon):
             'partner_id': cls.supplier_id,
             'picking_type_id': cls.warehouse.in_type_id.id,
             'location_id': cls.supplier_location_id,
-            'state': 'draft',
             'location_dest_id': cls.warehouse.lot_stock_id.id})
         cls.Move.create({
             'name': cls.product_refrigerator.name,
@@ -44,7 +43,6 @@ class TestLandedCosts(TestStockLandedCostsCommon):
             'partner_id': cls.customer_id,
             'picking_type_id': cls.warehouse.out_type_id.id,
             'location_id': cls.warehouse.lot_stock_id.id,
-            'state': 'draft',
             'location_dest_id': cls.customer_location_id})
         cls.Move.create({
             'name': cls.product_refrigerator.name,
@@ -121,8 +119,10 @@ class TestLandedCosts(TestStockLandedCostsCommon):
         ])
 
     def test_00_landed_costs_on_incoming_shipment_without_real_time(self):
-        if self.env.company.chart_template != 'generic_coa':
-            raise unittest.SkipTest('Skip this test as it works only with `generic_coa`')
+        chart_of_accounts = self.env.company.chart_template_id
+        generic_coa = self.env.ref('l10n_generic_coa.configurable_chart_template')
+        if chart_of_accounts != generic_coa:
+            raise unittest.SkipTest('Skip this test as it works only with %s (%s loaded)' % (generic_coa.name, chart_of_accounts.name))
         # Test landed cost on incoming shipment
         #
         # (A) Purchase product
@@ -249,9 +249,9 @@ class TestLandedCosts(TestStockLandedCostsCommon):
         stock_negative_landed_cost.button_validate()
         self.assertEqual(stock_negative_landed_cost.state, 'done', 'Negative landed costs should be in done state')
         self.assertTrue(stock_negative_landed_cost.account_move_id, 'Landed costs should be available account move lines')
-        [balance] = self.env['account.move.line']._read_group(
-            [('move_id', '=', stock_negative_landed_cost.account_move_id.id)], aggregates=['balance:sum'])[0]
-        self.assertEqual(balance, 0, 'Move is not balanced')
+        account_entry = self.env['account.move.line'].read_group(
+            [('move_id', '=', stock_negative_landed_cost.account_move_id.id)], ['balance', 'move_id'], ['move_id'])[0]
+        self.assertEqual(account_entry['balance'], 0, 'Move is not balanced')
         move_lines = [
             {'name': 'split by volume - Microwave Oven',                    'debit': 3.75,  'credit': 0.0},
             {'name': 'split by volume - Microwave Oven',                    'debit': 0.0,   'credit': 3.75},
@@ -290,7 +290,7 @@ class TestLandedCosts(TestStockLandedCostsCommon):
                 {'name': 'equal split - Refrigerator: 2.0 already out',         'debit': 0.0,   'credit': 1.0},
             ]
         self.assertRecordValues(
-            stock_negative_landed_cost.account_move_id.line_ids.sorted(lambda d: (d['name'], d['debit'])),
+            sorted(stock_negative_landed_cost.account_move_id.line_ids, key=lambda d: (d['name'], d['debit'])),
             sorted(move_lines, key=lambda d: (d['name'], d['debit'])),
         )
 
@@ -299,7 +299,9 @@ class TestLandedCosts(TestStockLandedCostsCommon):
         # Confirm incoming shipment.
         self.picking_in.action_confirm()
         # Transfer incoming shipment
-        self.picking_in.button_validate()
+        res_dict = self.picking_in.button_validate()
+        wizard = Form(self.env[(res_dict.get('res_model'))].with_context(res_dict.get('context'))).save()
+        wizard.process()
         return self.picking_in
 
     def _process_outgoing_shipment(self):
@@ -310,7 +312,9 @@ class TestLandedCosts(TestStockLandedCostsCommon):
         self.picking_out.action_assign()
         # Transfer picking.
 
-        self.picking_out.button_validate()
+        res_dict = self.picking_out.button_validate()
+        wizard = Form(self.env[(res_dict.get('res_model'))].with_context(res_dict['context'])).save()
+        wizard.process()
 
     def _create_landed_costs(self, value, picking_in):
         return self.LandedCost.create(dict(
@@ -384,7 +388,7 @@ class TestLandedCostsWithPurchaseAndInv(TestStockValuationLCCommon):
 
         # Receive the goods
         receipt = order.picking_ids[0]
-        receipt.move_ids.quantity = 1
+        receipt.move_ids.quantity_done = 1
         receipt.button_validate()
 
         # Check SVL and AML
@@ -435,7 +439,7 @@ class TestLandedCostsWithPurchaseAndInv(TestStockValuationLCCommon):
         self.landed_cost.split_method_landed_cost = 'by_quantity'
         product2 = self.env['product.product'].create({
             'name': 'product2',
-            'is_storable': True,
+            'type': 'product',
             'categ_id': self.stock_account_product_categ.id,
         })
         products = self.product1 | product2
@@ -466,9 +470,8 @@ class TestLandedCostsWithPurchaseAndInv(TestStockValuationLCCommon):
         bill = purchase_order.invoice_ids[0]
         receipt = purchase_order.picking_ids[0]
         receipt.picking_type_id.create_backorder = 'always'
-        receipt.move_ids[0].quantity = 50000
-        receipt.move_ids[1].quantity = 25000
-        receipt.move_ids.picked = True
+        receipt.move_ids[0].quantity_done = 50000
+        receipt.move_ids[1].quantity_done = 25000
         receipt.button_validate()
         self.assertEqual(self.product1.standard_price, 1)
         self.assertEqual(product2.standard_price, 3)
@@ -490,8 +493,7 @@ class TestLandedCostsWithPurchaseAndInv(TestStockValuationLCCommon):
 
         receipt2 = purchase_order.picking_ids.filtered(lambda p: p.state == 'assigned')
         for move in receipt2.move_ids:
-            move.quantity = move.product_qty
-            move.picked = True
+            move.quantity_done = move.product_qty
         receipt2.button_validate()
         self.assertEqual(self.product1.standard_price, 1.5)
         self.assertEqual(product2.standard_price, 3.5)
@@ -526,7 +528,7 @@ class TestLandedCostsWithPurchaseAndInv(TestStockValuationLCCommon):
         po.button_confirm()
 
         receipt = po.picking_ids
-        receipt.move_ids.quantity = 1
+        receipt.move_ids.quantity_done = 1
         receipt.button_validate()
         po.order_line[1].qty_received = 1
 
@@ -595,7 +597,7 @@ class TestLandedCostsWithPurchaseAndInv(TestStockValuationLCCommon):
         bill.invoice_line_ids[0].quantity = 23000
         receipt = purchase_order.picking_ids[0]
         receipt.picking_type_id.create_backorder = 'always'
-        receipt.move_ids.quantity = 23000
+        receipt.move_ids.quantity_done = 23000
         receipt.button_validate()
         self.assertEqual(product.standard_price, 1.35)
 
@@ -619,7 +621,7 @@ class TestLandedCostsWithPurchaseAndInv(TestStockValuationLCCommon):
         bill2.invoice_date = Date.today()
         bill2._post()
         receipt2 = purchase_order.picking_ids.filtered(lambda p: p.state == 'assigned')
-        receipt2.move_ids[0].quantity = 27000
+        receipt2.move_ids[0].quantity_done = 27000
         receipt2.button_validate()
         self.assertEqual(product.standard_price, 1.81)
 
@@ -662,7 +664,7 @@ class TestLandedCostsWithPurchaseAndInv(TestStockValuationLCCommon):
                 inv_line.is_landed_costs_line = True
         bill.action_post()
         receipt = purchase_order.picking_ids[0]
-        receipt.move_ids.quantity = 1
+        receipt.move_ids.quantity_done = 1
         receipt.button_validate()
 
         # Ensure that the product cost has not been updated yet
@@ -676,187 +678,3 @@ class TestLandedCostsWithPurchaseAndInv(TestStockValuationLCCommon):
 
         # 35 = Product price (10) + landed cost price (25)
         self.assertEqual(product.standard_price, 35)
-
-    def test_refund_landed_cost_creates_negative_valuation(self):
-        """Ensure landed cost created from a vendor refund is negative and reduces valuation."""
-        self.env.company.anglo_saxon_accounting = True
-        product = self.env['product.product'].create({
-            'name': 'product',
-            'is_storable': True,
-            'purchase_method': 'purchase',
-            'categ_id': self.stock_account_product_categ.id,
-        })
-        product.categ_id.write({
-            'property_stock_account_input_categ_id': self.company_data['default_account_stock_in'].id,
-            'property_stock_account_output_categ_id': self.company_data['default_account_stock_out'].id,
-            'property_stock_valuation_account_id': self.company_data['default_account_stock_valuation'].id,
-            'property_valuation': 'real_time',
-            'property_cost_method': 'average',
-        })
-        landed_cost_product = self.landed_cost
-        landed_cost_product.write({
-            'landed_cost_ok': True,
-            'categ_id': product.categ_id.id,
-            'type': 'service',
-            'purchase_method': 'purchase',
-        })
-        po = self.env['purchase.order'].create({
-            'partner_id': self.supplier_id,
-            'order_line': [
-                Command.create({
-                    'product_id': product.id,
-                    'product_qty': 1,
-                    'price_unit': 100,
-                }),
-                Command.create({
-                    'product_id': landed_cost_product.id,
-                    'product_qty': 1,
-                    'price_unit': 20,
-                }),
-            ],
-        })
-        po.button_confirm()
-        picking = po.picking_ids
-        picking.move_ids.quantity = 1
-        picking.button_validate()
-        po.action_create_invoice()
-        bill = po.invoice_ids[0]
-        bill.invoice_date = fields.Date.today()
-        bill.action_post()
-        action = bill.button_create_landed_costs()
-        lc_form = Form(self.env[action['res_model']].browse(action['res_id']))
-        lc_form.picking_ids.add(picking)
-        lc = lc_form.save()
-        lc.button_validate()
-        self.assertEqual(lc.amount_total, 20)
-        self.assertEqual(lc.stock_valuation_layer_ids.value, 20)
-        reverse_wizard = self.env['account.move.reversal'].with_context(active_model='account.move', active_ids=bill.ids).create({
-            'reason': 'Refund for landed cost',
-            'date': fields.Date.today(),
-            'journal_id': bill.journal_id.id,
-        })
-        reversal = reverse_wizard.reverse_moves()
-        reversed_move = self.env['account.move'].browse(reversal['res_id'])
-        reversed_move.invoice_date = fields.Date.today()
-        reversed_move.action_post()
-        action = reversed_move.button_create_landed_costs()
-        lc_form = Form(self.env[action['res_model']].browse(action['res_id']))
-        lc_form.picking_ids.add(picking)
-        lc = lc_form.save()
-        lc.button_validate()
-        self.assertEqual(lc.amount_total, -20)
-        self.assertEqual(lc.stock_valuation_layer_ids.value, -20)
-
-    def test_landed_cost_avco_partial_bill_rounding(self):
-        """Tests landed cost calculation for an AVCO product with partial
-        billing and backorders, ensuring correct stock valuation and handling
-        of rounding with decimal precision.
-        """
-        decimal_price = self.env.ref('product.decimal_price')
-        decimal_price.digits = 5
-        decimal_product_uom = self.env.ref('product.decimal_product_uom')
-        decimal_product_uom.digits = 5
-
-        self.env.company.anglo_saxon_accounting = True
-        self.product1.purchase_method = 'purchase'
-        self.product1.categ_id.write({
-            'property_stock_account_input_categ_id': self.company_data['default_account_stock_in'].id,
-            'property_stock_account_output_categ_id': self.company_data['default_account_stock_out'].id,
-            'property_stock_valuation_account_id': self.company_data['default_account_stock_valuation'].id,
-            'property_valuation': 'real_time',
-            'property_cost_method': 'average',
-        })
-        self.landed_cost.categ_id = self.product1.categ_id.id
-
-        purchase_order = self.env['purchase.order'].create({
-            'partner_id': self.partner_a.id,
-            'order_line': [
-                (0, 0, {
-                    'name': self.product1.name,
-                    'product_id': self.product1.id,
-                    'product_qty': 190.0,
-                    'product_uom': self.product1.uom_po_id.id,
-                    'price_unit': 110.0,
-                })
-            ],
-        })
-        purchase_order.button_confirm()
-
-        self.assertEqual(purchase_order.state, 'purchase')
-        picking = purchase_order.picking_ids[0]
-        picking.action_assign()
-
-        # Receive 70 items and create a backorder
-        picking.move_ids.quantity = 70
-        picking.button_validate()
-        picking._action_done()
-
-        backorder_picking = purchase_order.picking_ids.filtered(lambda p: p.backorder_id == picking)
-        self.assertTrue(backorder_picking, "Backorder picking was not created or not found.")
-
-        bill = self.env["account.move"].browse(purchase_order.action_create_invoice()["res_id"])
-        bill.invoice_date = fields.Date.today()
-        bill.invoice_line_ids.quantity = 70
-        bill.action_post()
-
-        svl_initial_receipt = self.env['stock.valuation.layer'].search([
-            ('product_id', '=', self.product1.id),
-            ('stock_move_id', '=', picking.move_ids.id)
-        ])
-        self.assertEqual(len(svl_initial_receipt), 1)
-        self.assertAlmostEqual(svl_initial_receipt.quantity, 70)
-        self.assertAlmostEqual(svl_initial_receipt.unit_cost, 110, msg="SVL unit cost for initial receipt should match PO price.")
-        self.assertAlmostEqual(svl_initial_receipt.value, 70 * 110)
-        self.assertAlmostEqual(self.product1.standard_price, 110, msg="Product AVCO should be 110 after first receipt.")
-        self.assertAlmostEqual(purchase_order.order_line[0].qty_invoiced, 70)
-
-        # Add a landed cost to the first picking
-        landed_cost = self.env['stock.landed.cost'].create({
-            'picking_ids': [(6, 0, [picking.id])],
-            'account_journal_id': self.stock_journal.id,
-            'cost_lines': [(0, 0, {
-                'name': 'landed cost',
-                'split_method': 'equal',
-                'price_unit': 95,
-                'product_id': self.landed_cost.id,
-            })],
-        })
-        landed_cost.compute_landed_cost()
-        landed_cost.button_validate()
-
-        # Create a draft bill for the remaining 120 units
-        bill2 = self.env["account.move"].browse(purchase_order.action_create_invoice()["res_id"])
-        bill2.invoice_date = fields.Date.today()
-        self.assertAlmostEqual(bill2.invoice_line_ids[0].quantity, 120, msg="Bill 2 should be for the remaining 120 units.")
-        self.assertAlmostEqual(bill2.invoice_line_ids[0].price_unit, 110, msg="Bill 2 unit price should match PO price.")
-        self.assertAlmostEqual(purchase_order.order_line[0].qty_invoiced, 190, msg="Total 190 units should be invoiced on PO line.")
-
-        # Receive the remaining 120 quantities in the backorder.
-        backorder_picking.action_assign()
-        backorder_picking.move_ids[0].quantity = 120
-        backorder_picking.button_validate()  # This should not create another backorder
-
-        # Check that the valuation layers of the backorder matches the bill
-        svl_backorder_receipt = self.env['stock.valuation.layer'].search([
-            ('product_id', '=', self.product1.id),
-            ('stock_move_id', '=', backorder_picking.move_ids[0].id)
-        ])
-
-        self.assertEqual(len(svl_backorder_receipt), 1)
-        self.assertAlmostEqual(svl_backorder_receipt.quantity, 120)
-        # The unit cost for AVCO on receipt is taken from the purchase order line price.
-        self.assertAlmostEqual(svl_backorder_receipt.unit_cost, 110, msg="SVL unit cost for backorder receipt should match PO price.")
-        self.assertAlmostEqual(svl_backorder_receipt.value, 120 * 110)
-
-        # Final check on product's AVCO and total quantity/value
-        # Total quantity received is 120 + 70 = 190
-        self.assertAlmostEqual(self.product1.qty_available, 190)
-
-        # For AVCO, the standard_price should reflect the average. Since all units came at
-        # the same price, it's 110, plus the landed cost (95 / 190)
-        # 110 + 95 / 190 = 110.5
-        self.assertAlmostEqual(self.product1.standard_price, 110.5)
-
-        # Check total value in SVL:
-        # 120 * 110 + 95 + 70 * 110 = 20995
-        self.assertAlmostEqual(self.product1.value_svl, 20995)

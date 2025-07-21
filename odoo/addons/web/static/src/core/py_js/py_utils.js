@@ -1,3 +1,5 @@
+/** @odoo-module **/
+
 import { bp } from "./py_parser";
 import { PyDate, PyDateTime } from "./py_date";
 

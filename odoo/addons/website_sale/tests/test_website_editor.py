@@ -243,10 +243,6 @@ class TestWebsiteSaleEditor(HttpCase):
         category = self.env['product.public.category'].create({
             'name': 'Test Category',
         })
-        self.env['product.public.category'].create({
-            'parent_id': category.id,
-            'name': 'Test Category - Child',
-        })
         self.env['product.template'].create({
             'name': 'Test Product',
             'website_published': True,

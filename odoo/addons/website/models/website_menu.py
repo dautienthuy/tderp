@@ -1,13 +1,11 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import werkzeug.exceptions
 import werkzeug.urls
 
-from werkzeug.urls import url_parse
-
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
-from odoo.fields import Command
 from odoo.http import request
 from odoo.tools.translate import html_translate
 
@@ -41,31 +39,28 @@ class Menu(models.Model):
     name = fields.Char('Menu', required=True, translate=True)
     url = fields.Char('Url', default='')
     page_id = fields.Many2one('website.page', 'Related Page', ondelete='cascade')
-    controller_page_id = fields.Many2one('website.controller.page', 'Related Model Page', ondelete='cascade')
     new_window = fields.Boolean('New Window')
     sequence = fields.Integer(default=_default_sequence)
     website_id = fields.Many2one('website', 'Website', ondelete='cascade')
     parent_id = fields.Many2one('website.menu', 'Parent Menu', index=True, ondelete="cascade")
     child_id = fields.One2many('website.menu', 'parent_id', string='Child Menus')
-    parent_path = fields.Char(index=True)
+    parent_path = fields.Char(index=True, unaccent=False)
     is_visible = fields.Boolean(compute='_compute_visible', string='Is Visible')
-    group_ids = fields.Many2many('res.groups', string='Visible Groups',
-        help="User needs to be at least in one of these groups to see the menu")
     is_mega_menu = fields.Boolean(compute=_compute_field_is_mega_menu, inverse=_set_field_is_mega_menu)
     mega_menu_content = fields.Html(translate=html_translate, sanitize=False, prefetch=True)
     mega_menu_classes = fields.Char()
 
-    @api.depends('website_id')
-    @api.depends_context('display_website')
-    def _compute_display_name(self):
+    def name_get(self):
         if not self._context.get('display_website') and not self.env.user.has_group('website.group_multi_website'):
-            return super()._compute_display_name()
+            return super(Menu, self).name_get()
 
+        res = []
         for menu in self:
             menu_name = menu.name
             if menu.website_id:
-                menu_name += f' [{menu.website_id.name}]'
-            menu.display_name = menu_name
+                menu_name += ' [%s]' % menu.website_id.name
+            res.append((menu.id, menu_name))
+        return res
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -76,7 +71,7 @@ class Menu(models.Model):
                   Be careful to return correct record for ir.model.data xml_id in case
                   of default main menus creation.
         '''
-        self.env.registry.clear_cache('templates')
+        self.clear_caches()
         # Only used when creating website_data.xml default menu
         menus = self.env['website.menu']
         for vals in vals_list:
@@ -106,25 +101,11 @@ class Menu(models.Model):
         return menus
 
     def write(self, values):
-        self.env.registry.clear_cache('templates')
-        if 'group_ids' in values:
-            commands = values['group_ids'] or []
-            designer_group_id = self.env.ref('website.group_website_designer').id
-            link_designer_group = Command.link(designer_group_id)
-            for record in self:
-                # Simulate write.
-                ids = set(record.group_ids.mapped('id'))
-                for command, record_id in commands:
-                    if command == Command.LINK:
-                        ids.add(record_id)
-                    elif command == Command.UNLINK and record_id in ids:
-                        ids.remove(record_id)
-                if ids and designer_group_id not in ids:
-                    commands.append(link_designer_group)
+        self.clear_caches()
         return super().write(values)
 
     def unlink(self):
-        self.env.registry.clear_cache('templates')
+        self.clear_caches()
         default_menu = self.env.ref('website.main_menu', raise_if_not_found=False)
         menus_to_remove = self
         for menu in self.filtered(lambda m: default_menu and m.parent_id.id == default_menu.id):
@@ -142,23 +123,16 @@ class Menu(models.Model):
     def _compute_visible(self):
         for menu in self:
             visible = True
-            if menu.page_id and not menu.env.user._is_internal():
+            if menu.page_id and not menu.user_has_groups('base.group_user'):
                 page_sudo = menu.page_id.sudo()
                 if (not page_sudo.is_visible
                     or (not page_sudo.view_id._handle_visibility(do_raise=False)
                         and page_sudo.view_id._get_cached_visibility() != "password")):
                     visible = False
-
-            if menu.controller_page_id and not menu.env.user._is_internal():
-                controller_page_sudo = menu.controller_page_id.sudo()
-                if (not controller_page_sudo.is_published
-                    or (not controller_page_sudo.view_id._handle_visibility(do_raise=False)
-                        and controller_page_sudo.view_id._get_cached_visibility() != "password")):
-                    visible = False
-
             menu.is_visible = visible
 
-    def _clean_url(self):
+    @api.model
+    def clean_url(self):
         # clean the url with heuristic
         if self.page_id:
             url = self.page_id.sudo().url
@@ -171,62 +145,6 @@ class Menu(models.Model):
                 elif not self.url.startswith('http'):
                     url = '/%s' % self.url
         return url
-
-    def _is_active(self):
-        """ To be considered active, a menu should either:
-
-        - have its URL matching the request's URL and have no children
-        - or have a children menu URL matching the request's URL
-
-        Matching an URL means, either:
-
-        - be equal, eg ``/contact/on-site`` vs ``/contact/on-site``
-        - be equal after unslug, eg ``/shop/1`` and ``/shop/my-super-product-1``
-
-        Note that saving a menu URL with an anchor or a query string is
-        considered a corner case, and the following applies:
-
-        - anchor/fragment are ignored during the comparison (it would be
-          impossible to compare anyway as the client is not sending the anchor
-          to the server as per RFC)
-        - query string parameters should be the same to be considered equal, as
-          those could drasticaly alter a page result
-        """
-        if not request or self.is_mega_menu:
-            # There is no notion of `active` if we don't have a request to
-            # compare the url to.
-            # Also, mega menu are never considered active.
-            return False
-
-        request_url = url_parse(request.httprequest.url)
-
-        if not self.child_id:
-            # Don't compare to `url` as it could be shadowed by the linked
-            # website page's URL
-            menu_url = self._clean_url()
-            if not menu_url:
-                return False
-
-            menu_url = url_parse(menu_url)
-            unslug_url = self.env['ir.http']._unslug_url
-            if unslug_url(menu_url.path) == unslug_url(request_url.path):
-                if not (
-                    set(menu_url.decode_query().items(multi=True))
-                    <= set(request_url.decode_query().items(multi=True))
-                ):
-                    # correct path but query arguments does not match
-                    return False
-                if menu_url.netloc and menu_url.netloc != request_url.netloc:
-                    # correct path but not correct domain
-                    return False
-                return True
-        else:
-            # Child match (dropdown menu), `self` is just a parent/container,
-            # don't check its URL, consider only its children
-            if any(child._is_active() for child in self.child_id):
-                return True
-
-        return False
 
     # would be better to take a menu_id as argument
     @api.model

@@ -32,13 +32,13 @@ class TestUi(AccountTestInvoicingCommon, TestUICommon):
 
         # Specify Accounting Data
         cash_journal = self.env['account.journal'].create({'name': 'Cash - Test', 'type': 'cash', 'code': 'CASH - Test'})
-        self.env.ref('website.default_website').company_id = self.env.company
         self.env['payment.provider'].sudo().search([('code', '=', 'demo')]).write({
             'journal_id': cash_journal.id,
             'state': 'test',
             'website_id': self.env.ref('website.default_website').id,
             'company_id': self.env.company.id,
         })
+        self.env.ref('website.default_website').company_id = self.env.company
         a_recv = self.env['account.account'].create({
             'code': 'X1012',
             'name': 'Debtors - (test)',
@@ -52,9 +52,9 @@ class TestUi(AccountTestInvoicingCommon, TestUICommon):
             'reconcile': True,
         })
 
-        IrDefault = self.env['ir.default']
-        IrDefault.set('res.partner', 'property_account_receivable_id', a_recv.id, company_id=self.env.company.id)
-        IrDefault.set('res.partner', 'property_account_payable_id', a_pay.id, company_id=self.env.company.id)
+        Property = self.env['ir.property']
+        Property._set_default('property_account_receivable_id', 'res.partner', a_recv, self.env.company)
+        Property._set_default('property_account_payable_id', 'res.partner', a_pay, self.env.company)
 
         product_course_channel_6 = self.env['product.product'].create({
             'name': 'DIY Furniture Course',
@@ -168,4 +168,8 @@ class TestUi(AccountTestInvoicingCommon, TestUICommon):
             ]
         })
 
-        self.start_tour('/slides', 'certification_member', login=user_demo.login, timeout=90)
+        self.browser_js(
+            '/slides',
+            'odoo.__DEBUG__.services["web_tour.tour"].run("certification_member")',
+            'odoo.__DEBUG__.services["web_tour.tour"].tours.certification_member.ready',
+            login=user_demo.login)

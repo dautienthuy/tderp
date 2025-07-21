@@ -3,16 +3,11 @@
 
 <!-- Products Search Bar autocomplete item -->
 <we-button t-name="website_sale.ribbonSelectItem" t-att-data-set-ribbon="ribbon.id">
-    <t t-out="ribbon.name"/>
+    <t t-out="ribbon.html"/>
+    <span t-attf-class="fa fa-#{isTag ? 'tag' : 'bookmark'} ms-auto"></span>
     <span t-attf-class="fa fa-arrow-#{isLeft ? 'left' : 'right'} ms-1"></span>
-    <span
-        t-attf-class="o_wsale_color_preview ms-1"
-        t-attf-style="background-color: #{ribbon.bg_color}"
-    />
-    <span
-        t-attf-class="o_wsale_color_preview ms-1"
-        t-attf-style="background-color: #{textColor} !important;"
-    />
+    <span t-attf-class="o_wsale_color_preview #{colorClasses} ms-1" t-attf-style="background-color: #{ribbon.bg_color}"></span>
+    <span t-attf-class="o_wsale_color_preview #{colorClasses} ms-1" t-attf-style="background-color: #{textColor} !important;"></span>
 </we-button>
 
 </templates>

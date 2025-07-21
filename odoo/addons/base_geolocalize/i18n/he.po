@@ -3,21 +3,19 @@
 # 	* base_geolocalize
 # 
 # Translators:
-# דודי מלכה <Dudimalka6@gmail.com>, 2024
-# NoaFarkash, 2024
-# Orel Nahmany, 2024
-# Yihya Hugirat <hugirat@gmail.com>, 2024
-# Martin Trigaux, 2024
-# david danilov, 2024
-# ZVI BLONDER <ZVIBLONDER@gmail.com>, 2024
+# NoaFarkash, 2022
+# דודי מלכה <Dudimalka6@gmail.com>, 2022
+# Martin Trigaux, 2022
+# david danilov, 2022
+# ZVI BLONDER <ZVIBLONDER@gmail.com>, 2022
 # Lilach Gilliam <lilach.gilliam@gmail.com>, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:55+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2022-09-20 09:01+0000\n"
+"PO-Revision-Date: 2022-09-22 05:45+0000\n"
 "Last-Translator: Lilach Gilliam <lilach.gilliam@gmail.com>, 2025\n"
 "Language-Team: Hebrew (https://app.transifex.com/odoo/teams/41243/he/)\n"
 "MIME-Version: 1.0\n"
@@ -32,8 +30,8 @@ msgid "API"
 msgstr "ממשק תכנות יישומים (API)"
 
 #. module: base_geolocalize
-#. odoo-python
 #: code:addons/base_geolocalize/models/base_geocoder.py:0
+#, python-format
 msgid ""
 "API key for GeoCoding (Places) required.\n"
 "Visit https://developers.google.com/maps/documentation/geocoding/get-api-key for more information."
@@ -59,7 +57,7 @@ msgstr "חישוב מבוסס על כתובת"
 #. module: base_geolocalize
 #: model:ir.model,name:base_geolocalize.model_res_config_settings
 msgid "Config Settings"
-msgstr "הגדרות תצורה"
+msgstr "הגדר הגדרות"
 
 #. module: base_geolocalize
 #: model:ir.model,name:base_geolocalize.model_res_partner
@@ -82,10 +80,10 @@ msgid "Display Name"
 msgstr "שם לתצוגה"
 
 #. module: base_geolocalize
-#. odoo-python
 #: code:addons/base_geolocalize/models/base_geocoder.py:0
-msgid "Error with geolocation server: %s"
-msgstr ""
+#, python-format
+msgid "Error with geolocation server:"
+msgstr "שגיאה בשרת מיקום גיאוגרפי:"
 
 #. module: base_geolocalize
 #: model:ir.model,name:base_geolocalize.model_base_geocoder
@@ -129,6 +127,11 @@ msgid "Key:"
 msgstr "מפתח:"
 
 #. module: base_geolocalize
+#: model:ir.model.fields,field_description:base_geolocalize.field_base_geo_provider____last_update
+msgid "Last Modified on"
+msgstr "שינוי אחרון ב"
+
+#. module: base_geolocalize
 #: model:ir.model.fields,field_description:base_geolocalize.field_base_geo_provider__write_uid
 msgid "Last Updated by"
 msgstr "עודכן לאחרונה על-ידי"
@@ -154,8 +157,8 @@ msgid "Name"
 msgstr "שם"
 
 #. module: base_geolocalize
-#. odoo-python
 #: code:addons/base_geolocalize/models/res_partner.py:0
+#, python-format
 msgid "No match found for %(partner_names)s address(es)."
 msgstr ""
 
@@ -165,8 +168,8 @@ msgid "Partner Assignment"
 msgstr "הקצאת שותף"
 
 #. module: base_geolocalize
-#. odoo-python
 #: code:addons/base_geolocalize/models/base_geocoder.py:0
+#, python-format
 msgid "Provider %s is not implemented for geolocation service."
 msgstr "ספק %s אינו מוטמע לשירות מיקום גיאוגרפי."
 
@@ -183,12 +186,12 @@ msgstr ""
 #. module: base_geolocalize
 #: model:ir.model.fields,field_description:base_geolocalize.field_base_geo_provider__tech_name
 #: model:ir.model.fields,field_description:base_geolocalize.field_res_config_settings__geoloc_provider_techname
-msgid "Technical Name"
+msgid "Tech Name"
 msgstr "שם טכני"
 
 #. module: base_geolocalize
-#. odoo-python
 #: code:addons/base_geolocalize/models/base_geocoder.py:0
+#, python-format
 msgid ""
 "Unable to geolocate, received the error:\n"
 "%s\n"
@@ -221,7 +224,7 @@ msgstr ""
 "key למידע נוסף."
 
 #. module: base_geolocalize
-#. odoo-python
 #: code:addons/base_geolocalize/models/res_partner.py:0
+#, python-format
 msgid "Warning"
 msgstr "אזהרה"

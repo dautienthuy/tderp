@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="view_account_analytic_line_tree" model="ir.ui.view">
-        <field name="name">account.analytic.line.list</field>
+        <field name="name">account.analytic.line.tree</field>
         <field name="model">account.analytic.line</field>
         <field name="arch" type="xml">
-            <list string="Analytic Items" multi_edit="1" js_class="analytic_list">
-                <field name="company_id" column_invisible="True"/>
-                <field name="product_uom_category_id" column_invisible="True"/>
+            <tree string="Analytic Items" multi_edit="1">
+                <field name="company_id" invisible="1"/>
+                <field name="product_uom_category_id" invisible="1"/>
                 <field name="date" optional="show"/>
                 <field name="name"/>
                 <field name="account_id"/>
-                <field name="currency_id" column_invisible="True"/>
+                <field name="plan_id"/>
+                <field name="currency_id" invisible="1"/>
                 <field name="unit_amount" sum="Quantity" optional="hide"/>
                 <field name="product_uom_id" optional="hide"/>
                 <field name="partner_id" optional="hide"/>
                 <field name="company_id" groups="base.group_multi_company" optional="show"/>
                 <field name="amount" sum="Total" optional="show"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -27,10 +28,12 @@
             <search string="Search Analytic Lines">
                 <field name="name"/>
                 <field name="date"/>
-                <separator/>
-                <filter name="month" string="Date" date="date"/>
+                <field name="account_id"/>
+                <field name="plan_id"/>
+                <filter string="Date" name="date" date="date"/>
+                <filter string="Analytic Account" name="group_by_analytic_account" context="{'group_by': 'account_id'}"/>
+                <filter string="Analytic Plan" name="group_by_analytic_plan" context="{'group_by': 'plan_id'}"/>
                 <group string="Group By..." expand="0" name="groupby">
-                    <separator/>
                     <filter string="Date" name="group_date" context="{'group_by': 'date'}"/>
                 </group>
             </search>
@@ -38,11 +41,11 @@
     </record>
 
     <record model="ir.actions.act_window" id="account_analytic_line_action">
-        <field name="context">{'search_default_group_date': 1}</field>
-        <field name="domain">[('auto_account_id','=', active_id)]</field>
+        <field name="context">{'search_default_group_date': 1, 'default_account_id': active_id}</field>
+        <field name="domain">[('account_id','=', active_id)]</field>
         <field name="name">Gross Margin</field>
         <field name="res_model">account.analytic.line</field>
-        <field name="view_mode">list,form,graph,pivot</field>
+        <field name="view_mode">tree,form,graph,pivot</field>
         <field name="view_id" ref="view_account_analytic_line_tree"/>
         <field name="search_view_id" ref="view_account_analytic_line_filter"/>
         <field name="help" type="html">
@@ -96,9 +99,9 @@
         <field name="name">account.analytic.line.graph</field>
         <field name="model">account.analytic.line</field>
         <field name="arch" type="xml">
-            <graph string="Analytic Items" sample="1" js_class="analytic_graph">
+            <graph string="Analytic Items" sample="1">
                 <field name="account_id"/>
-                <field name="unit_amount" type="measure" widget="float_time"/>
+                <field name="unit_amount" type="measure"/>
                 <field name="amount" type="measure"/>
             </graph>
         </field>
@@ -108,9 +111,9 @@
         <field name="name">account.analytic.line.pivot</field>
         <field name="model">account.analytic.line</field>
         <field name="arch" type="xml">
-            <pivot string="Analytic Items" sample="1" js_class="analytic_pivot">
-                <field name="account_id"/>
-                <field name="date" interval="month" type="col"/>
+            <pivot string="Analytic Items" sample="1">
+                <field name="account_id" type="row"/>
+                <field name="unit_amount" type="measure"/>
                 <field name="amount" type="measure"/>
             </pivot>
         </field>
@@ -120,18 +123,33 @@
         <field name="name">account.analytic.line.kanban</field>
         <field name="model">account.analytic.line</field>
         <field name="arch" type="xml">
-            <kanban class="o_kanban_mobile" js_class="analytic_kanban">
+            <kanban class="o_kanban_mobile">
+                <field name="date"/>
+                <field name="name"/>
                 <field name="account_id"/>
                 <field name="currency_id"/>
+                <field name="amount"/>
                 <templates>
-                    <t t-name="card">
-                        <div class="d-flex justify-content-between" >
-                            <field class="fw-bold fs-5" name="name"/>
-                            <field class="text-end fw-bold fs-5" name="date"/>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <field class="text-muted" name="account_id"/>
-                            <field class="justify-content-end" name="amount" widget="monetary"/>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong><span><t t-esc="record.name.value"/></span></strong>
+                                </div>
+                                <div class="col-6 text-end">
+                                    <strong><t t-esc="record.date.value"/></strong>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 text-muted">
+                                    <span><t t-esc="record.account_id.value"/></span>
+                                </div>
+                                <div class="col-6">
+                                    <span class="float-end text-end">
+                                        <field name="amount" widget="monetary"/>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </t>
                 </templates>
@@ -142,7 +160,7 @@
     <record model="ir.actions.act_window" id="account_analytic_line_action_entries">
         <field name="name">Analytic Items</field>
         <field name="res_model">account.analytic.line</field>
-        <field name="view_mode">list,kanban,form,graph,pivot</field>
+        <field name="view_mode">tree,kanban,form,graph,pivot</field>
         <field name="view_id" ref="view_account_analytic_line_tree"/>
         <field name="search_view_id" ref="analytic.view_account_analytic_line_filter"/>
         <field name="help" type="html">

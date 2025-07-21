@@ -1,10 +1,13 @@
+/** @odoo-module **/
+
 export const nbsp = "\u00a0";
 
 /**
  * Escapes a string for HTML.
+ * Note that it doesn't work for escaping node attributes.
  *
  * @param {string | number} [str] the string to escape
- * @returns {string} an escaped string
+ * @returns an escaped string
  */
 export function escape(str) {
     if (str === undefined) {
@@ -13,17 +16,9 @@ export function escape(str) {
     if (typeof str === "number") {
         return String(str);
     }
-    [
-        ["&", "&amp;"],
-        ["<", "&lt;"],
-        [">", "&gt;"],
-        ["'", "&#x27;"],
-        ['"', "&quot;"],
-        ["`", "&#x60;"],
-    ].forEach((pairs) => {
-        str = String(str).replaceAll(pairs[0], pairs[1]);
-    });
-    return str;
+    const p = document.createElement("p");
+    p.textContent = str;
+    return p.innerHTML;
 }
 
 /**
@@ -92,13 +87,13 @@ export function intersperse(str, indices, separator = "") {
  * If no value is given, the string will not be formatted.
  *
  * @param {string} s
- * @param {any[]} values
+ * @param {...string} ...values
  * @returns {string}
  */
 export function sprintf(s, ...values) {
     if (values.length === 1 && Object.prototype.toString.call(values[0]) === "[object Object]") {
         const valuesDict = values[0];
-        s = s.replace(/%\(([^)]+)\)s/g, (match, value) => valuesDict[value]);
+        s = s.replace(/%\(?([^)]+)\)s/g, (match, value) => valuesDict[value]);
     } else if (values.length > 0) {
         s = s.replace(/%s/g, () => values.shift());
     }
@@ -320,38 +315,4 @@ export function unaccent(str, caseSensitive) {
         return diacriticsMap[accented] || accented;
     });
     return caseSensitive ? str : str.toLowerCase();
-}
-
-/**
- * @param {string} value
- * @returns boolean
- */
-export function isEmail(value) {
-    // http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
-    const re = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-    return re.test(value);
-}
-
-/**
- * Return true if the string is composed of only digits
- *
- * @param {string} value
- * @returns boolean
- */
-
-export function isNumeric(value) {
-    return Boolean(value?.match(/^\d+$/));
-}
-
-/**
- * Parse the string to check if the value is true or false
- * If the string is empty, 0, False or false it's considered as false
- * The rest is considered as true
- *
- * @param {string} str
- * @param {boolean} [trueIfEmpty=false]
- * @returns {boolean}
- */
-export function exprToBoolean(str, trueIfEmpty = false) {
-    return str ? !/^false|0$/i.test(str) : trueIfEmpty;
 }

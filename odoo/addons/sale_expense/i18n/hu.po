@@ -3,17 +3,20 @@
 # 	* sale_expense
 # 
 # Translators:
-# Tamás Dombos, 2024
-# Tamás Németh <ntomasz81@gmail.com>, 2024
+# Martin Trigaux, 2022
+# Tamás Németh <ntomasz81@gmail.com>, 2022
+# Tamás Dombos, 2022
+# Ákos Nagy <akos.nagy@oregional.hu>, 2022
+# Krisztián Juhász <juhasz.krisztian@josafar.hu>, 2022
 # krnkris, 2024
 # gezza <geza.nagy@oregional.hu>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 17.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-05 12:32+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:54+0000\n"
 "Last-Translator: gezza <geza.nagy@oregional.hu>, 2024\n"
 "Language-Team: Hungarian (https://app.transifex.com/odoo/teams/41243/hu/)\n"
 "MIME-Version: 1.0\n"
@@ -53,7 +56,14 @@ msgstr ""
 #. module: sale_expense
 #: model:ir.model,name:sale_expense.model_hr_expense_sheet
 msgid "Expense Report"
-msgstr "Költségelszámolás"
+msgstr "Költség kiadás jelentés"
+
+#. module: sale_expense
+#: model:ir.model.fields,field_description:sale_expense.field_account_bank_statement_line__expense_sheet_id
+#: model:ir.model.fields,field_description:sale_expense.field_account_move__expense_sheet_id
+#: model:ir.model.fields,field_description:sale_expense.field_account_payment__expense_sheet_id
+msgid "Expense Sheet"
+msgstr "Költségkiadás táblázat"
 
 #. module: sale_expense
 #: model:ir.model,name:sale_expense.model_hr_expense_split
@@ -70,12 +80,14 @@ msgstr "Költségek"
 #. module: sale_expense
 #. odoo-python
 #: code:addons/sale_expense/models/product_template.py:0
+#, python-format
 msgid "Expenses of this category may not be added to a Sales Order."
 msgstr ""
 
 #. module: sale_expense
 #. odoo-python
 #: code:addons/sale_expense/models/product_template.py:0
+#, python-format
 msgid ""
 "Expenses will be added to the Sales Order at their actual cost when posted."
 msgstr ""
@@ -83,6 +95,7 @@ msgstr ""
 #. module: sale_expense
 #. odoo-python
 #: code:addons/sale_expense/models/product_template.py:0
+#, python-format
 msgid ""
 "Expenses will be added to the Sales Order at their sales price (product "
 "price, pricelist, etc.) when posted."
@@ -108,7 +121,7 @@ msgstr "Könyvelési tétel"
 #. module: sale_expense
 #: model:ir.model,name:sale_expense.model_account_move_line
 msgid "Journal Item"
-msgstr "Könyvelési tétel"
+msgstr "Könyvelési tételsor"
 
 #. module: sale_expense
 #: model:ir.model,name:sale_expense.model_product_template
@@ -118,20 +131,21 @@ msgstr "Termék"
 #. module: sale_expense
 #. odoo-python
 #: code:addons/sale_expense/models/hr_expense_sheet.py:0
+#, python-format
 msgid "Reinvoiced Sales Orders"
 msgstr ""
 
 #. module: sale_expense
 #: model:ir.model.fields,field_description:sale_expense.field_hr_expense_sheet__sale_order_count
 msgid "Sale Order Count"
-msgstr "Vevői rendelések száma"
+msgstr "Értékesítési rendelések száma"
 
 #. module: sale_expense
 #: model:ir.model,name:sale_expense.model_sale_order
 msgid "Sales Order"
-msgstr "Vevői rendelés"
+msgstr "Vevői rendelések"
 
 #. module: sale_expense
 #: model_terms:ir.ui.view,arch_db:sale_expense.hr_expense_sheet_view_form
 msgid "Sales Orders"
-msgstr "Vevői rendelések"
+msgstr "Vevői megrendelések"

@@ -1,66 +1,60 @@
-/** @odoo-module **/
+odoo.define('website_sale.tour_shop_mail', function (require) {
+'use strict';
 
-import { registry } from "@web/core/registry";
-import * as tourUtils from "@website_sale/js/tours/tour_utils";
-import { redirect } from "@web/core/utils/urls";
+var tour = require('web_tour.tour');
+const tourUtils = require('website_sale.tour_utils');
 
-registry.category("web_tour.tours").add('shop_mail', {
+require('web.dom_ready');
+
+tour.register('shop_mail', {
+    test: true,
     url: '/shop?search=Acoustic Bloc Screens',
-    steps: () => [
-        ...tourUtils.addToCart({productName: 'Acoustic Bloc Screens', search: false, expectUnloadPage: true}),
+},
+[
+    {
+        content: "select Acoustic Bloc Screens",
+        trigger: '.oe_product_cart a:containsExact("Acoustic Bloc Screens")',
+    },
+    {
+        content: "click add to cart",
+        trigger: '#product_details #add_to_cart',
+    },
         tourUtils.goToCart(),
     {
         content: "check product is in cart, get cart id, go to backend",
-        trigger: 'div:has(a>h6:contains("Acoustic Bloc Screens"))',
+        trigger: 'td.td-product_name:contains("Acoustic Bloc Screens")',
         run: function () {
-            const orderId = document.querySelector(".my_cart_quantity").dataset["orderId"];
-            redirect("/odoo/action-sale.action_orders/" + orderId);
+            var orderId = $('.my_cart_quantity').data('order-id');
+            window.location.href = "/web#action=sale.action_orders&view_type=form&id=" + orderId;
         },
-        expectUnloadPage: true,
     },
     {
         content: "click confirm",
         trigger: '.btn[name="action_confirm"]',
-        run: "click",
-    },
-    {
-        trigger: '.o_statusbar_status .o_arrow_button_current:contains("Sales Order")',
     },
     {
         content: "click send by email",
         trigger: '.btn[name="action_quotation_send"]',
-        run: "click",
-    },
-    {
-        isActive: ["body:not(:has(.modal-footer button[name='action_send_mail']))"],
-        trigger: ".modal-footer button[name='document_layout_save']",
-        content: "let's continue",
-        tooltipPosition: "bottom",
-        run: "click",
+        extra_trigger: '.o_statusbar_status .o_arrow_button_current:contains("Sales Order")',
     },
     {
         content: "Open recipients dropdown",
-        trigger: ".modal .o_field_many2many_tags_email[name=partner_ids] input",
-        run: 'edit Interior24',
+        trigger: '.o_field_many2many_tags_email[name=partner_ids] input',
+        run: 'click',
     },
     {
         content: "Select azure interior",
-        trigger: ".modal .ui-menu-item a:contains(Interior24)",
-        run: "click",
-    },
-    {
-        trigger: '.modal .o_badge_text:contains("Azure")',
+        trigger: '.ui-menu-item a:contains(Interior24)',
+        in_modal: false,
     },
     {
         content: "click Send email",
-        trigger: '.modal .btn.o_mail_send',
-        run: "click",
-    },
-    {
-        trigger: "body:not(:has(.modal))",
+        trigger: '.btn[name="action_send_mail"]',
+        extra_trigger: '.o_badge_text:contains("Azure")',
     },
     {
         content: "wait mail to be sent, and go see it",
-        trigger: '.o-mail-Message-body:contains("Your"):contains("order")',
+        trigger: '.o_Message_content:contains("Your"):contains("order")',
     },
-]});
+]);
+});

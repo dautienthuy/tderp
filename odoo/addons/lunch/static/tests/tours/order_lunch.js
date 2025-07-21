@@ -1,56 +1,53 @@
 /** @odoo-module **/
 
-import { _t } from "@web/core/l10n/translation";
-import { registry } from "@web/core/registry";
-import { stepUtils } from "@web_tour/tour_service/tour_utils";
+import { _t } from 'web.core';
+import tour from 'web_tour.tour';
 
-registry.category("web_tour.tours").add('order_lunch_tour', {
-    url: "/odoo",
-    steps: () => [
-    stepUtils.showAppsMenuItem(),
+tour.register('order_lunch_tour', {
+    url: "/web",
+    test: true,
+}, [
+    tour.stepUtils.showAppsMenuItem(),
 {
     trigger: '.o_app[data-menu-xmlid="lunch.menu_lunch"]',
     content: _t("Start by accessing the lunch app."),
-    tooltipPosition: 'bottom',
-    run: "click",
+    position: 'bottom',
 },
 {
     content:"click on location",
     trigger: ".lunch_location .o_input_dropdown input",
-    run: 'click'
+    run: 'click',
 },
 {
     content: "Pick 'Farm 1' option",
-    trigger: '.dropdown-item:contains("Farm 1")',
-    run: "click",
+    trigger: '.o_input_dropdown li:contains(Farm 1)',
 },
 {
-    trigger: '.lunch_location input:value("Farm 1")',
+    trigger: '.lunch_location input:propValueContains(Farm 1)',
+    run: () => {},  // wait for article to be correctly loaded
 },
 {
-    trigger: ".o_kanban_record",
+    trigger: "div[role='article']",
     content: _t("Click on a product you want to order and is available."),
     run: 'click'
 },
 {
-    trigger: 'textarea[id="note_0"]',
+    trigger: 'textarea[id="note"]',
     content: _t("Add additionnal information about your order."),
-    tooltipPosition: 'bottom',
-    run: "edit allergy to peanuts",
+    position: 'bottom',
+    run: 'text allergy to peanuts',
 },
 {
     trigger: 'button[name="add_to_cart"]',
     content: _t("Add your order to the cart."),
-    tooltipPosition: 'bottom',
-    run: "click",
-},
-{
+    position: 'bottom',
+}, {
     trigger: 'button:contains("Order Now")',
     content: _t("Validate your order"),
-    tooltipPosition: 'left',
+    position: 'left',
     run: 'click',
 }, {
     trigger: '.o_lunch_widget_lines .badge:contains("Ordered")',
     content: 'Check that order is ordered',
     run: () => {}
-}]});
+}]);

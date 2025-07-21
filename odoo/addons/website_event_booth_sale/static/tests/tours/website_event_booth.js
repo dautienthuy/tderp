@@ -1,56 +1,54 @@
 /** @odoo-module **/
 
-import { registry } from "@web/core/registry";
-import * as wsTourUtils from '@website_sale/js/tours/tour_utils';
+import tour from 'web_tour.tour';
 
-
-registry.category("web_tour.tours").add('website_event_booth_tour', {
+tour.register('website_event_booth_tour', {
+    test: true,
     url: '/event',
-    steps: () => [
+}, [
 {
     content: 'Open "Test Event Booths" event',
     trigger: 'h5.card-title span:contains("Test Event Booths")',
-    run: "click",
-    expectUnloadPage: true,
 }, {
     content: 'Go to "Get A Booth" page',
     trigger: 'li.nav-item a:has(span:contains("Get A Booth"))',
-    run: "click",
-    expectUnloadPage: true,
 }, {
     content: 'Select the first two booths',
-    trigger: ".o_wbooth_booths input[name=event_booth_ids]:not(:visible)",
-    run() {
-        document.querySelectorAll('.o_wbooth_booths input[name="event_booth_ids"]')[0].click();
-        document.querySelectorAll('.o_wbooth_booths input[name="event_booth_ids"]')[1].click();
+    trigger: '.o_wbooth_booths input[name="event_booth_ids"]',
+    run: function () {
+        $('.o_wbooth_booths input[name="event_booth_ids"]:lt(2)').click();
     },
 }, {
     content: 'Confirm the booths by clicking the submit button',
     trigger: 'button.o_wbooth_registration_submit',
-    run: "click",
-    expectUnloadPage: true,
 }, {
     content: 'Fill in your contact information',
     trigger: 'input[name="contact_name"]',
-    run() {
-        this.anchor.value = 'John Doe';
-        document.querySelector('input[name="contact_email"]').value = 'jdoe@example.com';
+    run: function () {
+        $('input[name="contact_name"]').val('John Doe');
+        $('input[name="contact_email"]').val('jdoe@example.com');
     },
 }, {
     content: 'Submit your informations',
     trigger: 'button[type="submit"]',
-    run: "click",
-    expectUnloadPage: true,
+}, {
+    content: 'Check if the price is correct',
+    trigger: 'tr#order_total_untaxed .oe_currency_value:containsExact(200.00)',
+    run: function () {},
+}, {
+    content: 'Check if the tax is correct',
+    trigger: 'tr#order_total_taxes .oe_currency_value:containsExact(20.00)',
+    run: function () {},
+}, {
+    content: 'Click Process Checkout to continue',
+    trigger: 'a[role="button"] span:contains("Process Checkout")',
+}, {
+    content: 'Check if the price is correct',
+    trigger: 'tr#order_total_untaxed .oe_currency_value:containsExact(200.00)',
+    run: function () {},
+}, {
+    content: 'Check if the total price is correct',
+    trigger: 'tr#order_total .oe_currency_value:containsExact(220.00)',
+    run: function () {},
 },
-...wsTourUtils.assertCartAmounts({
-    taxes: '20.00',
-    untaxed: '200.00',
-    total: '220.00',
-}),
-wsTourUtils.goToCheckout(),
-...wsTourUtils.assertCartAmounts({
-    taxes: '20.00',
-    untaxed: '200.00',
-    total: '220.00',
-}),
-]});
+]);

@@ -1,8 +1,11 @@
-import {
+odoo.define('web.public.lazyloader', function (require) {
+'use strict';
+
+const {
     BUTTON_HANDLER_SELECTOR,
     makeAsyncHandler,
     makeButtonHandler,
-} from '@web/legacy/js/public/minimal_dom';
+} = require('@web/legacy/js/core/minimal_dom');
 
 // Track when all JS files have been lazy loaded. Will allow to unblock the
 // related DOM sections when the whole JS have been loaded and executed.
@@ -65,6 +68,8 @@ let waitingLazy = false;
  * a form in any way should most of the time simulate a click on the submit
  * button if any anyway.
  *
+ * @todo This function used to consider the o_wait_lazy_js class. In master, the
+ * uses of this classes should be removed in XML templates.
  * @see stopWaitingLazy
  */
 function waitLazy() {
@@ -102,8 +107,13 @@ function waitLazy() {
     for (const buttonEl of loadingEffectButtonEls) {
         for (const eventType of loadingEffectEventTypes) {
             const loadingEffectHandler = eventType === 'click'
-                ? makeButtonHandler(waitForLazyAndRetrigger, true, true, true)
-                : makeAsyncHandler(waitForLazyAndRetrigger, true, true, true);
+                ? makeButtonHandler.call({
+                    '__makeButtonHandler_preventDefault': true,
+                    '__makeButtonHandler_stopImmediatePropagation': true,
+                }, waitForLazyAndRetrigger)
+                : makeAsyncHandler.call({
+                    '__makeAsyncHandler_stopImmediatePropagation': true,
+                }, waitForLazyAndRetrigger, true);
             registerLoadingEffectHandler(buttonEl, eventType, loadingEffectHandler);
         }
     }
@@ -166,13 +176,13 @@ function _loadScripts(scripts, index) {
     }
     const script = scripts[index];
     script.addEventListener('load', _loadScripts.bind(this, scripts, index + 1));
-    script.setAttribute('defer', 'defer');
     script.src = script.dataset.src;
     script.removeAttribute('data-src');
 }
 
-export default {
+return {
     loadScripts: _loadScripts,
     allScriptsLoaded: _allScriptsLoaded,
     registerPageReadinessDelay: retriggeringWaitingProms.push.bind(retriggeringWaitingProms),
 };
+});

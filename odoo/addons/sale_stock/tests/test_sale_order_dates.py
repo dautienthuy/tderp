@@ -16,19 +16,19 @@ class TestSaleExpectedDate(ValuationReconciliationTestCommon):
 
         product_A = Product.create({
             'name': 'Product A',
-            'is_storable': True,
+            'type': 'product',
             'sale_delay': 5,
             'uom_id': 1,
         })
         product_B = Product.create({
             'name': 'Product B',
-            'is_storable': True,
+            'type': 'product',
             'sale_delay': 10,
             'uom_id': 1,
         })
         product_C = Product.create({
             'name': 'Product C',
-            'is_storable': True,
+            'type': 'product',
             'sale_delay': 15,
             'uom_id': 1,
         })
@@ -82,7 +82,8 @@ class TestSaleExpectedDate(ValuationReconciliationTestCommon):
 
         # Check effective date, it should be date on which the first shipment successfully delivered to customer
         picking = sale_order.picking_ids[0]
-        picking.move_ids.picked = True
+        for ml in picking.move_line_ids:
+            ml.qty_done = ml.reserved_uom_qty
         picking._action_done()
         self.assertEqual(picking.state, 'done', "Picking not processed correctly!")
         self.assertEqual(fields.Date.today(), sale_order.effective_date.date(), "Wrong effective date on sale order!")
@@ -97,7 +98,7 @@ class TestSaleExpectedDate(ValuationReconciliationTestCommon):
                 'name': "A product",
                 'product_id': self.env['product.product'].create({
                     'name': 'A product',
-                    'is_storable': True,
+                    'type': 'product',
                 }).id,
                 'product_uom_qty': 1,
                 'price_unit': 750,

@@ -1,13 +1,9 @@
+/** @odoo-module **/
 import { escapeRegExp } from "@web/core/utils/strings";
 
 import { Component, useState, onWillRender } from "@odoo/owl";
 
 export class HighlightText extends Component {
-    static template = "web.HighlightText";
-    static highlightClass = "highlighter";
-    static props = {
-        originalText: String,
-    };
     setup() {
         this.searchState = useState(this.env.searchState);
 
@@ -22,3 +18,8 @@ export class HighlightText extends Component {
         });
     }
 }
+HighlightText.template = "web.HighlightText";
+HighlightText.props = {
+    originalText: String,
+};
+HighlightText.highlightClass = "highlighter";

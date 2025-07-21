@@ -47,7 +47,7 @@ class SaleOrder(models.Model):
             action.update({
                 'name': _("Purchase Order generated from %s", self.name),
                 'domain': [('id', 'in', purchase_order_ids)],
-                'view_mode': 'list,form',
+                'view_mode': 'tree,form',
             })
         return action
 

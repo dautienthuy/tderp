@@ -3,16 +3,17 @@
 # 	* website_sale_slides
 # 
 # Translators:
+# Martin Trigaux, 2022
+# Vo Thanh Thuy, 2022
 # Thi Huong Nguyen, 2024
-# Wil Odoo, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:56+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: Wil Odoo, 2024\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:57+0000\n"
+"Last-Translator: Thi Huong Nguyen, 2024\n"
 "Language-Team: Vietnamese (https://app.transifex.com/odoo/teams/41243/vi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -31,15 +32,23 @@ msgid "<i class=\"fa fa-shopping-cart\"/> Add to Cart"
 msgstr "<i class=\"fa fa-shopping-cart\"/> Thêm vào giỏ"
 
 #. module: website_sale_slides
-#. odoo-python
-#: code:addons/website_sale_slides/models/product_product.py:0
-msgid "Access to: %(new_line)s%(channel_list)s"
-msgstr "Quyền truy cập vào: %(new_line)s%(channel_list)s"
+#: model:ir.model.fields,help:website_sale_slides.field_product_product__detailed_type
+#: model:ir.model.fields,help:website_sale_slides.field_product_template__detailed_type
+msgid ""
+"A storable product is a product for which you manage stock. The Inventory app has to be installed.\n"
+"A consumable product is a product for which stock is not managed.\n"
+"A service is a non-material product you provide."
+msgstr ""
+"Sản phẩm lưu kho là sản phẩm bạn muốn quản lý lượng tồn kho của nó. Hệ thống sẽ cần cài thêm phân hệ Kho.\n"
+"Sản phẩm tiêu dùng là sản phẩm bạn không cần quản lý lượng tồn kho.\n"
+"Sản phẩm dịch vụ là sản phẩm bạn cung cấp."
 
 #. module: website_sale_slides
-#: model:product.template,name:website_sale_slides.product_course_channel_5_product_template
-msgid "Basics of Furniture Creation"
-msgstr "Cơ bản về sáng tạo đồ nội thất"
+#. odoo-python
+#: code:addons/website_sale_slides/models/product_product.py:0
+#, python-format
+msgid "Access to:%s%s"
+msgstr ""
 
 #. module: website_sale_slides
 #: model_terms:ir.ui.view,arch_db:website_sale_slides.snippet_options
@@ -49,12 +58,14 @@ msgstr "Nút Mua ngay"
 #. module: website_sale_slides
 #. odoo-javascript
 #: code:addons/website_sale_slides/static/src/xml/website_sale_slides_quiz.xml:0
+#, python-format
 msgid "Buy the course to validate your answers!"
 msgstr "Mua khóa học để xác nhận câu trả lời của bạn!"
 
 #. module: website_sale_slides
 #. odoo-javascript
 #: code:addons/website_sale_slides/static/src/xml/slide_course_join.xml:0
+#, python-format
 msgid "Buy this Course"
 msgstr "Mua khoá học này"
 
@@ -67,11 +78,11 @@ msgstr ""
 
 #. module: website_sale_slides
 #: model:ir.model,name:website_sale_slides.model_slide_channel
+#: model:ir.model.fields.selection,name:website_sale_slides.selection__product_template__detailed_type__course
 msgid "Course"
 msgstr "Khóa học"
 
 #. module: website_sale_slides
-#: model:ir.model.fields.selection,name:website_sale_slides.selection__product_template__service_tracking__course
 #: model:product.template,name:website_sale_slides.default_product_course_product_template
 msgid "Course Access"
 msgstr "Quyền truy cập khoá học"
@@ -90,12 +101,6 @@ msgstr "Khoá học không có sẵn"
 #: model:ir.model.fields,field_description:website_sale_slides.field_product_product__channel_ids
 msgid "Courses"
 msgstr "Khóa học"
-
-#. module: website_sale_slides
-#: model:ir.model.fields,field_description:website_sale_slides.field_product_product__service_tracking
-#: model:ir.model.fields,field_description:website_sale_slides.field_product_template__service_tracking
-msgid "Create on Order"
-msgstr "Tạo từ đơn hàng"
 
 #. module: website_sale_slides
 #: model:ir.model.fields,field_description:website_sale_slides.field_slide_channel__currency_id
@@ -124,12 +129,6 @@ msgid "Free Preview"
 msgstr "Xem trước miễn phí"
 
 #. module: website_sale_slides
-#. odoo-python
-#: code:addons/website_sale_slides/models/product_template.py:0
-msgid "Grant access to the eLearning course linked to this product."
-msgstr "Cấp quyền truy cập vào khóa Học trực tuyến liên kết với sản phẩm này."
-
-#. module: website_sale_slides
 #: model_terms:ir.ui.view,arch_db:website_sale_slides.course_buy_course_link
 msgid "Join this Course"
 msgstr "Tham gia khóa học này"
@@ -137,16 +136,12 @@ msgstr "Tham gia khóa học này"
 #. module: website_sale_slides
 #. odoo-javascript
 #: code:addons/website_sale_slides/static/src/xml/website_slides_unsubscribe.xml:0
+#, python-format
 msgid ""
 "Leaving the course and re-enrolling afterwards means that you'll be charged "
 "again."
 msgstr ""
 "Rời khóa học và sau đó ghi danh lại nghĩa là bạn sẽ phải trả phí lần nữa. "
-
-#. module: website_sale_slides
-#: model_terms:ir.ui.view,arch_db:website_sale_slides.course_buy_course_button
-msgid "Log in"
-msgstr "Đăng nhập"
 
 #. module: website_sale_slides
 #: model_terms:ir.actions.act_window,help:website_sale_slides.sale_report_action_slides
@@ -166,11 +161,6 @@ msgstr ""
 "cập vào:"
 
 #. module: website_sale_slides
-#: model_terms:ir.ui.view,arch_db:website_sale_slides.course_buy_course_button
-msgid "Prerequisite:"
-msgstr "Khoá học tiên quyết:"
-
-#. module: website_sale_slides
 #: model_terms:ir.ui.view,arch_db:website_sale_slides.course_slides_list_slide
 msgid "Preview"
 msgstr "Xem trước"
@@ -180,6 +170,12 @@ msgstr "Xem trước"
 #: model:ir.model.fields,field_description:website_sale_slides.field_slide_channel__product_id
 msgid "Product"
 msgstr "Sản phẩm"
+
+#. module: website_sale_slides
+#: model:ir.model.fields,field_description:website_sale_slides.field_product_product__detailed_type
+#: model:ir.model.fields,field_description:website_sale_slides.field_product_template__detailed_type
+msgid "Product Type"
+msgstr "Loại sản phẩm"
 
 #. module: website_sale_slides
 #: model:ir.model,name:website_sale_slides.model_product_product
@@ -210,19 +206,16 @@ msgstr "Đơn bán hàng"
 #. module: website_sale_slides
 #. odoo-javascript
 #: code:addons/website_sale_slides/static/src/xml/slide_course_join.xml:0
+#, python-format
 msgid "Sign in"
 msgstr "Đăng nhập"
 
 #. module: website_sale_slides
 #. odoo-javascript
 #: code:addons/website_sale_slides/static/src/xml/website_sale_slides_quiz.xml:0
+#, python-format
 msgid "Sign in and buy the course to take the quiz"
 msgstr "Đăng nhập và mua khóa học để trả lời quiz"
-
-#. module: website_sale_slides
-#: model_terms:ir.ui.view,arch_db:website_sale_slides.course_buy_course_button
-msgid "Sign up"
-msgstr "Đăng ký"
 
 #. module: website_sale_slides
 #: model_terms:ir.ui.view,arch_db:website_sale_slides.course_purchased_confirmation_message
@@ -235,11 +228,6 @@ msgid "Taking care of Trees Course"
 msgstr "Khóa học chăm sóc cây xanh"
 
 #. module: website_sale_slides
-#: model_terms:ir.ui.view,arch_db:website_sale_slides.course_buy_course_button
-msgid "There are some"
-msgstr "Có một số"
-
-#. module: website_sale_slides
 #: model_terms:ir.ui.view,arch_db:website_sale_slides.course_main
 msgid "This course cannot be bought because its linked product"
 msgstr "Không thể mua khóa học này vì sản phẩm được liên kết của nó"
@@ -247,6 +235,7 @@ msgstr "Không thể mua khóa học này vì sản phẩm được liên kết 
 #. module: website_sale_slides
 #. odoo-javascript
 #: code:addons/website_sale_slides/static/src/xml/website_slides_unsubscribe.xml:0
+#, python-format
 msgid "This course is paid."
 msgstr "Khóa học đã được thanh toán. "
 
@@ -261,18 +250,14 @@ msgid "Total revenues"
 msgstr "Tổng doanh thu"
 
 #. module: website_sale_slides
-#. odoo-python
-#: code:addons/website_sale_slides/models/slide_channel.py:0
-msgid ""
-"You are not allowed to add members to this course. Please contact the course"
-" responsible or an administrator."
-msgstr ""
-"Bạn không được phép thêm thành viên vào khóa học này. Vui lòng liên hệ với "
-"người chịu trách nhiệm khóa học hoặc quản trị viên."
+#: model:ir.model,name:website_sale_slides.model_website
+msgid "Website"
+msgstr "Trang web"
 
 #. module: website_sale_slides
 #. odoo-python
 #: code:addons/website_sale_slides/models/sale_order.py:0
+#, python-format
 msgid "You can only add a course once in your cart."
 msgstr "Bạn chỉ có thể thêm mỗi khóa học vào giỏ hàng một lần."
 
@@ -295,11 +280,6 @@ msgstr "Phân tích kinh doanh eLearning"
 #: model_terms:ir.ui.view,arch_db:website_sale_slides.course_main
 msgid "is not published."
 msgstr "chưa được đăng."
-
-#. module: website_sale_slides
-#: model_terms:ir.ui.view,arch_db:website_sale_slides.course_buy_course_button
-msgid "prerequisite courses."
-msgstr "khoá học tiên quyết."
 
 #. module: website_sale_slides
 #: model_terms:ir.ui.view,arch_db:website_sale_slides.course_purchased_confirmation_message

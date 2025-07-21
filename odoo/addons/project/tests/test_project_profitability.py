@@ -17,6 +17,7 @@ class TestProjectProfitabilityCommon(TransactionCase):
 
         cls.analytic_plan = cls.env['account.analytic.plan'].create({
             'name': 'Plan A',
+            'company_id': False,
         })
         cls.analytic_account = cls.env['account.analytic.account'].create({
             'name': 'Project - AA',
@@ -26,7 +27,7 @@ class TestProjectProfitabilityCommon(TransactionCase):
         cls.project = cls.env['project.project'].with_context({'mail_create_nolog': True}).create({
             'name': 'Project',
             'partner_id': cls.partner.id,
-            'account_id': cls.analytic_account.id,
+            'analytic_account_id': cls.analytic_account.id,
         })
         cls.task = cls.env['project.task'].with_context({'mail_create_nolog': True}).create({
             'name': 'Task',
@@ -36,19 +37,7 @@ class TestProjectProfitabilityCommon(TransactionCase):
             'revenues': {'data': [], 'total': {'invoiced': 0.0, 'to_invoice': 0.0}},
             'costs': {'data': [], 'total': {'billed': 0.0, 'to_bill': 0.0}},
         }
-        cls.foreign_currency = cls.env['res.currency'].create({
-            'name': 'Chaos orb',
-            'symbol': '☺',
-            'rounding': 0.001,
-            'position': 'after',
-            'currency_unit_label': 'Chaos',
-            'currency_subunit_label': 'orb',
-        })
-        cls.env['res.currency.rate'].create({
-            'name': '2016-01-01',
-            'rate': '5.0',
-            'currency_id': cls.foreign_currency.id,
-        })
+
 
 class TestProfitability(TestProjectProfitabilityCommon):
     def test_project_profitability(self):
@@ -57,8 +46,9 @@ class TestProfitability(TestProjectProfitabilityCommon):
             In this module, the project profitability should have no data.
             So the no revenue and cost should be found.
         """
+        profitability_items = self.project._get_profitability_items(False)
         self.assertDictEqual(
-            self.project._get_profitability_items(False),
+            profitability_items,
             self.project_profitability_items_empty,
             'The profitability data of the project should be return no data and so 0 for each total amount.'
         )

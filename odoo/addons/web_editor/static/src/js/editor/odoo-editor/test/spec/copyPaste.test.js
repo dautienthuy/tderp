@@ -1,5 +1,3 @@
-/** @odoo-module */
-
 import {
     BasicEditor,
     testEditor,
@@ -13,7 +11,7 @@ import {
     pasteOdooEditorHtml,
     unformat,
 } from "../utils.js";
-import { CLIPBOARD_WHITELISTS, setSelection } from "../../src/OdooEditor.js";
+import {CLIPBOARD_WHITELISTS} from "../../src/OdooEditor.js";
 
 describe('Copy', () => {
     describe('range collapsed', async () => {
@@ -167,17 +165,6 @@ describe('Copy', () => {
                 },
             });
         });
-
-        it('should replace NBSP characters with space when copying text', async () => {
-            await testEditor(BasicEditor, {
-                contentBefore: '<p>[content\u00A0]</p>',
-                stepFunction: async editor => {
-                    const clipboardData = new DataTransfer();
-                    triggerEvent(editor.editable, 'copy', { clipboardData });
-                    window.chai.expect(clipboardData.getData('text/plain')).to.be.equal('content ');
-                },
-            });
-        });
     });
 });
 describe('Cut', () => {
@@ -262,12 +249,12 @@ describe('Cut', () => {
 describe('Paste', () => {
     describe('Html Paste cleaning', () => {
         describe('whitelist', async () => {
-            for (const node of CLIPBOARD_WHITELISTS.nodes) {
-                if (!['TABLE', 'THEAD', 'TH', 'TBODY', 'TR', 'TD', 'IMG', 'BR', 'LI', '.fa'].includes(node)) {
-                    const isInline = ['I', 'B', 'U', 'S', 'EM', 'STRONG', 'IMG', 'BR', 'A', 'FONT'].includes(node);
-                    const html = isInline ? `a<${node.toLowerCase()}>b</${node.toLowerCase()}>c` : `a</p><${node.toLowerCase()}>b</${node.toLowerCase()}><p>c`;
+            it('should keep whitelisted Tags tag', async () => {
+                for (const node of CLIPBOARD_WHITELISTS.nodes) {
+                    if (!['TABLE', 'THEAD', 'TH', 'TBODY', 'TR', 'TD', 'IMG', 'BR', 'LI', '.fa'].includes(node)) {
+                        const isInline = ['I', 'B', 'U', 'S', 'EM', 'STRONG', 'IMG', 'BR', 'A', 'FONT'].includes(node);
+                        const html = isInline ? `a<${node.toLowerCase()}>b</${node.toLowerCase()}>c` : `a</p><${node.toLowerCase()}>b</${node.toLowerCase()}><p>c`;
 
-                    it('should keep whitelisted Tags tag', async () => {
                         await testEditor(BasicEditor, {
                             contentBefore: '<p>123[]4</p>',
                             stepFunction: async editor => {
@@ -275,10 +262,10 @@ describe('Paste', () => {
                             },
                             contentAfter: '<p>123' + html.replace(/<\/?font>/g, '') + '[]4</p>',
                         });
-                    });
+                    }
                 }
-            }
 
+            });
             it('should keep whitelisted Tags tag (2)', async () => {
                 await testEditor(BasicEditor, {
                     contentBefore: '<p>123[]</p>',
@@ -513,24 +500,6 @@ describe('Paste', () => {
                         await pasteText(editor, 'x    y');
                     },
                     contentAfter: '<p>ax&nbsp; &nbsp; y[]d</p>',
-                });
-            });
-            it('should paste a text on line break', async () => {
-                await testEditor(BasicEditor, {
-                    contentBefore: '<p>abc<br>[def]</p>',
-                    stepFunction: async editor => {
-                        await pasteText(editor, 'x');
-                    },
-                    contentAfter: '<p>abc<br>x[]</p>',
-                });
-            });
-            it('should paste a text at line-break when selected text is formatted', async () => {
-                await testEditor(BasicEditor, {
-                    contentBefore: '<p>abc<br><b>[def]</b></p>',
-                    stepFunction: async editor => {
-                        await pasteText(editor, 'x');
-                    },
-                    contentAfter: '<p>abc<br><b>x[]</b></p>',
                 });
             });
             it('should paste a text in a span', async () => {
@@ -1194,89 +1163,6 @@ describe('Paste', () => {
                         await pasteHtml(editor, '<p><br></p><p><br></p><p><br></p>');
                     },
                     contentAfter: '<p>a</p><p><br></p><p><br></p><p><br>[]</p>',
-                });
-            });
-            it('should unwrap li elements having no ul/ol', async () => {
-                await testEditor(BasicEditor, {
-                    contentBefore: '<p>[]<br></p>',
-                    stepFunction: async editor => {
-                        await pasteHtml(editor, '<li><p>abc</p></li><li><p>def</p></li>');
-                    },
-                    contentAfter: '<p>abc</p><p>def[]</p>',
-                });
-                await testEditor(BasicEditor, {
-                    contentBefore: '<p>[]<br></p>',
-                    stepFunction: async editor => {
-                        await pasteHtml(editor, '<li><h1>abc</h1></li><li><h1>def</h1></li');
-                    },
-                    contentAfter: '<h1>abc</h1><h1>def[]</h1>',
-                });
-                await testEditor(BasicEditor, {
-                    contentBefore: '<p>[]<br></p>',
-                    stepFunction: async editor => {
-                        await pasteHtml(editor, '<li><blockquote>abc</blockquote></li><li><blockquote>def</blockquote></li>');
-                    },
-                    contentAfter: '<blockquote>abc</blockquote><blockquote>def[]</blockquote>',
-                });
-            });
-            it('should unwrap li elements with multiple blocks having no ul/ol', async () => {
-                await testEditor(BasicEditor, {
-                    contentBefore: '<p>[]<br></p>',
-                    stepFunction: async editor => {
-                        await pasteHtml(editor, '<li><p>abc</p><p>def</p></li><li><p>abc</p><p>def</p></li>');
-                    },
-                    contentAfter: '<p>abc</p><p>def</p><p>abc</p><p>def[]</p>',
-                });
-                await testEditor(BasicEditor, {
-                    contentBefore: '<p>[]<br></p>',
-                    stepFunction: async editor => {
-                        await pasteHtml(editor, '<li><h1>abc</h1><h1>def</h1></li><li><h1>abc</h1><h1>def</h1></li');
-                    },
-                    contentAfter: '<h1>abc</h1><h1>def</h1><h1>abc</h1><h1>def[]</h1>',
-                });
-                await testEditor(BasicEditor, {
-                    contentBefore: '<p>[]<br></p>',
-                    stepFunction: async editor => {
-                        await pasteHtml(editor, '<li><blockquote>abc</blockquote><blockquote>def</blockquote></li><li><blockquote>abc</blockquote><blockquote>def</blockquote></li>');
-                    },
-                    contentAfter: '<blockquote>abc</blockquote><blockquote>def</blockquote><blockquote>abc</blockquote><blockquote>def[]</blockquote>',
-                });
-                await testEditor(BasicEditor, {
-                    contentBefore: '<p>[]<br></p>',
-                    stepFunction: async editor => {
-                        await pasteHtml(editor, unformat(`
-                            <li>
-                                <p>abc</p>
-                                <ul>
-                                    <li>abc</li>
-                                    <li>def</li>
-                                    <li>ghi</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <p>abc</p>
-                                <ul>
-                                    <li>abc</li>
-                                    <li>def</li>
-                                    <li>ghi</li>
-                                </ul>
-                            </li>
-                        `));
-                    },
-                    contentAfter: unformat(`
-                        <p>abc</p>
-                        <ul>
-                            <li>abc</li>
-                            <li>def</li>
-                            <li>ghi</li>
-                        </ul>
-                        <p>abc</p>
-                        <ul>
-                            <li>abc</li>
-                            <li>def</li>
-                            <li>ghi[]</li>
-                        </ul>
-                    `),
                 });
             });
         });
@@ -2577,15 +2463,15 @@ describe('Paste', () => {
                     stepFunction: async editor => {
                         await pasteText(editor, 'abc www.odoo.com xyz');
                     },
-                    contentAfter: '<p>abc <a href="http://www.odoo.com">www.odoo.com</a> xyz[]</p>',
+                    contentAfter: '<p>abc <a href="https://www.odoo.com">www.odoo.com</a> xyz[]</p>',
                 });
                 await testEditor(BasicEditor, {
                     contentBefore: '<p><a href="#">[]\u200B</a></p>',
                     stepFunction: async editor => {
                         await pasteText(editor, 'odoo.com\ngoogle.com');
                     },
-                    contentAfter: '<p style="margin-bottom: 0px;"><a href="http://odoo.com">odoo.com</a></p>' +
-                                  '<p><a href="http://google.com">google.com</a>[]</p>'
+                    contentAfter: '<p style="margin-bottom: 0px;"><a href="https://odoo.com">odoo.com</a></p>' +
+                                  '<p><a href="https://google.com">google.com</a>[]</p>'
                 });
             });
             it('should paste html content over an empty link', async () => {
@@ -2668,15 +2554,6 @@ describe('Paste', () => {
                         await pasteText(editor, 'http://www.xyz.com');
                     },
                     contentAfter: '<pre>http://www.xyz.com[]</pre>',
-                })
-            });
-            it('Should pad link with zws and put selection after the link', async () => {
-                await testEditor(BasicEditor, {
-                    contentBefore: '<p>[]<br></p>',
-                    stepFunction: async editor => {
-                        await pasteHtml(editor, '<p><a href="http://www.xyz.com">a</a></p><p><a href="http://existing.com">b</a></p>');
-                    },
-                    contentAfter: '<p><a href="http://www.xyz.com">a</a></p><p><a href="http://existing.com">b</a>[]</p>',
                 });
             });
         });
@@ -2809,14 +2686,14 @@ describe('Paste', () => {
                     stepFunction: async editor => {
                         await pasteText(editor, 'www.odoo.com');
                     },
-                    contentAfter: '<p><a href="http://www.odoo.com">www.odoo.com</a>[]</p>',
+                    contentAfter: '<p><a href="https://www.odoo.com">www.odoo.com</a>[]</p>',
                 });
                 await testEditor(BasicEditor, {
                     contentBefore: '<p><a href="#">[xyz]</a></p>',
                     stepFunction: async editor => {
                         await pasteText(editor, 'abc www.odoo.com xyz');
                     },
-                    contentAfter: '<p>abc <a href="http://www.odoo.com">www.odoo.com</a> xyz[]</p>',
+                    contentAfter: '<p>abc <a href="https://www.odoo.com">www.odoo.com</a> xyz[]</p>',
                 });
                 const imageUrl = 'https://download.odoocdn.com/icons/website/static/description/icon.png';
                 await testEditor(BasicEditor, {
@@ -3246,35 +3123,6 @@ describe('Paste', () => {
                 },
                 contentAfter: '<p>a[]b</p>',
             });
-        });
-    });
-    describe('editable in iframe', () => {
-        it('should paste odoo-editor html', async () => {
-            // Setup
-            const testContainer = document.querySelector('#editor-test-container');
-            const iframe = document.createElement('iframe');
-            testContainer.append(iframe);
-            const iframeDocument = iframe.contentDocument;
-            const editable = iframeDocument.createElement('div');
-            iframeDocument.body.append(editable);
-            const editor = new BasicEditor(editable, { document: iframeDocument });
-
-            // Action: paste
-            setSelection(editable.querySelector('p'), 0);
-            const clipboardData = new DataTransfer();
-            clipboardData.setData('text/odoo-editor', '<p>text<b>bold text</b>more text</p>');
-            await triggerEvent(editor.editable, 'paste', { clipboardData });
-
-            // Clean-up
-            editor.clean();
-            editor.destroy();
-            iframe.remove();
-
-            // Assertion
-            window.chai.expect(editable.innerHTML).to.be.equal(
-                '<p>text<b>bold text</b>more text</p>',
-                'should paste content in the paragraph'
-            );
         });
     });
 });

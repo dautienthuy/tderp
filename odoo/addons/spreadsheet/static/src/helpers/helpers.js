@@ -1,5 +1,6 @@
 /** @odoo-module */
-// @ts-check
+
+import { loadJS } from "@web/core/assets";
 
 /**
  * Get the intersection of two arrays
@@ -12,6 +13,30 @@
  */
 export function intersect(a, b) {
     return a.filter((x) => b.includes(x));
+}
+
+/**
+ * Given an object of form {"1": {...}, "2": {...}, ...} get the maximum ID used
+ * in this object
+ * If the object has no keys, return 0
+ *
+ * @param {Object} o an object for which the keys are an ID
+ *
+ * @returns {number}
+ */
+export function getMaxObjectId(o) {
+    const keys = Object.keys(o);
+    if (!keys.length) {
+        return 0;
+    }
+    const nums = keys.map((id) => parseInt(id, 10));
+    const max = Math.max(...nums);
+    return max;
+}
+
+/** converts and orderBy Object to a string equivalent that can be processed by orm.call */
+export function orderByToString(orderBy) {
+    return orderBy.map((o) => `${o.name} ${o.asc ? "ASC" : "DESC"}`).join(", ");
 }
 
 /**
@@ -33,9 +58,6 @@ export function sum(array) {
     return array.reduce((acc, n) => acc + n, 0);
 }
 
-/**
- * @param {string} word
- */
 function camelToSnakeKey(word) {
     const result = word.replace(/(.){1}([A-Z])/g, "$1 $2");
     return result.split(" ").join("_").toLowerCase();
@@ -76,11 +98,11 @@ export function isEmpty(item) {
 }
 
 /**
- * @param {import("@odoo/o-spreadsheet").Cell} cell
+ * Load external libraries required for o-spreadsheet
+ * @returns {Promise<void>}
  */
-export function containsReferences(cell) {
-    if (!cell.isFormula) {
-        return false;
-    }
-    return cell.compiledFormula.tokens.some((token) => token.type === "REFERENCE");
+export async function loadSpreadsheetDependencies() {
+    await loadJS("/web/static/lib/Chart/Chart.js");
+    // chartjs-gauge should only be loaded when Chart.js is fully loaded !
+    await loadJS("/spreadsheet/static/lib/chartjs-gauge/chartjs-gauge.js");
 }

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import json
-
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError, UserError
 from odoo.tools.misc import formatLang
@@ -11,9 +9,7 @@ from odoo.tools.misc import formatLang
 class EventTemplateTicket(models.Model):
     _name = 'event.type.ticket'
     _description = 'Event Template Ticket'
-    _order = 'sequence, name, id'
 
-    sequence = fields.Integer('Sequence', default=10)
     # description
     name = fields.Char(
         string='Name', default=lambda self: _('Registration'),
@@ -40,18 +36,17 @@ class EventTemplateTicket(models.Model):
     def _get_event_ticket_fields_whitelist(self):
         """ Whitelist of fields that are copied from event_type_ticket_ids to event_ticket_ids when
         changing the event_type_id field of event.event """
-        return ['sequence', 'name', 'description', 'seats_max']
+        return ['name', 'description', 'seats_max']
 
 
 class EventTicket(models.Model):
-    """ Ticket model allowing to have different kind of registrations for a given
+    """ Ticket model allowing to have differnt kind of registrations for a given
     event. Ticket are based on ticket type as they share some common fields
     and behavior. Those models come from <= v13 Odoo event.event.ticket that
     modeled both concept: tickets for event templates, and tickets for events. """
     _name = 'event.event.ticket'
     _inherit = 'event.type.ticket'
     _description = 'Event Ticket'
-    _order = "event_id, sequence, name, id"
 
     @api.model
     def default_get(self, fields):
@@ -78,12 +73,10 @@ class EventTicket(models.Model):
     # seats
     seats_reserved = fields.Integer(string='Reserved Seats', compute='_compute_seats', store=False)
     seats_available = fields.Integer(string='Available Seats', compute='_compute_seats', store=False)
+    seats_unconfirmed = fields.Integer(string='Unconfirmed Seats', compute='_compute_seats', store=False)
     seats_used = fields.Integer(string='Used Seats', compute='_compute_seats', store=False)
-    seats_taken = fields.Integer(string="Taken Seats", compute="_compute_seats", store=False)
     is_sold_out = fields.Boolean(
         'Sold Out', compute='_compute_is_sold_out', help='Whether seats are not available for this ticket.')
-    # reports
-    color = fields.Char('Color', default="#875A7B")
 
     @api.depends('end_sale_datetime', 'event_id.date_tz')
     def _compute_is_expired(self):
@@ -115,20 +108,21 @@ class EventTicket(models.Model):
 
     @api.depends('seats_max', 'registration_ids.state', 'registration_ids.active')
     def _compute_seats(self):
-        """ Determine available, reserved, used and taken seats. """
+        """ Determine reserved, available, reserved but unconfirmed and used seats. """
         # initialize fields to 0 + compute seats availability
         for ticket in self:
-            ticket.seats_reserved = ticket.seats_used = ticket.seats_available = 0
+            ticket.seats_unconfirmed = ticket.seats_reserved = ticket.seats_used = ticket.seats_available = 0
         # aggregate registrations by ticket and by state
         results = {}
         if self.ids:
             state_field = {
+                'draft': 'seats_unconfirmed',
                 'open': 'seats_reserved',
                 'done': 'seats_used',
             }
             query = """ SELECT event_ticket_id, state, count(event_id)
                         FROM event_registration
-                        WHERE event_ticket_id IN %s AND state IN ('open', 'done') AND active = true
+                        WHERE event_ticket_id IN %s AND state IN ('draft', 'open', 'done') AND active = true
                         GROUP BY event_ticket_id, state
                     """
             self.env['event.registration'].flush_model(['event_id', 'event_ticket_id', 'state', 'active'])
@@ -141,15 +135,11 @@ class EventTicket(models.Model):
             ticket.update(results.get(ticket._origin.id or ticket.id, {}))
             if ticket.seats_max > 0:
                 ticket.seats_available = ticket.seats_max - (ticket.seats_reserved + ticket.seats_used)
-            ticket.seats_taken = ticket.seats_reserved + ticket.seats_used
 
-    @api.depends('seats_limited', 'seats_available', 'event_id.event_registrations_sold_out')
+    @api.depends('seats_limited', 'seats_available')
     def _compute_is_sold_out(self):
         for ticket in self:
-            ticket.is_sold_out = (
-                (ticket.seats_limited and not ticket.seats_available)
-                or ticket.event_id.event_registrations_sold_out
-            )
+            ticket.is_sold_out = ticket.seats_limited and not ticket.seats_available
 
     @api.constrains('start_sale_datetime', 'end_sale_datetime')
     def _constrains_dates_coherency(self):
@@ -163,22 +153,18 @@ class EventTicket(models.Model):
         sold_out_tickets = []
         for ticket in self:
             if ticket.seats_max and ticket.seats_available < minimal_availability:
-                sold_out_tickets.append(_(
+                sold_out_tickets.append((_(
                     '- the ticket "%(ticket_name)s" (%(event_name)s): Missing %(nb_too_many)i seats.',
-                    ticket_name=ticket.name,
-                    event_name=ticket.event_id.name,
-                    nb_too_many=minimal_availability - ticket.seats_available,
-                ))
+                    ticket_name=ticket.name, event_name=ticket.event_id.name, nb_too_many=-ticket.seats_available)))
         if sold_out_tickets:
             raise ValidationError(_('There are not enough seats available for:')
                                   + '\n%s\n' % '\n'.join(sold_out_tickets))
 
-    @api.depends('seats_max', 'seats_available')
-    @api.depends_context('name_with_seats_availability')
-    def _compute_display_name(self):
+    def name_get(self):
         """Adds ticket seats availability if requested by context."""
         if not self.env.context.get('name_with_seats_availability'):
-            return super()._compute_display_name()
+            return super().name_get()
+        res = []
         for ticket in self:
             if not ticket.seats_max:
                 name = ticket.name
@@ -190,7 +176,8 @@ class EventTicket(models.Model):
                     ticket_name=ticket.name,
                     count=formatLang(self.env, ticket.seats_available, digits=0),
                 )
-            ticket.display_name = name
+            res.append((ticket.id, name))
+        return res
 
     def _get_ticket_multiline_description(self):
         """ Compute a multiline description of this ticket. It is used when ticket
@@ -208,15 +195,3 @@ class EventTicket(models.Model):
             raise UserError(_(
                 "The following tickets cannot be deleted while they have one or more registrations linked to them:\n- %s",
                 '\n- '.join(self.mapped('name'))))
-
-    def _get_ticket_printing_color(self):
-        self.ensure_one()
-        default_color = '#000000'
-        color_overrides_json = self.env['ir.config_parameter'].sudo().get_param('event.ticket_text_colors')
-        if color_overrides_json:
-            try:
-                color_overrides = json.loads(color_overrides_json)
-                return color_overrides.get(self.name, default_color)
-            except (json.JSONDecodeError, AttributeError):
-                pass
-        return default_color

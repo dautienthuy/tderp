@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.exceptions import AccessError
-from odoo.tests.common import TransactionCase, tagged
+from collections import defaultdict
+
+import psycopg2
+
+from odoo.exceptions import AccessError, MissingError
+from odoo.tests.common import TransactionCase
 from odoo.tools import mute_logger
 from odoo import Command
 
@@ -41,13 +45,13 @@ class TestORM(TransactionCase):
         self.assertTrue(type(Model).display_name.automatic, "test assumption not satisfied")
 
         # access regular field when another record from the same prefetch set has been deleted
-        records = Model.create([{'name': name[0], 'code': name[1]} for name in (['Foo', 'ZV'], ['Bar', 'ZX'], ['Baz', 'ZY'])])
+        records = Model.create([{'name': name} for name in ('Foo', 'Bar', 'Baz')])
         for record in records:
             record.name
             record.unlink()
 
         # access computed field when another record from the same prefetch set has been deleted
-        records = Model.create([{'name': name[0], 'code': name[1]} for name in (['Foo', 'ZV'], ['Bar', 'ZX'], ['Baz', 'ZY'])])
+        records = Model.create([{'name': name} for name in ('Foo', 'Bar', 'Baz')])
         for record in records:
             record.display_name
             record.unlink()
@@ -152,6 +156,64 @@ class TestORM(TransactionCase):
         recs = partner.browse([0])
         self.assertFalse(recs.exists())
 
+    def test_groupby_date(self):
+        partners_data = dict(
+            A='2012-11-19',
+            B='2012-12-17',
+            C='2012-12-31',
+            D='2013-01-07',
+            E='2013-01-14',
+            F='2013-01-28',
+            G='2013-02-11',
+        )
+
+        partner_ids = []
+        partner_ids_by_day = defaultdict(list)
+        partner_ids_by_month = defaultdict(list)
+        partner_ids_by_year = defaultdict(list)
+
+        partners = self.env['res.partner']
+        for name, date in partners_data.items():
+            p = partners.create(dict(name=name, date=date))
+            partner_ids.append(p.id)
+            partner_ids_by_day[date].append(p.id)
+            partner_ids_by_month[date.rsplit('-', 1)[0]].append(p.id)
+            partner_ids_by_year[date.split('-', 1)[0]].append(p.id)
+
+        def read_group(interval):
+            domain = [('id', 'in', partner_ids)]
+            result = {}
+            for grp in partners.read_group(domain, ['date'], ['date:' + interval]):
+                result[grp['date:' + interval]] = partners.search(grp['__domain'])
+            return result
+
+        self.assertEqual(len(read_group('day')), len(partner_ids_by_day))
+        self.assertEqual(len(read_group('month')), len(partner_ids_by_month))
+        self.assertEqual(len(read_group('year')), len(partner_ids_by_year))
+
+        res = partners.read_group([('id', 'in', partner_ids)], ['date'],
+                                  ['date:month', 'date:day'], lazy=False)
+        self.assertEqual(len(res), len(partner_ids))
+
+        # combine groupby and orderby
+        months = ['February 2013', 'January 2013', 'December 2012', 'November 2012']
+        res = partners.read_group([('id', 'in', partner_ids)], ['date'],
+                                  groupby=['date:month'], orderby='date:month DESC')
+        self.assertEqual([item['date:month'] for item in res], months)
+
+        # order by date should reorder by date:month
+        res = partners.read_group([('id', 'in', partner_ids)], ['date'],
+                                  groupby=['date:month'], orderby='date DESC')
+        self.assertEqual([item['date:month'] for item in res], months)
+
+        # order by date should reorder by date:day
+        days = ['11 Feb 2013', '28 Jan 2013', '14 Jan 2013', '07 Jan 2013',
+                '31 Dec 2012', '17 Dec 2012', '19 Nov 2012']
+        res = partners.read_group([('id', 'in', partner_ids)], ['date'],
+                                  groupby=['date:month', 'date:day'],
+                                  orderby='date DESC', lazy=False)
+        self.assertEqual([item['date:day'] for item in res], days)
+
     def test_write_duplicate(self):
         p1 = self.env['res.partner'].create({'name': 'W'})
         (p1 + p1).write({'name': 'X'})
@@ -171,6 +233,28 @@ class TestORM(TransactionCase):
 
         group_user.write({'users': [Command.unlink(user.id)]})
         self.assertTrue(user.share)
+
+    @mute_logger('odoo.models')
+    def test_unlink_with_property(self):
+        """ Verify that unlink removes the related ir.property as unprivileged user """
+        user = self.env['res.users'].create({
+            'name': 'Justine Bridou',
+            'login': 'saucisson',
+            'groups_id': [Command.set([self.ref('base.group_partner_manager')])],
+        })
+        p1 = self.env['res.partner'].with_user(user).create({'name': 'Zorro'})
+        self.env['ir.property'].with_user(user)._set_multi("ref", "res.partner", {p1.id: "Nain poilu"})
+        p1_prop = self.env['ir.property'].with_user(user)._get("ref", "res.partner", res_id=p1.id)
+        self.assertEqual(
+            p1_prop, "Nain poilu", 'p1_prop should have been created')
+
+        # Unlink with unprivileged user
+        p1.unlink()
+
+        # ir.property is deleted
+        p1_prop = self.env['ir.property'].with_user(user)._get("ref", "res.partner", res_id=p1.id)
+        self.assertEqual(
+            p1_prop, False, 'p1_prop should have been deleted')
 
     def test_create_multi(self):
         """ create for multiple records """
@@ -201,14 +285,12 @@ class TestORM(TransactionCase):
                 Command.create({'name': 'West Foo', 'code': 'WF'}),
                 Command.create({'name': 'East Foo', 'code': 'EF'}),
             ],
-            'code': 'ZV',
         }, {
             'name': 'Bar',
             'state_ids': [
                 Command.create({'name': 'North Bar', 'code': 'NB'}),
                 Command.create({'name': 'South Bar', 'code': 'SB'}),
             ],
-            'code': 'ZX',
         }]
         foo, bar = self.env['res.country'].create(vals_list)
         self.assertEqual(foo.name, 'Foo')
@@ -265,10 +347,12 @@ class TestInherits(TransactionCase):
             'employee': True,
         })
         foo_before, = user_foo.read()
+        del foo_before['__last_update']
         del foo_before['create_date']
         del foo_before['write_date']
         user_bar = user_foo.copy({'login': 'bar'})
         foo_after, = user_foo.read()
+        del foo_after['__last_update']
         del foo_after['create_date']
         del foo_after['write_date']
         self.assertEqual(foo_before, foo_after)
@@ -286,12 +370,14 @@ class TestInherits(TransactionCase):
         partner_bar = self.env['res.partner'].create({'name': 'Bar'})
 
         foo_before, = user_foo.read()
+        del foo_before['__last_update']
         del foo_before['create_date']
         del foo_before['write_date']
         del foo_before['login_date']
         partners_before = self.env['res.partner'].search([])
         user_bar = user_foo.copy({'partner_id': partner_bar.id, 'login': 'bar'})
         foo_after, = user_foo.read()
+        del foo_after['__last_update']
         del foo_after['create_date']
         del foo_after['write_date']
         del foo_after['login_date']
@@ -317,35 +403,3 @@ class TestInherits(TransactionCase):
         user.write({'image_1920': 'R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='})
         write_date_after = user.write_date
         self.assertNotEqual(write_date_before, write_date_after)
-
-
-@tagged('post_install', '-at_install')
-class TestCompanyDependent(TransactionCase):
-    def test_orm_ondelete_restrict(self):
-        # model_A
-        #  | field_a                           company dependent many2one is
-        #  | company dependent many2one        stored as jsonb and doesn't
-        #  | (ondelete='restrict')             have db ON DELETE action
-        #  v
-        # model_B
-        #  | field_b                           if a row for model_B is deleted
-        #  | many2one (ondelete='cascade')     because of ON DELETE CASCADE,
-        #  v                                   model_A will reference a deleted
-        # model_C                              row and logically be NULL when read
-        #
-        #                                      this test asks you to move the
-        #                                      ON DELETE CASCADE logic of model_B
-        #                                      to ORM and remove ondelete='cascade'
-
-        for model in self.env.registry.values():
-            for field in model._fields.values():
-                if field.company_dependent and field.type == 'many2one' and field.ondelete.lower() == 'restrict':
-                    for comodel_field in self.env[field.comodel_name]._fields.values():
-                        self.assertFalse(
-                            comodel_field.type == 'many2one' and comodel_field.ondelete == 'cascade',
-                            (f'when a row for {comodel_field.comodel_name} is deleted, a row for {comodel_field.model_name} '
-                             f'may also be deleted for sake of on delete cascade field {comodel_field}, which will '
-                             f'bypass the ORM ondelete="restrict" check for a company dependent many2one field {field}. '
-                             f'Please override the unlink method of {comodel_field.comodel_name} and do the ORM on '
-                             f'delete cascade logic and remove/override the ondelete="cascade" of {comodel_field}')
-                        )

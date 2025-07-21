@@ -3,8 +3,7 @@
 
 from odoo.tests.common import TransactionCase
 from odoo.tools import pdf
-from odoo.tools.misc import file_open
-from odoo.tools.pdf import reshape_text
+from odoo.modules.module import get_module_resource
 import io
 
 
@@ -13,7 +12,8 @@ class TestPdf(TransactionCase):
 
     def setUp(self):
         super().setUp()
-        self.file = file_open('base/tests/minimal.pdf', 'rb').read()
+        file_path = get_module_resource('base', 'tests', 'minimal.pdf')
+        self.file = open(file_path, 'rb').read()
         self.minimal_reader_buffer = io.BytesIO(self.file)
         self.minimal_pdf_reader = pdf.OdooPdfFileReader(self.minimal_reader_buffer)
 
@@ -24,29 +24,24 @@ class TestPdf(TransactionCase):
         pdf_writer = pdf.PdfFileWriter()
         pdf_writer.cloneReaderDocumentRoot(self.minimal_pdf_reader)
         pdf_writer.addAttachment('test_attachment.txt', b'My awesome attachment')
-        out = io.BytesIO()
-        pdf_writer.write(out)
 
-        r = pdf.OdooPdfFileReader(io.BytesIO(out.getvalue()))
-        self.assertEqual(len(list(r.getAttachments())), 1)
+        attachments = list(self.minimal_pdf_reader.getAttachments())
+        self.assertEqual(len(attachments), 1)
 
     def test_odoo_pdf_file_writer(self):
         attachments = list(self.minimal_pdf_reader.getAttachments())
         self.assertEqual(len(attachments), 0)
-        r = self.minimal_pdf_reader
 
-        for count, (name, data) in enumerate([
-            ('test_attachment.txt', b'My awesome attachment'),
-            ('another_attachment.txt', b'My awesome OTHER attachment'),
-        ], start=1):
-            pdf_writer = pdf.OdooPdfFileWriter()
-            pdf_writer.cloneReaderDocumentRoot(r)
-            pdf_writer.addAttachment(name, data)
-            out = io.BytesIO()
-            pdf_writer.write(out)
+        pdf_writer = pdf.OdooPdfFileWriter()
+        pdf_writer.cloneReaderDocumentRoot(self.minimal_pdf_reader)
 
-            r = pdf.OdooPdfFileReader(io.BytesIO(out.getvalue()))
-            self.assertEqual(len(list(r.getAttachments())), count)
+        pdf_writer.addAttachment('test_attachment.txt', b'My awesome attachment')
+        attachments = list(self.minimal_pdf_reader.getAttachments())
+        self.assertEqual(len(attachments), 1)
+
+        pdf_writer.addAttachment('another_attachment.txt', b'My awesome OTHER attachment')
+        attachments = list(self.minimal_pdf_reader.getAttachments())
+        self.assertEqual(len(attachments), 2)
 
     def test_odoo_pdf_file_reader_with_owner_encryption(self):
         pdf_writer = pdf.OdooPdfFileWriter()
@@ -97,26 +92,3 @@ class TestPdf(TransactionCase):
     def tearDown(self):
         super().tearDown()
         self.minimal_reader_buffer.close()
-
-    def test_reshaping_non_arabic_text(self):
-        """
-        Test that reshaper doesn't alter non-Arabic text.
-        """
-        english_text = "Hello, I'm just an English text"
-        processed_text = reshape_text(english_text)
-        self.assertEqual(english_text, processed_text, "English text shouldn't be altered.")
-
-        brazilian_text = "Ayrton Senna foi o melhor piloto de Formula 1 que já existiu"
-        processed_brazilian_text = reshape_text(brazilian_text)
-        self.assertEqual(brazilian_text, processed_brazilian_text, "Brazilian text shouldn't be altered.")
-
-    def test_reshaping_arabic_text(self):
-        """
-        Test reshaping is applied properly on Arabic text.
-        """
-        text = "بث مباشر"
-        processed_text = reshape_text(text)
-        expected_shapes = ['ﺮ', 'ﺷ', 'ﺎ', 'ﺒ', 'ﻣ', ' ', 'ﺚ', 'ﺑ']
-
-        for i, expected_shape in enumerate(expected_shapes):
-            self.assertEqual(processed_text[i], expected_shape)

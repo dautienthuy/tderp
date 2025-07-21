@@ -168,7 +168,7 @@ class report_paperformat(models.Model):
     _description = "Paper Format Config"
 
     name = fields.Char('Name', required=True)
-    default = fields.Boolean('Default paper format?')
+    default = fields.Boolean('Default paper format ?')
     format = fields.Selection([(ps['key'], ps['description']) for ps in PAPER_SIZES], 'Paper size', default='A4', help="Select Proper Paper size")
     margin_top = fields.Float('Top Margin (mm)', default=40)
     margin_bottom = fields.Float('Bottom Margin (mm)', default=20)
@@ -187,7 +187,6 @@ class report_paperformat(models.Model):
     report_ids = fields.One2many('ir.actions.report', 'paperformat_id', 'Associated reports', help="Explicitly associated reports")
     print_page_width = fields.Float('Print page width (mm)', compute='_compute_print_page_size')
     print_page_height = fields.Float('Print page height (mm)', compute='_compute_print_page_size')
-    css_margins = fields.Boolean('Use css margins', default=False)
 
     @api.constrains('format')
     def _check_format_or_page(self):

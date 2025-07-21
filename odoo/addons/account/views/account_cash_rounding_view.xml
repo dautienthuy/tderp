@@ -5,7 +5,7 @@
         <record id="rounding_list_action" model="ir.actions.act_window">
             <field name="name">Cash Roundings</field>
             <field name="res_model">account.cash.rounding</field>
-            <field name="view_mode">list,form</field>
+            <field name="view_mode">tree,form</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">Create the first cash rounding</p>
             </field>
@@ -26,10 +26,10 @@
                             <group>
                                 <field name="rounding"/>
                                 <field name="strategy"/>
-                                <field name="profit_account_id" options="{'no_create': True}" invisible="strategy != 'add_invoice_line'" required="strategy == 'add_invoice_line'"
-                                    groups="account.group_account_invoice,account.group_account_readonly"/>
-                                <field name="loss_account_id" options="{'no_create': True}" invisible="strategy != 'add_invoice_line'" required="strategy == 'add_invoice_line'"
-                                    groups="account.group_account_invoice,account.group_account_readonly"/>
+                                <field name="profit_account_id" options="{'no_create': True}" attrs="{'invisible': [('strategy', '!=', 'add_invoice_line')], 'required': [('strategy', '=', 'add_invoice_line')]}"
+                                    groups="account.group_account_invoice,account.group_account_readonly" domain="[('account_type', 'not in', ('asset_receivable', 'liability_payable'))]"/>
+                                <field name="loss_account_id" options="{'no_create': True}" attrs="{'invisible': [('strategy', '!=', 'add_invoice_line')], 'required': [('strategy', '=', 'add_invoice_line')]}"
+                                    groups="account.group_account_invoice,account.group_account_readonly" domain="[('account_type', 'not in', ('asset_receivable', 'liability_payable'))]"/>
                                 <field name="rounding_method"/>
                             </group>
                         </group>
@@ -49,14 +49,14 @@
         </record>
 
         <record id="rounding_tree_view" model="ir.ui.view">
-            <field name="name">account.cash.rounding.list</field>
+            <field name="name">account.cash.rounding.tree</field>
             <field name="model">account.cash.rounding</field>
             <field name="arch" type="xml">
-                <list string="Rounding List">
+                <tree string="Rounding Tree">
                     <field name="name"/>
                     <field name="rounding"/>
                     <field name="rounding_method"/>
-                </list>
+                </tree>
             </field>
         </record>
 

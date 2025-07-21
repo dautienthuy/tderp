@@ -3,18 +3,17 @@
 # 	* crm_iap_enrich
 # 
 # Translators:
-# Manel Fernandez Ramirez <manelfera@outlook.com>, 2024
-# Óscar Fonseca <tecnico@pyming.com>, 2024
-# marcescu, 2024
-# Ivan Espinola, 2024
+# Manel Fernandez Ramirez <manelfera@outlook.com>, 2022
+# marcescu, 2022
+# Ivan Espinola, 2022
 # Noemi Pla, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 17.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-26 21:55+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2022-09-22 05:45+0000\n"
 "Last-Translator: Noemi Pla, 2025\n"
 "Language-Team: Catalan (https://app.transifex.com/odoo/teams/41243/ca/)\n"
 "MIME-Version: 1.0\n"
@@ -48,13 +47,8 @@ msgid "Allow manual enrich"
 msgstr "Permet l'enriquiment manual"
 
 #. module: crm_iap_enrich
-#. odoo-python
-#: code:addons/crm_iap_enrich/models/crm_lead.py:0
-msgid "An error occurred during lead enrichment"
-msgstr "S'ha produït un error durant l'enriquiment de clients potencials"
-
-#. module: crm_iap_enrich
 #: model:ir.actions.server,name:crm_iap_enrich.ir_cron_lead_enrichment_ir_actions_server
+#: model:ir.cron,cron_name:crm_iap_enrich.ir_cron_lead_enrichment
 msgid "CRM: enrich leads (IAP)"
 msgstr "CRM: enriquiment de clients amb iniciatives (IAP)"
 
@@ -94,6 +88,7 @@ msgstr ""
 #. module: crm_iap_enrich
 #. odoo-python
 #: code:addons/crm_iap_enrich/models/crm_lead.py:0
+#, python-format
 msgid "Lead enriched based on email address"
 msgstr "Enriquiment enriquit basat en l'adreça de correu electrònic"
 
@@ -105,12 +100,23 @@ msgstr "Iniciativa/Oportunitat"
 #. module: crm_iap_enrich
 #. odoo-python
 #: code:addons/crm_iap_enrich/models/crm_lead.py:0
+#, python-format
 msgid "Not enough credits for Lead Enrichment"
 msgstr "No hi ha crèdits suficients per a l'enriquiment de plom"
 
 #. module: crm_iap_enrich
 #. odoo-python
 #: code:addons/crm_iap_enrich/models/crm_lead.py:0
+#, python-format
+msgid "Sent batch %s enrich requests: failed with exception %s"
+msgstr ""
+"S'han enviat sol·licituds d'enriquiment del lot %s: ha fallat amb l'excepció"
+" %s"
+
+#. module: crm_iap_enrich
+#. odoo-python
+#: code:addons/crm_iap_enrich/models/crm_lead.py:0
+#, python-format
 msgid "The leads/opportunities have successfully been enriched"
 msgstr "Les iniciatives/avantatges s'han enriquit correctament"
 

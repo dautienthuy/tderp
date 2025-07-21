@@ -62,11 +62,8 @@ class IrModelFields(models.Model):
                 try:
                     value = existing[(model_name, field.sparse)][0] if field.sparse else None
                 except KeyError:
-                    raise UserError(_(
-                        'Serialization field "%(serialization_field)s" not found for sparse field %(sparse_field)s!',
-                        serialization_field=field.sparse,
-                        sparse_field=field,
-                    ))
+                    msg = _("Serialization field %r not found for sparse field %s!")
+                    raise UserError(msg % (field.sparse, field))
                 if current_value != value:
                     updates[value].append(field_id)
 

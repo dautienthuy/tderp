@@ -49,20 +49,26 @@ class TestSeller(TransactionCase):
             (0, 0, {'partner_id': self.asustec.id, 'product_code': 'NO', 'company_id': False}),
         ]})
 
-        name = self.product_consu.with_context(
+        names = self.product_consu.with_context(
             partner_id=self.asustec.id,
-        ).display_name
-        self.assertEqual(name, '[A] Boudin, [B] Boudin, [NO] Boudin', "Incorrect vendor reference list")
-        name = self.product_consu.with_context(
+        ).name_get()
+        ref = set([x[1] for x in names])
+        self.assertEqual(len(names), 3, "3 vendor references should have been found")
+        self.assertEqual(ref, {'[A] Boudin', '[B] Boudin', '[NO] Boudin'}, "Incorrect vendor reference list")
+        names = self.product_consu.with_context(
             partner_id=self.asustec.id,
             company_id=company_a.id,
-        ).display_name
-        self.assertEqual(name, '[A] Boudin, [NO] Boudin', "Incorrect vendor reference list")
-        name = self.product_consu.with_context(
+        ).name_get()
+        ref = set([x[1] for x in names])
+        self.assertEqual(len(names), 2, "2 vendor references should have been found")
+        self.assertEqual(ref, {'[A] Boudin', '[NO] Boudin'}, "Incorrect vendor reference list")
+        names = self.product_consu.with_context(
             partner_id=self.asustec.id,
             company_id=company_b.id,
-        ).display_name
-        self.assertEqual(name, '[B] Boudin, [NO] Boudin', "Incorrect vendor reference list")
+        ).name_get()
+        ref = set([x[1] for x in names])
+        self.assertEqual(len(names), 2, "2 vendor references should have been found")
+        self.assertEqual(ref, {'[B] Boudin', '[NO] Boudin'}, "Incorrect vendor reference list")
 
     def test_30_select_seller(self):
         self.res_partner_1 = self.asustec
@@ -115,21 +121,6 @@ class TestSeller(TransactionCase):
         price = product._select_seller(partner_id=self.res_partner_4, quantity=3.0).price
         msg = "Wrong cost price: LCD Monitor if more than 3 Unit.should be 785 instead of %s" % price
         self.assertEqual(float_compare(price, 785, precision_digits=2), 0, msg)
-
-    def test_31_select_seller(self):
-        """Check that the right seller is selected, even when the decimal precision of
-        Product Price is higher than the precision of the currency.
-        """
-        self.env.ref('product.decimal_price').digits = 3
-        partner = self.asustec
-        product = self.product_consu
-        self.env['product.supplierinfo'].create([{
-            'partner_id': partner.id,
-            'product_tmpl_id': product.product_tmpl_id.id,
-            'price': price,
-        } for price in (0.025, 0.022, 0.020)])
-        price = product._select_seller(partner_id=partner, quantity=201).price
-        self.assertAlmostEqual(price, 0.02, places=3, msg="Lowest price should be returned")
 
     def test_40_seller_min_qty_precision(self):
         """Test that the min_qty has the precision of Product UoM."""

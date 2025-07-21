@@ -1,19 +1,14 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import os
 import datetime
 import json
 import pytz
-from freezegun import freeze_time
 from urllib.parse import urlencode
 from unittest.mock import patch
-from tempfile import TemporaryDirectory
 
 import odoo
-from odoo.addons.base.tests.common import HttpCaseWithUserDemo
-from odoo.http import SESSION_LIFETIME
-from odoo.tools import config, lazy_property, mute_logger
 from odoo.tests import get_db_name, tagged
+from odoo.tools import mute_logger
 from .test_common import TestHttpBase
 
 
@@ -47,13 +42,44 @@ class TestHttpSession(TestHttpBase):
     def test_session1_default_session(self):
         # The default session should not be saved on the filestore.
         with patch.object(odoo.http.root.session_store, 'save') as mock_save:
-            res = self.db_url_open('/test_http/geoip')
+            res = self.db_url_open('/test_http/greeting')
             res.raise_for_status()
             try:
                 mock_save.assert_not_called()
             except AssertionError as exc:
                 msg = f'save() was called with args: {mock_save.call_args}'
                 raise AssertionError(msg) from exc
+
+    def test_session2_geoip(self):
+        real_save = odoo.http.root.session_store.save
+        with patch.object(odoo.http.root.geoip_resolver, 'resolve') as mock_resolve,\
+             patch.object(odoo.http.root.session_store, 'save') as mock_save:
+            mock_resolve.return_value = GEOIP_ODOO_FARM_2
+            mock_save.side_effect = real_save
+
+            # Geoip is lazy: it should be computed only when necessary.
+            self.nodb_url_open('/test_http/greeting').raise_for_status()
+            mock_resolve.assert_not_called()
+
+            # Geoip is like the defaut session: the session should not
+            # be stored only due to geoip.
+            mock_resolve.reset_mock()
+            mock_save.reset_mock()
+            res = self.nodb_url_open('/test_http/geoip')
+            res.raise_for_status()
+            self.assertEqual(res.text, str(GEOIP_ODOO_FARM_2))
+            mock_save.assert_not_called()
+
+            # Geoip is cached on the session: we shouldn't geolocate the
+            # same ip multiple times.
+            mock_resolve.reset_mock()
+            mock_save.reset_mock()
+            self.nodb_url_open('/test_http/save_session').raise_for_status()
+            self.nodb_url_open('/test_http/geoip').raise_for_status()
+            res = self.nodb_url_open('/test_http/geoip')
+            res.raise_for_status()
+            self.assertEqual(res.text, str(GEOIP_ODOO_FARM_2))
+            mock_resolve.assert_called_once()
 
     def test_session3_logout_15_0_geoip(self):
         session = self.authenticate(None, None)
@@ -140,52 +166,21 @@ class TestHttpSession(TestHttpBase):
             res = self.url_open('/test_http/echo-http-context-lang')
             self.assertEqual(res.text, 'en_US')
 
-        milky_way = self.env.ref('test_http.milky_way')
-        with self.subTest(case='fr record in url but fr_FR disabled'):
-            session.context['lang'] = 'fr_FR'
-            odoo.http.root.session_store.save(session)
-            lang_fr.active = False
-            self.url_open(f'/test_http/{milky_way.id}').raise_for_status()
-
     def test_session7_serializable(self):
-        """
-            Test (non-)serializable values in the session in JSON format.
+        """Tests setting a non-serializable value to the session is prevented
+        The test ensures the warning/exception is raised at the moment the attribute is set,
+        and not simply when the session is being saved in the session store.
         """
         session = self.authenticate(None, None)
         self.assertFalse(session.foo)
 
-        def check_session_attr(value):
-            """
-                :return:
-                    - True: can be used
-                    - False: cannot be used
-                    - None: not recommended (can be used, but the value is modified)
-            """
-            try:
-                session.foo = value
-                try:
-                    self.assertEqual(session.foo, value)
-                except Exception:
-                    return None
-                session.pop('foo')
-                self.assertFalse(session.foo)
-                session['foo'] = value
-                self.assertEqual(session.foo, value)
-                session.pop('foo')
-                return True
-            except Exception:
-                return False
-
-        accepted_values = [
+        # Values allowed
+        for value in [
             123,
             12.3,
             'foo',
-            True,
-            None,
-            [1, 2, 3],
-            {'foo': 'bar'},
-        ]
-        forbidden_values = [
+            (1, 2, 3, 4),
+            [1, 2, 3, 4],
             set(),
             {'1234'},
             datetime.datetime.now(),
@@ -193,6 +188,17 @@ class TestHttpSession(TestHttpBase):
             datetime.time(1, 33, 7),
             pytz.timezone('UTC'),
             pytz.timezone('Europe/Brussels'),
+        ]:
+            session.foo = value
+            self.assertEqual(session.foo, value)
+            session.pop('foo')
+            self.assertFalse(session.foo)
+            session['foo'] = value
+            self.assertEqual(session.foo, value)
+            session.pop('foo')
+
+        # Values forbidden by odoo, raising a warning
+        for value in [
             str,
             int,
             float,
@@ -200,37 +206,46 @@ class TestHttpSession(TestHttpBase):
             range,
             "foo".startswith,
             datetime.datetime.strftime,
+        ]:
+            with self.assertLogs(level="WARNING"):
+                session['foo'] = value
+            self.assertFalse(session.foo)
+            with self.assertLogs(level="WARNING"):
+                session.foo = value
+            self.assertFalse(session.foo)
+            with self.assertLogs(level="WARNING"):
+                # testing you cannot set a non-serializable value at the creation of the session
+                # e.g. in the __init__ of the session class
+                self.assertFalse(odoo.http.root.session_store.session_class({'foo': value}, 1234).foo)
+            with self.assertRaises(TypeError):
+                dict.update(session, foo=value)
+            self.assertFalse(session.foo)
+
+        # Values forbidden by pickle, raising an exception
+        for value in [
             lambda: 'bar',
-        ]
-        not_recommended_values = [
-            (1, 2, 3),
-        ]
+        ]:
+            with self.assertRaises(AttributeError):
+                session['foo'] = value
+            self.assertFalse(session.foo)
+            with self.assertRaises(AttributeError):
+                session.foo = value
+            self.assertFalse(session.foo)
+            with self.assertRaises(AttributeError):
+                # testing you cannot set a non-serializable value at the creation of the session
+                # e.g. in the __init__ of the session class
+                self.assertFalse(odoo.http.root.session_store.session_class({'foo': value}, 1234).foo)
+            with self.assertRaises(TypeError):
+                dict.update(session, foo=value)
+            self.assertFalse(session.foo)
 
-        for value in accepted_values:
-            self.assertEqual(check_session_attr(value), True)
-        for value in forbidden_values:
-            self.assertEqual(check_session_attr(value), False)
-        for value in not_recommended_values:
-            self.assertEqual(check_session_attr(value), None)
-
-    @patch("odoo.http.root.session_store.vacuum")
-    def test_session8_gc_ignored_no_db_name(self, mock):
-        with patch.dict(os.environ, {'ODOO_SKIP_GC_SESSIONS': ''}):
-            self.env['ir.http']._gc_sessions()
-            mock.assert_called_once()
-
-        with patch.dict(os.environ, {'ODOO_SKIP_GC_SESSIONS': '1'}):
-            mock.reset_mock()
-            self.env['ir.http']._gc_sessions()
-            mock.assert_not_called()
-
-    def test_session9_logout(self):
+    def test_session8_logout(self):
         sid = self.authenticate('admin', 'admin').sid
         self.assertTrue(odoo.http.root.session_store.get(sid), "session should exist")
         self.url_open('/web/session/logout', allow_redirects=False).raise_for_status()
         self.assertFalse(odoo.http.root.session_store.get(sid), "session should not exist")
 
-    def test_session10_explicit_session(self):
+    def test_session9_explicit_session(self):
         forged_sid = 'da39a3ee5e6b4b0d3255bfef95601890afd80709'
         admin_session = self.authenticate('admin', 'admin')
         with self.assertLogs('odoo.http') as capture:
@@ -242,76 +257,3 @@ class TestHttpSession(TestHttpBase):
             r"called ignoring args {('session_id', 'debug'|'debug', 'session_id')}$"
         )
         self.assertEqual(admin_session.debug, '1')
-
-
-class TestSessionStore(HttpCaseWithUserDemo):
-    def setUp(self):
-        super().setUp()
-        self.tmpdir = TemporaryDirectory()
-        self.addCleanup(self.tmpdir.cleanup)
-
-        lazy_property.reset_all(odoo.http.root)
-        self.addCleanup(lazy_property.reset_all, odoo.http.root)
-        patcher = patch.dict(config.options, {'data_dir': self.tmpdir.name})
-        self.startPatcher(patcher)
-
-    @mute_logger('odoo.http')
-    def test01_session_nan(self):
-        self.env['ir.config_parameter'].set_param('sessions.max_inactivity_seconds', 'adminCantSetupThisValueLikeANormalPerson')
-
-        with self.assertLogs('odoo.http', level='WARNING') as logs:
-            self.assertEqual(odoo.http.get_session_max_inactivity(self.env), SESSION_LIFETIME)
-            self.assertEqual(logs.output[0], "WARNING:odoo.http:Invalid value for 'sessions.max_inactivity_seconds', using default value.")
-
-    @mute_logger('odoo.http')
-    def test02_session_lifetime_1week(self):
-        # default lifetime is 1 week
-        with freeze_time() as freeze:
-            session = self.authenticate(None, None)
-
-            freeze.tick(delta=datetime.timedelta(seconds=SESSION_LIFETIME - 1))
-            self.env['ir.http']._gc_sessions()
-            session_from_store = odoo.http.root.session_store.get(session.sid)
-            self.assertEqual(session.sid, session_from_store.sid, "the session should still be valid")
-
-            freeze.tick(delta=datetime.timedelta(seconds=2))
-            self.env['ir.http']._gc_sessions()
-            session_from_store = odoo.http.root.session_store.get(session.sid)
-            self.assertNotEqual(session.sid, session_from_store.sid, "the old session as been removed")
-
-    @mute_logger('odoo.http')
-    def test03_session_lifetime_1min(self):
-        # changing the lifetime to 1 minute
-        self.env['ir.config_parameter'].set_param('sessions.max_inactivity_seconds', 60)
-        with freeze_time() as freeze:
-            session = self.authenticate(None, None)
-
-            freeze.tick(delta=datetime.timedelta(seconds=59))
-            self.env['ir.http']._gc_sessions()
-            session_from_store = odoo.http.root.session_store.get(session.sid)
-            self.assertEqual(session.sid, session_from_store.sid, "the session should still be valid")
-
-            freeze.tick(delta=datetime.timedelta(seconds=2))
-            self.env['ir.http']._gc_sessions()
-            session_from_store = odoo.http.root.session_store.get(session.sid)
-            self.assertNotEqual(session.sid, session_from_store.sid, "the old session as been removed")
-
-    @mute_logger('odoo.http')
-    def test04_session_lifetime_nodb(self):
-        # in case of requesting session in a no db scenario
-        self.env['ir.config_parameter'].set_param('sessions.max_inactivity_seconds', SESSION_LIFETIME // 2)
-        with freeze_time() as freeze:
-            self.authenticate(None, None)
-            res = TestHttpBase.nodb_url_open(self, '/')
-            res.raise_for_status()
-            session = res.cookies.get('session_id')
-
-            freeze.tick(delta=datetime.timedelta(seconds=(SESSION_LIFETIME // 2) - 1))
-            self.env['ir.http']._gc_sessions()
-            session_from_store = odoo.http.root.session_store.get(session)
-            self.assertEqual(session, session_from_store.sid, "the session should still be valid")
-
-            freeze.tick(delta=datetime.timedelta(seconds=2))
-            self.env['ir.http']._gc_sessions()
-            session_from_store = odoo.http.root.session_store.get(session)
-            self.assertNotEqual(session, session_from_store.sid, "the old session as been removed")

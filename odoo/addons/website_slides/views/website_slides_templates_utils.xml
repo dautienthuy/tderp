@@ -14,7 +14,7 @@
                 <i class="fa fa-facebook-square fa-fw"/>
             </a>
             <a t-attf-href="https://twitter.com/intent/tweet?text=#{record.name}&amp;url=#{website_share_url}" class="btn border bg-white o_wslides_js_social_share"
-                social-key="twitter" aria-label="Share on X" title="Share on X" target="_blank">
+                social-key="twitter" aria-label="Share on Twitter" title="Share on Twitter" target="_blank">
                 <i class="fa fa-twitter fa-fw"/>
             </a>
             <a t-attf-href="http://www.linkedin.com/sharing/share-offsite/?url=#{website_share_url}" class="btn border bg-white o_wslides_js_social_share"
@@ -51,13 +51,13 @@
                 </button>
             </div>
             <div class="alert alert-info d-none" role="alert">
-                <strong>Sharing is caring!</strong> Your email(s) will arrive shortly.
+                <strong>Sharing is caring!</strong> Email(s) sent.
             </div>
             <div class="alert alert-warning d-none" role="alert">Please enter valid email(s)</div>
         </div>
     </div>
     <div t-if="is_public_user" class="alert alert-info d-inline-block">
-        <p class="mb-0">Please <a t-attf-href="/odoo?redirect=#{request.httprequest.url}" class="fw-bold"> login </a> to share this
+        <p class="mb-0">Please <a t-attf-href="/web?redirect=#{request.httprequest.url}" class="fw-bold"> login </a> to share this
         <span t-field="record.slide_category" t-if="record._name == 'slide.slide'"/>
         <span t-field="record.name" t-if="record._name == 'slide.channel'"/> by email.</p>
     </div>
@@ -110,7 +110,7 @@
         <t t-call="website_slides.slide_share_link"/>
         <h5 class="mt-3">Share on Social Media</h5>
         <t t-call="website_slides.slide_share_social"/>
-        <t t-if="email_sharing" t-call="website_slides.slide_social_email"/>
+        <t t-call="website_slides.slide_social_email"/>
         <t t-if="include_embed" t-call="website_slides.slide_social_embed"/>
     </div>
 </template>
@@ -139,22 +139,20 @@
 
 <!-- Python equivalent of the JS template "website.slides.sidebar.done.button" -->
 <template id="slide_sidebar_done_button" name="Sidebar Done Button">
-    <t t-set="uncompleted_icon" t-value="use_slide_icon and slide.slide_icon_class or 'fa-circle-thin'"/>
     <div t-if="is_member"
         class="o_wslides_sidebar_done_button align-self-start"
         t-att-data-id="slide.id"
-        t-att-data-uncompleted-icon="uncompleted_icon"
         t-att-data-completed="slide_completed"
         t-att-data-can-self-mark-completed="slide.can_self_mark_completed"
         t-att-data-can-self-mark-uncompleted="slide.can_self_mark_uncompleted"
         t-att-data-is-member="is_member">
         <button class="o_wslides_button_complete btn btn-sm" t-if="slide_completed and slide.can_self_mark_uncompleted or not slide_completed and slide.can_self_mark_completed">
             <i t-if="slide_completed" class="o_wslides_slide_completed fa fa-check-circle fa-fw text-success fa-lg" t-att-data-slide-id="slide.id" title="Mark as not done"/>
-            <i t-else="" t-attf-class="fa #{uncompleted_icon} fa-fw fa-lg" t-att-data-slide-id="slide.id" title="Mark as done"/>
+            <i t-else="" class="fa fa-circle-thin fa-fw fa-lg" t-att-data-slide-id="slide.id" title="Mark as done"/>
         </button>
-        <button class="o_wslides_button_complete o_wslides_button_uncompleted btn btn-sm border-0" t-else="" disabled="1">
-            <i t-if="slide_completed" class="o_wslides_slide_completed fa fa-check fa-fw text-success fa-lg" t-att-data-slide-id="slide.id" title="Can not be marked as not done"/>
-            <i t-else="" t-attf-class="fa #{uncompleted_icon} fa-fw fa-lg" t-att-data-slide-id="slide.id" title="Can not be marked as done"/>
+        <button class="o_wslides_button_complete o_wslides_button_uncompleted btn btn-sm" t-else="" disabled="1">
+            <i t-if="not slide_completed" class="fa fa-circle-thin fa-fw fa-lg" t-att-data-slide-id="slide.id" title="Can not be marked as done"/>
+            <i t-else="" class="o_wslides_slide_completed fa fa-check fa-fw text-success fa-lg" t-att-data-slide-id="slide.id" title="Can not be marked as not done"/>
         </button>
     </div>
 </template>

@@ -23,7 +23,7 @@ class TestStockNotificationProduct(HttpCase):
         cls.product = cls.env['product.product'].create({
             'name': 'Macbook Pro',
             'website_published': True,
-            'is_storable': True,
+            'type': 'product',
             'allow_out_of_stock_order': False,
 
         })

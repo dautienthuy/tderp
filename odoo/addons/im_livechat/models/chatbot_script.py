@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, Command, models, fields
-from odoo.http import request
-from odoo.tools import email_normalize, get_lang, html2plaintext, is_html_empty, plaintext2html
-from odoo.exceptions import ValidationError
+from odoo import _, api, models, fields
+from odoo.tools import email_normalize, html2plaintext, is_html_empty, plaintext2html
 
 
 class ChatbotScript(models.Model):
@@ -29,22 +27,10 @@ class ChatbotScript(models.Model):
         ('first_step_invalid', 'First Step Invalid'),
     ], compute="_compute_first_step_warning")
 
-    @api.constrains("script_step_ids")
-    def _check_question_selection(self):
-        for step in self.script_step_ids:
-            if step.step_type == "question_selection" and not step.answer_ids:
-                raise ValidationError(self.env._("Step of type 'Question' must have answers."))
-
-    @api.onchange("script_step_ids")
-    def _onchange_script_step_ids(self):
-        for step in self.script_step_ids:
-            if step.step_type != "question_selection" and step.answer_ids:
-                step.answer_ids = [Command.clear()]
-
     def _compute_livechat_channel_count(self):
-        channels_data = self.env['im_livechat.channel.rule']._read_group(
-            [('chatbot_script_id', 'in', self.ids)], ['chatbot_script_id'], ['channel_id:count_distinct'])
-        mapped_channels = {chatbot_script.id: count_distinct for chatbot_script, count_distinct in channels_data}
+        channels_data = self.env['im_livechat.channel.rule'].read_group(
+            [('chatbot_script_id', 'in', self.ids)], ['channel_id:count_distinct'], ['chatbot_script_id'])
+        mapped_channels = {channel['chatbot_script_id'][0]: channel['channel_id'] for channel in channels_data}
         for script in self:
             script.livechat_channel_count = mapped_channels.get(script.id, 0)
 
@@ -66,10 +52,7 @@ class ChatbotScript(models.Model):
             else:
                 script.first_step_warning = False
 
-    def copy_data(self, default=None):
-        vals_list = super().copy_data(default=default)
-        return [dict(vals, title=self.env._("%s (copy)", script.title)) for script, vals in zip(self, vals_list)]
-
+    @api.returns('self', lambda value: value.id)
     def copy(self, default=None):
         """ Correctly copy the 'triggering_answer_ids' field from the original script_step_ids to the clone.
         This needs to be done in post-processing to make sure we get references to the newly created
@@ -77,32 +60,35 @@ class ChatbotScript(models.Model):
 
         This implementation assumes that the order of created steps and answers will be kept between
         the original and the clone, using 'zip()' to match the records between the two. """
+
         default = default or {}
-        new_scripts = super().copy(default=default)
+        default['title'] = self.title + _(' (copy)')
+
+        clone_chatbot_script = super().copy(default=default)
         if 'question_ids' in default:
-            return new_scripts
+            return clone_chatbot_script
 
-        for old_script, new_script in zip(self, new_scripts):
-            original_steps = old_script.script_step_ids.sorted()
-            clone_steps = new_script.script_step_ids.sorted()
+        original_steps = self.script_step_ids.sorted()
+        clone_steps = clone_chatbot_script.script_step_ids.sorted()
 
-            answers_map = {}
-            for clone_step, original_step in zip(clone_steps, original_steps):
-                for clone_answer, original_answer in zip(clone_step.answer_ids.sorted(), original_step.answer_ids.sorted()):
-                    answers_map[original_answer] = clone_answer
+        answers_map = {}
+        for clone_step, original_step in zip(clone_steps, original_steps):
+            for clone_answer, original_answer in zip(clone_step.answer_ids.sorted(), original_step.answer_ids.sorted()):
+                answers_map[original_answer] = clone_answer
 
-            for clone_step, original_step in zip(clone_steps, original_steps):
-                clone_step.write({
-                    'triggering_answer_ids': [
-                        (4, answer.id)
-                        for answer in [
-                            answers_map[original_answer]
-                            for original_answer
-                            in original_step.triggering_answer_ids
-                        ]
+        for clone_step, original_step in zip(clone_steps, original_steps):
+            clone_step.write({
+                'triggering_answer_ids': [
+                    (4, answer.id)
+                    for answer in [
+                        answers_map[original_answer]
+                        for original_answer
+                        in original_step.triggering_answer_ids
                     ]
-                })
-        return new_scripts
+                ]
+            })
+
+        return clone_chatbot_script
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -151,7 +137,7 @@ class ChatbotScript(models.Model):
         end user.
 
         This is important because we need to display those welcoming steps in a special fashion on
-        the frontend, since those are not inserted into the discuss.channel as actual mail.messages,
+        the frontend, since those are not inserted into the mail.channel as actual mail.messages,
         to avoid bloating the channels with bot messages if the end-user never interacts with it. """
         self.ensure_one()
 
@@ -163,21 +149,21 @@ class ChatbotScript(models.Model):
 
         return welcome_steps
 
-    def _post_welcome_steps(self, discuss_channel):
+    def _post_welcome_steps(self, mail_channel):
         """ Welcome messages are only posted after the visitor's first interaction with the chatbot.
         See 'chatbot.script#_get_welcome_steps()' for more details.
 
         Side note: it is important to set the 'chatbot_current_step_id' on each iteration so that
-        it's correctly set when going into 'discuss_channel#_message_post_after_hook()'. """
+        it's correctly set when going into 'mail_channel#_message_post_after_hook()'. """
 
         self.ensure_one()
         posted_messages = self.env['mail.message']
 
         for welcome_step in self._get_welcome_steps():
-            discuss_channel.chatbot_current_step_id = welcome_step.id
+            mail_channel.chatbot_current_step_id = welcome_step.id
 
             if not is_html_empty(welcome_step.message):
-                posted_messages += discuss_channel.with_context(mail_create_nosubscribe=True).message_post(
+                posted_messages += mail_channel.with_context(mail_create_nosubscribe=True).message_post(
                     author_id=self.operator_partner_id.id,
                     body=plaintext2html(welcome_step.message),
                     message_type='comment',
@@ -201,35 +187,30 @@ class ChatbotScript(models.Model):
         self.ensure_one()
 
         return {
-            'id': self.id,
-            'name': self.title,
-            'partner': {'id': self.operator_partner_id.id, 'type': 'partner', 'name': self.operator_partner_id.name},
-            'welcomeSteps': [
+            'chatbot_script_id': self.id,
+            'chatbot_name': self.title,
+            'chatbot_operator_partner_id': self.operator_partner_id.id,
+            'chatbot_welcome_steps': [
                 step._format_for_frontend()
                 for step in self._get_welcome_steps()
             ]
         }
 
-    def _validate_email(self, email_address, discuss_channel):
+    def _validate_email(self, email_address, mail_channel):
         email_address = html2plaintext(email_address)
         email_normalized = email_normalize(email_address)
 
         posted_message = False
         error_message = False
         if not email_normalized:
-            error_message = self.env._(
+            error_message = _(
                 "'%(input_email)s' does not look like a valid email. Can you please try again?",
                 input_email=email_address
             )
-            posted_message = discuss_channel._chatbot_post_message(self, plaintext2html(error_message))
+            posted_message = mail_channel._chatbot_post_message(self, plaintext2html(error_message))
 
         return {
             'success': bool(email_normalized),
             'posted_message': posted_message,
             'error_message': error_message,
         }
-
-    def _get_chatbot_language(self):
-        return get_lang(
-            self.env, lang_code=request and request.httprequest.cookies.get("frontend_lang")
-        ).code

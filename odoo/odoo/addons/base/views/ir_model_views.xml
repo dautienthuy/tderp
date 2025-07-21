@@ -13,7 +13,7 @@
                     </group>
                     <footer>
                         <button name="menu_create" string="Create Menu" type="object" class="btn-primary" data-hotkey="q"/>
-                        <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="x" />
+                        <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z" />
                     </footer>
                 </form>
             </field>
@@ -35,10 +35,11 @@
                   <sheet>
                     <group>
                         <group>
+                            <field name="id" invisible="1"/>
                             <field name="name"/>
-                            <field name="model" readonly="id"/>
+                            <field name="model" attrs="{'readonly': [('id', '!=', False)]}"/>
                             <field name="order"/>
-                            <field name="transient" readonly="id" groups="base.group_no_one"/>
+                            <field name="transient" attrs="{'readonly': [('id', '!=', False)]}" groups="base.group_no_one"/>
                         </group>
                         <group>
                             <field name="state" readonly="1" groups="base.group_no_one"/>
@@ -48,7 +49,7 @@
                     <notebook>
                         <page string="Fields" name="fields">
                             <field name="field_id">
-                                <list string="Fields Description">
+                                <tree string="Fields Description">
                                     <field name="name"/>
                                     <field name="field_description"/>
                                     <field name="ttype"/>
@@ -56,7 +57,7 @@
                                     <field name="readonly"/>
                                     <field name="index" groups="base.group_no_one"/>
                                     <field name="state" groups="base.group_no_one"/>
-                                </list>
+                                </tree>
                                 <form string="Fields Description">
                                     <group>
                                         <group>
@@ -80,49 +81,50 @@
                                                 </group>
                                                 <group>
                                                     <field name="translate"
-                                                        invisible="ttype not in ['char', 'text', 'html']"
-                                                        readonly="ttype not in ['char', 'text', 'html']"/>
+                                                        attrs="{'readonly': [('ttype','not in',['char','text','html'])],
+                                                                'invisible': [('ttype','not in',['char','text','html'])]}"/>
                                                     <field name="size" groups="base.group_no_one"
-                                                        invisible="ttype not in ['char', 'reference']"
-                                                        readonly="ttype not in ['char', 'reference']"/>
+                                                        attrs="{'readonly': [('ttype','not in',['char','reference'])],
+                                                                'invisible': [('ttype','not in',['char','reference'])]}"/>
                                                     <field name="relation"
-                                                        invisible="ttype not in ['many2one', 'one2many', 'many2many']"
-                                                        readonly="ttype not in ['many2one', 'one2many', 'many2many']"
-                                                        required="ttype in ['many2one', 'one2many', 'many2many']"/>
+                                                        attrs="{'required': [('ttype','in',['many2one','one2many','many2many'])],
+                                                                'readonly': [('ttype','not in',['many2one','one2many','many2many'])],
+                                                                'invisible': [('ttype','not in',['many2one','one2many','many2many'])]}"/>
                                                     <field name="on_delete" groups="base.group_no_one"
-                                                        invisible="ttype != 'many2one'"
-                                                        readonly="ttype != 'many2one'"/>
+                                                        attrs="{'readonly': [('ttype','!=','many2one')],
+                                                                'invisible': [('ttype','!=','many2one')]}"/>
                                                     <field name="relation_field"
-                                                        invisible="ttype != 'one2many'"
-                                                        readonly="ttype != 'one2many'"
-                                                        required="ttype == 'one2many'"/>
+                                                        attrs="{'required': [('ttype','=','one2many')],
+                                                                'readonly': [('ttype','!=','one2many')],
+                                                                'invisible': [('ttype','!=','one2many')]}"/>
                                                     <field name="relation_table" groups="base.group_no_one"
-                                                        invisible="ttype != 'many2many' or state != 'manual'"
-                                                        readonly="ttype != 'many2many' or state != 'manual'"/>
+                                                        attrs="{'readonly': ['|', ('ttype','!=','many2many'), ('state','!=','manual')],
+                                                                'invisible': ['|', ('ttype','!=','many2many'), ('state','!=','manual')]}"/>
                                                     <field name="column1" groups="base.group_no_one"
-                                                        invisible="ttype != 'many2many' or state != 'manual'"
-                                                        readonly="ttype != 'many2many' or state != 'manual'"/>
+                                                        attrs="{'readonly': ['|', ('ttype','!=','many2many'), ('state','!=','manual')],
+                                                                'invisible': ['|', ('ttype','!=','many2many'), ('state','!=','manual')]}"/>
                                                     <field name="column2" groups="base.group_no_one"
-                                                        invisible="ttype != 'many2many' or state != 'manual'"
-                                                        readonly="ttype != 'many2many' or state != 'manual'"/>
+                                                        attrs="{'readonly': ['|', ('ttype','!=','many2many'), ('state','!=','manual')],
+                                                                'invisible': ['|', ('ttype','!=','many2many'), ('state','!=','manual')]}"/>
                                                     <field name="domain" groups="base.group_no_one"
-                                                        invisible="ttype not in ['many2one', 'one2many', 'many2many']"
-                                                        readonly="ttype not in ['many2one', 'one2many', 'many2many']"/>
+                                                        attrs="{'readonly': [('ttype','not in',['many2one','one2many','many2many'])],
+                                                                'invisible': [('ttype','not in',['many2one','one2many','many2many'])]}"/>
                                                 </group>
                                             </group>
-                                            <group invisible="ttype not in ['selection', 'reference']" readonly="ttype not in ['selection', 'reference']">
+                                            <group attrs="{'readonly': [('ttype','not in',['selection','reference'])],
+                                                           'invisible': [('ttype','not in',['selection','reference'])]}">
                                                 <field name="selection_ids">
-                                                    <list editable="bottom">
+                                                    <tree editable="bottom">
                                                         <field name="sequence" widget="handle"/>
                                                         <field name="value"/>
                                                         <field name="name"/>
-                                                    </list>
+                                                    </tree>
                                                 </field>
                                             </group>
                                             <group string="Advanced Properties" groups="base.group_no_one">
                                                 <field name="related"/>
-                                                <field name="depends" required="compute not in [False, '']"/>
-                                                <field name="compute" widget="code" options="{'mode': 'python'}"/>
+                                                <field name="depends" attrs="{'required': [('compute', 'not in', [False, ''])]}"/>
+                                                <field name="compute" widget="ace" options="{'mode': 'python'}"/>
                                             </group>
                                             <div groups="base.group_no_one">
                                                 <h3>How to define a computed field</h3>
@@ -172,7 +174,7 @@
                         </page>
                         <page string="Access Rights" name="access_rights">
                             <field name="access_ids">
-                                <list string="Access Rights" editable="top"
+                                <tree string="Access Rights" editable="top"
                                       decoration-warning="not group_id and
                                                          (perm_read or perm_write or
                                                           perm_create or perm_unlink)">
@@ -182,12 +184,12 @@
                                     <field name="perm_write"/>
                                     <field name="perm_create"/>
                                     <field name="perm_unlink"/>
-                                </list>
+                                </tree>
                             </field>
                         </page>
                         <page string="Record Rules" name="record_rules">
                             <field name="rule_ids">
-                                <list string="Record Rules" editable="top" decoration-info="not groups">
+                                <tree string="Record Rules" editable="top" decoration-info="not groups">
                                     <field name="name"/>
                                     <field name="groups" widget="many2many_tags" options="{'no_create':True}"/>
                                     <field name="domain_force"/>
@@ -195,7 +197,7 @@
                                     <field name="perm_write"/>
                                     <field name="perm_create"/>
                                     <field name="perm_unlink"/>
-                                </list>
+                                </tree>
                             </field>
                         </page>
                         <page string="Notes" name="notes" groups="base.group_no_one">
@@ -212,12 +214,12 @@
         <record id="view_model_tree" model="ir.ui.view">
             <field name="model">ir.model</field>
             <field name="arch" type="xml">
-                <list string="Model Description">
+                <tree string="Model Description">
                     <field name="model"/>
                     <field name="name"/>
                     <field name="state"/>
                     <field name="transient"/>
-                </list>
+                </tree>
             </field>
         </record>
         <record id="view_model_search" model="ir.ui.view">
@@ -246,12 +248,13 @@
             <field name="model">ir.model.fields</field>
             <field name="arch" type="xml">
                 <form string="Fields" duplicate="false">
+                    <field name="state" invisible="1"/>
                     <sheet>
                         <group>
                             <group>
                                 <field name="name"/>
                                 <field name="field_description"/>
-                                <field name="model_id" readonly="state != 'manual'"/>
+                                <field name="model_id" attrs="{'readonly': [('state','!=', 'manual')]}"/>
                             </group>
                             <group>
                                 <field name="ttype"/>
@@ -270,85 +273,53 @@
                                     </group>
                                     <group>
                                         <field name="translate"
-                                            invisible="ttype not in ['char', 'text', 'html']"
-                                            readonly="ttype not in ['char', 'text', 'html']"/>
+                                            attrs="{'readonly': [('ttype','not in',['char','text','html'])],
+                                                    'invisible': [('ttype','not in',['char','text','html'])]}"/>
                                         <field name="size" groups="base.group_no_one"
-                                            invisible="ttype not in ['char', 'reference']"
-                                            readonly="ttype not in ['char', 'reference']"/>
+                                            attrs="{'readonly': [('ttype','not in',['char','reference'])],
+                                                    'invisible': [('ttype','not in',['char','reference'])]}"/>
                                         <field name="relation"
-                                            invisible="ttype not in ['many2one', 'one2many', 'many2many']"
-                                            readonly="ttype not in ['many2one', 'one2many', 'many2many']"
-                                            required="ttype in ['many2one', 'one2many', 'many2many']"/>
+                                            attrs="{'required': [('ttype','in',['many2one','one2many','many2many'])],
+                                                    'readonly': [('ttype','not in',['many2one','one2many','many2many'])],
+                                                    'invisible': [('ttype','not in',['many2one','one2many','many2many'])]}"/>
                                         <field name="group_expand" groups="base.group_no_one"
-                                            invisible="ttype not in ['many2one', 'selection']"
-                                            readonly="ttype not in ['many2one', 'selection']"/>
+                                            attrs="{'readonly': [('ttype','not in', ['many2one', 'selection'])],
+                                                    'invisible': [('ttype','not in', ['many2one', 'selection'])]}"/>
                                         <field name="on_delete" groups="base.group_no_one"
-                                            invisible="ttype != 'many2one'"
-                                            readonly="ttype != 'many2one'"/>
+                                            attrs="{'readonly': [('ttype','!=','many2one')],
+                                                    'invisible': [('ttype','!=','many2one')]}"/>
                                         <field name="relation_field"
-                                            invisible="ttype != 'one2many'"
-                                            readonly="ttype != 'one2many'"
-                                            required="ttype == 'one2many'"/>
+                                            attrs="{'required': [('ttype','=','one2many')],
+                                                    'readonly': [('ttype','!=','one2many')],
+                                                    'invisible': [('ttype','!=','one2many')]}"/>
                                         <field name="relation_table" groups="base.group_no_one"
-                                            invisible="ttype != 'many2many' or state != 'manual'"
-                                            readonly="ttype != 'many2many' or state != 'manual'"/>
+                                            attrs="{'readonly': ['|', ('ttype','!=','many2many'), ('state','!=','manual')],
+                                                    'invisible': ['|', ('ttype','!=','many2many'), ('state','!=','manual')]}"/>
                                         <field name="column1" groups="base.group_no_one"
-                                            invisible="ttype != 'many2many' or state != 'manual'"
-                                            readonly="ttype != 'many2many' or state != 'manual'"/>
+                                            attrs="{'readonly': ['|', ('ttype','!=','many2many'), ('state','!=','manual')],
+                                                    'invisible': ['|', ('ttype','!=','many2many'), ('state','!=','manual')]}"/>
                                         <field name="column2" groups="base.group_no_one"
-                                            invisible="ttype != 'many2many' or state != 'manual'"
-                                            readonly="ttype != 'many2many' or state != 'manual'"/>
+                                            attrs="{'readonly': ['|', ('ttype','!=','many2many'), ('state','!=','manual')],
+                                                    'invisible': ['|', ('ttype','!=','many2many'), ('state','!=','manual')]}"/>
                                         <field name="domain" groups="base.group_no_one"
-                                            invisible="ttype not in ['many2one', 'one2many', 'many2many']"
-                                            readonly="ttype not in ['many2one', 'one2many', 'many2many']"/>
-                                        <field name="currency_field"
-                                            invisible="ttype != 'monetary'"
-                                            readonly="ttype != 'monetary'"/>
+                                            attrs="{'readonly': [('ttype','not in',['many2one','one2many','many2many'])],
+                                                    'invisible': [('ttype','not in',['many2one','one2many','many2many'])]}"/>
                                     </group>
                                 </group>
-                                <group string="HTML/Sanitization Properties">
-                                    <group>
-                                        <field name="sanitize"
-                                            invisible="ttype != 'html'"
-                                            readonly="ttype != 'html'" />
-                                        <field name="sanitize_overridable"
-                                            invisible="ttype != 'html' or sanitize == False"
-                                            readonly="ttype != 'html' or sanitize == False" />
-                                        <field name="sanitize_tags"
-                                            invisible="ttype != 'html' or sanitize == False"
-                                            readonly="ttype != 'html' or sanitize == False" />
-                                        <field name="sanitize_attributes"
-                                            invisible="ttype != 'html' or sanitize == False"
-                                            readonly="ttype != 'html' or sanitize == False" />
-                                    </group>
-                                    <group>
-                                        <field name="sanitize_style"
-                                            invisible="ttype != 'html' or sanitize == False"
-                                            readonly="ttype != 'html' or sanitize == False" />
-                                        <field name="sanitize_form"
-                                            invisible="ttype != 'html' or sanitize == False"
-                                            readonly="ttype != 'html' or sanitize == False" />
-                                        <field name="strip_style"
-                                            invisible="ttype != 'html' or sanitize == False"
-                                            readonly="ttype != 'html' or sanitize == False" />
-                                        <field name="strip_classes"
-                                            invisible="ttype != 'html' or sanitize == False"
-                                            readonly="ttype != 'html' or sanitize == False" />
-                                    </group>
-                                </group>
-                                <group invisible="ttype not in ['selection', 'reference']" readonly="ttype not in ['selection', 'reference']">
+                                <group attrs="{'readonly': [('ttype','not in',['selection','reference'])],
+                                               'invisible': [('ttype','not in',['selection','reference'])]}">
                                     <field name="selection_ids">
-                                        <list editable="bottom">
+                                        <tree editable="bottom">
                                             <field name="sequence" widget="handle"/>
                                             <field name="value"/>
                                             <field name="name"/>
-                                        </list>
+                                        </tree>
                                     </field>
                                 </group>
                                 <group string="Advanced Properties" groups="base.group_no_one">
                                     <field name="related"/>
-                                    <field name="depends" required="compute not in [False, '']"/>
-                                    <field name="compute" widget="code" options="{'mode': 'python'}"/>
+                                    <field name="depends" attrs="{'required': [('compute', 'not in', [False, ''])]}"/>
+                                    <field name="compute" widget="ace" options="{'mode': 'python'}"/>
                                 </group>
                                 <div groups="base.group_no_one">
                                     <h3>How to define a computed field</h3>
@@ -395,7 +366,7 @@
         <record id="view_model_fields_tree" model="ir.ui.view">
             <field name="model">ir.model.fields</field>
             <field name="arch" type="xml">
-                <list string="Fields" duplicate="false">
+                <tree string="Fields" duplicate="false">
                     <field name="name"/>
                     <field name="field_description"/>
                     <field name="model_id"/>
@@ -405,7 +376,7 @@
                     <field name="store"/>
                     <field name="readonly"/>
                     <field name="relation"/>
-                </list>
+                </tree>
             </field>
         </record>
         <record id="view_model_fields_search" model="ir.ui.view">
@@ -460,12 +431,12 @@
         <record id="view_model_fields_selection_tree" model="ir.ui.view">
             <field name="model">ir.model.fields.selection</field>
             <field name="arch" type="xml">
-                <list>
+                <tree>
                     <field name="sequence" widget="handle"/>
                     <field name="field_id"/>
                     <field name="value"/>
                     <field name="name"/>
-                </list>
+                </tree>
             </field>
         </record>
         <record id="view_model_fields_selection_search" model="ir.ui.view">
@@ -509,7 +480,7 @@
                             <group>
                                 <field name="display_name"/>
                                 <field name="model"/>
-                                <field name="res_id" widget="many2one_reference_integer"/>
+                                <field name="res_id"/>
                                 <field name="reference" widget="reference" string="Record"/>
                             </group>
                         </group>
@@ -520,12 +491,13 @@
         <record id="view_model_data_list" model="ir.ui.view">
             <field name="model">ir.model.data</field>
             <field name="arch" type="xml">
-                <list string="External Identifiers">
+                <tree string="External Identifiers">
                     <field name="complete_name"/>
                     <field name="display_name"/>
                     <field name="model" groups="base.group_no_one"/>
-                    <field name="res_id" widget="many2one_reference_integer"/>
-                </list>
+                    <field name="module" invisible="1"/>
+                    <field name="res_id"/>
+                </tree>
             </field>
         </record>
         <record id="view_model_data_search" model="ir.ui.view">
@@ -576,12 +548,12 @@
         <record id="view_model_constraint_list" model="ir.ui.view">
             <field name="model">ir.model.constraint</field>
             <field name="arch" type="xml">
-                <list string="Model Constraints">
+                <tree string="Model Constraints">
                     <field name="type"/>
                     <field name="name"/>
                     <field name="module"/>
                     <field name="model"/>
-                </list>
+                </tree>
             </field>
         </record>
 
@@ -628,11 +600,11 @@
         <record id="view_model_relation_list" model="ir.ui.view">
             <field name="model">ir.model.relation</field>
             <field name="arch" type="xml">
-                <list string="ManyToMany Relations">
+                <tree string="ManyToMany Relations">
                     <field name="name"/>
                     <field name="module"/>
                     <field name="model"/>
-                </list>
+                </tree>
             </field>
         </record>
         <record id="action_model_relation" model="ir.actions.act_window">
@@ -645,10 +617,10 @@
 
         <!-- ir.model.access -->
         <record id="ir_access_view_tree" model="ir.ui.view">
-            <field name="name">ir.model.access.view.list</field>
+            <field name="name">ir.model.access.view.tree</field>
             <field name="model">ir.model.access</field>
             <field name="arch" type="xml">
-                <list string="Access Rights"
+                <tree string="Access Rights"
                       decoration-warning="not group_id and
                                          (perm_read or perm_write or
                                           perm_create or perm_unlink)">
@@ -659,14 +631,14 @@
                     <field name="perm_write"/>
                     <field name="perm_create"/>
                     <field name="perm_unlink"/>
-                </list>
+                </tree>
             </field>
         </record>
         <record id="ir_access_view_tree_edition" model="ir.ui.view">
-            <field name="name">ir.model.access.view.list.edition</field>
+            <field name="name">ir.model.access.view.tree.edition</field>
             <field name="model">ir.model.access</field>
             <field name="arch" type="xml">
-                <list string="Access Rights" editable="top"
+                <tree string="Access Rights" editable="top"
                       decoration-warning="not group_id and
                                          (perm_read or perm_write or
                                           perm_create or perm_unlink)">
@@ -677,7 +649,7 @@
                     <field name="perm_write"/>
                     <field name="perm_create"/>
                     <field name="perm_unlink"/>
-                </list>
+                </tree>
             </field>
         </record>
         <record id="ir_access_view_form" model="ir.ui.view">
@@ -700,7 +672,7 @@
                         <field name="perm_create"/>
                         <field name="perm_unlink"/>
                     </group>
-                   </sheet>
+                   </sheet> 
                 </form>
             </field>
         </record>
@@ -728,7 +700,6 @@
         <record id="ir_access_act" model="ir.actions.act_window">
             <field name="name">Access Rights</field>
             <field name="res_model">ir.model.access</field>
-            <field name="path">access-rights</field>
             <field name="view_id" ref="ir_access_view_tree_edition"/>
             <field name="search_view_id" ref="ir_access_view_search"/>
         </record>

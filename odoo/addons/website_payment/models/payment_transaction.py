@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from markupsafe import Markup
 from odoo import _, fields, models
 
 
@@ -10,19 +9,19 @@ class PaymentTransaction(models.Model):
 
     is_donation = fields.Boolean(string="Is donation")
 
-    def _post_process(self):
-        super()._post_process()
-        for donation_tx in self.filtered(lambda tx: tx.state == 'done' and tx.is_donation):
-            donation_tx._send_donation_email()
+    def _finalize_post_processing(self):
+        super()._finalize_post_processing()
+        for tx in self.filtered('is_donation'):
+            tx._send_donation_email()
             msg = [_('Payment received from donation with following details:')]
             for field in ['company_id', 'partner_id', 'partner_name', 'partner_country_id', 'partner_email']:
-                field_name = donation_tx._fields[field].string
-                value = donation_tx[field]
+                field_name = tx._fields[field].string
+                value = tx[field]
                 if value:
                     if hasattr(value, 'name'):
                         value = value.name
-                    msg.append(Markup('<br/>- %s: %s') % (field_name, value))
-            donation_tx.payment_id._message_log(body=Markup().join(msg))
+                    msg.append('<br/>- %s: %s' % (field_name, value))
+            tx.payment_id._message_log(body=''.join(msg))
 
     def _send_donation_email(self, is_internal_notification=False, comment=None, recipient_email=None):
         self.ensure_one()

@@ -3,15 +3,16 @@
 # 	* auth_ldap
 # 
 # Translators:
-# Wil Odoo, 2024
+# Martin Trigaux, 2023
+# Maitê Dietze, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 08:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Wil Odoo, 2024\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2023-07-13 13:02+0000\n"
+"Last-Translator: Maitê Dietze, 2024\n"
 "Language-Team: Portuguese (Brazil) (https://app.transifex.com/odoo/teams/41243/pt_BR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -79,7 +80,7 @@ msgstr "Configurações"
 #. module: auth_ldap
 #: model:ir.model.fields,field_description:auth_ldap.field_res_company_ldap__create_user
 msgid "Create User"
-msgstr "Criar usuário"
+msgstr "Criar Usuário"
 
 #. module: auth_ldap
 #: model:ir.model.fields,field_description:auth_ldap.field_res_company_ldap__create_uid
@@ -158,6 +159,11 @@ msgid "LDAP password"
 msgstr "Senha LDAP"
 
 #. module: auth_ldap
+#: model:ir.model.fields,field_description:auth_ldap.field_res_company_ldap____last_update
+msgid "Last Modified on"
+msgstr "Última modificação em"
+
+#. module: auth_ldap
 #: model:ir.model.fields,field_description:auth_ldap.field_res_company_ldap__write_uid
 msgid "Last Updated by"
 msgstr "Última atualização por"
@@ -170,20 +176,21 @@ msgstr "Última atualização em"
 #. module: auth_ldap
 #: model_terms:ir.ui.view,arch_db:auth_ldap.view_ldap_installer_form
 msgid "Login Information"
-msgstr "Informação de login"
+msgstr "Informação de Login"
 
 #. module: auth_ldap
 #. odoo-python
 #: code:addons/auth_ldap/models/res_company_ldap.py:0
+#, python-format
 msgid "No local user found for LDAP login and not configured to create one"
 msgstr ""
-"Nenhum usuário local foi encontrado para login LDAP e não há configuração "
-"para criar um"
+"Nenhum usuário local encontrado para o login LDAP e não configurado para "
+"criar um"
 
 #. module: auth_ldap
 #: model_terms:ir.ui.view,arch_db:auth_ldap.view_ldap_installer_form
 msgid "Process Parameter"
-msgstr "Parâmetro de processo"
+msgstr "Parâmetro de Processo"
 
 #. module: auth_ldap
 #: model:ir.model.fields,help:auth_ldap.field_res_company_ldap__ldap_tls
@@ -194,7 +201,7 @@ msgid ""
 msgstr ""
 "Solicite a conexão segura com encriptação TLS/SSL quando se conectar no "
 "servidor LDAP. Esta opção requer um servidor com STARTTLS habilitado, caso "
-"contrário a autenticação falhará"
+"contrário a autenticação irá falhar"
 
 #. module: auth_ldap
 #: model:ir.model.fields,field_description:auth_ldap.field_res_company_ldap__sequence
@@ -204,7 +211,7 @@ msgstr "Sequência"
 #. module: auth_ldap
 #: model_terms:ir.ui.view,arch_db:auth_ldap.view_ldap_installer_form
 msgid "Server Information"
-msgstr "Informação do servidor"
+msgstr "Informação do Servidor"
 
 #. module: auth_ldap
 #: model:ir.actions.act_window,name:auth_ldap.action_ldap_installer
@@ -214,7 +221,7 @@ msgstr "Configure seu servidor LDAP"
 #. module: auth_ldap
 #: model:ir.model.fields,field_description:auth_ldap.field_res_company_ldap__user
 msgid "Template User"
-msgstr "Modelo de usuário"
+msgstr "Modelo de Usuário"
 
 #. module: auth_ldap
 #: model:ir.model.fields,help:auth_ldap.field_res_company_ldap__ldap_password
@@ -231,8 +238,8 @@ msgid ""
 "The user account on the LDAP server that is used to query the directory. "
 "Leave empty to connect anonymously."
 msgstr ""
-"A conta do usuário no servidor LDAP que é usada para a busca no diretório. "
-"Deixe em branco para conectar anonimamente."
+"A conta do usuário no servidor LDAP que é usada para a busca no diretório, "
+"deixe em branco para conectar anonimamente"
 
 #. module: auth_ldap
 #: model:ir.model.fields,field_description:auth_ldap.field_res_company_ldap__ldap_tls

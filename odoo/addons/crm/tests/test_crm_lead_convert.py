@@ -4,7 +4,8 @@
 from odoo import SUPERUSER_ID
 from odoo.addons.crm.tests import common as crm_common
 from odoo.fields import Datetime
-from odoo.tests import Form, tagged, users
+from odoo.tests.common import tagged, users
+from odoo.tests.common import Form
 
 @tagged('lead_manage')
 class TestLeadConvertForm(crm_common.TestLeadConvertCommon):
@@ -395,11 +396,19 @@ class TestLeadConvert(crm_common.TestLeadConvertCommon):
         }]
         self.lead_1.convert_opportunity(False)
         self.assertEqual(self.lead_1.team_id, initial_team)
-        self.assertEqual(self.lead_1.lead_properties, {'test': 'test value'})
+        self.assertEqual(self.lead_1.lead_properties, [{
+            'name': 'test',
+            'type': 'char',
+            'value': 'test value',
+        }])
 
         # re-writing the team, but keeping the same value should not reset the properties
         self.lead_1.write({'team_id': self.lead_1.team_id.id})
-        self.assertEqual(self.lead_1.lead_properties, {'test': 'test value'})
+        self.assertEqual(self.lead_1.lead_properties, [{
+            'name': 'test',
+            'type': 'char',
+            'value': 'test value',
+        }])
 
     @users('user_sales_manager')
     def test_lead_convert_properties_reset(self):
@@ -451,36 +460,6 @@ class TestLeadConvert(crm_common.TestLeadConvertCommon):
 
         convert.action_apply()
         self.assertEqual(self.lead_1.type, 'opportunity')
-
-    @users('user_sales_manager')
-    def test_lead_merge_last_created(self):
-        """
-        Test convert wizard is not deleted in merge mode when the original assigned lead is deleted
-        """
-        date = Datetime.from_string('2020-01-20 16:00:00')
-        self.crm_lead_dt_mock.now.return_value = date
-
-        last_lead = self.env['crm.lead'].create({
-            'name': f'Duplicate of {self.lead_1.contact_name}',
-            'type': 'lead', 'user_id': False, 'team_id': self.lead_1.team_id.id,
-            'contact_name': f'Duplicate of {self.lead_1.contact_name}',
-            'email_from': self.lead_1.email_from,
-            'probability': 10,
-        })
-
-        convert = self.env['crm.lead2opportunity.partner'].with_context({
-            'active_model': 'crm.lead',
-            'active_id': last_lead.id,
-            'active_ids': last_lead.ids,
-        }).create({})
-
-        # test main lead on wizard
-        self.assertEqual(convert.lead_id, last_lead)
-        convert.action_apply()
-        self.assertTrue(convert.exists(), 'Wizard cannot be deleted via cascade!')
-        self.assertEqual(convert.lead_id, self.lead_1, "Lead must be the result opportunity!")
-        self.assertEqual(self.lead_1.type, 'opportunity')
-        self.assertFalse(last_lead.exists(), 'The last lead must be merged with the first one!')
 
     @users('user_sales_salesman')
     def test_lead_merge_user(self):

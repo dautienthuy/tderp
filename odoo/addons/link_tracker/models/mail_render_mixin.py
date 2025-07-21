@@ -2,15 +2,12 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import re
-from html import unescape
 
-import lxml
 import markupsafe
+from html import unescape
 from werkzeug import urls
 
 from odoo import api, models, tools
-from odoo.addons.link_tracker.tools.html import find_links_with_urls_and_labels
-from odoo.tools.mail import is_html_empty, URL_SKIP_PROTOCOL_REGEX, TEXT_URL_REGEX
 
 
 class MailRenderMixin(models.AbstractModel):
@@ -37,29 +34,29 @@ class MailRenderMixin(models.AbstractModel):
 
         :return: updated html
         """
-        if not html or is_html_empty(html):
-            return html
         base_url = base_url or self.env['ir.config_parameter'].sudo().get_param('web.base.url')
         short_schema = base_url + '/r/'
+        for match in set(re.findall(tools.HTML_TAG_URL_REGEX, html)):
+            long_url = match[1]
+            # Make relative links absolute
+            if long_url.startswith(('/', '?', '#')):
+                long_url = base_url + long_url
+            # Don't shorten already-shortened links
+            if long_url.startswith(short_schema):
+                continue
+            # Don't shorten urls present in blacklist (aka to skip list)
+            if blacklist and any(s in long_url for s in blacklist):
+                continue
+            label = (match[3] or '').strip()
 
-        root_node = lxml.html.fromstring(html)
-        link_nodes, urls_and_labels = find_links_with_urls_and_labels(
-            root_node, base_url, skip_regex=rf'^{URL_SKIP_PROTOCOL_REGEX}', skip_prefix=short_schema,
-            skip_list=blacklist)
-        if not link_nodes:
-            return html
+            create_vals = dict(link_tracker_vals, url=unescape(long_url), label=unescape(label))
+            link = self.env['link.tracker'].search_or_create(create_vals)
+            if link.short_url:
+                # `str` manipulation required to support replacing "&" characters, common in urls
+                new_href = match[0].replace(match[1], link.short_url)
+                html = html.replace(markupsafe.Markup(match[0]), markupsafe.Markup(new_href))
 
-        links_trackers = self.env['link.tracker'].search_or_create([
-            dict(link_tracker_vals, **url_and_label) for url_and_label in urls_and_labels
-        ])
-        for node, link_tracker in zip(link_nodes, links_trackers):
-            node.set("href", link_tracker.short_url)
-
-        new_html = lxml.html.tostring(root_node, encoding="unicode", method="xml")
-        if isinstance(html, markupsafe.Markup):
-            new_html = markupsafe.Markup(new_html)
-
-        return new_html
+        return html
 
     @api.model
     def _shorten_links_text(self, content, link_tracker_vals, blacklist=None, base_url=None):
@@ -73,17 +70,17 @@ class MailRenderMixin(models.AbstractModel):
         base_url = base_url or self.env['ir.config_parameter'].sudo().get_param('web.base.url')
         shortened_schema = base_url + '/r/'
         unsubscribe_schema = base_url + '/sms/'
-        for original_url in set(re.findall(TEXT_URL_REGEX, content)):
+        for original_url in set(re.findall(tools.TEXT_URL_REGEX, content)):
             # don't shorten already-shortened links or links towards unsubscribe page
             if original_url.startswith(shortened_schema) or original_url.startswith(unsubscribe_schema):
                 continue
             # support blacklist items in path, like /u/
             parsed = urls.url_parse(original_url, scheme='http')
-            if blacklist and any(re.search(item + r'([#?/]|$)', parsed.path) for item in blacklist):
+            if blacklist and any(item in parsed.path for item in blacklist):
                 continue
 
             create_vals = dict(link_tracker_vals, url=unescape(original_url))
-            link = self.env['link.tracker'].search_or_create([create_vals])
+            link = self.env['link.tracker'].search_or_create(create_vals)
             if link.short_url:
                 # Ensures we only replace the same link and not a subpart of a longer one, multiple times if applicable
                 content = re.sub(re.escape(original_url) + r'(?![\w@:%.+&~#=/-])', link.short_url, content)

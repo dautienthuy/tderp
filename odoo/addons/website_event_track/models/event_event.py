@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import api, fields, models, _
+from odoo.addons.http_routing.models.ir_http import slug
 
 
 class Event(models.Model):
@@ -23,8 +24,8 @@ class Event(models.Model):
         compute='_compute_tracks_tag_ids', store=True)
 
     def _compute_track_count(self):
-        data = self.env['event.track']._read_group([('stage_id.is_cancel', '!=', True)], ['event_id'], ['__count'])
-        result = {event.id: count for event, count in data}
+        data = self.env['event.track']._read_group([('stage_id.is_cancel', '!=', True)], ['event_id'], ['event_id'])
+        result = dict((data['event_id'][0], data['event_id_count']) for data in data)
         for event in self:
             event.track_count = result.get(event.id, 0)
 
@@ -84,7 +85,7 @@ class Event(models.Model):
     def _get_website_menu_entries(self):
         self.ensure_one()
         return super(Event, self)._get_website_menu_entries() + [
-            (_('Talks'), '/event/%s/track' % self.env['ir.http']._slug(self), False, 10, 'track'),
-            (_('Agenda'), '/event/%s/agenda' % self.env['ir.http']._slug(self), False, 70, 'track'),
-            (_('Talk Proposals'), '/event/%s/track_proposal' % self.env['ir.http']._slug(self), False, 15, 'track_proposal')
+            (_('Talks'), '/event/%s/track' % slug(self), False, 10, 'track'),
+            (_('Agenda'), '/event/%s/agenda' % slug(self), False, 70, 'track'),
+            (_('Talk Proposals'), '/event/%s/track_proposal' % slug(self), False, 15, 'track_proposal')
         ]

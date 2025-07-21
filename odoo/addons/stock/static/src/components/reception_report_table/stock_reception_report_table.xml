@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
 
-    <t t-name="stock.ReceptionReportTable">
+    <t t-name="stock.ReceptionReportTable" owl="1">
         <thead>
             <tr class="bg-light">
                 <th>
@@ -32,7 +32,6 @@
             <t t-foreach="props.lines" t-as="line" t-key="line.index">
                 <ReceptionReportLine
                     data="line"
-                    labelReport="props.labelReport"
                     parentIndex="props.index"
                     showUom="props.showUom"
                     precision="props.precision"/>

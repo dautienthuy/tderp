@@ -62,7 +62,7 @@ class MicrosoftOutlookController(http.Controller):
             refresh_token, access_token, expiration = record._fetch_outlook_refresh_token(code)
         except UserError as e:
             return request.render('microsoft_outlook.microsoft_outlook_oauth_error', {
-                'error': str(e),
+                'error': str(e.name),
                 'model_name': model_name,
                 'rec_id': rec_id,
             })
@@ -73,4 +73,4 @@ class MicrosoftOutlookController(http.Controller):
             'microsoft_outlook_access_token_expiration': expiration,
         })
 
-        return request.redirect(f'/odoo/{model_name}/{rec_id}')
+        return request.redirect(f'/web?#id={rec_id}&model={model_name}&view_type=form')

@@ -24,7 +24,7 @@ class ProductMargin(models.TransientModel):
 
         def ref(xml_id):
             proxy = self.env['ir.model.data']
-            return proxy._xmlid_lookup(xml_id)[1]
+            return proxy._xmlid_lookup(xml_id)[2]
 
         search_view_id = ref('product.product_search_form_view')
         graph_view_id = ref('product_margin.view_product_margin_graph')
@@ -40,14 +40,14 @@ class ProductMargin(models.TransientModel):
             context.update(date_to=self.to_date)
 
         views = [
-            (tree_view_id, 'list'),
+            (tree_view_id, 'tree'),
             (form_view_id, 'form'),
             (graph_view_id, 'graph')
         ]
         return {
             'name': _('Product Margins'),
             'context': context,
-            "view_mode": 'list,form,graph',
+            "view_mode": 'tree,form,graph',
             'res_model': 'product.product',
             'type': 'ir.actions.act_window',
             'views': views,

@@ -1,60 +1,29 @@
-import { AutoComplete } from "@web/core/autocomplete/autocomplete";
-import { ColorList } from "@web/core/colorlist/colorlist";
-import { _t } from "@web/core/l10n/translation";
-import { usePopover } from "@web/core/popover/popover_hook";
-import { registry } from "@web/core/registry";
+/** @odoo-module **/
+
+import { _lt } from "@web/core/l10n/translation";
 import { useService } from "@web/core/utils/hooks";
-import { TagsList } from "@web/core/tags_list/tags_list";
-import { standardFieldProps } from "@web/views/fields/standard_field_props";
+import { TagsList } from "@web/views/fields/many2many_tags/tags_list";
+import { ColorList } from "@web/core/colorlist/colorlist";
+import { usePopover } from "@web/core/popover/popover_hook";
+import { AutoComplete } from "@web/core/autocomplete/autocomplete";
+import { sprintf } from "@web/core/utils/strings";
 
 import { Component } from "@odoo/owl";
 
-class PropertyTagsColorListPopover extends Component {
-    static template = "web.PropertyTagsColorListPopover";
-    static components = {
-        ColorList,
-    };
-    static props = {
-        colors: Array,
-        tag: Object,
-        switchTagColor: Function,
-        close: Function,
-    };
-}
+class PropertyTagsColorListPopover extends Component {}
+PropertyTagsColorListPopover.template = "web.PropertyTagsColorListPopover";
+PropertyTagsColorListPopover.components = {
+    ColorList,
+};
 
 // property tags does not really need timeout because it does not make RPC calls
-export class PropertyTagAutoComplete extends AutoComplete {}
+export class PropertyTagAutoComplete extends AutoComplete { };
 Object.assign(PropertyTagAutoComplete, { timeout: 0 });
 
 export class PropertyTags extends Component {
-    static template = "web.PropertyTags";
-    static components = {
-        AutoComplete: PropertyTagAutoComplete,
-        TagsList,
-        ColorList,
-        Popover: PropertyTagsColorListPopover,
-    };
-
-    static props = {
-        id: { type: String, optional: true },
-        selectedTags: {}, // Tags value visible in the tags list
-        tags: {}, // Tags definition visible in the dropdown
-        // Define the behavior of the delete button on the tags, either
-        // "value" or "tags". If "value", the delete button will unselect
-        // the value, if "tags" the value will be removed from the definition.
-        deleteAction: { type: String },
-        readonly: { type: Boolean, optional: true },
-        canChangeTags: { type: Boolean, optional: true },
-        checkDefinitionWriteAccess: { type: Function, optional: true },
-        // Select a new value
-        onValueChange: { type: Function, optional: true },
-        // Change the tags definition (can also receive a second
-        // argument to update the current selected value)
-        onTagsChange: { type: Function, optional: true },
-    };
     setup() {
         this.notification = useService("notification");
-        this.popover = usePopover(this.constructor.components.Popover);
+        this.popover = usePopover();
     }
 
     /* --------------------------------------------------------
@@ -86,19 +55,16 @@ export class PropertyTags extends Component {
 
         if (!this.displayBadge) {
             // in kanban view e.g. to not show tag without color
-            value = value.filter((tag) => tag[2]);
+            value = value.filter(tag => tag[2]);
         }
 
-        const canDeleteTag =
-            !this.props.readonly &&
-            (this.props.canChangeTags || this.props.deleteAction === "value");
+        const canDeleteTag = !this.props.readonly && this.props.canChangeTags;
 
         return value.map((tag) => {
             const [tagId, tagLabel, tagColorIndex] = tag;
             return {
                 id: tagId,
                 text: tagLabel,
-                className: this.props.canChangeTags ? "" : "pe-none",
                 colorIndex: tagColorIndex || 0,
                 onClick: (event) => this.onTagClick(event, tagId, tagColorIndex),
                 onDelete: canDeleteTag && (() => this.onTagDelete(tagId)),
@@ -152,7 +118,7 @@ export class PropertyTags extends Component {
                             return [
                                 {
                                     value: null,
-                                    label: _t("Start typing..."),
+                                    label: _lt("Start typing..."),
                                     classList: "fst-italic",
                                 },
                             ];
@@ -160,7 +126,7 @@ export class PropertyTags extends Component {
                             return [
                                 {
                                     value: null,
-                                    label: _t("No result"),
+                                    label: _lt("No result"),
                                     classList: "fst-italic",
                                 },
                             ];
@@ -169,7 +135,7 @@ export class PropertyTags extends Component {
                         return [
                             {
                                 value: { toCreate: true, value: request },
-                                label: _t('Create "%s"', request),
+                                label: sprintf(_lt('Create "%s"'), request),
                                 classList: "o_field_property_dropdown_add",
                             },
                         ];
@@ -223,11 +189,10 @@ export class PropertyTags extends Component {
             return;
         }
 
-        if (!(await this.props.checkDefinitionWriteAccess())) {
-            this.notification.add(
-                _t("You need to be able to edit parent first to add property tags"),
-                { type: "warning" }
-            );
+        if (!await this.props.checkDefinitionWriteAccess()) {
+            this.notification.add(_lt("You need to be able to edit parent first to add property tags"), {
+                type: "warning",
+            });
             return;
         }
 
@@ -235,18 +200,17 @@ export class PropertyTags extends Component {
 
         const existingTag = this.props.tags.find((tag) => tag[0] === newValue);
         if (existingTag) {
-            this.notification.add(_t("This tag is already available"), {
+            this.notification.add(_lt("This tag is already available"), {
                 type: "warning",
             });
             return;
         }
 
         // cycle trough colors
-        let tagColor =
+        const tagColor =
             this.props.tags && this.props.tags.length
                 ? (this.props.tags[this.props.tags.length - 1][2] + 1) % ColorList.COLORS.length
                 : parseInt(Math.random() * ColorList.COLORS.length);
-        tagColor = tagColor || 1; // never select white by default
 
         const newTag = [newValue, newLabel, tagColor];
         const updatedTags = [...this.availableTags, newTag];
@@ -290,11 +254,18 @@ export class PropertyTags extends Component {
             event.currentTarget.blur();
             return;
         }
-        this.popover.open(event.currentTarget, {
-            colors: [...Array(ColorList.COLORS.length).keys()],
-            tag: { id: tagId, colorIndex: tagColor },
-            switchTagColor: this.onTagColorSwitch.bind(this),
-        });
+        this.popoverCloseFn = this.popover.add(
+            event.currentTarget,
+            this.constructor.components.Popover,
+            {
+                colors: [...Array(ColorList.COLORS.length).keys()],
+                tag: { id: tagId, colorIndex: tagColor },
+                switchTagColor: this.onTagColorSwitch.bind(this),
+            },
+            {
+                closeOnClickAway: true,
+            }
+        );
     }
 
     /**
@@ -309,31 +280,33 @@ export class PropertyTags extends Component {
         this.props.onTagsChange(availableTags);
 
         // close the color popover
-        this.popover.close();
+        this.popoverCloseFn();
+        this.popoverCloseFn = null;
     }
 }
 
-export class PropertyTagsField extends Component {
-    static template = "web.PropertyTagsField";
-    static components = { PropertyTags };
-    static props = { ...standardFieldProps };
-
-    get propertyTagsProps() {
-        return {
-            selectedTags: this.props.record.data[this.props.name] || [],
-            tags: this.props.record.fields[this.props.name].tags || [],
-            deleteAction: "value",
-            readonly: this.props.readonly,
-            canChangeTags: false,
-            onValueChange: (value) => {
-                this.props.record.update({ [this.props.name]: value });
-            },
-        };
-    }
-}
-
-export const propertyTagsField = {
-    component: PropertyTagsField,
+PropertyTags.template = "web.PropertyTags";
+PropertyTags.components = {
+    AutoComplete: PropertyTagAutoComplete,
+    TagsList,
+    ColorList,
+    Popover: PropertyTagsColorListPopover,
 };
 
-registry.category("fields").add("property_tags", propertyTagsField);
+PropertyTags.props = {
+    id: { type: String, optional: true },
+    selectedTags: {}, // Tags value visible in the tags list
+    tags: {}, // Tags definition visible in the dropdown
+    // Define the behavior of the delete button on the tags, either
+    // "value" or "tags". If "value", the delete button will unselect
+    // the value, if "tags" the value will be removed from the definition.
+    deleteAction: { type: String },
+    readonly: { type: Boolean, optional: true },
+    canChangeTags: { type: Boolean, optional: true },
+    checkDefinitionWriteAccess: { type: Function, optional: true },
+    // Select a new value
+    onValueChange: { type: Function, optional: true },
+    // Change the tags definition (can also receive a second
+    // argument to update the current selected value)
+    onTagsChange: { type: Function, optional: true },
+};

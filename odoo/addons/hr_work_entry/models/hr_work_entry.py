@@ -1,14 +1,13 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import itertools
 from collections import defaultdict
 from contextlib import contextmanager
-
 from dateutil.relativedelta import relativedelta
+import itertools
 from psycopg2 import OperationalError
-from odoo.exceptions import UserError
 
-from odoo import _, api, fields, models, tools
+from odoo import api, fields, models, tools, _
 from odoo.osv import expression
 
 
@@ -23,9 +22,7 @@ class HrWorkEntry(models.Model):
     date_start = fields.Datetime(required=True, string='From')
     date_stop = fields.Datetime(compute='_compute_date_stop', store=True, readonly=False, string='To')
     duration = fields.Float(compute='_compute_duration', store=True, string="Duration", readonly=False)
-    work_entry_type_id = fields.Many2one('hr.work.entry.type', index=True, default=lambda self: self.env['hr.work.entry.type'].search([], limit=1), domain="['|', ('country_id', '=', False), ('country_id', '=', country_id)]")
-    code = fields.Char(related='work_entry_type_id.code')
-    external_code = fields.Char(related='work_entry_type_id.external_code')
+    work_entry_type_id = fields.Many2one('hr.work.entry.type', index=True, default=lambda self: self.env['hr.work.entry.type'].search([], limit=1))
     color = fields.Integer(related='work_entry_type_id.color', readonly=True)
     state = fields.Selection([
         ('draft', 'Draft'),
@@ -37,7 +34,6 @@ class HrWorkEntry(models.Model):
         default=lambda self: self.env.company)
     conflict = fields.Boolean('Conflicts', compute='_compute_conflict', store=True)  # Used to show conflicting work entries first
     department_id = fields.Many2one('hr.department', related='employee_id.department_id', store=True)
-    country_id = fields.Many2one('res.country', related='employee_id.company_id.country_id')
 
     # There is no way for _error_checking() to detect conflicts in work
     # entries that have been introduced in concurrent transactions, because of the transaction
@@ -105,17 +101,21 @@ class HrWorkEntry(models.Model):
                 result[work_entry.id] = cached_periods[(date_start, date_stop)]
             else:
                 dt = date_stop - date_start
-                duration = round(dt.total_seconds()) / 3600  # Number of hours
+                duration = dt.days * 24 + dt.seconds / 3600  # Number of hours
                 cached_periods[(date_start, date_stop)] = duration
                 result[work_entry.id] = duration
         return result
+
+    # YTI TODO: Remove me in master: Deprecated, use _get_duration_batch instead
+    def _get_duration(self, date_start, date_stop):
+        return self._get_duration_batch()[self.id]
 
     def action_validate(self):
         """
         Try to validate work entries.
         If some errors are found, set `state` to conflict for conflicting work entries
         and validation fails.
-        :return: True if validation succeeded
+        :return: True if validation succeded
         """
         work_entries = self.filtered(lambda work_entry: work_entry.state != 'validated')
         if not work_entries._check_if_error():
@@ -167,14 +167,6 @@ class HrWorkEntry(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        company_by_employee_id = {}
-        for vals in vals_list:
-            if vals.get('company_id'):
-                continue
-            if vals['employee_id'] not in company_by_employee_id:
-                employee = self.env['hr.employee'].browse(vals['employee_id'])
-                company_by_employee_id[employee.id] = employee.company_id.id
-            vals['company_id'] = company_by_employee_id[vals['employee_id']]
         work_entries = super().create(vals_list)
         work_entries._check_if_error()
         return work_entries
@@ -196,11 +188,6 @@ class HrWorkEntry(models.Model):
             employee_ids += [vals['employee_id']]
         with self._error_checking(skip=skip_check, employee_ids=employee_ids):
             return super(HrWorkEntry, self).write(vals)
-
-    @api.ondelete(at_uninstall=False)
-    def _unlink_except_validated_work_entries(self):
-        if any(w.state == 'validated' for w in self):
-            raise UserError(_("This work entry is validated. You can't delete it."))
 
     def unlink(self):
         employee_ids = self.employee_id.ids
@@ -254,36 +241,16 @@ class HrWorkEntryType(models.Model):
     _description = 'HR Work Entry Type'
 
     name = fields.Char(required=True, translate=True)
-    code = fields.Char(string="Payroll Code", required=True, help="Careful, the Code is used in many references, changing it could lead to unwanted changes.")
-    external_code = fields.Char(help="Use this code to export your data to a third party")
+    code = fields.Char(required=True, help="Careful, the Code is used in many references, changing it could lead to unwanted changes.")
     color = fields.Integer(default=0)
     sequence = fields.Integer(default=25)
     active = fields.Boolean(
         'Active', default=True,
         help="If the active field is set to false, it will allow you to hide the work entry type without removing it.")
-    country_id = fields.Many2one('res.country', string="Country")
-    country_code = fields.Char(related='country_id.code')
 
-    @api.constrains('country_id')
-    def _check_work_entry_type_country(self):
-        if self.env.ref('hr_work_entry.work_entry_type_attendance') in self:
-            raise UserError(_("You can't change the country of this specific work entry type."))
-        elif not self.env.context.get('install_mode') and self.env['hr.work.entry'].sudo().search_count([('work_entry_type_id', 'in', self.ids)], limit=1):
-            raise UserError(_("You can't change the Country of this work entry type cause it's currently used by the system. You need to delete related working entries first."))
-
-    @api.constrains('code', 'country_id')
-    def _check_code_unicity(self):
-        similar_work_entry_types = self.search([
-            ('code', 'in', self.mapped('code')),
-            ('country_id', 'in', self.country_id.ids + [False]),
-            ('id', 'not in', self.ids)
-        ])
-        for work_entry_type in self:
-            if similar_work_entry_types.filtered_domain([
-                ('code', '=', work_entry_type.code),
-                ('country_id', 'in', self.country_id.ids + [False]),
-            ]):
-                raise UserError(_("The same code cannot be associated to multiple work entry types."))
+    _sql_constraints = [
+        ('unique_work_entry_code', 'UNIQUE(code)', 'The same code cannot be associated to multiple work entry types.'),
+    ]
 
 
 class Contacts(models.Model):
@@ -292,7 +259,7 @@ class Contacts(models.Model):
     _name = 'hr.user.work.entry.employee'
     _description = 'Work Entries Employees'
 
-    user_id = fields.Many2one('res.users', 'Me', required=True, default=lambda self: self.env.user, ondelete='cascade')
+    user_id = fields.Many2one('res.users', 'Me', required=True, default=lambda self: self.env.user)
     employee_id = fields.Many2one('hr.employee', 'Employee', required=True)
     active = fields.Boolean('Active', default=True)
 

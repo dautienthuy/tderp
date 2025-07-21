@@ -5,7 +5,6 @@
 
 .. todo:: Document this module
 """
-from __future__ import annotations
 
 __all__ = [
     'Environment',
@@ -29,71 +28,25 @@ try:
 except ImportError:
     from decorator import decorator
 
-from .exceptions import AccessError, UserError, CacheMiss
-from .tools import clean_context, frozendict, lazy_property, OrderedSet, Query, SQL
-from .tools.translate import get_translation, get_translated_module, LazyGettext
-from odoo.tools.misc import StackMap
-
-import typing
-if typing.TYPE_CHECKING:
-    from collections.abc import Callable
-    from odoo.sql_db import BaseCursor
-    from odoo.models import BaseModel
-    try:
-        from typing_extensions import Self  # noqa: F401
-    except ImportError:
-        from typing import Self  # noqa: F401
-    M = typing.TypeVar("M", bound=BaseModel)
-else:
-    Self = None
-    M = typing.TypeVar("M")
-
-DomainType = list[str | tuple[str, str, typing.Any]]
-ContextType = Mapping[str, typing.Any]
-ValuesType = dict[str, typing.Any]
-T = typing.TypeVar('T')
+from .exceptions import AccessError, CacheMiss
+from .tools import classproperty, frozendict, lazy_property, OrderedSet, Query, StackMap
+from .tools.translate import _
 
 _logger = logging.getLogger(__name__)
 
+# The following attributes are used, and reflected on wrapping methods:
+#  - method._constrains: set by @constrains, specifies constraint dependencies
+#  - method._depends: set by @depends, specifies compute dependencies
+#  - method._returns: set by @returns, specifies return model
+#  - method._onchange: set by @onchange, specifies onchange fields
+#  - method.clear_cache: set by @ormcache, used to clear the cache
+#  - method._ondelete: set by @ondelete, used to raise errors for unlink operations
+#
+# On wrapping method only:
+#  - method._api: decorator function, used for re-applying decorator
+#
 
-class NewId:
-    """ Pseudo-ids for new records, encapsulating an optional origin id (actual
-        record id) and an optional reference (any value).
-    """
-    __slots__ = ['origin', 'ref']
-
-    def __init__(self, origin=None, ref=None):
-        self.origin = origin
-        self.ref = ref
-
-    def __bool__(self):
-        return False
-
-    def __eq__(self, other):
-        return isinstance(other, NewId) and (
-            (self.origin and other.origin and self.origin == other.origin)
-            or (self.ref and other.ref and self.ref == other.ref)
-        )
-
-    def __hash__(self):
-        return hash(self.origin or self.ref or id(self))
-
-    def __repr__(self):
-        return (
-            "<NewId origin=%r>" % self.origin if self.origin else
-            "<NewId ref=%r>" % self.ref if self.ref else
-            "<NewId 0x%x>" % id(self)
-        )
-
-    def __str__(self):
-        if self.origin or self.ref:
-            id_part = repr(self.origin or self.ref)
-        else:
-            id_part = hex(id(self))
-        return "NewId_%s" % id_part
-
-
-IdType: typing.TypeAlias = int | NewId
+INHERITED_ATTRS = ('_returns',)
 
 
 class Params(object):
@@ -129,35 +82,22 @@ class Meta(type):
         return type.__new__(meta, name, bases, attrs)
 
 
-# The following attributes are used, and reflected on wrapping methods:
-#  - method._constrains: set by @constrains, specifies constraint dependencies
-#  - method._depends: set by @depends, specifies compute dependencies
-#  - method._returns: set by @returns, specifies return model
-#  - method._onchange: set by @onchange, specifies onchange fields
-#  - method.clear_cache: set by @ormcache, used to clear the cache
-#  - method._ondelete: set by @ondelete, used to raise errors for unlink operations
-#
-# On wrapping method only:
-#  - method._api: decorator function, used for re-applying decorator
-#
-
 def attrsetter(attr, value):
     """ Return a function that sets ``attr`` on its argument and returns it. """
     return lambda method: setattr(method, attr, value) or method
-
 
 def propagate(method1, method2):
     """ Propagate decorators from ``method1`` to ``method2``, and return the
         resulting method.
     """
     if method1:
-        for attr in ('_returns',):
+        for attr in INHERITED_ATTRS:
             if hasattr(method1, attr) and not hasattr(method2, attr):
                 setattr(method2, attr, getattr(method1, attr))
     return method2
 
 
-def constrains(*args: str) -> Callable[[T], T]:
+def constrains(*args):
     """Decorate a constraint checker.
 
     Each argument must be a field name used in the check::
@@ -303,7 +243,7 @@ def onchange(*args):
     return attrsetter('_onchange', args)
 
 
-def depends(*args: str) -> Callable[[T], T]:
+def depends(*args):
     """ Return a decorator that specifies the field dependencies of a "compute"
         method (for new-style function fields). Each argument must be a string
         that consists in a dot-separated sequence of field names::
@@ -405,6 +345,16 @@ def downgrade(method, value, self, args, kwargs):
         return value.ids
 
 
+def split_context(method, args, kwargs):
+    """ Extract the context from a pair of positional and keyword arguments.
+        Return a triple ``context, args, kwargs``.
+    """
+    # altering kwargs is a cause of errors, for instance when retrying a request
+    # after a serialization error: the retry is done without context!
+    kwargs = kwargs.copy()
+    return kwargs.pop('context', None), args, kwargs
+
+
 def autovacuum(method):
     """
     Decorate a method so that it is called by the daily vacuum cron job (model
@@ -416,7 +366,7 @@ def autovacuum(method):
     return method
 
 
-def model(method: T) -> T:
+def model(method):
     """ Decorate a record-style method where ``self`` is a recordset, but its
         contents is not relevant, only the model is. Such a method::
 
@@ -431,34 +381,6 @@ def model(method: T) -> T:
     return method
 
 
-def readonly(method: T) -> T:
-    """ Decorate a record-style method where ``self.env.cr`` can be a
-        readonly cursor when called trough a rpc call.
-
-            @api.readonly
-            def method(self, args):
-                ...
-
-    """
-    method._readonly = True
-    return method
-
-def private(method):
-    """ Decorate a record-style method to indicate that the method cannot be
-        called using RPC. Example::
-
-            @api.private
-            def method(self, args):
-                ...
-
-        If you have business methods that should not be called over RPC, you
-        should prefix them with "_". This decorator may be used in case of
-        existing public methods that become non-RPC callable or for ORM
-        methods.
-    """
-    method._api_private = True
-    return method
-
 _create_logger = logging.getLogger(__name__ + '.create')
 
 
@@ -472,17 +394,14 @@ def _model_create_single(create, self, arg):
     return self.browse().concat(*(create(self, vals) for vals in arg))
 
 
-def model_create_single(method: T) -> T:
+def model_create_single(method):
     """ Decorate a method that takes a dictionary and creates a single record.
         The method may be called with either a single dict or a list of dicts::
 
             record = model.create(vals)
             records = model.create([vals, ...])
     """
-    warnings.warn(
-        f"The model {method.__module__} is not overriding the create method in batch",
-        DeprecationWarning
-    )
+    _create_logger.warning("The model %s is not overriding the create method in batch", method.__module__)
     wrapper = _model_create_single(method) # pylint: disable=no-value-for-parameter
     wrapper._api = 'model_create'
     return wrapper
@@ -496,7 +415,7 @@ def _model_create_multi(create, self, arg):
     return create(self, arg)
 
 
-def model_create_multi(method: T) -> T:
+def model_create_multi(method):
     """ Decorate a method that takes a list of dictionaries and creates multiple
         records. The method may be called with either a single dict or a list of
         dicts::
@@ -509,34 +428,45 @@ def model_create_multi(method: T) -> T:
     return wrapper
 
 
+def _call_kw_model(method, self, args, kwargs):
+    context, args, kwargs = split_context(method, args, kwargs)
+    recs = self.with_context(context or {})
+    _logger.debug("call %s.%s(%s)", recs, method.__name__, Params(args, kwargs))
+    result = method(recs, *args, **kwargs)
+    return downgrade(method, result, recs, args, kwargs)
+
+
+def _call_kw_model_create(method, self, args, kwargs):
+    # special case for method 'create'
+    context, args, kwargs = split_context(method, args, kwargs)
+    recs = self.with_context(context or {})
+    _logger.debug("call %s.%s(%s)", recs, method.__name__, Params(args, kwargs))
+    result = method(recs, *args, **kwargs)
+    return result.id if isinstance(args[0], Mapping) else result.ids
+
+
+def _call_kw_multi(method, self, args, kwargs):
+    ids, args = args[0], args[1:]
+    context, args, kwargs = split_context(method, args, kwargs)
+    recs = self.with_context(context or {}).browse(ids)
+    _logger.debug("call %s.%s(%s)", recs, method.__name__, Params(args, kwargs))
+    result = method(recs, *args, **kwargs)
+    return downgrade(method, result, recs, args, kwargs)
+
+
 def call_kw(model, name, args, kwargs):
     """ Invoke the given method ``name`` on the recordset ``model``. """
-    method = getattr(model, name, None)
+    method = getattr(type(model), name, None)
     if not method:
         raise AttributeError(f"The method '{name}' does not exist on the model '{model._name}'")
     api = getattr(method, '_api', None)
-
-    if api:
-        # @api.model, @api.model_create -> no ids
-        recs = model
+    if api == 'model':
+        result = _call_kw_model(method, model, args, kwargs)
+    elif api == 'model_create':
+        result = _call_kw_model_create(method, model, args, kwargs)
     else:
-        ids, args = args[0], args[1:]
-        recs = model.browse(ids)
-
-    # altering kwargs is a cause of errors, for instance when retrying a request
-    # after a serialization error: the retry is done without context!
-    kwargs = dict(kwargs)
-    context = kwargs.pop('context', None) or {}
-    recs = recs.with_context(context)
-
-    _logger.debug("call %s.%s(%s)", recs, method.__name__, Params(args, kwargs))
-    result = getattr(recs, name)(*args, **kwargs)
-    if api == "model_create":
-        # special case for method 'create'
-        result = result.id if isinstance(args[0], Mapping) else result.ids
-    else:
-        result = downgrade(method, result, recs, args, kwargs)
-
+        result = _call_kw_multi(method, model, args, kwargs)
+    model.env.flush_all()
     return result
 
 
@@ -552,14 +482,21 @@ class Environment(Mapping):
     names to models. It also holds a cache for records, and a data
     structure to manage recomputations.
     """
+    @classproperty
+    def envs(cls):
+        raise NotImplementedError(
+            "Since Odoo 15.0, Environment.envs no longer works; "
+            "use cr.transaction or env.transaction instead."
+        )
 
-    cr: BaseCursor
-    uid: int
-    context: frozendict
-    su: bool
-    registry: Registry
-    cache: Cache
-    transaction: Transaction
+    @classmethod
+    @contextmanager
+    def manage(cls):
+        warnings.warn(
+            "Since Odoo 15.0, Environment.manage() is useless.",
+            DeprecationWarning, stacklevel=2,
+        )
+        yield
 
     def reset(self):
         """ Reset the transaction, see :meth:`Transaction.reset`. """
@@ -575,6 +512,8 @@ class Environment(Mapping):
         if uid_origin == SUPERUSER_ID:
             uid_origin = None
 
+        assert context is not None
+
         # determine transaction object
         transaction = cr.transaction
         if transaction is None:
@@ -582,20 +521,19 @@ class Environment(Mapping):
 
         # if env already exists, return it
         for env in transaction.envs:
-            if (env.cr, env.uid, env.su, env.uid_origin, env.context) == (cr, uid, su, uid_origin, context):
+            if (env.cr, env.uid, env.context, env.su, env.uid_origin) == (cr, uid, context, su, uid_origin):
                 return env
 
         # otherwise create environment, and add it in the set
         self = object.__new__(cls)
-        self.cr, self.uid, self.su, self.uid_origin = cr, uid, su, uid_origin
-        self.context = frozendict(context)
-        self.transaction = transaction
+        self.cr, self.uid, self.context, self.su = self.args = (cr, uid, frozendict(context), su)
+        self.uid_origin = uid_origin
+
+        self.transaction = self.all = transaction
         self.registry = transaction.registry
         self.cache = transaction.cache
-
         self._cache_key = {}                    # memo {field: cache_key}
         self._protected = transaction.protected
-
         transaction.envs.add(self)
         return self
 
@@ -607,7 +545,7 @@ class Environment(Mapping):
         """ Test whether the given model exists. """
         return model_name in self.registry
 
-    def __getitem__(self, model_name: str) -> BaseModel:
+    def __getitem__(self, model_name):
         """ Return an empty recordset from the given model. """
         return self.registry[model_name](self, (), ())
 
@@ -642,8 +580,7 @@ class Environment(Mapping):
         """
         cr = self.cr if cr is None else cr
         uid = self.uid if user is None else int(user)
-        if context is None:
-            context = clean_context(self.context) if su and not self.su else self.context
+        context = self.context if context is None else context
         su = (user is None and self.su) if su is None else su
         return Environment(cr, uid, context, su, self.uid_origin)
 
@@ -702,7 +639,7 @@ class Environment(Mapping):
 
         .. warning::
 
-            No sanity checks applied in sudo mode!
+            No sanity checks applied in sudo mode !
             When in sudo mode, a user can access any company,
             even if not in his allowed companies.
 
@@ -715,7 +652,7 @@ class Environment(Mapping):
             if not self.su:
                 user_company_ids = self.user._get_company_ids()
                 if set(company_ids) - set(user_company_ids):
-                    raise AccessError(self._("Access to unauthorized or invalid companies."))
+                    raise AccessError(_("Access to unauthorized or invalid companies."))
             return self['res.company'].browse(company_ids[0])
         return self.user.company_id.with_env(self)
 
@@ -745,7 +682,7 @@ class Environment(Mapping):
         if company_ids:
             if not self.su:
                 if set(company_ids) - set(user_company_ids):
-                    raise AccessError(self._("Access to unauthorized or invalid companies."))
+                    raise AccessError(_("Access to unauthorized or invalid companies."))
             return self['res.company'].browse(company_ids)
         # By setting the default companies to all user companies instead of the main one
         # we save a lot of potential trouble in all "out of context" calls, such as
@@ -759,72 +696,33 @@ class Environment(Mapping):
         #   - when loading an binary image on a template
         return self['res.company'].browse(user_company_ids)
 
-    @lazy_property
+    @property
     def lang(self):
         """Return the current language code.
 
         :rtype: str
         """
         lang = self.context.get('lang')
-        if lang and lang != 'en_US' and not self['res.lang']._get_data(code=lang):
-            # cannot translate here because we do not have a valid language
-            raise UserError(f'Invalid language code: {lang}')  # pylint: disable
-        return lang or None
-
-    @lazy_property
-    def _lang(self):
-        """Return the technical language code of the current context for **model_terms** translated field
-
-        :rtype: str
-        """
-        context = self.context
-        lang = self.lang or 'en_US'
-        if context.get('edit_translations') or context.get('check_translations'):
-            lang = '_' + lang
-        return lang
-
-    def _(self, source: str | LazyGettext, *args, **kwargs) -> str:
-        """Translate the term using current environment's language.
-
-        Usage:
-
-        ```
-        self.env._("hello world")  # dynamically get module name
-        self.env._("hello %s", "test")
-        self.env._(LAZY_TRANSLATION)
-        ```
-
-        :param source: String to translate or lazy translation
-        :param ...: args or kwargs for templating
-        :return: The transalted string
-        """
-        lang = self.lang or 'en_US'
-        if isinstance(source, str):
-            assert not (args and kwargs), "Use args or kwargs, not both"
-            args = args or kwargs
-        elif isinstance(source, LazyGettext):
-            # translate a lazy text evaluation
-            assert not args and not kwargs, "All args should come from the lazy text"
-            return source._translate(lang)
-        else:
-            raise TypeError(f"Cannot translate {source!r}")
-        if lang == 'en_US':
-            # we ignore the module as en_US is not translated
-            return get_translation('base', 'en_US', source, args)
-        try:
-            module = get_translated_module(2)
-            return get_translation(module, lang, source, args)
-        except Exception:  # noqa: BLE001
-            _logger.debug('translation went wrong for "%r", skipped', source, exc_info=True)
-        return source
+        # _lang_get_id is cached and used to validate lang before return,
+        # because 'env.lang' may be injected in SQL queries
+        return lang if lang and self['res.lang']._lang_get_id(lang) else None
 
     def clear(self):
         """ Clear all record caches, and discard all fields to recompute.
             This may be useful when recovering from a failed ORM operation.
         """
         lazy_property.reset_all(self)
-        self._cache_key.clear()
         self.transaction.clear()
+
+    def clear_upon_failure(self):
+        """ Context manager that rolls back the environments (caches and pending
+            computations and updates) upon exception.
+        """
+        warnings.warn(
+            "Since Odoo 15.0, use cr.savepoint() instead of env.clear_upon_failure().",
+            DeprecationWarning, stacklevel=2,
+        )
+        return self.cr.savepoint()
 
     def invalidate_all(self, flush=True):
         """ Invalidate the cache of all records.
@@ -886,20 +784,20 @@ class Environment(Mapping):
 
     def fields_to_compute(self):
         """ Return a view on the field to compute. """
-        return self.transaction.tocompute.keys()
+        return self.all.tocompute.keys()
 
     def records_to_compute(self, field):
         """ Return the records to compute for ``field``. """
-        ids = self.transaction.tocompute.get(field, ())
+        ids = self.all.tocompute.get(field, ())
         return self[field.model_name].browse(ids)
 
     def is_to_compute(self, field, record):
         """ Return whether ``field`` must be computed on ``record``. """
-        return record.id in self.transaction.tocompute.get(field, ())
+        return record.id in self.all.tocompute.get(field, ())
 
     def not_to_compute(self, field, records):
         """ Return the subset of ``records`` for which ``field`` must not be computed. """
-        ids = self.transaction.tocompute.get(field, ())
+        ids = self.all.tocompute.get(field, ())
         return records.browse(id_ for id_ in records._ids if id_ not in ids)
 
     def add_to_compute(self, field, records):
@@ -907,18 +805,23 @@ class Environment(Mapping):
         if not records:
             return records
         assert field.store and field.compute, "Cannot add to recompute no-store or no-computed field"
-        self.transaction.tocompute[field].update(records._ids)
+        self.all.tocompute[field].update(records._ids)
 
     def remove_to_compute(self, field, records):
         """ Mark ``field`` as computed on ``records``. """
         if not records:
             return
-        ids = self.transaction.tocompute.get(field, None)
+        ids = self.all.tocompute.get(field, None)
         if ids is None:
             return
         ids.difference_update(records._ids)
         if not ids:
-            del self.transaction.tocompute[field]
+            del self.all.tocompute[field]
+
+    @contextmanager
+    def norecompute(self):
+        """ Delay recomputations (deprecated: this is not the default behavior). """
+        yield
 
     def cache_key(self, field):
         """ Return the cache key of the given ``field``. """
@@ -930,13 +833,11 @@ class Environment(Mapping):
                 if key == 'company':
                     return self.company.id
                 elif key == 'uid':
-                    return self.uid if field.compute_sudo else (self.uid, self.su)
+                    return (self.uid, self.su)
                 elif key == 'lang':
                     return get_context('lang') or None
                 elif key == 'active_test':
                     return get_context('active_test', field.context.get('active_test', True))
-                elif key.startswith('bin_size'):
-                    return bool(get_context(key))
                 else:
                     val = get_context(key)
                     if type(val) is list:
@@ -956,59 +857,19 @@ class Environment(Mapping):
             self._cache_key[field] = result
             return result
 
-    def flush_query(self, query: SQL):
-        """ Flush all the fields in the metadata of ``query``. """
-        fields_to_flush = tuple(query.to_flush)
-        if not fields_to_flush:
-            return
-
-        fnames_to_flush = defaultdict(OrderedSet)
-        for field in fields_to_flush:
-            fnames_to_flush[field.model_name].add(field.name)
-        for model_name, field_names in fnames_to_flush.items():
-            self[model_name].flush_model(field_names)
-
-    def execute_query(self, query: SQL) -> list[tuple]:
-        """ Execute the given query, fetch its result and it as a list of tuples
-        (or an empty list if no result to fetch).  The method automatically
-        flushes all the fields in the metadata of the query.
-        """
-        assert isinstance(query, SQL)
-        self.flush_query(query)
-        self.cr.execute(query)
-        return [] if self.cr.description is None else self.cr.fetchall()
-
-    def execute_query_dict(self, query: SQL) -> list[dict]:
-        """ Execute the given query, fetch its results as a list of dicts.
-        The method automatically flushes fields in the metadata of the query.
-        """
-        rows = self.execute_query(query)
-        if not rows:
-            return rows
-        description = self.cr.description
-        return [
-            {column.name: row[index] for index, column in enumerate(description)}
-            for row in rows
-        ]
-
 
 class Transaction:
     """ A object holding ORM data structures for a transaction. """
-    __slots__ = ('_Transaction__file_open_tmp_paths', 'cache', 'envs', 'protected', 'registry', 'tocompute')
-
     def __init__(self, registry):
         self.registry = registry
         # weak set of environments
         self.envs = WeakSet()
-        self.envs.data = OrderedSet()  # make the weakset OrderedWeakSet
         # cache for all records
         self.cache = Cache()
         # fields to protect {field: ids}
         self.protected = StackMap()
         # pending computations {field: ids}
         self.tocompute = defaultdict(OrderedSet)
-        # temporary directories (managed in odoo.tools.file_open_temporary_directory)
-        self.__file_open_tmp_paths = ()  # noqa: PLE0237
 
     def flush(self):
         """ Flush pending computations and updates in the transaction. """
@@ -1035,7 +896,6 @@ class Transaction:
         for env in self.envs:
             env.registry = self.registry
             lazy_property.reset_all(env)
-            env._cache_key.clear()
         self.clear()
 
 
@@ -1044,7 +904,7 @@ NOTHING = object()
 EMPTY_DICT = frozendict()
 
 
-class Cache:
+class Cache(object):
     """ Implementation of the cache of records.
 
     For most fields, the cache is simply a mapping from a record and a field to
@@ -1064,7 +924,6 @@ class Cache:
     the values that should be in the database must be in a context where all
     the field's context keys are ``None``.
     """
-    __slots__ = ('_data', '_dirty', '_patches')
 
     def __init__(self):
         # {field: {record_id: value}, field: {context_key: {record_id: value}}}
@@ -1074,10 +933,6 @@ class Cache:
         # cache, but not yet written in the database; their changed values are
         # in `_data`
         self._dirty = defaultdict(OrderedSet)
-
-        # {field: {record_id: ids}} record ids to be added to the values of
-        # x2many fields if they are not in cache yet
-        self._patches = defaultdict(lambda: defaultdict(list))
 
     def __repr__(self):
         # for debugging: show the cache content and dirty flags as stars
@@ -1102,14 +957,14 @@ class Cache:
     def _get_field_cache(self, model, field):
         """ Return the field cache of the given field, but not for modifying it. """
         field_cache = self._data.get(field, EMPTY_DICT)
-        if field_cache and field in model.pool.field_depends_context:
+        if field_cache and model.pool.field_depends_context[field]:
             field_cache = field_cache.get(model.env.cache_key(field), EMPTY_DICT)
         return field_cache
 
     def _set_field_cache(self, model, field):
         """ Return the field cache of the given field for modifying it. """
         field_cache = self._data[field]
-        if field in model.pool.field_depends_context:
+        if model.pool.field_depends_context[field]:
             field_cache = field_cache.setdefault(model.env.cache_key(field), {})
         return field_cache
 
@@ -1120,7 +975,7 @@ class Cache:
             cache_value = field_cache.get(record.id, EMPTY_DICT)
             if cache_value is None:
                 return True
-            lang = (record.env.lang or 'en_US') if field.translate is True else record.env._lang
+            lang = record.env.lang or 'en_US'
             return lang in cache_value
 
         return record.id in field_cache
@@ -1141,12 +996,12 @@ class Cache:
             field_cache = self._get_field_cache(record, field)
             cache_value = field_cache[record._ids[0]]
             if field.translate and cache_value is not None:
-                lang = (record.env.lang or 'en_US') if field.translate is True else record.env._lang
+                lang = record.env.lang or 'en_US'
                 return cache_value[lang]
             return cache_value
         except KeyError:
             if default is NOTHING:
-                raise CacheMiss(record, field) from None
+                raise CacheMiss(record, field)
             return default
 
     def set(self, record, field, value, dirty=False, check_dirty=True):
@@ -1161,30 +1016,26 @@ class Cache:
             dirty must raise an exception
         """
         field_cache = self._set_field_cache(record, field)
-        record_id = record.id
-
         if field.translate and value is not None:
-            # only for model translated fields
             lang = record.env.lang or 'en_US'
-            cache_value = field_cache.get(record_id) or {}
+            cache_value = field_cache.get(record._ids[0]) or {}
             cache_value[lang] = value
             value = cache_value
-
-        field_cache[record_id] = value
+        field_cache[record._ids[0]] = value
 
         if not check_dirty:
             return
-
         if dirty:
-            assert field.column_type and field.store and record_id
-            self._dirty[field].add(record_id)
-            if field in record.pool.field_depends_context:
+            assert field.column_type and field.store and record.id
+            self._dirty[field].add(record.id)
+            if record.pool.field_depends_context[field]:
                 # put the values under conventional context key values {'context_key': None},
                 # in order to ease the retrieval of those values to flush them
-                record = record.with_env(record.env(context={}))
+                context_none = dict.fromkeys(record.pool.field_depends_context[field])
+                record = record.with_env(record.env(context=context_none))
                 field_cache = self._set_field_cache(record, field)
-                field_cache[record_id] = value
-        elif record_id in self._dirty.get(field, ()):
+                field_cache[record._ids[0]] = value
+        elif record.id in self._dirty.get(field, ()):
             _logger.error("cache.set() removing flag dirty on %s.%s", record, field.name, stack_info=True)
 
     def update(self, records, field, values, dirty=False, check_dirty=True):
@@ -1199,7 +1050,6 @@ class Cache:
             dirty must raise an exception
         """
         if field.translate:
-            # only for model translated fields
             lang = records.env.lang or 'en_US'
             field_cache = self._get_field_cache(records, field)
             cache_values = []
@@ -1225,10 +1075,11 @@ class Cache:
         if dirty:
             assert field.column_type and field.store and all(records._ids)
             self._dirty[field].update(records._ids)
-            if not field.company_dependent and field in records.pool.field_depends_context:
+            if records.pool.field_depends_context[field]:
                 # put the values under conventional context key values {'context_key': None},
                 # in order to ease the retrieval of those values to flush them
-                records = records.with_env(records.env(context={}))
+                context_none = dict.fromkeys(records.pool.field_depends_context[field])
+                records = records.with_env(records.env(context=context_none))
                 field_cache = self._set_field_cache(records, field)
                 field_cache.update(zip(records._ids, values))
         else:
@@ -1242,63 +1093,18 @@ class Cache:
         existing values in cache.
         """
         field_cache = self._set_field_cache(records, field)
-        env = records.env
         if field.translate:
-            if env.context.get('prefetch_langs'):
-                installed = [lang for lang, _ in env['res.lang'].get_installed()]
-                langs = OrderedSet(installed + ['en_US'])
-                _langs = [f'_{l}' for l in langs] if field.translate is not True and env._lang.startswith('_') else []
-                for id_, val in zip(records._ids, values):
-                    if val is None:
-                        field_cache.setdefault(id_, None)
-                    else:
-                        if _langs:  # fallback missing _lang to lang if exists
-                            val.update({f'_{k}': v for k, v in val.items() if k in langs and f'_{k}' not in val})
-                        field_cache[id_] = {
-                            **dict.fromkeys(langs, val['en_US']),  # fallback missing lang to en_US
-                            **dict.fromkeys(_langs, val.get('_en_US')),  # fallback missing _lang to _en_US
-                            **val
-                        }
-            else:
-                lang = (env.lang or 'en_US') if field.translate is True else env._lang
-                for id_, val in zip(records._ids, values):
-                    if val is None:
-                        field_cache.setdefault(id_, None)
-                    else:
-                        cache_value = field_cache.setdefault(id_, {})
-                        if cache_value is not None:
-                            cache_value.setdefault(lang, val)
+            lang = records.env.lang or 'en_US'
+            for id_, val in zip(records._ids, values):
+                if val is None:
+                    field_cache.setdefault(id_, None)
+                else:
+                    cache_value = field_cache.setdefault(id_, {})
+                    if cache_value is not None:
+                        cache_value.setdefault(lang, val)
         else:
             for id_, val in zip(records._ids, values):
                 field_cache.setdefault(id_, val)
-
-    def patch(self, records, field, new_id):
-        """ Apply a patch to an x2many field on new records. The patch consists
-        in adding new_id to its value in cache. If the value is not in cache
-        yet, it will be applied once the value is put in cache with method
-        :meth:`patch_and_set`.
-        """
-        assert not new_id, "Cache.patch can only be called with a new id"
-        field_cache = self._set_field_cache(records, field)
-        for id_ in records._ids:
-            assert not id_, "Cache.patch can only be called with new records"
-            if id_ in field_cache:
-                field_cache[id_] = tuple(dict.fromkeys(field_cache[id_] + (new_id,)))
-            else:
-                self._patches[field][id_].append(new_id)
-
-    def patch_and_set(self, record, field, value):
-        """ Set the value of ``field`` for ``record``, like :meth:`set`, but
-        apply pending patches to ``value`` and return the value actually put
-        in cache.
-        """
-        field_patches = self._patches.get(field)
-        if field_patches:
-            ids = field_patches.pop(record.id, ())
-            if ids:
-                value = tuple(dict.fromkeys(value + tuple(ids)))
-        self.set(record, field, value)
-        return value
 
     def remove(self, record, field):
         """ Remove the value of ``field`` for ``record``. """
@@ -1322,7 +1128,7 @@ class Cache:
         """ Return the cached values of ``field`` for ``records`` until a value is not found. """
         field_cache = self._get_field_cache(records, field)
         if field.translate:
-            lang = (records.env.lang or 'en_US') if field.translate is True else records.env._lang
+            lang = records.env.lang or 'en_US'
 
             def get_value(id_):
                 cache_value = field_cache[id_]
@@ -1374,7 +1180,7 @@ class Cache:
         By default the method checks for values in the current context of ``model``.
         But when ``all_contexts`` is true, it checks for values *in all contexts*.
         """
-        if all_contexts and field in model.pool.field_depends_context:
+        if all_contexts and model.pool.field_depends_context[field]:
             field_cache = self._data.get(field, EMPTY_DICT)
             ids = OrderedSet(id_ for sub_cache in field_cache.values() for id_ in sub_cache)
         else:
@@ -1385,7 +1191,7 @@ class Cache:
         """ Return the ids of ``records`` that have no value for ``field``. """
         field_cache = self._get_field_cache(records, field)
         if field.translate:
-            lang = (records.env.lang or 'en_US') if field.translate is True else records.env._lang
+            lang = records.env.lang or 'en_US'
             for record_id in records._ids:
                 cache_value = field_cache.get(record_id, False)
                 if cache_value is False or not (cache_value is None or lang in cache_value):
@@ -1460,7 +1266,6 @@ class Cache:
         """ Invalidate the cache and its dirty flags. """
         self._data.clear()
         self._dirty.clear()
-        self._patches.clear()
 
     def check(self, env):
         """ Check the consistency of the cache for the given environment. """
@@ -1475,15 +1280,15 @@ class Cache:
                 return
 
             # select the column for the given ids
-            query = Query(env, model._table, model._table_sql)
-            sql_id = SQL.identifier(model._table, 'id')
-            sql_field = model._field_to_sql(model._table, field.name, query)
+            query = Query(env.cr, model._table, model._table_query)
+            qname = model._inherits_join_calc(model._table, field.name, query)
             if field.type == 'binary' and (
                 model.env.context.get('bin_size') or model.env.context.get('bin_size_' + field.name)
             ):
-                sql_field = SQL('pg_size_pretty(length(%s)::bigint)', sql_field)
-            query.add_where(SQL("%s IN %s", sql_id, tuple(ids)))
-            env.cr.execute(query.select(sql_id, sql_field))
+                qname = f'pg_size_pretty(length({qname})::bigint)'
+            query.add_where(f'"{model._table}".id IN %s', [tuple(ids)])
+            query_str, params = query.select(f'"{model._table}".id', qname)
+            env.cr.execute(query_str, params)
 
             # compare returned values with corresponding values in cache
             for id_, value in env.cr.fetchall():
@@ -1494,11 +1299,11 @@ class Cache:
 
         for field, field_cache in self._data.items():
             # check column fields only
-            if not field.store or not field.column_type or field.translate or field.company_dependent:
+            if not field.store or not field.column_type or callable(field.translate):
                 continue
 
             model = env[field.model_name]
-            if field in depends_context:
+            if depends_context[field]:
                 for context_keys, inner_cache in field_cache.items():
                     context = dict(zip(depends_context[field], context_keys))
                     if 'company' in context:
@@ -1512,35 +1317,6 @@ class Cache:
 
         if invalids:
             _logger.warning("Invalid cache: %s", pformat(invalids))
-
-    def _get_grouped_company_dependent_field_cache(self, field):
-        """
-        get a field cache proxy to group up field cache value for a company
-        dependent field
-        cache data: {field: {(company_id,): {id: value}}}
-
-        :param field: a company dependent field
-        :return: a dict like field cache proxy which is logically similar to
-              {id: {company_id, value}}
-        """
-        field_caches = self._data.get(field, EMPTY_DICT)
-        company_field_cache = {
-            context_key[0]: field_cache
-            for context_key, field_cache in field_caches.items()
-        }
-        return GroupedCompanyDependentFieldCache(company_field_cache)
-
-
-class GroupedCompanyDependentFieldCache:
-    def __init__(self, company_field_cache):
-        self._company_field_cache = company_field_cache
-
-    def __getitem__(self, id_):
-        return {
-            company_id: field_cache[id_]
-            for company_id, field_cache in self._company_field_cache.items()
-            if id_ in field_cache
-        }
 
 
 class Starred:

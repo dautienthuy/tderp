@@ -22,10 +22,10 @@ class FleetVehicle(models.Model):
                 ('parent_state', '!=', 'cancel'),
                 ('move_id.move_type', 'in', self.env['account.move'].get_purchase_types())
             ],
+            fields=['vehicle_id', 'move_id:array_agg'],
             groupby=['vehicle_id'],
-            aggregates=['move_id:array_agg'],
         )
-        vehicle_move_mapping = {vehicle.id: set(move_ids) for vehicle, move_ids in moves}
+        vehicle_move_mapping = {move['vehicle_id'][0]: set(move['move_id']) for move in moves}
         for vehicle in self:
             vehicle.account_move_ids = [Command.set(vehicle_move_mapping.get(vehicle.id, []))]
             vehicle.bill_count = len(vehicle.account_move_ids)
@@ -34,11 +34,11 @@ class FleetVehicle(models.Model):
         self.ensure_one()
 
         form_view_ref = self.env.ref('account.view_move_form', False)
-        list_view_ref = self.env.ref('account_fleet.account_move_view_tree', False)
+        tree_view_ref = self.env.ref('account_fleet.account_move_view_tree', False)
 
         result = self.env['ir.actions.act_window']._for_xml_id('account.action_move_in_invoice_type')
         result.update({
             'domain': [('id', 'in', self.account_move_ids.ids)],
-            'views': [(list_view_ref.id, 'list'), (form_view_ref.id, 'form')],
+            'views': [(tree_view_ref.id, 'tree'), (form_view_ref.id, 'form')],
         })
         return result

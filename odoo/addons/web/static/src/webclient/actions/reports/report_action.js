@@ -1,7 +1,9 @@
+/** @odoo-module **/
+
 import { useService } from "@web/core/utils/hooks";
-import { useSetupAction } from "@web/search/action_hook";
 import { Layout } from "@web/search/layout";
 import { getDefaultConfig } from "@web/views/view";
+import { useSetupAction } from "@web/webclient/actions/action_hook";
 import { useEnrichWithActionLinks } from "@web/webclient/actions/reports/report_hook";
 
 import { Component, useRef, useSubEnv } from "@odoo/owl";
@@ -18,9 +20,6 @@ import { Component, useRef, useSubEnv } from "@odoo/owl";
  * is detected.
  */
 export class ReportAction extends Component {
-    static components = { Layout };
-    static template = "web.ReportAction";
-    static props = ["*"];
     setup() {
         useSubEnv({
             config: {
@@ -55,3 +54,5 @@ export class ReportAction extends Component {
         });
     }
 }
+ReportAction.components = { Layout };
+ReportAction.template = "web.ReportAction";

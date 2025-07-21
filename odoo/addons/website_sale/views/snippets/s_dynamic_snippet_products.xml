@@ -3,7 +3,6 @@
     <template id="s_dynamic_snippet_products" name="Products">
         <t t-call="website.s_dynamic_snippet_template">
             <t t-set="snippet_name" t-value="'s_dynamic_snippet_products'"/>
-            <t t-call="website_sale.s_dynamic_snippet_products_preview_data"/>
         </t>
     </template>
     <template id="s_dynamic_snippet_products_options" inherit_id="website.snippet_options">
@@ -21,19 +20,17 @@
                     <we-button data-select-data-attribute="all">All Products</we-button>
                     <we-button data-select-data-attribute="current">Current Category or All</we-button>
                 </we-select>
+                <t t-set="domain" t-translation="off">["|", ["website_id", "=", false], ["website_id", "=", <t t-out="current_website.id"/>]]</t>
                 <we-many2many string="Tags"
                     data-name="product_tag_opt"
                     data-attribute-name="productTagIds"
                     data-no-preview="true"
                     data-model="product.tag"
+                    t-att-data-domain="domain"
                     data-allow-delete="true"
                     data-fakem2m="true"
                     data-select-data-attribute=""/>
-                <we-checkbox string="Show variants"
-                    data-select-data-attribute="true"
-                    data-attribute-name="showVariants"
-                    data-no-preview="true"/>
-                <we-input string="Product Names" class="o_we_large" data-name="product_names_opt"
+                <we-input string="Product names" class="o_we_large" data-name="product_names_opt"
                     data-attribute-name="productNames" data-no-preview="true" data-select-data-attribute=""
                     placeholder="e.g. lamp,bin" title="Comma-separated list of parts of product names, barcodes or internal reference"/>
             </t>

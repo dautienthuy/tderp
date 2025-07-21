@@ -4,24 +4,24 @@ import { loadBundle, LazyComponent } from "@web/core/assets";
 import { registerCleanup } from "@web/../tests/helpers/cleanup";
 import { makeTestEnv } from "@web/../tests/helpers/mock_env";
 import { getFixture, patchWithCleanup } from "@web/../tests/helpers/utils";
-import { Component, App, xml } from "@odoo/owl";
+
+const { Component, App, xml } = owl;
 
 QUnit.module("utils", () => {
     QUnit.module("Assets");
 
     QUnit.test("LazyComponent loads the required bundle", async function (assert) {
         class Test extends Component {
-            static template = xml`
-                <LazyComponent bundle="'test_assetsbundle.lazy_test_component'" Component="'LazyTestComponent'" props="childProps"/>
-            `;
-            static components = { LazyComponent };
-            static props = ["*"];
             get childProps() {
                 return {
                     onCreated: () => assert.step("Lazy test component created"),
                 };
             }
         }
+        Test.template = xml`
+            <LazyComponent bundle="'test_assetsbundle.lazy_test_component'" Component="'LazyTestComponent'" props="childProps"/>
+        `;
+        Test.components = { LazyComponent };
 
         const target = getFixture();
         const app = new App(Test, {

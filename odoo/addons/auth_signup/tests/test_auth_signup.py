@@ -8,7 +8,6 @@ from odoo import http
 from odoo.addons.base.tests.common import HttpCaseWithUserPortal, HttpCaseWithUserDemo
 from odoo.exceptions import AccessError
 
-from datetime import datetime, timedelta
 
 class TestAuthSignupFlow(HttpCaseWithUserPortal, HttpCaseWithUserDemo):
 
@@ -53,7 +52,7 @@ class TestAuthSignupFlow(HttpCaseWithUserPortal, HttpCaseWithUserDemo):
             # Check if an email is sent to the new userw
             new_user = self.env['res.users'].search([('name', '=', name)])
             self.assertTrue(new_user)
-            mail = self.env['mail.message'].search([('message_type', '=', 'email_outgoing'), ('model', '=', 'res.users'), ('res_id', '=', new_user.id)], limit=1)
+            mail = self.env['mail.message'].search([('message_type', '=', 'email'), ('model', '=', 'res.users'), ('res_id', '=', new_user.id)], limit=1)
             self.assertTrue(mail, "The new user must be informed of his registration")
 
     def test_compute_signup_url(self):
@@ -64,27 +63,4 @@ class TestAuthSignupFlow(HttpCaseWithUserPortal, HttpCaseWithUserDemo):
         partner.signup_prepare()
 
         with self.assertRaises(AccessError):
-            partner.with_user(user.id)._get_signup_url()
-
-    def test_copy_multiple_users(self):
-        users = self.env['res.users'].create([
-            {'login': 'testuser1', 'name': 'Test User 1', 'email': 'test1@odoo.com'},
-            {'login': 'testuser2', 'name': 'Test User 2', 'email': 'test2@odoo.com'},
-        ])
-        initial_user_count = self.env['res.users'].search_count([])
-        users.copy()
-        self.assertEqual(
-            self.env['res.users'].search_count([]),
-            initial_user_count + len(users)
-        )
-
-    def test_notify_unregistered(self):
-        users = self.env['res.users'].create([
-            {'login': 'testuser1', 'name': 'Test User 1', 'email': 'test1@odoo.com'},
-            {'login': 'testuser2', 'name': 'Test User 2', 'email': 'test2@odoo.com'},
-        ])
-        for u in users:
-            u.create_date = datetime.now() - timedelta(days=5, minutes=10)
-        self.env.flush_all()
-        with self.registry.cursor() as cr:
-            users.with_env(users.env(cr=cr)).send_unregistered_user_reminder(after_days=5, batch_size=100)
+            partner.with_user(user.id).signup_url

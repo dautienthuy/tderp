@@ -3,7 +3,6 @@
 import base64
 import binascii
 import io
-from typing import Tuple, Union
 
 from PIL import Image, ImageOps
 # We can preload Ico too because it is considered safe
@@ -16,12 +15,8 @@ except ImportError:
 from random import randrange
 
 from odoo.exceptions import UserError
-from odoo.tools.misc import DotDict
-from odoo.tools.translate import LazyTranslate
+from odoo.tools.translate import _
 
-
-__all__ = ["image_process"]
-_lt = LazyTranslate('base')
 
 # Preload PIL with the minimal subset of image formats we need
 Image.preinit()
@@ -34,7 +29,6 @@ FILETYPE_BASE64_MAGICWORD = {
     b'R': 'gif',
     b'i': 'png',
     b'P': 'svg+xml',
-    b'U': 'webp',
 }
 
 EXIF_TAG_ORIENTATION = 0x112
@@ -57,15 +51,16 @@ EXIF_TAG_ORIENTATION_TO_TRANSPOSE_METHODS = { # Initial side on 1st row/col:
 IMAGE_MAX_RESOLUTION = 50e6
 
 
-class ImageProcess:
+class ImageProcess():
 
     def __init__(self, source, verify_resolution=True):
-        """Initialize the ``source`` image for processing.
+        """Initialize the `source` image for processing.
 
-        :param bytes source: the original image binary
+        :param source: the original image binary
 
             No processing will be done if the `source` is falsy or if
             the image is SVG.
+
         :param verify_resolution: if True, make sure the original image size is not
             excessive before starting to process it. The max allowed resolution is
             defined by `IMAGE_MAX_RESOLUTION`.
@@ -78,14 +73,14 @@ class ImageProcess:
         self.source = source or False
         self.operationsCount = 0
 
-        if not source or source[:1] == b'<' or (source[0:4] == b'RIFF' and source[8:15] == b'WEBPVP8'):
-            # don't process empty source or SVG or WEBP
+        if not source or source[:1] == b'<':
+            # don't process empty source or SVG
             self.image = False
         else:
             try:
                 self.image = Image.open(io.BytesIO(source))
             except (OSError, binascii.Error):
-                raise UserError(_lt("This file could not be decoded as an image file."))
+                raise UserError(_("This file could not be decoded as an image file."))
 
             # Original format has to be saved before fixing the orientation or
             # doing any other operations because the information will be lost on
@@ -96,15 +91,18 @@ class ImageProcess:
 
             w, h = self.image.size
             if verify_resolution and w * h > IMAGE_MAX_RESOLUTION:
-                raise UserError(_lt("Too large image (above %sMpx), reduce the image size.", str(IMAGE_MAX_RESOLUTION / 1e6)))
+                raise UserError(_("Image size excessive, uploaded images must be smaller than %s million pixels.", str(IMAGE_MAX_RESOLUTION / 1e6)))
 
     def image_quality(self, quality=0, output_format=''):
         """Return the image resulting of all the image processing
         operations that have been applied previously.
 
-        The source is returned as-is if it's an SVG, or if no operations have
-        been applied, the `output_format` is the same as the original format,
-        and the quality is not specified.
+        Return False if the initialized `image` was falsy, and return
+        the initialized `image` without change if it was SVG.
+
+        Also return the initialized `image` if no operations have been applied
+        and the `output_format` is the same as the original format and the
+        quality is not specified.
 
         :param int quality: quality setting to apply. Default to 0.
 
@@ -113,12 +111,11 @@ class ImageProcess:
               was changed, otherwise the original image is returned.
             - for PNG: set falsy to prevent conversion to a WEB palette.
             - for other formats: no effect.
-
-        :param str output_format: Can be PNG, JPEG, GIF, or ICO.
-            Default to the format of the original image if a valid output format,
-            otherwise BMP is converted to PNG and the rest are converted to JPEG.
-        :return: the final image, or ``False`` if the original ``source`` was falsy.
-        :rtype: bytes | False
+        :param str output_format: the output format. Can be PNG, JPEG, GIF, or ICO.
+            Default to the format of the original image. BMP is converted to
+            PNG, other formats than those mentioned above are converted to JPEG.
+        :return: image
+        :rtype: bytes or False
         """
         if not self.image:
             return self.source
@@ -152,19 +149,13 @@ class ImageProcess:
         if output_image.mode not in ["1", "L", "P", "RGB", "RGBA"] or (output_format == 'JPEG' and output_image.mode == 'RGBA'):
             output_image = output_image.convert("RGB")
 
-        output_bytes = image_apply_opt(output_image, **opt)
-        if len(output_bytes) >= len(self.source) and self.original_format == output_format and not self.operationsCount:
-            # Format has not changed and image content is unchanged but the
-            # reached binary is bigger: rather use the original.
-            return self.source
-        return output_bytes
+        return image_apply_opt(output_image, **opt)
 
-    def resize(self, max_width=0, max_height=0, expand=False):
+    def resize(self, max_width=0, max_height=0):
         """Resize the image.
 
-        The image is not resized above the current image size, unless the expand
-        parameter is True. This method is used by default to create smaller versions
-        of the image.
+        The image is never resized above the current image size. This method is
+        only to create a smaller version of the image.
 
         The current ratio is preserved. To change the ratio, see `crop_resize`.
 
@@ -176,7 +167,6 @@ class ImageProcess:
 
         :param int max_width: max width
         :param int max_height: max height
-        :param bool expand: whether or not the image size can be increased
         :return: self to allow chaining
         :rtype: ImageProcess
         """
@@ -184,10 +174,6 @@ class ImageProcess:
             w, h = self.image.size
             asked_width = max_width or (w * max_height) // h
             asked_height = max_height or (h * max_width) // w
-            if expand and (asked_width > w or asked_height > h):
-                self.image = self.image.resize((asked_width, asked_height))
-                self.operationsCount += 1
-                return self
             if asked_width != w or asked_height != h:
                 self.image.thumbnail((asked_width, asked_height), Resampling.LANCZOS)
                 if self.image.width != w or self.image.height != h:
@@ -253,43 +239,27 @@ class ImageProcess:
 
         return self.resize(max_width, max_height)
 
-    def colorize(self, color=None):
-        """Replace the transparent background by a given color, or by a random one.
+    def colorize(self):
+        """Replace the transparent background by a random color.
 
-        :param tuple color: RGB values for the color to use
         :return: self to allow chaining
         :rtype: ImageProcess
         """
-        if color is None:
-            color = (randrange(32, 224, 24), randrange(32, 224, 24), randrange(32, 224, 24))
         if self.image:
             original = self.image
+            color = (randrange(32, 224, 24), randrange(32, 224, 24), randrange(32, 224, 24))
             self.image = Image.new('RGB', original.size)
             self.image.paste(color, box=(0, 0) + original.size)
             self.image.paste(original, mask=original)
             self.operationsCount += 1
         return self
 
-    def add_padding(self, padding):
-        """Expand the image size by adding padding around the image
 
-        :param int padding: thickness of the padding
-        :return: self to allow chaining
-        :rtype: ImageProcess
-        """
-        if self.image:
-            img_width, img_height = self.image.size
-            self.image = self.image.resize((img_width - 2 * padding, img_height - 2 * padding))
-            self.image = ImageOps.expand(self.image, border=padding)
-            self.operationsCount += 1
-        return self
-
-
-def image_process(source, size=(0, 0), verify_resolution=False, quality=0, expand=False, crop=None, colorize=False, output_format='', padding=False):
+def image_process(source, size=(0, 0), verify_resolution=False, quality=0, crop=None, colorize=False, output_format=''):
     """Process the `source` image by executing the given operations and
     return the result image.
     """
-    if not source or ((not size or (not size[0] and not size[1])) and not verify_resolution and not quality and not crop and not colorize and not output_format and not padding):
+    if not source or ((not size or (not size[0] and not size[1])) and not verify_resolution and not quality and not crop and not colorize and not output_format):
         # for performance: don't do anything if the image is falsy or if
         # no operations have been requested
         return source
@@ -305,11 +275,9 @@ def image_process(source, size=(0, 0), verify_resolution=False, quality=0, expan
                 center_y = 1
             image.crop_resize(max_width=size[0], max_height=size[1], center_x=center_x, center_y=center_y)
         else:
-            image.resize(max_width=size[0], max_height=size[1], expand=expand)
-    if padding:
-        image.add_padding(padding)
+            image.resize(max_width=size[0], max_height=size[1])
     if colorize:
-        image.colorize(colorize if isinstance(colorize, tuple) else None)
+        image.colorize()
     return image.image_quality(quality=quality, output_format=output_format)
 
 
@@ -422,28 +390,30 @@ def binary_to_image(source):
     try:
         return Image.open(io.BytesIO(source))
     except (OSError, binascii.Error):
-        raise UserError(_lt("This file could not be decoded as an image file."))
+        raise UserError(_("This file could not be decoded as an image file."))
 
-def base64_to_image(base64_source: Union[str, bytes]) -> Image:
+def base64_to_image(base64_source):
     """Return a PIL image from the given `base64_source`.
 
     :param base64_source: the image base64 encoded
+    :type base64_source: string or bytes
+    :rtype: ~PIL.Image.Image
     :raise: UserError if the base64 is incorrect or the image can't be identified by PIL
     """
     try:
         return Image.open(io.BytesIO(base64.b64decode(base64_source)))
     except (OSError, binascii.Error):
-        raise UserError(_lt("This file could not be decoded as an image file."))
+        raise UserError(_("This file could not be decoded as an image file."))
 
 
-def image_apply_opt(image: Image, output_format: str, **params) -> bytes:
-    """Return the serialization of the provided `image` to `output_format`
-    using `params`.
+def image_apply_opt(image, output_format, **params):
+    """Return the given PIL `image` using `params`.
 
-    :param image: the image to encode
-    :param output_format: :meth:`~PIL.Image.Image.save`'s ``format`` parameter
+    :type image: ~PIL.Image.Image
+    :param str output_format: :meth:`~PIL.Image.Image.save`'s ``format`` parameter
     :param dict params: params to expand when calling :meth:`~PIL.Image.Image.save`
     :return: the image formatted
+    :rtype: bytes
     """
     if output_format == 'JPEG' and image.mode not in ['1', 'L', 'RGB']:
         image = image.convert("RGB")
@@ -465,43 +435,6 @@ def image_to_base64(image, output_format, **params):
     return base64.b64encode(stream)
 
 
-def get_webp_size(source):
-    """
-    Returns the size of the provided webp binary source for VP8, VP8X and
-    VP8L, otherwise returns None.
-    See https://developers.google.com/speed/webp/docs/riff_container.
-
-    :param source: binary source
-    :return: (width, height) tuple, or None if not supported
-    """
-    if not (source[0:4] == b'RIFF' and source[8:15] == b'WEBPVP8'):
-        raise UserError(_lt("This file is not a webp file."))
-
-    vp8_type = source[15]
-    if vp8_type == 0x20:  # 0x20 = ' '
-        # Sizes on big-endian 16 bits at offset 26.
-        width_low, width_high, height_low, height_high = source[26:30]
-        width = (width_high << 8) + width_low
-        height = (height_high << 8) + height_low
-        return (width, height)
-    elif vp8_type == 0x58:  # 0x48 = 'X'
-        # Sizes (minus one) on big-endian 24 bits at offset 24.
-        width_low, width_medium, width_high, height_low, height_medium, height_high = source[24:30]
-        width = 1 + (width_high << 16) + (width_medium << 8) + width_low
-        height = 1 + (height_high << 16) + (height_medium << 8) + height_low
-        return (width, height)
-    elif vp8_type == 0x4C and source[20] == 0x2F:  # 0x4C = 'L'
-        # Sizes (minus one) on big-endian-ish 14 bits at offset 21.
-        # E.g. [@20] 2F ab cd ef gh
-        # - width = 1 + (c&0x3)d ab: ignore the two high bits of the second byte
-        # - height= 1 + hef(c&0xC>>2): used them as the first two bits of the height
-        ab, cd, ef, gh = source[21:25]
-        width = 1 + ((cd & 0x3F) << 8) + ab
-        height = 1 + ((gh & 0xF) << 10) + (ef << 2) + (cd >> 6)
-        return (width, height)
-    return None
-
-
 def is_image_size_above(base64_source_1, base64_source_2):
     """Return whether or not the size of the given image `base64_source_1` is
     above the size of the given image `base64_source_2`.
@@ -511,40 +444,28 @@ def is_image_size_above(base64_source_1, base64_source_2):
     if base64_source_1[:1] in (b'P', 'P') or base64_source_2[:1] in (b'P', 'P'):
         # False for SVG
         return False
-
-    def get_image_size(base64_source):
-        source = base64.b64decode(base64_source)
-        if (source[0:4] == b'RIFF' and source[8:15] == b'WEBPVP8'):
-            size = get_webp_size(source)
-            if size:
-                return DotDict({'width': size[0], 'height': size[0]})
-            else:
-                # False for unknown WEBP format
-                return False
-        else:
-            return image_fix_orientation(binary_to_image(source))
-
-    image_source = get_image_size(base64_source_1)
-    image_target = get_image_size(base64_source_2)
+    image_source = image_fix_orientation(base64_to_image(base64_source_1))
+    image_target = image_fix_orientation(base64_to_image(base64_source_2))
     return image_source.width > image_target.width or image_source.height > image_target.height
 
 
-def image_guess_size_from_field_name(field_name: str) -> Tuple[int, int]:
+def image_guess_size_from_field_name(field_name):
     """Attempt to guess the image size based on `field_name`.
 
     If it can't be guessed or if it is a custom field: return (0, 0) instead.
 
-    :param field_name: the name of a field
+    :param str field_name: the name of a field
     :return: the guessed size
+    :rtype: tuple (width, height)
     """
     if field_name == 'image':
         return (1024, 1024)
     if field_name.startswith('x_'):
         return (0, 0)
     try:
-        suffix = int(field_name.rsplit('_', 1)[-1])
+        suffix = int(field_name.split('_')[-1])
     except ValueError:
-        return 0, 0
+        return (0, 0)
 
     if suffix < 16:
         # If the suffix is less than 16, it's probably not the size
@@ -553,7 +474,7 @@ def image_guess_size_from_field_name(field_name: str) -> Tuple[int, int]:
     return (suffix, suffix)
 
 
-def image_data_uri(base64_source: bytes) -> str:
+def image_data_uri(base64_source):
     """This returns data URL scheme according RFC 2397
     (https://tools.ietf.org/html/rfc2397) for all kind of supported images
     (PNG, GIF, JPG and SVG), defaulting on PNG type if not mimetype detected.

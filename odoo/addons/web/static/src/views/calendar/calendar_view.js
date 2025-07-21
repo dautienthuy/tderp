@@ -1,3 +1,5 @@
+/** @odoo-module **/
+
 import { registry } from "@web/core/registry";
 import { CalendarRenderer } from "./calendar_renderer";
 import { CalendarArchParser } from "./calendar_arch_parser";
@@ -7,6 +9,9 @@ import { CalendarController } from "./calendar_controller";
 export const calendarView = {
     type: "calendar",
 
+    display_name: "Calendar",
+    icon: "fa fa-calendar",
+    multiRecord: true,
     searchMenuTypes: ["filter", "favorite"],
 
     ArchParser: CalendarArchParser,

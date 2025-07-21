@@ -35,14 +35,14 @@ class MailPluginController(mail_plugin.MailPluginController):
             lead_values = {
                 'lead_id': lead.id,
                 'name': lead.name,
-                'expected_revenue': formatLang(request.env, lead.expected_revenue,
+                'expected_revenue': formatLang(request.env, lead.expected_revenue, monetary=True,
                                                currency_obj=lead.company_currency),
                 'probability': lead.probability,
             }
 
             if recurring_revenues:
                 lead_values.update({
-                    'recurring_revenue': formatLang(request.env, lead.recurring_revenue,
+                    'recurring_revenue': formatLang(request.env, lead.recurring_revenue, monetary=True,
                                                     currency_obj=lead.company_currency),
                     'recurring_plan': lead.recurring_plan.name,
                 })
@@ -59,7 +59,7 @@ class MailPluginController(mail_plugin.MailPluginController):
         """
         contact_values = super(MailPluginController, self)._get_contact_data(partner)
 
-        if not request.env['crm.lead'].has_access('create'):
+        if not request.env['crm.lead'].check_access_rights('create', raise_exception=False):
             return contact_values
 
         if not partner:
@@ -70,12 +70,12 @@ class MailPluginController(mail_plugin.MailPluginController):
 
     def _mail_content_logging_models_whitelist(self):
         models_whitelist = super(MailPluginController, self)._mail_content_logging_models_whitelist()
-        if not request.env['crm.lead'].has_access('create'):
+        if not request.env['crm.lead'].check_access_rights('create', raise_exception=False):
             return models_whitelist
         return models_whitelist + ['crm.lead']
 
     def _translation_modules_whitelist(self):
         modules_whitelist = super(MailPluginController, self)._translation_modules_whitelist()
-        if not request.env['crm.lead'].has_access('create'):
+        if not request.env['crm.lead'].check_access_rights('create', raise_exception=False):
             return modules_whitelist
         return modules_whitelist + ['crm_mail_plugin']

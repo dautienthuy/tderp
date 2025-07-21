@@ -6,13 +6,5 @@ from odoo.tests.common import TransactionCase
 
 class TestIAP(TransactionCase):
     def test_get_account(self):
-        service_name = 'random_service_name'
-        self.env['iap.service'].create({
-            'name': service_name,
-            'description': 'test service',
-            'unit_name': 'credit',
-            'integer_balance': True,
-            'technical_name': service_name,
-        })
-        account = self.env['iap.account'].get(service_name)
+        account = self.env["iap.account"].get("random_service_name")
         self.assertTrue(account.account_token, "Must be able to read the field")

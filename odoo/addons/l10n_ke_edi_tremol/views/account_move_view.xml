@@ -8,18 +8,17 @@
             <field name="arch" type="xml">
                 <xpath expr="//header/button[@name='action_post']" position="after">
                     <field name="l10n_ke_cu_qrcode" invisible="1"/>
-                    <field name="l10n_ke_cu_show_send_button" invisible="1"/>
                     <button name="l10n_ke_action_cu_post" type="object"
                             class="oe_highlight"
                             groups="account.group_account_manager"
                             string="Send To Fiscal Device"
-                            invisible="not l10n_ke_cu_show_send_button"/>
+                            attrs="{'invisible': ['|', '|', '|', ('country_code', '!=', 'KE'), ('l10n_ke_cu_qrcode', '!=', False), ('state', '!=', 'posted'), ('move_type', 'not in', ['out_invoice', 'out_refund'])]}"/>
                 </xpath>
                 <xpath expr="//group[@id='header_right_group']" position="inside">
-                    <field name="l10n_ke_cu_invoice_number" readonly="1" invisible="country_code != 'KE'"/>
+                    <field name="l10n_ke_cu_invoice_number" attrs="{'invisible': [('country_code', '!=', 'KE')]}" readonly="1"/>
                 </xpath>
                 <notebook position="inside">
-                    <page string="Tremol GO3 Fiscal Device" name="page_tremol_go3_fiscal_device" invisible="country_code != 'KE'">
+                    <page string="Tremol GO3 Fiscal Device" attrs="{'invisible': [('country_code', '!=', 'KE')]}">
                         <group>
                             <group>
                                 <field name="l10n_ke_cu_qrcode" widget="url" readonly="1"/>
@@ -33,11 +32,11 @@
         </record>
 
         <record id="l10n_ke_inherit_account_move_tree_view" model="ir.ui.view">
-            <field name="name">l10n.ke.inherit.account.move.list</field>
+            <field name="name">l10n.ke.inherit.account.move.tree</field>
             <field name="model">account.move</field>
             <field name="inherit_id" ref="account.view_out_invoice_tree" />
             <field name="arch" type="xml">
-                <field name="status_in_payment" position="after">
+                <field name="state" position="after">
                     <field name="l10n_ke_cu_invoice_number" optional="hide"/>
                 </field>
             </field>
@@ -60,7 +59,7 @@
             <field name="inherit_id" ref="account.view_account_invoice_filter" />
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='journal_id']" position="after">
-                    <field name="l10n_ke_cu_invoice_number" string="Kenya CU Invoice Number" operator="ilike" />
+                    <field name="l10n_ke_cu_invoice_number" string="Kenya CU Invoice Number" filter_domain="[('l10n_ke_cu_invoice_number', 'ilike', self')]" />
                 </xpath>
                 <xpath expr="//filter[@name='cancel']" position="after">
                     <separator/>
@@ -70,3 +69,5 @@
         </record>
     </data>
 </odoo>
+
+

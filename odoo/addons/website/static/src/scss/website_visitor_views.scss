@@ -1,11 +1,19 @@
-.o_wvisitor_kanban .o_kanban_renderer {
+.o_wvisitor_kanban {
     &.o_kanban_ungrouped {
         padding:0px;
         .o_kanban_record {
             width: 100%;
             margin: 0px;
-            .o_kanban_grouped {
-                display:none !important;
+            .o_wvisitor_kanban_card {
+                margin: 0px;
+                padding: 0px;
+                border-top: 0px !important;
+                &:first-child {
+                    border-bottom: 1px solid #dee2e6 !important;
+                }
+                .oe_kanban_details {
+                    display:none !important;
+                }
             }
         }
     }

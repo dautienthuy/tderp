@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import base64
 import datetime
 from dateutil.relativedelta import relativedelta
 import os.path
@@ -15,9 +14,40 @@ from odoo.tools import (
     merge_sequences,
     misc,
     remove_accents,
+    validate_url,
 )
-from odoo.tools.mail import validate_url
 from odoo.tests.common import TransactionCase, BaseCase
+
+
+class TestCountingStream(BaseCase):
+    def test_empty_stream(self):
+        s = misc.CountingStream(iter([]))
+        self.assertEqual(s.index, -1)
+        self.assertIsNone(next(s, None))
+        self.assertEqual(s.index, 0)
+
+    def test_single(self):
+        s = misc.CountingStream(range(1))
+        self.assertEqual(s.index, -1)
+        self.assertEqual(next(s, None), 0)
+        self.assertIsNone(next(s, None))
+        self.assertEqual(s.index, 1)
+
+    def test_full(self):
+        s = misc.CountingStream(range(42))
+        for _ in s:
+            pass
+        self.assertEqual(s.index, 42)
+
+    def test_repeated(self):
+        """ Once the CountingStream has stopped iterating, the index should not
+        increase anymore (the internal state should not be allowed to change)
+        """
+        s = misc.CountingStream(iter([]))
+        self.assertIsNone(next(s, None))
+        self.assertEqual(s.index, 0)
+        self.assertIsNone(next(s, None))
+        self.assertEqual(s.index, 0)
 
 
 class TestMergeSequences(BaseCase):
@@ -75,29 +105,6 @@ class TestDateRangeFunction(BaseCase):
         dates = [date for date in date_utils.date_range(start, end)]
 
         self.assertEqual(dates, expected)
-
-    def test_date_range_with_date(self):
-        """ Check date_range with naive datetimes. """
-        start = datetime.date(1985, 1, 1)
-        end = datetime.date(1986, 1, 1)
-
-        expected = [
-            datetime.date(1985, 1, 1),
-            datetime.date(1985, 2, 1),
-            datetime.date(1985, 3, 1),
-            datetime.date(1985, 4, 1),
-            datetime.date(1985, 5, 1),
-            datetime.date(1985, 6, 1),
-            datetime.date(1985, 7, 1),
-            datetime.date(1985, 8, 1),
-            datetime.date(1985, 9, 1),
-            datetime.date(1985, 10, 1),
-            datetime.date(1985, 11, 1),
-            datetime.date(1985, 12, 1),
-            datetime.date(1986, 1, 1),
-        ]
-
-        self.assertEqual(list(date_utils.date_range(start, end)), expected)
 
     def test_date_range_with_timezone_aware_datetimes_other_than_utc(self):
         """ Check date_range with timezone-aware datetimes other than UTC."""
@@ -488,94 +495,6 @@ class TestDictTools(BaseCase):
             dict.update(d, {'baz': 'xyz'})
 
 
-class TestFormatLang(TransactionCase):
-    def test_value_and_digits(self):
-        self.assertEqual(misc.formatLang(self.env, 100.23, digits=1), '100.2')
-        self.assertEqual(misc.formatLang(self.env, 100.23, digits=3), '100.230')
-
-        self.assertEqual(misc.formatLang(self.env, ''), '', 'If value is an empty string, it should return an empty string (not 0)')
-
-        self.assertEqual(misc.formatLang(self.env, 100), '100.00', 'If digits is None (default value), it should default to 2')
-
-        # Default rounding is 'HALF_EVEN'
-        self.assertEqual(misc.formatLang(self.env, 100.205), '100.20')
-        self.assertEqual(misc.formatLang(self.env, 100.215), '100.22')
-
-    def test_grouping(self):
-        self.env["res.lang"].create({
-            "name": "formatLang Lang",
-            "code": "fLT",
-            "grouping": "[3,2,-1]",
-            "decimal_point": "!",
-            "thousands_sep": "?",
-        })
-
-        self.env['res.lang']._activate_lang('fLT')
-
-        self.assertEqual(misc.formatLang(self.env['res.lang'].with_context(lang='fLT').env, 1000000000, grouping=True), '10000?00?000!00')
-        self.assertEqual(misc.formatLang(self.env['res.lang'].with_context(lang='fLT').env, 1000000000, grouping=False), '1000000000.00')
-
-    def test_decimal_precision(self):
-        decimal_precision = self.env['decimal.precision'].create({
-            'name': 'formatLang Decimal Precision',
-            'digits': 3,  # We want .001 decimals to make sure the decimal precision parameter 'dp' is chosen.
-        })
-
-        self.assertEqual(misc.formatLang(self.env, 100, dp=decimal_precision.name), '100.000')
-
-    def test_currency_object(self):
-        currency_object = self.env['res.currency'].create({
-            'name': 'formatLang Currency',
-            'symbol': 'fL',
-            'rounding': 0.1,  # We want .1 decimals to make sure 'currency_obj' is chosen.
-            'position': 'after',
-        })
-
-        self.assertEqual(misc.formatLang(self.env, 100, currency_obj=currency_object), '100.0%sfL' % u'\N{NO-BREAK SPACE}')
-
-        currency_object.write({'position': 'before'})
-
-        self.assertEqual(misc.formatLang(self.env, 100, currency_obj=currency_object), 'fL%s100.0' % u'\N{NO-BREAK SPACE}')
-
-    def test_decimal_precision_and_currency_object(self):
-        decimal_precision = self.env['decimal.precision'].create({
-            'name': 'formatLang Decimal Precision',
-            'digits': 3,
-        })
-
-        currency_object = self.env['res.currency'].create({
-            'name': 'formatLang Currency',
-            'symbol': 'fL',
-            'rounding': 0.1,
-            'position': 'after',
-        })
-
-        # If we have a 'dp' and 'currency_obj', we use the decimal precision of 'dp' and the format of 'currency_obj'.
-        self.assertEqual(misc.formatLang(self.env, 100, dp=decimal_precision.name, currency_obj=currency_object), '100.000%sfL' % u'\N{NO-BREAK SPACE}')
-
-    def test_rounding_method(self):
-        self.assertEqual(misc.formatLang(self.env, 100.205), '100.20')  # Default is 'HALF-EVEN'
-        self.assertEqual(misc.formatLang(self.env, 100.215), '100.22')  # Default is 'HALF-EVEN'
-
-        self.assertEqual(misc.formatLang(self.env, 100.205, rounding_method='HALF-UP'), '100.21')
-        self.assertEqual(misc.formatLang(self.env, 100.215, rounding_method='HALF-UP'), '100.22')
-
-        self.assertEqual(misc.formatLang(self.env, 100.205, rounding_method='HALF-DOWN'), '100.20')
-        self.assertEqual(misc.formatLang(self.env, 100.215, rounding_method='HALF-DOWN'), '100.21')
-
-    def test_rounding_unit(self):
-        self.assertEqual(misc.formatLang(self.env, 1000000.00), '1,000,000.00')
-        self.assertEqual(misc.formatLang(self.env, 1000000.00, rounding_unit='units'), '1,000,000')
-        self.assertEqual(misc.formatLang(self.env, 1000000.00, rounding_unit='thousands'), '1,000')
-        self.assertEqual(misc.formatLang(self.env, 1000000.00, rounding_unit='lakhs'), '10')
-        self.assertEqual(misc.formatLang(self.env, 1000000.00, rounding_unit="millions"), '1')
-
-    def test_rounding_method_and_rounding_unit(self):
-        self.assertEqual(misc.formatLang(self.env, 1822060000, rounding_method='HALF-UP', rounding_unit='lakhs'), '18,221')
-        self.assertEqual(misc.formatLang(self.env, 1822050000, rounding_method='HALF-UP', rounding_unit='lakhs'), '18,221')
-        self.assertEqual(misc.formatLang(self.env, 1822049900, rounding_method='HALF-UP', rounding_unit='lakhs'), '18,220')
-
-
 class TestUrlValidate(BaseCase):
     def test_url_validate(self):
         for case, truth in [
@@ -598,35 +517,3 @@ class TestUrlValidate(BaseCase):
         self.assertEqual(validate_url('/index.html'), 'http:///index.html')
         self.assertEqual(validate_url('?debug=1'), 'http://?debug=1')
         self.assertEqual(validate_url('#model=project.task&id=3603607'), 'http://#model=project.task&id=3603607')
-
-
-class TestMiscToken(TransactionCase):
-
-    def test_expired_token(self):
-        payload = {'test': True, 'value': 123456, 'some_string': 'hello', 'some_dict': {'name': 'New Dict'}}
-        expiration = datetime.datetime.now() - datetime.timedelta(days=1)
-        token = misc.hash_sign(self.env, 'test', payload, expiration=expiration)
-        self.assertIsNone(misc.verify_hash_signed(self.env, 'test', token))
-
-    def test_long_payload(self):
-        payload = {'test': True, 'value':123456, 'some_string': 'hello', 'some_dict': {'name': 'New Dict'}}
-        token = misc.hash_sign(self.env, 'test', payload, expiration_hours=24)
-        self.assertEqual(misc.verify_hash_signed(self.env, 'test', token), payload)
-
-    def test_None_payload(self):
-        with self.assertRaises(Exception):
-            misc.hash_sign(self.env, 'test', None, expiration_hours=24)
-
-    def test_list_payload(self):
-        payload = ["str1", "str2", "str3", 4, 5]
-        token = misc.hash_sign(self.env, 'test', payload, expiration_hours=24)
-        self.assertEqual(misc.verify_hash_signed(self.env, 'test', token), payload)
-
-    def test_modified_payload(self):
-        payload = ["str1", "str2", "str3", 4, 5]
-        token = base64.urlsafe_b64decode(misc.hash_sign(self.env, 'test', payload, expiration_hours=24) + '===')
-        new_timestamp = datetime.datetime.now() + datetime.timedelta(days=7)
-        new_timestamp = int(new_timestamp.timestamp())
-        new_timestamp = new_timestamp.to_bytes(8, byteorder='little')
-        token = base64.urlsafe_b64encode(token[:1] + new_timestamp + token[9:]).decode()
-        self.assertIsNone(misc.verify_hash_signed(self.env, 'test', token))

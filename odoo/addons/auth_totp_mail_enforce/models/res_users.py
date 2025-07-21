@@ -43,9 +43,6 @@ class Users(models.Model):
         if self._mfa_type() == 'totp_mail':
             return '/web/login/totp'
 
-    def _rpc_api_keys_only(self):
-        return self._mfa_type() == 'totp_mail' or super()._rpc_api_keys_only()
-
     def _totp_check(self, code):
         self._totp_rate_limit('code_check')
         user = self.sudo()
@@ -91,17 +88,15 @@ class Users(models.Model):
         template = self.env.ref('auth_totp_mail_enforce.mail_template_totp_mail_code').sudo()
         context = {}
         if request:
+            geoip = request.geoip
             device = request.httprequest.user_agent.platform
             browser = request.httprequest.user_agent.browser
             context.update({
-                'location': None,
+                'location': f"{geoip['city']}, {geoip['country_name']}" if geoip else None,
                 'device': device and device.capitalize() or None,
                 'browser': browser and browser.capitalize() or None,
                 'ip': request.httprequest.environ['REMOTE_ADDR'],
             })
-            if request.geoip.city.name:
-                context['location'] = f"{request.geoip.city.name}, {request.geoip.country_name}"
-
         email_values = {
             'email_to': self.email,
             'email_cc': False,

@@ -1,42 +1,22 @@
-/** @odoo-module **/
+odoo.define('website.editor.snippets.options', function (require) {
+'use strict';
 
-import { loadCSS } from "@web/core/assets";
-import { AutoComplete } from "@web/core/autocomplete/autocomplete";
-import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
-import { Dialog } from "@web/core/dialog/dialog";
-import { rpc } from "@web/core/network/rpc";
-import { user } from "@web/core/user";
-import { useChildRef } from "@web/core/utils/hooks";
-import weUtils from "@web_editor/js/common/utils";
-import options from "@web_editor/js/editor/snippets.options";
-import { NavbarLinkPopoverWidget } from "@website/js/widgets/link_popover_widget";
-import wUtils from "@website/js/utils";
-import {
-    applyModifications,
-    isImageSupportedForStyle,
-    loadImageInfo,
-} from "@web_editor/js/editor/image_processing";
-import "@website/snippets/s_popup/options";
-import { range } from "@web/core/utils/numbers";
-import { _t } from "@web/core/l10n/translation";
-import { pyToJsLocale } from "@web/core/l10n/utils";
-import {Domain} from "@web/core/domain";
-import {
-    isCSSColor,
-    convertCSSColorToRgba,
-    convertRgbaToCSSColor,
-    convertRgbToHsl,
-    convertHslToRgb,
- } from '@web/core/utils/colors';
-import { renderToElement, renderToFragment } from "@web/core/utils/render";
-import { browser } from "@web/core/browser/browser";
-import {
-    removeTextHighlight,
-    drawTextHighlightSVG,
-} from "@website/js/text_processing";
-import { throttleForAnimation } from "@web/core/utils/timing";
+const {ColorpickerWidget} = require('web.Colorpicker');
+var core = require('web.core');
+const { loadBundle, loadCSS } = require("@web/core/assets");
+var Dialog = require('web.Dialog');
+const {Markup, sprintf} = require('web.utils');
+const weUtils = require('web_editor.utils');
+var options = require('web_editor.snippets.options');
+const wLinkPopoverWidget = require('@website/js/widgets/link_popover_widget')[Symbol.for("default")];
+const wUtils = require('website.utils');
+const {isImageSupportedForStyle} = require('web_editor.image_processing');
+require('website.s_popup_options');
+const {Domain} = require('@web/core/domain');
+const {SIZES, MEDIAS_BREAKPOINTS} = require('@web/core/ui/ui_service');
 
-import { Component, markup, useEffect, useRef, useState } from "@odoo/owl";
+var _t = core._t;
+var qweb = core.qweb;
 
 const InputUserValueWidget = options.userValueWidgetsRegistry['we-input'];
 const SelectUserValueWidget = options.userValueWidgetsRegistry['we-select'];
@@ -63,11 +43,6 @@ options.UserValueWidget.include({
 });
 
 Many2oneUserValueWidget.include({
-    init() {
-        this._super(...arguments);
-        this.fields = this.bindService("field");
-    },
-
     /**
      * @override
      */
@@ -75,8 +50,10 @@ Many2oneUserValueWidget.include({
         // Add the current website's domain if the model has a website_id field.
         // Note that the `_rpc` method is cached in Many2X user value widget,
         // see `_rpcCache`.
-        const websiteIdField = await this.fields.loadFields(this.options.model, {
-            fieldNames: ["website_id"],
+        const websiteIdField = await this._rpc({
+            model: this.options.model,
+            method: "fields_get",
+            args: [["website_id"]],
         });
         const modelHasWebsiteId = !!websiteIdField["website_id"];
         if (modelHasWebsiteId && !this.options.domain.find(arr => arr[0] === "website_id")) {
@@ -88,7 +65,10 @@ Many2oneUserValueWidget.include({
 });
 
 const UrlPickerUserValueWidget = InputUserValueWidget.extend({
-    events: Object.assign({}, InputUserValueWidget.prototype.events || {}, {
+    custom_events: _.extend({}, InputUserValueWidget.prototype.custom_events || {}, {
+        'website_url_chosen': '_onWebsiteURLChosen',
+    }),
+    events: _.extend({}, InputUserValueWidget.prototype.events || {}, {
         'click .o_we_redirect_to': '_onRedirectTo',
     }),
 
@@ -99,31 +79,23 @@ const UrlPickerUserValueWidget = InputUserValueWidget.extend({
         await this._super(...arguments);
         const linkButton = document.createElement('we-button');
         const icon = document.createElement('i');
-        icon.classList.add('fa', 'fa-fw', 'fa-external-link');
-        linkButton.classList.add('o_we_redirect_to', 'o_we_link', 'ms-1');
-        linkButton.title = _t("Preview this URL in a new tab");
+        icon.classList.add('fa', 'fa-fw', 'fa-external-link')
+        linkButton.classList.add('o_we_redirect_to');
+        linkButton.title = _t("Redirect to URL in a new tab");
         linkButton.appendChild(icon);
-        this.containerEl.after(linkButton);
+        this.containerEl.appendChild(linkButton);
         this.el.classList.add('o_we_large');
         this.inputEl.classList.add('text-start');
         const options = {
+            position: {
+                collision: 'flip flipfit',
+            },
             classes: {
                 "ui-autocomplete": 'o_website_ui_autocomplete'
             },
             body: this.getParent().$target[0].ownerDocument.body,
-            urlChosen: this._onWebsiteURLChosen.bind(this),
         };
-        this.unmountAutocompleteWithPages = wUtils.autocompleteWithPages(this.inputEl, options);
-    },
-
-    open() {
-        this._super(...arguments);
-        document.querySelector(".o_website_ui_autocomplete")?.classList?.remove("d-none");
-    },
-
-    close() {
-        this._super(...arguments);
-        document.querySelector(".o_website_ui_autocomplete")?.classList?.add("d-none");
+        wUtils.autocompleteWithPages(this, $(this.inputEl), options);
     },
 
     //--------------------------------------------------------------------------
@@ -150,53 +122,15 @@ const UrlPickerUserValueWidget = InputUserValueWidget.extend({
             window.open(this._value, '_blank');
         }
     },
-    destroy() {
-        this.unmountAutocompleteWithPages?.();
-        this.unmountAutocompleteWithPages = null;
-        this._super(...arguments);
-    }
 });
 
-class GoogleFontAutoComplete extends AutoComplete {
-    setup() {
-        super.setup();
-        this.inputRef = useRef("input");
-        this.sourcesListRef = useRef("sourcesList");
-        useEffect((el) => {
-            el.setAttribute("id", "google_font");
-        }, () => [this.inputRef.el]);
-    }
-
-    get dropdownOptions() {
-        return {
-            ...super.dropdownOptions,
-            position: "bottom-fit",
-        };
-    }
-
-    onInput(ev) {
-        super.onInput(ev);
-        if (this.sourcesListRef.el) {
-            this.sourcesListRef.el.scrollTop = 0;
-        }
-    }
-}
-
 const FontFamilyPickerUserValueWidget = SelectUserValueWidget.extend({
-    events: Object.assign({}, SelectUserValueWidget.prototype.events || {}, {
-        'click .o_we_add_font_btn': '_onAddFontClick',
-        'click .o_we_delete_font_btn': '_onDeleteFontClick',
+    events: _.extend({}, SelectUserValueWidget.prototype.events || {}, {
+        'click .o_we_add_google_font_btn': '_onAddGoogleFontClick',
+        'click .o_we_delete_google_font_btn': '_onDeleteGoogleFontClick',
     }),
     fontVariables: [], // Filled by editor menu when all options are loaded
 
-    /**
-     * @override
-     */
-    init() {
-        this.dialog = this.bindService("dialog");
-        this.orm = this.bindService("orm");
-        return this._super(...arguments);
-    },
     /**
      * @override
      */
@@ -211,9 +145,6 @@ const FontFamilyPickerUserValueWidget = SelectUserValueWidget.extend({
         const googleLocalFontsProperty = weUtils.getCSSVariableValue('google-local-fonts', style);
         this.googleLocalFonts = googleLocalFontsProperty ?
             googleLocalFontsProperty.slice(1, -1).split(/\s*,\s*/g) : [];
-        const uploadedLocalFontsProperty = weUtils.getCSSVariableValue('uploaded-local-fonts', style);
-        this.uploadedLocalFonts = uploadedLocalFontsProperty ?
-            uploadedLocalFontsProperty.slice(1, -1).split(/\s*,\s*/g) : [];
         // If a same font exists both remotely and locally, we remove the remote
         // font to prioritize the local font. The remote one will never be
         // displayed or loaded as long as the local one exists.
@@ -227,7 +158,7 @@ const FontFamilyPickerUserValueWidget = SelectUserValueWidget.extend({
 
         const fontsToLoad = [];
         for (const font of this.googleFonts) {
-            const fontURL = `https://fonts.googleapis.com/css?family=${encodeURIComponent(font).replace(/%20/g, '+')}:300,300i,400,400i,700,700i`;
+            const fontURL = `https://fonts.googleapis.com/css?family=${encodeURIComponent(font).replace(/%20/g, '+')}`;
             fontsToLoad.push(fontURL);
         }
         for (const font of this.googleLocalFonts) {
@@ -244,8 +175,8 @@ const FontFamilyPickerUserValueWidget = SelectUserValueWidget.extend({
         const fontEls = [];
         const methodName = this.el.dataset.methodName || 'customizeWebsiteVariable';
         const variable = this.el.dataset.variable;
-        const themeFontsNb = nbFonts - (this.googleLocalFonts.length + this.googleFonts.length + this.uploadedLocalFonts.length);
-        for (let fontNb = 0; fontNb < nbFonts; fontNb++) {
+        const themeFontsNb = nbFonts - (this.googleLocalFonts.length + this.googleFonts.length);
+        _.times(nbFonts, fontNb => {
             const realFontNb = fontNb + 1;
             const fontKey = weUtils.getCSSVariableValue(`font-number-${realFontNb}`, style);
             this.allFonts.push(fontKey);
@@ -257,17 +188,17 @@ const FontFamilyPickerUserValueWidget = SelectUserValueWidget.extend({
                 fontFamily = 'var(--o-system-fonts)';
             }
             const fontEl = document.createElement('we-button');
+            // TODO: Remove me in master;
+            fontEl.classList.add(`o_we_option_font_${realFontNb}`);
             fontEl.setAttribute('string', fontName);
             fontEl.dataset.variable = variable;
             fontEl.dataset[methodName] = fontKey;
+            fontEl.dataset.font = realFontNb;
             fontEl.dataset.fontFamily = fontFamily;
-            const iconWrapperEl = document.createElement("div");
-            iconWrapperEl.classList.add("text-end");
-            fontEl.appendChild(iconWrapperEl);
             if ((realFontNb <= themeFontsNb) && !isSystemFonts) {
                 // Add the "cloud" icon next to the theme's default fonts
                 // because they are served by Google.
-                iconWrapperEl.appendChild(Object.assign(document.createElement('i'), {
+                fontEl.appendChild(Object.assign(document.createElement('i'), {
                     role: 'button',
                     className: 'text-info me-2 fa fa-cloud',
                     title: _t("This font is hosted and served to your visitors by Google servers"),
@@ -275,24 +206,14 @@ const FontFamilyPickerUserValueWidget = SelectUserValueWidget.extend({
             }
             fontEls.push(fontEl);
             this.menuEl.appendChild(fontEl);
-        }
-
-        if (this.uploadedLocalFonts.length) {
-            const uploadedLocalFontsEls = fontEls.splice(-this.uploadedLocalFonts.length);
-            uploadedLocalFontsEls.forEach((el, index) => {
-                $(el).find(".text-end").append(renderToFragment('website.delete_font_btn', {
-                    index: index,
-                    local: "uploaded",
-                }));
-            });
-        }
+        });
 
         if (this.googleLocalFonts.length) {
             const googleLocalFontsEls = fontEls.splice(-this.googleLocalFonts.length);
             googleLocalFontsEls.forEach((el, index) => {
-                $(el).find(".text-end").append(renderToFragment('website.delete_font_btn', {
+                $(el).append(core.qweb.render('website.delete_google_font_btn', {
                     index: index,
-                    local: "google",
+                    local: true,
                 }));
             });
         }
@@ -300,13 +221,13 @@ const FontFamilyPickerUserValueWidget = SelectUserValueWidget.extend({
         if (this.googleFonts.length) {
             const googleFontsEls = fontEls.splice(-this.googleFonts.length);
             googleFontsEls.forEach((el, index) => {
-                $(el).find(".text-end").append(renderToFragment('website.delete_font_btn', {
+                $(el).append(core.qweb.render('website.delete_google_font_btn', {
                     index: index,
                 }));
             });
         }
 
-        $(this.menuEl).append($(renderToElement('website.add_font_btn', {
+        $(this.menuEl).append($(core.qweb.render('website.add_google_font_btn', {
             variable: variable,
         })));
 
@@ -323,10 +244,17 @@ const FontFamilyPickerUserValueWidget = SelectUserValueWidget.extend({
     async setValue() {
         await this._super(...arguments);
 
-        this.menuTogglerEl.style.fontFamily = '';
+        // TODO: Remove me in master
+        for (const className of this.menuTogglerEl.classList) {
+            if (className.match(/^o_we_option_font_\d+$/)) {
+                this.menuTogglerEl.classList.remove(className);
+            }
+        }
         const activeWidget = this._userValueWidgets.find(widget => !widget.isPreviewed() && widget.isActive());
         if (activeWidget) {
             this.menuTogglerEl.style.fontFamily = activeWidget.el.dataset.fontFamily;
+            // TODO: Remove me in master
+            this.menuTogglerEl.classList.add(`o_we_option_font_${activeWidget.el.dataset.font}`);
         }
     },
 
@@ -337,272 +265,95 @@ const FontFamilyPickerUserValueWidget = SelectUserValueWidget.extend({
     /**
      * @private
      */
-    async _onAddFontClick(ev) {
-        const addFontDialog = class extends Component {
-            static template = "website.dialog.addFont";
-            static components = { GoogleFontAutoComplete, Dialog };
-            static props = { close: Function, title: String, onClickSave: Function };
-            state = useState({
-                valid: true, loading: false,
-                googleFontFamily: undefined, googleServe: true,
-                uploadedFontName: undefined, uploadedFonts: [], uploadedFontFaces: undefined,
-                previewText: _t("The quick brown fox jumps over the lazy dog."),
-            });
-            fileInput = useRef("fileInput");
-            async onClickSave() {
-                if (this.state.loading) {
-                    return;
-                }
-                this.state.loading = true;
-                const shouldClose = await this.props.onClickSave(this.state);
-                if (shouldClose) {
-                    this.props.close();
-                    return;
-                }
-                this.state.loading = false;
-            }
-            onClickCancel() {
-                this.props.close();
-            }
-            get getGoogleFontList() {
-                return [{options: async (term) => {
-                    if (!this.googleFontList) {
-                        await rpc("/website/google_font_metadata").then((data) => {
-                            this.googleFontList = data.familyMetadataList.map((font) => font.family);
-                        });
-                    }
-                    const lowerCaseTerm = term.toLowerCase();
-                    const filtered = this.googleFontList.filter((value) => value.toLowerCase().includes(lowerCaseTerm));
-                    return filtered.map((fontFamilyName) => {
-                        return {
-                            label: fontFamilyName,
-                            value: fontFamilyName,
-                        };
-                    });
-                }}];
-            }
-            async onGoogleFontSelect(selected) {
-                this.fileInput.el.value = "";
-                this.state.uploadedFonts = [];
-                this.state.uploadedFontName = undefined;
-                this.state.uploadedFontFaces = undefined;
-                try {
-                    const fontFamily = selected.value;
-                    const result = await fetch(`https://fonts.googleapis.com/css?family=${encodeURIComponent(fontFamily)}:300,300i,400,400i,700,700i`, {method: 'HEAD'});
-                    // Google fonts server returns a 400 status code if family is not valid.
-                    if (result.ok) {
-                        const linkId = `previewFont${fontFamily}`;
-                        if (!document.querySelector(`link[id='${linkId}']`)) {
-                            const linkEl = document.createElement("link");
-                            linkEl.id = linkId;
-                            linkEl.setAttribute("href", result.url);
-                            linkEl.setAttribute("rel", "stylesheet");
-                            linkEl.dataset.fontPreview = true;
-                            document.head.appendChild(linkEl);
-                        }
-                        this.state.googleFontFamily = fontFamily;
-                    } else {
-                        this.state.googleFontFamily = undefined;
-                    }
-                } catch (error) {
-                    console.error(error);
-                }
-            }
-            async onUploadChange(e) {
-                this.state.googleFontFamily = undefined;
-                const file = this.fileInput.el.files[0];
-                if (!file) {
-                    this.state.uploadedFonts = [];
-                    this.state.uploadedFontName = undefined;
-                    this.state.uploadedFontFaces = undefined;
-                    return;
-                }
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const base64 = e.target.result.split(',')[1];
-                    rpc("/website/theme_upload_font", {
-                        name: file.name,
-                        data: base64,
-                    }).then(result => {
-                        this.state.uploadedFonts = result;
-                        this.updateFontStyle(file.name.substr(0, file.name.lastIndexOf(".")));
-                    });
-                };
-                reader.readAsDataURL(file);
-            }
-            /**
-             * Deduces the style of uploaded fonts and creates inline style
-             * elements in the backend iframe's head to make the font-faces
-             * available for preview.
-             *
-             * @param baseFontName
-             */
-            updateFontStyle(baseFontName) {
-                const targetFonts = {};
-                // Add candidate tags to fonts.
-                let shortestNamedFont;
-                for (const font of this.state.uploadedFonts) {
-                    if (!shortestNamedFont || font.name.length < shortestNamedFont.name.length) {
-                        shortestNamedFont = font;
-                    }
-                    font.isItalic = /italic/i.test(font.name);
-                    font.isLight = /light|300/i.test(font.name);
-                    font.isBold = /bold|700/i.test(font.name);
-                    font.isRegular = /regular|400/i.test(font.name);
-                    font.weight = font.isRegular ? 400 : font.isLight ? 300 : font.isBold ? 700 : undefined;
-                    if (font.isItalic && !font.weight) {
-                        if (!/00|thin|medium|black|condense|extrude/i.test(font.name)) {
-                            font.isRegular = true;
-                            font.weight = 400;
-                        }
-                    }
-                    font.style = font.isItalic ? "italic" : "normal";
-                    if (font.weight) {
-                        targetFonts[`${font.weight}${font.style}`] = font;
-                    }
-                }
-                if (!Object.values(targetFonts).filter((font) => font.isRegular).length) {
-                    // Keep font with shortest name.
-                    shortestNamedFont.weight = 400;
-                    shortestNamedFont.style = "normal";
-                    targetFonts["400"] = shortestNamedFont;
-                }
-                const fontFaces = [];
-                for (const font of Object.values(targetFonts)) {
-                    fontFaces.push(`@font-face{
-                        font-family: ${baseFontName};
-                        font-style: ${font.style};
-                        font-weight: ${font.weight};
-                        src:url("${font.url}");
-                    }`);
-                }
-                let styleEl = document.head.querySelector(`style[id='WebsiteThemeFontPreview-${baseFontName}']`);
-                if (!styleEl) {
-                    styleEl = document.createElement("style");
-                    styleEl.id = `WebsiteThemeFontPreview-${baseFontName}`;
-                    styleEl.dataset.fontPreview = true;
-                    document.head.appendChild(styleEl);
-                }
-                const previewFontFaces = fontFaces.join("");
-                styleEl.textContent = previewFontFaces;
-                this.state.uploadedFontName = baseFontName;
-                this.state.uploadedFontFaces = previewFontFaces;
-            }
-        };
+    _onAddGoogleFontClick: function (ev) {
         const variable = $(ev.currentTarget).data('variable');
-        this.dialog.add(addFontDialog, {
-            title: _t("Add a Google font or upload a custom font"),
-            onClickSave: async (state) => {
-                const uploadedFontName = state.uploadedFontName;
-                const uploadedFontFaces = state.uploadedFontFaces;
-                let font = undefined;
-                if (uploadedFontName && uploadedFontFaces) {
-                    const fontExistsLocally = this.uploadedLocalFonts.some(localFont => localFont.split(':')[0] === `'${uploadedFontName}'`);
-                    if (fontExistsLocally) {
-                        this.dialog.add(ConfirmationDialog, {
-                            title: _t("Font exists"),
-                            body: _t("This uploaded font already exists.\nTo replace an existing font, remove it first."),
-                        });
-                        return;
-                    }
-                    const homonymGoogleFontExists =
-                        this.googleFonts.some(font => font === uploadedFontName) ||
-                        this.googleLocalFonts.some(font => font.split(':')[0] === `'${uploadedFontName}'`);
-                    if (homonymGoogleFontExists) {
-                        this.dialog.add(ConfirmationDialog, {
-                            title: _t("Font name already used"),
-                            body: _t("A font with the same name already exists.\nTry renaming the uploaded file."),
-                        });
-                        return;
-                    }
-                    // Create attachment.
-                    const [fontCssId] = await this.orm.call("ir.attachment", "create_unique", [[{
-                        name: uploadedFontName,
-                        description: `CSS font face for ${uploadedFontName}`,
-                        datas: btoa(uploadedFontFaces),
-                        res_model: "ir.attachment",
-                        mimetype: "text/css",
-                        "public": true,
-                    }]]);
-                    this.uploadedLocalFonts.push(`'${uploadedFontName}': ${fontCssId}`);
-                    font = uploadedFontName;
-                } else {
-                    let isValidFamily = false;
-                    font = state.googleFontFamily;
-
-                    try {
-                        const result = await fetch("https://fonts.googleapis.com/css?family=" + encodeURIComponent(font) + ':300,300i,400,400i,700,700i', {method: 'HEAD'});
-                        // Google fonts server returns a 400 status code if family is not valid.
-                        if (result.ok) {
-                            isValidFamily = true;
+        const dialog = new Dialog(this, {
+            title: _t("Add a Google Font"),
+            $content: $(core.qweb.render('website.dialog.addGoogleFont')),
+            buttons: [
+                {
+                    text: _t("Save & Reload"),
+                    classes: 'btn-primary',
+                    click: async () => {
+                        const inputEl = dialog.el.querySelector('.o_input_google_font');
+                        // if font page link (what is expected)
+                        let m = inputEl.value.match(/\bspecimen\/([\w+]+)/);
+                        if (!m) {
+                            // if embed code (so that it works anyway if the user put the embed code instead of the page link)
+                            m = inputEl.value.match(/\bfamily=([\w+]+)/);
+                            if (!m) {
+                                inputEl.classList.add('is-invalid');
+                                return;
+                            }
                         }
-                    } catch (error) {
-                        console.error(error);
-                    }
 
-                    if (!isValidFamily) {
-                        this.dialog.add(ConfirmationDialog, {
-                            title: _t("Font access"),
-                            body: _t("The selected font cannot be accessed."),
-                        });
-                        return;
-                    }
+                        let isValidFamily = false;
 
-                    const googleFontServe = state.googleServe;
-                    const fontName = `'${font}'`;
-                    // If the font already exists, it will only be added if
-                    // the user chooses to add it locally when it is already
-                    // imported from the Google Fonts server.
-                    const fontExistsLocally = this.googleLocalFonts.some(localFont => localFont.split(':')[0] === fontName);
-                    const fontExistsOnServer = this.allFonts.includes(fontName);
-                    const preventFontAddition = fontExistsLocally || (fontExistsOnServer && googleFontServe);
-                    if (preventFontAddition) {
-                        this.dialog.add(ConfirmationDialog, {
-                            title: _t("Font exists"),
-                            body: _t("This font already exists, you can only add it as a local font to replace the server version."),
+                        try {
+                            // Font family is an encoded query parameter:
+                            // "Open+Sans" needs to remain "Open+Sans".
+                            const result = await fetch("https://fonts.googleapis.com/css?family=" + m[1] + ':300,300i,400,400i,700,700i', {method: 'HEAD'});
+                            // Google fonts server returns a 400 status code if family is not valid.
+                            if (result.ok) {
+                                isValidFamily = true;
+                            }
+                        } catch (error) {
+                            console.error(error);
+                        }
+
+                        if (!isValidFamily) {
+                            inputEl.classList.add('is-invalid');
+                            return;
+                        }
+
+                        const font = m[1].replace(/\+/g, ' ');
+                        const googleFontServe = dialog.el.querySelector('#google_font_serve').checked;
+                        const fontName = `'${font}'`;
+                        // If the font already exists, it will only be added if
+                        // the user chooses to add it locally when it is already
+                        // imported from the Google Fonts server.
+                        const fontExistsLocally = this.googleLocalFonts.some(localFont => localFont.split(':')[0] === fontName);
+                        const fontExistsOnServer = this.allFonts.includes(fontName);
+                        const preventFontAddition = fontExistsLocally || (fontExistsOnServer && googleFontServe);
+                        if (preventFontAddition) {
+                            inputEl.classList.add('is-invalid');
+                            // Show custom validity error message.
+                            inputEl.setCustomValidity(_t("This font already exists, you can only add it as a local font to replace the server version."));
+                            inputEl.reportValidity();
+                            return;
+                        }
+                        if (googleFontServe) {
+                            this.googleFonts.push(font);
+                        } else {
+                            this.googleLocalFonts.push(`'${font}': ''`);
+                        }
+                        this.trigger_up('google_fonts_custo_request', {
+                            values: {[variable]: `'${font}'`},
+                            googleFonts: this.googleFonts,
+                            googleLocalFonts: this.googleLocalFonts,
                         });
-                        return;
-                    }
-                    if (googleFontServe) {
-                        this.googleFonts.push(font);
-                    } else {
-                        this.googleLocalFonts.push(`'${font}': ''`);
-                    }
-                }
-                this.trigger_up('fonts_custo_request', {
-                    values: {[variable]: `'${font}'`},
-                    googleFonts: this.googleFonts,
-                    googleLocalFonts: this.googleLocalFonts,
-                    uploadedLocalFonts: this.uploadedLocalFonts,
-                });
-                let styleEl = document.head.querySelector(`[id='WebsiteThemeFontPreview-${font}']`);
-                if (styleEl) {
-                    delete styleEl.dataset.fontPreview;
-                }
-                return true;
-            },
-        },
-        {
-            onClose: () => {
-                for (const el of document.head.querySelectorAll("[data-font-preview]")) {
-                    el.remove();
-                }
-            },
+                    },
+                },
+                {
+                    text: _t("Discard"),
+                    close: true,
+                },
+            ],
         });
+        dialog.open();
     },
     /**
      * @private
      * @param {Event} ev
      */
-    _onDeleteFontClick: async function (ev) {
+    _onDeleteGoogleFontClick: async function (ev) {
         ev.preventDefault();
         const values = {};
 
         const save = await new Promise(resolve => {
-            this.dialog.add(ConfirmationDialog, {
-                body: _t("Deleting a font requires a reload of the page. This will save all your changes and reload the page, are you sure you want to proceed?"),
-                confirm: () => resolve(true),
-                cancel: () => resolve(false),
+            Dialog.confirm(this, _t("Deleting a font requires a reload of the page. This will save all your changes and reload the page, are you sure you want to proceed?"), {
+                confirm_callback: () => resolve(true),
+                cancel_callback: () => resolve(false),
             });
         });
         if (!save) {
@@ -610,52 +361,43 @@ const FontFamilyPickerUserValueWidget = SelectUserValueWidget.extend({
         }
 
         // Remove Google font
-        const fontIndex = parseInt(ev.target.dataset.fontIndex);
-        const localFont = ev.target.dataset.localFont;
-        let fontName;
-        if (localFont === 'uploaded') {
-            const font = this.uploadedLocalFonts[fontIndex].split(':');
+        const googleFontIndex = parseInt(ev.target.dataset.fontIndex);
+        const isLocalFont = ev.target.dataset.localFont;
+        let googleFontName;
+        if (isLocalFont) {
+            const googleFont = this.googleLocalFonts[googleFontIndex].split(':');
             // Remove double quotes
-            fontName = font[0].substring(1, font[0].length - 1);
-            values['delete-font-attachment-id'] = font[1];
-            this.uploadedLocalFonts.splice(fontIndex, 1);
-        } else if (localFont === 'google') {
-            const googleFont = this.googleLocalFonts[fontIndex].split(':');
-            // Remove double quotes
-            fontName = googleFont[0].substring(1, googleFont[0].length - 1);
+            googleFontName = googleFont[0].substring(1, googleFont[0].length - 1);
             values['delete-font-attachment-id'] = googleFont[1];
-            this.googleLocalFonts.splice(fontIndex, 1);
+            this.googleLocalFonts.splice(googleFontIndex, 1);
         } else {
-            fontName = this.googleFonts[fontIndex];
-            this.googleFonts.splice(fontIndex, 1);
+            googleFontName = this.googleFonts[googleFontIndex];
+            this.googleFonts.splice(googleFontIndex, 1);
         }
 
         // Adapt font variable indexes to the removal
         const style = window.getComputedStyle(this.$target[0].ownerDocument.documentElement);
-        FontFamilyPickerUserValueWidget.prototype.fontVariables.forEach((variable) => {
+        _.each(FontFamilyPickerUserValueWidget.prototype.fontVariables, variable => {
             const value = weUtils.getCSSVariableValue(variable, style);
-            if (value.substring(1, value.length - 1) === fontName) {
+            if (value.substring(1, value.length - 1) === googleFontName) {
                 // If an element is using the google font being removed, reset
                 // it to the theme default.
                 values[variable] = 'null';
             }
         });
 
-        this.trigger_up('fonts_custo_request', {
+        this.trigger_up('google_fonts_custo_request', {
             values: values,
             googleFonts: this.googleFonts,
             googleLocalFonts: this.googleLocalFonts,
-            uploadedLocalFonts: this.uploadedLocalFonts,
         });
     },
 });
 
 const GPSPicker = InputUserValueWidget.extend({
-    // Explicitly not consider all InputUserValueWidget events. E.g. we actually
-    // don't want input focusout messing with the google map API. Because of
-    // this, clicking on google map autocomplete suggestion on Firefox was not
-    // working properly.
-    events: {},
+    events: { // Explicitly not consider all InputUserValueWidget events
+        'blur input': '_onInputBlur',
+    },
 
     /**
      * @constructor
@@ -668,8 +410,6 @@ const GPSPicker = InputUserValueWidget.extend({
         // not having to load it in the backend too and just using the iframe
         // google object instead.
         this.contentWindow = this.$target[0].ownerDocument.defaultView;
-
-        this.notification = this.bindService("notification");
     },
     /**
      * @override
@@ -828,10 +568,11 @@ const GPSPicker = InputUserValueWidget.extend({
         }
         this._gmapErrorNotified = true;
 
-        this.notification.add(
-            _t("A Google Map error occurred. Make sure to read the key configuration popup carefully."),
-            { type: 'danger', sticky: true }
-        );
+        this.displayNotification({
+            type: 'danger',
+            sticky: true,
+            message: _t("A Google Map error occurred. Make sure to read the key configuration popup carefully."),
+        });
         this.trigger_up('gmap_api_request', {
             editableMode: true,
             reconfigure: true,
@@ -864,6 +605,17 @@ const GPSPicker = InputUserValueWidget.extend({
             }
         }
     },
+    /**
+     * @override
+     */
+    _onInputBlur() {
+        // As a stable fix: do not call the _super as we actually don't want
+        // input focusout messing with the google map API. Because of this,
+        // clicking on google map autocomplete suggestion on Firefox was not
+        // working properly. This is kept as an empty function because of stable
+        // policy (ensures custo can still extend this).
+        // TODO review in master.
+    },
 });
 options.userValueWidgetsRegistry['we-urlpicker'] = UrlPickerUserValueWidget;
 options.userValueWidgetsRegistry['we-fontfamilypicker'] = FontFamilyPickerUserValueWidget;
@@ -872,8 +624,9 @@ options.userValueWidgetsRegistry['we-gpspicker'] = GPSPicker;
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 options.Class.include({
-    custom_events: Object.assign({}, options.Class.prototype.custom_events || {}, {
-        'fonts_custo_request': '_onFontsCustoRequest',
+    custom_events: _.extend({}, options.Class.prototype.custom_events || {}, {
+        'google_fonts_custo_request': '_onGoogleFontsCustoRequest',
+        'request_save': '_onSaveRequest',
     }),
     specialCheckAndReloadMethodsNames: ['customizeWebsiteViews', 'customizeWebsiteVariable', 'customizeWebsiteColor'],
 
@@ -890,8 +643,6 @@ options.Class.include({
         // triggers a custom event, only that same jQuery instance will
         // trigger handlers set with `.on`.
         this.$bsTarget = this.ownerDocument.defaultView.$(this.$target[0]);
-
-        this.orm = this.bindService("orm");
     },
 
     //--------------------------------------------------------------------------
@@ -909,12 +660,6 @@ options.Class.include({
      */
     customizeWebsiteVariable: async function (previewMode, widgetValue, params) {
         await this._customizeWebsite(previewMode, widgetValue, params, 'variable');
-    },
-    /**
-     * @see this.selectClass for parameters
-     */
-    customizeWebsiteVariables: async function (previewMode, widgetValue, params) {
-        await this._customizeWebsite(previewMode, widgetValue, params, 'variables');
     },
     /**
      * @see this.selectClass for parameters
@@ -963,16 +708,7 @@ options.Class.include({
             case 'customizeWebsiteVariable': {
                 const ownerDocument = this.$target[0].ownerDocument;
                 const style = ownerDocument.defaultView.getComputedStyle(ownerDocument.documentElement);
-                let finalValue = weUtils.getCSSVariableValue(params.variable, style);
-                if (!params.colorNames) {
-                    return finalValue;
-                }
-                let tempValue = finalValue;
-                while (tempValue) {
-                    finalValue = tempValue;
-                    tempValue = weUtils.getCSSVariableValue(tempValue.replaceAll("'", ''), style);
-                }
-                return finalValue;
+                return weUtils.getCSSVariableValue(params.variable, style);
             }
             case 'customizeWebsiteColor': {
                 const ownerDocument = this.$target[0].ownerDocument;
@@ -999,22 +735,7 @@ options.Class.include({
                 await this._customizeWebsiteData(widgetValue, params, true);
                 break;
             case 'variable':
-                // Color values (e.g. "header-text-color") must be saved as
-                // string. TODO: Color values should be added to the color map.
-                if (params.colorNames?.includes(widgetValue)) {
-                    widgetValue =`'${widgetValue}'`;
-                }
                 await this._customizeWebsiteVariable(widgetValue, params);
-                break;
-            case "variables":
-                const defaultVariables = params.defaultVariables ?
-                    Object.fromEntries(params.defaultVariables.split(",")
-                        .map((variable) => variable.split(":").map(v => v.trim()))) :
-                    {};
-                const overriddenVariables = Object.fromEntries(widgetValue.split(",")
-                    .map((variable) => variable.split(":").map(v => v.trim())));
-                const variables = Object.assign(defaultVariables, overriddenVariables);
-                await this._customizeWebsiteVariables(variables, params.nullValue);
                 break;
             case 'color':
                 await this._customizeWebsiteColor(widgetValue, params);
@@ -1032,14 +753,16 @@ options.Class.include({
             // Caller will reload the page, nothing needs to be done anymore.
             return;
         }
-        await this._refreshBundles();
-    },
-    /**
-     * @private
-     */
-    async _refreshBundles() {
+
         // Finally, only update the bundles as no reload is required
         await this._reloadBundles();
+        // TODO kept to be fully stable but this is useless, this is done
+        // automatically with _reloadBundles. As this is not a costly operation
+        // it is ok to do it twice for no reason in stable. To remove in master.
+        this.trigger_up('option_update', {
+            optionName: 'ThemeColors',
+            name: 'update_color_previews',
+        });
 
         // Some public widgets may depend on the variables that were
         // customized, so we have to restart them *all*.
@@ -1073,7 +796,7 @@ options.Class.include({
             if (color) {
                 if (weUtils.isColorCombinationName(color)) {
                     finalColors[colorName] = parseInt(color);
-                } else if (!isCSSColor(color)) {
+                } else if (!ColorpickerWidget.isCSSColor(color)) {
                     finalColors[colorName] = `'${color}'`;
                 }
             }
@@ -1089,31 +812,22 @@ options.Class.include({
         }, params.nullValue);
     },
     /**
-     * Customizes several website variables at the same time.
-     *
-     * @private
-     * @param {Object} values: value per key variable
-     * @param {string} nullValue: string that represent null
-     */
-    _customizeWebsiteVariables: async function (values, nullValue) {
-        await this._makeSCSSCusto('/website/static/src/scss/options/user_values.scss', values, nullValue);
-        await this._refreshBundles();
-    },
-    /**
      * @private
      */
     async _customizeWebsiteData(value, params, isViewData) {
         const allDataKeys = this._getDataKeysFromPossibleValues(params.possibleValues);
-        const keysToEnable = value.split(/\s*,\s*/);
-        const enableDataKeys = allDataKeys.filter(value => keysToEnable.includes(value));
+        const enableDataKeys = value.split(/\s*,\s*/);
         const disableDataKeys = allDataKeys.filter(value => !enableDataKeys.includes(value));
         const resetViewArch = !!params.resetViewArch;
 
-        return rpc('/website/theme_customize_data', {
-            'is_view_data': isViewData,
-            'enable': enableDataKeys,
-            'disable': disableDataKeys,
-            'reset_view_arch': resetViewArch,
+        return this._rpc({
+            route: '/website/theme_customize_data',
+            params: {
+                'is_view_data': isViewData,
+                'enable': enableDataKeys,
+                'disable': disableDataKeys,
+                'reset_view_arch': resetViewArch,
+            },
         });
     },
     /**
@@ -1124,8 +838,7 @@ options.Class.include({
         for (const dataKeysStr of possibleValues) {
             allDataKeys.push(...dataKeysStr.split(/\s*,\s*/));
         }
-        // return only unique non-empty strings
-        return allDataKeys.filter((v, i, arr) => v && arr.indexOf(v) === i);
+        return allDataKeys.filter((v, i, arr) => arr.indexOf(v) === i);
     },
     /**
      * @private
@@ -1135,9 +848,12 @@ options.Class.include({
      */
     async _getEnabledCustomizeValues(possibleValues, isViewData) {
         const allDataKeys = this._getDataKeysFromPossibleValues(possibleValues);
-        const enabledValues = await rpc('/website/theme_customize_data_get', {
-            'keys': allDataKeys,
-            'is_view_data': isViewData,
+        const enabledValues = await this._rpc({
+            route: '/website/theme_customize_data_get',
+            params: {
+                'keys': allDataKeys,
+                'is_view_data': isViewData,
+            },
         });
         let mostValuesStr = '';
         let mostValuesNb = 0;
@@ -1155,10 +871,11 @@ options.Class.include({
      * @private
      */
     _makeSCSSCusto: async function (url, values, defaultValue = 'null') {
-        Object.keys(values).forEach((key) => {
-            values[key] = values[key] || defaultValue;
+        return this._rpc({
+            model: 'web_editor.assets',
+            method: 'make_scss_customization',
+            args: [url, _.mapObject(values, v => v || defaultValue)],
         });
-        return this.orm.call("web_editor.assets", "make_scss_customization", [url, values]);
     },
     /**
      * Refreshes all public widgets related to the given element.
@@ -1194,13 +911,7 @@ options.Class.include({
     _select: async function (previewMode, widget) {
         await this._super(...arguments);
 
-        // Some blocks flicker when we start their public widgets, so we skip
-        // the refresh for them to avoid the flickering.
-        const targetNoRefreshSelector = ".s_instagram_page";
-        // TODO: we should review the way public widgets are restarted when
-        // converting to OWL and a new API.
-        if (this.options.isWebsite && !widget.$el.closest('[data-no-widget-refresh="true"]').length
-            && !this.$target[0].matches(targetNoRefreshSelector)) {
+        if (this.options.isWebsite && !widget.$el.closest('[data-no-widget-refresh="true"]').length) {
             // TODO the flag should be retrieved through widget params somehow
             await this._refreshPublicWidgets();
         }
@@ -1214,11 +925,10 @@ options.Class.include({
      * @private
      * @param {OdooEvent} ev
      */
-    _onFontsCustoRequest(ev) {
-        const values = ev.data.values ? Object.assign({}, ev.data.values) : {};
+    _onGoogleFontsCustoRequest: function (ev) {
+        const values = ev.data.values ? _.clone(ev.data.values) : {};
         const googleFonts = ev.data.googleFonts;
         const googleLocalFonts = ev.data.googleLocalFonts;
-        const uploadedLocalFonts = ev.data.uploadedLocalFonts;
         if (googleFonts.length) {
             values['google-fonts'] = "('" + googleFonts.join("', '") + "')";
         } else {
@@ -1229,11 +939,6 @@ options.Class.include({
         } else {
             values['google-local-fonts'] = 'null';
         }
-        if (uploadedLocalFonts.length) {
-            values['uploaded-local-fonts'] = "(" + uploadedLocalFonts.join(", ") + ")";
-        } else {
-            values['uploaded-local-fonts'] = 'null';
-        }
         this.trigger_up('snippet_edition_request', {exec: async () => {
             return this._makeSCSSCusto('/website/static/src/scss/options/user_values.scss', values);
         }});
@@ -1241,6 +946,22 @@ options.Class.include({
             reloadEditor: true,
         });
     },
+    /**
+     * This handler prevents reloading the page twice with a `request_save`
+     * event when a widget is already going to handle reloading the page.
+     *
+     * @param {OdooEvent} ev
+     */
+    _onSaveRequest(ev) {
+        // If a widget requires a reload, any subsequent request to save is
+        // useless, as the reload will save the page anyway. It can cause
+        // a race condition where the wysiwyg attempts to reload the page twice,
+        // so ignore the request.
+        if (this.__willReload) {
+            ev.stopPropagation();
+            return;
+        }
+    }
 });
 
 function _getLastPreFilterLayerElement($el) {
@@ -1417,17 +1138,6 @@ options.registry.ReplaceMedia.include({
     },
 });
 
-options.registry.ImageTools.include({
-    async _computeWidgetVisibility(widgetName, params) {
-        if (params.optionsPossibleValues.selectStyle
-                && params.cssProperty === 'width'
-                && this.$target[0].classList.contains('o_card_img')) {
-            return false;
-        }
-        return this._super(...arguments);
-    },
-});
-
 options.registry.BackgroundVideo = options.Class.extend({
 
     //--------------------------------------------------------------------------
@@ -1488,79 +1198,7 @@ options.registry.BackgroundVideo = options.Class.extend({
     },
 });
 
-options.registry.WebsiteLevelColor = options.Class.extend({
-    specialCheckAndReloadMethodsNames: options.Class.prototype.specialCheckAndReloadMethodsNames
-        .concat(['customizeWebsiteLayer2Color']),
-    /**
-     * @constructor
-     */
-    init() {
-        this._super(...arguments);
-        this._rpc = options.serviceCached(rpc);
-    },
-    /**
-     * @see this.selectClass for parameters
-     */
-    async customizeWebsiteLayer2Color(previewMode, widgetValue, params) {
-        if (previewMode) {
-            return;
-        }
-        params.color = params.layerColor;
-        params.variable = params.layerGradient;
-        let color = undefined;
-        let gradient = undefined;
-        if (weUtils.isColorGradient(widgetValue)) {
-            color = '';
-            gradient = widgetValue;
-        } else {
-            color = widgetValue;
-            gradient = '';
-        }
-        await this.customizeWebsiteVariable(previewMode, gradient, params);
-        params.noBundleReload = false;
-        return this.customizeWebsiteColor(previewMode, color, params);
-    },
-
-    //--------------------------------------------------------------------------
-    // Private
-    //--------------------------------------------------------------------------
-
-    /**
-     * @override
-     */
-    async _computeWidgetState(methodName, params) {
-        if (methodName === 'customizeWebsiteLayer2Color') {
-            params.variable = params.layerGradient;
-            const gradient = await this._computeWidgetState('customizeWebsiteVariable', params);
-            if (gradient) {
-                return gradient.substring(1, gradient.length - 1); // Unquote
-            }
-            params.color = params.layerColor;
-            return this._computeWidgetState('customizeWebsiteColor', params);
-        }
-        return this._super(...arguments);
-    },
-    /**
-     * @override
-     */
-    async _computeWidgetVisibility(widgetName, params) {
-        const _super = this._super.bind(this);
-        if (
-            [
-                "footer_language_selector_label_opt",
-                "footer_language_selector_opt",
-            ].includes(widgetName)
-        ) {
-            this._languages = await this._rpc.call("/website/get_languages");
-            if (this._languages.length === 1) {
-                return false;
-            }
-        }
-        return _super(...arguments);
-    },
-});
-
-options.registry.OptionsTab = options.registry.WebsiteLevelColor.extend({
+options.registry.OptionsTab = options.Class.extend({
     GRAY_PARAMS: {EXTRA_SATURATION: "gray-extra-saturation", HUE: "gray-hue"},
 
     /**
@@ -1570,7 +1208,6 @@ options.registry.OptionsTab = options.registry.WebsiteLevelColor.extend({
         this._super(...arguments);
         this.grayParams = {};
         this.grays = {};
-        this.orm = this.bindService("orm");
     },
 
     //--------------------------------------------------------------------------
@@ -1603,12 +1240,12 @@ options.registry.OptionsTab = options.registry.WebsiteLevelColor.extend({
         const baseStyle = getComputedStyle(document.documentElement);
         for (let id = 100; id <= 900; id += 100) {
             const gray = weUtils.getCSSVariableValue(`${id}`, style);
-            const grayRGB = convertCSSColorToRgba(gray);
-            const grayHSL = convertRgbToHsl(grayRGB.red, grayRGB.green, grayRGB.blue);
+            const grayRGB = ColorpickerWidget.convertCSSColorToRgba(gray);
+            const grayHSL = ColorpickerWidget.convertRgbToHsl(grayRGB.red, grayRGB.green, grayRGB.blue);
 
             const baseGray = weUtils.getCSSVariableValue(`base-${id}`, baseStyle);
-            const baseGrayRGB = convertCSSColorToRgba(baseGray);
-            const baseGrayHSL = convertRgbToHsl(baseGrayRGB.red, baseGrayRGB.green, baseGrayRGB.blue);
+            const baseGrayRGB = ColorpickerWidget.convertCSSColorToRgba(baseGray);
+            const baseGrayHSL = ColorpickerWidget.convertRgbToHsl(baseGrayRGB.red, baseGrayRGB.green, baseGrayRGB.blue);
 
             if (grayHSL.saturation > 0.01) {
                 if (grayHSL.lightness > 0.01 && grayHSL.lightness < 99.99) {
@@ -1709,16 +1346,83 @@ options.registry.OptionsTab = options.registry.WebsiteLevelColor.extend({
      * @override
      */
     async customizeBodyBg(previewMode, widgetValue, params) {
-        await this._customizeWebsiteVariables({
-            'body-image-type': this.bodyImageType,
-            'body-image': widgetValue ? `'${widgetValue}'` : '',
-        }, params.nullValue);
+        // TODO improve: customize two variables at the same time...
+        await this.customizeWebsiteVariable(previewMode, this.bodyImageType, {variable: 'body-image-type'});
+        await this.customizeWebsiteVariable(previewMode, widgetValue ? `'${widgetValue}'` : '', {variable: 'body-image'});
     },
+    /**
+     * @see this.selectClass for parameters
+     */
     async openCustomCodeDialog(previewMode, widgetValue, params) {
-        return new Promise(resolve => {
-            this.trigger_up('open_edit_head_body_dialog', {
-                onSuccess: resolve,
+        const libsProm = loadBundle({
+            jsLibs: [
+                '/web/static/lib/ace/ace.js',
+                '/web/static/lib/ace/mode-xml.js',
+                '/web/static/lib/ace/mode-qweb.js',
+            ],
+        });
+
+        let websiteId;
+        this.trigger_up('context_get', {
+            callback: (ctx) => {
+                websiteId = ctx['website_id'];
+            },
+        });
+
+        let website;
+        const dataProm = this._rpc({
+            model: 'website',
+            method: 'read',
+            args: [[websiteId], ['custom_code_head', 'custom_code_footer']],
+        }).then(websites => {
+            website = websites[0];
+        });
+
+        let fieldName, title, contentText;
+        if (widgetValue === 'head') {
+            fieldName = 'custom_code_head';
+            title = _t('Custom head code');
+            contentText = _t('Enter code that will be added into the <head> of every page of your site.');
+        } else {
+            fieldName = 'custom_code_footer';
+            title = _t('Custom end of body code');
+            contentText = _t('Enter code that will be added before the </body> of every page of your site.');
+        }
+
+        await Promise.all([libsProm, dataProm]);
+
+        await new Promise(resolve => {
+            const $content = $(core.qweb.render('website.custom_code_dialog_content', {
+                contentText,
+            }));
+            const aceEditor = this._renderAceEditor($content.find('.o_ace_editor_container')[0], website[fieldName] || '');
+            const dialog = new Dialog(this, {
+                title,
+                $content,
+                buttons: [
+                    {
+                        text: _t("Save"),
+                        classes: 'btn-primary',
+                        click: async () => {
+                            await this._rpc({
+                                model: 'website',
+                                method: 'write',
+                                args: [
+                                    [websiteId],
+                                    {[fieldName]: aceEditor.getValue()},
+                                ],
+                            });
+                        },
+                        close: true,
+                    },
+                    {
+                        text: _t("Discard"),
+                        close: true,
+                    },
+                ],
             });
+            dialog.on('closed', this, resolve);
+            dialog.open();
         });
     },
     /**
@@ -1726,10 +1430,9 @@ options.registry.OptionsTab = options.registry.WebsiteLevelColor.extend({
      */
     async switchTheme(previewMode, widgetValue, params) {
         const save = await new Promise(resolve => {
-            this.dialog.add(ConfirmationDialog, {
-                body: _t("Changing theme requires to leave the editor. This will save all your changes, are you sure you want to proceed? Be careful that changing the theme will reset all your color customizations."),
-                confirm: () => resolve(true),
-                cancel: () => resolve(false),
+            Dialog.confirm(this, _t("Changing theme requires to leave the editor. This will save all your changes, are you sure you want to proceed? Be careful that changing the theme will reset all your color customizations."), {
+                confirm_callback: () => resolve(true),
+                cancel_callback: () => resolve(false),
             });
         });
         if (!save) {
@@ -1739,45 +1442,6 @@ options.registry.OptionsTab = options.registry.WebsiteLevelColor.extend({
             reload: false,
             action: 'website.theme_install_kanban_action',
         });
-    },
-    /**
-     * @see this.selectClass for parameters
-     */
-    async addLanguage(previewMode, widgetValue, params) {
-        // Retrieve the website id to check by default the website checkbox in
-        // the dialog box 'action_view_base_language_install'
-        const websiteId = this.options.context.website_id;
-        const save = await new Promise((resolve) => {
-            this.dialog.add(ConfirmationDialog, {
-                body: _t("Adding a language requires to leave the editor. This will save all your changes, are you sure you want to proceed?"),
-                confirm: () => resolve(true),
-                cancel: () => resolve(false),
-            });
-        });
-        if (!save) {
-            return;
-        }
-        this.trigger_up("request_save", {
-            reload: false,
-            action: "base.action_view_base_language_install",
-            options: {
-                additionalContext: {
-                    params: {
-                        website_id: websiteId,
-                        url_return: "[lang]",
-                    }
-                },
-            }
-        });
-    },
-    /**
-     * @see this.selectClass for parameters
-     */
-    async customizeButtonStyle(previewMode, widgetValue, params) {
-        await this._customizeWebsiteVariables({
-            [`btn-${params.button}-outline`]: widgetValue === "outline" ? "true" : "false",
-            [`btn-${params.button}-flat`]: widgetValue === "flat" ? "true" : "false",
-        }, params.nullValue);
     },
 
     //--------------------------------------------------------------------------
@@ -1792,12 +1456,12 @@ options.registry.OptionsTab = options.registry.WebsiteLevelColor.extend({
     _buildGray(id) {
         // Getting base grays defined in color_palette.scss
         const gray = weUtils.getCSSVariableValue(`base-${id}`, getComputedStyle(document.documentElement));
-        const grayRGB = convertCSSColorToRgba(gray);
-        const hsl = convertRgbToHsl(grayRGB.red, grayRGB.green, grayRGB.blue);
-        const adjustedGrayRGB = convertHslToRgb(this.grayParams[this.GRAY_PARAMS.HUE],
+        const grayRGB = ColorpickerWidget.convertCSSColorToRgba(gray);
+        const hsl = ColorpickerWidget.convertRgbToHsl(grayRGB.red, grayRGB.green, grayRGB.blue);
+        const adjustedGrayRGB = ColorpickerWidget.convertHslToRgb(this.grayParams[this.GRAY_PARAMS.HUE],
             Math.min(Math.max(hsl.saturation + this.grayParams[this.GRAY_PARAMS.EXTRA_SATURATION], 0), 100),
             hsl.lightness);
-        return convertRgbaToCSSColor(adjustedGrayRGB.red, adjustedGrayRGB.green, adjustedGrayRGB.blue);
+        return ColorpickerWidget.convertRgbaToCSSColor(adjustedGrayRGB.red, adjustedGrayRGB.green, adjustedGrayRGB.blue);
     },
     /**
      * @override
@@ -1806,10 +1470,10 @@ options.registry.OptionsTab = options.registry.WebsiteLevelColor.extend({
         await this._super(...arguments);
         const extraSaturationRangeEl = uiFragment.querySelector(`we-range[data-param=${this.GRAY_PARAMS.EXTRA_SATURATION}]`);
         if (extraSaturationRangeEl) {
-            const baseGrays = range(100, 1000, 100).map(id => {
+            const baseGrays = _.range(100, 1000, 100).map(id => {
                 const gray = weUtils.getCSSVariableValue(`base-${id}`);
-                const grayRGB = convertCSSColorToRgba(gray);
-                const hsl = convertRgbToHsl(grayRGB.red, grayRGB.green, grayRGB.blue);
+                const grayRGB = ColorpickerWidget.convertCSSColorToRgba(gray);
+                const hsl = ColorpickerWidget.convertRgbToHsl(grayRGB.red, grayRGB.green, grayRGB.blue);
                 return {id: id, hsl: hsl};
             });
             const first = baseGrays[0];
@@ -1822,6 +1486,9 @@ options.registry.OptionsTab = options.registry.WebsiteLevelColor.extend({
             extraSaturationRangeEl.dataset.max = 100 - minValue.hsl.saturation;
             extraSaturationRangeEl.dataset.min = -maxValue.hsl.saturation;
         }
+        uiFragment.querySelectorAll('we-colorpicker').forEach(el => {
+            el.dataset.lazyPalette = 'true';
+        });
     },
     /**
      * @override
@@ -1857,11 +1524,6 @@ options.registry.OptionsTab = options.registry.WebsiteLevelColor.extend({
             // See updateUI override
             return this.grayParams[params.param];
         }
-        if (methodName === 'customizeButtonStyle') {
-            const isOutline = weUtils.getCSSVariableValue(`btn-${params.button}-outline`);
-            const isFlat = weUtils.getCSSVariableValue(`btn-${params.button}-flat`);
-            return isFlat === "true" ? "flat" : isOutline === "true" ? "outline" : "fill";
-        }
         return this._super(...arguments);
     },
     /**
@@ -1874,13 +1536,35 @@ options.registry.OptionsTab = options.registry.WebsiteLevelColor.extend({
         if (params.param === this.GRAY_PARAMS.HUE) {
             return this.grayHueIsDefined;
         }
-        if (params.removeFont) {
-            const font = await this._computeWidgetState('customizeWebsiteVariable', {
-                variable: params.removeFont,
-            });
-            return !!font;
-        }
         return this._super(...arguments);
+    },
+    /**
+     * @private
+     * @param {DOMElement} node
+     * @param {String} content text of the editor
+     * @returns {Object}
+     */
+    _renderAceEditor(node, content) {
+        const aceEditor = window.ace.edit(node);
+        aceEditor.setTheme('ace/theme/monokai');
+        aceEditor.setValue(content, 1);
+        aceEditor.setOptions({
+            minLines: 20,
+            maxLines: Infinity,
+            showPrintMargin: false,
+        });
+        aceEditor.renderer.setOptions({
+            highlightGutterLine: true,
+            showInvisibles: true,
+            fontSize: 14,
+        });
+
+        const aceSession = aceEditor.getSession();
+        aceSession.setOptions({
+            mode: "ace/mode/qweb",
+            useWorker: false,
+        });
+        return aceEditor;
     },
 });
 
@@ -1902,6 +1586,13 @@ options.registry.ThemeColors = options.registry.OptionsTab.extend({
     // Public
     //--------------------------------------------------------------------------
 
+    notify(name, data) {
+        if (name === 'update_color_previews') {
+            // TODO remove this part in master, this is handled automatically
+            // at each bundle reload.
+            this.updateColorPreviews = true;
+        }
+    },
     /**
      * @override
      */
@@ -1910,11 +1601,30 @@ options.registry.ThemeColors = options.registry.OptionsTab.extend({
         const oldColorSystemEl = this.el.querySelector('.o_old_color_system_warning');
         oldColorSystemEl.classList.toggle('d-none', !this._showOldColorSystemWarning);
     },
+    /**
+     * @override
+     */
+    async updateUI() {
+        if (this.updateColorPreviews) {
+            // TODO remove this part in master, this is handled automatically
+            // at each bundle reload.
+            this.trigger_up('update_color_previews');
+            this.updateColorPreviews = false;
+        }
+        await this._super(...arguments);
+    },
 
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
 
+    /**
+     * @override
+     */
+    _select() {
+        this.updateColorPreviews = true;
+        return this._super(...arguments);
+    },
     /**
      * @override
      */
@@ -1942,24 +1652,23 @@ options.registry.ThemeColors = options.registry.OptionsTab.extend({
         let ccPreviewEls = [];
         for (let i = 1; i <= 5; i++) {
             const collapseEl = document.createElement('we-collapse');
-            const ccPreviewEl = $(renderToElement('web_editor.color.combination.preview.legacy'))[0];
+            const ccPreviewEl = $(qweb.render('web_editor.color.combination.preview'))[0];
             ccPreviewEl.classList.add('text-center', `o_cc${i}`, 'o_colored_level', 'o_we_collapse_toggler');
             collapseEl.appendChild(ccPreviewEl);
-            collapseEl.appendChild(renderToFragment('website.color_combination_edition', {number: i}));
+            const editionEls = $(qweb.render('website.color_combination_edition', {number: i}));
+            for (const el of editionEls) {
+                collapseEl.appendChild(el);
+            }
             ccPreviewEls.push(ccPreviewEl);
             presetCollapseEl.appendChild(collapseEl);
         }
+        // TODO investigate in master why this would be necessary
+        this.trigger_up('update_color_previews');
         await this._super(...arguments);
     },
 });
 
 options.registry.menu_data = options.Class.extend({
-    init() {
-        this._super(...arguments);
-        this.orm = this.bindService("orm");
-        this.notification = this.bindService("notification");
-    },
-
     /**
      * When the users selects a menu, a popover is shown with 4 possible
      * actions: follow the link in a new tab, copy the menu link, edit the menu,
@@ -1972,50 +1681,7 @@ options.registry.menu_data = options.Class.extend({
     start: function () {
         const wysiwyg = $(this.ownerDocument.getElementById('wrapwrap')).data('wysiwyg');
         const popoverContainer = this.ownerDocument.getElementById('oe_manipulators');
-        NavbarLinkPopoverWidget.createFor({
-            target: this.$target[0],
-            wysiwyg,
-            container: popoverContainer,
-            notify: this.notification.add,
-            checkIsWebsiteDesigner: () => user.hasGroup("website.group_website_designer"),
-            onEditLinkClick: (widget) => {
-                var $menu = widget.$target.find('[data-oe-id]');
-                this.trigger_up('menu_dialog', {
-                    name: $menu.text(),
-                    url: $menu.parent().attr('href'),
-                    save: (name, url) => {
-                        let websiteId;
-                        this.trigger_up('context_get', {
-                            callback: ctx => websiteId = ctx['website_id'],
-                        });
-                        const data = {
-                            id: $menu.data('oe-id'),
-                            name,
-                            url,
-                        };
-                        return this.orm.call(
-                            "website.menu",
-                            "save",
-                            [websiteId, {'data': [data]}]
-                        ).then(function () {
-                            widget.wysiwyg.odooEditor.observerUnactive();
-                            widget.$target.attr('href', url);
-                            $menu.text(name);
-                            widget.wysiwyg.odooEditor.observerActive();
-                        });
-                    },
-                });
-                widget.popover.hide();
-            },
-            onEditMenuClick: (widget) => {
-                const contentMenu = widget.target.closest('[data-content_menu_id]');
-                const rootID = contentMenu ? parseInt(contentMenu.dataset.content_menu_id, 10) : undefined;
-                this.trigger_up('action_demand', {
-                    actionName: 'edit_menu',
-                    params: [rootID],
-                });
-            },
-        });
+        wLinkPopoverWidget.createFor(this, this.$target[0], { wysiwyg, container: popoverContainer });
         return this._super(...arguments);
     },
     /**
@@ -2029,11 +1695,59 @@ options.registry.menu_data = options.Class.extend({
     },
 });
 
-options.registry.Carousel = options.registry.CarouselHandler.extend({
+options.registry.company_data = options.Class.extend({
+    /**
+     * Fetches data to determine the URL where the user can edit its company
+     * data. Saves the info in the prototype to do this only once.
+     *
+     * @override
+     */
+    start: function () {
+        var proto = options.registry.company_data.prototype;
+        var prom;
+        var self = this;
+        if (proto.__link === undefined) {
+            prom = this._rpc({route: '/web/session/get_session_info'}).then(function (session) {
+                return self._rpc({
+                    model: 'res.users',
+                    method: 'read',
+                    args: [session.uid, ['company_id']],
+                });
+            }).then(function (res) {
+                proto.__link = '/web#action=base.action_res_company_form&view_type=form&id=' + encodeURIComponent(res && res[0] && res[0].company_id[0] || 1);
+            });
+        }
+        return Promise.all([this._super.apply(this, arguments), prom]);
+    },
+    /**
+     * When the users selects company data, opens a dialog to ask him if he
+     * wants to be redirected to the company form view to edit it.
+     *
+     * @override
+     */
+    onFocus: function () {
+        var self = this;
+        var proto = options.registry.company_data.prototype;
+
+        Dialog.confirm(this, _t("Do you want to edit the company data ?"), {
+            confirm_callback: function () {
+                self.trigger_up('request_save', {
+                    reload: false,
+                    onSuccess: function () {
+                        window.location.href = proto.__link;
+                    },
+                });
+            },
+        });
+    },
+});
+
+options.registry.Carousel = options.Class.extend({
     /**
      * @override
      */
     start: function () {
+        this.$bsTarget.carousel('pause');
         this.$indicators = this.$target.find('.carousel-indicators');
         this.$controls = this.$target.find('.carousel-control-prev, .carousel-control-next, .carousel-indicators');
 
@@ -2043,7 +1757,7 @@ options.registry.Carousel = options.registry.CarouselHandler.extend({
         this.$controls.addClass('o_we_no_overlay');
 
         // Handle the sliding manually.
-        this.__onControlClick = throttleForAnimation(this._onControlClick.bind(this));
+        this.__onControlClick = _.throttle(this._onControlClick.bind(this), 1000);
         this.$controls.on("click.carousel_option", this.__onControlClick);
         for (const controlEl of this.$controls) {
             controlEl.addEventListener("keydown", this._onControlKeyDown);
@@ -2111,7 +1825,7 @@ options.registry.Carousel = options.registry.CarouselHandler.extend({
         const id = 'myCarousel' + Date.now();
         this.$target.attr('id', id);
         this.$target.find('[data-bs-target]').attr('data-bs-target', '#' + id);
-        this.$target.find('[data-bs-slide], [data-bs-slide-to]').toArray().forEach((el) => {
+        _.each(this.$target.find('[data-bs-slide], [data-bs-slide-to]'), function (el) {
             var $el = $(el);
             if ($el.attr('data-bs-target')) {
                 $el.attr('data-bs-target', '#' + id);
@@ -2130,9 +1844,8 @@ options.registry.Carousel = options.registry.CarouselHandler.extend({
         const $items = this.$target.find('.carousel-item');
         this.$controls.removeClass('d-none');
         const $active = $items.filter('.active');
-        this.$indicators.append($('<button>', {
+        this.$indicators.append($('<li>', {
             'data-bs-target': '#' + this.$target.attr('id'),
-            'aria-label': _t('Carousel indicator'),
         }));
         this.$indicators.append(' ');
         // Need to remove editor data from the clone so it gets its own.
@@ -2203,6 +1916,7 @@ options.registry.Carousel = options.registry.CarouselHandler.extend({
      * @param {Event} ev
      */
     _onControlClick(ev) {
+        this.options.wysiwyg.odooEditor.historyPauseSteps();
         // Compute to which slide the carousel will slide.
         const controlEl = ev.currentTarget;
         let direction;
@@ -2212,7 +1926,7 @@ options.registry.Carousel = options.registry.CarouselHandler.extend({
             direction = "next";
         } else {
             const indicatorEl = ev.target;
-            if (!indicatorEl.matches(".carousel-indicators > *") || indicatorEl.classList.contains("active")) {
+            if (!indicatorEl.matches("li") || indicatorEl.classList.contains("active")) {
                 return;
             }
             direction = [...controlEl.children].indexOf(indicatorEl);
@@ -2220,7 +1934,6 @@ options.registry.Carousel = options.registry.CarouselHandler.extend({
 
         // Slide the carousel.
         this.trigger_up("snippet_edition_request", {exec: async () => {
-            this.options.wysiwyg.odooEditor.historyPauseSteps();
             await this._slide(direction);
             this.options.wysiwyg.odooEditor.historyUnpauseSteps();
             this.options.wysiwyg.odooEditor.historyStep();
@@ -2240,26 +1953,6 @@ options.registry.Carousel = options.registry.CarouselHandler.extend({
             ev.stopPropagation();
         }
     },
-    /**
-     * @override
-     */
-    _getItemsGallery() {
-        return Array.from(this.$target[0].querySelectorAll(".carousel-item"));
-    },
-    /**
-     * @override
-     */
-    _reorderItems(itemsEls, newItemPosition) {
-        const carouselInnerEl = this.$target[0].querySelector(".carousel-inner");
-        // First, empty the content of the carousel.
-        carouselInnerEl.replaceChildren();
-        // Then fill it with the new slides.
-        for (const itemsEl of itemsEls) {
-            carouselInnerEl.append(itemsEl);
-        }
-        this._updateIndicatorAndActivateSnippet(newItemPosition);
-    },
-
 });
 
 options.registry.CarouselItem = options.Class.extend({
@@ -2274,7 +1967,6 @@ options.registry.CarouselItem = options.Class.extend({
         this.$targetCarousel = this.$target.closest(".carousel");
         this.$indicators = this.$carousel.find('.carousel-indicators');
         this.$controls = this.$carousel.find('.carousel-control-prev, .carousel-control-next, .carousel-indicators');
-        this.carouselOptionName = this.$carousel[0].classList.contains("s_carousel_intro") ? "CarouselIntro" : "Carousel";
 
         var leftPanelEl = this.$overlay.data('$optionsSection')[0];
         var titleTextEl = leftPanelEl.querySelector('we-title > span');
@@ -2326,7 +2018,7 @@ options.registry.CarouselItem = options.Class.extend({
     addSlideItem(previewMode, widgetValue, params) {
         return new Promise(resolve => {
             this.trigger_up("option_update", {
-                optionName: this.carouselOptionName,
+                optionName: "Carousel",
                 name: "add_slide",
                 data: {
                     onSuccess: () => resolve(),
@@ -2351,7 +2043,7 @@ options.registry.CarouselItem = options.Class.extend({
             // Go to the previous slide.
             await new Promise(resolve => {
                 this.trigger_up("option_update", {
-                    optionName: this.carouselOptionName,
+                    optionName: "Carousel",
                     name: "slide",
                     data: {
                         direction: "prev",
@@ -2378,7 +2070,7 @@ options.registry.CarouselItem = options.Class.extend({
         const direction = widgetValue === "left" ? "prev" : "next";
         return new Promise(resolve => {
             this.trigger_up("option_update", {
-                optionName: this.carouselOptionName,
+                optionName: "Carousel",
                 name: "slide",
                 data: {
                     direction: direction,
@@ -2542,7 +2234,7 @@ options.registry.collapse = options.Class.extend({
      */
     start: function () {
         var self = this;
-        this.$bsTarget.on('shown.bs.collapse hidden.bs.collapse', '[role="region"]', function () {
+        this.$bsTarget.on('shown.bs.collapse hidden.bs.collapse', '[role="tabpanel"]', function () {
             self.trigger_up('cover_update');
             self.$target.trigger('content_changed');
         });
@@ -2587,42 +2279,58 @@ options.registry.collapse = options.Class.extend({
      */
     _createIDs: function () {
         let time = new Date().getTime();
-        const accordionEl = this.$target[0].closest(".accordion");
-        const accordionBtnEl = this.$target[0].querySelector(".accordion-button");
-        const accordionContentEl = this.$target[0].querySelector('[role="region"]');
+        const $tablist = this.$target.closest('[role="tablist"]');
+        const $tab = this.$target.find('[role="tab"]');
+        const $panel = this.$target.find('[role="tabpanel"]');
         const $body = this.$target.closest('body');
 
-        const setUniqueId = (el, label) => {
-            let elemId = el.id;
+        const setUniqueId = ($elem, label) => {
+            let elemId = $elem.attr('id');
             if (!elemId || $body.find('[id="' + elemId + '"]').length > 1) {
                 do {
                     time++;
                     elemId = label + time;
                 } while ($body.find('#' + elemId).length);
-                el.id = elemId;
+                $elem.attr('id', elemId);
             }
             return elemId;
         };
 
-        const accordionId = setUniqueId(accordionEl, "myCollapse");
-        accordionContentEl.dataset.bsParent = "#" + accordionId;
+        const tablistId = setUniqueId($tablist, 'myCollapse');
+        $panel.attr('data-bs-parent', '#' + tablistId);
+        $panel.data('bs-parent', '#' + tablistId);
 
-        const contentId = setUniqueId(accordionContentEl, "myCollapseTab");
-        accordionBtnEl.dataset.bsTarget = "#" + contentId;
-        accordionBtnEl.setAttribute("aria-controls", contentId);
-
-        const buttonId = setUniqueId(accordionBtnEl, "myCollapseBtn");
-        accordionContentEl.setAttribute("aria-labelledby", buttonId);
+        const panelId = setUniqueId($panel, 'myCollapseTab');
+        $tab.attr('data-bs-target', '#' + panelId);
+        $tab.data('bs-target', '#' + panelId);
     },
 });
 
-options.registry.HeaderElements = options.Class.extend({
+options.registry.WebsiteLevelColor = options.Class.extend({
+    specialCheckAndReloadMethodsNames: options.Class.prototype.specialCheckAndReloadMethodsNames
+        .concat(['customizeWebsiteLayer2Color']),
+
     /**
-     * @constructor
+     * @see this.selectClass for parameters
      */
-    init() {
-        this._super(...arguments);
-        this._rpc = options.serviceCached(rpc);
+    async customizeWebsiteLayer2Color(previewMode, widgetValue, params) {
+        if (previewMode) {
+            return;
+        }
+        params.color = params.layerColor;
+        params.variable = params.layerGradient;
+        let color = undefined;
+        let gradient = undefined;
+        if (weUtils.isColorGradient(widgetValue)) {
+            color = '';
+            gradient = widgetValue;
+        } else {
+            color = widgetValue;
+            gradient = '';
+        }
+        await this.customizeWebsiteVariable(previewMode, gradient, params);
+        params.noBundleReload = false;
+        return this.customizeWebsiteColor(previewMode, color, params);
     },
 
     //--------------------------------------------------------------------------
@@ -2632,18 +2340,22 @@ options.registry.HeaderElements = options.Class.extend({
     /**
      * @override
      */
-    async _computeWidgetVisibility(widgetName, params) {
-        const _super = this._super.bind(this);
-        switch (widgetName) {
-            case "header_language_selector_opt":
-                this._languages = await this._rpc.call("/website/get_languages");
-                if (this._languages.length === 1) {
-                    return false;
-                }
-                break;
+    async _computeWidgetState(methodName, params) {
+        if (methodName === 'customizeWebsiteLayer2Color') {
+            params.variable = params.layerGradient;
+            const gradient = await this._computeWidgetState('customizeWebsiteVariable', params);
+            if (gradient) {
+                return gradient.substring(1, gradient.length - 1); // Unquote
+            }
+            params.color = params.layerColor;
+            return this._computeWidgetState('customizeWebsiteColor', params);
         }
-        return _super(...arguments);
+        return this._super(...arguments);
     },
+});
+
+options.registry.HeaderLayout = options.registry.WebsiteLevelColor.extend({
+    // TODO: to remove in master, it is only kept for the stable versions.
 });
 
 options.registry.HeaderNavbar = options.Class.extend({
@@ -2658,6 +2370,67 @@ options.registry.HeaderNavbar = options.Class.extend({
     init() {
         this._super(...arguments);
         this.setTarget(this.$target.closest('#wrapwrap > header'));
+    },
+
+    //--------------------------------------------------------------------------
+    // Public
+    //--------------------------------------------------------------------------
+
+    /**
+     * @override
+     */
+    async updateUIVisibility() {
+        await this._super(...arguments);
+
+        // TODO improve this: this is a big hack so that the "no mobile
+        // hamburger" option is disabled if it is ever hidden (because of the
+        // selection of an hamburger template which is a foreign option). This
+        // should be done another way in another place somehow...
+        const noHamburgerWidget = this.findWidget('no_hamburger_opt');
+        const noHamburgerHidden = noHamburgerWidget.$el.hasClass('d-none');
+        if (noHamburgerHidden && noHamburgerWidget.isActive()) {
+            this.findWidget('default_hamburger_opt').enable();
+        }
+
+        // TODO improve this: this is a big hack so that the label of the
+        // hamburger option changes if the 'no_hamburger_opt' one is available
+        // (= in that case the option controls only the *mobile* hamburger).
+        const hamburgerTypeWidget = this.findWidget('header_hamburger_type_opt');
+        const labelEl = hamburgerTypeWidget.el.querySelector('we-title');
+        if (!this._originalHamburgerTypeLabel) {
+            this._originalHamburgerTypeLabel = labelEl.textContent;
+        }
+        labelEl.textContent = noHamburgerHidden
+            ? this._originalHamburgerTypeLabel
+            : _t("Mobile menu");
+    },
+
+    //--------------------------------------------------------------------------
+    // Public
+    //--------------------------------------------------------------------------
+
+    /**
+     * @override
+     */
+    async start() {
+        await this._super(...arguments);
+        // TODO Remove in master.
+        const signInOptionEl = this.el.querySelector('[data-customize-website-views="portal.user_sign_in"]');
+        signInOptionEl.dataset.noPreview = 'true';
+    },
+    /**
+     * @private
+     */
+    async updateUI() {
+        await this._super(...arguments);
+        // For all header templates except those in the following array, change
+        // the label of the option to "Mobile Alignment" (instead of
+        // "Alignment") because it only impacts the mobile view.
+        if (!["'default'", "'hamburger'", "'sidebar'", "'magazine'", "'hamburger-full'", "'slogan'"]
+            .includes(weUtils.getCSSVariableValue("header-template"))) {
+            const alignmentOptionTitleEl = this.el.querySelector('[data-name="header_alignment_opt"] we-title');
+            alignmentOptionTitleEl.textContent = _t("Mobile Alignment");
+        }
     },
 
     //--------------------------------------------------------------------------
@@ -2676,6 +2449,17 @@ options.registry.HeaderNavbar = options.Class.extend({
             case 'option_logo_height_scrolled': {
                 return !!this.$('.navbar-brand').length;
             }
+            case 'no_hamburger_opt': {
+                return !weUtils.getCSSVariableValue('header-template').includes('hamburger');
+            }
+        }
+        if (widgetName === 'header_alignment_opt') {
+            if (!this.$target[0].querySelector('.o_offcanvas_menu_toggler')) {
+                // If mobile menu is "Default", hides the alignment option for
+                // "hamburger full" and "magazine" header templates.
+                return !["'hamburger-full'", "'magazine'"].includes(weUtils.getCSSVariableValue('header-template'));
+            }
+            return true;
         }
         return this._super(...arguments);
     },
@@ -2686,6 +2470,17 @@ const VisibilityPageOptionUpdate = options.Class.extend({
     showOptionWidgetName: undefined,
     shownValue: '',
 
+    /**
+     * @override
+     */
+    async start() {
+        await this._super(...arguments);
+        // TODO in master: Use the data-invisible system to get rid of this
+        // piece of code.
+        this._isShown().then(isShown => {
+            this.trigger_up('snippet_option_visibility_update', {show: isShown});
+        });
+    },
     /**
      * @override
      */
@@ -2802,21 +2597,12 @@ options.registry.TopMenuVisibility = VisibilityPageOptionUpdate.extend({
         if (!transparent) {
             return;
         }
-        // TODO should be able to change both options at the same time, as the
-        // `params` list suggests.
         await new Promise((resolve, reject) => {
             this.trigger_up('action_demand', {
                 actionName: 'toggle_page_option',
                 params: [{name: 'header_color', value: ''}],
                 onSuccess: () => resolve(),
                 onFailure: reject,
-            });
-        });
-        await new Promise(resolve => {
-            this.trigger_up('action_demand', {
-                actionName: 'toggle_page_option',
-                params: [{name: 'header_text_color', value: ''}],
-                onSuccess: () => resolve(),
             });
         });
     },
@@ -2850,13 +2636,11 @@ options.registry.topMenuColor = options.Class.extend({
      */
     async selectStyle(previewMode, widgetValue, params) {
         await this._super(...arguments);
-        if (widgetValue && !isCSSColor(widgetValue)) {
-            widgetValue = params.colorPrefix + widgetValue;
-        }
+        const className = widgetValue ? (params.colorPrefix + widgetValue) : '';
         await new Promise((resolve, reject) => {
             this.trigger_up('action_demand', {
                 actionName: 'toggle_page_option',
-                params: [{name: params.pageOptionName, value: widgetValue}],
+                params: [{name: 'header_color', value: className}],
                 onSuccess: resolve,
                 onFailure: reject,
             });
@@ -2914,29 +2698,32 @@ options.registry.DeviceVisibility = options.Class.extend({
         }
 
         // Update invisible elements.
-        const isMobile = wUtils.isMobile(this);
+        let isMobile;
+        this.trigger_up('service_context_get', {
+            callback: (ctx) => {
+                isMobile = ctx['isMobile'];
+            },
+        });
         this.trigger_up('snippet_option_visibility_update', {show: widgetValue !== (isMobile ? 'no_mobile' : 'no_desktop')});
     },
     /**
      * @override
      */
     async onTargetHide() {
-        this.options.wysiwyg.odooEditor.observerUnactive("onTargetHide");
         this.$target[0].classList.remove('o_snippet_override_invisible');
-        this.options.wysiwyg.odooEditor.observerActive("onTargetHide");
     },
     /**
      * @override
      */
     async onTargetShow() {
-        const isMobilePreview = weUtils.isMobileView(this.$target[0]);
+        // TODO In future version use tool method to determine isMobilePreview.
+        const mobileViewThreshold = MEDIAS_BREAKPOINTS[SIZES.LG].minWidth;
+        const isMobilePreview = this.$target[0].ownerDocument.defaultView.frameElement.clientWidth < mobileViewThreshold;
         const isMobileHidden = this.$target[0].classList.contains("o_snippet_mobile_invisible");
         if ((this.$target[0].classList.contains('o_snippet_mobile_invisible')
                 || this.$target[0].classList.contains('o_snippet_desktop_invisible')
             ) && isMobilePreview === isMobileHidden) {
-            this.options.wysiwyg.odooEditor.observerUnactive("onTargetShow");
             this.$target[0].classList.add('o_snippet_override_invisible');
-            this.options.wysiwyg.odooEditor.observerActive("onTargetShow");
         }
     },
     /**
@@ -2993,25 +2780,27 @@ options.registry.HideFooter = VisibilityPageOptionUpdate.extend({
 options.registry.anchor = options.Class.extend({
     isTopOption: true,
 
-    /**
-     * @override
-     */
-    init() {
-        this._super(...arguments);
-        this.notification = this.bindService("notification");
-    },
-    /**
-     * @override
-     */
-    start() {
-        // Generate anchor and copy it to clipboard on click, show the tooltip on success
-        const buttonEl = this.el.querySelector("we-button");
-        this.isModal = this.$target[0].classList.contains("modal");
-        if (buttonEl && !this.isModal) {
-            this._buildClipboard(buttonEl);
-        }
+    //--------------------------------------------------------------------------
+    // Public
+    //--------------------------------------------------------------------------
 
-        return this._super(...arguments);
+    /**
+     * @override
+     */
+    start: function () {
+        // Generate anchor and copy it to clipboard on click, show the tooltip on success
+        this.$button = this.$el.find('we-button');
+        const clipboard = new ClipboardJS(this.$button[0], {text: () => this._getAnchorLink()});
+        clipboard.on('success', () => {
+            const message = sprintf(Markup(_t("Anchor copied to clipboard<br>Link: %s")), this._getAnchorLink());
+            this.displayNotification({
+              type: 'success',
+              message: message,
+              buttons: [{text: _t("Edit"), click: () => this.openAnchorDialog(), primary: true}],
+            });
+        });
+
+        return this._super.apply(this, arguments);
     },
     /**
      * @override
@@ -3022,91 +2811,57 @@ options.registry.anchor = options.Class.extend({
     },
 
     //--------------------------------------------------------------------------
-    // Public
-    //--------------------------------------------------------------------------
-
-    /**
-     * @override
-     */
-    notify(name, data) {
-        this._super(...arguments);
-        if (name === "modalAnchor") {
-            this._buildClipboard(data.buttonEl);
-        }
-    },
-
-    //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
-
     /**
-     * @private
-     * @param {Element} buttonEl
+     * @see this.selectClass for parameters
      */
-    _buildClipboard(buttonEl) {
-        buttonEl.addEventListener("click", async (ev) => {
-            const anchorLink = this._getAnchorLink();
-            await browser.navigator.clipboard.writeText(anchorLink);
-            const message = markup(_t("Anchor copied to clipboard<br>Link: %s", anchorLink));
-            this.notification.add(message, {
-                type: "success",
-                buttons: [{name: _t("Edit"), onClick: () => this._openAnchorDialog(buttonEl), primary: true}],
-            });
-        });
-    },
-
-    /**
-     * @private
-     * @param {Element} buttonEl
-     */
-    _openAnchorDialog(buttonEl) {
-        const anchorDialog = class extends Component {
-            static template = "website.dialog.anchorName";
-            static props = { close: Function, confirm: Function, delete: Function, currentAnchor: String };
-            static components = { Dialog };
-            title = _t("Link Anchor");
-            modalRef = useChildRef();
-            onClickConfirm() {
-                const shouldClose = this.props.confirm(this.modalRef);
-                if (shouldClose) {
-                    this.props.close();
-                }
-            }
-            onClickDelete() {
-                this.props.delete();
-                this.props.close();
-            }
-            onClickDiscard() {
-                this.props.close();
-            }
-        };
-        const props = {
-            confirm: (modalRef) => {
-                const inputEl = modalRef.el.querySelector(".o_input_anchor_name");
-                const anchorName = this._text2Anchor(inputEl.value);
-                if (this.$target[0].id === anchorName) {
+    openAnchorDialog: function (previewMode, widgetValue, params) {
+        var self = this;
+        var buttons = [{
+            text: _t("Save & copy"),
+            classes: 'btn-primary',
+            click: function () {
+                var $input = this.$('.o_input_anchor_name');
+                var anchorName = self._text2Anchor($input.val());
+                if (self.$target[0].id === anchorName) {
                     // If the chosen anchor name is already the one used by the
                     // element, close the dialog and do nothing else
-                    return true;
+                    this.close();
+                    return;
                 }
 
-                const alreadyExists = !!this.ownerDocument.getElementById(anchorName);
-                modalRef.el.querySelector('.o_anchor_already_exists').classList.toggle('d-none', !alreadyExists);
-                inputEl.classList.toggle('is-invalid', alreadyExists);
+                const alreadyExists = !!self.ownerDocument.getElementById(anchorName);
+                this.$('.o_anchor_already_exists').toggleClass('d-none', !alreadyExists);
+                $input.toggleClass('is-invalid', alreadyExists);
                 if (!alreadyExists) {
-                    this._setAnchorName(anchorName);
-                    buttonEl.click();
-                    return true;
+                    self._setAnchorName(anchorName);
+                    this.close();
+                    self.$button[0].click();
                 }
             },
-            currentAnchor: decodeURIComponent(this.$target.attr('id')),
-        };
+        }, {
+            text: _t("Discard"),
+            close: true,
+        }];
         if (this.$target.attr('id')) {
-            props["delete"] = () => {
-                this._setAnchorName();
-            };
+            buttons.push({
+                text: _t("Remove"),
+                classes: 'btn-link ms-auto',
+                icon: 'fa-trash',
+                close: true,
+                click: function () {
+                    self._setAnchorName();
+                },
+            });
         }
-        this.dialog.add(anchorDialog, props);
+        new Dialog(this, {
+            title: _t("Link Anchor"),
+            $content: $(qweb.render('website.dialog.anchorName', {
+                currentAnchor: decodeURIComponent(this.$target.attr('id')),
+            })),
+            buttons: buttons,
+        }).open();
     },
     /**
      * @private
@@ -3114,10 +2869,10 @@ options.registry.anchor = options.Class.extend({
      */
     _setAnchorName: function (value) {
         if (value) {
-            this.$target[0].id = value;
-            if (!this.isModal) {
-                this.$target[0].dataset.anchor = true;
-            }
+            this.$target.attr({
+                'id': value,
+                'data-anchor': true,
+            });
         } else {
             this.$target.removeAttr('id data-anchor');
         }
@@ -3140,8 +2895,7 @@ options.registry.anchor = options.Class.extend({
             }
             this._setAnchorName(anchorName + n);
         }
-        const pathName = this.isModal ? "" : this.ownerDocument.location.pathname;
-        return `${pathName}#${this.$target[0].id}`;
+        return `${this.ownerDocument.location.pathname}#${this.$target[0].id}`;
     },
     /**
      * Creates a safe id/anchor from text.
@@ -3190,24 +2944,6 @@ options.registry.HeaderBox = options.registry.Box.extend({
         }
         return this._super(...arguments);
     },
-
-    //--------------------------------------------------------------------------
-    // Private
-    //--------------------------------------------------------------------------
-
-    /**
-     * @override
-     */
-    async _computeWidgetState(methodName, params) {
-        const value = await this._super(...arguments);
-        if (methodName === "selectStyle" && params.cssProperty === "border-width") {
-            // One-sided borders return "0px 0px 3px 0px", which prevents the
-            // option from being displayed properly. We only keep the affected
-            // border.
-            return value.replace(/(^|\s)0px/gi, "").trim() || value;
-        }
-        return value;
-    },
 });
 
 options.registry.CookiesBar = options.registry.SnippetPopup.extend({
@@ -3228,13 +2964,13 @@ options.registry.CookiesBar = options.registry.SnippetPopup.extend({
             },
         });
 
-        const $template = $(renderToElement(`website.cookies_bar.${widgetValue}`, {
+        const $template = $(qweb.render(`website.cookies_bar.${widgetValue}`, {
             websiteId: websiteId,
         }));
 
         const $content = this.$target.find('.modal-content');
-
-        // The order of selectors is significant since certain selectors may be
+        
+        // The order of selectors is significant since certain selectors may be 
         // nested within others, and we want to preserve the nested ones.
         // For instance, in the case of '.o_cookies_bar_text_policy' nested
         // inside '.o_cookies_bar_text_secondary', the parent selector should be
@@ -3304,31 +3040,10 @@ options.registry.CoverProperties = options.Class.extend({
      * @see this.selectClass for parameters
      */
     background: async function (previewMode, widgetValue, params) {
-        if (previewMode === false) {
-            this.$image[0].classList.remove("o_b64_image_to_save");
-        }
         if (widgetValue === '') {
             this.$image.css('background-image', '');
             this.$target.removeClass('o_record_has_cover');
         } else {
-            if (previewMode === false) {
-                const imgEl = document.createElement("img");
-                imgEl.src = widgetValue;
-                await loadImageInfo(imgEl);
-                if (imgEl.dataset.mimetype && ![
-                    "image/gif",
-                    "image/svg+xml",
-                    "image/webp",
-                ].includes(imgEl.dataset.mimetype)) {
-                    // Convert to webp but keep original width.
-                    imgEl.dataset.mimetype = "image/webp";
-                    const base64src = await applyModifications(imgEl, {
-                        mimetype: "image/webp",
-                    });
-                    widgetValue = base64src;
-                    this.$image[0].classList.add("o_b64_image_to_save");
-                }
-            }
             this.$image.css('background-image', `url('${widgetValue}')`);
             this.$target.addClass('o_record_has_cover');
             const $defaultSizeBtn = this.$el.find('.o_record_cover_opt_size_default');
@@ -3444,16 +3159,16 @@ options.registry.CoverProperties = options.Class.extend({
         const ccValue = colorPickerWidget._ccValue;
         const colorOrGradient = colorPickerWidget._value;
         const isGradient = weUtils.isColorGradient(colorOrGradient);
-        const valueIsCSSColor = !isGradient && isCSSColor(colorOrGradient);
+        const isCSSColor = !isGradient && ColorpickerWidget.isCSSColor(colorOrGradient);
         const colorNames = [];
         if (ccValue) {
             colorNames.push(ccValue);
         }
-        if (colorOrGradient && !isGradient && !valueIsCSSColor) {
+        if (colorOrGradient && !isGradient && !isCSSColor) {
             colorNames.push(colorOrGradient);
         }
         const bgColorClass = weUtils.computeColorClasses(colorNames).join(' ');
-        const bgColorStyle = valueIsCSSColor ? `background-color: ${colorOrGradient};` :
+        const bgColorStyle = isCSSColor ? `background-color: ${colorOrGradient};` :
             isGradient ? `background-color: rgba(0, 0, 0, 0); background-image: ${colorOrGradient};` : '';
         this._updateColorDataset(bgColorStyle, bgColorClass);
     },
@@ -3547,12 +3262,40 @@ options.registry.ScrollButton = options.Class.extend({
      * @override
      */
     _renderCustomXML(uiFragment) {
-        // TODO We should have a better way to change labels depending on some
-        // condition (maybe a dedicated way in updateUI...)
-        if (this.$target[0].dataset.snippet === 's_image_gallery') {
-            const minHeightEl = uiFragment.querySelector('[data-name="minheight_auto_opt"]');
-            minHeightEl.parentElement.setAttribute('string', _t("Min-Height"));
+        // TODO adapt in master. This sets up a different UI for the image
+        // gallery snippet: for this one, we allow to force a specific height
+        // in auto mode. It was done in stable as without it, the default height
+        // is difficult to understand for the user as it depends on screen
+        // height of the one who edited the website and not on the added images.
+        // It was also a regression as in <= 11.0, this was a possibility.
+        if (this.$target[0].dataset.snippet !== 's_image_gallery') {
+            return;
         }
+        let minHeightEl = uiFragment.querySelector('[data-name="minheight_auto_opt"]');
+        if (!minHeightEl) {
+            return;
+        }
+        minHeightEl = minHeightEl.parentElement;
+        minHeightEl.setAttribute('string', _t("Min-Height"));
+        const heightEl = document.createElement('we-input');
+        heightEl.setAttribute('string', _t("Height"));
+        heightEl.classList.add('o_we_sublevel_1');
+        heightEl.dataset.dependencies = 'minheight_auto_opt';
+        heightEl.dataset.unit = 'px';
+        heightEl.dataset.selectStyle = '';
+        heightEl.dataset.cssProperty = 'height';
+        // For this setting, we need to always force the style (= if the block
+        // is naturally 800px tall and the user enters 800px for this setting,
+        // we set 800px as inline style anyway). Indeed, this snippet's style
+        // is based on the height that is forced but once the related public
+        // widgets are started, the inner carousel items receive a min-height
+        // which makes it so the snippet "natural" height is equal to the
+        // initially forced height... so if the style is not forced, it would
+        // ultimately be removed by mistake thinking it is not necessary.
+        // Note: this is forced as not important as we still need the height to
+        // be reset to 'auto' in mobile (generic css rules).
+        heightEl.dataset.forceStyle = '';
+        uiFragment.appendChild(heightEl);
     },
     /**
      * @override
@@ -3561,15 +3304,6 @@ options.registry.ScrollButton = options.Class.extend({
         switch (methodName) {
             case 'toggleButton':
                 return !!this.$button.parent().length;
-        }
-        return this._super(...arguments);
-    },
-    /**
-     * @override
-     */
-    _computeWidgetVisibility(widgetName, params) {
-        if (widgetName === 'fixed_height_opt') {
-            return (this.$target[0].dataset.snippet === 's_image_gallery');
         }
         return this._super(...arguments);
     },
@@ -3734,7 +3468,7 @@ options.registry.ConditionalVisibility = options.registry.DeviceVisibility.exten
                 });
                 if (attribute.saveAttribute === 'visibilityValueLang') {
                     records = records.map(lang => {
-                        lang.value = pyToJsLocale(lang.value);
+                        lang.value = lang.value.replace(/_/g, '-');
                         return lang;
                     });
                 }
@@ -3814,7 +3548,8 @@ options.registry.WebsiteAnimate = options.Class.extend({
         if (this.isAnimatedText) {
             // For animated text, the animation options must be in the editor
             // toolbar.
-            this.options.wysiwyg.toolbarEl.append(this.$el[0]);
+            const $toolbar = this.options.wysiwyg.toolbar.$el;
+            $toolbar.append(this.$el);
             this.$optionsSection.addClass('d-none');
         }
     },
@@ -3852,7 +3587,7 @@ options.registry.WebsiteAnimate = options.Class.extend({
             this._forceAnimation();
         }
         if (params.isAnimationTypeSelection) {
-            this.$target[0].classList.toggle("o_animate_preview", this.$target[0].classList.contains("o_animate"));
+            this.$target[0].classList.toggle('o_animate_preview', !!widgetValue);
         }
     },
     /**
@@ -3884,20 +3619,13 @@ options.registry.WebsiteAnimate = options.Class.extend({
             delete this.$target[0].dataset.scrollZoneStart;
             delete this.$target[0].dataset.scrollZoneEnd;
         }
-        if (params.activeValue === "o_animate_on_hover") {
-            this.trigger_up("option_update", {
-                optionName: "ImageTools",
-                name: "disable_hover_effect",
-            });
-        }
-        if ((!params.activeValue || params.activeValue === "o_animate_on_hover")
-                && widgetValue && widgetValue !== "onHover") {
-            // If "Animation" was on "None" or "o_animate_on_hover" and it is no
-            // longer, it is set to "fade_in" by default.
+        if (!params.activeValue && widgetValue) {
+            // If "Animation" was on "None" and it is no longer, it is set to
+            // "fade_in" by default.
             targetClassList.add('o_anim_fade_in');
             this._toggleImagesLazyLoading(false);
         }
-        if (!widgetValue || widgetValue === "onHover") {
+        if (!widgetValue) {
             const possibleEffects = this._requestUserValueWidgets('animation_effect_opt')[0].getMethodsParams('selectClass').possibleValues;
             const possibleDirections = this._requestUserValueWidgets('animation_direction_opt')[0].getMethodsParams('selectClass').possibleValues;
             const possibleEffectsAndDirections = possibleEffects.concat(possibleDirections);
@@ -3911,16 +3639,6 @@ options.registry.WebsiteAnimate = options.Class.extend({
             this.$target[0].style.setProperty('--wanim-intensity', '');
             this.$target[0].style.animationDuration = '';
             this._toggleImagesLazyLoading(true);
-        }
-        if (widgetValue === "onHover") {
-            // Pause the history until the hover effect is applied in
-            // "setImgShapeHoverEffect". This prevents saving the intermediate
-            // steps done (in a tricky way) up to that point.
-            this.options.wysiwyg.odooEditor.historyPauseSteps();
-            this.trigger_up("option_update", {
-                optionName: "ImageTools",
-                name: "enable_hover_effect",
-            });
         }
     },
     /**
@@ -3967,29 +3685,19 @@ options.registry.WebsiteAnimate = options.Class.extend({
     /**
      * @override
      */
-    async _computeWidgetVisibility(widgetName, params) {
-        const hasAnimateClass = this.$target[0].classList.contains("o_animate");
+    _computeWidgetVisibility(widgetName, params) {
         switch (widgetName) {
             case 'no_animation_opt': {
                 return !this.isAnimatedText;
-            }
-            case 'animation_effect_opt': {
-                return hasAnimateClass;
             }
             case 'animation_trigger_opt': {
                 return !this.$target[0].closest('.dropdown');
             }
             case 'animation_on_scroll_opt':
             case 'animation_direction_opt': {
-                if (widgetName === "animation_direction_opt" && !hasAnimateClass) {
-                    return false;
-                }
                 return !this.limitedAnimations.some(className => this.$target[0].classList.contains(className));
             }
             case 'animation_intensity_opt': {
-                if (!hasAnimateClass) {
-                    return false;
-                }
                 const possibleDirections = this._requestUserValueWidgets('animation_direction_opt')[0].getMethodsParams('selectClass').possibleValues;
                 if (this.$target[0].classList.contains('o_anim_fade_in')) {
                     for (const targetClass of this.$target[0].classList) {
@@ -4003,18 +3711,6 @@ options.registry.WebsiteAnimate = options.Class.extend({
                     return false;
                 }
                 return true;
-            }
-            case 'animation_on_hover_opt': {
-                const [hoverEffectOverlayWidget] = this._requestUserValueWidgets("hover_effect_overlay_opt");
-                if (hoverEffectOverlayWidget) {
-                    const hoverEffectWidget = hoverEffectOverlayWidget.getParent();
-                    const imageToolsOpt = hoverEffectWidget.getParent();
-                    return (
-                        imageToolsOpt._canHaveHoverEffect()
-                        && !await weUtils.isImageCorsProtected(this.$target[0])
-                    );
-                }
-                return false;
             }
         }
         return this._super(...arguments);
@@ -4057,144 +3753,6 @@ options.registry.WebsiteAnimate = options.Class.extend({
             } else {
                 imgEl.loading = 'eager';
             }
-        }
-    },
-});
-
-/**
- * Allows edition of text "Highlight Effects" following this generic structure:
- * `<span class="o_text_highlight">
- *      <span class="o_text_highlight_item">
- *          line1-textNode1 [line1-textNode2,...]
- *          <svg.../>
- *      </span>
- *      [<br/>]
- *      <span class="o_text_highlight_item">
- *          line2-textNode1 [line2-textNode2,...]
- *          <svg.../>
- *      </span>
- *      ...
- * </span>`
- * To correctly adapt each highlight unit when the text content is changed.
- */
-options.registry.TextHighlight = options.Class.extend({
-    custom_events: Object.assign({}, options.Class.prototype.custom_events, {
-        "user_value_widget_opening": "_onWidgetOpening",
-    }),
-    /**
-     * @override
-     */
-    async start() {
-        await this._super(...arguments);
-        this.leftPanelEl = this.$overlay.data("$optionsSection")[0];
-        // Reduce overlay opacity for more highlight visibility on small text.
-        this.$overlay[0].style.opacity = "0.25";
-        this.$overlay[0].querySelector(".o_handles").classList.add("pe-none");
-    },
-    /**
-     * Move "Text Effect" options to the editor's toolbar.
-     *
-     * @override
-     */
-    onFocus() {
-        this.options.wysiwyg.toolbarEl.append(this.$el[0]);
-    },
-    /**
-     * @override
-     */
-    onBlur() {
-        this.leftPanelEl.appendChild(this.el);
-    },
-    /**
-    * @override
-    */
-    notify(name, data) {
-        // Apply the highlight effect DOM structure when added for the first time
-        // and display the highlight effects grid immediately.
-        if (name === "new_text_highlight") {
-            this._autoAdaptHighlights();
-            this._requestUserValueWidgets("text_highlight_opt")[0]?.enable();
-        }
-        this._super(...arguments);
-    },
-
-    //--------------------------------------------------------------------------
-    // Options
-    //--------------------------------------------------------------------------
-
-    /**
-     * Activates & deactivates the text highlight effect.
-     *
-     * @see this.selectClass for parameters
-     */
-    async setTextHighlight(previewMode, widgetValue, params) {
-        return widgetValue ? this._addTextHighlight(widgetValue)
-            : removeTextHighlight(this.$target[0]);
-    },
-
-    //--------------------------------------------------------------------------
-    // Private
-    //--------------------------------------------------------------------------
-
-    /**
-     * Used to add a highlight SVG element to the targeted text node(s).
-     * This should also take in consideration a situation where many text nodes
-     * are separate e.g. `<p>first text content<br/>second text content...</p>`.
-     * To correctly handle those situations, every set of text nodes will be
-     * wrapped in a `.o_text_highlight_item` that contains its highlight SVG.
-     *
-     * @param {String} highlightID
-     * @private
-     */
-    _addTextHighlight(highlightID) {
-        const highlightEls = [...this.$target[0].querySelectorAll(".o_text_highlight_item svg")];
-        if (highlightEls.length) {
-            // If the text element has a highlight effect, we only need to
-            // change the SVG.
-            highlightEls.forEach(svg => {
-                svg.after(drawTextHighlightSVG(svg.parentElement, highlightID));
-                svg.remove();
-            });
-        } else {
-            this._autoAdaptHighlights();
-        }
-    },
-    /**
-     * Used to set the highlight effect DOM structure on the targeted text
-     * content.
-     *
-     * @private
-     */
-    _autoAdaptHighlights() {
-        this.trigger_up("snippet_edition_request", { exec: async () =>
-            await this._refreshPublicWidgets($(this.options.wysiwyg.odooEditor.editable))
-        });
-    },
-
-    //--------------------------------------------------------------------------
-    // Handlers
-    //--------------------------------------------------------------------------
-
-    /**
-     * To draw highlight SVGs for `<we-select/>` preview, we need to open the
-     * widget (we need correct size values from `getBoundingClientRect()`).
-     * This code will build the highlight preview the first time we open the
-     * `<we-select/>`.
-     *
-     * @private
-     */
-    _onWidgetOpening(ev) {
-        const target = ev.target;
-        // Only when there is no highlight SVGs.
-        if (target.getName() === "text_highlight_opt" && !target.el.querySelector("svg")) {
-            const weToggler = target.el.querySelector("we-toggler");
-            weToggler.classList.add("active");
-            [...target.el.querySelectorAll("we-button[data-set-text-highlight] div")].forEach(weBtnEl => {
-                weBtnEl.textContent = "Text";
-                // Get the text highlight linked to each `<we-button/>`
-                // and apply it to its text content.
-                weBtnEl.append(drawTextHighlightSVG(weBtnEl, weBtnEl.parentElement.dataset.setTextHighlight));
-            });
         }
     },
 });
@@ -4252,18 +3810,6 @@ options.registry.MegaMenuLayout = options.registry.SelectTemplate.extend({
             .classList.value.split(' ').filter(cl => cl.startsWith('s_mega_menu'))[0];
         return `website.${templateDefiningClass}`;
     },
-    /**
-     * @override
-     */
-    async _computeWidgetVisibility(widgetName, params) {
-        if (params.optionsPossibleValues.selectClass?.includes("o_mega_menu_container_size")) {
-            const headerTemplate = weUtils.getCSSVariableValue("header-template");
-            if (["hamburger", "sidebar"].includes(headerTemplate.slice(1, -1))) {
-                return false;
-            }
-        }
-        return this._super(...arguments);
-    },
 });
 
 /**
@@ -4289,25 +3835,38 @@ options.registry.MegaMenuNoDelete = options.Class.extend({
 });
 
 options.registry.sizing.include({
-
-    //--------------------------------------------------------------------------
-    // Public
-    //--------------------------------------------------------------------------
-
     /**
      * @override
      */
-    async updateUIVisibility() {
-        await this._super(...arguments);
-        const nonDraggableClasses = [
-            's_table_of_content_navbar_wrap',
-            's_table_of_content_main',
-        ];
-        if (nonDraggableClasses.some(c => this.$target[0].classList.contains(c))) {
-            const moveHandleEl = this.$overlay[0].querySelector('.o_move_handle');
-            moveHandleEl.classList.add('d-none');
-        }
-    },
+    start() {
+        const defs = this._super(...arguments);
+        const self = this;
+        this.$handles.on('mousedown', function (ev) {
+            // Since website is edited in an iframe, a div that goes over the
+            // iframe is necessary to catch mousemove and mouseup events,
+            // otherwise the iframe absorbs them.
+            const $body = $(this.ownerDocument.body);
+            if (!self.divEl) {
+                self.divEl = document.createElement('div');
+                self.divEl.style.position = 'absolute';
+                self.divEl.style.height = '100%';
+                self.divEl.style.width = '100%';
+                self.divEl.setAttribute('id', 'iframeEventOverlay');
+                $body.append(self.divEl);
+            }
+            const documentMouseUp = () => {
+                // Multiple mouseup can occur if mouse goes out of the window
+                // while moving.
+                if (self.divEl) {
+                    self.divEl.remove();
+                    self.divEl = undefined;
+                }
+                $body.off('mouseup', documentMouseUp);
+            };
+            $body.on('mouseup', documentMouseUp);
+        });
+        return defs;
+    }
 });
 
 options.registry.SwitchableViews = options.Class.extend({
@@ -4384,15 +3943,9 @@ options.registry.GridImage = options.Class.extend({
      * @override
      */
     _computeVisibility() {
-        // Special conditions for the hover effects.
-        const hasSquareShape = this.$target[0].dataset.shape === "web_editor/geometric/geo_square";
-        const effectAllowsOption = !["dolly_zoom", "outline", "image_mirror_blur"]
-            .includes(this.$target[0].dataset.hoverEffect);
-
         return this._super(...arguments)
             && !!this._getImageGridItem()
-            && (!('shape' in this.$target[0].dataset)
-                || hasSquareShape && effectAllowsOption);
+            && !('shape' in this.$target[0].dataset);
     },
     /**
      * @override
@@ -4408,151 +3961,25 @@ options.registry.GridImage = options.Class.extend({
     },
 });
 
-options.registry.GalleryElement = options.Class.extend({
-
-    //--------------------------------------------------------------------------
-    // Options
-    //--------------------------------------------------------------------------
-
-    /**
-     * Allows to change the position of an item on the set.
-     *
-     * @see this.selectClass for parameters
-     */
-    position(previewMode, widgetValue, params) {
-        const carouselOptionName = this.$target[0].parentNode.parentNode.classList.contains("s_carousel_intro") ? "CarouselIntro" : "Carousel";
-        const optionName = this.$target[0].classList.contains("carousel-item") ? carouselOptionName
-            : "GalleryImageList";
-        const itemEl = this.$target[0];
-        this.trigger_up("option_update", {
-            optionName: optionName,
-            name: "reorder_items",
-            data: {
-                itemEl: itemEl,
-                position: widgetValue,
-            },
-        });
-    },
-});
-
-options.registry.Button = options.Class.extend({
-    /**
-     * @override
-     */
-    init() {
-        this._super(...arguments);
-        const isUnremovableButton = this.$target[0].classList.contains("oe_unremovable");
-        this.forceDuplicateButton = !isUnremovableButton;
-        this.forceNoDeleteButton = isUnremovableButton;
-    },
-    /**
-     * @override
-     */
-    onBuilt(options) {
-        // Only if the button is built, not if a snippet containing that button
-        // is built (e.g. true if dropping a button from the snippet menu onto
-        // the page, false if dropping an "image-text" snippet).
-        if (options.isCurrent) {
-            this._adaptButtons();
-        }
-    },
-    /**
-     * @override
-     */
-    onClone(options) {
-        // Only if the button is cloned, not if a snippet containing that button
-        // is cloned.
-        if (options.isCurrent) {
-            this._adaptButtons(false);
-        }
-    },
+options.registry.layout_column.include({
 
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
 
     /**
-     * Checks if there are buttons before or after the target element and
-     * applies appropriate styling.
+     * TODO adapt in master: used to hide the "Layout" options on "Images Wall"
+     * (which has its own options to handle the layout).
      *
-     * @private
-     * @param {Boolean} [adaptAppearance=true]
-     */
-    _adaptButtons(adaptAppearance = true) {
-        const previousSiblingEl = this.$target[0].previousElementSibling;
-        const nextSiblingEl = this.$target[0].nextElementSibling;
-        let siblingButtonEl = null;
-        // When multiple buttons follow each other, they may break on 2 lines or
-        // more on mobile, so they need a margin-bottom. Also, if the button is
-        // dropped next to another button add a space between them.
-        if (nextSiblingEl?.matches(".btn")) {
-            nextSiblingEl.classList.add("mb-2");
-            this.$target[0].after(' ');
-            // It is first the next button that we put in this variable because
-            // we want to copy as a priority the style of the previous button
-            // if it exists.
-            siblingButtonEl = nextSiblingEl;
-        }
-        if (previousSiblingEl?.matches(".btn")) {
-            previousSiblingEl.classList.add("mb-2");
-            this.$target[0].before(' ');
-            siblingButtonEl = previousSiblingEl;
-        }
-        if (siblingButtonEl) {
-            this.$target[0].classList.add("mb-2");
-        }
-        if (adaptAppearance) {
-            if (siblingButtonEl && !this.$target[0].matches(".s_custom_button")) {
-                // If the dropped button is not a custom button then we adjust
-                // its appearance to match its sibling.
-                if (siblingButtonEl.classList.contains("btn-secondary")) {
-                    this.$target[0].classList.remove("btn-primary");
-                    this.$target[0].classList.add("btn-secondary");
-                }
-                if (siblingButtonEl.classList.contains("btn-sm")) {
-                    this.$target[0].classList.add("btn-sm");
-                } else if (siblingButtonEl.classList.contains("btn-lg")) {
-                    this.$target[0].classList.add("btn-lg");
-                }
-            } else {
-                // To align with the editor's behavior, we need to enclose the
-                // button in a <p> tag if it's not dropped within a <p> tag. We only
-                // put the dropped button in a <p> if it's not next to another
-                // button, because some snippets have buttons that aren't inside a
-                // <p> (e.g. s_text_cover).
-                // TODO: this definitely needs to be fixed at web_editor level.
-                // Nothing should prevent adding buttons outside of a paragraph.
-                const btnContainerEl = this.$target[0].closest("p");
-                if (!btnContainerEl) {
-                    const paragraphEl = document.createElement("p");
-                    this.$target[0].parentNode.insertBefore(paragraphEl, this.$target[0]);
-                    paragraphEl.appendChild(this.$target[0]);
-                }
-            }
-            this.$target[0].classList.remove("s_custom_button");
-        }
-    },
-});
-
-options.registry.layout_column.include({
-    /**
      * @override
      */
-    _isMobile() {
-        return wUtils.isMobile(this);
+    _computeVisibility() {
+        return !this.$target[0].closest('[data-snippet="s_images_wall"]');
     },
 });
 
-options.registry.SnippetMove.include({
-    /**
-     * @override
-     */
-    _isMobile() {
-        return wUtils.isMobile(this);
-    },
-});
-
-export default {
+return {
     UrlPickerUserValueWidget: UrlPickerUserValueWidget,
     FontFamilyPickerUserValueWidget: FontFamilyPickerUserValueWidget,
 };
+});

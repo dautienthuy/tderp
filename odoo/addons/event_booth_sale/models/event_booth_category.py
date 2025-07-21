@@ -4,7 +4,6 @@
 import logging
 
 from odoo import api, fields, models
-from odoo.addons.product.models.product_template import PRICE_CONTEXT_KEYS
 
 _logger = logging.getLogger(__name__)
 
@@ -17,14 +16,11 @@ class EventBoothCategory(models.Model):
 
     product_id = fields.Many2one(
         'product.product', string='Product', required=True,
-        domain=[('service_tracking', '=', 'event_booth')], default=_default_product_id,
+        domain=[('detailed_type', '=', 'event_booth')], default=_default_product_id,
         groups="event.group_event_registration_desk")
     price = fields.Float(
         string='Price', compute='_compute_price', digits='Product Price', readonly=False,
         store=True, groups="event.group_event_registration_desk")
-    price_incl = fields.Float(
-        string='Price incl', compute='_compute_price_incl', digits='Product Price', readonly=False,
-        groups="event.group_event_registration_desk")
     currency_id = fields.Many2one(related='product_id.currency_id', groups="event.group_event_registration_desk")
     price_reduce = fields.Float(
         string='Price Reduce', compute='_compute_price_reduce',
@@ -48,30 +44,29 @@ class EventBoothCategory(models.Model):
             if category.product_id and category.product_id.list_price:
                 category.price = category.product_id.list_price + category.product_id.price_extra
 
-    @api.depends('product_id', 'product_id.taxes_id', 'price')
-    def _compute_price_incl(self):
-        for category in self:
-            if category.product_id and category.price:
-                tax_ids = category.product_id.taxes_id
-                taxes = tax_ids.compute_all(category.price, category.currency_id, 1.0, product=category.product_id)
-                category.price_incl = taxes['total_included']
-            else:
-                category.price_incl = 0
-
-    @api.depends_context(*PRICE_CONTEXT_KEYS)
+    @api.depends_context('pricelist', 'quantity')
     @api.depends('product_id', 'price')
     def _compute_price_reduce(self):
         for category in self:
-            contextual_discount = category.product_id._get_contextual_discount()
-            category.price_reduce = (1.0 - contextual_discount) * category.price
+            product = category.product_id
+            pricelist = product.product_tmpl_id._get_contextual_pricelist()
+            lst_price = product.currency_id._convert(
+                product.lst_price,
+                pricelist.currency_id,
+                self.env.company,
+                fields.Datetime.now(),
+                round=False,
+            )
+            discount = (lst_price - product._get_contextual_price()) / lst_price if lst_price else 0.0
+            category.price_reduce = (1.0 - discount) * category.price
 
-    @api.depends_context(*PRICE_CONTEXT_KEYS)
+    @api.depends_context('pricelist', 'quantity')
     @api.depends('product_id', 'price_reduce')
     def _compute_price_reduce_taxinc(self):
         for category in self:
             tax_ids = category.product_id.taxes_id
             taxes = tax_ids.compute_all(category.price_reduce, category.currency_id, 1.0, product=category.product_id)
-            category.price_reduce_taxinc = taxes['total_included'] or 0
+            category.price_reduce_taxinc = taxes['total_included']
 
     def _init_column(self, column_name):
         """ Initialize product_id for existing columns when installing sale
@@ -94,11 +89,10 @@ class EventBoothCategory(models.Model):
         else:
             product_id = self.env['product.product'].create({
                 'name': 'Generic Event Booth Product',
-                'categ_id': self.env.ref('event_product.product_category_events').id,
+                'categ_id': self.env.ref('event_sale.product_category_events').id,
                 'list_price': 100,
                 'standard_price': 0,
-                'type': 'service',
-                'service_tracking': 'event_booth',
+                'detailed_type': 'event_booth',
                 'invoice_policy': 'order',
             }).id
             self.env['ir.model.data'].create({

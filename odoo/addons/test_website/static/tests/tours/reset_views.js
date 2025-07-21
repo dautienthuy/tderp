@@ -1,7 +1,8 @@
-/** @odoo-module **/
 /* global ace */
+odoo.define('test_website.reset_views', function (require) {
+'use strict';
 
-import { clickOnSave, registerWebsitePreviewTour } from "@website/js/tours/tour_utils";
+const wTourUtils = require('website.tour_utils');
 
 var BROKEN_STEP = {
     // because saving a broken template opens a recovery page with no assets
@@ -9,109 +10,98 @@ var BROKEN_STEP = {
     // to properly wait for the page to be saved & reloaded in order to fix the
     // race condition of a tour ending on a side-effect (with the possible
     // exception of somehow telling the harness / browser to do it)
-    trigger: "body",
+    trigger: 'body',
+    run: function () {}
 };
-registerWebsitePreviewTour(
-    "test_reset_page_view_complete_flow_part1",
-    {
-        url: "/test_page_view",
-        // 1. Edit the page through Edit Mode, it will COW the view
-        edition: true,
-    },
-    () => [
+wTourUtils.registerWebsitePreviewTour('test_reset_page_view_complete_flow_part1', {
+    test: true,
+    url: '/test_page_view',
+    // 1. Edit the page through Edit Mode, it will COW the view
+    edition: true,
+},
+    [
         {
-            content: "Drag the Intro snippet group and drop it in #oe_structure_test_website_page.",
-            trigger: '#oe_snippets .oe_snippet[name="Intro"] .oe_snippet_thumbnail:not(.o_we_ongoing_insertion)',
+            content: "drop a snippet",
+            trigger: ".oe_snippet:has(.s_cover) .oe_snippet_thumbnail",
             // id starting by 'oe_structure..' will actually create an inherited view
-            run: "drag_and_drop :iframe #oe_structure_test_website_page",
+            run: "drag_and_drop iframe #oe_structure_test_website_page",
         },
         {
-            content: "Click on the s_cover snippet.",
-            trigger: ':iframe .o_snippet_preview_wrap[data-snippet-id="s_cover"]',
-            run: "click",
+            content: "save the page",
+            extra_trigger: 'iframe #oe_structure_test_website_page.o_dirty',
+            trigger: "button[data-action=save]",
         },
-        ...clickOnSave(),
         // 2. Edit that COW'd view in the HTML editor to break it.
         {
             content: "open site menu",
+            extra_trigger: "iframe body:not(.editor_enable)",
             trigger: 'button[data-menu-xmlid="website.menu_site"]',
-            run: "click",
         },
         {
             content: "open html editor",
             trigger: 'a[data-menu-xmlid="website.menu_ace_editor"]',
-            run: "click",
         },
         {
             content: "add a broken t-field in page DOM",
             trigger: 'div.ace_line .ace_xml:contains("placeholder")',
-            run() {
-                ace.edit(document.querySelector("#resource-editor div"))
-                    .getSession()
-                    .insert({row: 4, column: 1}, '<t t-field="not.exist"/>\n');
+            run: function () {
+                ace.edit('ace-view-editor').getSession().insert({row: 4, column: 1}, '<t t-field="not.exist"/>\n');
             },
         },
         {
-            trigger: '.ace_content:contains("not.exist")',
-        },
-        {
             content: "save the html editor",
-            trigger: ".o_resource_editor button:contains(Save)",
-            run: "click",
+            extra_trigger: '.ace_content:contains("not.exist")',
+            trigger: ".o_ace_view_editor button[data-action=save]",
         },
-        BROKEN_STEP,
+        BROKEN_STEP
     ]
 );
 
-registerWebsitePreviewTour(
-    "test_reset_page_view_complete_flow_part2",
-    {
-        url: "/test_page_view",
-    },
-    () => [
+wTourUtils.registerWebsitePreviewTour('test_reset_page_view_complete_flow_part2', {
+    test: true,
+    url: '/test_page_view',
+},
+    [
         {
             content: "check that the view got fixed",
-            trigger: ":iframe p:contains(/^Test Page View$/)",
+            trigger: 'iframe p:containsExact("Test Page View")',
+            run: function () {}, // it's a check
         },
         {
             content: "check that the inherited COW view is still there (created during edit mode)",
-            trigger: ":iframe #oe_structure_test_website_page .s_cover",
+            trigger: 'iframe #oe_structure_test_website_page .s_cover',
+            run: function () {}, // it's a check
         },
         //4. Now break the inherited view created when dropping a snippet
         {
             content: "open site menu",
             trigger: 'button[data-menu-xmlid="website.menu_site"]',
-            run: "click",
         },
         {
             content: "open html editor",
             trigger: 'a[data-menu-xmlid="website.menu_ace_editor"]',
-            run: "click",
         },
         {
             content: "select oe_structure view",
-            trigger: ".o_resource_editor_title .o_select_menu_toggler",
-            run: "click",
-        },
-        {
-            content: "select oe_structure view",
-            trigger: ".o_select_menu_menu .o_select_menu_item:contains(Test Page View)",
-            run: "click",
+            trigger: '#s2id_ace-view-list',  // use select2 version
+            run: function () {
+                var viewId = $('#ace-view-list option:contains("oe_structure_test_website_page")').val();
+                $('#ace-view-list').val(viewId).trigger('change');
+            },
         },
         {
             content: "add a broken t-field in page DOM",
             trigger: 'div.ace_line .ace_xml:contains("oe_structure_test_website_page")',
-            run() {
-                ace.edit(document.querySelector("#resource-editor div"))
-                    .getSession()
-                    .insert({row: 4, column: 1}, '<t t-field="not.exist"/>\n');
+            run: function () {
+                ace.edit('ace-view-editor').getSession().insert({row: 4, column: 1}, '<t t-field="not.exist"/>\n');
             },
         },
         {
             content: "save the html editor",
-            trigger: ".o_resource_editor button:contains(Save)",
-            run: "click",
+            trigger: ".o_ace_view_editor button[data-action=save]",
         },
-        BROKEN_STEP,
+        BROKEN_STEP
     ]
 );
+
+});

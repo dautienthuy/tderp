@@ -1,18 +1,17 @@
 import base64
 
-from markupsafe import Markup
 from unittest.mock import patch
 
-from odoo import SUPERUSER_ID
-from odoo.addons.mail.tests.common import mail_new_test_user, MailCommon
+from odoo.addons.mail.tests.common import mail_new_test_user
 from odoo.addons.test_mail.models.mail_test_access import MailTestAccess
+from odoo.addons.test_mail.tests.common import TestMailCommon
 from odoo.addons.test_mail.models.test_mail_models import MailTestSimple
 from odoo.exceptions import AccessError
 from odoo.tools import mute_logger
 from odoo.tests import tagged
 
 
-class MessageAccessCommon(MailCommon):
+class MessageAccessCommon(TestMailCommon):
 
     @classmethod
     def setUpClass(cls):
@@ -271,10 +270,6 @@ class TestMailMessageAccess(MessageAccessCommon):
             (self.record_admin, {
                 'parent_id': admin_msg.id,
             }, False, 'No access on record but reply to notified parent'),
-            # internal = forbidden (internal users only)
-            (self.record_portal, {'is_internal': True}, True, 'Internal subtype always forbidden'),
-            (self.record_portal, {'subtype_id': self.env.ref('mail.mt_note').id}, True, 'Internal flag always forbidden'),
-            (self.record_portal, {'subtype_id': False}, True, 'No subtype = internal = always forbidden'),
         ]:
             with self.subTest(record=record, msg_vals=msg_vals, reason=reason):
                 if should_crash:
@@ -283,7 +278,6 @@ class TestMailMessageAccess(MessageAccessCommon):
                             'model': record._name if record else False,
                             'res_id': record.id if record else False,
                             'body': 'Test',
-                            'subtype_id': self.env.ref('mail.mt_comment').id,
                             **msg_vals,
                         })
                 else:
@@ -291,7 +285,6 @@ class TestMailMessageAccess(MessageAccessCommon):
                         'model': record._name if record else False,
                         'res_id': record.id if record else False,
                         'body': 'Test',
-                        'subtype_id': self.env.ref('mail.mt_comment').id,
                         **msg_vals,
                     })
 
@@ -301,7 +294,6 @@ class TestMailMessageAccess(MessageAccessCommon):
                 'model': self.record_portal._name,
                 'res_id': self.record_portal.id,
                 'body': 'Test',
-                'subtype_id': self.env.ref('mail.mt_comment').id,
             })
 
     @mute_logger('odoo.addons.base.models.ir_model', 'odoo.addons.base.models.ir_rule')
@@ -337,18 +329,18 @@ class TestMailMessageAccess(MessageAccessCommon):
         test_record.message_subscribe((partner_1 | self.user_admin.partner_id).ids)
 
         message = test_record.message_post(
-            body=Markup('<p>This is First Message</p>'),
+            body='<p>This is First Message</p>',
             message_type='comment',
             subject='Subject',
             subtype_xmlid='mail.mt_note',
         )
         # portal user have no rights to read the message
         with self.assertRaises(AccessError):
-            message.with_user(self.user_portal).read(['subject', 'body'])
+            message.with_user(self.user_portal).read(['subject, body'])
 
-        with patch.object(MailTestSimple, '_check_access', return_value=None):
+        with patch.object(MailTestSimple, 'check_access_rights', return_value=True):
             with self.assertRaises(AccessError):
-                message.with_user(self.user_portal).read(['subject', 'body'])
+                message.with_user(self.user_portal).read(['subject, body'])
 
             # parent message is accessible to references notification mail values
             # for _notify method and portal user have no rights to send the message for this model
@@ -367,8 +359,8 @@ class TestMailMessageAccess(MessageAccessCommon):
             ('mail_message_id', '=', new_msg.id),
         ])
         self.assertEqual(
-            new_mail.references, f'{message.message_id} {new_msg.message_id}',
-            'References should not include message parent message_id, even if internal note, to help thread formation')
+            new_mail.references, new_msg.message_id,
+            'References should not include message parent message_id, as it is a note hence internal')
         self.assertTrue(new_mail)
         self.assertEqual(new_msg.parent_id, message)
 
@@ -376,7 +368,6 @@ class TestMailMessageAccess(MessageAccessCommon):
     # READ
     # - Criterions
     #  - author
-    #  - creator (might post on behalf of someone else)
     #  - recipients / notified
     #  - document-based: read, using '_get_mail_message_access'
     # - share users: limited to 'not internal' (flag or subtype)
@@ -393,9 +384,6 @@ class TestMailMessageAccess(MessageAccessCommon):
             (self.record_admin.message_ids[0], {
                 'author_id': self.user_employee.partner_id.id,
             }, False, 'Author > no access on record'),
-            (self.record_admin.message_ids[0], {
-                'create_uid': self.user_employee.id,
-            }, False, 'Creator > no access on record'),
             # notified
             (self.record_admin.message_ids[0], {
                 'notification_ids': [(0, 0, {
@@ -412,12 +400,7 @@ class TestMailMessageAccess(MessageAccessCommon):
                 'parent_id': msg.parent_id.id,
             }
             with self.subTest(msg=msg, reason=reason):
-                if 'create_uid' in msg_vals:
-                    self.patch(self.env.registry, 'ready', False)
-                    msg.with_user(SUPERUSER_ID).write(msg_vals)
-                    self.patch(self.env.registry, 'ready', True)
-                    self.assertEqual(msg.create_uid.id, msg_vals['create_uid'])
-                elif msg_vals:
+                if msg_vals:
                     msg.write(msg_vals)
                 if should_crash:
                     with self.assertRaises(AccessError):
@@ -607,12 +590,13 @@ class TestMailMessageAccess(MessageAccessCommon):
         """ Test updating message envelope require some privileges """
         message = self.record_internal.with_user(self.user_employee).message_ids[0]
         message.write({'body': 'Update Me'})
-        with self.assertRaises(AccessError):
-            message.write({'model': 'res.partner'})
+        # To change in 18+
+        message.write({'model': 'res.partner'})
+        message.sudo().write({'model': self.record_internal._name})  # back to original model
         # To change in 18+
         message.write({'partner_ids': [(4, self.user_portal_2.partner_id.id)]})
-        with self.assertRaises(AccessError):
-            message.write({'res_id': self.record_public.id})
+        # To change in 18+
+        message.write({'res_id': self.record_public.id})
         # To change in 18+
         message.write({'notification_ids': [
             (0, 0, {'res_partner_id': self.user_portal_2.partner_id.id})
@@ -778,11 +762,9 @@ class TestMessageSubModelAccess(MessageAccessCommon):
         with self.assertRaises(AccessError):
             notif_own.write({'res_partner_id': self.user_admin.partner_id.id})
 
-    @mute_logger('odoo.addons.base.models.ir_model')
     def test_mail_notification_portal(self):
         """ In any case, portal should not modify notifications """
-        with self.assertRaises(AccessError):
-            self.assertFalse(self.env['mail.notification'].with_user(self.user_portal).check_access('write'))
+        self.assertFalse(self.env['mail.notification'].with_user(self.user_portal).check_access_rights('write', raise_exception=False))
         portal_record = self.record_portal.with_user(self.user_portal)
         message = portal_record.message_post(
             body='Hello People',

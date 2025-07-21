@@ -1,8 +1,7 @@
 /** @odoo-module **/
 
 import slidesTourTools from '@website_slides/../tests/tours/slides_tour_tools';
-import { clickOnEditAndWaitEditMode, registerWebsitePreviewTour } from '@website/js/tours/tour_utils';
-import { waitForStable } from '@web/core/macro';
+import wTourUtils from 'website.tour_utils';
 
 /**
  * Global use case:
@@ -11,80 +10,75 @@ import { waitForStable } from '@web/core/macro';
  * they create some lessons in it;
  * they publish it;
  */
-registerWebsitePreviewTour('course_publisher_standard', {
+wTourUtils.registerWebsitePreviewTour('course_publisher_standard', {
     url: '/slides',
-}, () => [{
+    test: true,
+}, [{
     content: 'eLearning: click on New (top-menu)',
-    trigger: 'div.o_new_content_container a',
-    run: "click",
+    trigger: 'div.o_new_content_container a'
 }, {
     content: 'eLearning: click on New Course',
-    trigger: '#o_new_content_menu_choices a:contains("Course")',
-    run: "click",
+    trigger: '#o_new_content_menu_choices a:contains("Course")'
 }, {
     content: 'eLearning: set name',
     trigger: 'div[name="name"] input',
-    run: "edit How to Déboulonnate",
+    run: 'text How to Déboulonnate',
 }, {
     content: 'eLearning: click on tags',
     trigger: '.o_field_many2many_tags input',
-    run: "edit Gard",
+    run: 'text Gard',
 }, {
     content: 'eLearning: select Gardening tag',
     trigger: '.ui-autocomplete a:contains("Gardening")',
-    run: "click",
+    in_modal: false,
 }, {
     content: 'eLearning: set description',
-    trigger: '.o_field_html[name="description"] .odoo-editor-editable div.o-paragraph',
-    run: "editor Déboulonnate is very common at Fleurus",
+    trigger: '.o_field_html[name="description"]',
+    run: 'text Déboulonnate is very common at Fleurus',
 }, {
     content: 'eLearning: we want reviews',
     trigger: '.o_field_boolean[name="allow_comment"] input',
-    run: "click",
 }, {
     content: 'eLearning: seems cool, create it',
-    trigger: '.modal button:contains("Save")',
-    run: "click",
+    trigger: 'button:contains("Save")',
 },
-{
-    trigger: "body:not(:has(.modal))",
-},
-...clickOnEditAndWaitEditMode(),
+...wTourUtils.clickOnEditAndWaitEditMode(),
 {
     content: 'eLearning: double click image to edit it',
-    trigger: ':iframe img.o_wslides_course_pict',
+    trigger: 'iframe img.o_wslides_course_pict',
     run: 'dblclick',
 }, {
     content: 'eLearning: click "Add URL" to trigger URL box',
     trigger: '.o_upload_media_url_button',
-    run: "click",
 }, {
     content: 'eLearning: add a bioutifoul URL',
     trigger: 'input.o_we_url_input',
-    run: "edit https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/ThreeTimeAKCGoldWinnerPembrookeWelshCorgi.jpg/800px-ThreeTimeAKCGoldWinnerPembrookeWelshCorgi.jpg",
-},
-{
-    trigger: ".o_we_url_success",
-},
-{
+    run: 'text https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/ThreeTimeAKCGoldWinnerPembrookeWelshCorgi.jpg/800px-ThreeTimeAKCGoldWinnerPembrookeWelshCorgi.jpg'
+}, {
     content: 'eLearning: click "Add URL" really adding image',
     trigger: '.o_upload_media_url_button',
-    run: "click",
+    extra_trigger: '.o_we_url_success',
 }, {
     content: 'eLearning: is the Corgi set ?',
-    trigger: ':iframe img.o_wslides_course_pict.o_modified_image_to_save[data-original-src$="GoldWinnerPembrookeWelshCorgi.jpg"][src^="data:image"]',
-    run: "click",
+    trigger: 'iframe img.o_wslides_course_pict',
+    run: function () {
+        const $imgCorgi = $('.o_website_preview iframe').contents().find('img.o_wslides_course_pict');
+        const expectedImageUrlRegex=/GoldWinnerPembrookeWelshCorgi.jpg/;
+        if (expectedImageUrlRegex.test($imgCorgi.attr('src'))) {
+            $imgCorgi.addClass('o_wslides_tour_success');
+        }
+    },
+}, {
+    content: 'eLearning: the Corgi is set !',
+    trigger: 'iframe img.o_wslides_course_pict.o_wslides_tour_success',
 }, {
     content: 'eLearning: save course edition',
     trigger: 'button[data-action="save"]',
-    run: "click",
-},
-{
-    trigger: ":iframe body:not(.editor_enable)", // wait for editor to close
-},
-{
+}, {
     content: 'eLearning: course create with current member',
-    trigger: ':iframe .o_wslides_js_course_join:contains("You\'re enrolled")',
+    extra_trigger: 'iframe body:not(.editor_enable)',  // wait for editor to close
+    trigger: 'iframe .o_wslides_js_course_join:contains("You\'re enrolled")',
+    run: function () {} // check membership
 }
 ].concat(
     slidesTourTools.addExistingCourseTag(true),
@@ -93,30 +87,16 @@ registerWebsitePreviewTour('course_publisher_standard', {
     slidesTourTools.addArticleToSection('Introduction', 'MyArticle', true),
     [{
     content: "eLearning: check editor is loaded for article",
-    trigger: ':iframe body.editor_enable',
+    trigger: 'iframe body.editor_enable',
     timeout: 30000,
+    run: () => null, // it's a check
 }, {
     content: "eLearning: save article",
     trigger: '.o_we_website_top_actions button.btn-primary:contains("Save")',
-    run: "click",
-},
-{
-    trigger: "[is-ready=true]:iframe body:not(.editor_enable)",
-},
-{
-    trigger:
-        ":iframe main:has(.o_wslides_course_nav a:contains(Déboulonnate)):has(.o_wslides_lesson_header_container:contains(completed)):has(.o_wslides_lesson_content:contains(screen to edit))",
-},
-{
+}, {
     content: "eLearning: use breadcrumb to go back to channel",
-    trigger: ':iframe .o_wslides_course_nav a:contains("Déboulonnate")[href^="/slides/how-to-deboulonnate"]',
-    async run(actions) {
-        await waitForStable(document, 2000);
-        await actions.click();
-    }
-}],
-    slidesTourTools.addImageToSection('Introduction', 'Overview', true),
-    slidesTourTools.addPdfToSection('Introduction', 'Exercise', true),
+    trigger: 'iframe .o_wslides_course_nav a:contains("Déboulonnate")',
+}]
 //     [
 // {
 //     content: 'eLearning: move new course inside introduction',

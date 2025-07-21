@@ -3,18 +3,18 @@
 # 	* website_sale_stock
 # 
 # Translators:
-# Minj P <pminj322@gmail.com>, 2024
-# Martin Trigaux, 2024
-# Batmunkh Ganbat <batmunkh.g@bumanit.mn>, 2024
-# Baskhuu Lodoikhuu <baskhuujacara@gmail.com>, 2025
+# Minj P <pminj322@gmail.com>, 2022
+# Martin Trigaux, 2022
+# Batmunkh Ganbat <batmunkh.g@bumanit.mn>, 2022
+# Baskhuu Lodoikhuu <baskhuujacara@gmail.com>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-07 20:37+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: Baskhuu Lodoikhuu <baskhuujacara@gmail.com>, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:57+0000\n"
+"Last-Translator: Baskhuu Lodoikhuu <baskhuujacara@gmail.com>, 2024\n"
 "Language-Team: Mongolian (https://app.transifex.com/odoo/teams/41243/mn/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,19 +24,12 @@ msgstr ""
 
 #. module: website_sale_stock
 #: model_terms:ir.ui.view,arch_db:website_sale_stock.res_config_settings_view_form
-msgid "<span invisible=\"not show_availability\">Units</span>"
+msgid ""
+"<span attrs=\"{'invisible': [('show_availability', '=', "
+"False)]}\">Units</span>"
 msgstr ""
-
-#. module: website_sale_stock
-#. odoo-javascript
-#: code:addons/website_sale_stock/static/src/js/product_card/product_card.js:0
-msgid "All available quantity selected"
-msgstr ""
-
-#. module: website_sale_stock
-#: model_terms:ir.ui.view,arch_db:website_sale_stock.res_config_settings_view_form
-msgid "All warehouses"
-msgstr ""
+"<span attrs=\"{'invisible': [('show_availability', '=', "
+"False)]}\">Нэгж</span>"
 
 #. module: website_sale_stock
 #: model:ir.model.fields,field_description:website_sale_stock.field_product_product__stock_notification_partner_ids
@@ -84,6 +77,7 @@ msgstr "Нөөц хүрэлцээний мэдээлэл харуулах."
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/xml/website_sale_stock_product_availability.xml:0
+#, python-format
 msgid "Get notified when back in stock"
 msgstr "Нөөц ирэх үед эргэж мэдэгдэх"
 
@@ -96,12 +90,14 @@ msgstr ""
 #. module: website_sale_stock
 #. odoo-python
 #: code:addons/website_sale_stock/controllers/main.py:0
+#, python-format
 msgid "Invalid Email"
 msgstr "Буруу имэйл"
 
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/xml/website_sale_stock_product_availability.xml:0
+#, python-format
 msgid "Invalid email"
 msgstr "Буруу имэйл"
 
@@ -113,6 +109,7 @@ msgstr "Нөөцийн анхны утгууд"
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/xml/website_sale_stock_product_availability.xml:0
+#, python-format
 msgid "Only"
 msgstr "Ердөө"
 
@@ -124,13 +121,8 @@ msgstr "Яг одоо захиалах"
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/xml/website_sale_stock_product_availability.xml:0
+#, python-format
 msgid "Out of Stock"
-msgstr "Нөөц дууссан"
-
-#. module: website_sale_stock
-#. odoo-javascript
-#: code:addons/website_sale_stock/static/src/js/product/product.xml:0
-msgid "Out of stock"
 msgstr "Нөөц дууссан"
 
 #. module: website_sale_stock
@@ -149,13 +141,9 @@ msgstr "Нөөц дууссан мэдэгдэл"
 #. odoo-python
 #: code:addons/website_sale_stock/models/product_product.py:0
 #: model:ir.model,name:website_sale_stock.model_product_template
+#, python-format
 msgid "Product"
 msgstr "Бараа"
-
-#. module: website_sale_stock
-#: model:ir.model,name:website_sale_stock.model_product_combo
-msgid "Product Combo"
-msgstr ""
 
 #. module: website_sale_stock
 #: model:ir.model,name:website_sale_stock.model_product_product
@@ -164,6 +152,7 @@ msgstr "Барааны хувилбар"
 
 #. module: website_sale_stock
 #: model:ir.actions.server,name:website_sale_stock.ir_cron_send_availability_email_ir_actions_server
+#: model:ir.cron,cron_name:website_sale_stock.ir_cron_send_availability_email
 msgid "Product: send email regarding products availability"
 msgstr "Бараа: барааны нөөц хүрэлцээн талаар имэйл илгээх"
 
@@ -171,12 +160,6 @@ msgstr "Бараа: барааны нөөц хүрэлцээн талаар им
 #: model_terms:ir.ui.view,arch_db:website_sale_stock.availability_email_body
 msgid "Regards,"
 msgstr "Хүндэтгэсэн,"
-
-#. module: website_sale_stock
-#. odoo-javascript
-#: code:addons/website_sale_stock/static/src/js/product_card/product_card.xml:0
-msgid "Requested quantity not available"
-msgstr ""
 
 #. module: website_sale_stock
 #: model:ir.model,name:website_sale_stock.model_sale_order
@@ -211,6 +194,7 @@ msgstr "Боломжит нөөцийг харуулах"
 #. module: website_sale_stock
 #. odoo-python
 #: code:addons/website_sale_stock/models/sale_order.py:0
+#, python-format
 msgid ""
 "Some products became unavailable and your cart has been updated. We're sorry"
 " for the inconvenience."
@@ -225,19 +209,15 @@ msgstr "Дараах бараа одоогоор нөөц хүрэлцээтэй
 
 #. module: website_sale_stock
 #. odoo-python
-#: code:addons/website_sale_stock/models/sale_order.py:0
-msgid "The item has not been added to your cart since it is not available."
-msgstr ""
-
-#. module: website_sale_stock
-#. odoo-python
 #: code:addons/website_sale_stock/models/product_product.py:0
+#, python-format
 msgid "The product '%(product_name)s' is now available"
 msgstr "Бараа '%(product_name)s' одоогоор нөөц хүрэлцээтэй байна"
 
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/js/website_sale_reorder.js:0
+#, python-format
 msgid "This product is out of stock."
 msgstr "Энэ барааны нөөц дууссан."
 
@@ -261,6 +241,7 @@ msgstr "Агуулах"
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/xml/website_sale_stock_product_availability.xml:0
+#, python-format
 msgid "We'll notify you once the product is back in stock."
 msgstr "Бараа нөөцтэй болох үед бид таньд эргэж мэдэгдэнэ."
 
@@ -278,24 +259,28 @@ msgstr "Уг захиалгыг хүлээн бүртгэн авсан вебс�
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/xml/website_sale_stock_product_availability.xml:0
+#, python-format
 msgid "You already added"
 msgstr "Аль хэдийн нэмэгдсэн байна"
 
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/xml/website_sale_stock_product_availability.xml:0
+#, python-format
 msgid "You already added all the available product in your cart."
 msgstr "Та аль хэдийнээ боломжит бүх нөөцийг сагсандаа хийсэн байна."
 
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/js/website_sale_reorder.js:0
+#, python-format
 msgid "You already have %s Units in your cart."
 msgstr "Та аль хэдийнээ %s нэгжээр сагсандаа хийсэн байна."
 
 #. module: website_sale_stock
 #. odoo-python
 #: code:addons/website_sale_stock/models/sale_order_line.py:0
+#, python-format
 msgid ""
 "You ask for %(desired_qty)s %(product_name)s but only %(new_qty)s is "
 "available"
@@ -304,6 +289,7 @@ msgstr ""
 #. module: website_sale_stock
 #. odoo-python
 #: code:addons/website_sale_stock/models/sale_order.py:0
+#, python-format
 msgid "You ask for %(desired_qty)s products but only %(new_qty)s is available"
 msgstr ""
 "Та уг бараанаас %(desired_qty)s хэмжээгээр авхыг хүссэн боловч бидэнд ердөө "
@@ -312,19 +298,22 @@ msgstr ""
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/js/website_sale_reorder.js:0
-msgid "You ask for %(quantity1)s Units but only %(quantity2)s are available."
-msgstr ""
-"Таны хүссэн нь %(quantity1)s нэгж гэвч бидэнд ердөө %(quantity2)s байна."
+#: code:addons/website_sale_stock/static/src/js/website_sale_reorder.js:0
+#, python-format
+msgid "You ask for %s Units but only %s are available."
+msgstr "Таны хүссэн нь %s нэгж гэвч бидэнд ердөө %s байна."
 
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/xml/website_sale_stock_product_availability.xml:0
+#, python-format
 msgid "in your cart."
 msgstr "таны сагсанд."
 
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/xml/website_sale_stock_product_availability.xml:0
+#, python-format
 msgid "left in stock."
 msgstr "нөөцтэй байна."
 
@@ -337,5 +326,6 @@ msgstr "нөөцийн доод босго"
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/xml/website_sale_stock_product_availability.xml:0
+#, python-format
 msgid "youremail@gmail.com"
 msgstr ""

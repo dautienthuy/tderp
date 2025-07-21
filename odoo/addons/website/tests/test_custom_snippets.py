@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import Command
@@ -218,4 +219,4 @@ class TestHttpCustomSnippet(HttpCase):
             'url': '/custom-page',
         })
 
-        self.start_tour(f'{custom_page.url}', 'editable_root_as_custom_snippet', login='admin')
+        self.start_tour(f'{custom_page.url}?enable_editor=1', 'editable_root_as_custom_snippet', login='admin')

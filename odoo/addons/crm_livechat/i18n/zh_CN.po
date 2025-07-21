@@ -3,17 +3,17 @@
 # 	* crm_livechat
 # 
 # Translators:
-# Wil Odoo, 2024
-# Chloe Wang, 2024
-# Odoo哥 <vnsoft.he@gmail.com>, 2024
+# Martin Trigaux, 2022
+# 稀饭~~ <wangwhai@qq.com>, 2022
+# Jeffery CHEN <jeffery9@gmail.com>, 2022
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:55+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Odoo哥 <vnsoft.he@gmail.com>, 2024\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2022-09-22 05:45+0000\n"
+"Last-Translator: Jeffery CHEN <jeffery9@gmail.com>, 2022\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/odoo/teams/41243/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,6 +24,7 @@ msgstr ""
 #. module: crm_livechat
 #. odoo-python
 #: code:addons/crm_livechat/models/chatbot_script_step.py:0
+#, python-format
 msgid "%s's New Lead"
 msgstr "%s 的新线索"
 
@@ -44,34 +45,29 @@ msgstr "创建线索"
 
 #. module: crm_livechat
 #. odoo-javascript
-#: code:addons/crm_livechat/static/src/core/channel_commands.js:0
+#. odoo-python
+#: code:addons/crm_livechat/models/mail_channel.py:0
+#: code:addons/crm_livechat/static/src/models/messaging_initializer.js:0
+#, python-format
 msgid "Create a new lead (/lead lead title)"
 msgstr "创建新线索（/主要负责人头衔）"
 
 #. module: crm_livechat
 #. odoo-python
-#: code:addons/crm_livechat/models/discuss_channel.py:0
-msgid ""
-"Create a new lead: %(pre_start)s%(lead_command)s %(i_start)slead "
-"title%(i_end)s%(pre_end)s"
-msgstr ""
-"创建新潜在客户：%(pre_start)s%(lead_command)s%(i_start)s潜在客户标题%(i_end)s%(pre_end)s"
-
-#. module: crm_livechat
-#. odoo-python
-#: code:addons/crm_livechat/models/discuss_channel.py:0
+#: code:addons/crm_livechat/models/mail_channel.py:0
+#, python-format
 msgid "Created a new lead: %s"
-msgstr "已创建新线索：%s"
+msgstr "已创建新潜在顾客：%s"
 
 #. module: crm_livechat
-#: model:ir.model,name:crm_livechat.model_discuss_channel
+#: model:ir.model,name:crm_livechat.model_mail_channel
 msgid "Discussion Channel"
 msgstr "讨论频道"
 
 #. module: crm_livechat
 #: model:ir.model.fields,field_description:crm_livechat.field_chatbot_script__lead_count
 msgid "Generated Lead Count"
-msgstr "生成的线索数量"
+msgstr "生成的线索计数"
 
 #. module: crm_livechat
 #: model:chatbot.script.step,message:crm_livechat.chatbot_script_lead_generation_step_welcome

@@ -3,23 +3,28 @@
 # 	* rating
 # 
 # Translators:
-# Algo Kärp <algokarp@gmail.com>, 2024
-# Martin Trigaux, 2024
-# JanaAvalah, 2024
-# Martin Aavastik <martin@avalah.ee>, 2024
-# Piia Paurson <piia@avalah.ee>, 2024
-# Eneli Õigus <enelioigus@gmail.com>, 2024
-# Siim Raasuke, 2024
-# Leaanika Randmets, 2024
+# Andre Roomet <andreroomet@gmail.com>, 2022
+# Triine Aavik <triine@avalah.ee>, 2022
+# Arma Gedonsky <armagedonsky@hot.ee>, 2022
+# Algo Kärp <algokarp@gmail.com>, 2022
+# Rivo Zängov <eraser@eraser.ee>, 2022
+# Egon Raamat <egon@avalah.ee>, 2022
+# Martin Trigaux, 2022
+# Eneli Õigus <enelioigus@gmail.com>, 2022
+# Martin Aavastik <martin@avalah.ee>, 2022
+# Piia Paurson <piia@avalah.ee>, 2022
+# JanaAvalah, 2023
+# Leaanika Randmets, 2023
 # Anna, 2024
+# Siim Raasuke, 2024
 # Stevin Lilla, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-16 13:40+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:54+0000\n"
 "Last-Translator: Stevin Lilla, 2024\n"
 "Language-Team: Estonian (https://app.transifex.com/odoo/teams/41243/et/)\n"
 "MIME-Version: 1.0\n"
@@ -29,19 +34,9 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: rating
-#: model_terms:ir.ui.view,arch_db:rating.rating_external_page_invalid_partner
-msgid "\" or someone from the same company can give it a rating."
-msgstr ""
-
-#. module: rating
 #: model:ir.model.fields,field_description:rating.field_rating_parent_mixin__rating_count
 msgid "# Ratings"
 msgstr "# Hinnangud"
-
-#. module: rating
-#: model_terms:ir.ui.view,arch_db:rating.rating_external_page_view
-msgid "<i class=\"fa fa-arrow-left me-1\"/> Back to the Homepage"
-msgstr "<i class=\"fa fa-arrow-left me-1\"/> Tagasi kodulehele"
 
 #. module: rating
 #: model_terms:ir.ui.view,arch_db:rating.rating_rating_view_kanban_stars
@@ -59,20 +54,10 @@ msgid "A star"
 msgstr "Täht"
 
 #. module: rating
-#: model:ir.model.fields,field_description:rating.field_rating_mixin__message_needaction
-msgid "Action Needed"
-msgstr "Vajalik toiming"
-
-#. module: rating
-#: model:ir.model.fields,field_description:rating.field_rating_mixin__message_attachment_count
-msgid "Attachment Count"
-msgstr "Manuste arv"
-
-#. module: rating
 #: model:ir.model.fields,field_description:rating.field_rating_mixin__rating_avg
 #: model:ir.model.fields,field_description:rating.field_rating_parent_mixin__rating_avg
 msgid "Average Rating"
-msgstr "Keskmine hinnang"
+msgstr "Keskmine hinne"
 
 #. module: rating
 #: model:ir.model.fields,field_description:rating.field_rating_parent_mixin__rating_avg_percentage
@@ -96,20 +81,33 @@ msgid "Customer"
 msgstr "Klient"
 
 #. module: rating
+#. odoo-python
+#: code:addons/rating/controllers/main.py:0
+#, python-format
+msgid "Customer rated %r."
+msgstr "Klient hindas %r."
+
+#. module: rating
+#: model_terms:ir.ui.view,arch_db:rating.rating_rating_view_search
+msgid "Date"
+msgstr "Kuupäev"
+
+#. module: rating
 #: model:ir.model.fields,field_description:rating.field_rating_rating__display_name
 msgid "Display Name"
-msgstr "Kuvatav nimi"
+msgstr "Näidatav nimi"
 
 #. module: rating
 #. odoo-python
 #: code:addons/rating/controllers/main.py:0
-#: model:ir.model.fields.selection,name:rating.selection__discuss_channel__rating_avg_text__ko
+#: model:ir.model.fields.selection,name:rating.selection__mail_channel__rating_avg_text__ko
 #: model:ir.model.fields.selection,name:rating.selection__product_template__rating_avg_text__ko
 #: model:ir.model.fields.selection,name:rating.selection__project_task__rating_avg_text__ko
 #: model:ir.model.fields.selection,name:rating.selection__rating_mixin__rating_avg_text__ko
 #: model:ir.model.fields.selection,name:rating.selection__rating_rating__rating_text__ko
 #: model:ir.model.fields.selection,name:rating.selection__slide_channel__rating_avg_text__ko
 #: model_terms:ir.ui.view,arch_db:rating.rating_rating_view_search
+#, python-format
 msgid "Dissatisfied"
 msgstr "Rahulolematu"
 
@@ -131,8 +129,8 @@ msgstr "E-posti kirjavahetus"
 
 #. module: rating
 #: model_terms:ir.ui.view,arch_db:rating.rating_external_page_submit
-msgid "Feel free to share feedback on your experience:"
-msgstr "Tagasiside on alati teretulnud "
+msgid "Feel free to write a feedback on your experience:"
+msgstr "Kirjutage oma kogemuse kohta julgelt tagasiside:"
 
 #. module: rating
 #: model:ir.model.fields,field_description:rating.field_rating_rating__consumed
@@ -140,29 +138,19 @@ msgid "Filled Rating"
 msgstr "Täidetud hinnang"
 
 #. module: rating
-#: model:ir.model.fields,field_description:rating.field_rating_mixin__message_follower_ids
-msgid "Followers"
-msgstr "Jälgijad"
-
-#. module: rating
-#: model:ir.model.fields,field_description:rating.field_rating_mixin__message_partner_ids
-msgid "Followers (Partners)"
-msgstr "Jälgijad(Partnerid)"
+#: model_terms:ir.ui.view,arch_db:rating.rating_external_page_view
+msgid "Go back to the Homepage"
+msgstr "Mine tagasi pealehele"
 
 #. module: rating
 #: model_terms:ir.ui.view,arch_db:rating.rating_rating_view_search
 msgid "Group By"
-msgstr "Rühmitamine"
+msgstr "Grupeeri"
 
 #. module: rating
 #: model_terms:ir.ui.view,arch_db:rating.rating_rating_view_kanban_stars
 msgid "Half a star"
 msgstr "Pool tähest"
-
-#. module: rating
-#: model:ir.model.fields,field_description:rating.field_rating_mixin__has_message
-msgid "Has Message"
-msgstr "On sõnum"
 
 #. module: rating
 #: model:ir.model.fields,help:rating.field_rating_rating__is_internal
@@ -171,24 +159,9 @@ msgid ""
 msgstr "Peida portaali kasutajad, eraldiseisvalt alamtüübi sätetest."
 
 #. module: rating
-#: model_terms:ir.ui.view,arch_db:rating.rating_external_page_invalid_partner
-msgid "Home"
-msgstr "Kodu"
-
-#. module: rating
 #: model:ir.model.fields,field_description:rating.field_rating_rating__id
 msgid "ID"
 msgstr "ID"
-
-#. module: rating
-#: model:ir.model.fields,help:rating.field_rating_mixin__message_needaction
-msgid "If checked, new messages require your attention."
-msgstr "Kui kontrollitud, siis uued sõnumid nõuavad Teie tähelepanu."
-
-#. module: rating
-#: model:ir.model.fields,help:rating.field_rating_mixin__message_has_error
-msgid "If checked, some messages have a delivery error."
-msgstr "Kui valitud, on mõningate sõnumitel saatmiserror"
 
 #. module: rating
 #: model:ir.model.fields,field_description:rating.field_rating_rating__rating_image
@@ -203,39 +176,30 @@ msgstr "Pildi URL"
 #. module: rating
 #. odoo-python
 #: code:addons/rating/controllers/main.py:0
+#: code:addons/rating/controllers/main.py:0
+#, python-format
 msgid "Incorrect rating: should be 1, 3 or 5 (received %d)"
 msgstr "Vale hinnang: peaks olema 1, 3 või 5 (saadud %d)"
 
 #. module: rating
-#. odoo-python
-#: code:addons/rating/models/mail_thread.py:0
-msgid "Invalid token or rating."
-msgstr "Vigane token või hinnang."
-
-#. module: rating
-#: model:ir.model.fields,field_description:rating.field_rating_mixin__message_is_follower
-msgid "Is Follower"
-msgstr "On jälgija"
-
-#. module: rating
 #: model_terms:ir.ui.view,arch_db:rating.rating_rating_view_search
-msgid "Last 30 Days"
+msgid "Last 30 days"
 msgstr "Viimased 30 päeva"
 
 #. module: rating
 #: model_terms:ir.ui.view,arch_db:rating.rating_rating_view_search
-msgid "Last 365 Days"
-msgstr "Viimased 365 päeva"
+msgid "Last 7 days"
+msgstr "Viimased 7 päeva"
 
 #. module: rating
-#: model_terms:ir.ui.view,arch_db:rating.rating_rating_view_search
-msgid "Last 7 Days"
-msgstr "Viimased 7 päeva"
+#: model:ir.model.fields,field_description:rating.field_rating_rating____last_update
+msgid "Last Modified on"
+msgstr "Viimati muudetud"
 
 #. module: rating
 #: model:ir.model.fields,field_description:rating.field_rating_rating__write_uid
 msgid "Last Updated by"
-msgstr "Viimati uuendatud"
+msgstr "Viimati uuendas"
 
 #. module: rating
 #: model:ir.model.fields,field_description:rating.field_rating_rating__write_date
@@ -249,16 +213,6 @@ msgid "Message"
 msgstr "Sõnum"
 
 #. module: rating
-#: model:ir.model.fields,field_description:rating.field_rating_mixin__message_has_error
-msgid "Message Delivery error"
-msgstr "Sõnumi saatmise veateade"
-
-#. module: rating
-#: model:ir.model.fields,field_description:rating.field_rating_mixin__message_ids
-msgid "Messages"
-msgstr "Sõnum"
-
-#. module: rating
 #: model_terms:ir.ui.view,arch_db:rating.rating_rating_view_search
 msgid "My Ratings"
 msgstr "Minu hinnangud"
@@ -269,7 +223,7 @@ msgid "Name"
 msgstr "Nimi"
 
 #. module: rating
-#: model:ir.model.fields.selection,name:rating.selection__discuss_channel__rating_avg_text__none
+#: model:ir.model.fields.selection,name:rating.selection__mail_channel__rating_avg_text__none
 #: model:ir.model.fields.selection,name:rating.selection__product_template__rating_avg_text__none
 #: model:ir.model.fields.selection,name:rating.selection__project_task__rating_avg_text__none
 #: model:ir.model.fields.selection,name:rating.selection__rating_mixin__rating_avg_text__none
@@ -284,42 +238,18 @@ msgid "No rating yet"
 msgstr "Hinnang puudub"
 
 #. module: rating
-#: model:ir.model.fields,field_description:rating.field_rating_mixin__message_needaction_counter
-msgid "Number of Actions"
-msgstr "Tegevuste arv"
-
-#. module: rating
-#: model:ir.model.fields,field_description:rating.field_rating_mixin__message_has_error_counter
-msgid "Number of errors"
-msgstr "Vigade arv"
-
-#. module: rating
-#: model:ir.model.fields,help:rating.field_rating_mixin__message_needaction_counter
-msgid "Number of messages requiring action"
-msgstr "Tegevust nõudvate sõnumite arv"
-
-#. module: rating
-#: model:ir.model.fields,help:rating.field_rating_mixin__message_has_error_counter
-msgid "Number of messages with delivery error"
-msgstr "Veateatega sõnumite arv"
-
-#. module: rating
 #. odoo-python
 #: code:addons/rating/controllers/main.py:0
-#: model:ir.model.fields.selection,name:rating.selection__discuss_channel__rating_avg_text__ok
+#: model:ir.model.fields.selection,name:rating.selection__mail_channel__rating_avg_text__ok
 #: model:ir.model.fields.selection,name:rating.selection__product_template__rating_avg_text__ok
 #: model:ir.model.fields.selection,name:rating.selection__project_task__rating_avg_text__ok
 #: model:ir.model.fields.selection,name:rating.selection__rating_mixin__rating_avg_text__ok
 #: model:ir.model.fields.selection,name:rating.selection__rating_rating__rating_text__ok
 #: model:ir.model.fields.selection,name:rating.selection__slide_channel__rating_avg_text__ok
 #: model_terms:ir.ui.view,arch_db:rating.rating_rating_view_search
+#, python-format
 msgid "Okay"
 msgstr "Korras"
-
-#. module: rating
-#: model_terms:ir.ui.view,arch_db:rating.rating_external_page_invalid_partner
-msgid "Only the customer of \""
-msgstr "Ainult selle kliendi puhul \""
 
 #. module: rating
 #: model:ir.model.fields,field_description:rating.field_rating_rating__parent_res_id
@@ -357,6 +287,13 @@ msgid "Percentage of happy ratings"
 msgstr "Positiivse hinnangu protsent"
 
 #. module: rating
+#. odoo-python
+#: code:addons/rating/models/mail_thread.py:0
+#, python-format
+msgid "Posting a rating should be done using message post API."
+msgstr ""
+
+#. module: rating
 #: model:ir.model.fields,field_description:rating.field_rating_rating__rated_partner_id
 #: model_terms:ir.ui.view,arch_db:rating.rating_rating_view_search
 msgid "Rated Operator"
@@ -364,19 +301,12 @@ msgstr "Hinnatud operaator"
 
 #. module: rating
 #: model:ir.model,name:rating.model_rating_rating
-#: model:ir.model.fields,field_description:rating.field_mail_mail__rating_id
-#: model:ir.model.fields,field_description:rating.field_mail_message__rating_id
+#: model:ir.model.fields,field_description:rating.field_rating_mixin__rating_ids
 #: model:ir.model.fields,field_description:rating.field_rating_rating__rating_text
 #: model_terms:ir.ui.view,arch_db:rating.rating_rating_view_form_text
 #: model_terms:ir.ui.view,arch_db:rating.rating_rating_view_search
 msgid "Rating"
 msgstr "Hinnang"
-
-#. module: rating
-#: model_terms:ir.ui.view,arch_db:rating.rating_rating_view_graph
-#: model_terms:ir.ui.view,arch_db:rating.rating_rating_view_pivot
-msgid "Rating (/5)"
-msgstr "Hinnang (/5)"
 
 #. module: rating
 #: model:ir.model.fields,field_description:rating.field_rating_mixin__rating_avg_text
@@ -427,6 +357,12 @@ msgid "Rating Value"
 msgstr "Hinnanguline väärtus"
 
 #. module: rating
+#: model_terms:ir.ui.view,arch_db:rating.rating_rating_view_graph
+#: model_terms:ir.ui.view,arch_db:rating.rating_rating_view_pivot
+msgid "Rating Value (/5)"
+msgstr "Hindamisväärtus (/5)"
+
+#. module: rating
 #: model:ir.model.fields,field_description:rating.field_rating_mixin__rating_count
 msgid "Rating count"
 msgstr "Hinnangu arv"
@@ -438,41 +374,15 @@ msgstr "Hinnang peab olema 0 ja 5 vahel"
 
 #. module: rating
 #. odoo-javascript
-#: code:addons/rating/static/src/core/web/notification_item_patch.xml:0
+#: code:addons/rating/static/src/components/channel_preview_view/channel_preview_view.xml:0
+#: code:addons/rating/static/src/components/thread_needaction_preview/thread_needaction_preview.xml:0
+#, python-format
 msgid "Rating:"
 msgstr "Hinnang:"
 
 #. module: rating
 #: model:ir.actions.act_window,name:rating.rating_rating_action
-#: model:ir.model.fields,field_description:rating.field_account_analytic_account__rating_ids
-#: model:ir.model.fields,field_description:rating.field_calendar_event__rating_ids
-#: model:ir.model.fields,field_description:rating.field_discuss_channel__rating_ids
-#: model:ir.model.fields,field_description:rating.field_fleet_vehicle__rating_ids
-#: model:ir.model.fields,field_description:rating.field_fleet_vehicle_log_contract__rating_ids
-#: model:ir.model.fields,field_description:rating.field_fleet_vehicle_log_services__rating_ids
-#: model:ir.model.fields,field_description:rating.field_fleet_vehicle_model__rating_ids
-#: model:ir.model.fields,field_description:rating.field_gamification_badge__rating_ids
-#: model:ir.model.fields,field_description:rating.field_gamification_challenge__rating_ids
-#: model:ir.model.fields,field_description:rating.field_iap_account__rating_ids
-#: model:ir.model.fields,field_description:rating.field_lunch_supplier__rating_ids
-#: model:ir.model.fields,field_description:rating.field_mail_blacklist__rating_ids
-#: model:ir.model.fields,field_description:rating.field_mail_thread__rating_ids
-#: model:ir.model.fields,field_description:rating.field_mail_thread_blacklist__rating_ids
-#: model:ir.model.fields,field_description:rating.field_mail_thread_cc__rating_ids
-#: model:ir.model.fields,field_description:rating.field_mail_thread_main_attachment__rating_ids
-#: model:ir.model.fields,field_description:rating.field_mail_thread_phone__rating_ids
-#: model:ir.model.fields,field_description:rating.field_maintenance_equipment__rating_ids
-#: model:ir.model.fields,field_description:rating.field_maintenance_equipment_category__rating_ids
-#: model:ir.model.fields,field_description:rating.field_maintenance_request__rating_ids
-#: model:ir.model.fields,field_description:rating.field_phone_blacklist__rating_ids
-#: model:ir.model.fields,field_description:rating.field_product_category__rating_ids
-#: model:ir.model.fields,field_description:rating.field_product_pricelist__rating_ids
-#: model:ir.model.fields,field_description:rating.field_product_product__rating_ids
-#: model:ir.model.fields,field_description:rating.field_product_template__rating_ids
-#: model:ir.model.fields,field_description:rating.field_rating_mixin__rating_ids
 #: model:ir.model.fields,field_description:rating.field_rating_parent_mixin__rating_ids
-#: model:ir.model.fields,field_description:rating.field_res_partner__rating_ids
-#: model:ir.model.fields,field_description:rating.field_res_users__rating_ids
 #: model:ir.ui.menu,name:rating.rating_rating_menu_technical
 #: model_terms:ir.ui.view,arch_db:rating.mail_message_view_form
 #: model_terms:ir.ui.view,arch_db:rating.rating_rating_view_form
@@ -512,13 +422,14 @@ msgstr "Ressursi nimi"
 #. module: rating
 #. odoo-python
 #: code:addons/rating/controllers/main.py:0
-#: model:ir.model.fields.selection,name:rating.selection__discuss_channel__rating_avg_text__top
+#: model:ir.model.fields.selection,name:rating.selection__mail_channel__rating_avg_text__top
 #: model:ir.model.fields.selection,name:rating.selection__product_template__rating_avg_text__top
 #: model:ir.model.fields.selection,name:rating.selection__project_task__rating_avg_text__top
 #: model:ir.model.fields.selection,name:rating.selection__rating_mixin__rating_avg_text__top
 #: model:ir.model.fields.selection,name:rating.selection__rating_rating__rating_text__top
 #: model:ir.model.fields.selection,name:rating.selection__slide_channel__rating_avg_text__top
 #: model_terms:ir.ui.view,arch_db:rating.rating_rating_view_search
+#, python-format
 msgid "Satisfied"
 msgstr "Rahul"
 
@@ -534,7 +445,6 @@ msgstr "Saada tagasiside"
 
 #. module: rating
 #: model:ir.model.fields,field_description:rating.field_rating_rating__create_date
-#: model_terms:ir.ui.view,arch_db:rating.rating_rating_view_search
 msgid "Submitted on"
 msgstr "Esitatud"
 
@@ -545,8 +455,8 @@ msgstr "Täname, et hindasite meie teenuseid!"
 
 #. module: rating
 #: model_terms:ir.ui.view,arch_db:rating.rating_external_page_view
-msgid "Thank you for your feedback!"
-msgstr "Aitäh tagasiside eest!"
+msgid "Thank you, we appreciate your feedback!"
+msgstr "Täname teid, hindame teie tagasisidet!"
 
 #. module: rating
 #: model_terms:ir.actions.act_window,help:rating.rating_rating_action
@@ -554,26 +464,19 @@ msgid "There is no rating for this object at the moment."
 msgstr "Sellel objektil pole hetkel hinnangut."
 
 #. module: rating
+#: model_terms:ir.ui.view,arch_db:rating.rating_rating_view_search
+msgid "Today"
+msgstr "Täna"
+
+#. module: rating
 #: model:ir.model.fields,field_description:rating.field_rating_rating__is_internal
 msgid "Visible Internally Only"
 msgstr "Nähtav ainult sisemiselt"
 
 #. module: rating
-#. odoo-python
-#: code:addons/rating/models/mail_thread.py:0
-msgid "Wrong rating value. A rate should be between 0 and 5 (received %d)."
-msgstr ""
-"Vale hindamisväärtus. Hinnang peaks olema vahemikus 0 kuni 5 (saadud %d)."
-
-#. module: rating
-#: model_terms:ir.ui.view,arch_db:rating.rating_external_page_invalid_partner
-msgid "You cannot rate this"
-msgstr ""
-
-#. module: rating
 #: model_terms:ir.ui.view,arch_db:rating.rating_rating_view_kanban
 msgid "by"
-msgstr " by"
+msgstr " "
 
 #. module: rating
 #: model_terms:ir.ui.view,arch_db:rating.rating_rating_view_kanban
@@ -583,4 +486,4 @@ msgstr "for"
 #. module: rating
 #: model_terms:ir.ui.view,arch_db:rating.rating_rating_view_kanban
 msgid "on"
-msgstr ","
+msgstr " "

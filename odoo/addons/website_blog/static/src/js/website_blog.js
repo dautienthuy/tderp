@@ -1,9 +1,9 @@
-/** @odoo-module **/
+odoo.define('website_blog.website_blog', function (require) {
+'use strict';
+var core = require('web.core');
 
-import { _t } from "@web/core/l10n/translation";
-import { scrollTo } from "@web_editor/js/common/scrolling";
-import publicWidget from "@web/legacy/js/public/public_widget";
-import { share } from "./contentshare";
+const dom = require('web.dom');
+const publicWidget = require('web.public.widget');
 
 publicWidget.registry.websiteBlog = publicWidget.Widget.extend({
     selector: '.website_blog',
@@ -17,20 +17,7 @@ publicWidget.registry.websiteBlog = publicWidget.Widget.extend({
      * @override
      */
     start: function () {
-        document.querySelectorAll(".js_tweet, .js_comment").forEach((el) => {
-            share(el);
-        });
-
-        // Updates the href of an anchor tag when tags list is empty. This will
-        // redirect to backend part of the website blog post.
-        // TODO: Remove this in the master branch as it will be directly
-        // modified in the XML code.
-        const blogPostTitleEl = this.el.querySelector("#o_wblog_post_name");
-        const emptyTagEl = this.el.querySelector(".o_wblog_sidebar_block #edit-in-backend");
-        if (blogPostTitleEl && emptyTagEl) {
-            const id = blogPostTitleEl.dataset.blogId;
-            emptyTagEl.href = `/odoo/website/blog.post/${id}`;
-        }
+        $('.js_tweet, .js_comment').share({});
         return this._super.apply(this, arguments);
     },
 
@@ -44,21 +31,21 @@ publicWidget.registry.websiteBlog = publicWidget.Widget.extend({
      */
     _onNextBlogClick: function (ev) {
         ev.preventDefault();
-        const nexInfo = ev.currentTarget.querySelector("#o_wblog_next_post_info").dataset;
-        const recordCoverContainerEl = ev.currentTarget.querySelector(".o_record_cover_container");
-        const classes = nexInfo.size.split(" ");
-        recordCoverContainerEl.classList.add(...classes, nexInfo.textContent);
-        ev.currentTarget.querySelectorAll(".o_wblog_toggle").forEach(el => el.classList.toggle("d-none"));
+        var self = this;
+        var $el = $(ev.currentTarget);
+        var nexInfo = $el.find('#o_wblog_next_post_info').data();
+        $el.find('.o_record_cover_container').addClass(nexInfo.size + ' ' + nexInfo.text).end()
+           .find('.o_wblog_toggle').toggleClass('d-none');
         // Appending a placeholder so that the cover can scroll to the top of the
         // screen, regardless of its height.
         const placeholder = document.createElement('div');
         placeholder.style.minHeight = '100vh';
-        this.el.querySelector("#o_wblog_next_container").append(placeholder);
+        this.$('#o_wblog_next_container').append(placeholder);
 
-        // Use setTimeout() to calculate the 'offset()'' only after that size classes
+        // Use _.defer to calculate the 'offset()'' only after that size classes
         // have been applyed and that $el has been resized.
-        setTimeout(() => {
-            this._forumScrollAction(ev.currentTarget, 300, function () {
+        _.defer(function () {
+            self._forumScrollAction($el, 300, function () {
                 window.location.href = nexInfo.url;
             });
         });
@@ -70,9 +57,9 @@ publicWidget.registry.websiteBlog = publicWidget.Widget.extend({
     _onContentAnchorClick: function (ev) {
         ev.preventDefault();
         ev.stopImmediatePropagation();
-        const currentTargetEl = document.querySelector(ev.currentTarget.hash);
+        var $el = $(ev.currentTarget.hash);
 
-        this._forumScrollAction(currentTargetEl, 500, function () {
+        this._forumScrollAction($el, 500, function () {
             window.location.hash = 'blog_content';
         });
     },
@@ -82,18 +69,17 @@ publicWidget.registry.websiteBlog = publicWidget.Widget.extend({
      */
     _onShareArticle: function (ev) {
         ev.preventDefault();
-        let url = "";
-        const blogPostTitle = document.querySelector("#o_wblog_post_name").textContent || "";
-        const articleURL = window.location.href;
-        if (ev.currentTarget.classList.contains("o_twitter")) {
-            const tweetText = _t("Amazing blog article: %(title)s! Check it live: %(url)s", {
-                title: blogPostTitle,
-                url: articleURL,
-            });
+        var url = '';
+        var $element = $(ev.currentTarget);
+        var blogPostTitle = $('#o_wblog_post_name').html() || '';
+        var articleURL = window.location.href;
+        if ($element.hasClass('o_twitter')) {
+            var twitterText = core._t("Amazing blog article: %s! Check it live: %s");
+            var tweetText = _.string.sprintf(twitterText, blogPostTitle, articleURL);
             url = 'https://twitter.com/intent/tweet?tw_p=tweetbutton&text=' + encodeURIComponent(tweetText);
-        } else if (ev.currentTarget.classList.contains("o_facebook")) {
+        } else if ($element.hasClass('o_facebook')) {
             url = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(articleURL);
-        } else if (ev.currentTarget.classList.contains("o_linkedin")) {
+        } else if ($element.hasClass('o_linkedin')) {
             url = 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(articleURL);
         }
         window.open(url, '', 'menubar=no, width=500, height=400');
@@ -105,11 +91,12 @@ publicWidget.registry.websiteBlog = publicWidget.Widget.extend({
 
     /**
      * @private
-     * @param {HTMLElement} el - the element we are scrolling to
+     * @param {JQuery} $el - the element we are scrolling to
      * @param {Integer} duration - scroll animation duration
      * @param {Function} callback - to be executed after the scroll is performed
      */
-    _forumScrollAction: function (el, duration, callback) {
-        scrollTo(el, { duration: duration }).then(() => callback());
+    _forumScrollAction: function ($el, duration, callback) {
+        dom.scrollTo($el[0], {duration: duration}).then(() => callback());
     },
+});
 });

@@ -23,7 +23,7 @@ class ReportController(http.Controller):
     @http.route([
         '/report/<converter>/<reportname>',
         '/report/<converter>/<reportname>/<docids>',
-    ], type='http', auth='user', website=True, readonly=True)
+    ], type='http', auth='user', website=True)
     def report_routes(self, reportname, docids=None, converter=None, **data):
         report = request.env['ir.actions.report']
         context = dict(request.env.context)
@@ -52,10 +52,7 @@ class ReportController(http.Controller):
     #------------------------------------------------------
     # Misc. route utils
     #------------------------------------------------------
-    @http.route([
-        '/report/barcode',
-        '/report/barcode/<barcode_type>/<path:value>',
-    ], type='http', auth='public', readonly=True)
+    @http.route(['/report/barcode', '/report/barcode/<barcode_type>/<path:value>'], type='http', auth="public")
     def report_barcode(self, barcode_type, value, **kwargs):
         """Contoller able to render barcode images thanks to reportlab.
         Samples::
@@ -84,14 +81,10 @@ class ReportController(http.Controller):
         except (ValueError, AttributeError):
             raise werkzeug.exceptions.HTTPException(description='Cannot convert into barcode.')
 
-        return request.make_response(barcode, headers=[
-            ('Content-Type', 'image/png'),
-            ('Cache-Control', f'public, max-age={http.STATIC_CACHE_LONG}, immutable'),
-        ])
+        return request.make_response(barcode, headers=[('Content-Type', 'image/png')])
 
     @http.route(['/report/download'], type='http', auth="user")
-    # pylint: disable=unused-argument
-    def report_download(self, data, context=None, token=None, readonly=True):
+    def report_download(self, data, context=None, token=None):  # pylint: disable=unused-argument
         """This function is used by 'action_manager_report.js' in order to trigger the download of
         a pdf/controller report.
 
@@ -140,7 +133,7 @@ class ReportController(http.Controller):
             else:
                 return
         except Exception as e:
-            _logger.warning("Error while generating report %s", reportname, exc_info=True)
+            _logger.exception("Error while generating report %s", reportname)
             se = http.serialize_exception(e)
             error = {
                 'code': 200,
@@ -150,6 +143,6 @@ class ReportController(http.Controller):
             res = request.make_response(html_escape(json.dumps(error)))
             raise werkzeug.exceptions.InternalServerError(response=res) from e
 
-    @http.route(['/report/check_wkhtmltopdf'], type='json', auth='user', readonly=True)
+    @http.route(['/report/check_wkhtmltopdf'], type='json', auth="user")
     def check_wkhtmltopdf(self):
         return request.env['ir.actions.report'].get_wkhtmltopdf_state()

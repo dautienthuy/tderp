@@ -1,10 +1,10 @@
-import { FormRenderer } from "@web/views/form/form_renderer";
+/** @odoo-module */
 
-import { Chatter } from "@mail/chatter/web_portal/chatter";
+import { ChatterContainer } from '../../components/chatter/chatter_container';
+import { FormRenderer } from '@web/views/form/form_renderer';
 
-export class ProjectSharingFormRenderer extends FormRenderer {
-    static components = {
-        ...FormRenderer.components,
-        Chatter,
-    };
-}
+export class ProjectSharingFormRenderer extends FormRenderer { }
+ProjectSharingFormRenderer.components = {
+    ...FormRenderer.components,
+    ChatterContainer,
+};

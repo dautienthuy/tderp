@@ -3,16 +3,20 @@
 # 	* sale_expense
 # 
 # Translators:
-# Lyall Kindmurr, 2024
-# Wil Odoo, 2024
+# Hongu Cosmin <cosmin513@gmail.com>, 2022
+# Foldi Robert <foldirobert@nexterp.ro>, 2022
+# Martin Trigaux, 2022
+# Dorin Hongu <dhongu@gmail.com>, 2024
+# Maria Muntean, 2024
+# Corina Calin, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 17.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-05 12:32+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Wil Odoo, 2024\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:54+0000\n"
+"Last-Translator: Corina Calin, 2024\n"
 "Language-Team: Romanian (https://app.transifex.com/odoo/teams/41243/ro/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -40,7 +44,7 @@ msgstr "Clienți de Refacturat"
 #. module: sale_expense
 #: model:ir.model,name:sale_expense.model_hr_expense
 msgid "Expense"
-msgstr "Cheltuială"
+msgstr "Cheltuieli"
 
 #. module: sale_expense
 #: model:ir.model.fields,field_description:sale_expense.field_product_product__expense_policy_tooltip
@@ -54,9 +58,16 @@ msgid "Expense Report"
 msgstr "Raport de cheltuieli"
 
 #. module: sale_expense
+#: model:ir.model.fields,field_description:sale_expense.field_account_bank_statement_line__expense_sheet_id
+#: model:ir.model.fields,field_description:sale_expense.field_account_move__expense_sheet_id
+#: model:ir.model.fields,field_description:sale_expense.field_account_payment__expense_sheet_id
+msgid "Expense Sheet"
+msgstr "Foaie de cheltuieli"
+
+#. module: sale_expense
 #: model:ir.model,name:sale_expense.model_hr_expense_split
 msgid "Expense Split"
-msgstr "Repartizarea cheltuielilor"
+msgstr "Divizarea cheltuielilor"
 
 #. module: sale_expense
 #: model:ir.actions.act_window,name:sale_expense.hr_expense_action_from_sale_order
@@ -68,6 +79,7 @@ msgstr "Cheltuieli"
 #. module: sale_expense
 #. odoo-python
 #: code:addons/sale_expense/models/product_template.py:0
+#, python-format
 msgid "Expenses of this category may not be added to a Sales Order."
 msgstr ""
 "Cheltuielile din această categorie nu pot fi adăugate la o comandă de "
@@ -76,6 +88,7 @@ msgstr ""
 #. module: sale_expense
 #. odoo-python
 #: code:addons/sale_expense/models/product_template.py:0
+#, python-format
 msgid ""
 "Expenses will be added to the Sales Order at their actual cost when posted."
 msgstr ""
@@ -85,6 +98,7 @@ msgstr ""
 #. module: sale_expense
 #. odoo-python
 #: code:addons/sale_expense/models/product_template.py:0
+#, python-format
 msgid ""
 "Expenses will be added to the Sales Order at their sales price (product "
 "price, pricelist, etc.) when posted."
@@ -109,12 +123,12 @@ msgstr "Facturare"
 #. module: sale_expense
 #: model:ir.model,name:sale_expense.model_account_move
 msgid "Journal Entry"
-msgstr "Înregistrare de jurnal "
+msgstr "Înregistrare jurnal "
 
 #. module: sale_expense
 #: model:ir.model,name:sale_expense.model_account_move_line
 msgid "Journal Item"
-msgstr "Element de jurnal"
+msgstr "Element jurnal"
 
 #. module: sale_expense
 #: model:ir.model,name:sale_expense.model_product_template
@@ -124,6 +138,7 @@ msgstr "Produs"
 #. module: sale_expense
 #. odoo-python
 #: code:addons/sale_expense/models/hr_expense_sheet.py:0
+#, python-format
 msgid "Reinvoiced Sales Orders"
 msgstr "Comenzi de vânzare refacturate"
 

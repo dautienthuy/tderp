@@ -1,10 +1,12 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import random
-from markupsafe import Markup
 
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessDenied, AccessError, UserError
+from odoo.tools import html_escape
+
 
 
 class CrmLead(models.Model):
@@ -56,8 +58,7 @@ class CrmLead(models.Model):
         leads_with_country = self.filtered(lambda lead: lead.country_id)
         leads_without_country = self - leads_with_country
         if leads_without_country:
-            self.env.user._bus_send('simple_notification', {
-                'type': 'danger',
+            self.env['bus.bus']._sendone(self.env.user.partner_id, 'simple_notification', {
                 'title': _("Warning"),
                 'message': _('There is no country set in addresses for %(lead_names)s.', lead_names=', '.join(leads_without_country.mapped('name'))),
             })
@@ -79,7 +80,7 @@ class CrmLead(models.Model):
             lead.assign_geo_localize(lead.partner_latitude, lead.partner_longitude)
             partner = self.env['res.partner'].browse(partner_id)
             if partner.user_id:
-                lead._handle_salesmen_assignment(user_ids=partner.user_id.ids)
+                lead._handle_salesmen_assignment(user_ids=partner.user_id.ids, team_id=partner.team_id.id)
             lead.write({'partner_assigned_id': partner_id})
         return res
 
@@ -188,23 +189,23 @@ class CrmLead(models.Model):
         return res_partner_ids
 
     def partner_interested(self, comment=False):
-        message = Markup('<p>%s</p>') % _('I am interested by this lead.')
+        message = _('<p>I am interested by this lead.</p>')
         if comment:
-            message += Markup('<p>%s</p>') % comment
+            message += '<p>%s</p>' % html_escape(comment)
         for lead in self:
             lead.message_post(body=message)
             lead.sudo().convert_opportunity(lead.partner_id)  # sudo required to convert partner data
 
     def partner_desinterested(self, comment=False, contacted=False, spam=False):
         if contacted:
-            message = Markup('<p>%s</p>') % _('I am not interested by this lead. I contacted the lead.')
+            message = '<p>%s</p>' % _('I am not interested by this lead. I contacted the lead.')
         else:
-            message = Markup('<p>%s</p>') % _('I am not interested by this lead. I have not contacted the lead.')
+            message = '<p>%s</p>' % _('I am not interested by this lead. I have not contacted the lead.')
         partner_ids = self.env['res.partner'].search(
             [('id', 'child_of', self.env.user.partner_id.commercial_partner_id.id)])
         self.message_unsubscribe(partner_ids=partner_ids.ids)
         if comment:
-            message += Markup('<p>%s</p>') % comment
+            message += '<p>%s</p>' % html_escape(comment)
         self.message_post(body=message)
         values = {
             'partner_assigned_id': False,
@@ -219,7 +220,7 @@ class CrmLead(models.Model):
         self.sudo().write(values)
 
     def update_lead_portal(self, values):
-        self.browse().check_access('write')
+        self.check_access_rights('write')
         for lead in self:
             lead_values = {
                 'expected_revenue': values['expected_revenue'],
@@ -251,11 +252,11 @@ class CrmLead(models.Model):
             lead.write(lead_values)
 
     def update_contact_details_from_portal(self, values):
-        self.browse().check_access('write')
+        self.check_access_rights('write')
         fields = ['partner_name', 'phone', 'mobile', 'email_from', 'street', 'street2',
             'city', 'zip', 'state_id', 'country_id']
         if any([key not in fields for key in values]):
-            raise UserError(_("Not allowed to update the following field(s): %s.", ", ".join([key for key in values if not key in fields])))
+            raise UserError(_("Not allowed to update the following field(s) : %s.") % ", ".join([key for key in values if not key in fields]))
         return self.sudo().write(values)
 
     @api.model
@@ -266,7 +267,7 @@ class CrmLead(models.Model):
         self = self.sudo()
         if not (values['contact_name'] and values['description'] and values['title']):
             return {
-                'errors': _('All fields are required!')
+                'errors': _('All fields are required !')
             }
         tag_own = self.env.ref('website_crm_partner_assign.tag_portal_lead_own_opp', False)
         values = {
@@ -298,14 +299,16 @@ class CrmLead(models.Model):
         user, record = self.env.user, self
         if access_uid:
             try:
-                record.check_access("read")
+                record.check_access_rights('read')
+                record.check_access_rule("read")
             except AccessError:
                 return super(CrmLead, self)._get_access_action(access_uid=access_uid, force_website=force_website)
             user = self.env['res.users'].sudo().browse(access_uid)
             record = self.with_user(user)
         if user.share or force_website:
             try:
-                record.check_access('read')
+                record.check_access_rights('read')
+                record.check_access_rule('read')
             except AccessError:
                 pass
             else:

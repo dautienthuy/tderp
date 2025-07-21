@@ -8,7 +8,7 @@ from odoo.exceptions import UserError, ValidationError
 
 from odoo.addons.payment import utils as payment_utils
 from odoo.addons.payment_authorize.models.authorize_request import AuthorizeAPI
-from odoo.addons.payment_authorize.const import PAYMENT_METHODS_MAPPING, TRANSACTION_STATUS_MAPPING
+from odoo.addons.payment_authorize.const import TRANSACTION_STATUS_MAPPING
 
 
 _logger = logging.getLogger(__name__)
@@ -100,15 +100,15 @@ class PaymentTransaction(models.Model):
         tx_details = authorize_api.get_transaction_details(self.provider_reference)
         if 'err_code' in tx_details:  # Could not retrieve the transaction details.
             raise ValidationError("Authorize.Net: " + _(
-                "Could not retrieve the transaction details. (error code: %(error_code)s; error_details: %(error_message)s)",
-                error_code=tx_details['err_code'], error_message=tx_details.get('err_msg'),
+                "Could not retrieve the transaction details. (error code: %s; error_details: %s)",
+                tx_details['err_code'], tx_details.get('err_msg')
             ))
 
         refund_tx = self.env['payment.transaction']
         tx_status = tx_details.get('transaction', {}).get('transactionStatus')
         if tx_status in TRANSACTION_STATUS_MAPPING['voided']:
             # The payment has been voided from Authorize.net side before we could refund it.
-            self._set_canceled(extra_allowed_states=('done',))
+            self._set_canceled()
         elif tx_status in TRANSACTION_STATUS_MAPPING['refunded']:
             # The payment has been refunded from Authorize.net side before we could refund it. We
             # create a refund tx on Odoo to reflect the move of the funds.
@@ -119,7 +119,7 @@ class PaymentTransaction(models.Model):
             self.env.ref('payment.cron_post_process_payment_tx')._trigger()
         elif any(tx_status in TRANSACTION_STATUS_MAPPING[k] for k in ('authorized', 'captured')):
             if tx_status in TRANSACTION_STATUS_MAPPING['authorized']:
-                # The payment has not been settled on Authorize.net yet. It must be voided rather
+                # The payment has not been settle on Authorize.net yet. It must be voided rather
                 # than refunded. Since the funds have not moved yet, we don't create a refund tx.
                 res_content = authorize_api.void(self.provider_reference)
                 tx_to_process = self
@@ -139,16 +139,21 @@ class PaymentTransaction(models.Model):
             tx_to_process._handle_notification_data('authorize', data)
         else:
             raise ValidationError("Authorize.net: " + _(
-                "The transaction is not in a status to be refunded. (status: %(status)s, details: %(message)s)",
-                status=tx_status, message=tx_details.get('messages', {}).get('message'),
+                "The transaction is not in a status to be refunded. (status: %s, details: %s)",
+                tx_status, tx_details.get('messages', {}).get('message')
             ))
         return refund_tx
 
-    def _send_capture_request(self, amount_to_capture=None):
-        """ Override of `payment` to send a capture request to Authorize. """
-        child_capture_tx = super()._send_capture_request(amount_to_capture=amount_to_capture)
+    def _send_capture_request(self):
+        """ Override of payment to send a capture request to Authorize.
+
+        Note: self.ensure_one()
+
+        :return: None
+        """
+        super()._send_capture_request()
         if self.provider_code != 'authorize':
-            return child_capture_tx
+            return
 
         authorize_API = AuthorizeAPI(self.provider_id)
         rounded_amount = round(self.amount, self.currency_id.decimal_places)
@@ -159,13 +164,16 @@ class PaymentTransaction(models.Model):
         )
         self._handle_notification_data('authorize', {'response': res_content})
 
-        return child_capture_tx
+    def _send_void_request(self):
+        """ Override of payment to send a void request to Authorize.
 
-    def _send_void_request(self, amount_to_void=None):
-        """ Override of payment to send a void request to Authorize. """
-        child_void_tx = super()._send_void_request(amount_to_void=amount_to_void)
+        Note: self.ensure_one()
+
+        :return: None
+        """
+        super()._send_void_request()
         if self.provider_code != 'authorize':
-            return child_void_tx
+            return
 
         authorize_API = AuthorizeAPI(self.provider_id)
         res_content = authorize_API.void(self.provider_reference)
@@ -174,8 +182,6 @@ class PaymentTransaction(models.Model):
             self.reference, pprint.pformat(res_content)
         )
         self._handle_notification_data('authorize', {'response': res_content})
-
-        return child_void_tx
 
     def _get_tx_from_notification_data(self, provider_code, notification_data):
         """ Find the transaction based on Authorize.net data.
@@ -211,17 +217,7 @@ class PaymentTransaction(models.Model):
 
         response_content = notification_data.get('response')
 
-        # Update the provider reference.
         self.provider_reference = response_content.get('x_trans_id')
-
-        # Update the payment method.
-        payment_method_code = response_content.get('payment_method_code', '').lower()
-        payment_method = self.env['payment.method']._get_from_code(
-            payment_method_code, mapping=PAYMENT_METHODS_MAPPING
-        )
-        self.payment_method_id = payment_method or self.payment_method_id
-
-        # Update the payment state.
         status_code = response_content.get('x_response_code', '3')
         if status_code == '1':  # Approved
             status_type = response_content.get('x_type').lower()
@@ -239,7 +235,7 @@ class PaymentTransaction(models.Model):
                 if self.operation == 'validation':  # Validation txs are authorized and then voided
                     self._set_done()  # If the refund went through, the validation tx is confirmed
                 else:
-                    self._set_canceled(extra_allowed_states=('done',))
+                    self._set_canceled()
             elif status_type == 'refund' and self.operation == 'refund':
                 self._set_done()
                 # Immediately post-process the transaction as the post-processing will not be
@@ -287,11 +283,12 @@ class PaymentTransaction(models.Model):
         if cust_profile:
             token = self.env['payment.token'].create({
                 'provider_id': self.provider_id.id,
-                'payment_method_id': self.payment_method_id.id,
                 'payment_details': cust_profile.get('payment_details'),
                 'partner_id': self.partner_id.id,
                 'provider_ref': cust_profile.get('payment_profile_id'),
                 'authorize_profile': cust_profile.get('profile_id'),
+                'authorize_payment_method_type': self.provider_id.authorize_payment_method_type,
+                'verified': True,
             })
             self.write({
                 'token_id': token.id,

@@ -8,10 +8,9 @@ from unittest.mock import Mock, MagicMock, patch
 from werkzeug.exceptions import NotFound
 from werkzeug.test import EnvironBuilder
 
-import odoo.http
+import odoo
+from odoo.tests.common import HttpCase, HOST
 from odoo.tools.misc import hmac, DotDict, frozendict
-
-HOST = '127.0.0.1'
 
 
 @contextlib.contextmanager
@@ -21,16 +20,10 @@ def MockRequest(
         website=None, remote_addr=HOST, environ_base=None, url_root=None,
         # website_sale
         sale_order_id=None, website_sale_current_pl=None,
-        website_sale_selected_pl_id=None,
 ):
-    # TODO move MockRequest to a package in addons/web/tests
-    from odoo.tests.common import HttpCase  # noqa: PLC0415
+
     lang_code = context.get('lang', env.context.get('lang', 'en_US'))
     env = env(context=dict(context, lang=lang_code))
-    if HttpCase.http_port():
-        base_url = HttpCase.base_url()
-    else:
-        base_url = f"http://{HOST}:{odoo.tools.config['http_port']}"
     request = Mock(
         # request
         httprequest=Mock(
@@ -40,7 +33,7 @@ def MockRequest(
             environ=dict(
                 EnvironBuilder(
                     path=path,
-                    base_url=base_url,
+                    base_url=HttpCase.base_url(),
                     environ_base=environ_base,
                 ).get_environ(),
                 REMOTE_ADDR=remote_addr,
@@ -57,33 +50,24 @@ def MockRequest(
         redirect=env['ir.http']._redirect,
         session=DotDict(
             odoo.http.get_default_session(),
-            force_website_id=website and website.id,
+            geoip={'country_code': country_code},
             sale_order_id=sale_order_id,
             website_sale_current_pl=website_sale_current_pl,
-            website_sale_selected_pl_id=website_sale_selected_pl_id,
             context={'lang': ''},
         ),
-        geoip=odoo.http.GeoIP('127.0.0.1'),
+        geoip={},
         db=env.registry.db_name,
         env=env,
         registry=env.registry,
         cr=env.cr,
         uid=env.uid,
         context=env.context,
-        cookies=cookies,
-        lang=env['res.lang']._get_data(code=lang_code),
+        lang=env['res.lang']._lang_get(lang_code),
         website=website,
         render=lambda *a, **kw: '<MockResponse>',
     )
-    if url_root is not None:
-        request.httprequest.url = werkzeug.urls.url_join(url_root, path)
     if website:
         request.website_routing = website.id
-    if country_code:
-        try:
-            request.geoip._city_record = odoo.http.geoip2.models.City(['en'], country={'iso_code': country_code})
-        except TypeError:
-            request.geoip._city_record = odoo.http.geoip2.models.City({'country': {'iso_code': country_code}})
 
     # The following code mocks match() to return a fake rule with a fake
     # 'routing' attribute (routing=True) or to raise a NotFound
@@ -251,22 +235,3 @@ def add_form_signature(html_fragment, env_sudo):
             hash_value += ':email_cc'
         hash_node = etree.Element('input', attrib={'type': "hidden", 'value': hash_value, 'class': "form-control s_website_form_input s_website_form_custom", 'name': "website_form_signature"})
         form_values['email_to'].addnext(hash_node)
-
-
-def create_image_attachment(env, image_path, image_name):
-    """
-    Creates an image attachment.
-
-    :param env: self.env
-    :param image_path: the path to the image (e.g. '/web/image/website.s_banner_default_image')
-    :param image_name: the name to give to the image (e.g. 's_banner_default_image.jpg')
-    :return: the image attachment
-    """
-    Attachments = env['ir.attachment']
-    img = Attachments.create({
-        'public': True,
-        'name': image_name,
-        'type': 'url',
-        'url': Attachments.get_base_url() + image_path,
-    })
-    return img

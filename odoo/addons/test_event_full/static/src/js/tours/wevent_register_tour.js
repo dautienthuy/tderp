@@ -1,6 +1,7 @@
-/** @odoo-module **/
+odoo.define('test_event_full.tour.register', function (require) {
+"use strict";
 
-import { registry } from "@web/core/registry";
+var tour = require('web_tour.tour');
 
 /**
  * TALKS STEPS
@@ -12,8 +13,6 @@ var discoverTalkSteps = function (talkName, fromList, reminderOn, toggleReminder
         steps = [{
             content: 'Go on "' + talkName + '" talk in List',
             trigger: 'a:contains("' + talkName + '")',
-            run: "click",
-            expectUnloadPage: true,
         }];
     }
     else {
@@ -21,33 +20,38 @@ var discoverTalkSteps = function (talkName, fromList, reminderOn, toggleReminder
             content: 'Click on Live Track',
             trigger: 'article span:contains("' + talkName + '")',
             run: 'click',
-            expectUnloadPage: true,
         }];
     }
     steps = steps.concat([{
         content: `Check we are on the "${talkName}" talk page`,
         trigger: 'div.o_wesession_track_main',
+        run: function () {}, // it's a check
     }]);
 
     if (reminderOn) {
         steps = steps.concat([{
             content: `Check Favorite for ${talkName} was already on`,
             trigger: 'div.o_wetrack_js_reminder i.fa-bell',
+            extra_trigger: 'span.o_wetrack_js_reminder_text:contains("Favorite On")',
+            run: function () {}, // it's a check
         }]);
     }
     else {
         steps = steps.concat([{
             content: `Check Favorite for ${talkName} was off`,
-            trigger: 'div.o_wetrack_js_reminder i.fa-bell-o',
+            trigger: 'span.o_wetrack_js_reminder_text:contains("Set Favorite")',
+            run: function () {}, // it's a check
         }]);
         if (toggleReminder) {
             steps = steps.concat([{
                 content: "Set Favorite",
-                trigger: 'div.o_wetrack_js_reminder',
+                trigger: 'span.o_wetrack_js_reminder_text',
                 run: 'click',
             }, {
                 content: `Check Favorite for ${talkName} is now on`,
                 trigger: 'div.o_wetrack_js_reminder i.fa-bell',
+                extra_trigger: 'span.o_wetrack_js_reminder_text:contains("Favorite On")',
+                run: function () {}, // it's a check
             }]);
         }
     }
@@ -62,8 +66,10 @@ var discoverTalkSteps = function (talkName, fromList, reminderOn, toggleReminder
 var discoverRoomSteps = function (roomName) {
     var steps = [{
         content: 'Go on "' + roomName + '" room in List',
-        // can't click on it, it will try to launch Jitsi and fail on chrome headless
         trigger: 'a.o_wevent_meeting_room_card h4:contains("' + roomName + '")',
+        run: function() {
+            // can't click on it, it will try to launch Jitsi and fail on chrome headless
+        },
     }];
     return steps;
 };
@@ -73,81 +79,50 @@ var discoverRoomSteps = function (roomName) {
  * REGISTER STEPS
  */
 
-const registerSteps = [
-    {
-        content: "Open ticket modal",
-        trigger: "button.btn-primary:contains(Register):enabled",
-        run: "click",
+var registerSteps = [{
+    content: 'Go on Register',
+    trigger: 'a.btn-primary:contains("Register")',
+}, {
+    content: "Select 2 units of 'Standard' ticket type",
+    trigger: '#o_wevent_tickets_collapse .row:has(.o_wevent_registration_multi_select:contains("Free")) select',
+    run: 'text 2',
+}, {
+    content: "Click on 'Register' button",
+    trigger: '#o_wevent_tickets .btn-primary:contains("Register"):not(:disabled)',
+    run: 'click',
+}, {
+    content: "Fill attendees details",
+    trigger: 'form[id="attendee_registration"] .btn:contains("Continue")',
+    run: function () {
+        $("input[name='1-name']").val("Raoulette Poiluchette");
+        $("input[name='1-phone']").val("0456112233");
+        $("input[name='1-email']").val("raoulette@example.com");
+        $("select[name*='question_answer-1']").val($("select[name*='question_answer-1'] option:contains('Consumers')").val());
+        $("input[name='2-name']").val("Michel Tractopelle");
+        $("input[name='2-phone']").val("0456332211");
+        $("input[name='2-email']").val("michel@example.com");
+        $("select[name*='question_answer-2']").val($("select[name*='question_answer-1'] option:contains('Research')").val());
+        $("textarea[name*='question_answer']").text("An unicorn told me about you. I ate it afterwards.");
     },
-    {
-        content: "Select 2 units of 'Standard' ticket type",
-        trigger: ".modal .o_wevent_ticket_selector select",
-        run: "select 2",
-    },
-    {
-        content: "Click on 'Register' button",
-        trigger: ".modal #o_wevent_tickets .btn-primary:contains(Register):enabled",
-        run: "click",
-    },
-    {
-        content: "Wait the modal is shown before continue",
-        trigger: ".modal.modal_shown.show form[id=attendee_registration]",
-    },
-    {
-        trigger: ".modal input[name*='1-name']",
-        run: "edit Raoulette Poiluchette",
-    },
-    {
-        trigger: ".modal input[name*='1-phone']",
-        run: "edit 0456112233",
-    },
-    {
-        trigger: ".modal input[name*='1-email']",
-        run: "edit raoulette@example.com",
-    },
-    {
-        trigger: ".modal select[name*='1-simple_choice']",
-        run: "selectByLabel Consumers",
-    },
-    {
-        trigger: ".modal input[name*='2-name']",
-        run: "edit Michel Tractopelle",
-    },
-    {
-        trigger: ".modal input[name*='2-phone']",
-        run: "edit 0456332211",
-    },
-    {
-        trigger: ".modal input[name*='2-email']",
-        run: "edit michel@example.com",
-    },
-    {
-        trigger: ".modal select[name*='2-simple_choice']",
-        run: "selectByLabel Research",
-    },
-    {
-        trigger: ".modal textarea[name*='text_box']",
-        run: "edit An unicorn told me about you. I ate it afterwards.",
-    },
-    {
-        trigger: ".modal input[name*='1-name'], input[name*='2-name'], input[name*='3-name']",
-    },
-    {
-        content: "Validate attendees details",
-        trigger: ".modal button[type=submit]:enabled",
-        run: "click",
-        expectUnloadPage: true,
-    },
-    {
-        content: "Click on 'register favorites talks' button",
-        trigger: "a:contains(register to your favorites talks now)",
-        run: "click",
-        expectUnloadPage: true,
-    },
-    {
-        trigger: "h5:contains(Book your talks)",
-    },
-];
+}, {
+    content: "Validate attendees details",
+    extra_trigger: "input[name='1-name'], input[name='2-name'], input[name='3-name']",
+    trigger: 'button:contains("Continue")',
+    run: 'click',
+}, {
+    trigger: 'div.o_wereg_confirmed_attendees span:contains("Raoulette Poiluchette")',
+    run: function () {} // check
+}, {
+    trigger: 'div.o_wereg_confirmed_attendees span:contains("Michel Tractopelle")',
+    run: function () {} // check
+},  {
+    content: "Click on 'register favorites talks' button",
+    trigger: 'a:contains("register to your favorites talks now")',
+    run: 'click',
+},  {
+    trigger: 'h1:contains("Book your talks")',
+    run: function() {},
+}];
 
 /**
  * MAIN STEPS
@@ -157,54 +132,43 @@ var initTourSteps = function (eventName) {
     return [{
         content: 'Go on "' + eventName + '" page',
         trigger: 'a[href*="/event"]:contains("' + eventName + '"):first',
-        run: "click",
-        expectUnloadPage: true,
     }];
 };
 
 var browseTalksSteps = [{
     content: 'Browse Talks',
     trigger: 'a:contains("Talks")',
-    run: "click",
-    expectUnloadPage: true,
 }, {
     content: 'Check we are on the talk list page',
-    trigger: 'h5:contains("Book your talks")',
-}];
-
-var browseBackSteps = [{
-    content: 'Browse Back',
-    trigger: 'a:contains("All Talks")',
-    run: "click",
-    expectUnloadPage: true,
-}, {
-    content: 'Check we are back on the talk list page',
-    trigger: 'h5:contains("Book your talks")',
+    trigger: 'h1:contains("Book your talks")',
+    run: function () {} // check
 }];
 
 var browseMeetSteps = [{
     content: 'Browse Meet',
     trigger: 'a:contains("Community")',
-    run: "click",
 }, {
     content: 'Check we are on the community page',
-    trigger: 'h3:contains("Join a room")',
+    trigger: 'span:contains("Join a room")',
+    run: function () {} // check
 }];
 
 
-registry.category("web_tour.tours").add('wevent_register', {
+tour.register('wevent_register', {
     url: '/event',
-    steps: () => [].concat(
+    test: true
+}, [].concat(
         initTourSteps('Online Reveal'),
         browseTalksSteps,
         discoverTalkSteps('What This Event Is All About', true, true),
         browseTalksSteps,
         discoverTalkSteps('Live Testimonial', false, false, false),
         browseTalksSteps,
-        discoverTalkSteps('Our Last Day Together!', true, false, true),
-        browseBackSteps,
+        discoverTalkSteps('Our Last Day Together !', true, false, true),
         browseMeetSteps,
         discoverRoomSteps('Best wood for furniture'),
         registerSteps,
     )
+);
+
 });

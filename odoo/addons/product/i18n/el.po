@@ -1,28 +1,21 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* product
+# * product
 # 
 # Translators:
-# Stefanos Nikou <stefanos.nikou@gmail.com>, 2024
-# Alexandros Kapetanios <alexandros@gnugr.org>, 2024
-# George Tarasidis <george_tarasidis@yahoo.com>, 2024
-# Martin Trigaux, 2024
-# Kostas Goutoudis <goutoudis@gmail.com>, 2024
-# Gerasimos Kanelatos, 2025
-# Anastasia Mimou, 2025
-# Maria Chalepiadou, 2025
-# Charalampos Loukas, 2025
-# Georgios Geitonas <g.geitonas@dileanity.com>, 2025
-# Iasonas Polydoros <j.polydoros@dileanity.com>, 2025
+# Stefanos Nikou <stefanos.nikou@gmail.com>, 2018
+# Kostas Goutoudis <goutoudis@gmail.com>, 2018
+# George Tarasidis <george_tarasidis@yahoo.com>, 2018
+# Martin Trigaux, 2018
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 12.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-14 20:47+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Iasonas Polydoros <j.polydoros@dileanity.com>, 2025\n"
-"Language-Team: Greek (https://app.transifex.com/odoo/teams/41243/el/)\n"
+"POT-Creation-Date: 2018-10-08 06:49+0000\n"
+"PO-Revision-Date: 2018-08-24 09:23+0000\n"
+"Last-Translator: Martin Trigaux, 2018\n"
+"Language-Team: Greek (https://www.transifex.com/odoo/teams/41243/el/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -30,16 +23,11 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_product.py:0
-msgid ""
-"\n"
-"\n"
-"Note: products that you don't have access to will not be shown above."
-msgstr ""
+#: selection:product.pricelist.item,applied_on:0
+msgid " Product Category"
+msgstr "Κατηγορία Eίδους"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_pricelist_item__product_variant_count
 #: model:ir.model.fields,field_description:product.field_product_product__product_variant_count
 #: model:ir.model.fields,field_description:product.field_product_template__product_variant_count
 msgid "# Product Variants"
@@ -51,103 +39,22 @@ msgid "# Products"
 msgstr "# Είδη"
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.report_pricelist_page
-msgid "$14.00"
+#: code:addons/product/models/product_pricelist.py:462
+#, python-format
+msgid "%s %% discount"
 msgstr ""
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.report_pricelist_page
-msgid "$15.00"
+#: code:addons/product/models/product_pricelist.py:464
+#, python-format
+msgid "%s %% discount and %s surcharge"
 msgstr ""
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_pricelist_item.py:0
-msgid ""
-"%(base)s with a %(discount)s %% %(discount_type)s and %(surcharge)s extra fee\n"
-"Example: %(amount)s * %(discount_charge)s + %(price_surcharge)s → %(total_amount)s"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_pricelist_item.py:0
-msgid ""
-"%(item_name)s: end date (%(end_date)s) should be after start date "
-"(%(start_date)s)"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_pricelist_item.py:0
-msgid "%(percentage)s %% %(discount_type)s on %(base)s %(extra)s"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_pricelist_item.py:0
-msgid "%(percentage)s %% discount on %(pricelist)s"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_pricelist_item.py:0
-msgid "%(percentage)s %% discount on sales price"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_pricelist.py:0
-#: code:addons/product/models/product_tag.py:0
-#: code:addons/product/models/product_template.py:0
+#: code:addons/product/models/product_template.py:357
+#, python-format
 msgid "%s (copy)"
 msgstr "%s (αντίγραφο)"
-
-#. module: product
-#: model:ir.actions.report,print_report_name:product.report_product_template_label_2x7
-#: model:ir.actions.report,print_report_name:product.report_product_template_label_4x12
-#: model:ir.actions.report,print_report_name:product.report_product_template_label_4x12_noprice
-#: model:ir.actions.report,print_report_name:product.report_product_template_label_4x7
-#: model:ir.actions.report,print_report_name:product.report_product_template_label_dymo
-msgid "'Products Labels - %s' % (object.name)"
-msgstr ""
-
-#. module: product
-#: model:ir.actions.report,print_report_name:product.report_product_packaging
-msgid "'Products packaging - %s' % (object.name)"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_template.py:0
-msgid "(e.g: product description, ebook, legal notice, ...)."
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_pricelist_item.py:0
-msgid "+ %(amount)s extra fee"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_pricelist_item.py:0
-msgid "- %(amount)s rebate"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_product.py:0
-msgid "- Barcode \"%(barcode)s\" already assigned to product(s): %(product_list)s"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_attribute__create_variant
-msgid ""
-"- Instantly: All possible variants are created as soon as the attribute and its values are added to a product.\n"
-"        - Dynamically: Each variant is created only when its corresponding attributes and values are added to a sales order.\n"
-"        - Never: Variants are never created for the attribute.\n"
-"        Note: this cannot be changed once the attribute is used on a product."
-msgstr ""
 
 #. module: product
 #: model:product.attribute.value,name:product.product_attribute_value_5
@@ -155,34 +62,13 @@ msgid "1 year"
 msgstr "1 Έτος"
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_warranty
-msgid "1 year warranty extension"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.report_packagingbarcode
-msgid "10"
-msgstr "10"
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.report_pricelist_page
-msgid "10 Units"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.report_packagingbarcode
-msgid "123456789012"
-msgstr ""
-
-#. module: product
-#: model:product.template,description_sale:product.product_product_4_product_template
+#: model:product.product,description_sale:product.product_product_4
+#: model:product.product,description_sale:product.product_product_4b
+#: model:product.product,description_sale:product.product_product_4c
+#: model:product.product,description_sale:product.product_product_4d
+#: model:product.template,description_sale:product.product_product_4b_product_template
 msgid "160x80cm, with large legs."
 msgstr ""
-
-#. module: product
-#: model:ir.model.fields.selection,name:product.selection__product_label_layout__print_format__2x7xprice
-msgid "2 x 7 with price"
-msgstr "2 x 7 με τιμή"
 
 #. module: product
 #: model:product.attribute.value,name:product.product_attribute_value_6
@@ -190,57 +76,16 @@ msgid "2 year"
 msgstr "2 Έτη"
 
 #. module: product
-#: model:ir.model.fields.selection,name:product.selection__product_label_layout__print_format__4x12
-msgid "4 x 12"
-msgstr "4 x 12"
-
-#. module: product
-#: model:ir.model.fields.selection,name:product.selection__product_label_layout__print_format__4x12xprice
-msgid "4 x 12 with price"
-msgstr "4 x 12 με τιμή"
-
-#. module: product
-#: model:ir.model.fields.selection,name:product.selection__product_label_layout__print_format__4x7xprice
-msgid "4 x 7 with price"
-msgstr "4 x 7 με τιμή"
-
-#. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
-msgid "<b>Tip: want to round at 9.99?</b>"
+msgid ""
+"<span attrs=\"{'invisible':[('base', '!=', 'list_price')]}\">Public Price  -  </span>\n"
+"                            <span attrs=\"{'invisible':[('base', '!=', 'standard_price')]}\">Cost  -  </span>\n"
+"                            <span attrs=\"{'invisible':[('base', '!=', 'pricelist')]}\">Other Pricelist  -  </span>"
 msgstr ""
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
-msgid ""
-"<i class=\"fa fa-long-arrow-right mx-2 oe_edit_only\" aria-label=\"Arrow "
-"icon\" title=\"Arrow\"/>"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_view_kanban
-msgid "<i class=\"fa fa-money\" role=\"img\" aria-label=\"Currency\" title=\"Currency\"/>"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
-msgid ""
-"<span class=\"o_stat_text\" invisible=\"pricelist_item_count == 1\">\n"
-"                                            Rules\n"
-"                                        </span>\n"
-"                                        <span class=\"o_stat_text\" invisible=\"pricelist_item_count != 1\">\n"
-"                                            Rule\n"
-"                                        </span>"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
-msgid ""
-"<span class=\"o_stat_text\" invisible=\"pricelist_item_count == 1\">\n"
-"                                        Pricelists\n"
-"                                    </span>\n"
-"                                    <span class=\"o_stat_text\" invisible=\"pricelist_item_count != 1\">\n"
-"                                        Pricelist\n"
-"                                    </span>"
+msgid "<span class=\"o_form_label\">New Price =</span>"
 msgstr ""
 
 #. module: product
@@ -249,38 +94,45 @@ msgid "<span class=\"o_stat_text\"> Products</span>"
 msgstr "<span class=\"o_stat_text\"> Είδη</span>"
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_attribute_view_form
-msgid "<span class=\"o_stat_text\">Products</span>"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
-msgid "<span>%</span>"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
-msgid ""
-"<span>%</span>\n"
-"                                <span>on</span>"
-msgstr ""
-
-#. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_variant_easy_edit_view
-msgid "<span>All general settings about this product are managed on</span>"
+msgid "<span>kg</span>"
 msgstr ""
+
+#. module: product
+#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
+#: model_terms:ir.ui.view,arch_db:product.product_variant_easy_edit_view
+msgid "<span>m³</span>"
+msgstr ""
+
+#. module: product
+#: model_terms:ir.ui.view,arch_db:product.report_pricelist
+msgid "<strong>Currency</strong>:<br/>"
+msgstr ""
+
+#. module: product
+#: model_terms:ir.ui.view,arch_db:product.report_pricelist
+msgid "<strong>Description</strong>"
+msgstr "<strong>Περιγραφή</strong>"
+
+#. module: product
+#: model_terms:ir.ui.view,arch_db:product.report_pricelist
+msgid "<strong>Price List Name</strong>:<br/>"
+msgstr "<strong>Όνομα Τιμοκαταλόγου</strong>:<br/>"
+
+#. module: product
+#: model_terms:ir.ui.view,arch_db:product.report_simple_label
+msgid "<strong>Price:</strong>"
+msgstr "<strong>Τιμή:</strong>"
+
+#. module: product
+#: model_terms:ir.ui.view,arch_db:product.report_pricelist
+msgid "<strong>Print date</strong>:<br/>"
+msgstr "<strong>Ημερομηνία Εκτύπωσης</strong>:<br/>"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.report_packagingbarcode
 msgid "<strong>Qty: </strong>"
 msgstr "<strong>Ποσ: </strong>"
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.res_config_settings_view_form
-msgid ""
-"<strong>Save</strong> this page and come back\n"
-"                                here to set up the feature."
-msgstr ""
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_template_only_form_view
@@ -291,32 +143,8 @@ msgid ""
 msgstr ""
 
 #. module: product
-#: model:ir.model.constraint,message:product.constraint_product_packaging_barcode_uniq
-msgid "A barcode can only be assigned to one packaging."
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_combo.py:0
-msgid "A combo choice can't contain duplicate products."
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_combo_item.py:0
-msgid "A combo choice can't contain products of type \"combo\"."
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_combo.py:0
-msgid "A combo choice must contain at least 1 product."
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_template.py:0
-msgid "A combo product must contain at least 1 combo choice."
+#: sql_constraint:product.product:0
+msgid "A barcode can only be assigned to one product !"
 msgstr ""
 
 #. module: product
@@ -332,225 +160,93 @@ msgstr ""
 "και Τιμολόγιο Πελατών / Πιστωτικό "
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_product.py:0
-msgid "A packaging already uses the barcode"
-msgstr ""
-
-#. module: product
 #: model_terms:ir.actions.act_window,help:product.product_pricelist_action2
 msgid ""
 "A price is a set of sales prices or rules to compute the price of sales order lines based on products, product categories, dates and ordered quantities.\n"
-"            This is the perfect tool to handle several pricings, seasonal discounts, etc."
+"                This is the perfect tool to handle several pricings, seasonal discounts, etc."
 msgstr ""
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_packaging.py:0
-msgid "A product already uses the barcode"
+#: model:ir.model.fields,help:product.field_product_product__type
+#: model:ir.model.fields,help:product.field_product_template__type
+msgid ""
+"A storable product is a product for which you manage stock. The Inventory app has to be installed.\n"
+"A consumable product is a product for which stock is not managed.\n"
+"A service is a non-material product you provide."
 msgstr ""
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_template.py:0
-msgid "A sellable combo product can only contain sellable products."
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_document__access_token
-msgid "Access Token"
-msgstr "Διακριτικό Πρόσβασης"
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.report_pricelist_page
-msgid "Acme Widget"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.report_pricelist_page
-msgid "Acme Widget - Blue"
-msgstr ""
-
-#. module: product
-#: model:product.template,name:product.product_template_acoustic_bloc_screens
+#: model:product.product,name:product.product_product_25
+#: model:product.template,name:product.product_product_25_product_template
 msgid "Acoustic Bloc Screens"
 msgstr ""
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_category__message_needaction
-#: model:ir.model.fields,field_description:product.field_product_pricelist__message_needaction
 #: model:ir.model.fields,field_description:product.field_product_product__message_needaction
 #: model:ir.model.fields,field_description:product.field_product_template__message_needaction
 msgid "Action Needed"
 msgstr "Απαιτείται ενέργεια"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_attribute__active
-#: model:ir.model.fields,field_description:product.field_product_attribute_value__active
-#: model:ir.model.fields,field_description:product.field_product_document__active
 #: model:ir.model.fields,field_description:product.field_product_pricelist__active
 #: model:ir.model.fields,field_description:product.field_product_product__active
 #: model:ir.model.fields,field_description:product.field_product_template__active
-#: model:ir.model.fields,field_description:product.field_product_template_attribute_line__active
-#: model:ir.model.fields,field_description:product.field_product_template_attribute_value__ptav_active
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_view_search
 #: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_search_view
-#: model_terms:ir.ui.view,arch_db:product.product_template_attribute_value_view_search
 msgid "Active"
 msgstr "Σε Ισχύ"
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_search_view
-msgid "Active Products"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_pricelist__activity_ids
 #: model:ir.model.fields,field_description:product.field_product_product__activity_ids
 #: model:ir.model.fields,field_description:product.field_product_template__activity_ids
 msgid "Activities"
 msgstr "Δραστηριότητες"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_pricelist__activity_exception_decoration
-#: model:ir.model.fields,field_description:product.field_product_product__activity_exception_decoration
-#: model:ir.model.fields,field_description:product.field_product_template__activity_exception_decoration
-msgid "Activity Exception Decoration"
-msgstr "Δραστηριότητα Εξαίρεσης Διακόσμησης"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_pricelist__activity_state
 #: model:ir.model.fields,field_description:product.field_product_product__activity_state
 #: model:ir.model.fields,field_description:product.field_product_template__activity_state
 msgid "Activity State"
 msgstr "Κατάσταση Δραστηριότητας"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_pricelist__activity_type_icon
-#: model:ir.model.fields,field_description:product.field_product_product__activity_type_icon
-#: model:ir.model.fields,field_description:product.field_product_template__activity_type_icon
-msgid "Activity Type Icon"
-msgstr "Εικονίδιο Τύπου Δραστηριότητας"
-
-#. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/product_catalog/order_line/order_line.xml:0
-msgid "Add"
-msgstr "Προσθήκη"
-
-#. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/js/pricelist_report/product_pricelist_report.xml:0
-msgid "Add Products"
-msgstr ""
-
-#. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/js/pricelist_report/product_pricelist_report.js:0
-msgid "Add Products to pricelist report"
-msgstr ""
-
-#. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/js/pricelist_report/product_pricelist_report.xml:0
-msgid "Add a quantity"
-msgstr ""
-
-#. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/js/pricelist_report/product_pricelist_report.xml:0
-msgid ""
-"Add products using the \"Add Products\" button at the top right to\n"
-"                                include them in the report."
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_attribute_value.py:0
-msgid "Add to all products"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields.selection,name:product.selection__update_product_attribute_value__mode__add
-msgid "Add to existing products"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_attribute_view_form
-msgid "Add to products"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_document_search
+#: model:product.category,name:product.product_category_all
 msgid "All"
 msgstr "Όλα"
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_pricelist_item.py:0
-msgid "All Categories"
-msgstr "Όλες οι κατηγορίες"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__all_product_tag_ids
-msgid "All Product Tag"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_tag__product_ids
-msgid "All Product Variants using this Tag"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_pricelist_item.py:0
-#: model:ir.model.fields.selection,name:product.selection__product_pricelist_item__applied_on__3_global
-#: model_terms:ir.ui.view,arch_db:product.product_tag_form_view
+#: code:addons/product/models/product_pricelist.py:457
+#, python-format
 msgid "All Products"
 msgstr "Όλα τα Είδη"
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
-msgid "All categories"
-msgstr ""
+#: model_terms:ir.ui.view,arch_db:product.product_variant_easy_edit_view
+msgid "All general settings about this product are managed on"
+msgstr "Όλες οι γενικές ρυθμίσεις σχετικά με αυτό το είδος διαχειρίζονται στο"
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_view_tree
-msgid "All countries"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/controllers/product_document.py:0
-msgid "All files uploaded"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
-msgid "All products"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_tree_view_from_product
-msgid "All variants"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_attribute_value__is_custom
-#: model:ir.model.fields,help:product.field_product_template_attribute_value__is_custom
-msgid "Allow customers to set their own value"
+#: model:ir.model.fields,help:product.field_res_config_settings__group_sale_pricelist
+msgid ""
+"Allows to manage different prices based on rules per category of customers.\n"
+"                Example: 10% for retailers, promotion of 5 EUR on this product, etc."
 msgstr ""
 
 #. module: product
 #: model:product.attribute.value,name:product.product_attribute_value_2
+#: model:product.template.attribute.value,name:product.product_template_attribute_value_1
+#: model:product.template.attribute.value,name:product.product_template_attribute_value_2
 msgid "Aluminium"
 msgstr ""
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_tree_view
-msgid "Applied On"
-msgstr ""
+#: selection:product.attribute,create_variant:0
+msgid "Always"
+msgstr "Πάντα"
+
+#. module: product
+#: model_terms:ir.ui.view,arch_db:product.product_normal_form_view
+#: model_terms:ir.ui.view,arch_db:product.product_pricelist_view
+msgid "Applicable On"
+msgstr "Ισχύουν για"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__applied_on
@@ -558,25 +254,9 @@ msgid "Apply On"
 msgstr ""
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
-msgid "Apply To"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_view
-msgid "Apply on"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_attribute_view_form
-#: model_terms:ir.ui.view,arch_db:product.product_document_kanban
-#: model_terms:ir.ui.view,arch_db:product.product_document_search
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_view
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_view_search
 #: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_search_view
-#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
 #: model_terms:ir.ui.view,arch_db:product.product_template_search_view
-#: model_terms:ir.ui.view,arch_db:product.product_variant_easy_edit_view
 msgid "Archived"
 msgstr "Αρχειοθετημένα"
 
@@ -586,35 +266,10 @@ msgid "Assigns the priority to the list of product vendor."
 msgstr ""
 
 #. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/js/pricelist_report/product_pricelist_report.js:0
-msgid ""
-"At most %s quantities can be displayed simultaneously. Remove a selected "
-"quantity to add others."
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_document_form
-msgid "Attached To"
-msgstr "Συνημμένο με"
-
-#. module: product
-#: model:ir.model,name:product.model_ir_attachment
-msgid "Attachment"
-msgstr "Συνημμένο"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_category__message_attachment_count
-#: model:ir.model.fields,field_description:product.field_product_pricelist__message_attachment_count
 #: model:ir.model.fields,field_description:product.field_product_product__message_attachment_count
 #: model:ir.model.fields,field_description:product.field_product_template__message_attachment_count
 msgid "Attachment Count"
-msgstr "Αριθμός Συνημμένων"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_document__local_url
-msgid "Attachment URL"
-msgstr "URL συνημμένου"
+msgstr ""
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute__name
@@ -625,29 +280,28 @@ msgid "Attribute"
 msgstr "Χαρακτηριστικό"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_template_attribute_value__attribute_line_id
-msgid "Attribute Line"
-msgstr ""
-
-#. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_attribute_view_form
 #: model_terms:ir.ui.view,arch_db:product.product_template_attribute_line_form
 msgid "Attribute Name"
 msgstr ""
 
 #. module: product
+#: model:ir.model.fields,field_description:product.field_product_template_attribute_value__price_extra
+msgid "Attribute Price Extra"
+msgstr "Χαρακτηριστικό Επιπλέον Τμής"
+
+#. module: product
 #: model:ir.model,name:product.model_product_attribute_value
-#: model:ir.model.fields,field_description:product.field_product_attribute_custom_value__custom_product_template_attribute_value_id
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_exclusion__product_template_attribute_value_id
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__product_attribute_value_id
-#: model:ir.model.fields,field_description:product.field_update_product_attribute_value__attribute_value_id
 msgid "Attribute Value"
 msgstr ""
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__product_template_attribute_value_ids
+#: model:ir.actions.act_window,name:product.variants_action
+#: model:ir.model.fields,field_description:product.field_product_product__attribute_value_ids
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_exclusion__value_ids
-#: model_terms:ir.ui.view,arch_db:product.product_attribute_value_list
+#: model:ir.model.fields,field_description:product.field_product_template_attribute_line__value_ids
 #: model_terms:ir.ui.view,arch_db:product.product_attribute_view_form
 msgid "Attribute Values"
 msgstr "Τιμές Χαρακτηριστικών"
@@ -656,57 +310,32 @@ msgstr "Τιμές Χαρακτηριστικών"
 #: model:ir.actions.act_window,name:product.attribute_action
 #: model_terms:ir.ui.view,arch_db:product.product_template_attribute_value_view_tree
 #: model_terms:ir.ui.view,arch_db:product.product_template_search_view
-#: model_terms:ir.ui.view,arch_db:product.product_view_search_catalog
+#: model_terms:ir.ui.view,arch_db:product.product_variant_easy_edit_view
 msgid "Attributes"
 msgstr "Ιδιότητες"
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_template_only_form_view
-msgid "Attributes & Variants"
-msgstr ""
-
-#. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/product_catalog/kanban_controller.js:0
-msgid "Back to Order"
-msgstr ""
-
-#. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/product_catalog/kanban_controller.js:0
-msgid "Back to Quotation"
-msgstr ""
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_packaging__barcode
 #: model:ir.model.fields,field_description:product.field_product_product__barcode
 #: model:ir.model.fields,field_description:product.field_product_template__barcode
+#: model_terms:ir.ui.view,arch_db:product.report_packagingbarcode
+#: model_terms:ir.ui.view,arch_db:product.report_simple_barcode
+#: model_terms:ir.ui.view,arch_db:product.report_simple_label
 msgid "Barcode"
 msgstr "Barcode"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_packaging__barcode
-msgid ""
-"Barcode used for packaging identification. Scan this packaging barcode from "
-"a transfer in the Barcode app to move all the contained units"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_product.py:0
-msgid ""
-"Barcode(s) already assigned:\n"
-"\n"
-"%s"
+msgid "Barcode used for packaging identification."
 msgstr ""
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_pricelist_item__base
 msgid ""
 "Base price for computation.\n"
-"Sales Price: The base price will be the Sales Price.\n"
-"Cost Price: The base price will be the cost price.\n"
-"Other Pricelist: Computation of the base price based on another Pricelist."
+"Public Price: The base price will be the Sale/public Price.\n"
+"Cost Price : The base price will be the cost price.\n"
+"Other Pricelist : Computation of the base price based on another Pricelist."
 msgstr ""
 
 #. module: product
@@ -715,14 +344,9 @@ msgid "Based on"
 msgstr "Βασισμένο στο"
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
-msgid "Based price"
-msgstr ""
-
-#. module: product
-#: model:res.groups,name:product.group_product_pricelist
-msgid "Basic Pricelists"
-msgstr ""
+#: model:ir.model.fields,field_description:product.field_product_product__image
+msgid "Big-sized image"
+msgstr "Μεγάλου-μεγέθους εικόνα"
 
 #. module: product
 #: model:product.attribute.value,name:product.product_attribute_value_4
@@ -730,49 +354,55 @@ msgid "Black"
 msgstr "Μαύρο"
 
 #. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/js/product_attribute_value_list.js:0
-msgid "Bye-bye, record!"
-msgstr "Αντίο, εγγραφή!"
-
-#. module: product
+#: model:product.product,name:product.product_product_10
 #: model:product.template,name:product.product_product_10_product_template
 msgid "Cabinet with Doors"
 msgstr ""
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__can_image_1024_be_zoomed
-#: model:ir.model.fields,field_description:product.field_product_template__can_image_1024_be_zoomed
-msgid "Can Image 1024 be zoomed"
-msgstr ""
+#: model_terms:ir.ui.view,arch_db:product.view_product_price_list
+msgid "Calculate Product Price per Unit Based on Pricelist Version."
+msgstr "Υπολογισμός Τιμής Είδους ανά μονάδα βασισμένη σε έκδοση τιμοκαταλόγου"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__can_image_variant_1024_be_zoomed
-msgid "Can Variant Image 1024 be zoomed"
-msgstr ""
+#: model:ir.model.fields,field_description:product.field_product_product__purchase_ok
+#: model:ir.model.fields,field_description:product.field_product_template__purchase_ok
+#: model_terms:ir.ui.view,arch_db:product.product_template_search_view
+msgid "Can be Purchased"
+msgstr "Μπορεί να Αγοραστεί"
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.update_product_attribute_value_form
+#: model:ir.model.fields,field_description:product.field_product_product__rental
+#: model:ir.model.fields,field_description:product.field_product_template__rental
+msgid "Can be Rent"
+msgstr "Μπορεί να Ενοικιαστεί"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_product_product__sale_ok
+#: model:ir.model.fields,field_description:product.field_product_template__sale_ok
+#: model_terms:ir.ui.view,arch_db:product.product_template_search_view
+msgid "Can be Sold"
+msgstr "Μπορεί να Πωληθεί"
+
+#. module: product
+#: model_terms:ir.ui.view,arch_db:product.view_product_price_list
 msgid "Cancel"
 msgstr "Ακύρωση"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_pricelist_item__categ_id
-#: model:ir.model.fields.selection,name:product.selection__product_pricelist_item__display_applied_on__2_product_category
 #: model_terms:ir.ui.view,arch_db:product.product_category_form_view
-#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
-msgid "Category"
-msgstr "Κατηγορία"
+msgid "Category name"
+msgstr "Όνομα Κατηγορίας"
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_pricelist_item.py:0
+#: code:addons/product/models/product_pricelist.py:451
+#, python-format
 msgid "Category: %s"
 msgstr ""
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_document__checksum
-msgid "Checksum/SHA1"
+#: model:ir.model.fields,help:product.field_product_attribute__create_variant
+msgid "Check this if you want to create multiple variants for this attribute."
 msgstr ""
 
 #. module: product
@@ -781,18 +411,8 @@ msgid "Child Categories"
 msgstr "Θυγατρικές Κατηγορίες"
 
 #. module: product
-#: model:ir.actions.act_window,name:product.action_open_label_layout
-msgid "Choose Labels Layout"
-msgstr "Επιλέξτε Διάταξη Ετικετών"
-
-#. module: product
-#: model:ir.model,name:product.model_product_label_layout
-msgid "Choose the sheet layout to print the labels"
-msgstr "Επιλέξτε τη διάταξη της σελίδας για την εκτύπωση ετικετών"
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_cleaning_kit
-msgid "Cleaning kit"
+#: model_terms:ir.ui.view,arch_db:product.res_config_settings_view_form
+msgid "Choose the unit to measure weight"
 msgstr ""
 
 #. module: product
@@ -801,73 +421,19 @@ msgid "Codes"
 msgstr "Κωδικοί"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_attribute_value__html_color
-#: model:ir.model.fields,field_description:product.field_product_tag__color
-#: model:ir.model.fields,field_description:product.field_product_template_attribute_value__color
-#: model:ir.model.fields.selection,name:product.selection__product_attribute__display_type__color
 #: model:product.attribute,name:product.product_attribute_2
 msgid "Color"
 msgstr "Χρώμα"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_attribute_value__color
 #: model:ir.model.fields,field_description:product.field_product_product__color
 #: model:ir.model.fields,field_description:product.field_product_template__color
 msgid "Color Index"
 msgstr "Χρωματισμός Ευρετήριου"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_label_layout__columns
-msgid "Columns"
-msgstr "Στήλες"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__combination_indices
-msgid "Combination Indices"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_combo_item__combo_id
-#: model:ir.model.fields.selection,name:product.selection__product_template__type__combo
-#: model_terms:ir.ui.view,arch_db:product.product_template_search_view
-msgid "Combo"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_combo_view_form
-msgid "Combo Choice"
-msgstr ""
-
-#. module: product
-#: model:ir.actions.act_window,name:product.product_combo_action
-#: model:ir.model.fields,field_description:product.field_product_product__combo_ids
-#: model:ir.model.fields,field_description:product.field_product_template__combo_ids
-#: model_terms:ir.ui.view,arch_db:product.product_combo_view_tree
-msgid "Combo Choices"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_combo__combo_item_ids
-msgid "Combo Item"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_combo__base_price
-msgid "Combo Price"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_template.py:0
-msgid "Combo products can't have attributes."
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_template.py:0
-msgid ""
-"Combos allow to choose one product amongst a selection of choices per "
-"category."
+#: model_terms:ir.ui.view,arch_db:product.res_config_settings_view_form
+msgid "Common Product Catalog"
 msgstr ""
 
 #. module: product
@@ -876,10 +442,7 @@ msgid "Companies"
 msgstr "Εταιρίες"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_combo__company_id
-#: model:ir.model.fields,field_description:product.field_product_combo_item__company_id
-#: model:ir.model.fields,field_description:product.field_product_document__company_id
-#: model:ir.model.fields,field_description:product.field_product_packaging__company_id
+#: model:ir.model.fields,field_description:product.field_product_price_history__company_id
 #: model:ir.model.fields,field_description:product.field_product_pricelist__company_id
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__company_id
 #: model:ir.model.fields,field_description:product.field_product_product__company_id
@@ -889,45 +452,38 @@ msgid "Company"
 msgstr "Εταιρία"
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
-msgid "Company Settings"
-msgstr "Ρυθμίσεις εταιρείας"
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_category__complete_name
 msgid "Complete Name"
 msgstr "Πλήρες Όνομα"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__compute_price
+#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
 msgid "Compute Price"
 msgstr "Υπολογισμός τιμής"
 
 #. module: product
-#: model:product.template,name:product.product_product_11_product_template
+#: model:product.product,name:product.product_product_11
+#: model:product.product,name:product.product_product_11b
+#: model:product.template,name:product.product_product_11b_product_template
 msgid "Conference Chair"
-msgstr ""
-
-#. module: product
-#: model:product.template,description_sale:product.consu_delivery_02_product_template
-msgid "Conference room table"
 msgstr ""
 
 #. module: product
 #: model:ir.model,name:product.model_res_config_settings
 msgid "Config Settings"
-msgstr "Ρυθμίσεις διαμόρφωσης"
+msgstr ""
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_template_only_form_view
-msgid "Configure"
-msgstr "Παραμετροποίηση"
+#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
+msgid "Configure Variants"
+msgstr ""
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_label_layout_form
-#: model_terms:ir.ui.view,arch_db:product.update_product_attribute_value_form
-msgid "Confirm"
-msgstr "Επιβεβαίωση"
+#: model:product.category,name:product.product_category_consumable
+#: selection:product.template,type:0
+msgid "Consumable"
+msgstr "Αναλώσιμο"
 
 #. module: product
 #: model:ir.model,name:product.model_res_partner
@@ -935,18 +491,8 @@ msgid "Contact"
 msgstr "Επαφή"
 
 #. module: product
-#: model_terms:product.template,website_description:product.product_product_4_product_template
-msgid "Contact Us"
-msgstr "Επικοινωνήστε μαζί μας"
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_packaging__qty
 msgid "Contained Quantity"
-msgstr ""
-
-#. module: product
-#: model:ir.model.constraint,message:product.constraint_product_packaging_positive_qty
-msgid "Contained Quantity should be positive."
 msgstr ""
 
 #. module: product
@@ -955,36 +501,38 @@ msgid "Contained quantity"
 msgstr ""
 
 #. module: product
-#: model:ir.model.fields,help:product.field_product_product__uom_category_id
-#: model:ir.model.fields,help:product.field_product_template__uom_category_id
-msgid ""
-"Conversion between Units of Measure can only occur if they belong to the "
-"same category. The conversion will be made based on the ratios."
-msgstr ""
-"Μετατροπή ανάμεσα σε Μονάδες Μέτρησης μπορεί να πραγματοποιηθεί μόνο αν "
-"ανήκουν στην ίδια κατηγορία. Η μετατροπή θα γίνει βάσει των αναλογιών."
-
-#. module: product
+#: model:product.product,name:product.product_product_13
 #: model:product.template,name:product.product_product_13_product_template
-msgid "Corner Desk Left Sit"
+msgid "Corner Desk Black"
 msgstr ""
 
 #. module: product
+#: model:product.product,name:product.product_product_5
 #: model:product.template,name:product.product_product_5_product_template
 msgid "Corner Desk Right Sit"
 msgstr ""
 
 #. module: product
+#: model:ir.model.fields,field_description:product.field_product_price_history__cost
 #: model:ir.model.fields,field_description:product.field_product_product__standard_price
 #: model:ir.model.fields,field_description:product.field_product_template__standard_price
-#: model:ir.model.fields.selection,name:product.selection__product_pricelist_item__base__standard_price
+#: selection:product.pricelist.item,base:0
 msgid "Cost"
 msgstr "Κόστος"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__cost_currency_id
-#: model:ir.model.fields,field_description:product.field_product_template__cost_currency_id
-msgid "Cost Currency"
+#: model:ir.model.fields,help:product.field_product_template__standard_price
+msgid ""
+"Cost used for stock valuation in standard price and as a first price to set "
+"in average/FIFO."
+msgstr ""
+
+#. module: product
+#: model:ir.model.fields,help:product.field_product_product__standard_price
+msgid ""
+"Cost used for stock valuation in standard price and as a first price to set "
+"in average/fifo. Also used as a base price for pricelists. Expressed in the "
+"default unit of measure of the product."
 msgstr ""
 
 #. module: product
@@ -996,6 +544,11 @@ msgstr "Ομάδα Κράτους"
 #: model:ir.model.fields,field_description:product.field_product_pricelist__country_group_ids
 msgid "Country Groups"
 msgstr "Ομάδες Χωρών"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_product_attribute__create_variant
+msgid "Create Variants"
+msgstr ""
 
 #. module: product
 #: model_terms:ir.actions.act_window,help:product.product_pricelist_action2
@@ -1016,100 +569,49 @@ msgid "Create a new product variant"
 msgstr ""
 
 #. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/product_catalog/kanban_renderer.xml:0
-msgid "Create a product"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__service_tracking
-#: model:ir.model.fields,field_description:product.field_product_template__service_tracking
-msgid "Create on Order"
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute__create_uid
-#: model:ir.model.fields,field_description:product.field_product_attribute_custom_value__create_uid
 #: model:ir.model.fields,field_description:product.field_product_attribute_value__create_uid
 #: model:ir.model.fields,field_description:product.field_product_category__create_uid
-#: model:ir.model.fields,field_description:product.field_product_combo__create_uid
-#: model:ir.model.fields,field_description:product.field_product_combo_item__create_uid
-#: model:ir.model.fields,field_description:product.field_product_document__create_uid
-#: model:ir.model.fields,field_description:product.field_product_label_layout__create_uid
 #: model:ir.model.fields,field_description:product.field_product_packaging__create_uid
+#: model:ir.model.fields,field_description:product.field_product_price_history__create_uid
+#: model:ir.model.fields,field_description:product.field_product_price_list__create_uid
 #: model:ir.model.fields,field_description:product.field_product_pricelist__create_uid
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__create_uid
 #: model:ir.model.fields,field_description:product.field_product_product__create_uid
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo__create_uid
-#: model:ir.model.fields,field_description:product.field_product_tag__create_uid
 #: model:ir.model.fields,field_description:product.field_product_template__create_uid
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_exclusion__create_uid
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_line__create_uid
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__create_uid
-#: model:ir.model.fields,field_description:product.field_update_product_attribute_value__create_uid
 msgid "Created by"
 msgstr "Δημιουργήθηκε από"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute__create_date
-#: model:ir.model.fields,field_description:product.field_product_attribute_custom_value__create_date
 #: model:ir.model.fields,field_description:product.field_product_attribute_value__create_date
 #: model:ir.model.fields,field_description:product.field_product_category__create_date
-#: model:ir.model.fields,field_description:product.field_product_combo__create_date
-#: model:ir.model.fields,field_description:product.field_product_combo_item__create_date
-#: model:ir.model.fields,field_description:product.field_product_document__create_date
-#: model:ir.model.fields,field_description:product.field_product_label_layout__create_date
 #: model:ir.model.fields,field_description:product.field_product_packaging__create_date
+#: model:ir.model.fields,field_description:product.field_product_price_history__create_date
+#: model:ir.model.fields,field_description:product.field_product_price_list__create_date
 #: model:ir.model.fields,field_description:product.field_product_pricelist__create_date
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__create_date
 #: model:ir.model.fields,field_description:product.field_product_product__create_date
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo__create_date
-#: model:ir.model.fields,field_description:product.field_product_tag__create_date
 #: model:ir.model.fields,field_description:product.field_product_template__create_date
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_exclusion__create_date
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_line__create_date
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__create_date
-#: model:ir.model.fields,field_description:product.field_update_product_attribute_value__create_date
 msgid "Created on"
 msgstr "Δημιουργήθηκε στις"
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_document_form
-msgid "Creation"
-msgstr "Δημιουργία"
-
-#. module: product
-#: model:ir.model.fields.selection,name:product.selection__res_config_settings__product_volume_volume_in_cubic_feet__1
-msgid "Cubic Feet"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields.selection,name:product.selection__res_config_settings__product_volume_volume_in_cubic_feet__0
-msgid "Cubic Meters"
-msgstr ""
-
-#. module: product
-#: model:ir.model,name:product.model_res_currency
-#: model:ir.model.fields,field_description:product.field_product_combo__currency_id
-#: model:ir.model.fields,field_description:product.field_product_combo_item__currency_id
 #: model:ir.model.fields,field_description:product.field_product_pricelist__currency_id
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__currency_id
 #: model:ir.model.fields,field_description:product.field_product_product__currency_id
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo__currency_id
 #: model:ir.model.fields,field_description:product.field_product_template__currency_id
-#: model:ir.model.fields,field_description:product.field_product_template_attribute_value__currency_id
 msgid "Currency"
 msgstr "Νόμισμα"
-
-#. module: product
-#: model:product.attribute.value,name:product.fabric_attribute_custom
-msgid "Custom"
-msgstr "Προσωποποιημένο"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_attribute_custom_value__custom_value
-msgid "Custom Value"
-msgstr ""
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product__partner_ref
@@ -1117,14 +619,24 @@ msgid "Customer Ref"
 msgstr ""
 
 #. module: product
-#: model:product.template,name:product.product_product_4_product_template
+#: model:product.product,name:product.product_product_4
+#: model:product.product,name:product.product_product_4b
+#: model:product.product,name:product.product_product_4c
+#: model:product.product,name:product.product_product_4d
+#: model:product.template,name:product.product_product_4b_product_template
 msgid "Customizable Desk"
-msgstr "Προσαρμόσιμο Γραφείο"
+msgstr ""
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_document__db_datas
-msgid "Database Data"
-msgstr "Δεδομένα Βάσης"
+#: model:ir.model.fields,field_description:product.field_product_price_history__datetime
+msgid "Date"
+msgstr "Ημερομηνία"
+
+#. module: product
+#: model:product.product,uom_name:product.expense_hotel
+#: model:product.template,uom_name:product.expense_hotel_product_template
+msgid "Day(s)"
+msgstr "Ημέρα(ες)"
 
 #. module: product
 #: model:ir.model,name:product.model_decimal_precision
@@ -1132,19 +644,9 @@ msgid "Decimal Precision"
 msgstr "Ακρίβεια Δεκαδικών"
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/res_company.py:0
-msgid "Default"
-msgstr "Προεπιλογή"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_attribute_value__default_extra_price
-msgid "Default Extra Price"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_attribute_value__default_extra_price_changed
-msgid "Default Extra Price Changed"
+#: code:addons/product/models/res_company.py:59
+#, python-format
+msgid "Default %(currency)s pricelist for %(company)s"
 msgstr ""
 
 #. module: product
@@ -1153,12 +655,9 @@ msgstr ""
 #: model:ir.model.fields,help:product.field_product_template__uom_id
 msgid "Default unit of measure used for all stock operations."
 msgstr ""
-"Προεπιλεγμένη μονάδα μέτρησης που χρησιμοποιείται για όλες τις λειτουργίες "
-"αποθέματος."
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product__uom_po_id
-#: model:ir.model.fields,help:product.field_product_supplierinfo__product_uom
 #: model:ir.model.fields,help:product.field_product_template__uom_po_id
 msgid ""
 "Default unit of measure used for purchase orders. It must be in the same "
@@ -1166,26 +665,10 @@ msgid ""
 msgstr ""
 
 #. module: product
-#: model_terms:ir.actions.act_window,help:product.product_tag_action
-msgid "Define a new tag"
+#: model:ir.model.fields,help:product.field_product_product__seller_ids
+#: model:ir.model.fields,help:product.field_product_template__seller_ids
+msgid "Define vendor pricelists."
 msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.res_config_settings_view_form
-msgid "Define your volume unit of measure"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.res_config_settings_view_form
-msgid "Define your weight unit of measure"
-msgstr ""
-
-#. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/js/product_attribute_value_list.js:0
-#: model_terms:ir.ui.view,arch_db:product.product_document_kanban
-msgid "Delete"
-msgstr "Διαγραφή"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo__delay
@@ -1193,33 +676,30 @@ msgid "Delivery Lead Time"
 msgstr "Απαιτούμενος Χρόνος για Παράδοση"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_document__description
 #: model:ir.model.fields,field_description:product.field_product_product__description
 #: model:ir.model.fields,field_description:product.field_product_template__description
 msgid "Description"
 msgstr "Περιγραφή"
 
 #. module: product
+#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
+msgid "Description for Customers"
+msgstr "Περιγραφή για Πελάτες"
+
+#. module: product
+#: model:product.product,name:product.product_product_3
 #: model:product.template,name:product.product_product_3_product_template
 msgid "Desk Combination"
 msgstr ""
 
 #. module: product
-#: model:product.template,name:product.desk_organizer_product_template
-msgid "Desk Organizer"
-msgstr ""
-
-#. module: product
-#: model:product.template,name:product.desk_pad_product_template
-msgid "Desk Pad"
-msgstr ""
-
-#. module: product
+#: model:product.product,name:product.product_product_22
 #: model:product.template,name:product.product_product_22_product_template
 msgid "Desk Stand with Screen"
 msgstr ""
 
 #. module: product
+#: model:product.product,description_sale:product.product_product_3
 #: model:product.template,description_sale:product.product_product_3_product_template
 msgid "Desk combination, black-brown: chair + desk + drawer."
 msgstr ""
@@ -1227,113 +707,44 @@ msgstr ""
 #. module: product
 #: model:ir.model.fields,help:product.field_product_attribute__sequence
 #: model:ir.model.fields,help:product.field_product_attribute_value__sequence
+#: model:ir.model.fields,help:product.field_product_template_attribute_value__sequence
 msgid "Determine the display order"
 msgstr "Καθορισμός σειράς εμφάνισης"
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_label_layout_form
-msgid "Discard"
-msgstr "Απόρριψη"
-
-#. module: product
-#: model:ir.model.fields.selection,name:product.selection__product_pricelist_item__compute_price__percentage
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
-msgid "Discount"
-msgstr "Έκπτωση"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_supplierinfo__discount
-msgid "Discount (%)"
-msgstr "Έκπτωση (%)"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_supplierinfo__price_discounted
-msgid "Discounted Price"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_pricelist_item__display_applied_on
-msgid "Display Applied On"
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute__display_name
-#: model:ir.model.fields,field_description:product.field_product_attribute_custom_value__display_name
 #: model:ir.model.fields,field_description:product.field_product_attribute_value__display_name
 #: model:ir.model.fields,field_description:product.field_product_category__display_name
-#: model:ir.model.fields,field_description:product.field_product_combo__display_name
-#: model:ir.model.fields,field_description:product.field_product_combo_item__display_name
-#: model:ir.model.fields,field_description:product.field_product_document__display_name
-#: model:ir.model.fields,field_description:product.field_product_label_layout__display_name
 #: model:ir.model.fields,field_description:product.field_product_packaging__display_name
+#: model:ir.model.fields,field_description:product.field_product_price_history__display_name
+#: model:ir.model.fields,field_description:product.field_product_price_list__display_name
 #: model:ir.model.fields,field_description:product.field_product_pricelist__display_name
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__display_name
 #: model:ir.model.fields,field_description:product.field_product_product__display_name
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo__display_name
-#: model:ir.model.fields,field_description:product.field_product_tag__display_name
 #: model:ir.model.fields,field_description:product.field_product_template__display_name
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_exclusion__display_name
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_line__display_name
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__display_name
-#: model:ir.model.fields,field_description:product.field_update_product_attribute_value__display_name
+#: model:ir.model.fields,field_description:product.field_report_product_report_pricelist__display_name
 msgid "Display Name"
 msgstr "Εμφάνιση Ονόματος"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_attribute__display_type
-#: model:ir.model.fields,field_description:product.field_product_attribute_value__display_type
-#: model:ir.model.fields,field_description:product.field_product_template_attribute_value__display_type
-msgid "Display Type"
-msgstr "Τύπος Οθόνης"
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_document_kanban
-msgid "Document"
-msgstr "Έγγραφο"
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_template.py:0
-#: model:ir.model.fields,field_description:product.field_product_product__product_document_ids
-#: model:ir.model.fields,field_description:product.field_product_template__product_document_ids
-#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
-msgid "Documents"
-msgstr "Έγγραφα"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__product_document_count
-#: model:ir.model.fields,field_description:product.field_product_template__product_document_count
-msgid "Documents Count"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_document_search
-msgid "Documents of this variant"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_document_kanban
-msgid "Download"
-msgstr "Λήψη"
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_template.py:0
-msgid "Download examples"
-msgstr ""
-
-#. module: product
+#: model:product.product,name:product.product_product_27
 #: model:product.template,name:product.product_product_27_product_template
 msgid "Drawer"
 msgstr ""
 
 #. module: product
+#: model:product.product,name:product.product_product_16
 #: model:product.template,name:product.product_product_16_product_template
 msgid "Drawer Black"
-msgstr "Μαύρο Συρτάρι"
+msgstr ""
 
 #. module: product
-#: model_terms:product.template,description:product.product_product_27_product_template
+#: model:product.product,description:product.product_product_27
+#: model:product.template,description:product.product_product_27_product_template
 msgid "Drawer with two routing possiblities."
 msgstr ""
 
@@ -1343,30 +754,12 @@ msgid "Duration"
 msgstr "Διάρκεια"
 
 #. module: product
-#: model:ir.model.fields.selection,name:product.selection__product_label_layout__print_format__dymo
-msgid "Dymo"
-msgstr "Dymo"
-
-#. module: product
-#: model:ir.model.fields.selection,name:product.selection__product_attribute__create_variant__dynamic
-msgid "Dynamically"
+#: model:product.product,description_sale:product.consu_delivery_03
+#: model:product.template,description_sale:product.consu_delivery_03_product_template
+msgid ""
+"Dvorak keyboard\n"
+"left-handed mouse"
 msgstr ""
-
-#. module: product
-#: model:ir.model.constraint,message:product.constraint_product_template_attribute_value_attribute_value_unique
-msgid "Each value should be defined only once per attribute per product."
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.report_packagingbarcode
-msgid "Eco-friendly Wooden Chair"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_document_kanban
-#: model_terms:ir.ui.view,arch_db:product.product_view_kanban_catalog
-msgid "Edit"
-msgstr "Επεξεργασία"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__date_end
@@ -1381,20 +774,15 @@ msgstr "Ημερομηνία λήξης για αυτήν την τιμή προ
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_pricelist_item__date_end
+msgid "Ending valid for the pricelist item validation"
+msgstr "Λήξη ισχύος για το στοιχείο επικύρωσης τιμοκαταλόγου"
+
+#. module: product
+#: code:addons/product/models/product.py:300
+#, python-format
 msgid ""
-"Ending datetime for the pricelist item validation\n"
-"The displayed value depends on the timezone set in your preferences."
-msgstr ""
-
-#. module: product
-#: model_terms:product.template,website_description:product.product_product_4_product_template
-msgid "Ergonomic"
-msgstr ""
-
-#. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/js/pricelist_report/product_pricelist_report.js:0
-msgid "Error exporting file. Please try again."
+"Error! It is not allowed to choose more than one value for a given "
+"attribute."
 msgstr ""
 
 #. module: product
@@ -1403,109 +791,49 @@ msgid "Exclude for"
 msgstr ""
 
 #. module: product
+#: model:product.category,name:product.cat_expense
+msgid "Expenses"
+msgstr "Έξοδα"
+
+#. module: product
 #: model:ir.model.fields,help:product.field_product_pricelist_item__name
 #: model:ir.model.fields,help:product.field_product_pricelist_item__price
 msgid "Explicit rule name for this pricelist line."
 msgstr "Σαφής ονομασία κανόνα για αυτήν την γραμμή τιμοκαταλόγου"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_label_layout__extra_html
-msgid "Extra Content"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_pricelist_item__price_surcharge
-msgid "Extra Fee"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
-msgid "Extra Info"
-msgstr "Περισσότερες Πληροφορίες"
-
-#. module: product
-#: model:product.attribute,name:product.pa_extra_options
-msgid "Extra Options"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_combo_item__extra_price
-#: model:ir.model.fields,field_description:product.field_product_template_attribute_value__price_extra
-msgid "Extra Price"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_template_attribute_value__price_extra
-msgid ""
-"Extra price for the variant with this attribute value on sale price. eg. 200"
-" price extra, 1000 + 200 = 1200."
-msgstr ""
-
-#. module: product
-#: model:product.attribute,name:product.fabric_attribute
-msgid "Fabric"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__is_favorite
-#: model:ir.model.fields,field_description:product.field_product_template__is_favorite
-msgid "Favorite"
-msgstr "Αγαπημένη"
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_template_search_view
-#: model_terms:ir.ui.view,arch_db:product.product_view_search_catalog
-msgid "Favorites"
-msgstr "Αγαπημένα"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_document__datas
-msgid "File Content (base64)"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_document__raw
-msgid "File Content (raw)"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_document__file_size
-msgid "File Size"
-msgstr "Μέγεθος Αρχείου"
+#: selection:product.pricelist.item,compute_price:0
+msgid "Fix Price"
+msgstr "Σταθερή τιμή"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__fixed_price
-#: model:ir.model.fields.selection,name:product.selection__product_pricelist_item__compute_price__fixed
 msgid "Fixed Price"
 msgstr "Σταθερή τιμή"
 
 #. module: product
+#: model:product.product,name:product.product_product_20
 #: model:product.template,name:product.product_product_20_product_template
 msgid "Flipover"
 msgstr ""
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_category__message_follower_ids
-#: model:ir.model.fields,field_description:product.field_product_pricelist__message_follower_ids
 #: model:ir.model.fields,field_description:product.field_product_product__message_follower_ids
 #: model:ir.model.fields,field_description:product.field_product_template__message_follower_ids
 msgid "Followers"
 msgstr "Ακόλουθοι"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_category__message_partner_ids
-#: model:ir.model.fields,field_description:product.field_product_pricelist__message_partner_ids
+#: model:ir.model.fields,field_description:product.field_product_product__message_channel_ids
+#: model:ir.model.fields,field_description:product.field_product_template__message_channel_ids
+msgid "Followers (Channels)"
+msgstr "Ακόλουθοι (Κανάλια)"
+
+#. module: product
 #: model:ir.model.fields,field_description:product.field_product_product__message_partner_ids
 #: model:ir.model.fields,field_description:product.field_product_template__message_partner_ids
 msgid "Followers (Partners)"
 msgstr "Ακόλουθοι (Συνεργάτες)"
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_pricelist__activity_type_icon
-#: model:ir.model.fields,help:product.field_product_product__activity_type_icon
-#: model:ir.model.fields,help:product.field_product_template__activity_type_icon
-msgid "Font awesome icon e.g. fa-tasks"
-msgstr "Γραμματοσειρά awesome  π.χ. fa-tasks"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_pricelist_item__min_quantity
@@ -1515,34 +843,14 @@ msgid ""
 msgstr ""
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_label_layout__print_format
-msgid "Format"
-msgstr "Διαμόρφωση"
-
-#. module: product
-#: model:ir.model.fields.selection,name:product.selection__product_pricelist_item__compute_price__formula
+#: selection:product.pricelist.item,compute_price:0
 msgid "Formula"
 msgstr "Τύπος"
 
 #. module: product
+#: model:product.product,name:product.consu_delivery_03
 #: model:product.template,name:product.consu_delivery_03_product_template
 msgid "Four Person Desk"
-msgstr ""
-
-#. module: product
-#: model:product.template,description_sale:product.consu_delivery_03_product_template
-msgid "Four person modern office workstation"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_attribute_value__is_custom
-#: model:ir.model.fields,field_description:product.field_product_template_attribute_value__is_custom
-msgid "Free text"
-msgstr ""
-
-#. module: product
-#: model:product.template,name:product.product_product_furniture_product_template
-msgid "Furniture Assembly"
 msgstr ""
 
 #. module: product
@@ -1554,11 +862,6 @@ msgstr "Μελλοντικές Δραστηριότητες"
 #: model_terms:ir.ui.view,arch_db:product.product_template_form_view
 msgid "General Information"
 msgstr "Γενικές Πληροφορίες"
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.res_config_settings_view_form
-msgid "Get product pictures using Barcode"
-msgstr ""
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product__packaging_ids
@@ -1573,132 +876,76 @@ msgid "Gives the sequence order when displaying a product list"
 msgstr ""
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.report_pricelist_page
-msgid "Gold Member Pricelist"
+#: selection:product.pricelist.item,applied_on:0
+msgid "Global"
+msgstr "Παγκόσμια"
+
+#. module: product
+#: code:addons/product/models/product_template.py:32
+#, python-format
+msgid "Go to Internal Categories"
 msgstr ""
 
 #. module: product
-#: model:ir.model.fields.selection,name:product.selection__product_template__type__consu
-#: model_terms:ir.ui.view,arch_db:product.product_template_search_view
-#: model_terms:ir.ui.view,arch_db:product.product_view_search_catalog
-msgid "Goods"
-msgstr "Εμπορεύματα"
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_product__type
-#: model:ir.model.fields,help:product.field_product_template__type
-msgid ""
-"Goods are tangible materials and merchandise you provide.\n"
-"A service is a non-material product you provide."
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.res_config_settings_view_form
-msgid "Google Images"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_view_search
 #: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_search_view
-#: model_terms:ir.ui.view,arch_db:product.product_template_search_view
-#: model_terms:ir.ui.view,arch_db:product.product_view_search_catalog
 msgid "Group By"
 msgstr "Ομαδοποίηση κατά"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_template_attribute_value__html_color
-msgid "HTML Color Index"
-msgstr "HTML Color Index"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_category__has_message
-#: model:ir.model.fields,field_description:product.field_product_pricelist__has_message
-#: model:ir.model.fields,field_description:product.field_product_product__has_message
-#: model:ir.model.fields,field_description:product.field_product_template__has_message
-msgid "Has Message"
-msgstr "Έχει Μήνυμα"
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_attribute_value__html_color
-#: model:ir.model.fields,help:product.field_product_template_attribute_value__html_color
-msgid ""
-"Here you can set a specific HTML color index (e.g. #ff0000) to display the "
-"color if the attribute type is 'Color'."
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_document_form
-msgid "History"
-msgstr "Ιστορικό"
-
-#. module: product
+#: model:product.product,name:product.expense_hotel
 #: model:product.template,name:product.expense_hotel_product_template
 msgid "Hotel Accommodation"
 msgstr "Διαμονή σε Ξενοδοχείο"
 
 #. module: product
+#: model:product.product,uom_name:product.product_product_1
+#: model:product.product,uom_name:product.product_product_2
+#: model:product.template,uom_name:product.product_product_1_product_template
+#: model:product.template,uom_name:product.product_product_2_product_template
+msgid "Hour(s)"
+msgstr "Ώρα"
+
+#. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute__id
-#: model:ir.model.fields,field_description:product.field_product_attribute_custom_value__id
 #: model:ir.model.fields,field_description:product.field_product_attribute_value__id
 #: model:ir.model.fields,field_description:product.field_product_category__id
-#: model:ir.model.fields,field_description:product.field_product_combo__id
-#: model:ir.model.fields,field_description:product.field_product_combo_item__id
-#: model:ir.model.fields,field_description:product.field_product_document__id
-#: model:ir.model.fields,field_description:product.field_product_label_layout__id
 #: model:ir.model.fields,field_description:product.field_product_packaging__id
+#: model:ir.model.fields,field_description:product.field_product_price_history__id
+#: model:ir.model.fields,field_description:product.field_product_price_list__id
 #: model:ir.model.fields,field_description:product.field_product_pricelist__id
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__id
 #: model:ir.model.fields,field_description:product.field_product_product__id
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo__id
-#: model:ir.model.fields,field_description:product.field_product_tag__id
 #: model:ir.model.fields,field_description:product.field_product_template__id
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_exclusion__id
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_line__id
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__id
-#: model:ir.model.fields,field_description:product.field_update_product_attribute_value__id
+#: model:ir.model.fields,field_description:product.field_report_product_report_pricelist__id
 msgid "ID"
 msgstr "Κωδικός"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_pricelist__activity_exception_icon
-#: model:ir.model.fields,field_description:product.field_product_product__activity_exception_icon
-#: model:ir.model.fields,field_description:product.field_product_template__activity_exception_icon
-msgid "Icon"
-msgstr "Εικονίδιο"
+#: model:ir.model.fields,help:product.field_product_product__message_unread
+#: model:ir.model.fields,help:product.field_product_template__message_unread
+msgid "If checked new messages require your attention."
+msgstr "Εάν επιλεγεί τα νέα μηνύματα χρειάζονται την προσοχή σας"
 
 #. module: product
-#: model:ir.model.fields,help:product.field_product_pricelist__activity_exception_icon
-#: model:ir.model.fields,help:product.field_product_product__activity_exception_icon
-#: model:ir.model.fields,help:product.field_product_template__activity_exception_icon
-msgid "Icon to indicate an exception activity."
-msgstr "Εικονίδιο που υποδεικνύει μια δραστηριότητα εξαίρεσης."
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_category__message_needaction
-#: model:ir.model.fields,help:product.field_product_pricelist__message_needaction
 #: model:ir.model.fields,help:product.field_product_product__message_needaction
 #: model:ir.model.fields,help:product.field_product_template__message_needaction
 msgid "If checked, new messages require your attention."
 msgstr "Εάν επιλεγεί τα νέα μηνύματα χρειάζονται την προσοχή σας."
 
 #. module: product
-#: model:ir.model.fields,help:product.field_product_category__message_has_error
-#: model:ir.model.fields,help:product.field_product_pricelist__message_has_error
 #: model:ir.model.fields,help:product.field_product_product__message_has_error
 #: model:ir.model.fields,help:product.field_product_template__message_has_error
 msgid "If checked, some messages have a delivery error."
-msgstr "Αν επιλεγεί, κάποια μηνύματα έχουν σφάλμα παράδοσης."
+msgstr ""
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_supplierinfo__product_id
 msgid ""
 "If not set, the vendor price will apply to all variants of this product."
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_attribute__active
-msgid ""
-"If unchecked, it will allow you to hide the attribute without removing it."
 msgstr ""
 
 #. module: product
@@ -1719,95 +966,67 @@ msgstr ""
 "διαγράψετε."
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_attribute_value__image
-#: model:ir.model.fields,field_description:product.field_product_product__image_1920
-#: model:ir.model.fields,field_description:product.field_product_template__image_1920
-#: model:ir.model.fields,field_description:product.field_product_template_attribute_value__image
+#: model:ir.model.fields,field_description:product.field_product_template__image
 msgid "Image"
 msgstr "Εικόνα"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__image_1024
-#: model:ir.model.fields,field_description:product.field_product_template__image_1024
-msgid "Image 1024"
+#: model:ir.model.fields,help:product.field_product_product__image
+msgid ""
+"Image of the product variant (Big-sized image of product template if false)."
+" It is automatically resized as a 1024x1024px image, with aspect ratio "
+"preserved."
 msgstr ""
+"Εικόνα της παραλλαγής είδους (εάν είναι Ψευδές, τότε θα χρησιμοποιηθεί η "
+"μεγάλου μεγέθους εικόνα του προτύπου είδους). Θα αλλάξει αυτόματα το μέγεθός"
+" τους ως 1024x1024 εικονοστοιχεία, με διατήρηση της αναλογίας διαστάσεων."
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__image_128
-#: model:ir.model.fields,field_description:product.field_product_template__image_128
-msgid "Image 128"
+#: model:ir.model.fields,help:product.field_product_product__image_medium
+msgid ""
+"Image of the product variant (Medium-sized image of product template if "
+"false)."
 msgstr ""
+"Εικόνα της παραλλαγής είδους (εάν είναι Ψευδές, τότε θα χρησιμοποιηθεί η "
+"μεσαίου μεγέθους εικόνα του προτύπου είδους)."
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__image_256
-#: model:ir.model.fields,field_description:product.field_product_template__image_256
-msgid "Image 256"
+#: model:ir.model.fields,help:product.field_product_product__image_small
+msgid ""
+"Image of the product variant (Small-sized image of product template if "
+"false)."
 msgstr ""
+"Εικόνα της παραλλαγής είδους (εάν είναι Ψευδές, τότε θα χρησιμοποιηθεί η "
+"μικρού μεγέθους εικόνα του προτύπου είδους)."
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__image_512
-#: model:ir.model.fields,field_description:product.field_product_template__image_512
-msgid "Image 512"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_document__image_height
-msgid "Image Height"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_document__image_src
-msgid "Image Src"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_document__image_width
-msgid "Image Width"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_document_kanban
-msgid "Image is a link"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_pricelist.py:0
+#: code:addons/product/models/product_pricelist.py:348
+#, python-format
 msgid "Import Template for Pricelists"
 msgstr ""
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_template.py:0
+#: code:addons/product/models/product_template.py:573
+#, python-format
 msgid "Import Template for Products"
 msgstr ""
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_supplierinfo.py:0
+#: code:addons/product/models/product.py:665
+#, python-format
 msgid "Import Template for Vendor Pricelists"
 msgstr ""
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_attribute_search
-#: model_terms:ir.ui.view,arch_db:product.product_template_attribute_value_view_search
-msgid "Inactive"
-msgstr "Ανενεργή"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_document__index_content
-msgid "Indexed Content"
-msgstr "Αρχειοθετημένα Περιεχόμενα"
-
-#. module: product
+#: model:product.product,name:product.product_product_24
 #: model:product.template,name:product.product_product_24_product_template
 msgid "Individual Workplace"
 msgstr ""
 
 #. module: product
-#: model:ir.model.fields.selection,name:product.selection__product_attribute__create_variant__always
-msgid "Instantly"
-msgstr ""
+#: model:product.category,name:product.product_category_2
+msgid "Internal"
+msgstr "Εσωτερικές"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_template_form_view
@@ -1822,15 +1041,10 @@ msgstr "Εσωτερικός Κωδικός"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product__barcode
+#: model:ir.model.fields,help:product.field_product_template__barcode
 msgid "International Article Number used for product identification."
 msgstr ""
 "Διεθνής Αριθμός Είδους που χρησιμοποιείται για την αναγνώριση προϊόντος"
-
-#. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/js/product_attribute_value_list.js:0
-msgid "Invalid Operation"
-msgstr ""
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_template_form_view
@@ -1838,8 +1052,6 @@ msgid "Inventory"
 msgstr "Αποθήκη"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_category__message_is_follower
-#: model:ir.model.fields,field_description:product.field_product_pricelist__message_is_follower
 #: model:ir.model.fields,field_description:product.field_product_product__message_is_follower
 #: model:ir.model.fields,field_description:product.field_product_template__message_is_follower
 msgid "Is Follower"
@@ -1851,83 +1063,85 @@ msgid "Is Product Variant"
 msgstr ""
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__has_configurable_attributes
-#: model:ir.model.fields,field_description:product.field_product_template__has_configurable_attributes
-msgid "Is a configurable product"
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_template__is_product_variant
 msgid "Is a product variant"
 msgstr ""
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_document__public
-msgid "Is public document"
+#: selection:res.config.settings,product_weight_in_lbs:0
+msgid "Kilogram"
 msgstr ""
 
 #. module: product
-#: model:ir.model.fields.selection,name:product.selection__res_config_settings__product_weight_in_lbs__0
-msgid "Kilograms"
-msgstr ""
-
-#. module: product
+#: model:product.product,name:product.product_product_6
 #: model:product.template,name:product.product_product_6_product_template
 msgid "Large Cabinet"
 msgstr ""
 
 #. module: product
+#: model:product.product,name:product.product_product_8
 #: model:product.template,name:product.product_product_8_product_template
 msgid "Large Desk"
 msgstr ""
 
 #. module: product
+#: model:product.product,name:product.consu_delivery_02
 #: model:product.template,name:product.consu_delivery_02_product_template
 msgid "Large Meeting Table"
 msgstr ""
 
 #. module: product
+#: model:ir.model.fields,field_description:product.field_product_attribute____last_update
+#: model:ir.model.fields,field_description:product.field_product_attribute_value____last_update
+#: model:ir.model.fields,field_description:product.field_product_category____last_update
+#: model:ir.model.fields,field_description:product.field_product_packaging____last_update
+#: model:ir.model.fields,field_description:product.field_product_price_history____last_update
+#: model:ir.model.fields,field_description:product.field_product_price_list____last_update
+#: model:ir.model.fields,field_description:product.field_product_pricelist____last_update
+#: model:ir.model.fields,field_description:product.field_product_pricelist_item____last_update
+#: model:ir.model.fields,field_description:product.field_product_product____last_update
+#: model:ir.model.fields,field_description:product.field_product_supplierinfo____last_update
+#: model:ir.model.fields,field_description:product.field_product_template____last_update
+#: model:ir.model.fields,field_description:product.field_product_template_attribute_exclusion____last_update
+#: model:ir.model.fields,field_description:product.field_product_template_attribute_line____last_update
+#: model:ir.model.fields,field_description:product.field_product_template_attribute_value____last_update
+#: model:ir.model.fields,field_description:product.field_report_product_report_pricelist____last_update
+msgid "Last Modified on"
+msgstr "Τελευταία τροποποίηση στις"
+
+#. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute__write_uid
-#: model:ir.model.fields,field_description:product.field_product_attribute_custom_value__write_uid
 #: model:ir.model.fields,field_description:product.field_product_attribute_value__write_uid
 #: model:ir.model.fields,field_description:product.field_product_category__write_uid
-#: model:ir.model.fields,field_description:product.field_product_combo__write_uid
-#: model:ir.model.fields,field_description:product.field_product_combo_item__write_uid
-#: model:ir.model.fields,field_description:product.field_product_document__write_uid
-#: model:ir.model.fields,field_description:product.field_product_label_layout__write_uid
 #: model:ir.model.fields,field_description:product.field_product_packaging__write_uid
+#: model:ir.model.fields,field_description:product.field_product_price_history__write_uid
+#: model:ir.model.fields,field_description:product.field_product_price_list__write_uid
 #: model:ir.model.fields,field_description:product.field_product_pricelist__write_uid
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__write_uid
 #: model:ir.model.fields,field_description:product.field_product_product__write_uid
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo__write_uid
-#: model:ir.model.fields,field_description:product.field_product_tag__write_uid
 #: model:ir.model.fields,field_description:product.field_product_template__write_uid
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_exclusion__write_uid
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_line__write_uid
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__write_uid
-#: model:ir.model.fields,field_description:product.field_update_product_attribute_value__write_uid
 msgid "Last Updated by"
 msgstr "Τελευταία Ενημέρωση από"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute__write_date
-#: model:ir.model.fields,field_description:product.field_product_attribute_custom_value__write_date
 #: model:ir.model.fields,field_description:product.field_product_attribute_value__write_date
 #: model:ir.model.fields,field_description:product.field_product_category__write_date
-#: model:ir.model.fields,field_description:product.field_product_combo__write_date
-#: model:ir.model.fields,field_description:product.field_product_combo_item__write_date
-#: model:ir.model.fields,field_description:product.field_product_document__write_date
-#: model:ir.model.fields,field_description:product.field_product_label_layout__write_date
 #: model:ir.model.fields,field_description:product.field_product_packaging__write_date
+#: model:ir.model.fields,field_description:product.field_product_price_history__write_date
+#: model:ir.model.fields,field_description:product.field_product_price_list__write_date
 #: model:ir.model.fields,field_description:product.field_product_pricelist__write_date
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__write_date
+#: model:ir.model.fields,field_description:product.field_product_product__write_date
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo__write_date
-#: model:ir.model.fields,field_description:product.field_product_tag__write_date
 #: model:ir.model.fields,field_description:product.field_product_template__write_date
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_exclusion__write_date
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_line__write_date
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__write_date
-#: model:ir.model.fields,field_description:product.field_update_product_attribute_value__write_date
 msgid "Last Updated on"
 msgstr "Τελευταία Ενημέρωση στις"
 
@@ -1948,50 +1162,37 @@ msgstr ""
 "αυτόματο υπολογισμό του προγραμματισμού των παραγγελιών αγορών."
 
 #. module: product
-#: model:product.attribute.value,name:product.fabric_attribute_leather
-msgid "Leather"
-msgstr ""
-
-#. module: product
 #: model:product.attribute,name:product.product_attribute_1
 msgid "Legs"
 msgstr ""
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute__attribute_line_ids
-#: model:ir.model.fields,field_description:product.field_product_attribute_value__pav_attribute_line_ids
 msgid "Lines"
 msgstr "Γραμμές"
 
 #. module: product
-#: model:product.template,name:product.product_product_local_delivery_product_template
-msgid "Local Delivery"
-msgstr ""
-
-#. module: product
-#: model_terms:product.template,website_description:product.product_product_4_product_template
-msgid "Locally handmade"
-msgstr ""
-
-#. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_template_form_view
-#: model_terms:ir.ui.view,arch_db:product.product_variant_easy_edit_view
 msgid "Logistics"
 msgstr "Εφοδιαστική Αλυσίδα"
 
 #. module: product
-#: model_terms:product.template,website_description:product.product_product_4_product_template
-msgid ""
-"Looking for a custom bamboo stain to match existing furniture? Contact us "
-"for a quote."
+#: model:ir.model.fields,field_description:product.field_product_product__message_main_attachment_id
+#: model:ir.model.fields,field_description:product.field_product_template__message_main_attachment_id
+msgid "Main Attachment"
 msgstr ""
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_template_attribute_value__exclude_for
 msgid ""
-"Make this attribute value not compatible with other values of the product or"
-" some attribute values of optional and accessory products."
+"Make this attribute value not compatible with\n"
+"        other values of the product or some attribute values of optional and accessory products."
 msgstr ""
+
+#. module: product
+#: model:res.groups,name:product.group_pricelist_item
+msgid "Manage Pricelist Items"
+msgstr "Διαχείριση Στοιχείων Τιμοκαταλόγου"
 
 #. module: product
 #: model:res.groups,name:product.group_stock_packaging
@@ -2005,17 +1206,6 @@ msgstr "Διαχείριση Παραλλαγών Προϊόντων"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
-msgid "Margins"
-msgstr "Περιθώρια"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_pricelist_item__price_markup
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
-msgid "Markup"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
 msgid "Max. Margin"
 msgstr "Μέγιστο Περιθώριο"
 
@@ -2025,35 +1215,34 @@ msgid "Max. Price Margin"
 msgstr "Μέγιστο Περιθώριο Τιμής"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_update_product_attribute_value__message
-msgid "Message"
-msgstr "Μήνυμα"
+#: model:ir.model.fields,field_description:product.field_product_product__image_medium
+#: model:ir.model.fields,field_description:product.field_product_template__image_medium
+msgid "Medium-sized image"
+msgstr "Μεσαίου-μεγέθους εικόνα"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_category__message_has_error
-#: model:ir.model.fields,field_description:product.field_product_pricelist__message_has_error
+#: model:ir.model.fields,help:product.field_product_template__image_medium
+msgid ""
+"Medium-sized image of the product. It is automatically resized as a "
+"128x128px image, with aspect ratio preserved, only when the image exceeds "
+"one of those sizes. Use this field in form views or some kanban views."
+msgstr ""
+"Μεσαίου-μεγέθους εικόνα του είδους. Το μέγεθος αλλάζει αυτόματα σε εικόνα "
+"διαστάσεων 128x128px, με διατήρηση των αναλογιών, μόνο όταν η εικόνα "
+"υπερβαίνει αυτές τις διαστάσεις. Χρησιμοποιήστε αυτό το πεδίο για προβολές "
+"φορμών ή προβολές kanban."
+
+#. module: product
 #: model:ir.model.fields,field_description:product.field_product_product__message_has_error
 #: model:ir.model.fields,field_description:product.field_product_template__message_has_error
 msgid "Message Delivery error"
-msgstr "Σφάλμα παράδοσης μηνύματος"
+msgstr ""
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_category__message_ids
-#: model:ir.model.fields,field_description:product.field_product_pricelist__message_ids
 #: model:ir.model.fields,field_description:product.field_product_product__message_ids
 #: model:ir.model.fields,field_description:product.field_product_template__message_ids
 msgid "Messages"
 msgstr "Μηνύματα"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_document__mimetype
-msgid "Mime Type"
-msgstr "Τύπος MIME"
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
-msgid "Min Qty"
-msgstr ""
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
@@ -2071,242 +1260,130 @@ msgid "Min. Quantity"
 msgstr "Ελάχιστη Ποσότητα"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_update_product_attribute_value__mode
-msgid "Mode"
-msgstr "Είδος"
+#: model:ir.model.fields,field_description:product.field_product_supplierinfo__min_qty
+msgid "Minimal Quantity"
+msgstr "Ελάχιστη Ποσότητα"
 
 #. module: product
-#: model:product.template,name:product.monitor_stand_product_template
-msgid "Monitor Stand"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields.selection,name:product.selection__product_attribute__display_type__multi
-msgid "Multi-checkbox"
-msgstr ""
-
-#. module: product
-#: model:ir.model.constraint,message:product.constraint_product_attribute_check_multi_checkbox_no_variant
-msgid ""
-"Multi-checkbox display type is not compatible with the creation of variants"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_pricelist__my_activity_date_deadline
-#: model:ir.model.fields,field_description:product.field_product_product__my_activity_date_deadline
-#: model:ir.model.fields,field_description:product.field_product_template__my_activity_date_deadline
-msgid "My Activity Deadline"
-msgstr "Η Προθεσμία της Δραστηριότητάς Μου"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_attribute_custom_value__name
 #: model:ir.model.fields,field_description:product.field_product_category__name
-#: model:ir.model.fields,field_description:product.field_product_combo__name
-#: model:ir.model.fields,field_description:product.field_product_document__name
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__name
 #: model:ir.model.fields,field_description:product.field_product_product__name
-#: model:ir.model.fields,field_description:product.field_product_tag__name
 #: model:ir.model.fields,field_description:product.field_product_template__name
 msgid "Name"
 msgstr "Περιγραφή"
 
 #. module: product
-#: model:ir.model.fields.selection,name:product.selection__product_attribute__create_variant__no_variant
+#: selection:product.attribute,create_variant:0
 msgid "Never"
 msgstr "Ποτέ"
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_pricelist.py:0
-msgid "New"
-msgstr "Νέα"
+#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
+msgid "New Price ="
+msgstr "Νέα Τιμή ="
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_pricelist__activity_calendar_event_id
-#: model:ir.model.fields,field_description:product.field_product_product__activity_calendar_event_id
-#: model:ir.model.fields,field_description:product.field_product_template__activity_calendar_event_id
-msgid "Next Activity Calendar Event"
-msgstr "Επόμενο Γεγονός Δραστηριότητας στο Ημερολόγιο"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_pricelist__activity_date_deadline
 #: model:ir.model.fields,field_description:product.field_product_product__activity_date_deadline
 #: model:ir.model.fields,field_description:product.field_product_template__activity_date_deadline
 msgid "Next Activity Deadline"
 msgstr "Επόμενη Προθεσμία Δραστηριότητας"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_pricelist__activity_summary
 #: model:ir.model.fields,field_description:product.field_product_product__activity_summary
 #: model:ir.model.fields,field_description:product.field_product_template__activity_summary
 msgid "Next Activity Summary"
 msgstr "Σύνοψη Επόμενης Δραστηριότητας"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_pricelist__activity_type_id
 #: model:ir.model.fields,field_description:product.field_product_product__activity_type_id
 #: model:ir.model.fields,field_description:product.field_product_template__activity_type_id
 msgid "Next Activity Type"
 msgstr "Επόμενος Τύπος Δραστηριότητας"
 
 #. module: product
-#. odoo-python
-#: code:addons/product/wizard/product_label_layout.py:0
-msgid ""
-"No product to print, if the product is archived please unarchive it before "
-"printing its label."
-msgstr ""
-
-#. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/product_catalog/kanban_renderer.xml:0
-msgid "No products could be found."
-msgstr ""
-
-#. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/js/pricelist_report/product_pricelist_report.xml:0
-msgid "No products found in the report"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.actions.act_window,help:product.product_supplierinfo_type_action
-msgid "No vendor pricelist found"
-msgstr ""
-
-#. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/js/product_attribute_value_list.js:0
-msgid "No, keep it"
-msgstr "Όχι, κράτα το"
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_product.py:0
-#: code:addons/product/models/product_template.py:0
-msgid "Note:"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields.selection,name:product.selection__product_template__service_tracking__no
-msgid "Nothing"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_attribute__number_related_products
-msgid "Number Related Products"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_category__message_needaction_counter
-#: model:ir.model.fields,field_description:product.field_product_pricelist__message_needaction_counter
 #: model:ir.model.fields,field_description:product.field_product_product__message_needaction_counter
 #: model:ir.model.fields,field_description:product.field_product_template__message_needaction_counter
 msgid "Number of Actions"
 msgstr "Πλήθος ενεργειών"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_category__message_has_error_counter
-#: model:ir.model.fields,field_description:product.field_product_pricelist__message_has_error_counter
 #: model:ir.model.fields,field_description:product.field_product_product__message_has_error_counter
 #: model:ir.model.fields,field_description:product.field_product_template__message_has_error_counter
-msgid "Number of errors"
-msgstr "Αριθμός σφαλμάτων"
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_category__message_needaction_counter
-#: model:ir.model.fields,help:product.field_product_pricelist__message_needaction_counter
-#: model:ir.model.fields,help:product.field_product_product__message_needaction_counter
-#: model:ir.model.fields,help:product.field_product_template__message_needaction_counter
-msgid "Number of messages requiring action"
-msgstr "Αριθμός μηνυμάτων που απαιτούν ενέργεια"
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_category__message_has_error_counter
-#: model:ir.model.fields,help:product.field_product_pricelist__message_has_error_counter
-#: model:ir.model.fields,help:product.field_product_product__message_has_error_counter
-#: model:ir.model.fields,help:product.field_product_template__message_has_error_counter
-msgid "Number of messages with delivery error"
-msgstr "Αριθμός μηνυμάτων με σφάλμα παράδοσης"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__pricelist_item_count
-#: model:ir.model.fields,field_description:product.field_product_template__pricelist_item_count
-msgid "Number of price rules"
+msgid "Number of error"
 msgstr ""
 
 #. module: product
-#: model:product.template,name:product.product_delivery_01_product_template
-msgid "Office Chair"
-msgstr "Καρέκλα Γραφείου"
+#: model:ir.model.fields,help:product.field_product_product__message_needaction_counter
+#: model:ir.model.fields,help:product.field_product_template__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr "Πλήθος μηνυμάτων που απαιτούν ενέργεια"
 
 #. module: product
+#: model:ir.model.fields,help:product.field_product_product__message_has_error_counter
+#: model:ir.model.fields,help:product.field_product_template__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: product
+#: model:ir.model.fields,help:product.field_product_product__message_unread_counter
+#: model:ir.model.fields,help:product.field_product_template__message_unread_counter
+msgid "Number of unread messages"
+msgstr "Πλήθος μη αναγνωσμένων μηνυμάτων"
+
+#. module: product
+#: model:product.product,name:product.product_delivery_01
+#: model:product.template,name:product.product_delivery_01_product_template
+msgid "Office Chair"
+msgstr ""
+
+#. module: product
+#: model:product.product,name:product.product_product_12
 #: model:product.template,name:product.product_product_12_product_template
 msgid "Office Chair Black"
 msgstr ""
 
 #. module: product
-#: model:product.template,name:product.office_combo_product_template
-msgid "Office Combo"
-msgstr ""
-
-#. module: product
+#: model:product.product,name:product.product_order_01
 #: model:product.template,name:product.product_order_01_product_template
 msgid "Office Design Software"
 msgstr ""
 
 #. module: product
+#: model:product.category,name:product.product_category_5
+msgid "Office Furniture"
+msgstr ""
+
+#. module: product
+#: model:product.product,name:product.product_delivery_02
 #: model:product.template,name:product.product_delivery_02_product_template
 msgid "Office Lamp"
 msgstr ""
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_template_attribute_line.py:0
-msgid ""
-"On the product %(product)s you cannot associate the value %(value)s with the"
-" attribute %(attribute)s because they do not match."
+#: selection:product.attribute,create_variant:0
+msgid "Only when the product is added to a sales order"
 msgstr ""
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_template_attribute_line.py:0
-msgid ""
-"On the product %(product)s you cannot transform the attribute "
-"%(attribute_src)s into the attribute %(attribute_dest)s."
-msgstr ""
-
-#. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/js/product_document_kanban/upload_button/upload_button.js:0
-msgid "Oops! '%(fileName)s' didn’t upload since its format isn’t allowed."
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_document__original_id
-msgid "Original (unoptimized, unresized) attachment"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_combo_item__lst_price
-msgid "Original Price"
-msgstr ""
+#: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_form_view
+msgid "Other Information"
+msgstr "Άλλες Πληροφορίες"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__base_pricelist_id
-#: model:ir.model.fields.selection,name:product.selection__product_pricelist_item__base__pricelist
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
+#: selection:product.pricelist.item,base:0
 msgid "Other Pricelist"
 msgstr "Άλλος Τιμοκατάλογος"
 
 #. module: product
-#: model:product.template,name:product.product_template_dining_table
-msgid "Outdoor dining table"
-msgstr ""
+#: selection:product.product,activity_state:0
+#: selection:product.template,activity_state:0
+msgid "Overdue"
+msgstr "Εκπρόθεσμο"
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.report_packagingbarcode
-msgid "Package Type A"
+#: model:ir.model.fields,field_description:product.field_product_packaging__name
+msgid "Package Type"
 msgstr ""
 
 #. module: product
@@ -2325,11 +1402,17 @@ msgstr "Μητρική Κατηγορία"
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_category__parent_path
 msgid "Parent Path"
-msgstr "Μητρική διαδρομή"
+msgstr ""
 
 #. module: product
+#: model:product.product,name:product.product_product_9
 #: model:product.template,name:product.product_product_9_product_template
 msgid "Pedal Bin"
+msgstr ""
+
+#. module: product
+#: selection:product.pricelist.item,compute_price:0
+msgid "Percentage (discount)"
 msgstr ""
 
 #. module: product
@@ -2338,76 +1421,32 @@ msgid "Percentage Price"
 msgstr "Ποσοστό Τιμής"
 
 #. module: product
-#: model:ir.model.fields.selection,name:product.selection__product_attribute__display_type__pills
-msgid "Pills"
-msgstr ""
+#: selection:product.product,activity_state:0
+#: selection:product.template,activity_state:0
+msgid "Planned"
+msgstr "Προγραμματισμένη"
 
 #. module: product
-#: model:product.attribute.value,name:product.fabric_attribute_plastic
-msgid "Plastic"
-msgstr ""
-
-#. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/js/pricelist_report/product_pricelist_report.js:0
-msgid "Please enter a positive whole number."
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_document.py:0
-msgid ""
-"Please enter a valid URL.\n"
-"Example: https://www.odoo.com\n"
-"\n"
-"Invalid URL: %s"
-msgstr ""
-
-#. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/js/pricelist_report/product_pricelist_report.js:0
-msgid "Please select some products first."
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_pricelist_item.py:0
-msgid "Please specify the category for which this rule should be applied"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_pricelist_item.py:0
-msgid "Please specify the product for which this rule should be applied"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_pricelist_item.py:0
-msgid ""
-"Please specify the product variant for which this rule should be applied"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields.selection,name:product.selection__res_config_settings__product_weight_in_lbs__1
-msgid "Pounds"
-msgstr ""
-
-#. module: product
-#: model_terms:product.template,website_description:product.product_product_4_product_template
-msgid ""
-"Press a button and watch your desk glide effortlessly from sitting to "
-"standing height in seconds."
+#: selection:res.config.settings,product_weight_in_lbs:0
+msgid "Pound"
 msgstr ""
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__price
+#: model:ir.model.fields,field_description:product.field_product_product__price
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo__price
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_tree_view_from_product
+#: model:ir.model.fields,field_description:product.field_product_template__price
+#: model_terms:ir.ui.view,arch_db:product.product_normal_form_view
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_view
 #: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_tree_view
+#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
 msgid "Price"
 msgstr "ΤΙΜΗ"
+
+#. module: product
+#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
+msgid "Price Computation"
+msgstr "Υπολογισμός Τιμής"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__price_discount
@@ -2415,28 +1454,34 @@ msgid "Price Discount"
 msgstr "Έκπτωση Τιμής"
 
 #. module: product
+#: model:ir.model.fields,help:product.field_product_template_attribute_value__price_extra
+msgid ""
+"Price Extra: Extra price for the variant with\n"
+"        this attribute value on sale price. eg. 200 price extra, 1000 + 200 = 1200."
+msgstr ""
+
+#. module: product
+#: model:ir.actions.act_window,name:product.action_product_price_list
+#: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_form_view
+#: model_terms:ir.ui.view,arch_db:product.report_pricelist
+#: model_terms:ir.ui.view,arch_db:product.view_product_price_list
+msgid "Price List"
+msgstr "Τιμοκατάλογος"
+
+#. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__price_round
 msgid "Price Rounding"
 msgstr "Στρογγυλοποίηση Τιμής"
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_product.py:0
-#: code:addons/product/models/product_template.py:0
-#: model:ir.actions.act_window,name:product.product_pricelist_item_action
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_tree_view
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_view
-msgid "Price Rules"
-msgstr "Κανόνες Τιμών"
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
-msgid "Price Type"
-msgstr ""
+#: model:ir.model.fields,field_description:product.field_product_pricelist_item__price_surcharge
+msgid "Price Surcharge"
+msgstr "Τιμή Προσαύξησης"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product__list_price
 #: model:ir.model.fields,help:product.field_product_template__list_price
+#: model:ir.model.fields,help:product.field_product_template__lst_price
 msgid "Price at which the product is sold to customers."
 msgstr ""
 
@@ -2447,26 +1492,43 @@ msgid "Price:"
 msgstr "Τιμή:"
 
 #. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/js/pricelist_report/product_pricelist_report.xml:0
+#: model:ir.model.fields,field_description:product.field_product_price_list__price_list
+msgid "PriceList"
+msgstr "Τιμοκατάλογος"
+
+#. module: product
 #: model:ir.actions.report,name:product.action_report_pricelist
 #: model:ir.model,name:product.model_product_pricelist
-#: model:ir.model.fields,field_description:product.field_product_label_layout__pricelist_id
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__pricelist_id
+#: model:ir.model.fields,field_description:product.field_product_product__pricelist_id
+#: model:ir.model.fields,field_description:product.field_product_template__pricelist_id
 #: model:ir.model.fields,field_description:product.field_res_partner__property_product_pricelist
-#: model:ir.model.fields,field_description:product.field_res_users__property_product_pricelist
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_tree_view_from_product
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_view_search
-#: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_form_view
-#: model_terms:ir.ui.view,arch_db:product.report_pricelist_page
+#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
 msgid "Pricelist"
 msgstr "Τιμοκατάλογος"
 
 #. module: product
+#: model:ir.model,name:product.model_product_pricelist_item
+#: model:ir.model.fields,field_description:product.field_product_product__pricelist_item_ids
+msgid "Pricelist Item"
+msgstr ""
+
+#. module: product
 #: model:ir.model.fields,help:product.field_product_pricelist_item__applied_on
-#: model:ir.model.fields,help:product.field_product_pricelist_item__display_applied_on
 msgid "Pricelist Item applicable on selected option"
 msgstr "Στοιχείο Τιμοκαταλόγου που εφαρμόζεται σε επιλεγμένες δυνατότητες"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_product_pricelist__item_ids
+#: model:ir.model.fields,field_description:product.field_product_product__item_ids
+#: model:ir.model.fields,field_description:product.field_product_template__item_ids
+#: model_terms:ir.ui.view,arch_db:product.product_normal_form_view
+#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
+#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_tree_view
+#: model_terms:ir.ui.view,arch_db:product.product_pricelist_view
+#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
+msgid "Pricelist Items"
+msgstr "Στοιχεία Τιμοκαταλόγου"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist__name
@@ -2474,39 +1536,15 @@ msgid "Pricelist Name"
 msgstr "Ονομασία Τιμοκαταλόγου"
 
 #. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/js/pricelist_report/product_pricelist_report.js:0
-#: model:ir.actions.server,name:product.action_product_price_list_report
-#: model:ir.actions.server,name:product.action_product_template_price_list_report
-#: model:ir.model,name:product.model_report_product_report_pricelist
-msgid "Pricelist Report"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_pricelist.py:0
-msgid "Pricelist Report Preview"
-msgstr ""
-
-#. module: product
-#: model:ir.model,name:product.model_product_pricelist_item
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
-msgid "Pricelist Rule"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_pricelist__item_ids
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_tree_view_from_product
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_view
-msgid "Pricelist Rules"
-msgstr ""
-
-#. module: product
 #: model:ir.actions.act_window,name:product.product_pricelist_action2
-#: model:ir.model.fields,field_description:product.field_res_config_settings__group_product_pricelist
 #: model:ir.model.fields,field_description:product.field_res_country_group__pricelist_ids
 msgid "Pricelists"
 msgstr "Τιμοκατάλογοι"
+
+#. module: product
+#: model:res.groups,name:product.group_product_pricelist
+msgid "Pricelists On Product"
+msgstr "Τιμοκατάλογοι σε Είδος"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.view_partner_property_form
@@ -2514,51 +1552,34 @@ msgid "Pricelists are managed on"
 msgstr "Τιμοκατάλογοι που διαχειρίζονται"
 
 #. module: product
+#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
 #: model_terms:ir.ui.view,arch_db:product.product_variant_easy_edit_view
 msgid "Pricing"
 msgstr "Τιμολόγηση"
 
 #. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/js/pricelist_report/product_pricelist_report.xml:0
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_view
+#: model_terms:ir.ui.view,arch_db:product.view_product_price_list
 msgid "Print"
 msgstr "Εκτύπωση"
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_product_tree_view
-#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
-#: model_terms:ir.ui.view,arch_db:product.product_template_tree_view
-#: model_terms:ir.ui.view,arch_db:product.product_variant_easy_edit_view
-msgid "Print Labels"
-msgstr "Εκτύπωση Ετικετών"
-
-#. module: product
-#. odoo-python
-#: code:addons/product/controllers/pricelist_report.py:0
-#: model:ir.model,name:product.model_product_template
-#: model:ir.model.fields,field_description:product.field_product_combo_item__product_id
-#: model:ir.model.fields,field_description:product.field_product_label_layout__product_ids
+#: model:ir.model,name:product.model_product_product
 #: model:ir.model.fields,field_description:product.field_product_packaging__product_id
-#: model:ir.model.fields,field_description:product.field_product_pricelist_item__product_tmpl_id
+#: model:ir.model.fields,field_description:product.field_product_price_history__product_id
+#: model:ir.model.fields,field_description:product.field_product_pricelist_item__product_id
 #: model:ir.model.fields,field_description:product.field_product_product__product_variant_id
 #: model:ir.model.fields,field_description:product.field_product_template__product_variant_id
-#: model:ir.model.fields.selection,name:product.selection__product_pricelist_item__applied_on__1_product
-#: model:ir.model.fields.selection,name:product.selection__product_pricelist_item__display_applied_on__1_product
 #: model_terms:ir.ui.view,arch_db:product.product_kanban_view
-#: model_terms:ir.ui.view,arch_db:product.product_packaging_search_view
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_view_search
+#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
 #: model_terms:ir.ui.view,arch_db:product.product_search_form_view
 #: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_form_view
 #: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_search_view
 #: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_tree_view
-#: model_terms:ir.ui.view,arch_db:product.product_template_attribute_value_view_tree
 #: model_terms:ir.ui.view,arch_db:product.product_template_form_view
 #: model_terms:ir.ui.view,arch_db:product.product_template_kanban_view
 #: model_terms:ir.ui.view,arch_db:product.product_template_search_view
 #: model_terms:ir.ui.view,arch_db:product.product_template_tree_view
-#: model_terms:ir.ui.view,arch_db:product.product_view_kanban_catalog
-#: model_terms:ir.ui.view,arch_db:product.product_view_search_catalog
+#: selection:product.pricelist.item,applied_on:0
 msgid "Product"
 msgstr "Είδος"
 
@@ -2570,9 +1591,9 @@ msgid "Product Attribute"
 msgstr "Χαρακτηριστικό Είδους"
 
 #. module: product
-#: model:ir.model,name:product.model_product_attribute_custom_value
-msgid "Product Attribute Custom Value"
-msgstr ""
+#: model:ir.model,name:product.model_product_template_attribute_value
+msgid "Product Attribute Value"
+msgstr "Αξία Χαρακτηριστικού Είδους"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_line__product_template_value_ids
@@ -2591,8 +1612,9 @@ msgid "Product Attributes"
 msgstr "Χαρακτηριστικά Είδους"
 
 #. module: product
-#: model:ir.model,name:product.model_product_catalog_mixin
-msgid "Product Catalog Mixin"
+#: model:ir.actions.report,name:product.report_product_product_barcode
+#: model:ir.actions.report,name:product.report_product_template_barcode
+msgid "Product Barcode (PDF)"
 msgstr ""
 
 #. module: product
@@ -2604,94 +1626,22 @@ msgstr "Κατηγορίες Είδους"
 
 #. module: product
 #: model:ir.model,name:product.model_product_category
+#: model:ir.model.fields,field_description:product.field_product_pricelist_item__categ_id
 #: model:ir.model.fields,field_description:product.field_product_product__categ_id
 #: model:ir.model.fields,field_description:product.field_product_template__categ_id
-#: model:ir.model.fields.selection,name:product.selection__product_pricelist_item__applied_on__2_product_category
 #: model_terms:ir.ui.view,arch_db:product.product_category_list_view
-#: model_terms:ir.ui.view,arch_db:product.product_template_search_view
-#: model_terms:ir.ui.view,arch_db:product.product_view_search_catalog
+#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
 msgid "Product Category"
 msgstr "Κατηγορία Είδους"
 
 #. module: product
-#: model:ir.model,name:product.model_product_combo
-msgid "Product Combo"
-msgstr ""
-
-#. module: product
-#: model:ir.model,name:product.model_product_combo_item
-msgid "Product Combo Item"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_combo__combo_item_count
-#: model:ir.model.fields,field_description:product.field_update_product_attribute_value__product_count
-msgid "Product Count"
-msgstr ""
-
-#. module: product
-#: model:res.groups,name:product.group_product_manager
-msgid "Product Creation"
-msgstr ""
-
-#. module: product
-#: model:ir.model,name:product.model_product_document
-msgid "Product Document"
-msgstr "Έγγραφο Προϊόντος"
-
-#. module: product
-#: model:ir.actions.report,name:product.report_product_template_label_dymo
+#: model:ir.actions.report,name:product.report_product_label
+#: model:ir.actions.report,name:product.report_product_template_label
 msgid "Product Label (PDF)"
 msgstr ""
 
 #. module: product
-#: model:ir.actions.report,name:product.report_product_template_label_2x7
-msgid "Product Label 2x7 (PDF)"
-msgstr ""
-
-#. module: product
-#: model:ir.actions.report,name:product.report_product_template_label_4x12
-msgid "Product Label 4x12 (PDF)"
-msgstr ""
-
-#. module: product
-#: model:ir.actions.report,name:product.report_product_template_label_4x12_noprice
-msgid "Product Label 4x12 No Price (PDF)"
-msgstr ""
-
-#. module: product
-#: model:ir.actions.report,name:product.report_product_template_label_4x7
-msgid "Product Label 4x7 (PDF)"
-msgstr ""
-
-#. module: product
-#: model:ir.model,name:product.model_report_product_report_producttemplatelabel_dymo
-msgid "Product Label Report"
-msgstr "Αναφορά Ετικέτας Προϊόντος"
-
-#. module: product
-#: model:ir.model,name:product.model_report_product_report_producttemplatelabel2x7
-msgid "Product Label Report 2x7"
-msgstr ""
-
-#. module: product
-#: model:ir.model,name:product.model_report_product_report_producttemplatelabel4x12
-msgid "Product Label Report 4x12"
-msgstr ""
-
-#. module: product
-#: model:ir.model,name:product.model_report_product_report_producttemplatelabel4x12noprice
-msgid "Product Label Report 4x12 No Price"
-msgstr ""
-
-#. module: product
-#: model:ir.model,name:product.model_report_product_report_producttemplatelabel4x7
-msgid "Product Label Report 4x7"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_product_view_form_normalized
-#: model_terms:ir.ui.view,arch_db:product.product_template_tree_view
+#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
 #: model_terms:ir.ui.view,arch_db:product.product_variant_easy_edit_view
 msgid "Product Name"
 msgstr "Περιγραφή Είδους"
@@ -2704,10 +1654,9 @@ msgstr "Συσκευασίες Είδους"
 
 #. module: product
 #: model:ir.model,name:product.model_product_packaging
-#: model:ir.model.fields,field_description:product.field_product_packaging__name
 #: model_terms:ir.ui.view,arch_db:product.product_packaging_form_view
 msgid "Product Packaging"
-msgstr "Συσκευασίες Προϊόντων"
+msgstr ""
 
 #. module: product
 #: model:ir.actions.report,name:product.report_product_packaging
@@ -2717,36 +1666,34 @@ msgstr ""
 #. module: product
 #: model:ir.actions.act_window,name:product.action_packaging_view
 #: model:ir.model.fields,field_description:product.field_res_config_settings__group_stock_packaging
-#: model_terms:ir.ui.view,arch_db:product.product_packaging_search_view
 #: model_terms:ir.ui.view,arch_db:product.product_packaging_tree_view
 msgid "Product Packagings"
-msgstr "Συσκευασίες Ειδών"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_category__product_properties_definition
-msgid "Product Properties"
 msgstr ""
 
 #. module: product
-#: model:ir.model,name:product.model_product_tag
-#: model_terms:ir.ui.view,arch_db:product.product_tag_form_view
-msgid "Product Tag"
+#: model:ir.model,name:product.model_product_price_history
+msgid "Product Price List History"
 msgstr ""
 
 #. module: product
-#: model:ir.actions.act_window,name:product.product_tag_action
-#: model_terms:ir.ui.view,arch_db:product.product_tag_tree_view
-msgid "Product Tags"
+#: model:ir.model,name:product.model_report_product_report_pricelist
+msgid "Product Price List Report"
 msgstr ""
 
 #. module: product
+#: model:ir.model,name:product.model_product_price_list
+msgid "Product Price per Unit Based on Pricelist Version"
+msgstr ""
+
+#. module: product
+#: model:ir.model,name:product.model_product_template
+#: model:ir.model.fields,field_description:product.field_product_pricelist_item__product_tmpl_id
 #: model:ir.model.fields,field_description:product.field_product_product__product_tmpl_id
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo__product_tmpl_id
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_exclusion__product_tmpl_id
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_line__product_tmpl_id
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__product_tmpl_id
 #: model_terms:ir.ui.view,arch_db:product.product_search_form_view
-#: model_terms:ir.ui.view,arch_db:product.product_view_search_catalog
 msgid "Product Template"
 msgstr "Πρότυπο Είδους "
 
@@ -2761,54 +1708,21 @@ msgid "Product Template Attribute Line"
 msgstr ""
 
 #. module: product
-#: model:ir.model,name:product.model_product_template_attribute_value
-msgid "Product Template Attribute Value"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_tag__product_template_ids
-#: model_terms:ir.ui.view,arch_db:product.product_tag_form_view
-#: model_terms:ir.ui.view,arch_db:product.product_template_view_tree_tag
-msgid "Product Templates"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_label_layout__product_tmpl_ids
-msgid "Product Tmpl"
-msgstr "Πρότυπο Προϊόντος"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__product_tooltip
-#: model:ir.model.fields,field_description:product.field_product_template__product_tooltip
-msgid "Product Tooltip"
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_product__type
 #: model:ir.model.fields,field_description:product.field_product_template__type
-#: model_terms:ir.ui.view,arch_db:product.product_template_search_view
-#: model_terms:ir.ui.view,arch_db:product.product_view_search_catalog
 msgid "Product Type"
 msgstr "Τύπος Είδους"
 
 #. module: product
-#: model:ir.model,name:product.model_uom_uom
-msgid "Product Unit of Measure"
-msgstr "Μονάδα Μέτρησης Είδους"
-
-#. module: product
-#: model:ir.model,name:product.model_product_product
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo__product_id
-#: model:ir.model.fields.selection,name:product.selection__product_pricelist_item__applied_on__0_product_variant
-#: model_terms:ir.ui.view,arch_db:product.product_document_form
 #: model_terms:ir.ui.view,arch_db:product.product_normal_form_view
-#: model_terms:ir.ui.view,arch_db:product.product_tag_tree_view
+#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
+#: selection:product.pricelist.item,applied_on:0
 msgid "Product Variant"
 msgstr "Μεταβλητή Είδους"
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_template_attribute_line.py:0
+#: model:ir.actions.act_window,name:product.product_attribute_value_action
 msgid "Product Variant Values"
 msgstr ""
 
@@ -2816,32 +1730,17 @@ msgstr ""
 #: model:ir.actions.act_window,name:product.product_normal_action
 #: model:ir.actions.act_window,name:product.product_normal_action_sell
 #: model:ir.actions.act_window,name:product.product_variant_action
-#: model:ir.model.fields,field_description:product.field_product_tag__product_product_ids
 #: model_terms:ir.ui.view,arch_db:product.product_product_tree_view
-#: model_terms:ir.ui.view,arch_db:product.product_product_view_activity
-#: model_terms:ir.ui.view,arch_db:product.product_product_view_tree_tag
-#: model_terms:ir.ui.view,arch_db:product.product_tag_form_view
 msgid "Product Variants"
 msgstr "Παραλλαγές του Είδους"
 
 #. module: product
-#. odoo-python
-#: code:addons/product/report/product_label_report.py:0
-msgid "Product model not defined, Please contact your administrator."
-msgstr ""
-"Το μοντέλο προϊόντος δεν έχει οριστεί. Παρακαλώ επικοινωνήστε με τον "
-"διαχειριστή σας."
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_attribute.py:0
-#: code:addons/product/models/product_catalog_mixin.py:0
 #: model:ir.actions.act_window,name:product.product_template_action
 #: model:ir.actions.act_window,name:product.product_template_action_all
 #: model:ir.model.fields,field_description:product.field_product_product__product_variant_ids
 #: model:ir.model.fields,field_description:product.field_product_template__product_variant_ids
-#: model_terms:ir.ui.view,arch_db:product.product_template_view_activity
-#: model_terms:ir.ui.view,arch_db:product.report_pricelist_page
+#: model_terms:ir.ui.view,arch_db:product.product_template_search_view
+#: model_terms:ir.ui.view,arch_db:product.res_config_settings_view_form
 msgid "Products"
 msgstr "Είδη"
 
@@ -2857,42 +1756,29 @@ msgid "Products Price List"
 msgstr "Τιμοκατάλογος Ειδών"
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_view_search
-msgid "Products Price Rules Search"
-msgstr ""
-
-#. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_view_search
 msgid "Products Price Search"
 msgstr "Αναζήτηση Τιμών Ειδών"
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_product.py:0
-msgid "Products: %(category)s"
-msgstr "Προϊόντα: %(category)s"
+#: code:addons/product/models/product.py:475
+#, python-format
+msgid "Products: "
+msgstr "Είδη: "
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_res_config_settings__module_loyalty
-msgid "Promotions, Coupons, Gift Card & Loyalty Program"
-msgstr ""
+#: model:ir.model.fields,field_description:product.field_product_template__lst_price
+#: selection:product.pricelist.item,base:0
+msgid "Public Price"
+msgstr "Λιανική Τιμή"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__product_properties
-#: model:ir.model.fields,field_description:product.field_product_template__product_properties
-msgid "Properties"
-msgstr "Ιδιότητες"
+#: model:product.pricelist,name:product.list0
+msgid "Public Pricelist"
+msgstr "Τιμοκατάλογος Λιανικής"
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_protection_kit
-msgid "Protection kit"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__purchase_ok
-#: model:ir.model.fields,field_description:product.field_product_template__purchase_ok
 #: model_terms:ir.ui.view,arch_db:product.product_template_form_view
-#: model_terms:ir.ui.view,arch_db:product.product_template_search_view
 msgid "Purchase"
 msgstr "Αγορά"
 
@@ -2905,198 +1791,117 @@ msgstr "Περιγραφή Προμήθειας"
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product__uom_po_id
 #: model:ir.model.fields,field_description:product.field_product_template__uom_po_id
-msgid "Purchase Unit"
-msgstr ""
+msgid "Purchase Unit of Measure"
+msgstr "Μονάδα Μέτρησης Αγοράς"
 
 #. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/js/pricelist_report/product_pricelist_report.xml:0
-msgid "Quantities"
-msgstr "Ποσότητες"
+#: model:ir.model.fields,field_description:product.field_product_price_list__qty1
+msgid "Quantity-1"
+msgstr "Ποσότητα-1"
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.report_pricelist_page
-msgid "Quantities (Price)"
-msgstr ""
+#: model:ir.model.fields,field_description:product.field_product_price_list__qty2
+msgid "Quantity-2"
+msgstr "Ποσότητα-2"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_label_layout__custom_quantity
-#: model:ir.model.fields,field_description:product.field_product_supplierinfo__min_qty
-msgid "Quantity"
-msgstr "Ποσότητα"
+#: model:ir.model.fields,field_description:product.field_product_price_list__qty3
+msgid "Quantity-3"
+msgstr "Ποσότητα-3"
 
 #. module: product
-#. odoo-python
-#: code:addons/product/controllers/pricelist_report.py:0
-msgid "Quantity (%s UoM)"
-msgstr ""
+#: model:ir.model.fields,field_description:product.field_product_price_list__qty4
+msgid "Quantity-4"
+msgstr "Ποσότητα-4"
 
 #. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/js/pricelist_report/product_pricelist_report.js:0
-msgid "Quantity already present (%s)."
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_packaging__qty
-msgid "Quantity of products contained in the packaging."
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
-msgid "Quotation Description"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields.selection,name:product.selection__product_attribute__display_type__radio
-msgid "Radio"
-msgstr "Κουμπί Επιλογής"
+#: model:ir.model.fields,field_description:product.field_product_price_list__qty5
+msgid "Quantity-5"
+msgstr "Ποσότητα-5"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product__code
-#: model_terms:ir.ui.view,arch_db:product.product_template_only_form_view
 msgid "Reference"
 msgstr "Σχετικό"
 
 #. module: product
-#: model_terms:ir.actions.act_window,help:product.product_supplierinfo_type_action
-msgid ""
-"Register the prices requested by your vendors for each product, based on the"
-" quantity and the period."
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_attribute__product_tmpl_ids
-msgid "Related Products"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_template_attribute_value__ptav_product_variant_ids
-msgid "Related Variants"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_document__ir_attachment_id
-msgid "Related attachment"
-msgstr ""
-
-#. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/product_catalog/order_line/order_line.xml:0
-msgid "Remove"
-msgstr "Αφαίρεση"
-
-#. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/js/pricelist_report/product_pricelist_report.xml:0
-msgid "Remove quantity"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_document__res_field
-msgid "Resource Field"
-msgstr "Πεδίο πόρων"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_document__res_id
-msgid "Resource ID"
-msgstr "Αριθμός Πόρου"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_document__res_model
-msgid "Resource Model"
-msgstr "Μοντέλο πόρων"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_document__res_name
-msgid "Resource Name"
-msgstr "Όνομα Πόρου"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_pricelist__activity_user_id
 #: model:ir.model.fields,field_description:product.field_product_product__activity_user_id
 #: model:ir.model.fields,field_description:product.field_product_template__activity_user_id
 msgid "Responsible User"
 msgstr "Υπεύθυνος Χρήστης"
 
 #. module: product
+#: model:product.product,name:product.expense_product
 #: model:product.template,name:product.expense_product_product_template
 msgid "Restaurant Expenses"
 msgstr ""
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
-msgid "Round off to"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_label_layout__rows
-msgid "Rows"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_pricelist_item__rule_tip
-msgid "Rule Tip"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__sale_ok
-#: model:ir.model.fields,field_description:product.field_product_template__sale_ok
-#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
-#: model_terms:ir.ui.view,arch_db:product.product_template_search_view
-#: model_terms:ir.ui.view,arch_db:product.product_variant_easy_edit_view
-msgid "Sales"
-msgstr "Πωλήσεις"
+msgid "Rounding Method"
+msgstr "Μέθοδος Στρογγυλοποίησης"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product__description_sale
 #: model:ir.model.fields,field_description:product.field_product_template__description_sale
-msgid "Sales Description"
-msgstr ""
+msgid "Sale Description"
+msgstr "Περιγραφή Πώλησης"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_product_product__lst_price
+msgid "Sale Price"
+msgstr "Τιμή Πώλησης"
+
+#. module: product
+#: model:product.category,name:product.product_category_1
+#: model:product.category,name:product.product_category_6
+msgid "Saleable"
+msgstr "Εμπορεύσιμο"
+
+#. module: product
+#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
+msgid "Sales"
+msgstr "Πωλήσεις"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product__list_price
 #: model:ir.model.fields,field_description:product.field_product_template__list_price
-#: model:ir.model.fields.selection,name:product.selection__product_pricelist_item__base__list_price
-#: model_terms:ir.ui.view,arch_db:product.product_product_tree_view
+#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
 #: model_terms:ir.ui.view,arch_db:product.product_template_tree_view
-#: model_terms:ir.ui.view,arch_db:product.product_variant_easy_edit_view
 msgid "Sales Price"
 msgstr "Τιμή Πώλησης"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__lst_price
-msgid "Sales Price"
-msgstr ""
+#: model:res.groups,name:product.group_sale_pricelist
+msgid "Sales Pricelists"
+msgstr "Τιμοκατάλογοι Πωλήσεων"
 
 #. module: product
-#: model:ir.model.fields.selection,name:product.selection__product_attribute__display_type__select
-msgid "Select"
-msgstr "Επιλογή"
+#: model:ir.model.fields,help:product.field_product_product__categ_id
+#: model:ir.model.fields,help:product.field_product_template__categ_id
+msgid "Select category for the current product"
+msgstr "Επιλέξτε κατηγορία για το τρέχον είδος"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute__sequence
 #: model:ir.model.fields,field_description:product.field_product_attribute_value__sequence
-#: model:ir.model.fields,field_description:product.field_product_combo__sequence
-#: model:ir.model.fields,field_description:product.field_product_document__sequence
 #: model:ir.model.fields,field_description:product.field_product_packaging__sequence
 #: model:ir.model.fields,field_description:product.field_product_pricelist__sequence
 #: model:ir.model.fields,field_description:product.field_product_product__sequence
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo__sequence
-#: model:ir.model.fields,field_description:product.field_product_tag__sequence
 #: model:ir.model.fields,field_description:product.field_product_template__sequence
-#: model:ir.model.fields,field_description:product.field_product_template_attribute_line__sequence
+#: model:ir.model.fields,field_description:product.field_product_template_attribute_value__sequence
 msgid "Sequence"
 msgstr "Ακολουθία"
 
 #. module: product
-#: model:ir.model.fields.selection,name:product.selection__product_template__type__service
+#: selection:product.template,type:0
 msgid "Service"
 msgstr "Υπηρεσία"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_template_search_view
-#: model_terms:ir.ui.view,arch_db:product.product_view_search_catalog
+#: model:product.category,name:product.product_category_3
 msgid "Services"
 msgstr "Υπηρεσίες"
 
@@ -3105,13 +1910,23 @@ msgstr "Υπηρεσίες"
 msgid ""
 "Sets the price so that it is a multiple of this value.\n"
 "Rounding is applied after the discount and before the surcharge.\n"
-"To have prices that end in 9.99, round off to 10.00 and set an extra at -0.01"
+"To have prices that end in 9.99, set rounding 10, surcharge -0.01"
+msgstr ""
+"Θέτει την τιμή ώστε να είναι πολλαπλάσια αυτής της αξόας.\n"
+"Η στρογγυλοποίηση εφαρμόζεται μετά την έκπτωση και πριν τις πρόσθετες χρεώσεις.\n"
+"Για να κάνετε τις τιμές να τελειώνουν σε 9,99, θέστε την στρογγυλοποίηση στο 10, και πρόσθετες χρεώσεις στο -0,01."
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_res_config_settings__company_share_product
+msgid "Share product to all companies"
 msgstr ""
 
 #. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/js/pricelist_report/product_pricelist_report.xml:0
-msgid "Show Name"
+#: model:ir.model.fields,help:product.field_res_config_settings__company_share_product
+msgid ""
+"Share your product to all companies defined in your instance.\n"
+" * Checked : Product are visible for every company, even if a company is defined on the partner.\n"
+" * Unchecked : Each company can see only its product (product where company is defined). Product not related to a company are visible for all companies."
 msgstr ""
 
 #. module: product
@@ -3122,15 +1937,36 @@ msgstr ""
 "σήμερα"
 
 #. module: product
-#: model:product.attribute,name:product.size_attribute
-msgid "Size"
-msgstr "Μέγεθος"
+#: model:ir.model.fields,field_description:product.field_res_config_settings__group_product_pricelist
+msgid "Show pricelists On Products"
+msgstr "Εμφάνιση τιμοκαταλόγων στα Είδη"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_res_partner__specific_property_product_pricelist
-#: model:ir.model.fields,field_description:product.field_res_users__specific_property_product_pricelist
-msgid "Specific Property Product Pricelist"
+#: model:ir.model.fields,field_description:product.field_res_config_settings__group_pricelist_item
+msgid "Show pricelists to customers"
+msgstr "Εμφάνιση τιμοκαταλόγων στους πελάτες"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_product_product__image_small
+#: model:ir.model.fields,field_description:product.field_product_template__image_small
+msgid "Small-sized image"
+msgstr "Μικρού μεγέθους εικόνα"
+
+#. module: product
+#: model:ir.model.fields,help:product.field_product_template__image_small
+msgid ""
+"Small-sized image of the product. It is automatically resized as a 64x64px "
+"image, with aspect ratio preserved. Use this field anywhere a small image is"
+" required."
 msgstr ""
+"Μικρού-μεγέθους φωτογραφία του είδους. Αυτόματα μετασχηματίζεται σε 64x64px "
+"εικόνα, με aspect ratio preserved. Χρησιμοποιήστε αυτό το πεδίο οπουδήποτε "
+"μια μικρή εικόνα είναι αναγκαία."
+
+#. module: product
+#: model:product.category,name:product.product_category_4
+msgid "Software"
+msgstr "Λογισμικό"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_pricelist_item__categ_id
@@ -3163,9 +1999,11 @@ msgstr ""
 #. module: product
 #: model:ir.model.fields,help:product.field_product_pricelist_item__price_surcharge
 msgid ""
-"Specify the fixed amount to add or subtract (if negative) to the amount "
+"Specify the fixed amount to add or substract(if negative) to the amount "
 "calculated with the discount."
 msgstr ""
+"Καθορίστε το σταθερό ποσό για πρόσθεση ή αφαίρεση (εάν είναι αρνητικό) στο "
+"ποσό που υπολογίστηκε με την έκπτωση."
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_pricelist_item__price_max_margin
@@ -3190,13 +2028,10 @@ msgstr "Ημερομηνία έναρξης για αυτήν την τιμή π
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_pricelist_item__date_start
-msgid ""
-"Starting datetime for the pricelist item validation\n"
-"The displayed value depends on the timezone set in your preferences."
-msgstr ""
+msgid "Starting date for the pricelist item validation"
+msgstr "Έναρξη ισχύος για το στοιχείο επικύρωσης τιμοκαταλόγου"
 
 #. module: product
-#: model:ir.model.fields,help:product.field_product_pricelist__activity_state
 #: model:ir.model.fields,help:product.field_product_product__activity_state
 #: model:ir.model.fields,help:product.field_product_template__activity_state
 msgid ""
@@ -3216,14 +2051,15 @@ msgid "Steel"
 msgstr ""
 
 #. module: product
-#: model:product.template,name:product.product_product_7_product_template
-msgid "Storage Box"
+#: selection:product.template,type:0
+msgid "Storable Product"
 msgstr ""
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_document__store_fname
-msgid "Stored Filename"
-msgstr "Αποθηκευμένο Όνομα Αρχείου"
+#: model:product.product,name:product.product_product_7
+#: model:product.template,name:product.product_product_7_product_template
+msgid "Storage Box"
+msgstr ""
 
 #. module: product
 #: model:ir.model,name:product.model_product_supplierinfo
@@ -3231,103 +2067,51 @@ msgid "Supplier Pricelist"
 msgstr "Τιμοκατάλογος Προμηθευτή"
 
 #. module: product
-#: model:ir.model.constraint,message:product.constraint_product_tag_name_uniq
-msgid "Tag name already exists!"
-msgstr "Το όνομα ετικέτας υπάρχει ήδη!"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__product_tag_ids
-#: model:ir.model.fields,field_description:product.field_product_template__product_tag_ids
-#: model_terms:ir.ui.view,arch_db:product.product_search_form_view
-#: model_terms:ir.ui.view,arch_db:product.product_template_search_view
-msgid "Tags"
-msgstr "Ετικέτες"
-
-#. module: product
-#: model_terms:ir.actions.act_window,help:product.product_tag_action
-msgid "Tags are used to search product for a given theme."
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_attribute__template_value_ids
-msgid "Template Values"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_template.py:0
-msgid "The Internal Reference '%s' already exists."
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_product.py:0
-msgid "The Reference '%s' already exists."
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_template_attribute_line.py:0
+#: model:ir.model.fields,help:product.field_product_product__pricelist_id
+#: model:ir.model.fields,help:product.field_product_template__pricelist_id
 msgid ""
-"The attribute %(attribute)s must have at least one value for the product "
-"%(product)s."
+"Technical field. Used for searching on pricelists, not stored in database."
 msgstr ""
 
 #. module: product
-#: model:ir.model.fields,help:product.field_product_attribute_value__attribute_id
+#: model:ir.model.fields,field_description:product.field_product_product__product_template_attribute_value_ids
+msgid "Template Attribute Values"
+msgstr ""
+
+#. module: product
+#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
 msgid ""
-"The attribute cannot be changed once the value is used on at least one "
+"The computed price is expressed in the default Unit of Measure of the "
 "product."
 msgstr ""
+"Η τιμή που υπολογίστηκε είναι εκφρασμένη στην προεπιλεγμένη Μονάδα Μέτρησης "
+"του είδους."
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_template.py:0
+#: code:addons/product/models/product_template.py:303
+#, python-format
 msgid ""
 "The default Unit of Measure and the purchase Unit of Measure must be in the "
 "same category."
 msgstr ""
 
 #. module: product
-#: model:product.template,description_sale:product.desk_organizer_product_template
-msgid ""
-"The desk organiser is perfect for storing all kinds of small things and "
-"since the 5 boxes are loose, you can move and place them in the way that "
-"suits you and your things best."
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_attribute__display_type
-#: model:ir.model.fields,help:product.field_product_attribute_value__display_type
-#: model:ir.model.fields,help:product.field_product_template_attribute_value__display_type
-msgid "The display type used in the Product Configurator."
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields,help:product.field_product_packaging__sequence
 msgid "The first in the sequence is the default one."
-msgstr "Το πρώτο στη σειρά είναι το προεπιλεγμένο"
-
-#. module: product
-#: model_terms:product.template,website_description:product.product_product_4_product_template
-msgid ""
-"The minimum height is 65 cm, and for standing work the maximum height "
-"position is 125 cm."
 msgstr ""
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_pricelist_item.py:0
+#: model:ir.model.fields,help:product.field_product_supplierinfo__min_qty
+msgid ""
+"The minimal quantity to purchase from this vendor, expressed in the vendor "
+"Product Unit of Measure if not any, in the default unit of measure of the "
+"product otherwise."
+msgstr ""
+
+#. module: product
+#: code:addons/product/models/product_pricelist.py:443
+#, python-format
 msgid "The minimum margin should be lower than the maximum margin."
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_combo__base_price
-msgid ""
-"The minimum price among the products in this combo. This value will be used "
-"to prorate the price of this combo with respect to the other combos in a "
-"combo product. This heuristic ensures that whatever product the user chooses"
-" in a combo, it will always be the same price."
 msgstr ""
 
 #. module: product
@@ -3338,13 +2122,21 @@ msgid ""
 msgstr ""
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_template.py:0
+#: code:addons/product/models/product_template.py:475
+#, python-format
 msgid ""
-"The number of variants to generate is above allowed limit. You should either"
-" not generate variants for each combination or generate them on demand from "
-"the sales order. To do so, open the form view of attributes and change the "
-"mode of *Create Variants*."
+"The number of variants to generate is too high. You should either not "
+"generate variants for each combination or generate them on demand from the "
+"sales order. To do so, open the form view of attributes and change the mode "
+"of *Create Variants*."
+msgstr ""
+
+#. module: product
+#: code:addons/product/models/product_attribute.py:56
+#, python-format
+msgid ""
+"The operation cannot be completed:\n"
+"You are trying to delete an attribute value with a reference on a product variant."
 msgstr ""
 
 #. module: product
@@ -3353,27 +2145,6 @@ msgid "The price to purchase a product"
 msgstr ""
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_template.py:0
-msgid "The product template is archived so no combination is possible."
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_supplierinfo__min_qty
-msgid ""
-"The quantity to purchase from this vendor to benefit from the price, "
-"expressed in the vendor Product Unit of Measure if not any, in the default "
-"unit of measure of the product otherwise."
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_pricelist_item.py:0
-msgid "The rounding method must be strictly positive."
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_combo_item__lst_price
 #: model:ir.model.fields,help:product.field_product_product__lst_price
 msgid ""
 "The sale price is managed from the product template. Click on the 'Configure"
@@ -3381,39 +2152,48 @@ msgid ""
 msgstr ""
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_template_attribute_value.py:0
+#: model:ir.model.fields,help:product.field_product_packaging__qty
+msgid "The total number of products you can have per pallet or box."
+msgstr ""
+
+#. module: product
+#: model:ir.model.fields,help:product.field_product_product__volume
+#: model:ir.model.fields,help:product.field_product_template__volume
+msgid "The volume in m3."
+msgstr "Ο όγκος σε κυβικά."
+
+#. module: product
+#: model:ir.model.fields,help:product.field_product_template__weight
+msgid "The weight of the contents in Kg, not including any packaging, etc."
+msgstr ""
+
+#. module: product
+#: sql_constraint:product.attribute.value:0
+msgid "This attribute value already exists !"
+msgstr "Η αξία του χαρακτηριστικού υπάρχει ήδη!"
+
+#. module: product
+#: model:ir.model.fields,help:product.field_product_supplierinfo__product_uom
+msgid "This comes from the product form."
+msgstr "Αυτό έρχεται από την φόρμα καταχώρησης είδους"
+
+#. module: product
+#: model:ir.model.fields,help:product.field_product_product__image_variant
 msgid ""
-"The value %(value)s is not defined for the attribute %(attribute)s on the "
-"product %(product)s."
+"This field holds the image used as image for the product variant, limited to"
+" 1024x1024px."
 msgstr ""
+"Στο πεδίο περιέχεται η εικόνα της παραλλαγής του είδους, με περιορισμό σε "
+"1024x1024px."
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_template.py:0
-msgid "There are no possible combination."
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_template.py:0
-msgid "There are no remaining closest combination."
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_template.py:0
-msgid "There are no remaining possible combination."
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_template.py:0
+#: model:ir.model.fields,help:product.field_product_template__image
 msgid ""
-"This configuration of product attributes, values, and exclusions would lead "
-"to no possible variant. Please archive or delete your product directly if "
-"intended."
+"This field holds the image used as image for the product, limited to "
+"1024x1024px."
 msgstr ""
+"Αυτό το πεδίο κρατά την εικόνα σαν φωτογραφία για το είδος, περιορισμένη σε"
+"  1024x1024px."
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product__price_extra
@@ -3422,39 +2202,22 @@ msgstr "Αυτό είναι το άθροισμα όλων των επιπλέο
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_template_form_view
-msgid "This note is added to sales orders and invoices."
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
 msgid "This note is only for internal purposes."
 msgstr ""
 
 #. module: product
+#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
+msgid "This note will show up on sales orders & invoices."
+msgstr ""
+
+#. module: product
 #: model:ir.model.fields,help:product.field_res_partner__property_product_pricelist
-#: model:ir.model.fields,help:product.field_res_users__property_product_pricelist
 msgid ""
 "This pricelist will be used, instead of the default one, for sales to the "
 "current partner"
 msgstr ""
 "Αυτός ο τιμοκατάλογος θα χρησιμοποιηθεί, αντί του προεπιλεγμένου , για "
 "πωλήσεις στον τρέχον συνεργάτη"
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_template.py:0
-msgid ""
-"This product is part of a combo, so its type can't be changed to \"combo\"."
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/uom_uom.py:0
-msgid ""
-"This rounding precision is higher than the Decimal Accuracy (%(digits)s digits).\n"
-"This may cause inconsistencies in computations.\n"
-"Please set a precision between %(min_precision)s and 1."
-msgstr ""
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_supplierinfo__product_code
@@ -3471,55 +2234,21 @@ msgid ""
 msgstr ""
 
 #. module: product
-#: model:product.template,description_sale:product.consu_delivery_01_product_template
-msgid "Three Seater Sofa with Lounger in Steel Grey Colour"
-msgstr ""
-
-#. module: product
+#: model:product.product,name:product.consu_delivery_01
 #: model:product.template,name:product.consu_delivery_01_product_template
 msgid "Three-Seat Sofa"
 msgstr ""
 
 #. module: product
+#: selection:product.product,activity_state:0
+#: selection:product.template,activity_state:0
+msgid "Today"
+msgstr "Σήμερα"
+
+#. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_template_search_view
 msgid "Today Activities"
 msgstr "Σημερινές Δραστηριότητες"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_document__type
-msgid "Type"
-msgstr "Τύπος"
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_pricelist__activity_exception_decoration
-#: model:ir.model.fields,help:product.field_product_product__activity_exception_decoration
-#: model:ir.model.fields,help:product.field_product_template__activity_exception_decoration
-msgid "Type of the exception activity on record."
-msgstr "Τύπος της καταγεγραμμένης δραστηριότητας εξαίρεσης."
-
-#. module: product
-#. odoo-python
-#: code:addons/product/controllers/pricelist_report.py:0
-#: model_terms:ir.ui.view,arch_db:product.report_pricelist_page
-msgid "UOM"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/wizard/product_label_layout.py:0
-msgid "Unable to find report template for %s format"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_product_tree_view
-#: model_terms:ir.ui.view,arch_db:product.product_template_tree_view
-msgid "Unit"
-msgstr "Μονάδα"
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_form_view
-msgid "Unit Price"
-msgstr "Τιμή Μονάδας"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_packaging__product_uom_id
@@ -3530,118 +2259,93 @@ msgid "Unit of Measure"
 msgstr "Μονάδα Μέτρησης"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_pricelist_item__product_uom
 #: model:ir.model.fields,field_description:product.field_product_product__uom_name
 #: model:ir.model.fields,field_description:product.field_product_template__uom_name
 msgid "Unit of Measure Name"
-msgstr "Όνομα Μονάδας Μέτρησης"
-
-#. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/product_catalog/order_line/order_line.xml:0
-msgid "Unit price:"
 msgstr ""
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.report_packagingbarcode
-msgid "Units"
+#: model:product.product,uom_name:product.consu_delivery_01
+#: model:product.product,uom_name:product.consu_delivery_02
+#: model:product.product,uom_name:product.consu_delivery_03
+#: model:product.product,uom_name:product.expense_product
+#: model:product.product,uom_name:product.product_delivery_01
+#: model:product.product,uom_name:product.product_delivery_02
+#: model:product.product,uom_name:product.product_order_01
+#: model:product.product,uom_name:product.product_product_10
+#: model:product.product,uom_name:product.product_product_11
+#: model:product.product,uom_name:product.product_product_11b
+#: model:product.product,uom_name:product.product_product_12
+#: model:product.product,uom_name:product.product_product_13
+#: model:product.product,uom_name:product.product_product_16
+#: model:product.product,uom_name:product.product_product_20
+#: model:product.product,uom_name:product.product_product_22
+#: model:product.product,uom_name:product.product_product_24
+#: model:product.product,uom_name:product.product_product_25
+#: model:product.product,uom_name:product.product_product_27
+#: model:product.product,uom_name:product.product_product_3
+#: model:product.product,uom_name:product.product_product_4
+#: model:product.product,uom_name:product.product_product_4b
+#: model:product.product,uom_name:product.product_product_4c
+#: model:product.product,uom_name:product.product_product_4d
+#: model:product.product,uom_name:product.product_product_5
+#: model:product.product,uom_name:product.product_product_6
+#: model:product.product,uom_name:product.product_product_7
+#: model:product.product,uom_name:product.product_product_8
+#: model:product.product,uom_name:product.product_product_9
+#: model:product.template,uom_name:product.consu_delivery_01_product_template
+#: model:product.template,uom_name:product.consu_delivery_02_product_template
+#: model:product.template,uom_name:product.consu_delivery_03_product_template
+#: model:product.template,uom_name:product.expense_product_product_template
+#: model:product.template,uom_name:product.product_delivery_01_product_template
+#: model:product.template,uom_name:product.product_delivery_02_product_template
+#: model:product.template,uom_name:product.product_order_01_product_template
+#: model:product.template,uom_name:product.product_product_10_product_template
+#: model:product.template,uom_name:product.product_product_11b_product_template
+#: model:product.template,uom_name:product.product_product_12_product_template
+#: model:product.template,uom_name:product.product_product_13_product_template
+#: model:product.template,uom_name:product.product_product_16_product_template
+#: model:product.template,uom_name:product.product_product_20_product_template
+#: model:product.template,uom_name:product.product_product_22_product_template
+#: model:product.template,uom_name:product.product_product_24_product_template
+#: model:product.template,uom_name:product.product_product_25_product_template
+#: model:product.template,uom_name:product.product_product_27_product_template
+#: model:product.template,uom_name:product.product_product_3_product_template
+#: model:product.template,uom_name:product.product_product_4b_product_template
+#: model:product.template,uom_name:product.product_product_5_product_template
+#: model:product.template,uom_name:product.product_product_6_product_template
+#: model:product.template,uom_name:product.product_product_7_product_template
+#: model:product.template,uom_name:product.product_product_8_product_template
+#: model:product.template,uom_name:product.product_product_9_product_template
+msgid "Unit(s)"
 msgstr "Μονάδες"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_res_config_settings__group_uom
-#: model_terms:ir.ui.view,arch_db:product.res_config_settings_view_form
 msgid "Units of Measure"
 msgstr "Μονάδες Μέτρησης"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__uom_category_id
-#: model:ir.model.fields,field_description:product.field_product_template__uom_category_id
-msgid "UoM Category"
+#: model:ir.model.fields,field_description:product.field_product_product__message_unread
+#: model:ir.model.fields,field_description:product.field_product_template__message_unread
+msgid "Unread Messages"
+msgstr "Μη αναγνωσμένα μηνύματα"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_product_product__message_unread_counter
+#: model:ir.model.fields,field_description:product.field_product_template__message_unread_counter
+msgid "Unread Messages Counter"
+msgstr "Μετρητής μη αναγνωσμένων μηνυμάτων"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_res_config_settings__group_sale_pricelist
+msgid "Use pricelists to adapt your price per customers"
 msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_attribute_view_form
-msgid "Update extra prices"
-msgstr ""
-
-#. module: product
-#: model:ir.model,name:product.model_update_product_attribute_value
-msgid "Update product attribute value"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_attribute_value.py:0
-msgid "Update product extra prices"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields.selection,name:product.selection__update_product_attribute_value__mode__update_extra_price
-msgid "Update the extra price on existing products"
-msgstr ""
-
-#. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/js/product_document_kanban/upload_button/upload_button.xml:0
-msgid "Upload"
-msgstr "Μεταφόρτωση"
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_template.py:0
-msgid "Upload files to your product"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
-msgid "Upsell & Cross-Sell"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_document__url
-msgid "Url"
-msgstr "Διεύθυνση (Url)"
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_pricelist_item__compute_price
-msgid ""
-"Use the discount rules and activate the discount settings in order to show "
-"discount to customer."
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_template.py:0
-msgid ""
-"Use this feature to store any files you would like to share with your "
-"customers"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_attribute_value__is_used_on_products
-msgid "Used on Products"
-msgstr ""
-
-#. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/js/pricelist_report/product_pricelist_report.xml:0
-msgid "Username"
-msgstr "Όνομα Χρήστη"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__valid_product_template_attribute_line_ids
-#: model:ir.model.fields,field_description:product.field_product_template__valid_product_template_attribute_line_ids
-msgid "Valid Product Attribute Lines"
-msgstr "Έγκυρες γραμμές χαρακτηριστικών προϊόντος"
+"Χρησιμοποιείστε τιμοκαταλόγους για να προσαρμόσετε την τιμή σας ανά πελάτη"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_form_view
 msgid "Validity"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
-msgid "Validity Period"
 msgstr ""
 
 #. module: product
@@ -3651,68 +2355,21 @@ msgid "Value"
 msgstr "Τιμή"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_template_attribute_line__value_count
-msgid "Value Count"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_product__standard_price
-#: model:ir.model.fields,help:product.field_product_template__standard_price
-msgid ""
-"Value of the product (automatically computed in AVCO).\n"
-"        Used to value the product when the purchase cost is not known (e.g. inventory adjustment).\n"
-"        Used to compute margins on sale orders."
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute__value_ids
-#: model:ir.model.fields,field_description:product.field_product_template_attribute_line__value_ids
 #: model_terms:ir.ui.view,arch_db:product.product_attribute_view_form
 #: model_terms:ir.ui.view,arch_db:product.product_template_attribute_line_form
 msgid "Values"
 msgstr "Τιμές"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_pricelist_item__product_id
-#: model_terms:ir.ui.view,arch_db:product.product_document_kanban
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_view_search
-msgid "Variant"
-msgstr "Παραλλαγή"
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo__product_variant_count
 msgid "Variant Count"
-msgstr "Αριθμός παραλλαγών"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_attribute__create_variant
-msgid "Variant Creation"
 msgstr ""
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__image_variant_1920
+#: model:ir.model.fields,field_description:product.field_product_product__image_variant
 msgid "Variant Image"
 msgstr "Εικόνα Παραλλαγής"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__image_variant_1024
-msgid "Variant Image 1024"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__image_variant_128
-msgid "Variant Image 128"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__image_variant_256
-msgid "Variant Image 256"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__image_variant_512
-msgid "Variant Image 512"
-msgstr ""
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_variant_easy_edit_view
@@ -3731,31 +2388,24 @@ msgid "Variant Seller"
 msgstr ""
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__additional_product_tag_ids
-msgid "Variant Tags"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__product_template_variant_value_ids
 #: model_terms:ir.ui.view,arch_db:product.attribute_tree_view
+#: model_terms:ir.ui.view,arch_db:product.variants_tree_view
 msgid "Variant Values"
 msgstr "Αξίες Παραλλαγής"
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_pricelist_item.py:0
-msgid "Variant: %s"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_res_config_settings__group_product_variant
 #: model_terms:ir.ui.view,arch_db:product.product_template_kanban_view
 #: model_terms:ir.ui.view,arch_db:product.product_template_only_form_view
 msgid "Variants"
 msgstr "Παραλλαγές"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_supplierinfo__partner_id
+#: model:ir.model.fields,field_description:product.field_res_config_settings__group_product_variant
+msgid "Variants and Options"
+msgstr ""
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_product_supplierinfo__name
 #: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_form_view
 #: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_search_view
 msgid "Vendor"
@@ -3788,77 +2438,70 @@ msgid "Vendor Product Name"
 msgstr ""
 
 #. module: product
+#: model:ir.model.fields,help:product.field_product_supplierinfo__name
+msgid "Vendor of this product"
+msgstr ""
+
+#. module: product
 #: model:ir.model.fields,field_description:product.field_product_product__seller_ids
 #: model:ir.model.fields,field_description:product.field_product_template__seller_ids
 msgid "Vendors"
 msgstr "Προμηθευτές"
 
 #. module: product
+#: model:product.product,name:product.product_product_2
 #: model:product.template,name:product.product_product_2_product_template
 msgid "Virtual Home Staging"
 msgstr ""
 
 #. module: product
+#: model:product.product,name:product.product_product_1
 #: model:product.template,name:product.product_product_1_product_template
-#: model_terms:ir.ui.view,arch_db:product.report_pricelist_page
 msgid "Virtual Interior Design"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_combo_view_form
-#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
-msgid "Visible to all"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_document__voice_ids
-msgid "Voice"
 msgstr ""
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product__volume
 #: model:ir.model.fields,field_description:product.field_product_template__volume
 #: model_terms:ir.ui.view,arch_db:product.product_template_form_view
-#: model_terms:ir.ui.view,arch_db:product.res_config_settings_view_form
 msgid "Volume"
 msgstr "Όγκος"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_res_config_settings__product_volume_volume_in_cubic_feet
-msgid "Volume unit of measure"
-msgstr ""
+#: model:ir.model.fields,field_description:product.field_product_product__website_message_ids
+#: model:ir.model.fields,field_description:product.field_product_template__website_message_ids
+msgid "Website Messages"
+msgstr "Μηνύματα Ιστότοπου"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__volume_uom_name
-#: model:ir.model.fields,field_description:product.field_product_template__volume_uom_name
-msgid "Volume unit of measure label"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/decimal_precision.py:0
-#: code:addons/product/models/uom_uom.py:0
-msgid "Warning!"
-msgstr "Προειδοποίηση"
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_template_search_view
-msgid "Warnings"
-msgstr "Προειδοποιήσεις"
-
-#. module: product
-#: model_terms:product.template,website_description:product.product_product_4_product_template
-msgid ""
-"We pay special attention to detail, which is why our desks are of a superior"
-" quality."
-msgstr ""
+#: model:ir.model.fields,help:product.field_product_product__website_message_ids
+#: model:ir.model.fields,help:product.field_product_template__website_message_ids
+msgid "Website communication history"
+msgstr "Ιστορικό επικοινωνίας ιστότοπου"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product__weight
 #: model:ir.model.fields,field_description:product.field_product_template__weight
-#: model_terms:ir.ui.view,arch_db:product.res_config_settings_view_form
 msgid "Weight"
 msgstr "Βάρος"
+
+#. module: product
+#: model_terms:ir.ui.view,arch_db:product.res_config_settings_view_form
+msgid "Weight Measurement"
+msgstr ""
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_product_product__weight_uom_id
+#: model:ir.model.fields,field_description:product.field_product_template__weight_uom_id
+msgid "Weight Unit of Measure"
+msgstr ""
+
+#. module: product
+#: model:ir.model.fields,help:product.field_product_product__weight
+msgid ""
+"Weight of the product, packaging not included. The unit of measure can be "
+"changed in the general settings"
+msgstr ""
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_res_config_settings__product_weight_in_lbs
@@ -3869,65 +2512,17 @@ msgstr ""
 #: model:ir.model.fields,field_description:product.field_product_product__weight_uom_name
 #: model:ir.model.fields,field_description:product.field_product_template__weight_uom_name
 msgid "Weight unit of measure label"
-msgstr "Ετικέτα μονάδας μέτρησης βάρους"
+msgstr ""
+
+#. module: product
+#: model_terms:ir.ui.view,arch_db:product.product_variant_easy_edit_view
+msgid "Weights"
+msgstr "Βάρη"
 
 #. module: product
 #: model:product.attribute.value,name:product.product_attribute_value_3
 msgid "White"
 msgstr "Λευκό"
-
-#. module: product
-#: model:product.attribute.value,name:product.product_attribute_value_color_wood
-msgid "Wood"
-msgstr "Ξύλο"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__write_date
-msgid "Write Date"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/wizard/update_product_attribute_value.py:0
-msgid ""
-"You are about to add the value \"%(attribute_value)s\" to %(product_count)s "
-"products."
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/wizard/update_product_attribute_value.py:0
-msgid "You are about to update the extra price of %s products."
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/res_config_settings.py:0
-msgid ""
-"You are deactivating the pricelist feature. Every active pricelist will be "
-"archived."
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/decimal_precision.py:0
-msgid ""
-"You are setting a Decimal Accuracy less precise than the UOMs:\n"
-"%s\n"
-"This may cause inconsistencies in computations.\n"
-"Please increase the rounding of those units of measure, or the digits of this Decimal Accuracy."
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_pricelist_item__percent_price
-#: model:ir.model.fields,help:product.field_product_pricelist_item__price_discount
-msgid "You can apply a mark-up by setting a negative discount."
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_pricelist_item__price_markup
-msgid "You can apply a mark-up on the cost"
-msgstr ""
 
 #. module: product
 #: model_terms:ir.actions.act_window,help:product.product_pricelist_action2
@@ -3937,168 +2532,55 @@ msgid ""
 msgstr ""
 
 #. module: product
-#: model:ir.model.fields,help:product.field_product_document__type
-msgid ""
-"You can either upload a file from your computer or copy/paste an internet "
-"link to your file."
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_attribute_value__image
-#: model:ir.model.fields,help:product.field_product_template_attribute_value__image
-msgid ""
-"You can upload an image that will be used as the color of the attribute "
-"value."
-msgstr ""
-
-#. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/product_catalog/order_line/order_line.xml:0
-msgid "You can't edit this product in the catalog."
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_attribute.py:0
-msgid ""
-"You cannot archive this attribute as there are still products linked to it"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_pricelist_item.py:0
+#: code:addons/product/models/product_pricelist.py:437
+#, python-format
 msgid ""
 "You cannot assign the Main Pricelist as Other Pricelist in PriceList Item"
 msgstr ""
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_attribute.py:0
-msgid ""
-"You cannot change the Variants Creation Mode of the attribute %(attribute)s because it is used on the following products:\n"
-"%(products)s"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_attribute_value.py:0
-msgid ""
-"You cannot change the attribute of the value %(value)s because it is used on"
-" the following products: %(products)s"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_template_attribute_value.py:0
-msgid ""
-"You cannot change the product of the value %(value)s set on product "
-"%(product)s."
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_template_attribute_value.py:0
-msgid ""
-"You cannot change the value of the value %(value)s set on product "
-"%(product)s."
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_category.py:0
+#: code:addons/product/models/product.py:54
+#, python-format
 msgid "You cannot create recursive categories."
 msgstr ""
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/decimal_precision.py:0
+#: code:addons/product/models/decimal_precision.py:16
+#, python-format
 msgid ""
 "You cannot define the decimal precision of 'Account' as greater than the "
 "rounding factor of the company's main currency"
 msgstr ""
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_pricelist.py:0
-msgid ""
-"You cannot delete pricelist(s):\n"
-"(%(pricelists)s)\n"
-"They are used within pricelist(s):\n"
-"%(other_pricelists)s"
+#: code:addons/product/models/product_attribute.py:79
+#, python-format
+msgid "You cannot use this attribute with the following value."
 msgstr ""
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_category.py:0
-msgid "You cannot delete the %s product category."
+#: code:addons/product/wizard/product_price_list.py:26
+#, python-format
+msgid "You have to set a logo or a layout for your company."
 msgstr ""
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_attribute.py:0
-msgid ""
-"You cannot delete the attribute %(attribute)s because it is used on the following products:\n"
-"%(products)s"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_attribute_value.py:0
-msgid ""
-"You cannot delete the value %(value)s because it is used on the following products:\n"
-"%(products)s\n"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_category.py:0
-msgid ""
-"You cannot delete this product category, it is the default generic category."
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_template_attribute_line.py:0
-msgid ""
-"You cannot move the attribute %(attribute)s from the product %(product_src)s"
-" to the product %(product_dest)s."
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_template_attribute_value.py:0
-msgid ""
-"You cannot update related variants from the values. Please update related "
-"values from the variants."
-msgstr ""
-
-#. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/product_catalog/kanban_renderer.xml:0
-msgid ""
-"You must define a product for everything you sell or purchase,\n"
-"                            whether it's a storable product, a consumable or a service."
+#: code:addons/product/wizard/product_price_list.py:28
+#, python-format
+msgid "You have to set your reports's header and footer layout."
 msgstr ""
 
 #. module: product
 #: model_terms:ir.actions.act_window,help:product.product_normal_action
 #: model_terms:ir.actions.act_window,help:product.product_template_action
 msgid ""
-"You must define a product for everything you sell or purchase,\n"
-"                whether it's a storable product, a consumable or a service."
-msgstr ""
-
-#. module: product
-#: model_terms:ir.actions.act_window,help:product.product_variant_action
-msgid ""
-"You must define a product for everything you sell or purchase,\n"
-"                whether it's a storable product, a consumable or a service.\n"
-"                The product form contains information to simplify the sale process:\n"
-"                price, notes in the quotation, accounting data, procurement methods, etc."
+"You must define a product for everything you purchase,\n"
+"                whether it's a physical product, a consumable or services."
 msgstr ""
 
 #. module: product
 #: model_terms:ir.actions.act_window,help:product.product_normal_action_sell
+#: model_terms:ir.actions.act_window,help:product.product_variant_action
 msgid ""
 "You must define a product for everything you sell, whether it's a physical product,\n"
 "                a consumable or a service you offer to customers.\n"
@@ -4107,21 +2589,11 @@ msgid ""
 msgstr ""
 
 #. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/js/pricelist_report/product_pricelist_report.js:0
-msgid "You must leave at least one quantity."
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/wizard/product_label_layout.py:0
-msgid "You need to set a positive quantity."
-msgstr ""
-
-#. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/js/pricelist_report/product_pricelist_report.xml:0
-msgid "csv"
+#: code:addons/product/models/product_template.py:31
+#, python-format
+msgid ""
+"You must define at least one product category in order to be able to create "
+"products."
 msgstr ""
 
 #. module: product
@@ -4129,28 +2601,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_view_kanban
 msgid "days"
 msgstr "ημέρες"
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_pricelist_item.py:0
-msgid "discount"
-msgstr "έκπτωση"
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_product_view_form_normalized
-msgid "e.g. 1234567890"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_combo_view_form
-msgid "e.g. Burger Choice"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_product_view_form_normalized
-#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
-msgid "e.g. Cheese Burger"
-msgstr ""
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_category_form_view
@@ -4163,61 +2613,89 @@ msgid "e.g. Odoo Enterprise Subscription"
 msgstr ""
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
-msgid "e.g. Starter - Meal - Desert"
-msgstr ""
-
-#. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_view
 msgid "e.g. USD Retailers"
 msgstr "π.χ. USD Λιανοπωλητές"
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_pricelist_item.py:0
-msgid "markup"
-msgstr ""
+#: model:product.product,weight_uom_name:product.consu_delivery_01
+#: model:product.product,weight_uom_name:product.consu_delivery_02
+#: model:product.product,weight_uom_name:product.consu_delivery_03
+#: model:product.product,weight_uom_name:product.expense_hotel
+#: model:product.product,weight_uom_name:product.expense_product
+#: model:product.product,weight_uom_name:product.product_delivery_01
+#: model:product.product,weight_uom_name:product.product_delivery_02
+#: model:product.product,weight_uom_name:product.product_order_01
+#: model:product.product,weight_uom_name:product.product_product_1
+#: model:product.product,weight_uom_name:product.product_product_10
+#: model:product.product,weight_uom_name:product.product_product_11
+#: model:product.product,weight_uom_name:product.product_product_11b
+#: model:product.product,weight_uom_name:product.product_product_12
+#: model:product.product,weight_uom_name:product.product_product_13
+#: model:product.product,weight_uom_name:product.product_product_16
+#: model:product.product,weight_uom_name:product.product_product_2
+#: model:product.product,weight_uom_name:product.product_product_20
+#: model:product.product,weight_uom_name:product.product_product_22
+#: model:product.product,weight_uom_name:product.product_product_24
+#: model:product.product,weight_uom_name:product.product_product_25
+#: model:product.product,weight_uom_name:product.product_product_27
+#: model:product.product,weight_uom_name:product.product_product_3
+#: model:product.product,weight_uom_name:product.product_product_4
+#: model:product.product,weight_uom_name:product.product_product_4b
+#: model:product.product,weight_uom_name:product.product_product_4c
+#: model:product.product,weight_uom_name:product.product_product_4d
+#: model:product.product,weight_uom_name:product.product_product_5
+#: model:product.product,weight_uom_name:product.product_product_6
+#: model:product.product,weight_uom_name:product.product_product_7
+#: model:product.product,weight_uom_name:product.product_product_8
+#: model:product.product,weight_uom_name:product.product_product_9
+#: model:product.template,weight_uom_name:product.consu_delivery_01_product_template
+#: model:product.template,weight_uom_name:product.consu_delivery_02_product_template
+#: model:product.template,weight_uom_name:product.consu_delivery_03_product_template
+#: model:product.template,weight_uom_name:product.expense_hotel_product_template
+#: model:product.template,weight_uom_name:product.expense_product_product_template
+#: model:product.template,weight_uom_name:product.product_delivery_01_product_template
+#: model:product.template,weight_uom_name:product.product_delivery_02_product_template
+#: model:product.template,weight_uom_name:product.product_order_01_product_template
+#: model:product.template,weight_uom_name:product.product_product_10_product_template
+#: model:product.template,weight_uom_name:product.product_product_11b_product_template
+#: model:product.template,weight_uom_name:product.product_product_12_product_template
+#: model:product.template,weight_uom_name:product.product_product_13_product_template
+#: model:product.template,weight_uom_name:product.product_product_16_product_template
+#: model:product.template,weight_uom_name:product.product_product_1_product_template
+#: model:product.template,weight_uom_name:product.product_product_20_product_template
+#: model:product.template,weight_uom_name:product.product_product_22_product_template
+#: model:product.template,weight_uom_name:product.product_product_24_product_template
+#: model:product.template,weight_uom_name:product.product_product_25_product_template
+#: model:product.template,weight_uom_name:product.product_product_27_product_template
+#: model:product.template,weight_uom_name:product.product_product_2_product_template
+#: model:product.template,weight_uom_name:product.product_product_3_product_template
+#: model:product.template,weight_uom_name:product.product_product_4b_product_template
+#: model:product.template,weight_uom_name:product.product_product_5_product_template
+#: model:product.template,weight_uom_name:product.product_product_6_product_template
+#: model:product.template,weight_uom_name:product.product_product_7_product_template
+#: model:product.template,weight_uom_name:product.product_product_8_product_template
+#: model:product.template,weight_uom_name:product.product_product_9_product_template
+msgid "kg"
+msgstr "κιλά"
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_document_form
-msgid "on"
-msgstr "στις"
-
-#. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/js/pricelist_report/product_pricelist_report.xml:0
-msgid "pdf"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
-#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
-msgid "per"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_product.py:0
-#: code:addons/product/models/product_template.py:0
+#: code:addons/product/models/product.py:586
+#: code:addons/product/models/product_template.py:566
+#, python-format
 msgid "product"
-msgstr "είδος"
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_pricelist_item.py:0
-msgid "product cost"
 msgstr ""
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
-msgid "round off to 10.00 and set an extra at -0.01"
+#: model:product.product,description_sale:product.consu_delivery_02
+#: model:product.template,description_sale:product.consu_delivery_02_product_template
+msgid "raid 1, 512ECC ram"
 msgstr ""
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_pricelist_item.py:0
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
-msgid "sales price"
+#: model:product.product,description_sale:product.consu_delivery_01
+#: model:product.template,description_sale:product.consu_delivery_01_product_template
+msgid "raid 10, 2048ECC ram"
 msgstr ""
 
 #. module: product
@@ -4227,16 +2705,10 @@ msgstr "η μητρική εταιρία"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_variant_easy_edit_view
-msgid "the product template."
+msgid "the product template"
 msgstr ""
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_form_view
 msgid "to"
 msgstr "σε"
-
-#. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/js/pricelist_report/product_pricelist_report.xml:0
-msgid "xlsx"
-msgstr ""

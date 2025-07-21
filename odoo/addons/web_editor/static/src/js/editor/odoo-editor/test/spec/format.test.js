@@ -1,5 +1,3 @@
-/** @odoo-module */
-
 import { isSelectionFormat } from '../../src/utils/utils.js';
 import { BasicEditor, testEditor, setTestSelection, Direction, unformat, insertText, triggerEvent } from '../utils.js';
 
@@ -16,8 +14,6 @@ const strikeThrough = async editor => {
     await editor.execCommand('strikeThrough');
 };
 const setFontSize = size => editor => editor.execCommand('setFontSize', size);
-
-const setFontSizeClassName = className => editor => editor.execCommand('setFontSizeClassName', className);
 
 const switchDirection = editor => editor.execCommand('switchDirection');
 
@@ -128,25 +124,6 @@ describe('Format', () => {
                 contentAfter: `<p>[abc</p><p>def]</p>`,
             });
         });
-        it('should make qweb tag bold', async () => {
-            await testEditor(BasicEditor, {
-                contentBefore: `<div><p t-esc="'Test'" contenteditable="false">[Test]</p></div>`,
-                stepFunction: bold,
-                contentAfter: `<div><p t-esc="'Test'" contenteditable="false" style="font-weight: bolder;">[Test]</p></div>`,
-            });
-            await testEditor(BasicEditor, {
-                contentBefore: `<div><p t-field="record.name" contenteditable="false">[Test]</p></div>`,
-                stepFunction: bold,
-                contentAfter: `<div><p t-field="record.name" contenteditable="false" style="font-weight: bolder;">[Test]</p></div>`,
-            });
-        });
-        it('should make qweb tag bold even with partial selection', async () => {
-            await testEditor(BasicEditor, {
-                contentBefore: `<div><p t-esc="'Test'" contenteditable="false">T[e]st</p></div>`,
-                stepFunction: bold,
-                contentAfter: `<div><p t-esc="'Test'" contenteditable="false" style="font-weight: bolder;">T[e]st</p></div>`,
-            });
-        });
         it('should make a whole heading bold after a triple click', async () => {
             await testEditor(BasicEditor, {
                 contentBefore: `<h1>${notStrong(`[ab`)}</h1><p>]cd</p>`,
@@ -235,14 +212,6 @@ describe('Format', () => {
                 contentBefore: '<p>[a</p><p contenteditable="false">b</p><p>c]</p>',
                 stepFunction: bold,
                 contentAfter: `<p>${strong('[a')}</p><p contenteditable="false">b</p><p>${strong('c]')}</p>`,
-            });
-        });
-        it("should remove bold format when having newline character nodes in selection", async () => {
-            await testEditor(BasicEditor, {
-                contentBefore:
-                    "<p><strong>[abc</strong></p>\n<p><strong>def</strong></p>\n<p><strong>ghi]</strong></p>",
-                stepFunction: bold,
-                contentAfter: "<p>[abc</p>\n<p>def</p>\n<p>ghi]</p>",
             });
         });
 
@@ -376,13 +345,6 @@ describe('Format', () => {
                 contentBefore: `<p>${em(`[abc`)}</p><p>${em(`def]`)}</p>`,
                 stepFunction: italic,
                 contentAfter: `<p>[abc</p><p>def]</p>`,
-            });
-        });
-        it('should make qweb tag italic', async () => {
-            await testEditor(BasicEditor, {
-                contentBefore: `<div><p t-esc="'Test'" contenteditable="false">[Test]</p></div>`,
-                stepFunction: italic,
-                contentAfter: `<div><p t-esc="'Test'" contenteditable="false" style="font-style: italic;">[Test]</p></div>`,
             });
         });
         it('should make a whole heading italic after a triple click', async () => {
@@ -520,13 +482,6 @@ describe('Format', () => {
                 contentBefore: `<p>${u(`[abc`)}</p><p>${u(`def]`)}</p>`,
                 stepFunction: underline,
                 contentAfter: '<p>[abc</p><p>def]</p>',
-            });
-        });
-        it('should make qweb tag underline', async () => {
-            await testEditor(BasicEditor, {
-                contentBefore: `<div><p t-esc="'Test'" contenteditable="false">[Test]</p></div>`,
-                stepFunction: underline,
-                contentAfter: `<div><p t-esc="'Test'" contenteditable="false" style="text-decoration-line: underline;">[Test]</p></div>`,
             });
         });
         it('should make a whole heading underline after a triple click', async () => {
@@ -668,7 +623,7 @@ describe('Format', () => {
                     await setTestSelection(selection);
                     await strikeThrough(editor);
                 },
-                contentAfter: `<p>ab<s>c</s>[ ]<s>d</s>ef</p>`,
+                contentAfter: `<p>ab${s(`c[ ]d`)}ef</p>`,
             });
         });
         it('should make strikeThrough then more then remove', async () => {
@@ -720,13 +675,6 @@ describe('Format', () => {
                 contentBefore: `<p>${s(`[abc`)}</p><p>${s(`def]`)}</p>`,
                 stepFunction: strikeThrough,
                 contentAfter: '<p>[abc</p><p>def]</p>',
-            });
-        });
-        it('should make qweb tag strikeThrough', async () => {
-            await testEditor(BasicEditor, {
-                contentBefore: `<div><p t-esc="'Test'" contenteditable="false">[Test]</p></div>`,
-                stepFunction: strikeThrough,
-                contentAfter: `<div><p t-esc="'Test'" contenteditable="false" style="text-decoration-line: line-through;">[Test]</p></div>`,
             });
         });
         it('should make a whole heading strikeThrough after a triple click', async () => {
@@ -847,6 +795,7 @@ describe('Format', () => {
             });
         });
         it('should remove underline, write, restore underline, write, remove underline again, write (collapsed, strikeThrough)', async () => {
+            const uselessU = u(''); // TODO: clean
             await testEditor(BasicEditor, {
                 contentBefore: `<p>ab${u(s(`cd[]ef`))}</p>`,
                 stepFunction: async editor => {
@@ -857,7 +806,7 @@ describe('Format', () => {
                     await editor.execCommand('underline');
                     await editor.execCommand('insert', 'C');
                 },
-                contentAfterEdit: `<p>ab${u(s(`cd`))}${s(`A${u("B")}C[]`)}${u(s(`ef`))}</p>`,
+                contentAfterEdit: `<p>ab${u(s(`cd`))}${s(`A${u(`B`)}C[]${uselessU}`)}${u(s(`ef`))}</p>`,
             });
         });
         it('should remove only underline decoration on a span', async () => {
@@ -950,6 +899,7 @@ describe('Format', () => {
             });
         });
         it('should remove underline, write, restore underline, write, remove underline again, write (collapsed, italic)', async () => {
+            const uselessU = u(''); // TODO: clean
             await testEditor(BasicEditor, {
                 contentBefore: `<p>ab${u(em(`cd[]ef`))}</p>`,
                 stepFunction: async editor => {
@@ -960,7 +910,7 @@ describe('Format', () => {
                     await editor.execCommand('underline');
                     await editor.execCommand('insert', 'C');
                 },
-                contentAfter: `<p>ab${u(em(`cd`))}${em(`A${u(`B`)}C[]`)}${u(em(`ef`))}</p>`,
+                contentAfter: `<p>ab${u(em(`cd`))}${em(`A${u(`B`)}C[]${uselessU}`)}${u(em(`ef`))}</p>`,
             });
         });
     });
@@ -971,13 +921,6 @@ describe('Format', () => {
                 contentBefore: '<p>ab[cde]fg</p>',
                 stepFunction: setFontSize('10px'),
                 contentAfter: '<p>ab<span style="font-size: 10px;">[cde]</span>fg</p>',
-            });
-        });
-        it('should change the font size the qweb tag', async () => {
-            await testEditor(BasicEditor, {
-                contentBefore: `<div><p t-esc="'Test'" contenteditable="false">[Test]</p></div>`,
-                stepFunction: setFontSize('36px'),
-                contentAfter: `<div><p t-esc="'Test'" contenteditable="false" style="font-size: 36px;">[Test]</p></div>`,
             });
         });
         it('should change the font size of a whole heading after a triple click', async () => {
@@ -1116,28 +1059,6 @@ describe('Format', () => {
                 contentAfter: `<p>a<span style="font-size: 18px;"><s><u>[b]</u></s></span>c</p>`,
             });
         });
-        it("should apply font size on top of `font` tag", async () => {
-            await testEditor(BasicEditor, {
-                contentBefore: `<p><font class="text-gradient" style="background-image: linear-gradient(135deg, rgb(214, 255, 127) 0%, rgb(0, 179, 204) 100%);">[abcdefg]</font></p>`,
-                stepFunction: setFontSize("80px"),
-                contentAfter: `<p><span style="font-size: 80px;"><font class="text-gradient" style="background-image: linear-gradient(135deg, rgb(214, 255, 127) 0%, rgb(0, 179, 204) 100%);">[abcdefg]</font></span></p>`,
-            });
-            await testEditor(BasicEditor, {
-                contentBefore: `<p><font class="bg-o-color-1 text-black">[abcdefg]</font></p>`,
-                stepFunction: setFontSize("72px"),
-                contentAfter: `<p><span style="font-size: 72px;"><font class="bg-o-color-1 text-black">[abcdefg]</font></span></p>`,
-            });
-        });
-    });
-
-    describe('setFontSizeClassName', () => {
-        it('should be able to change font-size class', async () => {
-            await testEditor(BasicEditor, {
-                contentBefore: `<p>a<span class="h1-fs">[bcd]</span>e</p>`,
-                stepFunction: setFontSizeClassName("h2-fs"),
-                contentAfter: `<p>a<span class="h2-fs">[bcd]</span>e</p>`,
-            });
-        });
     });
 
     it('should add style to a span parent of an inline', async () => {
@@ -1170,14 +1091,6 @@ describe('Format', () => {
                 contentBefore: `<p>a[b</p><p>${strong(`c`)}</p><p>d]e</p>`,
                 stepFunction: (editor) => {
                     window.chai.expect(isSelectionFormat(editor.editable, 'bold')).to.be.equal(false);
-                },
-            });
-        });
-        it('return true for isSelectionFormat selecting text nodes including invisible elements', async () => {
-            await testEditor(BasicEditor, {
-                contentBefore: `[<p>${strong("a")}\ufeff<p>${strong("b")}</p></p>]`,
-                stepFunction: async (editor) => {
-                    window.chai.expect(isSelectionFormat(editor.editable, 'bold')).to.be.equal(true);
                 },
             });
         });
@@ -1239,35 +1152,6 @@ describe('Format', () => {
                 stepFunction: editor => editor.execCommand('removeFormat'),
                 contentAfter: `<div><h1>[abc</h1><h1>abc</h1><h1>abc]</h1></div>`
 
-            });
-        });
-        it("should remove font size classes and gradient color styles", async () => {
-            await testEditor(BasicEditor, {
-                contentBefore: `<p><span class="display-1-fs"><font class="text-gradient" style="background-image: linear-gradient(135deg, rgb(214, 255, 127) 0%, rgb(0, 179, 204) 100%);">[abcdefg]</font></span></p>`,
-                stepFunction: (editor) => editor.execCommand("removeFormat"),
-                contentAfter: `<p>[abcdefg]</p>`,
-            });
-            await testEditor(BasicEditor, {
-                contentBefore: `<p><span class="display-2-fs"><font style="background-image: linear-gradient(135deg, rgb(214, 255, 127) 0%, rgb(0, 179, 204) 100%);">[abcdefg]</font></span></p>`,
-                stepFunction: (editor) => editor.execCommand("removeFormat"),
-                contentAfter: `<p>[abcdefg]</p>`,
-            });
-        });
-        it('should remove font-size classes when clearing the format' , async () => {
-            await testEditor(BasicEditor, {
-                contentBefore: `<p>123<span class="h1-fs">[abc]</span>456</p>`,
-                stepFunction: editor => editor.execCommand('removeFormat'),
-                contentAfter: `<p>123[abc]456</p>`
-            });
-            await testEditor(BasicEditor, {
-                contentBefore: `<p>[a<span class="h1-fs">bc</span>d<span class="h2-fs">ef</span>g]</p>`,
-                stepFunction: editor => editor.execCommand('removeFormat'),
-                contentAfter: `<p>[abcdefg]</p>`
-            });
-            await testEditor(BasicEditor, {
-                contentBefore: `<p>[a<span class="h1-fs">bc</span>d</p><p>e<span class="o_small-fs">fg</span>h]</p>`,
-                stepFunction: editor => editor.execCommand('removeFormat'),
-                contentAfter: `<p>[abcd</p><p>efgh]</p>`
             });
         });
     });
@@ -1354,6 +1238,13 @@ describe('setTagName', () => {
                 contentAfter: '<p>[before</p><h1 contenteditable="false">noneditable</h1><p>after]</p>',
             });
         });
+        it('should turn a heading 4 with class h5 into a paragraph', async () => {
+            await testEditor(BasicEditor, {
+                contentBefore: '<h4 class="text-uppercase h5">[abcd]</h4>',
+                stepFunction: editor => editor.execCommand('setTag', 'p'),
+                contentAfter: '<p class="text-uppercase">[abcd]</p>',
+            });
+        });
     });
     describe('to heading 1', () => {
         it('should turn a paragraph into a heading 1', async () => {
@@ -1397,6 +1288,13 @@ describe('setTagName', () => {
                 stepFunction: editor => editor.execCommand('setTag', 'h1'),
                 // The custom table selection is removed in cleanForSave and the selection is collapsed.
                 contentAfter: '<table><tbody><tr><td><h1>[]a</h1></td><td><h1>b</h1></td><td><h1>c</h1></td></tr></tbody></table>',
+            });
+        });
+        it('should turn a heading 4 with class h5 into a heading 1', async () => {
+            await testEditor(BasicEditor, {
+                contentBefore: '<h4 class="text-uppercase h5">[abcd]</h4>',
+                stepFunction: editor => editor.execCommand('setTag', 'h1'),
+                contentAfter: '<h1 class="text-uppercase">[abcd]</h1>',
             });
         });
         it('should not transfer attributes of list to heading 1', async () => {
@@ -1599,6 +1497,13 @@ describe('setTagName', () => {
                 stepFunction: editor => editor.execCommand('setTag', 'blockquote'),
                 // The custom table selection is removed in cleanForSave and the selection is collapsed.
                 contentAfter: '<table><tbody><tr><td><blockquote>[]a</blockquote></td><td><blockquote>b</blockquote></td><td><blockquote>c</blockquote></td></tr></tbody></table>',
+            });
+        });
+        it('should turn a heading 4 with class h5 into a blockquote', async () => {
+            await testEditor(BasicEditor, {
+                contentBefore: '<h4 class="h5">[abcd]</h4>',
+                stepFunction: editor => editor.execCommand('setTag', 'blockquote'),
+                contentAfter: '<blockquote>[abcd]</blockquote>',
             });
         });
         it('should not transfer attributes of list to blockquote', async () => {

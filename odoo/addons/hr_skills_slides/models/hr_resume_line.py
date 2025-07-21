@@ -8,7 +8,7 @@ class ResumeLine(models.Model):
     _inherit = 'hr.resume.line'
 
     display_type = fields.Selection(selection_add=[('course', 'Course')])
-    channel_id = fields.Many2one('slide.channel', string="Course", readonly=True, index='btree_not_null')
+    channel_id = fields.Many2one('slide.channel', string="Course", readonly=True)
     course_url = fields.Char(compute="_compute_course_url", default=False)
 
     @api.depends('channel_id')

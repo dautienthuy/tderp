@@ -3,32 +3,29 @@
 # 	* purchase_stock
 # 
 # Translators:
-# emre oktem, 2024
-# Tiffany Chang, 2024
-# Levent Karakaş <levent@mektup.at>, 2024
-# abc Def <hdogan1974@gmail.com>, 2024
-# Buket Şeker <buket_skr@hotmail.com>, 2024
-# Ozlem Cikrikci <ozlemc@eskayazilim.com.tr>, 2024
-# Özlem Atalay <ozlema@eskayazilim.com.tr>, 2024
-# Umur Akın <umura@projetgrup.com>, 2024
-# Ertuğrul Güreş <ertugrulg@projetgrup.com>, 2024
-# Tugay Hatıl <tugayh@projetgrup.com>, 2024
-# Martin Trigaux, 2024
-# Murat Kaplan <muratk@projetgrup.com>, 2024
-# Güven YILMAZ <guvenyilmaz@outlook.com.tr>, 2024
-# Halil, 2024
-# Murat Durmuş <muratd@projetgrup.com>, 2024
-# Ediz Duman <neps1192@gmail.com>, 2024
-# Wil Odoo, 2025
-# Deniz Guvener_Odoo <degu@odoo.com>, 2025
+# Nadir Gazioglu <nadirgazioglu@gmail.com>, 2022
+# Levent Karakaş <levent@mektup.at>, 2022
+# Ertuğrul Güreş <ertugrulg@projetgrup.com>, 2022
+# abc Def <hdogan1974@gmail.com>, 2022
+# Buket Şeker <buket_skr@hotmail.com>, 2022
+# Ozlem Cikrikci <ozlemc@eskayazilim.com.tr>, 2022
+# Özlem Atalay <ozlema@eskayazilim.com.tr>, 2022
+# Umur Akın <umura@projetgrup.com>, 2022
+# Martin Trigaux, 2022
+# Güven YILMAZ <guvenyilmaz@outlook.com.tr>, 2022
+# Murat Kaplan <muratk@projetgrup.com>, 2022
+# Halil, 2022
+# Murat Durmuş <muratd@projetgrup.com>, 2022
+# Ediz Duman <neps1192@gmail.com>, 2023
+# Tugay Hatıl <tugayh@projetgrup.com>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-23 18:38+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Deniz Guvener_Odoo <degu@odoo.com>, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2022-09-22 05:54+0000\n"
+"Last-Translator: Tugay Hatıl <tugayh@projetgrup.com>, 2023\n"
 "Language-Team: Turkish (https://app.transifex.com/odoo/teams/41243/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -44,8 +41,40 @@ msgstr "% Zamanında Teslim"
 #. module: purchase_stock
 #. odoo-python
 #: code:addons/purchase_stock/models/stock_rule.py:0
+#: code:addons/purchase_stock/models/stock_rule.py:0
+#: code:addons/purchase_stock/models/stock_rule.py:0
+#, python-format
 msgid "+ %d day(s)"
 msgstr "+ %d gün(ler)"
+
+#. module: purchase_stock
+#: model_terms:ir.ui.view,arch_db:purchase_stock.purchase_order_view_form_inherit
+msgid ""
+"<span attrs=\"{'invisible': [('on_time_rate', '&gt;=', 0)]}\">No On-time "
+"Delivery Data</span>"
+msgstr ""
+"<span attrs=\"{'invisible': [('on_time_rate', '&gt;=', 0)]}\">Zamanında "
+"Teslim Verisi Yok</span>"
+
+#. module: purchase_stock
+#: model_terms:ir.ui.view,arch_db:purchase_stock.res_config_settings_view_form_stock
+msgid ""
+"<span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-"
+"specific.\" aria-label=\"Values set here are company-specific.\" "
+"groups=\"base.group_multi_company\"/>"
+msgstr ""
+"<span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-"
+"specific.\" aria-label=\"Values set here are company-specific.\" "
+"groups=\"base.group_multi_company\"/>"
+
+#. module: purchase_stock
+#: model_terms:ir.ui.view,arch_db:purchase_stock.res_config_settings_view_form_stock
+msgid ""
+"<span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-"
+"specific.\" groups=\"base.group_multi_company\"/>"
+msgstr ""
+"<span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-"
+"specific.\" groups=\"base.group_multi_company\"/>"
 
 #. module: purchase_stock
 #: model_terms:ir.ui.view,arch_db:purchase_stock.res_partner_view_purchase_buttons_inherit
@@ -63,53 +92,27 @@ msgid "<span class=\"o_stat_value\">%</span>"
 msgstr "<span class=\"o_stat_value\">%</span>"
 
 #. module: purchase_stock
-#: model_terms:ir.ui.view,arch_db:purchase_stock.purchase_order_view_form_inherit
-msgid "<span invisible=\"on_time_rate &gt;= 0\">No On-time Delivery Data</span>"
-msgstr ""
-"<span invisible=\"on_time_rate &gt;= 0\">Zamanında Teslimat Verisi "
-"Yok</span>"
-
-#. module: purchase_stock
-#: model_terms:ir.ui.view,arch_db:purchase_stock.res_config_settings_view_form_stock
-msgid "<span> days</span>"
-msgstr "<span> gün </span>"
-
-#. module: purchase_stock
-#: model_terms:ir.ui.view,arch_db:purchase_stock.product_view_kanban_catalog_purchase_only
-msgid "<span>Forecasted: </span>"
-msgstr "<span>Öngörülen: </span>"
-
-#. module: purchase_stock
-#: model_terms:ir.ui.view,arch_db:purchase_stock.report_purchaseorder_document
-msgid "<strong class=\"d-block mt-3\">Shipping address:</strong>"
-msgstr "<strong class=\"d-block mt-3\">Sevkiyat adresi:</strong>"
-
-#. module: purchase_stock
-#: model_terms:ir.ui.view,arch_db:purchase_stock.report_purchasequotation_document
-msgid "<strong class=\"d-block mt-3\">Shipping address</strong>"
-msgstr "<strong class=\"d-block mt-3\">Sevkiyat adresi</strong>"
-
-#. module: purchase_stock
 #: model_terms:ir.ui.view,arch_db:purchase_stock.report_purchaseorder_document
 #: model_terms:ir.ui.view,arch_db:purchase_stock.report_purchasequotation_document
 msgid "<strong>Incoterm:</strong>"
 msgstr "<strong>Teslimat Koşulu:</strong>"
 
 #. module: purchase_stock
-#: model:ir.model.fields,help:purchase_stock.field_purchase_order_line__is_storable
-msgid "A storable product is a product for which you manage stock."
-msgstr "Depolanabilir bir ürün, stoklarını yönettiğiniz bir ürün türüdür."
+#: model_terms:ir.ui.view,arch_db:purchase_stock.report_purchaseorder_document
+#: model_terms:ir.ui.view,arch_db:purchase_stock.report_purchasequotation_document
+msgid "<strong>Shipping address:</strong>"
+msgstr "<strong>Sevkiyat adresi:</strong>"
 
 #. module: purchase_stock
 #: model:ir.model.fields,help:purchase_stock.field_purchase_order_line__qty_received_method
 msgid ""
-"According to product configuration, the received quantity can be automatically computed by mechanism:\n"
+"According to product configuration, the received quantity can be automatically computed by mechanism :\n"
 "  - Manual: the quantity is set manually on the line\n"
 "  - Stock Moves: the quantity comes from confirmed pickings\n"
 msgstr ""
-"Ürün yapılandırmasına göre, alınan miktar mekanizma tarafından otomatik olarak hesaplanabilir:\n"
-"  - Manuel: miktar hat üzerinde manuel olarak ayarlanır\n"
-"  - Stok Hareketleri: miktar, onaylanmış toplamalardan gelir\n"
+"Ürün konfigürasyonuna göre, alınan miktar otomatik olarak mekanizma ile hesaplanabilir:\n"
+" Manuel: Miktar satırda manuel olarak ayarlanır\n"
+"- Stok Hareketleri: Miktar teyit edilen toplamalardan gelir\n"
 
 #. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_stock_rule__action
@@ -117,9 +120,27 @@ msgid "Action"
 msgstr "Aksiyon"
 
 #. module: purchase_stock
+#: model:ir.model.fields,help:purchase_stock.field_purchase_report__avg_receipt_delay
+msgid ""
+"Amount of time between expected and effective receipt date. Due to a hack "
+"needed to calculate this,               every record will show the same "
+"average value, therefore only use this as an aggregated value with "
+"group_operator=avg"
+msgstr ""
+"Beklenen ve geçerli giriş tarihi arasındaki süre. Bunu hesaplamak için "
+"gereken bir hack nedeniyle, her kayıt aynı ortalama değeri gösterecektir, bu"
+" nedenle bunu yalnızca group_operator=avg ile toplu bir değer olarak "
+"kullanın."
+
+#. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_purchase_order__effective_date
 msgid "Arrival"
 msgstr "Varış"
+
+#. module: purchase_stock
+#: model:ir.model.fields,field_description:purchase_stock.field_purchase_report__avg_receipt_delay
+msgid "Average Receipt Delay"
+msgstr "Ortalama Makbuz Gecikmesi"
 
 #. module: purchase_stock
 #. odoo-python
@@ -127,6 +148,7 @@ msgstr "Varış"
 #: model:ir.model.fields.selection,name:purchase_stock.selection__stock_rule__action__buy
 #: model:stock.route,name:purchase_stock.route_warehouse0_buy
 #: model_terms:ir.ui.view,arch_db:purchase_stock.purchase_report_stock_rule
+#, python-format
 msgid "Buy"
 msgstr "Satınal"
 
@@ -162,18 +184,21 @@ msgstr "Kontak"
 
 #. module: purchase_stock
 #. odoo-python
-#: code:addons/purchase_stock/models/purchase_order.py:0
+#: code:addons/purchase_stock/models/purchase.py:0
+#, python-format
 msgid "Corresponding receipt not found."
 msgstr "Karşılık gelen makbuz bulunmuş değil."
 
 #. module: purchase_stock
-#: model:ir.model.fields,field_description:purchase_stock.field_stock_move__created_purchase_line_ids
-msgid "Created Purchase Order Lines"
-msgstr "Satınalma Sipariş Satırları Oluşturuldu"
+#: model:ir.model.fields,field_description:purchase_stock.field_stock_move__created_purchase_line_id
+msgid "Created Purchase Order Line"
+msgstr "Oluşturulan Satın Alma Sipariş Satırları"
 
 #. module: purchase_stock
 #. odoo-python
 #: code:addons/purchase_stock/models/stock_move.py:0
+#: code:addons/purchase_stock/models/stock_move.py:0
+#, python-format
 msgid "Currency exchange rate difference"
 msgstr "Döviz kur farkı"
 
@@ -181,11 +206,6 @@ msgstr "Döviz kur farkı"
 #: model:ir.model.fields,field_description:purchase_stock.field_purchase_order_line__product_description_variants
 msgid "Custom Description"
 msgstr "Özel Açıklama"
-
-#. module: purchase_stock
-#: model:ir.model.fields,field_description:purchase_stock.field_stock_picking__days_to_arrive
-msgid "Days To Arrive"
-msgstr "Varış Günü Sayısı"
 
 #. module: purchase_stock
 #: model_terms:ir.ui.view,arch_db:purchase_stock.res_config_settings_view_form_stock
@@ -205,13 +225,9 @@ msgstr ""
 #: code:addons/purchase_stock/models/stock_rule.py:0
 #: model:ir.model.fields,field_description:purchase_stock.field_res_company__days_to_purchase
 #: model:ir.model.fields,field_description:purchase_stock.field_res_config_settings__days_to_purchase
+#, python-format
 msgid "Days to Purchase"
 msgstr "Satınalma Günler"
-
-#. module: purchase_stock
-#: model:ir.model.fields,field_description:purchase_stock.field_stock_picking__delay_pass
-msgid "Delay Pass"
-msgstr "Gecikme Süresi"
 
 #. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_purchase_order__picking_type_id
@@ -226,8 +242,8 @@ msgid ""
 "of the product: whether it will be bought, manufactured, replenished on "
 "order, etc."
 msgstr ""
-"Yüklü modüllere bağlı olarak, bu, ürünün rotasını tanımlamanıza olanak "
-"tanır: satın mı alınacak, üretilecek mi, sipariş üzerine mi yenilenecek vs."
+"Kurulu modüllere dayalı olarak, bu, ürünün rotasını tanımlamanızı sağlar: "
+"satın alınacak, üretilecek, sipariş üzerine yenilenecek vb."
 
 #. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_purchase_order__default_location_dest_id_usage
@@ -237,12 +253,18 @@ msgstr "Hedef Konum Türü"
 #. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_vendor_delay_report__display_name
 msgid "Display Name"
-msgstr "İsim Göster"
+msgstr "Görünüm Adı"
+
+#. module: purchase_stock
+#: model_terms:ir.ui.view,arch_db:purchase_stock.res_config_settings_view_form_purchase
+#: model_terms:ir.ui.view,arch_db:purchase_stock.res_config_settings_view_form_stock
+msgid "Documentation"
+msgstr "Belgeleme"
 
 #. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_purchase_order_line__move_dest_ids
-msgid "Downstream moves alt"
-msgstr "Alt seviyedeki hareketler"
+msgid "Downstream Moves"
+msgstr "Aşağı Yönlü Hareketler"
 
 #. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_purchase_order__dest_address_id
@@ -266,11 +288,6 @@ msgid "Effective Date Last Year"
 msgstr "Geçerlilik Tarihi Son Yıl"
 
 #. module: purchase_stock
-#: model:ir.model.fields,field_description:purchase_stock.field_purchase_report__days_to_arrival
-msgid "Effective Days To Arrival"
-msgstr "Teslimata Kalan Etkin Gün Sayısı"
-
-#. module: purchase_stock
 #: model_terms:ir.ui.view,arch_db:purchase_stock.exception_on_po
 msgid "Exception(s) occurred on the purchase order(s):"
 msgstr "Satınalma siparişlerinde istisnalar oluştu:"
@@ -279,6 +296,19 @@ msgstr "Satınalma siparişlerinde istisnalar oluştu:"
 #: model_terms:ir.ui.view,arch_db:purchase_stock.exception_on_po
 msgid "Exception(s):"
 msgstr "İstisna(lar):"
+
+#. module: purchase_stock
+#. odoo-python
+#: code:addons/purchase_stock/models/purchase.py:0
+#, python-format
+msgid ""
+"For the product %s, the warehouse of the operation type (%s) is inconsistent"
+" with the location (%s) of the reordering rule (%s). Change the operation "
+"type or cancel the request for quotation."
+msgstr ""
+"%s Ürünü için, işlem türünün (%s) deposu, yeniden sıralama kuralının (%s) "
+"konumu (%s) ile tutarsız. İşlem türünü değiştirin veya teklif talebini iptal"
+" edin."
 
 #. module: purchase_stock
 #: model_terms:ir.ui.view,arch_db:purchase_stock.purchase_order_view_form_inherit
@@ -298,12 +328,14 @@ msgstr "Tamamen Alındı"
 #. module: purchase_stock
 #. odoo-javascript
 #: code:addons/purchase_stock/static/src/js/tours/purchase_stock.js:0
+#, python-format
 msgid "Generate the draft vendor bill."
 msgstr "Tedarikçi taslak faturası oluşturun. "
 
 #. module: purchase_stock
 #. odoo-javascript
 #: code:addons/purchase_stock/static/src/js/tours/purchase_stock.js:0
+#, python-format
 msgid "Go back to the purchase order to generate the vendor bill."
 msgstr "Tedarikçi faturasını oluşturmak için satınalma siparişine geri dönün."
 
@@ -323,9 +355,23 @@ msgid "Incoming Shipments"
 msgstr "Gelen Sevkiyatlar"
 
 #. module: purchase_stock
+#: model:ir.model.fields,field_description:purchase_stock.field_purchase_order__incoterm_id
+msgid "Incoterm"
+msgstr "Teslimat Koşulu"
+
+#. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_purchase_order__incoterm_location
 msgid "Incoterm Location"
 msgstr "Incoterm Konumu"
+
+#. module: purchase_stock
+#: model:ir.model.fields,help:purchase_stock.field_purchase_order__incoterm_id
+msgid ""
+"International Commercial Terms are a series of predefined commercial terms "
+"used in international transactions."
+msgstr ""
+"Uluslararası Ticari Terimler, uluslararası işlemlerde kullanılan önceden "
+"tanımlanmış ticari  dizinlerdir."
 
 #. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_purchase_order__is_shipped
@@ -348,19 +394,14 @@ msgid "Journal Item"
 msgstr "Yevmiye Kalemi"
 
 #. module: purchase_stock
+#: model:ir.model.fields,field_description:purchase_stock.field_vendor_delay_report____last_update
+msgid "Last Modified on"
+msgstr "Son Düzenleme"
+
+#. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_product_supplierinfo__last_purchase_date
 msgid "Last Purchase"
 msgstr "Son Satınalma"
-
-#. module: purchase_stock
-#: model:ir.model.fields,field_description:purchase_stock.field_procurement_group__purchase_line_ids
-msgid "Linked Purchase Order Lines"
-msgstr "Bağlantılı Satın Alma Siparişi Kalemleri"
-
-#. module: purchase_stock
-#: model:ir.model.fields,field_description:purchase_stock.field_purchase_order_line__location_final_id
-msgid "Location from procurement"
-msgstr "Tedarikten gelen konum"
 
 #. module: purchase_stock
 #: model_terms:ir.ui.view,arch_db:purchase_stock.res_config_settings_view_form_purchase
@@ -391,7 +432,7 @@ msgstr ""
 #. module: purchase_stock
 #: model:ir.model,name:purchase_stock.model_stock_warehouse_orderpoint
 msgid "Minimum Inventory Rule"
-msgstr "Minimum Envanter Kuralı"
+msgstr "Min. Envanter Kuralı"
 
 #. module: purchase_stock
 #: model_terms:ir.ui.view,arch_db:purchase_stock.res_config_settings_view_form_stock
@@ -409,11 +450,6 @@ msgid "No data yet"
 msgstr "Henüz veri yok"
 
 #. module: purchase_stock
-#: model_terms:ir.ui.view,arch_db:purchase_stock.purchase_help_message_template
-msgid "No receipt yet! Automate them with purchase orders."
-msgstr "Henüz makbuz yok! Satın alma siparişleri ile otomatikleştirin."
-
-#. module: purchase_stock
 #: model:ir.model.fields.selection,name:purchase_stock.selection__purchase_order__receipt_status__pending
 msgid "Not Received"
 msgstr "Alınmadı"
@@ -421,6 +457,7 @@ msgstr "Alınmadı"
 #. module: purchase_stock
 #. odoo-python
 #: code:addons/purchase_stock/models/stock_move.py:0
+#, python-format
 msgid ""
 "Odoo is not able to generate the anglo saxon entries. The total valuation of"
 " %s is zero."
@@ -471,9 +508,6 @@ msgid ""
 " number of ordered products.x is either the System Parameter "
 "purchase_stock.on_time_delivery_days or the default 365"
 msgstr ""
-"Son x gün içinde zamanında teslim alınan ürün sayısının sipariş edilen ürün "
-"sayısına bölümü.x, sistem parametresi purchase_stock.on_time_delivery_days "
-"veya varsayılan 365'tir"
 
 #. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_product_product__purchase_order_line_ids
@@ -486,15 +520,9 @@ msgid "Partially Received"
 msgstr "Kısmen Alındı"
 
 #. module: purchase_stock
-#: model:ir.model.fields,field_description:purchase_stock.field_product_category__property_account_creditor_price_difference_categ
-#: model:ir.model.fields,field_description:purchase_stock.field_product_product__property_account_creditor_price_difference
-#: model:ir.model.fields,field_description:purchase_stock.field_product_template__property_account_creditor_price_difference
-msgid "Price Difference Account"
-msgstr "Fiyat Farkı Hesabı"
-
-#. module: purchase_stock
 #. odoo-javascript
 #: code:addons/purchase_stock/static/src/js/tours/purchase_stock.js:0
+#, python-format
 msgid "Process all the receipt quantities."
 msgstr "Tüm makbuz miktarlarını işleyin."
 
@@ -505,35 +533,19 @@ msgid "Procurement Group"
 msgstr "Tedarik Grubu"
 
 #. module: purchase_stock
-#: model:ir.model.fields,field_description:purchase_stock.field_purchase_order_line__group_id
-msgid "Procurement group that generated this line"
-msgstr "Bu satırı oluşturan tedarik grubu"
-
-#. module: purchase_stock
 #: model:ir.model,name:purchase_stock.model_product_template
 #: model:ir.model.fields,field_description:purchase_stock.field_vendor_delay_report__product_id
 msgid "Product"
 msgstr "Ürün"
 
 #. module: purchase_stock
-#: model:ir.model,name:purchase_stock.model_product_category
 #: model:ir.model.fields,field_description:purchase_stock.field_vendor_delay_report__category_id
 msgid "Product Category"
 msgstr "Ürün Kategorisi"
 
 #. module: purchase_stock
-#: model:ir.model,name:purchase_stock.model_product_replenish
-msgid "Product Replenish"
-msgstr "Ürün İkmali"
-
-#. module: purchase_stock
-#: model:ir.model,name:purchase_stock.model_stock_replenish_mixin
-msgid "Product Replenish Mixin"
-msgstr "Ürün Yenileme Karışımı"
-
-#. module: purchase_stock
-#: model:ir.model.fields,field_description:purchase_stock.field_stock_warehouse_orderpoint__product_supplier_id
-#: model_terms:ir.ui.view,arch_db:purchase_stock.warehouse_orderpoint_search_inherit
+#: model:ir.model.fields,field_description:purchase_stock.field_stock_replenishment_info__supplierinfo_id
+#: model:ir.model.fields,field_description:purchase_stock.field_stock_warehouse_orderpoint__supplier_id
 msgid "Product Supplier"
 msgstr "Ürün Tedarikçisi"
 
@@ -567,7 +579,6 @@ msgstr "Satınalma Sipariş Satırı"
 #. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_stock_lot__purchase_order_ids
 #: model:ir.model.fields,field_description:purchase_stock.field_stock_picking__purchase_id
-#: model_terms:ir.ui.view,arch_db:purchase_stock.purchase_help_message_template
 #: model_terms:ir.ui.view,arch_db:purchase_stock.stock_production_lot_view_form
 msgid "Purchase Orders"
 msgstr "Satınalma Siparişleri"
@@ -580,6 +591,7 @@ msgstr "Satınalma Raporu"
 #. module: purchase_stock
 #. odoo-python
 #: code:addons/purchase_stock/models/stock_rule.py:0
+#, python-format
 msgid "Purchase Security Lead Time"
 msgstr "Satınalma Güvenliği Tedarik Süresi"
 
@@ -620,6 +632,7 @@ msgstr "Ürün Kabulleri"
 #. module: purchase_stock
 #. odoo-javascript
 #: code:addons/purchase_stock/static/src/js/tours/purchase_stock.js:0
+#, python-format
 msgid "Receive the ordered products."
 msgstr "Sipariş edilen ürünleri alın."
 
@@ -634,17 +647,6 @@ msgid "Receptions"
 msgstr "Mal Kabul"
 
 #. module: purchase_stock
-#: model:ir.model.fields,help:purchase_stock.field_purchase_order__receipt_status
-msgid ""
-"Red: Late\n"
-"            Orange: To process today\n"
-"            Green: On time"
-msgstr ""
-"Kırmızı: Gecikmiş\n"
-"            Turuncu: Bugün işlenecek\n"
-"            Yeşil: Vaktinde"
-
-#. module: purchase_stock
 #: model_terms:ir.ui.view,arch_db:purchase_stock.res_config_settings_view_form_purchase
 msgid "Request your vendors to deliver to your customers"
 msgstr "Tedarikçiler müşterilerinize sizin adınıza direkt teslimat yaparlar"
@@ -652,6 +654,7 @@ msgstr "Tedarikçiler müşterilerinize sizin adınıza direkt teslimat yaparlar
 #. module: purchase_stock
 #. odoo-javascript
 #: code:addons/purchase_stock/static/src/purchase_stock_forecasted/forecasted_details.xml:0
+#, python-format
 msgid "Requests for quotation"
 msgstr "Teklif Talepleri"
 
@@ -687,12 +690,6 @@ msgid "Show Set Supplier Button"
 msgstr "Tedarikçi Ayarla Düğmesini Göster"
 
 #. module: purchase_stock
-#: model:ir.model.fields,field_description:purchase_stock.field_product_replenish__show_vendor
-#: model:ir.model.fields,field_description:purchase_stock.field_stock_replenish_mixin__show_vendor
-msgid "Show Vendor"
-msgstr "Tedarikçiyi Göster"
-
-#. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_stock_warehouse_orderpoint__show_supplier
 msgid "Show supplier column"
 msgstr "Tedarikçi sütununu göster"
@@ -709,7 +706,7 @@ msgid "Stock Moves"
 msgstr "Stok Hareketleri"
 
 #. module: purchase_stock
-#: model:ir.model,name:purchase_stock.model_stock_forecasted_product_product
+#: model:ir.model,name:purchase_stock.model_report_stock_report_product_product_replenishment
 msgid "Stock Replenishment Report"
 msgstr "Stok İkmal Raporu"
 
@@ -717,11 +714,6 @@ msgstr "Stok İkmal Raporu"
 #: model:ir.model,name:purchase_stock.model_stock_rule
 msgid "Stock Rule"
 msgstr "Stok Kuralı"
-
-#. module: purchase_stock
-#: model:ir.model,name:purchase_stock.model_stock_valuation_layer
-msgid "Stock Valuation Layer"
-msgstr "Stok Değerleme Katmanı"
 
 #. module: purchase_stock
 #: model:ir.model,name:purchase_stock.model_report_stock_report_stock_rule
@@ -732,17 +724,6 @@ msgstr "Stok kuralı raporu"
 #: model:ir.model,name:purchase_stock.model_stock_replenishment_info
 msgid "Stock supplier replenishment information"
 msgstr "Stok tedarikçisi ikmal verisi"
-
-#. module: purchase_stock
-#: model:ir.model,name:purchase_stock.model_stock_replenishment_option
-msgid "Stock warehouse replenishment option"
-msgstr "Stok deposu ikmal seçeneği"
-
-#. module: purchase_stock
-#: model:ir.model.fields,field_description:purchase_stock.field_stock_replenishment_info__supplierinfo_id
-#: model:ir.model.fields,field_description:purchase_stock.field_stock_warehouse_orderpoint__supplier_id
-msgid "Supplier"
-msgstr "Tedarikçi"
 
 #. module: purchase_stock
 #: model:ir.model,name:purchase_stock.model_product_supplierinfo
@@ -762,12 +743,14 @@ msgstr "Teslimat Bırakma Adresini görüntülemek için kullanılan teknik alan
 #. module: purchase_stock
 #. odoo-python
 #: code:addons/purchase_stock/models/stock.py:0
+#, python-format
 msgid "The following replenishment order has been generated"
 msgstr "Aşağıdaki yenileme siparişi oluşturuldu"
 
 #. module: purchase_stock
 #. odoo-python
-#: code:addons/purchase_stock/models/purchase_order_line.py:0
+#: code:addons/purchase_stock/models/purchase.py:0
+#, python-format
 msgid ""
 "The quantities on your purchase order indicate less than billed. You should "
 "ask for a refund."
@@ -777,19 +760,8 @@ msgstr ""
 
 #. module: purchase_stock
 #. odoo-python
-#: code:addons/purchase_stock/models/purchase_order_line.py:0
-msgid ""
-"The warehouse of operation type (%(operation_type)s) is inconsistent with "
-"location (%(location)s) of reordering rule (%(reordering_rule)s) for product"
-" %(product)s. Change the operation type or cancel the request for quotation."
-msgstr ""
-"İşlem türü (%(operation_type)s) nün deposu, ürün (%(product)s) için yeniden "
-"sipariş kuralının (%(reordering_rule)s) konumu (%(location)s) ile uyumlu "
-"değil. İşlem türünü değiştirin veya fiyatlandırma talebini iptal edin."
-
-#. module: purchase_stock
-#. odoo-python
 #: code:addons/purchase_stock/models/stock_rule.py:0
+#, python-format
 msgid ""
 "There is no matching vendor price to generate the purchase order for product"
 " %s (no vendor defined, minimum quantity not reached, dates not valid, ...)."
@@ -798,27 +770,6 @@ msgstr ""
 " %s ürünü için satınalma siparişi oluşturmak için uygun tedarikçi fiyatı yok"
 " (tedarikçi tanımlanmamış, minimum miktara ulaşılmadı, tarihler geçerli "
 "değil, ...). Ürün formuna gidin ve tedarikçi listesini tamamlayın."
-
-#. module: purchase_stock
-#: model:ir.model.fields,help:purchase_stock.field_product_product__property_account_creditor_price_difference
-#: model:ir.model.fields,help:purchase_stock.field_product_template__property_account_creditor_price_difference
-msgid ""
-"This account is used in automated inventory valuation to record the price "
-"difference between a purchase order and its related vendor bill when "
-"validating this vendor bill."
-msgstr ""
-"Bu hesap, bu tedarikçi faturasını doğrularken satınalma siparişi ile ilgili "
-"satıcı faturası arasındaki fiyat farkını kaydetmek için otomatik envanter "
-"değerlemesinde kullanılır."
-
-#. module: purchase_stock
-#: model:ir.model.fields,help:purchase_stock.field_product_category__property_account_creditor_price_difference_categ
-msgid ""
-"This account will be used to value price difference between purchase price "
-"and accounting cost."
-msgstr ""
-"Bu hesap, satın alma fiyatı ile maliyet tutarı arasındaki fiyat farkı değeri"
-" için kullanılacaktır."
 
 #. module: purchase_stock
 #: model_terms:ir.ui.view,arch_db:purchase_stock.res_config_settings_view_form_purchase
@@ -842,7 +793,8 @@ msgstr "Bu, gelen teslimatın operasyon türünü belirleyecektir."
 
 #. module: purchase_stock
 #. odoo-python
-#: code:addons/purchase_stock/models/purchase_order.py:0
+#: code:addons/purchase_stock/models/purchase.py:0
+#, python-format
 msgid ""
 "Those dates couldn’t be modified accordingly on the receipt %s which had "
 "already been validated."
@@ -852,7 +804,8 @@ msgstr ""
 
 #. module: purchase_stock
 #. odoo-python
-#: code:addons/purchase_stock/models/purchase_order.py:0
+#: code:addons/purchase_stock/models/purchase.py:0
+#, python-format
 msgid "Those dates have been updated accordingly on the receipt %s."
 msgstr "Bu tarihler, %s makbuzunda buna göre güncellenmiştir."
 
@@ -862,34 +815,29 @@ msgid "Total Quantity"
 msgstr "Toplam Miktar"
 
 #. module: purchase_stock
-#: model:ir.model.fields,field_description:purchase_stock.field_purchase_order_line__is_storable
-msgid "Track Inventory"
-msgstr "Envanter Takibi"
-
-#. module: purchase_stock
 #: model:ir.model,name:purchase_stock.model_stock_picking
 msgid "Transfer"
-msgstr "Aktarım"
+msgstr "Transfer"
 
 #. module: purchase_stock
 #. odoo-python
-#: code:addons/purchase_stock/models/purchase_order.py:0
+#: code:addons/purchase_stock/models/purchase.py:0
+#, python-format
 msgid ""
-"Unable to cancel purchase order(s): %s since they have receipts that are "
-"already done."
+"Unable to cancel purchase order %s as some receptions have already been "
+"done."
 msgstr ""
-"Satın alma sipariş(ler)i iptal edilemiyor: %s işlemleri tamamlanmış olan "
-"makbuzları mevcut."
+"Bazı alımlar çoktan yapıldığı için %s satın alma siparişini iptal "
+"edemezsiniz"
 
 #. module: purchase_stock
 #. odoo-javascript
 #: code:addons/purchase_stock/static/src/js/tours/purchase_stock.js:0
+#, python-format
 msgid "Validate the receipt of all ordered products."
 msgstr "Sipariş edilen tüm ürünlerin alındığını doğrulayın."
 
 #. module: purchase_stock
-#: model:ir.model.fields,field_description:purchase_stock.field_product_replenish__supplier_id
-#: model:ir.model.fields,field_description:purchase_stock.field_stock_replenish_mixin__supplier_id
 #: model:ir.model.fields,field_description:purchase_stock.field_stock_warehouse_orderpoint__vendor_id
 #: model:ir.model.fields,field_description:purchase_stock.field_vendor_delay_report__partner_id
 #: model_terms:ir.ui.view,arch_db:purchase_stock.view_warehouse_orderpoint_tree_editable_inherited_mrp
@@ -904,6 +852,7 @@ msgstr "Tedarikçi Gecikme Raporu"
 #. module: purchase_stock
 #. odoo-python
 #: code:addons/purchase_stock/models/stock_rule.py:0
+#, python-format
 msgid "Vendor Lead Time"
 msgstr "Tedarikçi Teslim Süresi"
 
@@ -936,6 +885,7 @@ msgstr "Ürünler satın alındığında bu depoya sevk edilebilir"
 #. module: purchase_stock
 #. odoo-python
 #: code:addons/purchase_stock/models/stock_rule.py:0
+#, python-format
 msgid ""
 "When products are needed in <b>%s</b>, <br/> a request for quotation is "
 "created to fulfill the need.<br/>Note: This rule will be used in combination"
@@ -947,7 +897,8 @@ msgstr ""
 
 #. module: purchase_stock
 #. odoo-python
-#: code:addons/purchase_stock/models/purchase_order_line.py:0
+#: code:addons/purchase_stock/models/purchase.py:0
+#, python-format
 msgid ""
 "You cannot decrease the ordered quantity below the received quantity.\n"
 "Create a return first."
@@ -957,7 +908,8 @@ msgstr ""
 
 #. module: purchase_stock
 #. odoo-python
-#: code:addons/purchase_stock/models/purchase_order.py:0
+#: code:addons/purchase_stock/models/purchase.py:0
+#, python-format
 msgid "You must set a Vendor Location for this partner %s"
 msgstr "Bu iş ortağı %s için bir tedarikçi konumu belirlemelisiniz"
 
