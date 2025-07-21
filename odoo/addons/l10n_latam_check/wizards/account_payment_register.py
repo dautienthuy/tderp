@@ -1,63 +1,76 @@
-from odoo import models, fields, api, Command, _
-from odoo.exceptions import ValidationError
+from odoo import models, fields, api
 
 
 class AccountPaymentRegister(models.TransientModel):
     _inherit = 'account.payment.register'
 
-    l10n_latam_new_check_ids = fields.One2many('l10n_latam.payment.register.check', 'payment_register_id', string="New Checks")
-    l10n_latam_move_check_ids = fields.Many2many(
-        comodel_name='l10n_latam.check',
-        string='Checks',
+    l10n_latam_check_id = fields.Many2one(
+        comodel_name='account.payment',
+        string='Check',
+    )
+    l10n_latam_check_bank_id = fields.Many2one(
+        comodel_name='res.bank',
+        string='Check Bank',
+        compute='_compute_l10n_latam_check_bank_id', store=True, readonly=False,
+    )
+    l10n_latam_check_issuer_vat = fields.Char(
+        string='Check Issuer VAT',
+        compute='_compute_l10n_latam_check_issuer_vat', store=True, readonly=False,
+    )
+    l10n_latam_check_number = fields.Char(
+        string="Check Number",
+    )
+    l10n_latam_manual_checks = fields.Boolean(
+        related='journal_id.l10n_latam_manual_checks',
+    )
+    l10n_latam_check_payment_date = fields.Date(
+        string='Check Cash-In Date', help="Date from when you can cash in the check, turn the check into cash",
     )
 
-    @api.depends('l10n_latam_move_check_ids.amount', 'l10n_latam_new_check_ids.amount', 'payment_method_code')
+    @api.depends('payment_method_line_id.code', 'partner_id')
+    def _compute_l10n_latam_check_bank_id(self):
+        new_third_party_checks = self.filtered(lambda x: x.payment_method_line_id.code == 'new_third_party_checks')
+        for rec in new_third_party_checks:
+            rec.l10n_latam_check_bank_id = rec.partner_id.bank_ids[:1].bank_id
+        (self - new_third_party_checks).l10n_latam_check_bank_id = False
+
+    @api.depends('payment_method_line_id.code', 'partner_id')
+    def _compute_l10n_latam_check_issuer_vat(self):
+        new_third_party_checks = self.filtered(lambda x: x.payment_method_line_id.code == 'new_third_party_checks')
+        for rec in new_third_party_checks:
+            rec.l10n_latam_check_issuer_vat = rec.partner_id.vat
+        (self - new_third_party_checks).l10n_latam_check_issuer_vat = False
+
+    @api.depends('l10n_latam_check_id')
     def _compute_amount(self):
         super()._compute_amount()
-        for wizard in self.filtered(lambda x: x._is_latam_check_payment(check_subtype='new_check')):
-            wizard.amount = sum(wizard.l10n_latam_new_check_ids.mapped('amount'))
-        for wizard in self.filtered(lambda x: x._is_latam_check_payment(check_subtype='move_check')):
-            wizard.amount = sum(wizard.l10n_latam_move_check_ids.mapped('amount'))
+        for wizard in self.filtered('l10n_latam_check_id'):
+            wizard.amount = wizard.l10n_latam_check_id.amount
 
-    @api.depends('l10n_latam_move_check_ids.currency_id')
+    @api.depends('l10n_latam_check_id')
     def _compute_currency_id(self):
         super()._compute_currency_id()
-        for wizard in self.filtered(lambda x: x._is_latam_check_payment(check_subtype='move_check')):
-            if wizard.l10n_latam_move_check_ids:
-                wizard.currency_id = wizard.l10n_latam_move_check_ids[0].currency_id
+        for wizard in self.filtered('l10n_latam_check_id'):
+            wizard.currency_id = wizard.l10n_latam_check_id.currency_id
 
-    def _is_latam_check_payment(self, check_subtype=False):
-        if check_subtype == 'move_check':
-            codes = ['in_third_party_checks', 'out_third_party_checks', 'return_third_party_checks']
-        elif check_subtype == 'new_check':
-            codes = ['new_third_party_checks', 'own_checks']
-        else:
-            codes = ['in_third_party_checks', 'out_third_party_checks', 'return_third_party_checks', 'new_third_party_checks', 'own_checks']
-        return self.payment_method_code in codes
+    @api.onchange('l10n_latam_check_number')
+    def _onchange_l10n_latam_check_number(self):
+        for rec in self.filtered(lambda x: x.journal_id.company_id.country_id.code == "AR" and x.l10n_latam_check_number
+                                 and x.l10n_latam_check_number.isdecimal()):
+            rec.l10n_latam_check_number = '%08d' % int(rec.l10n_latam_check_number)
+
+    @api.onchange('payment_method_line_id', 'journal_id')
+    def _onchange_to_reset_check_ids(self):
+        # If any of these fields change, the domain of the selectable checks could change
+        self.l10n_latam_check_id = False
 
     def _create_payment_vals_from_wizard(self, batch_result):
         vals = super()._create_payment_vals_from_wizard(batch_result)
-        if self.l10n_latam_new_check_ids:
-            vals.update({'l10n_latam_new_check_ids': [Command.create({
-                'name': x.name,
-                'bank_id': x.bank_id.id,
-                'issuer_vat': x.issuer_vat,
-                'payment_date': x.payment_date,
-                'amount': x.amount}) for x in self.l10n_latam_new_check_ids
-            ]})
-        if self.l10n_latam_move_check_ids:
-            vals.update({
-                'l10n_latam_move_check_ids': [Command.link(x.id) for x in self.l10n_latam_move_check_ids]
-            })
+        vals.update({
+            'l10n_latam_check_id': self.l10n_latam_check_id.id,
+            'l10n_latam_check_bank_id': self.l10n_latam_check_bank_id.id,
+            'l10n_latam_check_issuer_vat': self.l10n_latam_check_issuer_vat,
+            'check_number': self.l10n_latam_check_number,
+            'l10n_latam_check_payment_date': self.l10n_latam_check_payment_date,
+        })
         return vals
-
-    def action_create_payments(self):
-        if self._is_latam_check_payment(check_subtype="move_check"):
-            latam_check_currencies = self.l10n_latam_move_check_ids.mapped("currency_id")
-            if latam_check_currencies and (len(latam_check_currencies) > 1 or latam_check_currencies != self.currency_id):
-                raise ValidationError(_(
-                    "You can't mix checks of different currencies in one payment, "
-                    "and you can't change the payment's currency if checks are already created in that currency.\n"
-                    "Please create separate payments for each currency."
-                ))
-        return super().action_create_payments()

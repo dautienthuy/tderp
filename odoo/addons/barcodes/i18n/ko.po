@@ -3,17 +3,17 @@
 # 	* barcodes
 # 
 # Translators:
-# Wil Odoo, 2024
+# Martin Trigaux, 2022
+# Sarah Park, 2023
 # Daye Jeong, 2024
-# Sarah Park, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-23 18:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Sarah Park, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2022-09-22 05:45+0000\n"
+"Last-Translator: Daye Jeong, 2024\n"
 "Language-Team: Korean (https://app.transifex.com/odoo/teams/41243/ko/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,8 +24,9 @@ msgstr ""
 #. module: barcodes
 #. odoo-python
 #: code:addons/barcodes/models/barcode_rule.py:0
-msgid " '*' is not a valid Regex Barcode Pattern. Did you mean '.*'?"
-msgstr "'*' 항목은 유효한 정규식 바코드 패턴이 아닙니다.  '.*' 항목을 찾으시나요?"
+#, python-format
+msgid " '*' is not a valid Regex Barcode Pattern. Did you mean '.*' ?"
+msgstr "'*'는 유효한 일반 바코드 패턴이 아닙니다. '.*'을 의미합니까?"
 
 #. module: barcodes
 #: model_terms:ir.ui.view,arch_db:barcodes.view_barcode_nomenclature_form
@@ -79,12 +80,6 @@ msgid "Any"
 msgstr "또는"
 
 #. module: barcodes
-#. odoo-javascript
-#: code:addons/barcodes/static/src/components/barcode_scanner.xml:0
-msgid "Barcode"
-msgstr "바코드"
-
-#. module: barcodes
 #: model:ir.model,name:barcodes.model_barcodes_barcode_events_mixin
 msgid "Barcode Event Mixin"
 msgstr "바코드 이벤트 혼합"
@@ -122,8 +117,9 @@ msgstr "바코드 스캔됨"
 #. module: barcodes
 #. odoo-javascript
 #: code:addons/barcodes/static/src/barcode_handlers.js:0
-msgid "Barcode: %(barcode)s"
-msgstr "바코드: %(barcode)s"
+#, python-format
+msgid "Barcode: "
+msgstr "바코드:"
 
 #. module: barcodes
 #: model:ir.model,name:barcodes.model_res_company
@@ -180,14 +176,10 @@ msgid "ID"
 msgstr "ID"
 
 #. module: barcodes
-#. odoo-python
-#: code:addons/barcodes/models/barcode_events_mixin.py:0
-msgid ""
-"In order to use barcodes.barcode_events_mixin, method on_barcode_scanned "
-"must be implemented"
-msgstr ""
-"barcodes.barcode_events_mixin 내용을 적용하려면 반드시 on_barcode_scanned 메서드를 구현해야 "
-"합니다."
+#: model:ir.model.fields,field_description:barcodes.field_barcode_nomenclature____last_update
+#: model:ir.model.fields,field_description:barcodes.field_barcode_rule____last_update
+msgid "Last Modified on"
+msgstr "최근 수정일"
 
 #. module: barcodes
 #: model:ir.model.fields,field_description:barcodes.field_barcode_nomenclature__write_uid
@@ -204,7 +196,7 @@ msgstr "최근 갱신 일자"
 #. module: barcodes
 #: model:ir.model.fields.selection,name:barcodes.selection__barcode_nomenclature__upc_ean_conv__none
 msgid "Never"
-msgstr "하지 않음"
+msgstr "하지않음"
 
 #. module: barcodes
 #: model:ir.model.fields,field_description:barcodes.field_res_company__nomenclature_id
@@ -216,23 +208,16 @@ msgstr "명명법"
 msgid ""
 "Patterns can also define how numerical values, such as weight or price, can be\n"
 "                                encoded into the barcode. They are indicated by <code>{NNN}</code> where the N's\n"
-"                                define where the number's digits are encoded. Floats are also supported with the\n"
-"                                decimals indicated with D's, such as <code>{NNNDD}</code>. In these cases,\n"
-"                                the barcode field on the associated records <i>must</i> show these digits as\n"
+"                                define where the number's digits are encoded. Floats are also supported with the \n"
+"                                decimals indicated with D's, such as <code>{NNNDD}</code>. In these cases, \n"
+"                                the barcode field on the associated records <i>must</i> show these digits as \n"
 "                                zeroes."
 msgstr ""
-"패턴을 이용하여 또한 중량이나 가격과 같은 숫자 값을 바코드에 인코딩하는 방법도\n"
-"                                지정할 수 있습니다. 표시 방식은 <code>{NNN}</code>와 같으며 여기에서 N은\n"
-"                                숫자의 자릿수가 인코딩되는 위치를 나타냅니다. 변동값도 마찬가지로 지원되며\n"
-"                                D로 나타내는 십진수에서도, <code>{NNNDD}</code>와 같이 표시됩니다. 이러한 경우,\n"
-"                                연결된 레코드의 바코드 필드에 <i>반드시</i> 해당 숫자가 0으로 표시되어야\n"
-"                                합니다."
-
-#. module: barcodes
-#. odoo-javascript
-#: code:addons/barcodes/static/src/components/barcode_scanner.js:0
-msgid "Please, Scan again!"
-msgstr "다시 스캔하세요!"
+"또한 패턴은 무게 또는 가격과 같은 숫자 값을 바코드에 인코딩하는 방법을 정의할 수 있습니다. \n"
+"                             이 값은 <code>{NNN}</code>으로 표시됩니다. \n"
+"                             여기서 N은 숫자의 자릿수가 인코딩되는 위치를 정의합니다.\n"
+"                            <code>{NNNDD}</code>와 같이 D로 표시된 십진수에서도 플로트가 지원됩니다. \n"
+"                               이러한 경우 관련 레코드의 바코드 필드는 이 숫자를 0으로 <i>표시해야 합니다</i>."
 
 #. module: barcodes
 #: model:ir.model.fields,field_description:barcodes.field_barcode_rule__name
@@ -255,19 +240,13 @@ msgid "Tables"
 msgstr "표"
 
 #. module: barcodes
-#. odoo-javascript
-#: code:addons/barcodes/static/src/components/barcode_scanner.xml:0
-msgid "Tap to scan"
-msgstr "탭하여 스캔"
-
-#. module: barcodes
 #: model:ir.model.fields,help:barcodes.field_barcode_rule__pattern
 msgid "The barcode matching pattern"
 msgstr "바코드 일치 패턴"
 
 #. module: barcodes
-#. odoo-python
 #: code:addons/barcodes/models/barcode_rule.py:0
+#, python-format
 msgid ""
 "The barcode pattern %(pattern)s does not lead to a valid regular expression."
 msgstr "바코드 패턴 %(pattern)s이 유효한 정규식으로 연결되지 않았습니다."
@@ -285,14 +264,16 @@ msgstr "일치하는 패턴이 이 바코드의 별칭이 됩니다."
 #. module: barcodes
 #. odoo-python
 #: code:addons/barcodes/models/barcode_rule.py:0
+#, python-format
 msgid ""
 "There is a syntax error in the barcode pattern %(pattern)s: a rule can only "
 "contain one pair of braces."
-msgstr "바코드 규칙 %(pattern)s에 구문 오류가 있습니다: 괄호는 한 쌍만 포함할 수 있습니다. "
+msgstr "바코드 패턴 %(pattern)s에 구문 오류가 있습니다: 괄호는 한 쌍만 포함할 수 있습니다. "
 
 #. module: barcodes
 #. odoo-python
 #: code:addons/barcodes/models/barcode_rule.py:0
+#, python-format
 msgid ""
 "There is a syntax error in the barcode pattern %(pattern)s: braces can only "
 "contain N's followed by D's."
@@ -301,6 +282,7 @@ msgstr "바코드 규칙 %(pattern)s에 구문 오류가 있습니다: 괄호 �
 #. module: barcodes
 #. odoo-python
 #: code:addons/barcodes/models/barcode_rule.py:0
+#, python-format
 msgid ""
 "There is a syntax error in the barcode pattern %(pattern)s: empty braces."
 msgstr "바코드 규칙 %(pattern)s에 구문 오류가 있습니다: 괄호 내용이 없습니다."
@@ -345,11 +327,12 @@ msgstr "UPC/EAN 변환"
 #. module: barcodes
 #: model:ir.model.fields.selection,name:barcodes.selection__barcode_rule__type__product
 msgid "Unit Product"
-msgstr "품목 단위"
+msgstr "단위 상품"
 
 #. module: barcodes
 #. odoo-javascript
 #: code:addons/barcodes/static/src/barcode_handlers.js:0
+#, python-format
 msgid "Unknown barcode command"
 msgstr "알 수 없는 바코드 명령"
 

@@ -8,7 +8,7 @@ import werkzeug
 
 from unittest.mock import patch
 
-from odoo.tools import email_normalize, mail
+from odoo import tools
 from odoo.addons.link_tracker.tests.common import MockLinkTracker
 from odoo.addons.mail.tests.common import MailCase, MailCommon, mail_new_test_user
 from odoo.sql_db import Cursor
@@ -46,22 +46,16 @@ class MassMailCase(MailCase, MockLinkTracker):
 
         :param recipients_info: list[{
             # TRACE
-            'email': (normalized) email used when sending email and stored on
-              trace. May be empty, computed based on partner;
-            'failure_type': optional failure type;
-            'failure_reason': optional failure reason;
             'partner': res.partner record (may be empty),
-            'record: linked record,
+            'email': email used when sending email (may be empty, computed based on partner),
             'trace_status': outgoing / sent / open / reply / bounce / error / cancel (sent by default),
+            'record: linked record,
             # MAIL.MAIL
             'content': optional content that should be present in mail.mail body_html;
             'email_to_mail': optional email used for the mail, when different from the
-              one stored on the trace itself (see 'email_to' in assertMailMail);
-            'email_to_recipients': optional email used ofr the outgoing email,
-              see 'assertSentEmail';
-            'failure_type': propagated from trace;
-            'failure_reason': propagated from trace;
-            'mail_values': other mail.mail values for assertMailMail;
+              one stored on the trace itself;
+            'email_to_recipients': optional, see '_assertMailMail';
+            'failure_type': optional failure reason;
             }, { ... }]
 
         :param mailing: a mailing.mailing record from which traces have been
@@ -92,8 +86,10 @@ class MassMailCase(MailCase, MockLinkTracker):
             ('res_id', 'in', records.ids)
         ])
         debug_info = '\n'.join(
-            f'Trace: to {t.email} - state {t.trace_status} - res_id {t.res_id}'
-            for t in traces
+            (
+                f'Trace: to {t.email} - state {t.trace_status} - res_id {t.res_id}'
+                for t in traces
+            )
         )
 
         # ensure trace coherency
@@ -104,31 +100,15 @@ class MassMailCase(MailCase, MockLinkTracker):
         if not mail_links_info:
             mail_links_info = [None] * len(recipients_info)
         for recipient_info, link_info, record in zip(recipients_info, mail_links_info, records):
-            # check input
-            invalid = set(recipient_info.keys()) - {
-                'content',
-                'email', 'email_to_mail', 'email_to_recipients',
-                'mail_values',
-                'partner', 'record', 'trace_status',
-                'failure_type', 'failure_reason',
-            }
-            if invalid:
-                raise AssertionError(f"assertMailTraces: invalid input {invalid}")
-
-            # recipients
             partner = recipient_info.get('partner', self.env['res.partner'])
             email = recipient_info.get('email')
-            if email is None and partner:
-                email = partner.email_normalized
             email_to_mail = recipient_info.get('email_to_mail') or email
             email_to_recipients = recipient_info.get('email_to_recipients')
-            # trace
-            failure_type = recipient_info.get('failure_type')
-            failure_reason = recipient_info.get('failure_reason')
             status = recipient_info.get('trace_status', 'sent')
-            # content
-            content = recipient_info.get('content')
             record = record or recipient_info.get('record')
+            content = recipient_info.get('content')
+            if email is None and partner:
+                email = partner.email_normalized
 
             recipient_trace = traces.filtered(
                 lambda t: (t.email == email or (not email and not t.email)) and \
@@ -143,9 +123,7 @@ class MassMailCase(MailCase, MockLinkTracker):
             )
             self.assertTrue(bool(recipient_trace.mail_mail_id_int))
             if 'failure_type' in recipient_info or status in ('error', 'cancel', 'bounce'):
-                self.assertEqual(recipient_trace.failure_type, failure_type)
-            if 'failure_reason' in recipient_info:
-                self.assertEqual(recipient_trace.failure_reason, failure_reason)
+                self.assertEqual(recipient_trace.failure_type, recipient_info['failure_type'])
 
             if check_mail:
                 if author is None:
@@ -155,14 +133,10 @@ class MassMailCase(MailCase, MockLinkTracker):
                 fields_values = {'mailing_id': mailing}
                 if recipient_info.get('mail_values'):
                     fields_values.update(recipient_info['mail_values'])
-                if 'failure_type' in recipient_info:
-                    fields_values['failure_type'] = failure_type
                 if 'failure_reason' in recipient_info:
-                    fields_values['failure_reason'] = failure_reason
+                    fields_values['failure_reason'] = recipient_info['failure_reason']
                 if 'email_to_mail' in recipient_info:
                     fields_values['email_to'] = recipient_info['email_to_mail']
-                if partner:
-                    fields_values['recipient_ids'] = partner
 
                 # specific for partner: email_formatted is used
                 if partner:
@@ -210,7 +184,7 @@ class MassMailCase(MailCase, MockLinkTracker):
     # TOOLS
     # ------------------------------------------------------------
 
-    def gateway_mail_trace_bounce(self, mailing, record, bounce_base_values=None):
+    def gateway_mail_bounce(self, mailing, record, bounce_base_values=None):
         """ Generate a bounce at mailgateway level.
 
         :param mailing: a ``mailing.mailing`` record on which we find a trace
@@ -218,31 +192,27 @@ class MassMailCase(MailCase, MockLinkTracker):
         :param record: record which should bounce;
         :param bounce_base_values: optional values given to routing;
         """
-        record_email = record[record._primary_email]
         trace = mailing.mailing_trace_ids.filtered(
             lambda t: t.model == record._name and t.res_id == record.id
         )
-        self.assertTrue(trace)
-        self.assertEqual(trace.email, email_normalize(record_email))
 
         parsed_bounce_values = {
             'email_from': 'some.email@external.example.com',  # TDE check: email_from -> trace email ?
             'to': 'bounce@test.example.com',  # TDE check: bounce alias ?
-            'message_id': mail.generate_tracking_message_id('MailTest'),
+            'message_id': tools.generate_tracking_message_id('MailTest'),
             'bounced_partner': self.env['res.partner'].sudo(),
-            'bounced_message': self.env['mail.message'].sudo(),
-            'body': 'This is the bounce email',
+            'bounced_message': self.env['mail.message'].sudo()
         }
         if bounce_base_values:
             parsed_bounce_values.update(bounce_base_values)
         parsed_bounce_values.update({
             'bounced_email': trace.email,
-            'bounced_msg_ids': [trace.message_id],
+            'bounced_msg_id': [trace.message_id],
         })
         self.env['mail.thread']._routing_handle_bounce(False, parsed_bounce_values)
         return trace
 
-    def gateway_mail_trace_click(self, mailing, record, click_label):
+    def gateway_mail_click(self, mailing, record, click_label):
         """ Simulate a click on a sent email.
 
         :param mailing: a ``mailing.mailing`` record on which we find a trace
@@ -250,16 +220,13 @@ class MassMailCase(MailCase, MockLinkTracker):
         :param record: record which should click;
         :param click_label: label of link on which we should click;
         """
-        record_email = record[record._primary_email]
         trace = mailing.mailing_trace_ids.filtered(
             lambda t: t.model == record._name and t.res_id == record.id
         )
-        self.assertTrue(trace)
-        self.assertEqual(trace.email, email_normalize(record_email))
 
         email = self._find_sent_mail_wemail(trace.email)
         self.assertTrue(bool(email))
-        for (_url_href, link_url, _dummy, label) in re.findall(mail.HTML_TAG_URL_REGEX, email['body']):
+        for (_url_href, link_url, _dummy, label) in re.findall(tools.HTML_TAG_URL_REGEX, email['body']):
             if label == click_label and '/r/' in link_url:  # shortened link, like 'http://localhost:8069/r/LBG/m/53'
                 parsed_url = werkzeug.urls.url_parse(link_url)
                 path_items = parsed_url.path.split('/')
@@ -277,7 +244,7 @@ class MassMailCase(MailCase, MockLinkTracker):
             raise AssertionError('url %s not found in mailing %s for record %s' % (click_label, mailing, record))
         return trace
 
-    def gateway_mail_trace_open(self, mailing, record):
+    def gateway_mail_open(self, mailing, record):
         """ Simulate opening an email through blank.gif icon access. As we
         don't want to use the whole Http layer just for that we will just
         call 'set_opened()' on trace, until having a better option.
@@ -289,26 +256,7 @@ class MassMailCase(MailCase, MockLinkTracker):
         trace = mailing.mailing_trace_ids.filtered(
             lambda t: t.model == record._name and t.res_id == record.id
         )
-        self.assertTrue(trace)
-
         trace.set_opened()
-        return trace
-
-    def gateway_mail_trace_reply(self, mailing, record):
-        """ Simulate replying to an email. As we don't want to use the whole
-        mail and gateway layer just for that we will just call 'set_replied()'
-        on trace.
-
-        :param mailing: a ``mailing.mailing`` record on which we find a trace
-          to open;
-        :param record: record which should open;
-        """
-        trace = mailing.mailing_trace_ids.filtered(
-            lambda t: t.model == record._name and t.res_id == record.id
-        )
-        self.assertTrue(trace)
-
-        trace.set_replied()
         return trace
 
     @classmethod
@@ -352,35 +300,23 @@ class MassMailCase(MailCase, MockLinkTracker):
     def _create_mailing_list(cls):
         """ Shortcut to create mailing lists. Currently hardcoded, maybe evolve
         in a near future. """
-        cls.mailing_list_1, cls.mailing_list_2, cls.mailing_list_3, cls.mailing_list_4 = cls.env['mailing.list'].with_context(cls._test_context).create([
-            {
-                'contact_ids': [
-                    (0, 0, {'name': 'Déboulonneur', 'email': 'fleurus@example.com'}),
-                    (0, 0, {'name': 'Gorramts', 'email': 'gorramts@example.com'}),
-                    (0, 0, {'name': 'Ybrant', 'email': 'ybrant@example.com'}),
-                ],
-                'name': 'List1',
-                'is_public': True,
-            }, {
-                'contact_ids': [
-                    (0, 0, {'name': 'Gilberte', 'email': 'gilberte@example.com'}),
-                    (0, 0, {'name': 'Gilberte En Mieux', 'email': 'gilberte@example.com'}),
-                    (0, 0, {'name': 'Norbert', 'email': 'norbert@example.com'}),
-                    (0, 0, {'name': 'Ybrant', 'email': 'ybrant@example.com'}),
-                ],
-                'name': 'List2',
-                'is_public': True,
-            }, {
-                'contact_ids': [
-                    (0, 0, {'name': 'Déboulonneur', 'email': 'fleurus@example.com'}),
-                ],
-                'name': 'List3',
-                'is_public': True,
-            }, {
-                'name': 'List4',
-            }
-        ])
-        cls.mailing_list_3.subscription_ids[0].opt_out = True
+        cls.mailing_list_1 = cls.env['mailing.list'].with_context(cls._test_context).create({
+            'name': 'List1',
+            'contact_ids': [
+                (0, 0, {'name': 'Déboulonneur', 'email': 'fleurus@example.com'}),
+                (0, 0, {'name': 'Gorramts', 'email': 'gorramts@example.com'}),
+                (0, 0, {'name': 'Ybrant', 'email': 'ybrant@example.com'}),
+            ]
+        })
+        cls.mailing_list_2 = cls.env['mailing.list'].with_context(cls._test_context).create({
+            'name': 'List2',
+            'contact_ids': [
+                (0, 0, {'name': 'Gilberte', 'email': 'gilberte@example.com'}),
+                (0, 0, {'name': 'Gilberte En Mieux', 'email': 'gilberte@example.com'}),
+                (0, 0, {'name': 'Norbert', 'email': 'norbert@example.com'}),
+                (0, 0, {'name': 'Ybrant', 'email': 'ybrant@example.com'}),
+            ]
+        })
 
     @classmethod
     def _create_mailing_list_of_x_contacts(cls, contacts_nbr):
@@ -389,11 +325,8 @@ class MassMailCase(MailCase, MockLinkTracker):
         return cls.env['mailing.list'].with_context(cls._test_context).create({
             'name': 'Test List',
             'contact_ids': [
-                (0, 0, {
-                    'name': f'Contact %{idx}',
-                    'email': f'contact%{idx}@example.com'
-                })
-                for idx in range(contacts_nbr)
+                (0, 0, {'name': 'Contact %s' % i, 'email': 'contact%s@example.com' % i})
+                for i in range(contacts_nbr)
             ],
         })
 
@@ -405,12 +338,9 @@ class MassMailCommon(MailCommon, MassMailCase):
         super(MassMailCommon, cls).setUpClass()
 
         cls.user_marketing = mail_new_test_user(
-            cls.env,
+            cls.env, login='user_marketing',
             groups='base.group_user,base.group_partner_manager,mass_mailing.group_mass_mailing_user',
-            login='user_marketing',
-            name='Martial Marketing',
-            signature='--\nMartial',
-        )
+            name='Martial Marketing', signature='--\nMartial')
 
         cls.email_reply_to = 'MyCompany SomehowAlias <test.alias@test.mycompany.com>'
 

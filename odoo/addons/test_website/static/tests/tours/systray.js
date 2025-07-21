@@ -1,10 +1,6 @@
 /** @odoo-module **/
-import {
-    clickOnEditAndWaitEditMode,
-    clickOnSave,
-    registerWebsitePreviewTour,
-} from '@website/js/tours/tour_utils';
-import { stepUtils } from "@web_tour/tour_service/tour_utils";
+
+import wTourUtils from 'website.tour_utils';
 
 /**
  * The purpose of these tours is to check the systray visibility:
@@ -16,192 +12,176 @@ import { stepUtils } from "@web_tour/tour_service/tour_utils";
  * - as an unrelated user (neither "tester" nor restricted editor)
  */
 
-const canPublish = () => [{
-    content: "Publish",
+const canPublish = [{
+    content: 'Publish',
     trigger: '.o_menu_systray .o_menu_systray_item:contains("Unpublished")',
-    run: "click",
 }, {
-    content: "Wait for Publish",
+    content: 'Wait for Publish',
     trigger: '.o_menu_systray .o_menu_systray_item:contains("Published"):not([data-processing])',
+    run: () => {}, // This is a check.
 }, {
-    content: "Unpublish",
+    content: 'Unpublish',
     trigger: '.o_menu_systray .o_menu_systray_item:contains("Published")',
-    run: "click",
 }, {
-    content: "Wait for Unpublish",
+    content: 'Wait for Unpublish',
     trigger: '.o_menu_systray .o_menu_systray_item:contains("Unpublished"):not([data-processing])',
+    run: () => {}, // This is a check.
 }];
 
-const cannotPublish = () => [{
-    content: "Check has no Publish/Unpublish",
+const cannotPublish = [{
+    content: 'Check has no Publish/Unpublish',
     trigger: '.o_menu_systray:not(:has(.o_menu_systray_item:contains("ublished")))',
+    run: () => {}, // This is a check.
 }];
 
-const canToggleMobilePreview = () => [{
-    content: "Enable mobile preview",
-    trigger: '.o_menu_systray .o_menu_systray_item.o_mobile_preview:not(.o_mobile_preview_active) span',
-    run: "click",
-}, {
-    content: "Disable mobile preview",
-    trigger: '.o_menu_systray .o_menu_systray_item.o_mobile_preview.o_mobile_preview_active span',
-    run: "click",
-}];
-
-const cannotToggleMobilePreview = () => [{
+const canToggleMobilePreview = [{
     content: 'Enable mobile preview',
-    trigger: '.o_menu_systray:not(:has(.o_menu_systray_item.o_mobile_preview))',
+    trigger: '.o_menu_systray .o_menu_systray_item.o_mobile_preview:not(.o_mobile_preview_active)',
+}, {
+    content: 'Disable mobile preview',
+    trigger: '.o_menu_systray .o_menu_systray_item.o_mobile_preview.o_mobile_preview_active',
 }];
 
-// For non-website users, switching across website only works if the domains are
-// specified. Within the scope of test tours, this cannot be achieved.
-const canSwitchWebsiteNoCheck = () => [{
+const canSwitchWebsite = [{
     content: 'Open website switcher',
     trigger: '.o_menu_systray .o_menu_systray_item.o_website_switcher_container .dropdown-toggle:contains("My Website"):not(:contains("My Website 2"))',
-    run: "click",
 }, {
-    content: 'Can switch to other website',
-    trigger: '.o-dropdown--menu .dropdown-item:contains("Other")',
+    content: 'Switch to website 2',
+    trigger: '.o_menu_systray .o_menu_systray_item.o_website_switcher_container .dropdown-item:contains("My Website 2")',
+}, {
+    content: 'Wait for Website 2',
+    trigger: 'iframe html[data-website-id="2"] body:contains("Test Model")',
+    run: () => {}, // This is a check.
 }];
 
-
-const canSwitchWebsite = () => [{
-    content: "Open website switcher",
-    trigger: '.o_menu_systray .o_menu_systray_item.o_website_switcher_container .dropdown-toggle:contains("My Website"):not(:contains("My Website 2"))',
-    run: "click",
-}, {
-    content: "Switch to other website",
-    trigger: '.o-dropdown--menu .dropdown-item:contains("Other")',
-    run: "click",
-}, {
-    content: "Wait for other website",
-    trigger: ':iframe  body:contains("Test Model") div:contains("Other")',
-}];
-
-const canAddNewContent = () => [{
-    content: "Open +New content",
+const canAddNewContent = [{
+    content: 'Open +New content',
     trigger: '.o_menu_systray .o_menu_systray_item.o_new_content_container',
-    run: "click",
 }, {
-    content: "Close +New content",
+    content: 'Close +New content',
     trigger: '#o_new_content_menu_choices',
-    run: "click",
 }];
 
-const cannotAddNewContent = () => [{
-    content: 'No +New content',
-    trigger: '.o_menu_systray:not(:has(.o_menu_systray_item.o_new_content_container))',
-}];
-
-const canEditInBackEnd = () => [{
-    content: "Edit in backend",
+const canEditInBackEnd = [{
+    content: 'Edit in backend',
     trigger: '.o_menu_systray .o_website_edit_in_backend a',
-    run: "click",
 }, {
-    content: "Check that the form is editable",
+    content: 'Check that the form is editable',
     trigger: '.o_form_view_container .o_form_editable',
+    run: () => {}, // This is a check.
 }, {
-    content: "Return to website",
-    trigger: '.o-form-buttonbox .fa-globe',
-    run: "click",
+    content: 'Return to website',
+    trigger: '.oe_button_box .fa-globe',
 }];
 
-const canViewInBackEnd = () => [{
-    content: "Go to backend",
+const canViewInBackEnd = [{
+    content: 'Go to backend',
     trigger: '.o_menu_systray .o_website_edit_in_backend a',
-    run: "click",
 }, {
-    content: "Check that the form is read-only",
+    content: 'Check that the form is read-only',
     trigger: '.o_form_view_container .o_form_readonly',
+    run: () => {}, // This is a check.
 }, {
-    content: "Return to website",
-    trigger: '.o-form-buttonbox .fa-globe',
-    run: "click",
+    content: 'Return to website',
+    trigger: '.oe_button_box .fa-globe',
 }];
 
-const canEdit = () => [
-    ...clickOnEditAndWaitEditMode(),
+const canEdit = [
+    ...wTourUtils.clickOnEditAndWaitEditMode(),
     {
-        content: "Click on name",
-        trigger: ':iframe span[data-oe-expression="test_model.name"][contenteditable="true"]',
-        run: "click",
+        content: 'Click on name',
+        trigger: 'iframe span[data-oe-expression="test_model.name"][contenteditable="true"]',
     }, {
-        content: "Change name",
-        trigger: ':iframe span[data-oe-expression="test_model.name"][contenteditable="true"]',
-        run: "editor Better name",
+        content: 'Change name',
+        trigger: 'iframe span[data-oe-expression="test_model.name"][contenteditable="true"]',
+        run: 'text Better name',
     }, {
-        content: "Check that field becomes dirty",
-        trigger: ':iframe span[data-oe-expression="test_model.name"].o_dirty',
+        content: 'Check that field becomes dirty',
+        trigger: 'iframe span[data-oe-expression="test_model.name"].o_dirty',
+        run: () => {}, // This is a check.
     },
-    ...clickOnSave(),
+    ...wTourUtils.clickOnSave(),
     {
-        content: "Check whether name is saved",
-        trigger: ':iframe span[data-oe-expression="test_model.name"]:contains("Better name")',
+        content: 'Check whether name is saved',
+        trigger: 'iframe span[data-oe-expression="test_model.name"]:contains("Better name")',
+        run: () => {}, // This is a check.
     },
 ];
 
-const cannotEdit = () => [stepUtils.waitIframeIsReady(), {
-    content: "Check Edit is not available",
+const cannotEdit = [{
+    content: 'Check Edit is not available',
     trigger: '.o_menu_systray:not(:has(.o_edit_website_container))',
+    run: () => {}, // This is a check.
 }];
 
-const canEditButCannotChange = () => [
-    ...clickOnEditAndWaitEditMode(),
+const canEditButCannotChange = [
+    ...wTourUtils.clickOnEditAndWaitEditMode(),
     {
-        content: 'Cannot change name',
-        trigger: ':iframe main:not(:has([data-oe-expression])):contains("Test Model")',
+        content: 'Change name',
+        trigger: 'iframe span[data-oe-expression="test_model.name"][contenteditable="true"]',
+        run: 'text Better name',
+    }, {
+        // Shouldn't the field rather not be editable ?
+        content: 'Check that field becomes dirty',
+        trigger: 'iframe span.o_dirty[data-oe-expression="test_model.name"]',
+        run: () => {}, // This is a check.
+    },
+    wTourUtils.clickOnSave()[0], // Do not wait for save to succeed.
+    {
+        content: 'Check access error popup',
+        trigger: 'iframe .popover:contains("You are not allowed")',
+        run: () => {}, // This is a check.
     },
 ];
 
 const register = (title, steps) => {
-    registerWebsitePreviewTour(title, {
-        url: "/test_model/1",
+    wTourUtils.registerWebsitePreviewTour(title, {
+        url: '/test_model/1',
+        test: true,
     }, steps);
 };
 
-register("test_systray_admin", () => [
-    ...canPublish(),
-    ...canToggleMobilePreview(),
-    ...canSwitchWebsite(),
-    ...canAddNewContent(),
-    ...canEditInBackEnd(),
-    ...canEdit(),
+register('test_systray_admin', [
+    ...canPublish,
+    ...canToggleMobilePreview,
+    ...canSwitchWebsite,
+    ...canAddNewContent,
+    ...canEditInBackEnd,
+    ...canEdit,
 ]);
 
-register("test_systray_reditor_tester", () => [
-    ...canPublish(),
-    ...canToggleMobilePreview(),
-    ...canSwitchWebsite(),
-    ...canAddNewContent(),
-    ...canEditInBackEnd(),
-    ...canEdit(),
+register('test_systray_reditor_tester', [
+    ...canPublish,
+    ...canToggleMobilePreview,
+    ...canSwitchWebsite,
+    ...canAddNewContent,
+    ...canEditInBackEnd,
+    ...canEdit,
 ]);
 
-register("test_systray_reditor_not_tester", () => [
-    ...cannotPublish(),
-    ...canToggleMobilePreview(),
-    ...canSwitchWebsite(),
-    ...canAddNewContent(),
-    ...canViewInBackEnd(),
-    ...canEditButCannotChange(),
+register('test_systray_reditor_not_tester', [
+    ...cannotPublish,
+    ...canToggleMobilePreview,
+    ...canSwitchWebsite,
+    ...canAddNewContent,
+    ...canViewInBackEnd,
+    ...canEditButCannotChange,
 ]);
 
-register("test_systray_not_reditor_tester", () => [
-    ...canPublish(),
-    ...cannotToggleMobilePreview(),
-    ...canSwitchWebsiteNoCheck(),
-    ...cannotAddNewContent(),
-    ...canEditInBackEnd(),
-    ...cannotEdit(),
+register('test_systray_not_reditor_tester', [
+    ...canPublish,
+    ...canToggleMobilePreview,
+    ...canSwitchWebsite,
+    ...canAddNewContent,
+    ...canEditInBackEnd,
+    ...cannotEdit,
 ]);
 
-register("test_systray_not_reditor_not_tester", () => [
-    ...cannotPublish(),
-    ...cannotToggleMobilePreview(),
-    ...canSwitchWebsiteNoCheck(),
-    ...cannotAddNewContent(),
-    ...canViewInBackEnd(),
-    ...cannotEdit(),
-    {
-        trigger: ":iframe main:contains(test model)",
-    },
+register('test_systray_not_reditor_not_tester', [
+    ...cannotPublish,
+    ...canToggleMobilePreview,
+    ...canSwitchWebsite,
+    ...canAddNewContent,
+    ...canViewInBackEnd,
+    ...cannotEdit,
 ]);

@@ -3,16 +3,16 @@
 # 	* website_slides_survey
 # 
 # Translators:
-# Wil Odoo, 2024
-# Abe Manyo, 2025
+# Martin Trigaux, 2022
+# Abe Manyo, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-16 13:41+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: Abe Manyo, 2025\n"
+"POT-Creation-Date: 2023-05-23 08:24+0000\n"
+"PO-Revision-Date: 2022-09-22 05:57+0000\n"
+"Last-Translator: Abe Manyo, 2023\n"
 "Language-Team: Indonesian (https://app.transifex.com/odoo/teams/41243/id/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,15 +21,11 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: website_slides_survey
-#: model:ir.model.fields,field_description:website_slides_survey.field_slide_channel__members_certified_count
-msgid "# Certified Attendees"
-msgstr "# Peserta Bersertifikasi"
-
-#. module: website_slides_survey
 #. odoo-python
 #: code:addons/website_slides_survey/models/survey_survey.py:0
-msgid "- %(certification)s (Courses - %(courses)s)"
-msgstr "- %(certification)s (Kursus - %(courses)s)"
+#, python-format
+msgid "- %s (Courses - %s)"
+msgstr "- %s (Courses - %s)"
 
 #. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.survey_survey_view_kanban
@@ -45,38 +41,48 @@ msgstr ""
 msgid ""
 "<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
 "    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"        Dear <t t-out=\"object.partner_id.name or 'participant' or ''\">participant</t><br/><br/>\n"
-"        Unfortunately, you have failed the certification and are no longer a member of the course: <t t-out=\"object.slide_partner_id.channel_id.name or ''\">Basics of Gardening</t>.<br/><br/>\n"
+"        Dear <t t-out=\"object.partner_id.name or 'participant' or ''\">participant</t><br><br>\n"
+"        Unfortunately, you have failed the certification and are no longer a member of the course: <t t-out=\"object.slide_partner_id.channel_id.name or ''\">Basics of Gardening</t>.<br><br>\n"
 "        Don't hesitate to enroll again!\n"
-"        </p><div style=\"margin: 16px 0px 16px 0px;\">\n"
+"        <div style=\"margin: 16px 0px 16px 0px;\">\n"
 "            <a t-att-href=\"(object.slide_partner_id.channel_id.website_url)\" style=\"background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;\">\n"
 "                Enroll now\n"
 "            </a>\n"
 "        </div>\n"
 "        Thank you for your participation.\n"
-"    \n"
+"    </p>\n"
 "</div>\n"
 "            "
 msgstr ""
 "<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
 "    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"        Kepada <t t-out=\"object.partner_id.name or 'participant' or ''\">peserta</t><br/><br/>\n"
-"        Sangat disayangkan, namun Anda gagal mendapatkan sertifikasi dan sudah tidak lagi merupakan anggota untuk kursus: <t t-out=\"object.slide_partner_id.channel_id.name or ''\">Basics of Gardening</t>.<br/><br/>\n"
+"        Yth <t t-out=\"object.partner_id.name or 'participant' or ''\">peserta</t><br><br>\n"
+"        Sangat disayangkan, namun Anda gagal mendapatkan sertifikasi dan sudah tidak lagi merupakan anggota untuk kursus: <t t-out=\"object.slide_partner_id.channel_id.name or ''\">Basics of Gardening</t>.<br><br>\n"
 "        Jangan ragu untuk mengulangi kursus tersebut lagi!\n"
-"        </p><div style=\"margin: 16px 0px 16px 0px;\">\n"
+"        <div style=\"margin: 16px 0px 16px 0px;\">\n"
 "            <a t-att-href=\"(object.slide_partner_id.channel_id.website_url)\" style=\"background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;\">\n"
 "                Daftar sekarang\n"
 "            </a>\n"
 "        </div>\n"
-"         Terima kasih atas partisipasi Anda.\n"
-"    \n"
+"        Terima kasih atas partisipasi Anda.\n"
+"    </p>\n"
 "</div>\n"
 "            "
 
 #. module: website_slides_survey
+#: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_content_detailed
+msgid "<i class=\"fa fa-arrow-right me-1\"/>Add Questions to this Survey"
+msgstr ""
+
+#. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.display_certificate
-msgid "<i class=\"fa fa-arrow-right\"/> Get Certified"
-msgstr "<i class=\"fa fa-arrow-right\"/> Dapatkan Sertifikat"
+msgid "<i class=\"fa fa-arrow-right me-1\"/>All Certifications"
+msgstr ""
+
+#. module: website_slides_survey
+#: model_terms:ir.ui.view,arch_db:website_slides_survey.user_profile_content
+msgid "<i class=\"fa fa-arrow-right\"/> See Certifications"
+msgstr ""
 
 #. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.display_certificate
@@ -111,21 +117,6 @@ msgid "<i class=\"fa fa-share-alt\" aria-label=\"Share\" title=\"Share\"/>"
 msgstr "<i class=\"fa fa-share-alt\" aria-label=\"Share\" title=\"Share\"/>"
 
 #. module: website_slides_survey
-#: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_content_detailed
-msgid "<i class=\"oi oi-arrow-right me-1\"/>Add Questions to this Survey"
-msgstr "<i class=\"oi oi-arrow-right me-1\"/>Tambahkan Pertanyaan ke Survei ini"
-
-#. module: website_slides_survey
-#: model_terms:ir.ui.view,arch_db:website_slides_survey.display_certificate
-msgid "<i class=\"oi oi-arrow-right me-1\"/>All Certifications"
-msgstr "<i class=\"oi oi-arrow-right me-1\"/>Semua Sertifikasi"
-
-#. module: website_slides_survey
-#: model_terms:ir.ui.view,arch_db:website_slides_survey.user_profile_content
-msgid "<i class=\"oi oi-arrow-right\"/> See Certifications"
-msgstr "<i class=\"oi oi-arrow-right\"/> Lihat Sertifikasi"
-
-#. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.badge_content
 msgid "<i class=\"text-muted\"> awarded users</i>"
 msgstr "<i class=\"text-muted\"> user dengan piala</i>"
@@ -137,8 +128,12 @@ msgstr "<span class=\"ms-1\">Sertifikasi</span>"
 
 #. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_channel_view_form
-msgid "<span class=\"o_stat_text\">Certified</span>"
-msgstr "<span class=\"o_stat_text\">Bersertifikasi</span>"
+msgid ""
+"<span class=\"o_stat_text\" attrs=\"{'invisible': [('nbr_certification', '&gt;', 0)]}\">Finished</span>\n"
+"                <span class=\"o_stat_text\" attrs=\"{'invisible': [('nbr_certification', '=', 0)]}\">Certified</span>"
+msgstr ""
+"<span class=\"o_stat_text\" attrs=\"{'invisible': [('nbr_certification', '&gt;', 0)]}\">Selesai</span>\n"
+"                <span class=\"o_stat_text\" attrs=\"{'invisible': [('nbr_certification', '=', 0)]}\">Bersertifikasi</span>"
 
 #. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.all_user_card
@@ -151,11 +146,19 @@ msgid "<span class=\"text-muted\">Certifications</span>"
 msgstr "<span class=\"text-muted\">Sertifikasi-Sertifikasi</span>"
 
 #. module: website_slides_survey
+#: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_channel_view_kanban
+msgid "<span class=\"text-muted\">Certified</span>"
+msgstr "<span class=\"text-muted\">Bersertifikasi</span>"
+
+#. module: website_slides_survey
+#: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_channel_view_kanban
+msgid "<span class=\"text-muted\">Finished</span>"
+msgstr "<span class=\"text-muted\">Selesai</span>"
+
+#. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.course_main
-msgid "<span>Start Now</span><i class=\"oi oi-chevron-right ms-2 align-middle\"/>"
+msgid "<span>Start Now</span><i class=\"fa fa-chevron-right ms-2 align-middle\"/>"
 msgstr ""
-"<span>Mulai Sekarang</span><i class=\"oi oi-chevron-right ms-2 align-"
-"middle\"/>"
 
 #. module: website_slides_survey
 #: model:ir.model.constraint,message:website_slides_survey.constraint_slide_slide_check_survey_id
@@ -168,8 +171,6 @@ msgid "A slide of type certification cannot be previewed."
 msgstr "Slide untuk tipe 'sertifikasi' tidak dapat dipratinjau."
 
 #. module: website_slides_survey
-#. odoo-javascript
-#: code:addons/website_slides_survey/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.js:0
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_channel_view_form
 msgid "Add Certification"
 msgstr "Tambahkan Sertifikasi"
@@ -177,6 +178,7 @@ msgstr "Tambahkan Sertifikasi"
 #. module: website_slides_survey
 #. odoo-javascript
 #: code:addons/website_slides_survey/static/src/xml/website_slides_fullscreen.xml:0
+#, python-format
 msgid "Add Questions to this Survey"
 msgstr "Tambahkan Pertanyaan ke Survei ini"
 
@@ -193,6 +195,7 @@ msgstr "Izinkan Pratinjau"
 #. module: website_slides_survey
 #. odoo-python
 #: code:addons/website_slides_survey/models/survey_survey.py:0
+#, python-format
 msgid ""
 "Any Survey listed below is currently used as a Course Certification and cannot be deleted:\n"
 "%s"
@@ -238,6 +241,7 @@ msgstr "Pohon Beech"
 #. odoo-javascript
 #: code:addons/website_slides_survey/static/src/xml/website_slides_fullscreen.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_content_detailed
+#, python-format
 msgid "Begin Certification"
 msgstr "Mulai Sertifikasi"
 
@@ -253,10 +257,13 @@ msgstr "Kategori"
 
 #. module: website_slides_survey
 #. odoo-javascript
-#: code:addons/website_slides_survey/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.js:0
+#: code:addons/website_slides_survey/static/src/js/slides_upload.js:0
+#: code:addons/website_slides_survey/static/src/js/slides_upload.js:0
+#: code:addons/website_slides_survey/static/src/xml/website_slide_upload.xml:0
 #: model:ir.model.fields,field_description:website_slides_survey.field_slide_slide__survey_id
 #: model:ir.model.fields.selection,name:website_slides_survey.selection__slide_slide__slide_category__certification
 #: model:ir.model.fields.selection,name:website_slides_survey.selection__slide_slide__slide_type__certification
+#, python-format
 msgid "Certification"
 msgstr "Sertifikat"
 
@@ -309,6 +316,7 @@ msgstr "Ikon sertifikasi"
 #. module: website_slides_survey
 #. odoo-python
 #: code:addons/website_slides_survey/controllers/slides.py:0
+#, python-format
 msgid "Certification slides are completed when the survey is succeeded."
 msgstr "Slide sertifikasi selesai saat survei diselesaikan."
 
@@ -321,11 +329,6 @@ msgid "Certifications"
 msgstr "Sertifikat-Sertifikat"
 
 #. module: website_slides_survey
-#: model_terms:ir.ui.view,arch_db:website_slides_survey.display_certificate
-msgid "Certifications are exams that you successfully passed. <br/>"
-msgstr "Sertifikasi adalah ujian yang sudah sukses diselesaikan. <br/>"
-
-#. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_content_detailed
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_sidebar_done_button
 msgid "Certifications you have passed cannot be marked as not done"
@@ -334,25 +337,15 @@ msgstr ""
 "selesai"
 
 #. module: website_slides_survey
-#: model:ir.model.fields,field_description:website_slides_survey.field_slide_channel_partner__survey_certification_success
-#: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_channel_partner_view_search
-msgid "Certified"
-msgstr "Bersertifikasi"
-
-#. module: website_slides_survey
 #: model:survey.question.answer,value:website_slides_survey.furniture_certification_page_1_question_2_choice_1
 msgid "Chair"
 msgstr "Kursi"
 
 #. module: website_slides_survey
-#: model:ir.model,name:website_slides_survey.model_slide_channel_partner
-msgid "Channel / Partners (Members)"
-msgstr "Channel / Mitra (Anggota)"
-
-#. module: website_slides_survey
 #. odoo-javascript
 #: code:addons/website_slides_survey/static/src/xml/website_slides_fullscreen.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_content_detailed
+#, python-format
 msgid "Congratulations, you passed the Certification!"
 msgstr "Selamat, Anda lulus Sertifikasi!"
 
@@ -365,6 +358,7 @@ msgstr "Kursus"
 #. odoo-python
 #: code:addons/website_slides_survey/models/survey_survey.py:0
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.survey_survey_view_form
+#, python-format
 msgid "Courses"
 msgstr "Kursus-kursus"
 
@@ -391,6 +385,9 @@ msgstr "Meja"
 #. module: website_slides_survey
 #. odoo-javascript
 #: code:addons/website_slides_survey/static/src/xml/website_slides_fullscreen.xml:0
+#: code:addons/website_slides_survey/static/src/xml/website_slides_fullscreen.xml:0
+#: code:addons/website_slides_survey/static/src/xml/website_slides_fullscreen.xml:0
+#, python-format
 msgid "Download certification"
 msgstr "Unduh sertifikasi"
 
@@ -417,7 +414,8 @@ msgstr "Kembali ke kursus"
 
 #. module: website_slides_survey
 #. odoo-javascript
-#: code:addons/website_slides_survey/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
+#: code:addons/website_slides_survey/static/src/xml/website_slide_upload.xml:0
+#, python-format
 msgid "How to upload a certification on your course?"
 msgstr "Bagaimana cara mengunggah sertifikasi pada kursus Anda?"
 
@@ -435,12 +433,6 @@ msgstr "Kelola Sertifikasi"
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_content_detailed
 msgid "Mark To Do"
 msgstr "Tandai Sebagai Untuk Dilakukan"
-
-#. module: website_slides_survey
-#. odoo-python
-#: code:addons/website_slides_survey/models/slide_channel.py:0
-msgid "No Attendee passed this course certification yet!"
-msgstr "Belum ada Peserta yang lolos sertifikasi kursus ini!"
 
 #. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.user_profile_content
@@ -463,7 +455,6 @@ msgstr ""
 
 #. module: website_slides_survey
 #: model:ir.model.fields,field_description:website_slides_survey.field_slide_channel__nbr_certification
-#: model:ir.model.fields,field_description:website_slides_survey.field_slide_channel_partner__nbr_certification
 #: model:ir.model.fields,field_description:website_slides_survey.field_slide_slide__nbr_certification
 msgid "Number of Certifications"
 msgstr "Jumlah Sertifikasi"
@@ -475,7 +466,8 @@ msgstr "Ek"
 
 #. module: website_slides_survey
 #. odoo-javascript
-#: code:addons/website_slides_survey/static/src/js/public/components/slide_upload_dialog/slide_upload_category.xml:0
+#: code:addons/website_slides_survey/static/src/xml/website_slide_upload.xml:0
+#, python-format
 msgid "Please select a certification."
 msgstr "Mohon pilih sertifikasi."
 
@@ -486,13 +478,13 @@ msgstr "Slide kursus terkait"
 
 #. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.display_certificate
-msgid "Score:"
-msgstr "Nilai:"
+msgid "Score :"
+msgstr ""
 
 #. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.user_profile_content
 msgid "Search"
-msgstr "Cari"
+msgstr "Pencarian"
 
 #. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.user_profile_content
@@ -500,25 +492,9 @@ msgid "Search Attempts..."
 msgstr "Percobaan Pencarian..."
 
 #. module: website_slides_survey
-#. odoo-javascript
-#: code:addons/website_slides_survey/static/src/js/public/components/slide_upload_dialog/slide_upload_category.js:0
-msgid "Select a certification"
-msgstr "Pilih sertifikasi"
-
-#. module: website_slides_survey
 #: model:survey.question,title:website_slides_survey.furniture_certification_page_1_question_2
 msgid "Select all the furniture shown in the video"
 msgstr "Pilih semua furnitur yang ditunjukkan di video"
-
-#. module: website_slides_survey
-#. odoo-javascript
-#: code:addons/website_slides_survey/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
-msgid ""
-"Select an existing certification from the list. Creating or editing a "
-"certification can be done from the backend."
-msgstr ""
-"Pilih sertifikasi yang tersedia dari list. Membuat atau mengedit sertifikasi"
-" dapat dilakukan dari backend."
 
 #. module: website_slides_survey
 #: model:mail.template,description:website_slides_survey.mail_template_user_input_certification_failed
@@ -598,6 +574,7 @@ msgstr "Ambil Quiz"
 #. odoo-javascript
 #: code:addons/website_slides_survey/static/src/xml/website_slides_fullscreen.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_content_detailed
+#, python-format
 msgid "Test Certification"
 msgstr "Uji Sertifikasi"
 
@@ -652,14 +629,28 @@ msgstr "Tipe kayu apa yang terbaik untuk furnitur?"
 #. module: website_slides_survey
 #. odoo-python
 #: code:addons/website_slides_survey/controllers/slides.py:0
+#, python-format
 msgid "You are not allowed to create a survey."
 msgstr "Anda tidak diizinkan untuk membuat survei."
 
 #. module: website_slides_survey
 #. odoo-python
 #: code:addons/website_slides_survey/controllers/slides.py:0
+#, python-format
 msgid "You are not allowed to link a certification."
 msgstr "Anda tidak diizinkan untuk menautkan sertifikasi."
+
+#. module: website_slides_survey
+#. odoo-javascript
+#: code:addons/website_slides_survey/static/src/xml/website_slide_upload.xml:0
+#, python-format
+msgid ""
+"You can create your certification from here or use an existing one. Once "
+"your certification is created, you can still edit it in backend."
+msgstr ""
+"Anda dapat membuat sertifikasi Anda dari sini atau menggunakan sertifikasi "
+"yang sudah ada. Setelah sertifikasi dibuat, Anda masih dapat mengeditnya di "
+"backend."
 
 #. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.badge_content

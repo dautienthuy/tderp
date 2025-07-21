@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
 
-    <t t-name="web.KanbanCoverImageDialog">
-        <Dialog title.translate="Set a Cover Image" size="'lg'">
+    <t t-name="web.KanbanCoverImageDialog" owl="1">
+        <Dialog title="'Set a Cover Image'" size="'lg'">
             <div t-if="attachments.length" class="o_kanban_cover_container bg-100">
                 <t t-foreach="attachments" t-as="attachment" t-key="attachment.id">
                     <div class="o_kanban_cover_image position-relative d-inline-block m-2 border bg-white o_cursor_pointer" t-att-class="{
@@ -23,12 +23,11 @@
                     Select
                 </button>
                 <FileInput
-                    autoOpen="!attachments.length"
                     acceptedFileExtensions="'image/*'"
                     onUpload.bind="onUpload"
                     resModel="props.record.resModel"
                     resId="props.record.resId">
-                        <button class="btn btn-primary w-auto" t-on-click="uploadImage">
+                        <button class="btn btn-primary" t-on-click="uploadImage">
                             Upload and Set
                         </button>
                 </FileInput>

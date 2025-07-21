@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.fields import Command
 from odoo.tests import common, Form
 from odoo.exceptions import UserError
 
@@ -137,7 +136,7 @@ class TestMrpMulticompany(common.TransactionCase):
         mo_form = Form(self.env['mrp.production'].with_user(self.user_a))
         mo_form.product_id = product
         # The mo must be confirmed, no longer in draft, in order for `lot_producing_id` to be visible in the view
-        # <div class="o_row" invisible="state == 'draft' or product_tracking in ('none', False)">
+        # <div class="o_row" attrs="{'invisible': ['|', ('state', '=', 'draft'), ('product_tracking', 'in', ('none', False))]}">
         mo = mo_form.save()
         mo.action_confirm()
         mo_form = Form(mo)
@@ -177,9 +176,8 @@ class TestMrpMulticompany(common.TransactionCase):
         details_operation_form = Form(mo.move_raw_ids[0], view=self.env.ref('stock.view_stock_move_operations'))
         with details_operation_form.move_line_ids.edit(0) as ml:
             ml.lot_id = lot_b
-            ml.quantity = 1
+            ml.qty_done = 1
         details_operation_form.save()
-        mo.move_raw_ids.picked = True
         with self.assertRaises(UserError):
             mo.button_mark_done()
 
@@ -207,6 +205,8 @@ class TestMrpMulticompany(common.TransactionCase):
         self.assertFalse(product1.with_company(self.company_b).is_kits)
         self.assertFalse(template1.with_company(self.company_b).is_kits)
 
+        self.assertTrue(product2.with_context(allowed_company_ids=[self.company_b.id, self.company_a.id]).is_kits)
+        self.assertTrue(template2.with_context(allowed_company_ids=[self.company_b.id, self.company_a.id]).is_kits)
         self.assertTrue(product2.with_company(self.company_a).is_kits)
         self.assertTrue(template2.with_company(self.company_a).is_kits)
         self.assertTrue(product2.with_company(self.company_b).is_kits)
@@ -250,69 +250,3 @@ class TestMrpMulticompany(common.TransactionCase):
         new_company = self.env['res.company'].create({'name': 'Super Company'})
         new_warehouse = self.env['stock.warehouse'].search([('company_id', '=', new_company.id)], limit=1)
         self.assertEqual(new_warehouse.manufacture_pull_id.route_id.company_id, new_company)
-
-    def test_company_specific_routes_and_warehouse_creation(self):
-        """ Check that we are able to create a new warehouse when the generic manufacture route
-        is in a different company. """
-        group_stock_manager = self.env.ref('stock.group_stock_manager')
-        self.user_a.write({'groups_id': [(4, group_stock_manager.id)]})
-
-        manufacture_route = self.env.ref('mrp.route_warehouse0_manufacture')
-        for rule in manufacture_route.rule_ids.sudo():
-            rule_company = rule.company_id
-            if not rule_company or rule_company == self.company_a:
-                continue
-            manufacture_route.copy({
-                'company_id': rule_company.id,
-                'rule_ids': [(4, rule.id)],
-            })
-        manufacture_route.company_id = self.company_a
-
-        # Enable multi warehouse
-        group_user = self.env.ref('base.group_user')
-        group_stock_multi_warehouses = self.env.ref('stock.group_stock_multi_warehouses')
-        group_stock_multi_locations = self.env.ref('stock.group_stock_multi_locations')
-        self.env['res.config.settings'].create({
-            'group_stock_multi_locations': True,
-        }).execute()
-        group_user.write({'implied_ids': [(4, group_stock_multi_warehouses.id), (4, group_stock_multi_locations.id)]})
-
-        new_warehouse = self.env['stock.warehouse'].with_user(self.user_a).with_context(allowed_company_ids=[self.company_b.id]).create({
-            'name': 'Warehouse #2',
-            'code': 'WH2',
-        })
-        self.assertEqual(new_warehouse.manufacture_pull_id.route_id.company_id, self.company_b)
-
-    def test_multi_company_kit_reservation(self):
-        """
-        Create and assign a delivery in company_b for a product that is a kit in company_a.
-        Check that the move is treated just as a non-kit product.
-        """
-        """ Check that is_kits is company dependant """
-        semi_kit_product = self.env['product.product'].create({
-            'name': 'Kit Kat',
-            'is_storable': True,
-        })
-        self.env['mrp.bom'].create([{
-            'product_id': semi_kit_product.id,
-            'product_tmpl_id': semi_kit_product.product_tmpl_id.id,
-            'company_id': self.company_a.id,
-            'type': 'phantom',
-        }])
-        warehouse_b = self.env['stock.warehouse'].search([('company_id', '=', self.company_b.id)], limit=1)
-        delivery = self.env['stock.picking'].with_company(self.company_b.id).create({
-            'picking_type_id': warehouse_b.out_type_id.id,
-            'location_id': warehouse_b.lot_stock_id.id,
-            'location_dest_id': self.ref('stock.stock_location_customers'),
-            'move_ids': [Command.create({
-                'name': semi_kit_product.name,
-                'product_id': semi_kit_product.id,
-                'product_uom_qty': 1,
-                'location_id':  warehouse_b.lot_stock_id.id,
-                'location_dest_id': self.ref('stock.stock_location_customers'),
-            })]
-        })
-        # confirm and assign the delivery with company_a and check that it was treated as a non-kit product
-        delivery.with_company(self.company_a).action_confirm()
-        delivery.with_company(self.company_a).action_assign()
-        self.assertRecordValues(delivery.move_ids, [{'state': 'confirmed', 'quantity': 0.0}])

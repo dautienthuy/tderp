@@ -3,16 +3,21 @@
 # 	* auth_totp
 # 
 # Translators:
+# Irina Fedulova <istartlin@gmail.com>, 2022
+# Vasiliy Korobatov <korobatov@gmail.com>, 2022
+# Ivan Kropotkin <yelizariev@itpp.dev>, 2022
+# ILMIR <karamov@it-projects.info>, 2022
+# Martin Trigaux, 2022
+# Сергей Шебанин <sergey@shebanin.ru>, 2022
 # Wil Odoo, 2024
-# Anastasiia Koroleva, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 08:40+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Anastasiia Koroleva, 2025\n"
+"POT-Creation-Date: 2022-10-10 10:22+0000\n"
+"PO-Revision-Date: 2022-09-22 05:45+0000\n"
+"Last-Translator: Wil Odoo, 2024\n"
 "Language-Team: Russian (https://app.transifex.com/odoo/teams/41243/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,8 +26,8 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
 
 #. module: auth_totp
-#. odoo-python
 #: code:addons/auth_totp/controllers/home.py:0
+#, python-format
 msgid "%(browser)s on %(platform)s"
 msgstr "%(browser)s на %(platform)s"
 
@@ -32,10 +37,42 @@ msgid "2-Factor Setup Wizard"
 msgstr "мастер двухфакторной настройки"
 
 #. module: auth_totp
-#. odoo-python
 #: code:addons/auth_totp/wizard/auth_totp_wizard.py:0
+#, python-format
 msgid "2-Factor authentication is now enabled."
 msgstr "двухфакторная аутентификация теперь включена."
+
+#. module: auth_totp
+#: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_form
+msgid ""
+"<i title=\"Documentation\" class=\"fa fa-fw o_button_icon fa-info-circle\"/>\n"
+"                                    Learn More"
+msgstr ""
+"<i title=\"Documentation\" class=\"fa fa-fw o_button_icon fa-info-circle\"/>\n"
+"                                    Узнать больше"
+
+#. module: auth_totp
+#: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_field
+msgid ""
+"<i title=\"Documentation\" class=\"fa fa-fw o_button_icon fa-info-circle\"/>\n"
+"                            Learn More"
+msgstr ""
+"<i title=\"Documentation\" class=\"fa fa-fw o_button_icon fa-info-circle\"/>\n"
+"                            Узнать больше"
+
+#. module: auth_totp
+#: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_form
+msgid ""
+"<span attrs=\"{'invisible': [('totp_enabled', '=', False)]}\" class=\"text-"
+"muted\">This account is protected!</span>"
+msgstr ""
+
+#. module: auth_totp
+#: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_field
+msgid ""
+"<span attrs=\"{'invisible': [('totp_enabled', '=', False)]}\" class=\"text-"
+"muted\">Your account is protected!</span>"
+msgstr ""
 
 #. module: auth_totp
 #: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_wizard
@@ -66,26 +103,13 @@ msgstr ""
 
 #. module: auth_totp
 #: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_form
-msgid ""
-"<span invisible=\"not totp_enabled\" class=\"text-muted\">This account is "
-"protected!</span>"
-msgstr ""
-"<span invisible=\"not totp_enabled\" class=\"text-muted\">Этот счет "
-"защищен!</span>"
-
-#. module: auth_totp
-#: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_field
-msgid ""
-"<span invisible=\"not totp_enabled\" class=\"text-muted\">Your account is "
-"protected!</span>"
-msgstr ""
-"<span invisible=\"not totp_enabled\" class=\"text-muted\">Ваш счет "
-"защищен!</span>"
+msgid "Account Security"
+msgstr "Параметры доступа"
 
 #. module: auth_totp
 #: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_wizard
 msgid "Activate"
-msgstr "Активировать"
+msgstr "Включить"
 
 #. module: auth_totp
 #: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_field
@@ -130,7 +154,7 @@ msgstr "Настройка приложения Authenticator"
 #: model_terms:ir.ui.view,arch_db:auth_totp.auth_totp_form
 #: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_wizard
 msgid "Cancel"
-msgstr "Отменить"
+msgstr "Отмена"
 
 #. module: auth_totp
 #: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_wizard
@@ -145,12 +169,12 @@ msgstr "Нажмите на эту ссылку, чтобы открыть пр�
 #. module: auth_totp
 #: model:ir.model.fields,field_description:auth_totp.field_auth_totp_wizard__create_uid
 msgid "Created by"
-msgstr "Создано:"
+msgstr "Создал"
 
 #. module: auth_totp
 #: model:ir.model.fields,field_description:auth_totp.field_auth_totp_wizard__create_date
 msgid "Created on"
-msgstr "Дата создания:"
+msgstr "Дата создания"
 
 #. module: auth_totp
 #: model:ir.model.fields,field_description:auth_totp.field_auth_totp_device__create_date
@@ -166,7 +190,7 @@ msgstr "Описание"
 #: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_field
 #: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_form
 msgid "Device"
-msgstr "Устройство"
+msgstr "устройство"
 
 #. module: auth_totp
 #: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_field
@@ -202,38 +226,44 @@ msgid "Enter your six-digit code below"
 msgstr "Введите шестизначный код ниже"
 
 #. module: auth_totp
-#: model:ir.model.fields,field_description:auth_totp.field_auth_totp_device__expiration_date
-msgid "Expiration Date"
-msgstr "Дата окончания"
+#: model:ir.model,name:auth_totp.model_ir_http
+msgid "HTTP Routing"
+msgstr "Маршрутизация HTTP"
 
 #. module: auth_totp
 #: model:ir.model.fields,field_description:auth_totp.field_auth_totp_device__id
 #: model:ir.model.fields,field_description:auth_totp.field_auth_totp_wizard__id
 msgid "ID"
-msgstr "ID"
+msgstr "Идентификатор"
 
 #. module: auth_totp
-#. odoo-python
 #: code:addons/auth_totp/controllers/home.py:0
+#, python-format
 msgid "Invalid authentication code format."
-msgstr "Неверный формат кода аутентификации."
+msgstr "Неправильный формат кода."
+
+#. module: auth_totp
+#: model:ir.model.fields,field_description:auth_totp.field_auth_totp_device____last_update
+#: model:ir.model.fields,field_description:auth_totp.field_auth_totp_wizard____last_update
+msgid "Last Modified on"
+msgstr "Последнее изменение"
 
 #. module: auth_totp
 #: model:ir.model.fields,field_description:auth_totp.field_auth_totp_wizard__write_uid
 msgid "Last Updated by"
-msgstr "Последнее обновление:"
+msgstr "Последний раз обновил"
 
 #. module: auth_totp
 #: model:ir.model.fields,field_description:auth_totp.field_auth_totp_wizard__write_date
 msgid "Last Updated on"
-msgstr "Дата последнего обновления:"
+msgstr "Последнее обновление"
 
 #. module: auth_totp
 #: model_terms:ir.ui.view,arch_db:auth_totp.auth_totp_form
 #: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_field
 #: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_form
 msgid "Learn More"
-msgstr "Узнать больше"
+msgstr "Подробнее"
 
 #. module: auth_totp
 #: model_terms:ir.ui.view,arch_db:auth_totp.auth_totp_form
@@ -264,7 +294,7 @@ msgstr "QR-код"
 #: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_field
 #: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_form
 msgid "Revoke"
-msgstr "Аннулировать"
+msgstr "Отменить"
 
 #. module: auth_totp
 #: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_field
@@ -275,7 +305,7 @@ msgstr "Отменить все"
 #. module: auth_totp
 #: model:ir.model.fields,field_description:auth_totp.field_auth_totp_device__scope
 msgid "Scope"
-msgstr "Сфера"
+msgstr "Область доступа"
 
 #. module: auth_totp
 #: model:ir.model.fields,field_description:auth_totp.field_auth_totp_wizard__secret
@@ -283,10 +313,10 @@ msgid "Secret"
 msgstr "Секрет"
 
 #. module: auth_totp
-#. odoo-python
 #: code:addons/auth_totp/wizard/auth_totp_wizard.py:0
+#, python-format
 msgid "The verification code should only contain numbers"
-msgstr "Код проверки должен содержать только цифры"
+msgstr "Проверочный код должен состоять только из цифр"
 
 #. module: auth_totp
 #: model_terms:ir.ui.view,arch_db:auth_totp.auth_totp_form
@@ -300,7 +330,7 @@ msgstr ""
 #. module: auth_totp
 #: model:ir.model.fields,field_description:auth_totp.field_res_users__totp_secret
 msgid "Totp Secret"
-msgstr "Секрет Тотп"
+msgstr "TOTP секрет"
 
 #. module: auth_totp
 #: model:ir.model.fields,field_description:auth_totp.field_res_users__totp_trusted_device_ids
@@ -310,8 +340,8 @@ msgid "Trusted Devices"
 msgstr "Доверенные устройства"
 
 #. module: auth_totp
-#. odoo-python
 #: code:addons/auth_totp/models/res_users.py:0
+#, python-format
 msgid "Two-Factor Authentication Activation"
 msgstr "Активация двухфакторной аутентификации"
 
@@ -323,8 +353,18 @@ msgid "Two-factor Authentication"
 msgstr "Двухфакторная аутентификация"
 
 #. module: auth_totp
-#: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_field
 #: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_form
+msgid ""
+"Two-factor Authentication (\"2FA\") is a system of double authentication.\n"
+"                                The first one is done with your password and the second one with a code you get from a dedicated mobile app.\n"
+"                                Popular ones include Authy, Google Authenticator or the Microsoft Authenticator."
+msgstr ""
+"Двухфакторная аутентификация (\"2FA\") - это система двойной аутентификации.\n"
+"                                Первая осуществляется с помощью пароля, а вторая - с помощью кода, который вы получаете из специального мобильного приложения.\n"
+"                                Среди популярных - Authy, Google Authenticator или Microsoft Authenticator."
+
+#. module: auth_totp
+#: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_field
 msgid ""
 "Two-factor Authentication (\"2FA\") is a system of double authentication.\n"
 "                        The first one is done with your password and the second one with a code you get from a dedicated mobile app.\n"
@@ -350,20 +390,20 @@ msgid "Two-factor authentication Enabled"
 msgstr "Двухфакторная аутентификация Включено"
 
 #. module: auth_totp
-#. odoo-python
 #: code:addons/auth_totp/models/res_users.py:0
+#, python-format
 msgid "Two-factor authentication already enabled"
 msgstr "Двухфакторная аутентификация уже включена"
 
 #. module: auth_totp
-#. odoo-python
 #: code:addons/auth_totp/models/res_users.py:0
+#, python-format
 msgid "Two-factor authentication can only be enabled for yourself"
-msgstr "Двухфакторную аутентификацию можно включить только для себя"
+msgstr "Двухфакторная аутентификация может быть включена только персонально"
 
 #. module: auth_totp
-#. odoo-python
 #: code:addons/auth_totp/models/res_users.py:0
+#, python-format
 msgid "Two-factor authentication disabled for the following user(s): %s"
 msgstr ""
 "Двухфакторная аутентификация отключена для следующего пользователя "
@@ -385,14 +425,14 @@ msgstr "Пользователь"
 #: model:ir.model.fields,field_description:auth_totp.field_auth_totp_wizard__code
 #: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_wizard
 msgid "Verification Code"
-msgstr "Код подтверждения"
+msgstr "Проверочный код"
 
 #. module: auth_totp
-#. odoo-python
 #: code:addons/auth_totp/models/res_users.py:0
 #: code:addons/auth_totp/wizard/auth_totp_wizard.py:0
+#, python-format
 msgid "Verification failed, please double-check the 6-digit code"
-msgstr "Верификация не прошла, пожалуйста, перепроверьте 6-значный код"
+msgstr "Проверка не удалась, пожалуйста, проверьте еще раз ваш код из 6 цифр"
 
 #. module: auth_totp
 #: model_terms:ir.ui.view,arch_db:auth_totp.auth_totp_form

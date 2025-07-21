@@ -3,16 +3,21 @@
 # 	* website_slides_survey
 # 
 # Translators:
-# Wil Odoo, 2024
-# Junko Augias, 2025
+# Tsuda Ryoko <ryoko04nov@gmail.com>, 2022
+# Norimichi Sugimoto <norimichi.sugimoto@tls-ltd.co.jp>, 2022
+# Yoshi Tashiro (Quartile) <tashiro@roomsfor.hk>, 2022
+# Martin Trigaux, 2022
+# Andy Yiu, 2023
+# Ryoko Tsuda <ryoko@quartile.co>, 2023
+# Junko Augias, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-16 13:41+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: Junko Augias, 2025\n"
+"POT-Creation-Date: 2023-05-23 08:24+0000\n"
+"PO-Revision-Date: 2022-09-22 05:57+0000\n"
+"Last-Translator: Junko Augias, 2023\n"
 "Language-Team: Japanese (https://app.transifex.com/odoo/teams/41243/ja/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,15 +26,11 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: website_slides_survey
-#: model:ir.model.fields,field_description:website_slides_survey.field_slide_channel__members_certified_count
-msgid "# Certified Attendees"
-msgstr "# 認定済参加者"
-
-#. module: website_slides_survey
 #. odoo-python
 #: code:addons/website_slides_survey/models/survey_survey.py:0
-msgid "- %(certification)s (Courses - %(courses)s)"
-msgstr "- %(certification)s (コース - %(courses)s)"
+#, python-format
+msgid "- %s (Courses - %s)"
+msgstr "- %s (コース - %s)"
 
 #. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.survey_survey_view_kanban
@@ -45,38 +46,48 @@ msgstr ""
 msgid ""
 "<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
 "    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"        Dear <t t-out=\"object.partner_id.name or 'participant' or ''\">participant</t><br/><br/>\n"
-"        Unfortunately, you have failed the certification and are no longer a member of the course: <t t-out=\"object.slide_partner_id.channel_id.name or ''\">Basics of Gardening</t>.<br/><br/>\n"
+"        Dear <t t-out=\"object.partner_id.name or 'participant' or ''\">participant</t><br><br>\n"
+"        Unfortunately, you have failed the certification and are no longer a member of the course: <t t-out=\"object.slide_partner_id.channel_id.name or ''\">Basics of Gardening</t>.<br><br>\n"
 "        Don't hesitate to enroll again!\n"
-"        </p><div style=\"margin: 16px 0px 16px 0px;\">\n"
+"        <div style=\"margin: 16px 0px 16px 0px;\">\n"
 "            <a t-att-href=\"(object.slide_partner_id.channel_id.website_url)\" style=\"background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;\">\n"
 "                Enroll now\n"
 "            </a>\n"
 "        </div>\n"
 "        Thank you for your participation.\n"
-"    \n"
+"    </p>\n"
 "</div>\n"
 "            "
 msgstr ""
 "<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
 "    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"        <t t-out=\"object.partner_id.name or 'participant' or ''\">ご参加者様</t><br/><br/>\n"
-"        残念ながら、あなたは検定に不合格となり、以下コースのメンバーから除外されました: <t t-out=\"object.slide_partner_id.channel_id.name or ''\">園芸基礎</t><br/><br/>\n"
-"        再度のご登録をお待ちしております\n"
-"        </p><div style=\"margin: 16px 0px 16px 0px;\">\n"
+"        <t t-out=\"object.partner_id.name or 'participant' or ''\">ご参加者様</t><br><br>\n"
+"        残念ながら、あなたは認定に不合格となり、以下コースのメンバーではなくなりました：<t t-out=\"object.slide_partner_id.channel_id.name or ''\">園芸基礎</t><br><br>\n"
+"        再度のご登録をお待ちしています。\n"
+"        <div style=\"margin: 16px 0px 16px 0px;\">\n"
 "            <a t-att-href=\"(object.slide_partner_id.channel_id.website_url)\" style=\"background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;\">\n"
 "                今すぐ登録する\n"
 "            </a>\n"
 "        </div>\n"
 "        ご参加ありがとうございました。\n"
-"    \n"
+"    </p>\n"
 "</div>\n"
 "            "
 
 #. module: website_slides_survey
+#: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_content_detailed
+msgid "<i class=\"fa fa-arrow-right me-1\"/>Add Questions to this Survey"
+msgstr ""
+
+#. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.display_certificate
-msgid "<i class=\"fa fa-arrow-right\"/> Get Certified"
-msgstr "<i class=\"fa fa-arrow-right\"/>認証取得"
+msgid "<i class=\"fa fa-arrow-right me-1\"/>All Certifications"
+msgstr ""
+
+#. module: website_slides_survey
+#: model_terms:ir.ui.view,arch_db:website_slides_survey.user_profile_content
+msgid "<i class=\"fa fa-arrow-right\"/> See Certifications"
+msgstr ""
 
 #. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.display_certificate
@@ -94,7 +105,7 @@ msgid ""
 "certification\" title=\"Download certification\"/> Download certification"
 msgstr ""
 "<i class=\"fa fa-fw fa-trophy\" role=\"img\" aria-label=\"Download "
-"certification\" title=\"Download certification\"/>検定ダウンロード"
+"certification\" title=\"Download certification\"/>認定書ダウンロード"
 
 #. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.survey_fill_form_done_inherit_website_slides
@@ -103,27 +114,12 @@ msgid ""
 "                        Share your certification"
 msgstr ""
 "<i class=\"fa fa-share-alt\" aria-label=\"Share certification\" title=\"Share certification\"/>\n"
-"                        検定をシェアする"
+"                        認定をシェアする"
 
 #. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.display_certificate
 msgid "<i class=\"fa fa-share-alt\" aria-label=\"Share\" title=\"Share\"/>"
 msgstr "<i class=\"fa fa-share-alt\" aria-label=\"Share\" title=\"Share\"/>"
-
-#. module: website_slides_survey
-#: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_content_detailed
-msgid "<i class=\"oi oi-arrow-right me-1\"/>Add Questions to this Survey"
-msgstr "<i class=\"oi oi-arrow-right me-1\"/>この調査に質問を追加"
-
-#. module: website_slides_survey
-#: model_terms:ir.ui.view,arch_db:website_slides_survey.display_certificate
-msgid "<i class=\"oi oi-arrow-right me-1\"/>All Certifications"
-msgstr "<i class=\"oi oi-arrow-right me-1\"/>全ての検定"
-
-#. module: website_slides_survey
-#: model_terms:ir.ui.view,arch_db:website_slides_survey.user_profile_content
-msgid "<i class=\"oi oi-arrow-right\"/> See Certifications"
-msgstr "<i class=\"oi oi-arrow-right\"/>検定を見る"
 
 #. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.badge_content
@@ -133,12 +129,16 @@ msgstr "<i class=\"text-muted\"> 受賞者</i>"
 #. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.courses_home_inherit_survey
 msgid "<span class=\"ms-1\">Certifications</span>"
-msgstr "<span class=\"ms-1\">検定</span>"
+msgstr "<span class=\"ms-1\">認定</span>"
 
 #. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_channel_view_form
-msgid "<span class=\"o_stat_text\">Certified</span>"
-msgstr "<span class=\"o_stat_text\">認定済</span>"
+msgid ""
+"<span class=\"o_stat_text\" attrs=\"{'invisible': [('nbr_certification', '&gt;', 0)]}\">Finished</span>\n"
+"                <span class=\"o_stat_text\" attrs=\"{'invisible': [('nbr_certification', '=', 0)]}\">Certified</span>"
+msgstr ""
+"<span class=\"o_stat_text\" attrs=\"{'invisible': [('nbr_certification', '&gt;', 0)]}\">終了</span>\n"
+"<span class=\"o_stat_text\" attrs=\"{'invisible': [('nbr_certification', '=', 0)]}\">認定済</span>"
 
 #. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.all_user_card
@@ -151,9 +151,19 @@ msgid "<span class=\"text-muted\">Certifications</span>"
 msgstr "<span class=\"text-muted\">検定</span>"
 
 #. module: website_slides_survey
+#: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_channel_view_kanban
+msgid "<span class=\"text-muted\">Certified</span>"
+msgstr "<span class=\"text-muted\">認定済</span>"
+
+#. module: website_slides_survey
+#: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_channel_view_kanban
+msgid "<span class=\"text-muted\">Finished</span>"
+msgstr "<span class=\"text-muted\">終了</span>"
+
+#. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.course_main
-msgid "<span>Start Now</span><i class=\"oi oi-chevron-right ms-2 align-middle\"/>"
-msgstr "<span>今すぐ開始</span><i class=\"oi oi-chevron-right ms-2 align-middle\"/>"
+msgid "<span>Start Now</span><i class=\"fa fa-chevron-right ms-2 align-middle\"/>"
+msgstr ""
 
 #. module: website_slides_survey
 #: model:ir.model.constraint,message:website_slides_survey.constraint_slide_slide_check_survey_id
@@ -166,8 +176,6 @@ msgid "A slide of type certification cannot be previewed."
 msgstr "検定'タイプのスライドはプレビューできません。"
 
 #. module: website_slides_survey
-#. odoo-javascript
-#: code:addons/website_slides_survey/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.js:0
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_channel_view_form
 msgid "Add Certification"
 msgstr "検定追加"
@@ -175,6 +183,7 @@ msgstr "検定追加"
 #. module: website_slides_survey
 #. odoo-javascript
 #: code:addons/website_slides_survey/static/src/xml/website_slides_fullscreen.xml:0
+#, python-format
 msgid "Add Questions to this Survey"
 msgstr "この調査に質問を追加"
 
@@ -191,11 +200,12 @@ msgstr "プレビュー対象"
 #. module: website_slides_survey
 #. odoo-python
 #: code:addons/website_slides_survey/models/survey_survey.py:0
+#, python-format
 msgid ""
 "Any Survey listed below is currently used as a Course Certification and cannot be deleted:\n"
 "%s"
 msgstr ""
-"以下に記載されている調査は、現在コース検定として使用されており、削除することはできません:\n"
+"以下に記載されている調査は、現在コース検定として使用されており、削除することはできません：\n"
 "%s"
 
 #. module: website_slides_survey
@@ -236,6 +246,7 @@ msgstr "ブナ"
 #. odoo-javascript
 #: code:addons/website_slides_survey/static/src/xml/website_slides_fullscreen.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_content_detailed
+#, python-format
 msgid "Begin Certification"
 msgstr "検定を開始"
 
@@ -247,14 +258,17 @@ msgstr " <b>検定</b> をすぐに始めましょう！"
 #. module: website_slides_survey
 #: model:ir.model.fields,field_description:website_slides_survey.field_slide_slide__slide_category
 msgid "Category"
-msgstr "カテゴリー"
+msgstr "カテゴリ"
 
 #. module: website_slides_survey
 #. odoo-javascript
-#: code:addons/website_slides_survey/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.js:0
+#: code:addons/website_slides_survey/static/src/js/slides_upload.js:0
+#: code:addons/website_slides_survey/static/src/js/slides_upload.js:0
+#: code:addons/website_slides_survey/static/src/xml/website_slide_upload.xml:0
 #: model:ir.model.fields,field_description:website_slides_survey.field_slide_slide__survey_id
 #: model:ir.model.fields.selection,name:website_slides_survey.selection__slide_slide__slide_category__certification
 #: model:ir.model.fields.selection,name:website_slides_survey.selection__slide_slide__slide_type__certification
+#, python-format
 msgid "Certification"
 msgstr "検定"
 
@@ -307,6 +321,7 @@ msgstr "検定アイコン"
 #. module: website_slides_survey
 #. odoo-python
 #: code:addons/website_slides_survey/controllers/slides.py:0
+#, python-format
 msgid "Certification slides are completed when the survey is succeeded."
 msgstr "検定スライドは、調査が成功したときに完成します。"
 
@@ -319,21 +334,10 @@ msgid "Certifications"
 msgstr "検定"
 
 #. module: website_slides_survey
-#: model_terms:ir.ui.view,arch_db:website_slides_survey.display_certificate
-msgid "Certifications are exams that you successfully passed. <br/>"
-msgstr "認定は、あなたが合格した試験のことです。<br/>"
-
-#. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_content_detailed
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_sidebar_done_button
 msgid "Certifications you have passed cannot be marked as not done"
 msgstr "合格した検定は未完了としてマークすることはできません。"
-
-#. module: website_slides_survey
-#: model:ir.model.fields,field_description:website_slides_survey.field_slide_channel_partner__survey_certification_success
-#: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_channel_partner_view_search
-msgid "Certified"
-msgstr "認証済み"
 
 #. module: website_slides_survey
 #: model:survey.question.answer,value:website_slides_survey.furniture_certification_page_1_question_2_choice_1
@@ -341,14 +345,10 @@ msgid "Chair"
 msgstr "椅子"
 
 #. module: website_slides_survey
-#: model:ir.model,name:website_slides_survey.model_slide_channel_partner
-msgid "Channel / Partners (Members)"
-msgstr "チャネル/取引先（メンバー）"
-
-#. module: website_slides_survey
 #. odoo-javascript
 #: code:addons/website_slides_survey/static/src/xml/website_slides_fullscreen.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_content_detailed
+#, python-format
 msgid "Congratulations, you passed the Certification!"
 msgstr "おめでとうございます。検定に合格しました！"
 
@@ -361,6 +361,7 @@ msgstr "コース"
 #. odoo-python
 #: code:addons/website_slides_survey/models/survey_survey.py:0
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.survey_survey_view_form
+#, python-format
 msgid "Courses"
 msgstr "コース"
 
@@ -387,6 +388,9 @@ msgstr "机"
 #. module: website_slides_survey
 #. odoo-javascript
 #: code:addons/website_slides_survey/static/src/xml/website_slides_fullscreen.xml:0
+#: code:addons/website_slides_survey/static/src/xml/website_slides_fullscreen.xml:0
+#: code:addons/website_slides_survey/static/src/xml/website_slides_fullscreen.xml:0
+#, python-format
 msgid "Download certification"
 msgstr "検定をダウンロード"
 
@@ -413,9 +417,10 @@ msgstr "コースに戻る"
 
 #. module: website_slides_survey
 #. odoo-javascript
-#: code:addons/website_slides_survey/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
+#: code:addons/website_slides_survey/static/src/xml/website_slide_upload.xml:0
+#, python-format
 msgid "How to upload a certification on your course?"
-msgstr "コースに検定をアップロードするには？"
+msgstr "コースに検定をアップロードする方法"
 
 #. module: website_slides_survey
 #: model_terms:slide.slide,description:website_slides_survey.slide_slide_demo_6_0
@@ -431,12 +436,6 @@ msgstr "認定を管理"
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_content_detailed
 msgid "Mark To Do"
 msgstr "To Doとしてマーク"
-
-#. module: website_slides_survey
-#. odoo-python
-#: code:addons/website_slides_survey/models/slide_channel.py:0
-msgid "No Attendee passed this course certification yet!"
-msgstr "このコースに合格した参加者はまだいません！"
 
 #. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.user_profile_content
@@ -456,7 +455,6 @@ msgstr "コースを修了したら、次は知識をテストしてみましょ
 
 #. module: website_slides_survey
 #: model:ir.model.fields,field_description:website_slides_survey.field_slide_channel__nbr_certification
-#: model:ir.model.fields,field_description:website_slides_survey.field_slide_channel_partner__nbr_certification
 #: model:ir.model.fields,field_description:website_slides_survey.field_slide_slide__nbr_certification
 msgid "Number of Certifications"
 msgstr "検定の数"
@@ -468,7 +466,8 @@ msgstr "オーク"
 
 #. module: website_slides_survey
 #. odoo-javascript
-#: code:addons/website_slides_survey/static/src/js/public/components/slide_upload_dialog/slide_upload_category.xml:0
+#: code:addons/website_slides_survey/static/src/xml/website_slide_upload.xml:0
+#, python-format
 msgid "Please select a certification."
 msgstr "検定を選択して下さい。"
 
@@ -479,8 +478,8 @@ msgstr "関連するコースのスライド"
 
 #. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.display_certificate
-msgid "Score:"
-msgstr "スコア:"
+msgid "Score :"
+msgstr ""
 
 #. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.user_profile_content
@@ -493,23 +492,9 @@ msgid "Search Attempts..."
 msgstr "試行を検索…"
 
 #. module: website_slides_survey
-#. odoo-javascript
-#: code:addons/website_slides_survey/static/src/js/public/components/slide_upload_dialog/slide_upload_category.js:0
-msgid "Select a certification"
-msgstr "認証を選択"
-
-#. module: website_slides_survey
 #: model:survey.question,title:website_slides_survey.furniture_certification_page_1_question_2
 msgid "Select all the furniture shown in the video"
 msgstr "ビデオで紹介されている家具をすべて選んでください"
-
-#. module: website_slides_survey
-#. odoo-javascript
-#: code:addons/website_slides_survey/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
-msgid ""
-"Select an existing certification from the list. Creating or editing a "
-"certification can be done from the backend."
-msgstr "リストから既存の検定を選択します。検定の作成または編集は、バックエンドから行うことができます。"
 
 #. module: website_slides_survey
 #: model:mail.template,description:website_slides_survey.mail_template_user_input_certification_failed
@@ -534,7 +519,7 @@ msgstr "スライドタイプ"
 #. module: website_slides_survey
 #: model:ir.model.fields,help:website_slides_survey.field_survey_user_input__slide_partner_id
 msgid "Slide membership information for the logged in user"
-msgstr "現在ログインしているユーザ用の会員資格情報スライド"
+msgstr "現在ログインしているユーザ用のメンバーシップ情報スライド"
 
 #. module: website_slides_survey
 #: model:ir.model,name:website_slides_survey.model_slide_slide
@@ -576,7 +561,7 @@ msgstr "調査:検定不合格"
 #. module: website_slides_survey
 #: model:survey.question.answer,value:website_slides_survey.furniture_certification_page_1_question_2_choice_2
 msgid "Table"
-msgstr "表"
+msgstr "テーブル"
 
 #. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_content_detailed
@@ -587,6 +572,7 @@ msgstr "クイズに答える"
 #. odoo-javascript
 #: code:addons/website_slides_survey/static/src/xml/website_slides_fullscreen.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_content_detailed
+#, python-format
 msgid "Test Certification"
 msgstr "テスト検定"
 
@@ -612,7 +598,7 @@ msgstr "本調査がeラーニング・アプリケーションを通じてリ�
 #. module: website_slides_survey
 #: model:ir.model.fields,help:website_slides_survey.field_survey_user_input__slide_id
 msgid "The related course slide when there is no membership information"
-msgstr "会員資格情報がない場合の関連コースのスライド"
+msgstr "会員情報がない場合の関連コースのスライド"
 
 #. module: website_slides_survey
 #: model:ir.model.fields,help:website_slides_survey.field_survey_survey__slide_ids
@@ -637,14 +623,25 @@ msgstr "家具に最適な木の種類は？"
 #. module: website_slides_survey
 #. odoo-python
 #: code:addons/website_slides_survey/controllers/slides.py:0
+#, python-format
 msgid "You are not allowed to create a survey."
 msgstr "調査を作成する権限がありません。"
 
 #. module: website_slides_survey
 #. odoo-python
 #: code:addons/website_slides_survey/controllers/slides.py:0
+#, python-format
 msgid "You are not allowed to link a certification."
 msgstr "検定をリンクする権限がありません。"
+
+#. module: website_slides_survey
+#. odoo-javascript
+#: code:addons/website_slides_survey/static/src/xml/website_slide_upload.xml:0
+#, python-format
+msgid ""
+"You can create your certification from here or use an existing one. Once "
+"your certification is created, you can still edit it in backend."
+msgstr "ここから検定を作成することも、既存のものを使用することもできます。一度作成した検定は、バックエンドで編集することができます。"
 
 #. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.badge_content

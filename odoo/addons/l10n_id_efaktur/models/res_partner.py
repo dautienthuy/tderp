@@ -8,8 +8,10 @@ class ResPartner(models.Model):
     """Inherit res.partner object to add NPWP field and Kode Transaksi"""
     _inherit = "res.partner"
 
-    l10n_id_pkp = fields.Boolean(string="Is PKP", compute='_compute_l10n_id_pkp', store=True, readonly=False, help="Denoting whether the following partner is taxable")
+    l10n_id_pkp = fields.Boolean(string="ID PKP", compute='_compute_l10n_id_pkp', store=True, readonly=False)
     l10n_id_nik = fields.Char(string='NIK')
+    l10n_id_tax_address = fields.Char('Tax Address')
+    l10n_id_tax_name = fields.Char('Tax Name')
     l10n_id_kode_transaksi = fields.Selection([
             ('01', '01 To the Parties that is not VAT Collector (Regular Customers)'),
             ('02', '02 To the Treasurer'),
@@ -21,13 +23,19 @@ class ResPartner(models.Model):
             ('08', '08 Deliveries that the VAT is Exempted'),
             ('09', '09 Deliveries of Assets (Article 16D of VAT Law)'),
         ],
-        string='Invoice Transaction Code',
+        string='Kode Transaksi',
         help='Dua digit pertama nomor pajak',
         default='01',
-        tracking=True,
     )
 
     @api.depends('vat', 'country_code')
     def _compute_l10n_id_pkp(self):
         for record in self:
             record.l10n_id_pkp = record.vat and record.country_code == 'ID'
+
+
+class ResConfigSettings(models.TransientModel):
+    _inherit = 'res.config.settings'
+
+    l10n_id_tax_address = fields.Char('Tax Address', related='company_id.partner_id.l10n_id_tax_address', readonly=False)
+    l10n_id_tax_name = fields.Char('Tax Name', related='company_id.partner_id.l10n_id_tax_address', readonly=False)

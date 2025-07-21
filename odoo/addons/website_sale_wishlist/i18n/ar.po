@@ -3,16 +3,16 @@
 # 	* website_sale_wishlist
 # 
 # Translators:
-# Wil Odoo, 2024
-# Malaz Abuidris <msea@odoo.com>, 2024
+# Martin Trigaux, 2022
+# Malaz Abuidris <msea@odoo.com>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-27 18:40+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: Malaz Abuidris <msea@odoo.com>, 2024\n"
+"POT-Creation-Date: 2022-09-20 09:02+0000\n"
+"PO-Revision-Date: 2022-09-22 05:57+0000\n"
+"Last-Translator: Malaz Abuidris <msea@odoo.com>, 2023\n"
 "Language-Team: Arabic (https://app.transifex.com/odoo/teams/41243/ar/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -32,11 +32,11 @@ msgstr ""
 #. module: website_sale_wishlist
 #: model_terms:ir.ui.view,arch_db:website_sale_wishlist.product_add_to_wishlist
 msgid ""
-"<i class=\"fa fa-heart-o me-2\" role=\"img\" aria-label=\"Add to wishlist\"/>\n"
-"                    Add to wishlist"
+"<i class=\"fa fa-heart-o me-2\" role=\"img\" aria-label=\"Add to "
+"wishlist\"/>Add to wishlist"
 msgstr ""
-"<i class=\"fa fa-heart-o me-2\" role=\"img\" aria-label=\"Add to wishlist\"/>\n"
-"                    إضافة إلى قائمة الأمنيات "
+"<i class=\"fa fa-heart-o me-2\" role=\"img\" aria-label=\"Add to "
+"wishlist\"/>إضافة إلى قائمة الأمنيات "
 
 #. module: website_sale_wishlist
 #: model_terms:ir.ui.view,arch_db:website_sale_wishlist.product_wishlist
@@ -44,18 +44,9 @@ msgid "<small><i class=\"fa fa-trash-o\"/> Remove</small>"
 msgstr "<small><i class=\"fa fa-trash-o\"/> إزالة</small>"
 
 #. module: website_sale_wishlist
-#: model_terms:ir.ui.view,arch_db:website_sale_wishlist.product_wishlist
-msgid ""
-"<span class=\"fa fa-fw fa-shopping-cart o_not-animable\"/>\n"
-"                                                <span class=\"d-none d-md-inline\">Add</span>"
-msgstr ""
-
-#. module: website_sale_wishlist
 #: model_terms:ir.ui.view,arch_db:website_sale_wishlist.add_to_wishlist
-msgid ""
-"<span class=\"fa fa-heart o_not-animable\" role=\"img\" aria-label=\"Add to "
-"wishlist\"/>"
-msgstr ""
+msgid "<span class=\"fa fa-heart\" role=\"img\" aria-label=\"Add to wishlist\"/>"
+msgstr "<span class=\"fa fa-heart\" role=\"img\" aria-label=\"Add to wishlist\"/>"
 
 #. module: website_sale_wishlist
 #: model:ir.model.fields,field_description:website_sale_wishlist.field_product_wishlist__active
@@ -64,12 +55,16 @@ msgstr "نشط"
 
 #. module: website_sale_wishlist
 #: model_terms:ir.ui.view,arch_db:website_sale_wishlist.product_wishlist
+msgid "Add <span class=\"d-none d-md-inline\">to Cart</span>"
+msgstr "أضف <span class=\"d-none d-md-inline\">إلى عربة التسوق</span>"
+
+#. module: website_sale_wishlist
+#: model_terms:ir.ui.view,arch_db:website_sale_wishlist.product_wishlist
 msgid "Add product to my cart but keep it in my wishlist"
 msgstr "إضافة المنتج إلى عربة تسوقي لكن إبقاؤه في قائمة أمنياتي "
 
 #. module: website_sale_wishlist
 #: model_terms:ir.ui.view,arch_db:website_sale_wishlist.add_to_wishlist
-#: model_terms:ir.ui.view,arch_db:website_sale_wishlist.snippet_options
 msgid "Add to Wishlist"
 msgstr "إضافة إلى قائمة الأمنيات "
 
@@ -100,8 +95,8 @@ msgstr "أنشئ في"
 
 #. module: website_sale_wishlist
 #: model:ir.model.fields,field_description:website_sale_wishlist.field_product_wishlist__currency_id
-msgid "Default Currency"
-msgstr "العملة الافتراضية"
+msgid "Currency"
+msgstr "العملة"
 
 #. module: website_sale_wishlist
 #: model:ir.model.fields,field_description:website_sale_wishlist.field_product_wishlist__display_name
@@ -117,6 +112,11 @@ msgstr "المنتج المستنسخ المدرج في قائمة الأمني�
 #: model:ir.model.fields,field_description:website_sale_wishlist.field_product_wishlist__id
 msgid "ID"
 msgstr "المُعرف"
+
+#. module: website_sale_wishlist
+#: model:ir.model.fields,field_description:website_sale_wishlist.field_product_wishlist____last_update
+msgid "Last Modified on"
+msgstr "آخر تعديل في"
 
 #. module: website_sale_wishlist
 #: model:ir.model.fields,field_description:website_sale_wishlist.field_product_wishlist__write_uid
@@ -180,19 +180,14 @@ msgid "Product image"
 msgstr "صورة المنتج"
 
 #. module: website_sale_wishlist
-#: model_terms:ir.ui.view,arch_db:website_sale_wishlist.product_cart_lines
-msgid "Save for Later"
-msgstr "حفظ لوقت لاحق"
-
-#. module: website_sale_wishlist
 #: model_terms:ir.ui.view,arch_db:website_sale_wishlist.product_wishlist
 msgid "Shop Wishlist"
 msgstr "قائمة أمنيات المتجر"
 
 #. module: website_sale_wishlist
 #: model_terms:ir.ui.view,arch_db:website_sale_wishlist.snippet_options
-msgid "Show/hide empty wishlist"
-msgstr "إظهار/إخفاء قائمة الأمنيات الفارغة "
+msgid "Show Empty Wishlist"
+msgstr "إظهار قائمة الأمنيات الفارغة "
 
 #. module: website_sale_wishlist
 #: model:ir.model,name:website_sale_wishlist.model_res_users
@@ -208,7 +203,6 @@ msgstr "الموقع الإلكتروني"
 #: model:ir.model.fields,field_description:website_sale_wishlist.field_res_partner__wishlist_ids
 #: model:ir.model.fields,field_description:website_sale_wishlist.field_res_users__wishlist_ids
 #: model_terms:ir.ui.view,arch_db:website_sale_wishlist.header_wishlist_link
-#: model_terms:ir.ui.view,arch_db:website_sale_wishlist.product_cart_lines
 #: model_terms:ir.ui.view,arch_db:website_sale_wishlist.snippet_options
 msgid "Wishlist"
 msgstr "قائمة الأمنيات"

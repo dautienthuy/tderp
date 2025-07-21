@@ -3,20 +3,25 @@
 # 	* link_tracker
 # 
 # Translators:
-# Martin Trigaux, 2024
-# Siim Raasuke, 2024
-# Rivo Zängov <eraser@eraser.ee>, 2024
-# Arma Gedonsky <armagedonsky@hot.ee>, 2024
-# Algo Kärp <algokarp@gmail.com>, 2024
+# Arma Gedonsky <armagedonsky@hot.ee>, 2022
+# Andre Roomet <andreroomet@gmail.com>, 2022
+# Piia Paurson <piia@avalah.ee>, 2022
+# Rivo Zängov <eraser@eraser.ee>, 2022
+# Oliver Ernest, 2022
+# Helen Sulaoja <helen@avalah.ee>, 2022
+# Martin Trigaux, 2022
+# Algo Kärp <algokarp@gmail.com>, 2022
+# Triine Aavik <triine@avalah.ee>, 2022
+# Leaanika Randmets, 2023
 # Anna, 2024
 # Stevin Lilla, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server saas~14.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:55+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2021-07-12 07:50+0000\n"
+"PO-Revision-Date: 2022-09-22 05:53+0000\n"
 "Last-Translator: Stevin Lilla, 2024\n"
 "Language-Team: Estonian (https://app.transifex.com/odoo/teams/41243/et/)\n"
 "MIME-Version: 1.0\n"
@@ -26,14 +31,11 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: link_tracker
-#: model_terms:ir.ui.view,arch_db:link_tracker.utm_campaign_view_kanban
-msgid "<i class=\"fa fa-fw fa-mouse-pointer\" aria-label=\"Clicks\" role=\"img\"/>"
-msgstr "<i class=\"fa fa-fw fa-mouse-pointer\" aria-label=\"Clicks\" role=\"img\"/>"
-
-#. module: link_tracker
-#: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_view_form
-msgid "<span class=\"o_stat_text\">Visit Page</span>"
-msgstr "<span class=\"o_stat_text\">Külasta lehte</span>"
+#: code:addons/link_tracker/models/link_tracker.py:0
+#: code:addons/link_tracker/models/link_tracker.py:0
+#, python-format
+msgid "%r is not a valid link, links cannot redirect to the current page."
+msgstr ""
 
 #. module: link_tracker
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker__absolute_url
@@ -54,7 +56,7 @@ msgstr "Kampaania"
 #. module: link_tracker
 #: model:ir.actions.act_window,name:link_tracker.link_tracker_click_action_statistics
 msgid "Click Statistics"
-msgstr "Klikkide statistika"
+msgstr "Vajutamise statistika"
 
 #. module: link_tracker
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker__link_click_ids
@@ -63,7 +65,7 @@ msgstr "Klikkide statistika"
 #: model_terms:ir.ui.view,arch_db:link_tracker.utm_campaign_view_form
 #: model_terms:ir.ui.view,arch_db:link_tracker.utm_campaign_view_kanban
 msgid "Clicks"
-msgstr "Klikid"
+msgstr "Klikke"
 
 #. module: link_tracker
 #: model:ir.model.constraint,message:link_tracker.constraint_link_tracker_code_code
@@ -74,15 +76,6 @@ msgstr "Kood peab olema unikaalne."
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker__link_code_ids
 msgid "Codes"
 msgstr "Koodid"
-
-#. module: link_tracker
-#. odoo-python
-#: code:addons/link_tracker/models/link_tracker.py:0
-msgid ""
-"Combinations of Link Tracker values (URL, campaign, medium, source, and label) must be unique.\n"
-"The following combinations are already used: \n"
-"- %(error_lines)s"
-msgstr ""
 
 #. module: link_tracker
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker_click__country_id
@@ -108,11 +101,12 @@ msgstr "Loonud"
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker_click__create_date
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker_code__create_date
 msgid "Created on"
-msgstr "Loodud"
+msgstr "Loomise kuupäev"
 
 #. module: link_tracker
-#. odoo-python
 #: code:addons/link_tracker/models/link_tracker.py:0
+#: code:addons/link_tracker/models/link_tracker.py:0
+#, python-format
 msgid "Creating a Link Tracker without URL is not possible"
 msgstr ""
 
@@ -121,13 +115,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker_click__display_name
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker_code__display_name
 msgid "Display Name"
-msgstr "Kuvatav nimi"
+msgstr "Näidatav nimi"
 
 #. module: link_tracker
 #: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_click_view_search
 #: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_view_search
 msgid "Group By"
-msgstr "Rühmitamine"
+msgstr "Grupeeri"
 
 #. module: link_tracker
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker__short_url_host
@@ -147,11 +141,18 @@ msgid "Internet Protocol"
 msgstr "Interneti protokoll"
 
 #. module: link_tracker
+#: model:ir.model.fields,field_description:link_tracker.field_link_tracker____last_update
+#: model:ir.model.fields,field_description:link_tracker.field_link_tracker_click____last_update
+#: model:ir.model.fields,field_description:link_tracker.field_link_tracker_code____last_update
+msgid "Last Modified on"
+msgstr "Viimati muudetud"
+
+#. module: link_tracker
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker__write_uid
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker_click__write_uid
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker_code__write_uid
 msgid "Last Updated by"
-msgstr "Viimati uuendatud"
+msgstr "Viimati uuendas"
 
 #. module: link_tracker
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker__write_date
@@ -170,7 +171,7 @@ msgstr "Link"
 #. module: link_tracker
 #: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_click_view_form
 msgid "Link Click"
-msgstr "Lingi klikk"
+msgstr "Lingile klikk"
 
 #. module: link_tracker
 #: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_click_view_graph
@@ -192,6 +193,14 @@ msgstr "Lingi jälgija klikid"
 #. module: link_tracker
 #: model:ir.model,name:link_tracker.model_link_tracker_code
 msgid "Link Tracker Code"
+msgstr ""
+
+#. module: link_tracker
+#: code:addons/link_tracker/models/link_tracker.py:0
+#, python-format
+msgid ""
+"Link Tracker values (URL, campaign, medium and source) must be unique (%s, "
+"%s, %s, %s)."
 msgstr ""
 
 #. module: link_tracker
@@ -256,7 +265,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker__source_id
 #: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_view_search
 msgid "Source"
-msgstr "Allikas"
+msgstr "Alusdokument"
 
 #. module: link_tracker
 #: model:ir.actions.act_window,name:link_tracker.link_tracker_action_campaign
@@ -298,7 +307,6 @@ msgstr "Pealkiri ja URL"
 
 #. module: link_tracker
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker__short_url
-#: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_view_form
 msgid "Tracked URL"
 msgstr "Jälgitav URL"
 
@@ -333,8 +341,8 @@ msgid "Visit Page"
 msgstr "Külasta lehekülge"
 
 #. module: link_tracker
-#. odoo-python
 #: code:addons/link_tracker/models/link_tracker.py:0
+#, python-format
 msgid "Visit Webpage"
 msgstr "Külasta veebilehte"
 
@@ -342,9 +350,3 @@ msgstr "Külasta veebilehte"
 #: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_view_form
 msgid "Website Link"
 msgstr "Veebilehe link"
-
-#. module: link_tracker
-#. odoo-python
-#: code:addons/link_tracker/models/link_tracker.py:0
-msgid "“%s” is not a valid link, links cannot redirect to the current page."
-msgstr ""

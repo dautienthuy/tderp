@@ -1,9 +1,12 @@
-import { useEffect } from "@odoo/owl";
+/** @odoo-module **/
+
 import { patch } from "@web/core/utils/patch";
-import { exprToBoolean } from "@web/core/utils/strings";
 import { useDebounced } from "@web/core/utils/timing";
-import { charField, CharField } from "@web/views/fields/char/char_field";
-import { textField, TextField } from "@web/views/fields/text/text_field";
+import { CharField } from "@web/views/fields/char/char_field";
+import { TextField } from '@web/views/fields/text/text_field';
+import { archParseBoolean } from "@web/views/utils";
+
+const { useEffect } = owl;
 
 /**
  * Support a key-based onchange in text fields.
@@ -11,9 +14,9 @@ import { textField, TextField } from "@web/views/fields/text/text_field";
  * (or 2 seconds by default) when typing ends.
  *
  */
-const onchangeOnKeydownMixin = () => ({
+const onchangeOnKeydownMixin = {
     setup() {
-        super.setup(...arguments);
+        this._super(...arguments);
 
         if (this.props.onchangeOnKeydown) {
             const input = this.input || this.textareaRef;
@@ -35,12 +38,12 @@ const onchangeOnKeydownMixin = () => ({
 
     triggerOnChange() {
         const input = this.input || this.textareaRef;
-        input.el.dispatchEvent(new Event("change"));
-    },
-});
+        input.el.dispatchEvent(new Event('change'));
+    }
+};
 
-patch(CharField.prototype, onchangeOnKeydownMixin());
-patch(TextField.prototype, onchangeOnKeydownMixin());
+patch(CharField.prototype, 'char_field_onchange_on_keydown', onchangeOnKeydownMixin);
+patch(TextField.prototype, 'text_field_onchange_on_keydown', onchangeOnKeydownMixin);
 
 CharField.props = {
     ...CharField.props,
@@ -54,22 +57,18 @@ TextField.props = {
     keydownDebounceDelay: { type: Number, optional: true },
 };
 
-const charExtractProps = charField.extractProps;
-charField.extractProps = (fieldInfo) => {
-    return Object.assign(charExtractProps(fieldInfo), {
-        onchangeOnKeydown: exprToBoolean(fieldInfo.attrs.onchange_on_keydown),
-        keydownDebounceDelay: fieldInfo.attrs.keydown_debounce_delay
-            ? Number(fieldInfo.attrs.keydown_debounce_delay)
-            : 2000,
+const charExtractProps = CharField.extractProps;
+CharField.extractProps = ({ attrs, field }) => {
+    return Object.assign(charExtractProps({ attrs, field }), {
+        onchangeOnKeydown: archParseBoolean(attrs.onchange_on_keydown),
+        keydownDebounceDelay: attrs.keydown_debounce_delay ? Number(attrs.keydown_debounce_delay) : 2000,
     });
 };
 
-const textExtractProps = textField.extractProps;
-textField.extractProps = (fieldInfo) => {
-    return Object.assign(textExtractProps(fieldInfo), {
-        onchangeOnKeydown: exprToBoolean(fieldInfo.attrs.onchange_on_keydown),
-        keydownDebounceDelay: fieldInfo.attrs.keydown_debounce_delay
-            ? Number(fieldInfo.attrs.keydown_debounce_delay)
-            : 2000,
+const textExtractProps = TextField.extractProps;
+TextField.extractProps = ({ attrs, field }) => {
+    return Object.assign(textExtractProps({ attrs, field }), {
+        onchangeOnKeydown: archParseBoolean(attrs.onchange_on_keydown),
+        keydownDebounceDelay: attrs.keydown_debounce_delay ? Number(attrs.keydown_debounce_delay) : 2000,
     });
 };

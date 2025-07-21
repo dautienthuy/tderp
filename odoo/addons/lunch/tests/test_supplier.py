@@ -84,86 +84,64 @@ env['lunch.supplier'].browse([{self.supplier_kothai.id}])._send_auto_email()""")
         with patch.object(fields.Datetime, 'now', return_value=self.monday_1pm) as _:
             with patch.object(fields.Date, 'today', return_value=self.monday_1pm.date()) as _:
                 with patch.object(fields.Date, 'context_today', return_value=self.monday_1pm.date()) as _:
-                    line_pizza = self.env['lunch.order'].create({
+                    line = self.env['lunch.order'].create({
                         'product_id': self.product_pizza.id,
                         'date': self.monday_1pm.date(),
                         'supplier_id': self.supplier_pizza_inn.id,
                     })
 
-                    line_pizza.action_order()
-                    assert line_pizza.state == 'ordered'
+                    line.action_order()
+                    assert line.state == 'ordered'
 
                     self.supplier_pizza_inn._send_auto_email()
 
-                    assert line_pizza.state == 'sent'
+                    assert line.state == 'sent'
 
-                    line_pizza_olive = self.env['lunch.order'].create({
+                    line = self.env['lunch.order'].create({
                         'product_id': self.product_pizza.id,
                         'topping_ids_1': [(6, 0, [self.topping_olives.id])],
                         'date': self.monday_1pm.date(),
                         'supplier_id': self.supplier_pizza_inn.id,
                     })
-                    line_tuna = self.env['lunch.order'].create({
+                    line2 = self.env['lunch.order'].create({
                         'product_id': self.product_sandwich_tuna.id,
                         'date': self.monday_1pm.date(),
                         'supplier_id': self.supplier_coin_gourmand.id,
                     })
 
-                    (line_pizza_olive | line_tuna).action_order()
-                    assert line_pizza_olive.state == 'ordered'
-                    assert line_tuna.state == 'ordered'
+                    (line | line2).action_order()
+                    assert line.state == 'ordered'
+                    assert line2.state == 'ordered'
 
                     self.supplier_pizza_inn._send_auto_email()
 
-                    assert line_pizza_olive.state == 'sent'
-                    assert line_tuna.state == 'ordered'
+                    assert line.state == 'sent'
+                    assert line2.state == 'ordered'
 
-                    line_pizza_2 = self.env['lunch.order'].create({
+                    line_1 = self.env['lunch.order'].create({
                         'product_id': self.product_pizza.id,
                         'quantity': 2,
                         'date': self.monday_1pm.date(),
                         'supplier_id': self.supplier_pizza_inn.id,
                     })
 
-                    line_pizza_olive_2 = self.env['lunch.order'].create({
+                    line_2 = self.env['lunch.order'].create({
                         'product_id': self.product_pizza.id,
                         'topping_ids_1': [(6, 0, [self.topping_olives.id])],
                         'date': self.monday_1pm.date(),
                         'supplier_id': self.supplier_pizza_inn.id,
                     })
 
-                    line_tuna_2 = self.env['lunch.order'].create({
+                    line_3 = self.env['lunch.order'].create({
                         'product_id': self.product_sandwich_tuna.id,
                         'quantity': 2,
                         'date': self.monday_1pm.date(),
                         'supplier_id': self.supplier_coin_gourmand.id,
                     })
 
-                    ######################################################
-                    # id:  # lines:               # state:      # quantity:
-                    #######################################################
-                    # 1    # line_pizza           # sent        # 1
-                    # 2    # line_pizza_olive     # sent        # 1
-                    # 3    # line_tuna            # ordered     # 1
-                    # 4    # line_pizza_2         # new         # 2
-                    # 5    # line_pizza_olive_2   # new         # 1
-                    # 6    # line_tuna_2          # new         # 2
+                    (line_1 | line_2 | line_3).action_order()
 
-                    (line_pizza_2 | line_pizza_olive_2 | line_tuna_2).action_order()
-
-                    ######################################################
-                    # id:  # lines:               # state:      # quantity:
-                    #######################################################
-                    # 1    # line_pizza           # sent        # 1
-                    # 2    # line_pizza_olive     # sent        # 1
-                    # 3    # line_tuna            # ordered     # 3 (1 + 2 from line_tuna_2 id=6)
-                    # 4    # line_pizza_2         # ordered     # 2
-                    # 5    # line_pizza_olive_2   # ordered     # 1
-
-                    assert all(line.state == 'ordered' for line in [line_pizza_2, line_pizza_olive_2])
-
-                    self.assertEqual(line_tuna_2.active, False)
-                    self.assertEqual(line_tuna.quantity, 3)
+                    assert all(line.state == 'ordered' for line in [line_1, line_2, line_3])
 
                     self.supplier_pizza_inn._send_auto_email()
 
@@ -208,39 +186,3 @@ env['lunch.supplier'].browse([{self.supplier_kothai.id}])._send_auto_email()""")
 
         self.supplier_kothai.automatic_email_time -= 1
         self.assertEqual(cron_ny.nextcall, old_nextcall + timedelta(days=1, hours=1))
-
-    def test_remove_toppings(self):
-        partner = self.env['res.partner'].create({
-                'name': 'Partner',
-            })
-
-        supplier = self.env['lunch.supplier'].create({
-            'partner_id': partner.id,
-            'send_by': 'phone',
-            'topping_ids_2': [
-                (0, 0, {
-                    'name': 'salt',
-                    'price': 7,
-                    'company_id': self.env.company.id
-                }),
-            ],
-            'topping_ids_3': [
-                (0, 0, {
-                    'name': 'sugar',
-                    'price': 10,
-                    'company_id': self.env.company.id
-                }),
-            ],
-        })
-
-        # simulating the delete as it's done on frontend
-        supplier.write({
-            'topping_ids_2': [(2, supplier.topping_ids_2.id)],
-        })
-        self.assertFalse(supplier.topping_ids_2)
-
-        # simulating the delete as it's done on frontend
-        supplier.write({
-            'topping_ids_3': [(2, supplier.topping_ids_3.id)],
-        })
-        self.assertFalse(supplier.topping_ids_3)

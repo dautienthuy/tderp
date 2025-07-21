@@ -3,53 +3,26 @@
 # 	* hr_recruitment_survey
 # 
 # Translators:
-# Tiffany Chang, 2025
+# Hamid Darabi, 2023
+# Mohsen Mohammadi <iammohsen.123@gmail.com>, 2023
+# Hamed Mohammadi <hamed@dehongi.com>, 2023
+# Hanna Kheradroosta, 2023
+# Martin Trigaux, 2023
+# Mostafa Barmshory <mostafa.barmshory@gmail.com>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-16 13:40+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Tiffany Chang, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2022-09-22 05:52+0000\n"
+"Last-Translator: Mostafa Barmshory <mostafa.barmshory@gmail.com>, 2024\n"
 "Language-Team: Persian (https://app.transifex.com/odoo/teams/41243/fa/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: fa\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-
-#. module: hr_recruitment_survey
-#: model:mail.template,body_html:hr_recruitment_survey.mail_template_applicant_interview_invite
-msgid ""
-"<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"        Dear <t t-out=\"object.partner_id.name or 'applicant'\">[applicant name]</t><br/><br/>\n"
-"        <t>\n"
-"            You've progressed through the recruitment process and we would like you to answer some questions.\n"
-"        </t>\n"
-"        </p><div style=\"margin: 16px 0px 16px 0px;\">\n"
-"            <a t-att-href=\"(object.get_start_url())\" style=\"background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;\">\n"
-"                <t>\n"
-"                    Start the written interview\n"
-"                </t>\n"
-"            </a>\n"
-"        </div>\n"
-"        <t t-if=\"object.deadline\">\n"
-"            Please answer the interview for <t t-out=\"format_date(object.deadline)\">[deadline date]</t>.<br/><br/>\n"
-"        </t>\n"
-"        <t>\n"
-"            We wish you good luck! Thank you in advance for your participation.\n"
-"        </t>\n"
-"    \n"
-"</div>\n"
-"            "
-msgstr ""
-
-#. module: hr_recruitment_survey
-#: model_terms:ir.ui.view,arch_db:hr_recruitment_survey.hr_recruitment_survey_button_form_view
-msgid "<i class=\"oi oi-fw oi-arrow-right\"/>Go to Recruitment"
-msgstr ""
 
 #. module: hr_recruitment_survey
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_survey.hr_applicant_view_form_inherit
@@ -71,21 +44,11 @@ msgid "Activities"
 msgstr "فعالیت ها"
 
 #. module: hr_recruitment_survey
-#: model_terms:ir.actions.act_window,help:hr_recruitment_survey.survey_survey_action_recruitment
-msgid "Add a new survey"
-msgstr "افزودن نظرسنجی جدید"
-
-#. module: hr_recruitment_survey
 #: model:ir.model,name:hr_recruitment_survey.model_hr_applicant
 #: model:ir.model.fields,field_description:hr_recruitment_survey.field_survey_invite__applicant_id
 #: model:ir.model.fields,field_description:hr_recruitment_survey.field_survey_user_input__applicant_id
 msgid "Applicant"
 msgstr "متقاضی"
-
-#. module: hr_recruitment_survey
-#: model:mail.template,name:hr_recruitment_survey.mail_template_applicant_interview_invite
-msgid "Applicant: Interview"
-msgstr "مراجعه‌کننده: مصاحبه"
 
 #. module: hr_recruitment_survey
 #: model:ir.model.fields,help:hr_recruitment_survey.field_hr_applicant__survey_id
@@ -109,8 +72,8 @@ msgstr "آموزش"
 
 #. module: hr_recruitment_survey
 #: model:survey.question,title:hr_recruitment_survey.survey_recruitment_form_p1_q2
-msgid "From which university did or will you graduate?"
-msgstr "از کدام دانشگاه فارغ‌التحصیل شده‌اید یا خواهید شد؟"
+msgid "From which university did or will you graduate ?"
+msgstr ""
 
 #. module: hr_recruitment_survey
 #: model:survey.question.answer,value:hr_recruitment_survey.survey_recruitment_form_p1_q8_row2
@@ -151,8 +114,9 @@ msgstr "فرم مصاحبه"
 #. module: hr_recruitment_survey
 #. odoo-python
 #: code:addons/hr_recruitment_survey/models/hr_job.py:0
-msgid "Interview Form: %s"
-msgstr "فرم مصاحبه: %s"
+#, python-format
+msgid "Interview Form : %s"
+msgstr ""
 
 #. module: hr_recruitment_survey
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_survey.res_config_settings_view_form
@@ -160,15 +124,12 @@ msgid "Interview Survey"
 msgstr "نظرسنجی مصاحبه"
 
 #. module: hr_recruitment_survey
-#: model:ir.actions.act_window,name:hr_recruitment_survey.survey_survey_action_recruitment
-#: model:ir.ui.menu,name:hr_recruitment_survey.menu_hr_recruitment_config_surveys
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_survey.view_hr_job_kanban_inherit
 msgid "Interviews"
 msgstr "مصاحبه‌ها"
 
 #. module: hr_recruitment_survey
 #: model:ir.model,name:hr_recruitment_survey.model_hr_job
-#: model:ir.model.fields,field_description:hr_recruitment_survey.field_survey_survey__hr_job_ids
 msgid "Job Position"
 msgstr "موقعیت شغلی"
 
@@ -191,11 +152,6 @@ msgstr "غیر مهم"
 #: model:survey.question.answer,value:hr_recruitment_survey.survey_recruitment_form_p1_q8_row5
 msgid "Office location"
 msgstr "مکان دفتر"
-
-#. module: hr_recruitment_survey
-#: model:mail.template,subject:hr_recruitment_survey.mail_template_applicant_interview_invite
-msgid "Participate to {{ object.survey_id.display_name }} interview"
-msgstr "شرکت در مصاحبه {{ object.survey_id.display_name }}"
 
 #. module: hr_recruitment_survey
 #: model:survey.question,title:hr_recruitment_survey.survey_recruitment_form_p1_q5
@@ -221,12 +177,6 @@ msgstr ""
 "این اطلاعات به ما در مدیریت درخواست شما کمک خواهد کرد."
 
 #. module: hr_recruitment_survey
-#. odoo-python
-#: code:addons/hr_recruitment_survey/models/hr_applicant.py:0
-msgid "Please provide an applicant name."
-msgstr "لطفاً نام متقاضی را وارد کنید."
-
-#. module: hr_recruitment_survey
 #: model_terms:survey.question,description:hr_recruitment_survey.survey_recruitment_form_p1_q4
 #: model_terms:survey.question,description:hr_recruitment_survey.survey_recruitment_form_p1_q5
 msgid ""
@@ -243,19 +193,19 @@ msgstr ""
 "لطفاً کمی بیشتر در مورد خودتان به ما بگویید: فعالیت‌های اصلی شما چیست، ..."
 
 #. module: hr_recruitment_survey
-#: model:ir.model.fields.selection,name:hr_recruitment_survey.selection__survey_survey__survey_type__recruitment
-msgid "Recruitment"
-msgstr "استخدام"
-
-#. module: hr_recruitment_survey
 #: model:survey.survey,title:hr_recruitment_survey.survey_recruitment_form
 msgid "Recruitment Form"
 msgstr "فرم استخدام"
 
 #. module: hr_recruitment_survey
-#: model:ir.model.fields,field_description:hr_recruitment_survey.field_hr_applicant__response_ids
-msgid "Responses"
-msgstr "پاسخ‌ها"
+#: model:ir.model.fields,field_description:hr_recruitment_survey.field_hr_applicant__response_id
+msgid "Response"
+msgstr ""
+
+#. module: hr_recruitment_survey
+#: model_terms:ir.ui.view,arch_db:hr_recruitment_survey.hr_applicant_view_form_inherit
+msgid "SEND INTERVIEW"
+msgstr ""
 
 #. module: hr_recruitment_survey
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_survey.hr_applicant_view_form_inherit
@@ -263,21 +213,15 @@ msgid "See interview report"
 msgstr "مشاهده گزارش مصاحبه"
 
 #. module: hr_recruitment_survey
-#: model_terms:ir.ui.view,arch_db:hr_recruitment_survey.hr_applicant_view_form_inherit
-msgid "Send Interview"
-msgstr "ارسال مصاحبه"
-
-#. module: hr_recruitment_survey
-#. odoo-python
-#: code:addons/hr_recruitment_survey/models/hr_applicant.py:0
-msgid "Send an interview"
-msgstr "ارسال مصاحبه"
+#: model:ir.model.fields,field_description:hr_recruitment_survey.field_hr_applicant__response_state
+msgid "Status"
+msgstr "وضعیت"
 
 #. module: hr_recruitment_survey
 #. odoo-python
 #: code:addons/hr_recruitment_survey/models/hr_job.py:0
-#: model:ir.model,name:hr_recruitment_survey.model_survey_survey
 #: model:ir.model.fields,field_description:hr_recruitment_survey.field_hr_applicant__survey_id
+#, python-format
 msgid "Survey"
 msgstr "نظرسنجی"
 
@@ -285,11 +229,6 @@ msgstr "نظرسنجی"
 #: model:ir.model,name:hr_recruitment_survey.model_survey_invite
 msgid "Survey Invitation Wizard"
 msgstr "ویزارد دعوتنامه نظرسنجی"
-
-#. module: hr_recruitment_survey
-#: model:ir.model.fields,field_description:hr_recruitment_survey.field_survey_survey__survey_type
-msgid "Survey Type"
-msgstr "نوع نظرسنجی"
 
 #. module: hr_recruitment_survey
 #: model:ir.model,name:hr_recruitment_survey.model_survey_user_input
@@ -305,13 +244,15 @@ msgstr ""
 
 #. module: hr_recruitment_survey
 #. odoo-python
-#: code:addons/hr_recruitment_survey/models/survey_user_input.py:0
+#: code:addons/hr_recruitment_survey/models/survey_invite.py:0
+#, python-format
 msgid "The applicant \"%s\" has finished the survey."
 msgstr "متقاضی \"%s\" نظرسنجی را به پایان رسانده است."
 
 #. module: hr_recruitment_survey
 #. odoo-python
-#: code:addons/hr_recruitment_survey/wizard/survey_invite.py:0
+#: code:addons/hr_recruitment_survey/models/survey_invite.py:0
+#, python-format
 msgid "The survey %(survey_link)s has been sent to %(partner_link)s"
 msgstr "نظرسنجی %(survey_link)s به %(partner_link)s ارسال شده است."
 
@@ -327,18 +268,18 @@ msgstr "آیا توسط یکی از کارمندان معرفی شده‌اید�
 
 #. module: hr_recruitment_survey
 #: model_terms:survey.question,description:hr_recruitment_survey.survey_recruitment_form_p1_q6
-msgid "What are your main knowledge regarding the job you are applying to?"
-msgstr "دانش اصلی شما در مورد شغلی که برای آن درخواست می‌دهید چیست؟"
+msgid "What are your main knowledge regarding the job you are applying to ?"
+msgstr ""
 
 #. module: hr_recruitment_survey
 #: model:survey.question,title:hr_recruitment_survey.survey_recruitment_form_p1_q8
-msgid "What is important for you?"
-msgstr "چه چیزی برای شما مهم است؟"
+msgid "What is important for you ?"
+msgstr ""
 
 #. module: hr_recruitment_survey
 #: model:survey.question,title:hr_recruitment_survey.survey_recruitment_form_p1_q1
-msgid "Which country are you from?"
-msgstr "شما اهل کدام کشور هستید؟"
+msgid "Which country are you from ?"
+msgstr ""
 
 #. module: hr_recruitment_survey
 #: model:survey.question.answer,value:hr_recruitment_survey.survey_recruitment_form_p1_q8_row4
@@ -346,8 +287,8 @@ msgid "Working with state of the art technology"
 msgstr "کار با فناوری پیشرفته"
 
 #. module: hr_recruitment_survey
-#: model_terms:ir.actions.act_window,help:hr_recruitment_survey.survey_survey_action_recruitment
-msgid ""
-"You can create surveys used for recruitments. Design easily your interview,\n"
-"                send invitations and analyze answers."
-msgstr ""
+#. odoo-python
+#: code:addons/hr_recruitment_survey/models/hr_applicant.py:0
+#, python-format
+msgid "You must define a Contact Name for this applicant."
+msgstr "شما باید یک نام مخاطب برای این متقاضی تعریف کنید."

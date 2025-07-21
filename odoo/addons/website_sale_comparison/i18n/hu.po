@@ -3,22 +3,22 @@
 # 	* website_sale_comparison
 # 
 # Translators:
-# Tamás Dombos, 2024
-# Tamás Németh <ntomasz81@gmail.com>, 2024
-# krnkris, 2024
-# Istvan <leki69@gmail.com>, 2024
-# Ákos Nagy <akos.nagy@oregional.hu>, 2024
-# Martin Trigaux, 2024
-# 5768b353f27900ae76ad88cc42dfd5b8_3bb349f, 2024
-# gezza <geza.nagy@oregional.hu>, 2025
+# Krisztián Juhász <juhasz.krisztian@josafar.hu>, 2022
+# Ákos Nagy <akos.nagy@oregional.hu>, 2022
+# krnkris, 2022
+# Istvan <leki69@gmail.com>, 2022
+# Martin Trigaux, 2022
+# Tamás Németh <ntomasz81@gmail.com>, 2022
+# 5768b353f27900ae76ad88cc42dfd5b8_3bb349f, 2023
+# gezza <geza.nagy@oregional.hu>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:56+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: gezza <geza.nagy@oregional.hu>, 2025\n"
+"POT-Creation-Date: 2022-12-15 12:45+0000\n"
+"PO-Revision-Date: 2022-09-22 05:57+0000\n"
+"Last-Translator: gezza <geza.nagy@oregional.hu>, 2024\n"
 "Language-Team: Hungarian (https://app.transifex.com/odoo/teams/41243/hu/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -47,15 +47,6 @@ msgstr ""
 
 #. module: website_sale_comparison
 #: model_terms:ir.ui.view,arch_db:website_sale_comparison.product_compare
-msgid ""
-"<i class=\"fa fa-chevron-circle-down o_product_comparison_collpase\" "
-"role=\"img\" aria-label=\"Collapse\" title=\"Collapse\"/><span>Tags</span>"
-msgstr ""
-"<i class=\"fa fa-chevron-circle-down o_product_comparison_collpase\" "
-"role=\"img\" aria-label=\"Collapse\" title=\"Collapse\"/><span>Címkék</span>"
-
-#. module: website_sale_comparison
-#: model_terms:ir.ui.view,arch_db:website_sale_comparison.product_compare
 msgid "<i class=\"fa fa-shopping-cart me-2\"/>Add to Cart"
 msgstr "<i class=\"fa fa-shopping-cart me-2\"/>Kosárba"
 
@@ -68,12 +59,6 @@ msgstr "<i class=\"fa fa-trash\" role=\"img\" aria-label=\"Remove\"/>"
 #: model_terms:ir.ui.view,arch_db:website_sale_comparison.product_add_to_compare
 msgid "<span class=\"fa fa-exchange me-2\"/>Compare"
 msgstr "<span class=\"fa fa-exchange me-2\"/>Összehasonlítás"
-
-#. module: website_sale_comparison
-#: model_terms:ir.ui.view,arch_db:website_sale_comparison.product_attributes_body
-#: model_terms:ir.ui.view,arch_db:website_sale_comparison.product_compare
-msgid "<span>Tags</span>"
-msgstr "<span>Címkék</span>"
 
 #. module: website_sale_comparison
 #: model_terms:ir.ui.view,arch_db:website_sale_comparison.product_compare
@@ -94,7 +79,7 @@ msgstr "Apple"
 #: model:ir.actions.act_window,name:website_sale_comparison.product_attribute_category_action
 #: model:ir.ui.menu,name:website_sale_comparison.menu_attribute_category_action
 msgid "Attribute Categories"
-msgstr "Tulajdonság kategóriák"
+msgstr "Jellemző kategóriák"
 
 #. module: website_sale_comparison
 #: model_terms:ir.ui.view,arch_db:website_sale_comparison.snippet_options
@@ -102,16 +87,23 @@ msgid "Bottom of Page"
 msgstr "Oldal alja"
 
 #. module: website_sale_comparison
+#: model:ir.model.fields,field_description:website_sale_comparison.field_product_attribute__category_id
+msgid "Category"
+msgstr "Kategória"
+
+#. module: website_sale_comparison
 #: model:ir.model.fields,field_description:website_sale_comparison.field_product_attribute_category__name
 msgid "Category Name"
-msgstr "Kategória neve"
+msgstr "Kategórianév"
 
 #. module: website_sale_comparison
 #. odoo-javascript
 #: code:addons/website_sale_comparison/static/src/xml/comparison.xml:0
+#: code:addons/website_sale_comparison/static/src/xml/comparison.xml:0
 #: model_terms:ir.ui.view,arch_db:website_sale_comparison.add_to_compare
 #: model_terms:ir.ui.view,arch_db:website_sale_comparison.product_add_to_compare
 #: model_terms:ir.ui.view,arch_db:website_sale_comparison.snippet_options
+#, python-format
 msgid "Compare"
 msgstr "Összehasonlítás"
 
@@ -119,18 +111,19 @@ msgstr "Összehasonlítás"
 #. odoo-javascript
 #: code:addons/website_sale_comparison/static/src/js/website_sale_comparison.js:0
 #: model_terms:ir.ui.view,arch_db:website_sale_comparison.product_compare
+#, python-format
 msgid "Compare Products"
 msgstr "Termékek összehasonlítása"
 
 #. module: website_sale_comparison
 #: model_terms:ir.ui.view,arch_db:website_sale_comparison.product_compare
 msgid "Contact Us"
-msgstr "Kapcsolatfelvétel"
+msgstr "Vegye fel a kapcsolatot velünk"
 
 #. module: website_sale_comparison
 #: model_terms:ir.actions.act_window,help:website_sale_comparison.product_attribute_category_action
 msgid "Create a new attribute category"
-msgstr "Új tulajdonság kategória létrehozása"
+msgstr "Új tulajdonságkategória létrehozása"
 
 #. module: website_sale_comparison
 #: model:ir.model.fields,field_description:website_sale_comparison.field_product_attribute_category__create_uid
@@ -173,12 +166,12 @@ msgstr ""
 #. module: website_sale_comparison
 #: model:ir.model.fields,field_description:website_sale_comparison.field_product_attribute_category__id
 msgid "ID"
-msgstr "ID"
+msgstr "Azonosító"
 
 #. module: website_sale_comparison
-#: model_terms:ir.ui.view,arch_db:website_sale_comparison.snippet_options
-msgid "In accordion"
-msgstr ""
+#: model:ir.model.fields,field_description:website_sale_comparison.field_product_attribute_category____last_update
+msgid "Last Modified on"
+msgstr "Legutóbb frissítve"
 
 #. module: website_sale_comparison
 #: model:ir.model.fields,field_description:website_sale_comparison.field_product_attribute_category__write_uid
@@ -188,7 +181,7 @@ msgstr "Frissítette"
 #. module: website_sale_comparison
 #: model:ir.model.fields,field_description:website_sale_comparison.field_product_attribute_category__write_date
 msgid "Last Updated on"
-msgstr "Frissítve"
+msgstr "Frissítve ekkor"
 
 #. module: website_sale_comparison
 #: model_terms:ir.ui.view,arch_db:website_sale_comparison.snippet_options
@@ -196,14 +189,10 @@ msgid "None"
 msgstr "Nincs"
 
 #. module: website_sale_comparison
-#: model_terms:ir.ui.view,arch_db:website_sale_comparison.accordion_specs_item
-#: model_terms:ir.ui.view,arch_db:website_sale_comparison.specifications_table
-msgid "Others"
-msgstr "Egyebek"
-
-#. module: website_sale_comparison
 #. odoo-javascript
 #: code:addons/website_sale_comparison/static/src/xml/comparison.xml:0
+#: code:addons/website_sale_comparison/static/src/xml/comparison.xml:0
+#, python-format
 msgid "Product"
 msgstr "Termék"
 
@@ -232,7 +221,7 @@ msgstr "Termékváltozat"
 #: model_terms:ir.ui.view,arch_db:website_sale_comparison.product_compare
 #: model_terms:ir.ui.view,arch_db:website_sale_comparison.product_product
 msgid "Product image"
-msgstr "Termék képe"
+msgstr "Termékkép"
 
 #. module: website_sale_comparison
 #: model:ir.model.fields,field_description:website_sale_comparison.field_product_attribute_category__attribute_ids
@@ -253,7 +242,7 @@ msgstr "Sorszám"
 #: model:ir.model.fields,help:website_sale_comparison.field_product_attribute__category_id
 msgid ""
 "Set a category to regroup similar attributes under the same section in the "
-"Comparison page of eCommerce."
+"Comparison page of eCommerce"
 msgstr ""
 
 #. module: website_sale_comparison
@@ -264,15 +253,15 @@ msgstr ""
 #. module: website_sale_comparison
 #: model_terms:ir.ui.view,arch_db:website_sale_comparison.snippet_options
 msgid "Specification"
-msgstr "Specifikáció"
+msgstr "Részletezés"
 
 #. module: website_sale_comparison
-#: model_terms:ir.ui.view,arch_db:website_sale_comparison.accordion_specs_item
 #: model_terms:ir.ui.view,arch_db:website_sale_comparison.product_attributes_body
 msgid "Specifications"
 msgstr "Specifikációk"
 
 #. module: website_sale_comparison
+#: model_terms:ir.ui.view,arch_db:website_sale_comparison.product_attributes_body
 #: model_terms:ir.ui.view,arch_db:website_sale_comparison.product_compare
 msgid "Uncategorized"
 msgstr "Nem kategorizált"
@@ -280,21 +269,24 @@ msgstr "Nem kategorizált"
 #. module: website_sale_comparison
 #. odoo-javascript
 #: code:addons/website_sale_comparison/static/src/xml/comparison.xml:0
+#: code:addons/website_sale_comparison/static/src/xml/comparison.xml:0
+#, python-format
 msgid "Warning"
 msgstr "Figyelmeztetés"
 
 #. module: website_sale_comparison
 #: model:product.attribute,name:website_sale_comparison.product_attribute_7
 msgid "Weight"
-msgstr "Súly"
+msgstr "Tömeg"
 
 #. module: website_sale_comparison
 #. odoo-javascript
 #: code:addons/website_sale_comparison/static/src/xml/comparison.xml:0
+#, python-format
 msgid "You can compare max 4 products."
 msgstr "Maximum 4 terméket lehet összehasonlítani"
 
 #. module: website_sale_comparison
-#: model:ir.model.fields,field_description:website_sale_comparison.field_product_attribute__category_id
-msgid "eCommerce Category"
-msgstr "eKereskedelem kategória"
+#: model_terms:ir.ui.view,arch_db:website_sale_comparison.product_attributes_body
+msgid "or"
+msgstr "vagy"

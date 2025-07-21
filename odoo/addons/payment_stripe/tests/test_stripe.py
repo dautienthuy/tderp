@@ -1,15 +1,12 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import unittest
+import sys
 from unittest.mock import patch
-
-from werkzeug.urls import url_encode, url_join
 
 from odoo.tests import tagged
 from odoo.tools import mute_logger
 
 from odoo.addons.payment.tests.http_common import PaymentHttpCommon
-from odoo.addons.payment_stripe import const
 from odoo.addons.payment_stripe.controllers.main import StripeController
 from odoo.addons.payment_stripe.tests.common import StripeCommon
 
@@ -18,36 +15,31 @@ from odoo.addons.payment_stripe.tests.common import StripeCommon
 class StripeTest(StripeCommon, PaymentHttpCommon):
 
     def test_processing_values(self):
-        dummy_client_secret = 'pi_123456789_secret_dummy_123456789'
-        tx = self._create_transaction(flow='direct')  # We don't really care what the flow is here.
+        dummy_session_id = 'cs_test_sbTG0yGwTszAqFUP8Ulecr1bUwEyQEo29M8taYvdP7UA6Qr37qX6uA6w'
+        tx = self._create_transaction(flow='redirect')  # We don't really care what the flow is here.
 
         # Ensure no external API call is done, we only want to check the processing values logic
-        def mock_stripe_stripe_create_intent(self):
-            return {'client_secret': dummy_client_secret}
+        def mock_stripe_create_checkout_session(self):
+            return {'id': dummy_session_id}
 
         with patch.object(
-            type(self.env['payment.transaction']), '_stripe_create_intent',
-            mock_stripe_stripe_create_intent,
+            type(self.env['payment.transaction']), '_stripe_create_checkout_session',
+            mock_stripe_create_checkout_session,
         ), mute_logger('odoo.addons.payment.models.payment_transaction'):
             processing_values = tx._get_processing_values()
 
-        self.assertEqual(processing_values['client_secret'], dummy_client_secret)
-
-        base_url = self.provider.get_base_url()
-        return_url = url_join(
-            base_url, f'{StripeController._return_url}?{url_encode({"reference": tx.reference})}'
-        )
-        self.assertEqual(processing_values['return_url'], return_url)
+        self.assertEqual(processing_values['publishable_key'], self.stripe.stripe_publishable_key)
+        self.assertEqual(processing_values['session_id'], dummy_session_id)
 
     @mute_logger('odoo.addons.payment_stripe.models.payment_transaction')
     def test_tx_state_after_send_capture_request(self):
         self.provider.capture_manually = True
-        tx = self._create_transaction('direct', state='authorized')
+        tx = self._create_transaction('redirect', state='authorized')
 
         with patch(
             'odoo.addons.payment_stripe.models.payment_provider.PaymentProvider'
             '._stripe_make_request',
-            return_value={'id': 'pi_3KTk9zAlCFm536g81Wy7RCPH', 'status': 'succeeded'},
+            return_value={'status': 'succeeded'},
         ):
             tx._send_capture_request()
         self.assertEqual(
@@ -62,7 +54,7 @@ class StripeTest(StripeCommon, PaymentHttpCommon):
         with patch(
             'odoo.addons.payment_stripe.models.payment_provider.PaymentProvider'
             '._stripe_make_request',
-            return_value={'id': 'pi_3KTk9zAlCFm536g81Wy7RCPH', 'status': 'canceled'},
+            return_value={'status': 'canceled'},
         ):
             tx._send_void_request()
         self.assertEqual(
@@ -124,11 +116,6 @@ class StripeTest(StripeCommon, PaymentHttpCommon):
 
     def test_onboarding_action_redirect_to_url(self):
         """ Test that the action generate and return an URL when the provider is disabled. """
-        if country := self.env['res.country'].search([('code', 'in', list(const.SUPPORTED_COUNTRIES))], limit=1):
-            self.env.company.country_id = country
-        else:
-            raise unittest.SkipTest("Unable to find a country supported by both odoo and stripe")
-
         with patch.object(
             type(self.env['payment.provider']), '_stripe_fetch_or_create_connected_account',
             return_value={'id': 'dummy'},
@@ -161,6 +148,8 @@ class StripeTest(StripeCommon, PaymentHttpCommon):
         ) as mock:
             self.stripe._stripe_create_account_link('dummy', 'dummy')
             mock.assert_called_once()
-            call_args = mock.call_args.kwargs['payload'].keys()
-            for payload_param in ('account', 'return_url', 'refresh_url', 'type'):
-                self.assertIn(payload_param, call_args)
+            if sys.version_info >= (3, 8):
+                # call_args.kwargs is only available in python 3.8+
+                call_args = mock.call_args.kwargs['payload'].keys()
+                for payload_param in ('account', 'return_url', 'refresh_url', 'type'):
+                    self.assertIn(payload_param, call_args)

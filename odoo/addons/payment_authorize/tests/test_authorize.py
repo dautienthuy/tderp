@@ -14,7 +14,7 @@ from .common import AuthorizeCommon
 class AuthorizeTest(AuthorizeCommon):
 
     def test_compatible_providers(self):
-        # Note: in the test common, 'USD' is specified as the currency linked to the user account.
+        # Note: in the test common, 'USD' is specified as authorize_currency_id
         unsupported_currency = self._prepare_currency('CHF')
         providers = self.env['payment.provider']._get_compatible_providers(
             self.company.id, self.partner.id, self.amount, currency_id=unsupported_currency.id
@@ -43,17 +43,6 @@ class AuthorizeTest(AuthorizeCommon):
             ))
 
     def test_validation(self):
-        self.assertEqual(self.authorize.available_currency_ids[0], self.currency_usd)
+        self.assertEqual(self.authorize.authorize_currency_id, self.currency_usd)
         self.assertEqual(self.authorize._get_validation_amount(), 0.01)
         self.assertEqual(self.authorize._get_validation_currency(), self.currency_usd)
-
-    def test_voiding_confirmed_tx_cancels_it(self):
-        """ Test that voiding a transaction cancels it even if it's already confirmed. """
-        source_tx = self._create_transaction('direct', state='done')
-        source_tx._handle_notification_data('authorize', {
-            'response': {
-                'x_response_code': '1',
-                'x_type': 'void',
-            },
-        })
-        self.assertEqual(source_tx.state, 'cancel')

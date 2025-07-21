@@ -3,11 +3,9 @@
 import ast
 import json
 import logging
-import re
 import time
 
 from functools import partial
-from collections import defaultdict
 
 from lxml import etree
 from lxml.builder import E
@@ -15,11 +13,12 @@ from psycopg2 import IntegrityError
 from psycopg2.extras import Json
 
 from odoo.exceptions import AccessError, ValidationError
-from odoo.tests import common, tagged
+from odoo.tests import common
 from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
-from odoo.tools import mute_logger, view_validation, safe_eval
-from odoo.tools.cache import get_cache_key_counter
-from odoo.addons.base.models import ir_ui_view
+from odoo.tools import mute_logger, view_validation
+from odoo.addons.base.models.ir_ui_view import (
+    transfer_field_to_modifiers, transfer_node_to_modifiers, simplify_modifiers,
+)
 
 _logger = logging.getLogger(__name__)
 
@@ -37,21 +36,21 @@ class ViewCase(TransactionCaseWithUserDemo):
         super(ViewCase, self).setUp()
         self.View = self.env['ir.ui.view']
 
-    def assertValid(self, arch, name='valid view', inherit_id=False, model='ir.ui.view'):
+    def assertValid(self, arch, name='valid view', inherit_id=False):
         return self.View.create({
             'name': name,
-            'model': model,
+            'model': 'ir.ui.view',
             'inherit_id': inherit_id,
             'arch': arch,
         })
 
-    def assertInvalid(self, arch, expected_message=None, name='invalid view', inherit_id=False, model='ir.ui.view'):
+    def assertInvalid(self, arch, expected_message=None, name='invalid view', inherit_id=False):
         with mute_logger('odoo.addons.base.models.ir_ui_view'):
             with self.assertRaises(ValidationError) as catcher:
                 with self.cr.savepoint():
                     self.View.create({
                         'name': name,
-                        'model': model,
+                        'model': 'ir.ui.view',
                         'inherit_id': inherit_id,
                         'arch': arch,
                     })
@@ -62,11 +61,11 @@ class ViewCase(TransactionCaseWithUserDemo):
         else:
             _logger.warning(message)
 
-    def assertWarning(self, arch, expected_message=None, name='invalid view', model='ir.ui.view'):
+    def assertWarning(self, arch, expected_message=None, name='invalid view'):
         with self.assertLogs('odoo.addons.base.models.ir_ui_view', level="WARNING") as log_catcher:
             self.View.create({
                 'name': name,
-                'model': model,
+                'model': 'ir.ui.view',
                 'arch': arch,
             })
         self.assertEqual(len(log_catcher.output), 1, "Exactly one warning should be logged")
@@ -242,14 +241,10 @@ class TestViewInheritance(ViewCase):
         self.a22 = self.makeView("A22", self.a2.id)
         self.makeView("A221", self.a22.id)
 
-        self.b = self.makeView('B', arch=self.arch_for("B", 'list'))
-        self.makeView('B1', self.b.id, arch=self.arch_for("B1", 'list', parent=self.b))
-        self.c = self.makeView('C', arch=self.arch_for("C", 'list'))
+        self.b = self.makeView('B', arch=self.arch_for("B", 'tree'))
+        self.makeView('B1', self.b.id, arch=self.arch_for("B1", 'tree', parent=self.b))
+        self.c = self.makeView('C', arch=self.arch_for("C", 'tree'))
         self.c.write({'priority': 1})
-
-        self.d = self.makeView("D")
-        self.d1 = self.makeView("D1", self.d.id)
-        self.d1.arch = None
 
     def test_get_inheriting_views(self):
         self.assertEqual(
@@ -273,8 +268,8 @@ class TestViewInheritance(ViewCase):
         default = self.View.default_view(model=self.model, view_type='form')
         self.assertEqual(default, self.view_ids['A'].id)
 
-        default_list = self.View.default_view(model=self.model, view_type='list')
-        self.assertEqual(default_list, self.view_ids['C'].id)
+        default_tree = self.View.default_view(model=self.model, view_type='tree')
+        self.assertEqual(default_tree, self.view_ids['C'].id)
 
     def test_no_default_view(self):
         self.assertFalse(self.View.default_view(model='no_model.exist', view_type='form'))
@@ -320,58 +315,6 @@ class TestViewInheritance(ViewCase):
             # 2: _get_inheriting_views: id, inherit_id, mode, groups
             # 3: _combine: arch_db
             self.view_ids['A'].get_combined_arch()
-
-    def test_view_validate_button_action_query_count(self):
-        _, _, counter = get_cache_key_counter(self.env['ir.model.data']._xmlid_lookup, 'base.action_ui_view')
-        hit, miss = counter.hit, counter.miss
-
-        with self.assertQueryCount(11):
-            base_view = self.assertValid("""
-                <form string="View">
-                    <header>
-                        <button type="action" name="base.action_ui_view"/>
-                        <button type="action" name="base.action_ui_view_custom"/>
-                        <button type="action" name="base.action_ui_view"/>
-                    </header>
-                    <field name="name"/>
-                </form>
-            """)
-        self.assertEqual(counter.hit, hit)
-        self.assertEqual(counter.miss, miss + 2)
-
-        with self.assertQueryCount(10):
-            self.assertValid("""
-                <field name="name" position="replace"/>
-            """, inherit_id=base_view.id)
-        self.assertEqual(counter.hit, hit + 2)
-        self.assertEqual(counter.miss, miss + 2)
-
-    def test_view_validate_attrs_groups_query_count(self):
-        _, _, counter = get_cache_key_counter(self.env['ir.model.data']._xmlid_lookup, 'base.group_system')
-        hit, miss = counter.hit, counter.miss
-
-        with self.assertQueryCount(8):
-            base_view = self.assertValid("""
-                <form string="View">
-                    <field name="name" groups="base.group_system"/>
-                    <field name="priority" groups="base.group_system"/>
-                    <field name="inherit_id" groups="base.group_system"/>
-                </form>
-            """)
-        self.assertEqual(counter.hit, hit)
-        self.assertEqual(counter.miss, miss)
-
-        with self.assertQueryCount(8):
-            self.assertValid("""
-                <field name="name" position="replace">
-                    <field name="key" groups="base.group_system"/>
-                </field>
-            """, inherit_id=base_view.id)
-        self.assertEqual(counter.hit, hit)
-        self.assertEqual(counter.miss, miss)
-
-    def test_no_arch(self):
-        self.d1._check_xml()
 
 
 class TestApplyInheritanceSpecs(ViewCase):
@@ -699,28 +642,6 @@ class TestApplyInheritanceMoveSpecs(ViewCase):
                 E.div({'class': 'target'}),
                 E.p("Content2", {'class': 'new_p'}),
                 E.p("Content", {'class': 'some'}),
-            )
-        )
-
-    def test_move_with_tail(self):
-        moved_paragraph_xpath = E.xpath(expr="//p", position="move")
-        moved_paragraph_xpath.tail = "tail of paragraph"
-        spec = E.xpath(
-            E.p("Content2", {'class': 'new_p'}),
-            moved_paragraph_xpath,
-            expr="//div[@class='target']", position="after")
-
-        self.apply_spec(self.wrapped_arch, spec)
-
-        moved_paragraph = E.p("Content", {'class': 'some'})
-        moved_paragraph.tail = "tail of paragraph"
-        self.assertEqual(
-            self.wrapped_arch,
-            E.template(
-                E.div("aaaabbbb"),
-                E.div({'class': 'target'}),
-                E.p("Content2", {'class': 'new_p'}),
-                moved_paragraph,
             )
         )
 
@@ -1613,12 +1534,7 @@ class TestViews(ViewCase):
         kw.setdefault('active', True)
         if 'arch_db' in kw:
             arch_db = kw['arch_db']
-            if kw.get('inherit_id'):
-                self.cr.execute('SELECT type FROM ir_ui_view WHERE id = %s', [kw['inherit_id']])
-                kw['type'] = self.cr.fetchone()[0]
-            else:
-                kw['type'] = etree.fromstring(arch_db).tag
-            kw['arch_db'] = Json({'en_US': arch_db}) if self.env.lang in (None, 'en_US') else Json({'en_US': arch_db, self.env.lang: arch_db})
+            kw['arch_db'] = Json({'en_US': arch_db}) if self.env.lang == 'en_US' else Json({'en_US': arch_db, self.env.lang: arch_db})
 
         keys = sorted(kw)
         fields = ','.join('"%s"' % (k.replace('"', r'\"'),) for k in keys)
@@ -1627,32 +1543,6 @@ class TestViews(ViewCase):
         query = 'INSERT INTO ir_ui_view(%s) VALUES(%s) RETURNING id' % (fields, params)
         self.cr.execute(query, kw)
         return self.cr.fetchone()[0]
-
-    def test_view_root_node_matches_view_type(self):
-        view = self.View.create({
-            'name': 'foo',
-            'model': 'ir.ui.view',
-            'arch': """
-                <form>
-                </form>
-            """,
-        })
-        self.assertEqual(view.type, 'form')
-
-        with self.assertRaises(ValidationError):
-            self.View.create({
-                'name': 'foo',
-                'model': 'ir.ui.view',
-                'type': 'form',
-                'arch': """
-                    <data>
-                        <div>
-                        </div>
-                        <form>
-                        </form>
-                    </data>
-                """,
-            })
 
     def test_custom_view_validation(self):
         model = 'ir.actions.act_url'
@@ -1664,9 +1554,9 @@ class TestViews(ViewCase):
             model=model,
             priority=1,
             arch_db="""<?xml version="1.0"?>
-                        <list string="view">
+                        <tree string="view">
                           <field name="url"/>
-                        </list>
+                        </tree>
                     """,
         )
         self.assertTrue(validate())     # single view
@@ -1879,6 +1769,74 @@ class TestViews(ViewCase):
                 string="Replacement title"
             ))
 
+    def test_modifiers(self):
+        def _test_modifiers(what, expected):
+            modifiers = {}
+            if isinstance(what, dict):
+                transfer_field_to_modifiers(what, modifiers, ['invisible', 'readonly', 'required'])
+            else:
+                node = etree.fromstring(what) if isinstance(what, str) else what
+                transfer_node_to_modifiers(node, modifiers)
+            simplify_modifiers(modifiers)
+            assert str(modifiers) == str(expected), "%s != %s" % (modifiers, expected)
+
+        _test_modifiers('<field name="a"/>', {})
+        _test_modifiers('<field name="a" invisible="1"/>', {"invisible": True})
+        _test_modifiers('<field name="a" readonly="1"/>', {"readonly": True})
+        _test_modifiers('<field name="a" required="1"/>', {"required": True})
+        _test_modifiers('<field name="a" invisible="0"/>', {})
+        _test_modifiers('<field name="a" readonly="0"/>', {})
+        _test_modifiers('<field name="a" required="0"/>', {})
+        _test_modifiers(
+            """<field name="a" attrs="{'readonly': 1}"/>""",
+            {"readonly": True},
+        )
+        _test_modifiers(
+            """<field name="a" attrs="{'readonly': 0}"/>""",
+            {},
+        )
+        # TODO: Order is not guaranteed
+        _test_modifiers(
+            '<field name="a" invisible="1" required="1"/>',
+            {"invisible": True, "required": True},
+        )
+        _test_modifiers(
+            '<field name="a" invisible="1" required="0"/>',
+            {"invisible": True},
+        )
+        _test_modifiers(
+            '<field name="a" invisible="0" required="1"/>',
+            {"required": True},
+        )
+        _test_modifiers(
+            """<field name="a" attrs="{'invisible': [['b', '=', 'c']]}"/>""",
+            {"invisible": [["b", "=", "c"]]},
+        )
+
+        # fields in a tree view
+        tree = etree.fromstring('''
+            <tree>
+                <header>
+                    <button name="a" invisible="1"/>
+                </header>
+                <field name="a"/>
+                <field name="a" invisible="0"/>
+                <field name="a" invisible="1"/>
+                <field name="a" attrs="{'invisible': [['b', '=', 'c']]}"/>
+            </tree>
+        ''')
+        _test_modifiers(tree[0][0], {"invisible": True})
+        _test_modifiers(tree[1], {})
+        _test_modifiers(tree[2], {})
+        _test_modifiers(tree[3], {"column_invisible": True})
+        _test_modifiers(tree[4], {"invisible": [['b', '=', 'c']]})
+
+        # The dictionary is supposed to be the result of fields_get().
+        _test_modifiers({}, {})
+        _test_modifiers({"invisible": True}, {"invisible": True})
+        _test_modifiers({"invisible": False}, {})
+
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
     def test_invalid_field(self):
         self.assertInvalid("""
                 <form string="View">
@@ -1892,15 +1850,16 @@ class TestViews(ViewCase):
                 </form>
             """, 'Field tag must have a "name" attribute defined')
 
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
     def test_invalid_subfield(self):
         arch = """
             <form string="View">
                 <field name="name"/>
                 <field name="inherit_children_ids">
-                    <list name="Children">
+                    <tree name="Children">
                         <field name="name"/>
                         <field name="not_a_field"/>
-                    </list>
+                    </tree>
                 </field>
             </form>
         """
@@ -1909,6 +1868,7 @@ class TestViews(ViewCase):
             '''Field "not_a_field" does not exist in model "ir.ui.view"''',
         )
 
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
     def test_context_in_view(self):
         arch = """
             <form string="View">
@@ -1916,14 +1876,13 @@ class TestViews(ViewCase):
                 <field name="inherit_id" context="{'stuff': model}"/>
             </form>
         """
-        view = self.assertValid(arch % '<field name="model"/>')
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
+        self.assertValid(arch % '<field name="model"/>')
+        self.assertInvalid(
+            arch % '',
+            """Field 'model' used in context ({'stuff': model}) must be present in view but is missing.""",
+        )
 
-        view = self.assertValid(arch % '')
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
-
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
     def test_context_in_subview(self):
         arch = """
             <form string="View">
@@ -1936,18 +1895,17 @@ class TestViews(ViewCase):
                 </field>
             </form>
         """
-        view = self.assertValid(arch % ('', '<field name="model"/>'))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
+        self.assertValid(arch % ('', '<field name="model"/>'))
+        self.assertInvalid(
+            arch % ('', ''),
+            """Field 'model' used in context ({'stuff': model}) must be present in view but is missing.""",
+        )
+        self.assertInvalid(
+            arch % ('<field name="model"/>', ''),
+            """Field 'model' used in context ({'stuff': model}) must be present in view but is missing.""",
+        )
 
-        view = self.assertValid(arch % ('', ''))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//field/form/field[@name="model"][@invisible][@readonly]'))
-
-        view = self.assertValid(arch % ('<field name="model"/>', ''))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//field/form/field[@name="model"][@invisible][@readonly]'))
-
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
     def test_context_in_subview_with_parent(self):
         arch = """
             <form string="View">
@@ -1960,21 +1918,17 @@ class TestViews(ViewCase):
                 </field>
             </form>
         """
+        self.assertValid(arch % ('<field name="model"/>', ''))
+        self.assertInvalid(
+            arch % ('', ''),
+            """Field 'model' used in context ({'stuff': parent.model}) must be present in view but is missing.""",
+        )
+        self.assertInvalid(
+            arch % ('', '<field name="model"/>'),
+            """Field 'model' used in context ({'stuff': parent.model}) must be present in view but is missing.""",
+        )
 
-        view = self.assertValid(arch % ('<field name="model"/>', ''))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
-
-        view = self.assertValid(arch % ('', ''))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field/form/field[@name="model"][@invisible][@readonly]'))
-
-        view = self.assertValid(arch % ('', '<field name="model"/>'))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field/form/field[@name="model"][@invisible][@readonly]'))
-
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
     def test_context_in_subsubview_with_parent(self):
         arch = """
             <form string="View">
@@ -1989,32 +1943,24 @@ class TestViews(ViewCase):
                             </form>
                         </field>
                     </form>
-                    <list>
-                        <field name="name"/>
-                    </list>
                 </field>
             </form>
         """
+        self.assertValid(arch % ('<field name="model"/>', '', ''))
+        self.assertInvalid(
+            arch % ('', '', ''),
+            """Field 'model' used in context ({'stuff': parent.parent.model}) must be present in view but is missing.""",
+        )
+        self.assertInvalid(
+            arch % ('', '<field name="model"/>', ''),
+            """Field 'model' used in context ({'stuff': parent.parent.model}) must be present in view but is missing.""",
+        )
+        self.assertInvalid(
+            arch % ('', '', '<field name="model"/>'),
+            """Field 'model' used in context ({'stuff': parent.parent.model}) must be present in view but is missing.""",
+        )
 
-        view = self.assertValid(arch % ('<field name="model"/>', '', ''))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
-
-        view = self.assertValid(arch % ('', '', ''))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field//field[@name="model"][@invisible][@readonly]'))
-
-        view = self.assertValid(arch % ('', '<field name="model"/>', ''))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field//field[@name="model"][@invisible][@readonly]'))
-
-        view = self.assertValid(arch % ('', '', '<field name="model"/>'))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field//field[@name="model"][@invisible][@readonly]'))
-
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
     def test_domain_id_case(self):
         # id is read by default and should be usable in domains
         self.assertValid("""
@@ -2023,6 +1969,7 @@ class TestViews(ViewCase):
             </form>
         """)
 
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
     def test_domain_boolean_case(self):
         arch = """
             <form string="View">
@@ -2033,12 +1980,14 @@ class TestViews(ViewCase):
         self.assertValid(arch % ('', '1', '1'))
         self.assertValid(arch % ('', '0', '1'))
         # self.assertInvalid(arch % ('', '1', '0'))
-        self.assertValid(arch % ('<field name="name"/>', '1', '0 if name else 1'))
-        self.assertInvalid(arch % ('<field name="name"/><field name="type"/>', "'tata' if name else 'tutu'", 'type'), 'Wrong domain formatting')
-        view = self.assertValid(arch % ('', '1', '0 if name else 1'))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//field[@name="name"][@invisible][@readonly]'))
+        self.assertValid(arch % ('<field name="name"/>', '0 if name else 1', '1'))
+        # self.assertInvalid(arch % ('<field name="name"/><field name="type"/>', "'tata' if name else 'tutu'", 'type'), 'xxxx')
+        self.assertInvalid(
+            arch % ('', '0 if name else 1', '1'),
+            """Field 'name' used in domain of <field name="inherit_id"> ([(0 if name else 1, '=', 1)]) must be present in view but is missing""",
+        )
 
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
     def test_domain_in_view(self):
         arch = """
             <form string="View">
@@ -2046,13 +1995,11 @@ class TestViews(ViewCase):
                 <field name="inherit_id" domain="[('model', '=', model)]"/>
             </form>
         """
-        view = self.assertValid(arch % '<field name="model"/>')
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
-
-        view = self.assertValid(arch % '')
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
+        self.assertValid(arch % '<field name="model"/>')
+        self.assertInvalid(
+            arch % '',
+            """Field 'model' used in domain of <field name="inherit_id"> ([('model', '=', model)]) must be present in view but is missing.""",
+        )
 
     def test_domain_unknown_field(self):
         self.assertInvalid("""
@@ -2076,9 +2023,10 @@ class TestViews(ViewCase):
         # computed field, not stored, no search
         self.assertInvalid(
             arch % 'xml_id',
-            '''Unsearchable field “xml_id” in path “xml_id” in domain of <field name="inherit_id"> ([('xml_id', '=', 'test')])''',
+            '''Unsearchable field 'xml_id' in path 'xml_id' in domain of <field name="inherit_id"> ([('xml_id', '=', 'test')])''',
         )
 
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
     def test_domain_field_no_comodel(self):
         self.assertInvalid("""
             <form string="View">
@@ -2086,6 +2034,7 @@ class TestViews(ViewCase):
             </form>
         """, "Domain on non-relational field \"name\" makes no sense (domain:[('test', '=', 'test')])")
 
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
     def test_domain_in_subview(self):
         arch = """
             <form string="View">
@@ -2099,15 +2048,16 @@ class TestViews(ViewCase):
             </form>
         """
         self.assertValid(arch % ('', '<field name="model"/>'))
+        self.assertInvalid(
+            arch % ('', ''),
+            """Field 'model' used in domain of <field name="inherit_id"> ([('model', '=', model)]) must be present in view but is missing.""",
+        )
+        self.assertInvalid(
+            arch % ('<field name="model"/>', ''),
+            """Field 'model' used in domain of <field name="inherit_id"> ([('model', '=', model)]) must be present in view but is missing.""",
+        )
 
-        view = self.assertValid(arch % ('', ''))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//field/form/field[@name="model"][@invisible][@readonly]'))
-
-        view = self.assertValid(arch % ('<field name="model"/>', ''))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//field/form/field[@name="model"][@invisible][@readonly]'))
-
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
     def test_domain_in_subview_with_parent(self):
         arch = """
             <form string="View">
@@ -2120,22 +2070,18 @@ class TestViews(ViewCase):
                 </field>%s
             </form>
         """
-        view = self.assertValid(arch % ('<field name="model"/>', '', ''))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
+        self.assertValid(arch % ('<field name="model"/>', '', ''))
+        self.assertValid(arch % ('', '', '<field name="model"/>'))
+        self.assertInvalid(
+            arch % ('', '', ''),
+            """Field 'model' used in domain of <field name="inherit_id"> ([('model', '=', parent.model)]) must be present in view but is missing.""",
+        )
+        self.assertInvalid(
+            arch % ('', '<field name="model"/>', ''),
+            """Field 'model' used in domain of <field name="inherit_id"> ([('model', '=', parent.model)]) must be present in view but is missing.""",
+        )
 
-        view = self.assertValid(arch % ('', '', '<field name="model"/>'))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
-
-        view = self.assertValid(arch % ('', '', ''))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
-
-        view = self.assertValid(arch % ('', '<field name="model"/>', ''))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
-
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
     def test_domain_on_field_in_view(self):
         field = self.env['ir.ui.view']._fields['inherit_id']
         self.patch(field, 'domain', "[('model', '=', model)]")
@@ -2146,14 +2092,13 @@ class TestViews(ViewCase):
                 <field name="inherit_id"/>
             </form>
         """
-        view = self.assertValid(arch % '<field name="model"/>')
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
+        self.assertValid(arch % '<field name="model"/>')
+        self.assertInvalid(
+            arch % '',
+            """Field 'model' used in domain of field 'inherit_id' ([('model', '=', model)]) must be present in view but is missing.""",
+        )
 
-        view = self.assertValid(arch % '')
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
-
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
     def test_domain_on_field_in_subview(self):
         field = self.env['ir.ui.view']._fields['inherit_id']
         self.patch(field, 'domain', "[('model', '=', model)]")
@@ -2169,14 +2114,17 @@ class TestViews(ViewCase):
                 </field>
             </form>
         """
-        view = self.assertValid(arch % ('', '<field name="model"/>'))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
+        self.assertValid(arch % ('', '<field name="model"/>'))
+        self.assertInvalid(
+            arch % ('', ''),
+            """Field 'model' used in domain of field 'inherit_id' ([('model', '=', model)]) must be present in view but is missing.""",
+        )
+        self.assertInvalid(
+            arch % ('<field name="model"/>', ''),
+            """Field 'model' used in domain of field 'inherit_id' ([('model', '=', model)]) must be present in view but is missing.""",
+        )
 
-        view = self.assertValid(arch % ('', ''))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//field/form/field[@name="model"][@invisible][@readonly]'))
-
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
     def test_domain_on_field_in_subview_with_parent(self):
         field = self.env['ir.ui.view']._fields['inherit_id']
         self.patch(field, 'domain', "[('model', '=', parent.model)]")
@@ -2192,20 +2140,17 @@ class TestViews(ViewCase):
                 </field>
             </form>
         """
-        view = self.assertValid(arch % ('<field name="model"/>', ''))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
+        self.assertValid(arch % ('<field name="model"/>', ''))
+        self.assertInvalid(
+            arch % ('', ''),
+            """Field 'model' used in domain of field 'inherit_id' ([('model', '=', parent.model)]) must be present in view but is missing.""",
+        )
+        self.assertInvalid(
+            arch % ('', '<field name="model"/>'),
+            """Field 'model' used in domain of field 'inherit_id' ([('model', '=', parent.model)]) must be present in view but is missing.""",
+        )
 
-        view = self.assertValid(arch % ('', ''))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field/form/field[@name="model"][@invisible][@readonly]'))
-
-        view = self.assertValid(arch % ('', '<field name="model"/>'))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field/form/field[@name="model"][@invisible][@readonly]'))
-
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
     def test_domain_on_field_in_noneditable_subview(self):
         field = self.env['ir.ui.view']._fields['inherit_id']
         self.patch(field, 'domain', "[('model', '=', model)]")
@@ -2214,21 +2159,20 @@ class TestViews(ViewCase):
             <form string="View">
                 <field name="name"/>
                 <field name="inherit_children_ids">
-                    <list string="Children"%s>
+                    <tree string="Children"%s>
                         <field name="name"/>
                         <field name="inherit_id"/>
-                    </list>
+                    </tree>
                 </field>
             </form>
         """
-        view = self.assertValid(arch % '')
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
+        self.assertValid(arch % '')
+        self.assertInvalid(
+            arch % ' editable="bottom"',
+            """Field 'model' used in domain of field 'inherit_id' ([('model', '=', model)]) must be present in view but is missing.""",
+        )
 
-        view = self.assertValid(arch % ' editable="bottom"')
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//field/list/field[@name="model"][@column_invisible][@readonly]'))
-
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
     def test_domain_on_readonly_field_in_view(self):
         field = self.env['ir.ui.view']._fields['inherit_id']
         self.patch(field, 'domain', "[('model', '=', model)]")
@@ -2250,6 +2194,7 @@ class TestViews(ViewCase):
         """
         self.assertValid(arch)
 
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
     def test_domain_on_readonly_field_in_subview(self):
         field = self.env['ir.ui.view']._fields['inherit_id']
         self.patch(field, 'domain', "[('model', '=', model)]")
@@ -2265,14 +2210,69 @@ class TestViews(ViewCase):
                 </field>
             </form>
         """
-        view = self.assertValid(arch % ' readonly="1"')
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
+        self.assertValid(arch % ' readonly="1"')
+        self.assertInvalid(
+            arch % '',
+            """Field 'model' used in domain of field 'inherit_id' ([('model', '=', model)]) must be present in view but is missing.""",
+        )
 
-        view = self.assertValid(arch % '')
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//field/form/field[@name="model"][@invisible][@readonly]'))
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
+    def test_modifier_attribute_is_boolean(self):
+        arch = """
+            <form string="View">
+                <field name="name" readonly="%s"/>
+            </form>
+        """
+        self.assertValid(arch % '1')
+        self.assertValid(arch % '0')
+        self.assertValid(arch % 'True')
+        self.assertInvalid(
+            arch % "[('model', '=', '1')]",
+            "Attribute readonly evaluation expects a boolean, got [('model', '=', '1')]",
+        )
 
+    def test_modifier_attribute_using_context(self):
+        view = self.assertValid("""
+            <form string="View">
+                <field name="name"
+                    invisible="context.get('foo')"
+                    readonly="context.get('bar')"
+                    required="context.get('baz')"
+                />
+            </form>
+        """)
+
+        for context, expected in [
+            ({}, {}),
+            ({'foo': True}, {'invisible': True}),
+            ({'bar': True}, {'readonly': True}),
+            ({'baz': True}, {'required': True}),
+            ({'foo': True, 'bar': True}, {'invisible': True, 'readonly': True}),
+        ]:
+            arch = self.View.with_context(**context).get_view(view.id)['arch']
+            field_node = etree.fromstring(arch).xpath('//field[@name="name"]')[0]
+            modifiers = json.loads(field_node.get('modifiers') or '{}')
+            self.assertEqual(modifiers.get('invisible'), expected.get('invisible'))
+            self.assertEqual(modifiers.get('readonly'), expected.get('readonly'))
+            self.assertEqual(modifiers.get('required'), expected.get('required'))
+
+    def test_modifier_attribute_priority(self):
+        view = self.assertValid("""
+            <form string="View">
+                <field name="type" invisible="1"/>
+                <field name="name" invisible="context.get('foo')" attrs="{'invisible': [('type', '=', 'tree')]}"/>
+            </form>
+        """)
+        for context, expected in [
+            ({}, [['type', '=', 'tree']]),
+            ({'foo': True}, True)
+        ]:
+            arch = self.View.with_context(**context).get_view(view.id)['arch']
+            field_node = etree.fromstring(arch).xpath('//field[@name="name"]')[0]
+            modifiers = json.loads(field_node.get('modifiers') or '{}')
+            self.assertEqual(modifiers.get('invisible'), expected)
+
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
     def test_domain_in_filter(self):
         arch = """
             <search string="Search">
@@ -2296,6 +2296,7 @@ class TestViews(ViewCase):
         )
         # todo add check for non searchable fields and group by
 
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
     def test_group_by_in_filter(self):
         arch = """
             <search string="Search">
@@ -2305,9 +2306,10 @@ class TestViews(ViewCase):
         self.assertValid(arch % 'name')
         self.assertInvalid(
             arch % 'invalid_field',
-            """Unknown field “invalid_field” in "group_by" value in context=“{'group_by':'invalid_field'}”""",
+            """Unknown field "invalid_field" in "group_by" value in context="{'group_by':'invalid_field'}""",
         )
 
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
     def test_domain_invalid_in_filter(self):
         # invalid domain: it should be a list of tuples
         self.assertInvalid(
@@ -2315,43 +2317,36 @@ class TestViews(ViewCase):
                     <filter string="Dummy" name="draft" domain="['name', '=', 'dummy']"/>
                 </search>
             """,
-            '''Invalid domain of <filter name="draft">: “['name', '=', 'dummy']”''',
+            """Invalid domain format ['name', '=', 'dummy'] in domain of <filter name="draft">""",
         )
 
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
     def test_searchpanel(self):
         arch = """
             <search>
                 %s
                 <searchpanel>
                     %s
-                    <field name="groups_id" select="multi" domain="[('%s', '=', %s)]" enable_counters="1"/>
+                    <field name="groups_id" select="multi" domain="[['%s', '=', %s]]" enable_counters="1"/>
                 </searchpanel>
             </search>
         """
-        view = self.assertValid(arch % ('', '<field name="inherit_id"/>', 'view_access', 'inherit_id'))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field[@name="inherit_id"][@invisible][@readonly]'))
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field[@name="view_access"][@invisible][@readonly]'))
-
-        view = self.assertValid(arch % ('<field name="inherit_id"/>', '', 'view_access', 'inherit_id'))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//searchpanel/field[@name="inherit_id"][@invisible][@readonly]'))
-
-        view = self.assertValid(arch % ('', '<field name="inherit_id"/>', 'view_access', 'parent.arch_updated'))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field[@name="view_access"][@invisible][@readonly]'))
-
+        self.assertValid(arch % ('', '<field name="inherit_id"/>', 'view_access', 'inherit_id'))
+        self.assertInvalid(
+            arch % ('<field name="inherit_id"/>', '', 'view_access', 'inherit_id'),
+            """Field 'inherit_id' used in domain of <field name="groups_id"> ([['view_access', '=', inherit_id]]) must be present in view but is missing.""",
+        )
         self.assertInvalid(
             arch % ('', '<field name="inherit_id"/>', 'view_access', 'view_access'),
-            """field “view_access” does not exist in model “ir.ui.view”.""",
+            """Field 'view_access' used in domain of <field name="groups_id"> ([['view_access', '=', view_access]]) must be present in view but is missing.""",
         )
         self.assertInvalid(
             arch % ('', '<field name="inherit_id"/>', 'inherit_id', 'inherit_id'),
-            """Unknown field "res.groups.inherit_id" in domain of <field name="groups_id"> ([('inherit_id', '=', inherit_id)])""",
+            """Unknown field "res.groups.inherit_id" in domain of <field name="groups_id"> ([['inherit_id', '=', inherit_id]])""",
         )
         self.assertInvalid(
             arch % ('', '<field name="inherit_id" select="multi"/>', 'view_access', 'inherit_id'),
-            """Field “inherit_id” used in domain of <field name="groups_id"> ([('view_access', '=', inherit_id)]) is present in view but is in select multi.""",
+            """Field 'inherit_id' used in domain of <field name="groups_id"> ([['view_access', '=', inherit_id]]) is present in view but is in select multi.""",
         )
 
         arch = """
@@ -2375,6 +2370,84 @@ class TestViews(ViewCase):
         self.assertValid(arch % 'base.group_no_one')
         self.assertWarning(arch % 'base.dummy')
 
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
+    def test_attrs_field(self):
+        arch = """
+            <form string="View">
+                <field name="name"/>%s
+                <field name="inherit_id"
+                       attrs="{'readonly': [('model', '=', 'ir.ui.view')]}"/>
+            </form>
+        """
+        self.assertValid(arch % '<field name="model"/>')
+        self.assertInvalid(
+            arch % '',
+            """Field 'model' used in attrs ({'readonly': [('model', '=', 'ir.ui.view')]}) must be present in view but is missing""",
+        )
+
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
+    def test_attrs_invalid_domain(self):
+        arch = """
+            <form string="View">
+                <field name="name"/>
+                <field name="model"/>
+                <field name="inherit_id"
+                       attrs="{'readonly': [('model', 'ir.ui.view')]}"/>
+            </form>
+        """
+        self.assertInvalid(
+            arch,
+            """Invalid domain format {'readonly': [('model', 'ir.ui.view')]} in attrs""",
+        )
+
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
+    def test_attrs_subfield(self):
+        arch = """
+            <form string="View">
+                <field name="name"/>%s
+                <field name="inherit_children_ids">
+                    <form string="Children">
+                        <field name="name"/>%s
+                        <field name="inherit_id"
+                               attrs="{'readonly': [('model', '=', 'ir.ui.view')]}"/>
+                    </form>
+                </field>
+            </form>
+        """
+        self.assertValid(arch % ('', '<field name="model"/>'))
+        self.assertInvalid(
+            arch % ('', ''),
+            """Field 'model' used in attrs ({'readonly': [('model', '=', 'ir.ui.view')]}) must be present in view but is missing.""",
+        )
+        self.assertInvalid(
+            arch % ('<field name="model"/>', ''),
+            """Field 'model' used in attrs ({'readonly': [('model', '=', 'ir.ui.view')]}) must be present in view but is missing.""",
+        )
+
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
+    def test_attrs_subfield_with_parent(self):
+        arch = """
+            <form string="View">
+                <field name="name"/>%s
+                <field name="inherit_children_ids">
+                    <form string="Children">
+                        <field name="name"/>%s
+                        <field name="inherit_id"
+                               attrs="{'readonly': [('parent.model', '=', 'ir.ui.view')]}"/>
+                    </form>
+                </field>
+            </form>
+        """
+        self.assertValid(arch % ('<field name="model"/>', ''))
+        self.assertInvalid(
+            arch % ('', ''),
+            """Field 'model' used in attrs ({'readonly': [('parent.model', '=', 'ir.ui.view')]}) must be present in view but is missing.""",
+        )
+        self.assertInvalid(
+            arch % ('', '<field name="model"/>'),
+            """Field 'model' used in attrs ({'readonly': [('parent.model', '=', 'ir.ui.view')]}) must be present in view but is missing.""",
+        )
+
     def test_attrs_groups_behavior(self):
         view = self.View.create({
             'name': 'foo',
@@ -2390,7 +2463,7 @@ class TestViews(ViewCase):
         })
         user_demo = self.user_demo
         # Make sure demo doesn't have the base.group_system
-        self.assertFalse(user_demo.has_group('base.group_system'))
+        self.assertFalse(self.env['res.partner'].with_user(user_demo).env.user.has_group('base.group_system'))
         arch = self.env['res.partner'].with_user(user_demo).get_view(view_id=view.id)['arch']
         tree = etree.fromstring(arch)
         self.assertTrue(tree.xpath('//field[@name="name"]'))
@@ -2400,7 +2473,7 @@ class TestViews(ViewCase):
 
         user_admin = self.env.ref('base.user_admin')
         # Make sure admin has the base.group_system
-        self.assertTrue(user_admin.has_group('base.group_system'))
+        self.assertTrue(self.env['res.partner'].with_user(user_admin).env.user.has_group('base.group_system'))
         arch = self.env['res.partner'].with_user(user_admin).get_view(view_id=view.id)['arch']
         tree = etree.fromstring(arch)
         self.assertTrue(tree.xpath('//field[@name="name"]'))
@@ -2409,35 +2482,53 @@ class TestViews(ViewCase):
         self.assertTrue(tree.xpath('//div[@id="bar"]'))
 
     def test_attrs_groups_validation(self):
-        def validate(arch, valid=False, parent=False, field='name', model='ir.ui.view'):
+        def validate(arch, valid=False, parent=False):
             parent = 'parent.' if parent else ''
             if valid:
-                self.assertValid(arch % {'attrs': f"""invisible="{parent}{field} == 'foo'" """}, model=model)
-                self.assertValid(arch % {'attrs': f"""domain="[('name', '!=', {parent}{field})]" """}, model=model)
-                self.assertValid(arch % {'attrs': f"""context="{{'default_name': {parent}{field}}}" """}, model=model)
-                self.assertValid(arch % {'attrs': f"""decoration-info="{parent}{field} == 'foo'" """}, model=model)
+                self.assertValid(arch % {'attrs': f"""attrs="{{'invisible': [('{parent}name', '=', 'foo')]}}" """})
+                self.assertValid(arch % {'attrs': f"""domain="[('name', '!=', {parent}name)]" """})
+                self.assertValid(arch % {'attrs': f"""context="{{'default_name': {parent}name}}" """})
+                self.assertValid(arch % {'attrs': f"""decoration-info="{parent}name == 'foo'" """})
             else:
                 self.assertInvalid(
-                    arch % {'attrs': f"""invisible="{parent}{field} == 'foo'" """},
-                    f"""Field '{field}' used in modifier 'invisible' ({parent}{field} == 'foo') is restricted to the group(s)""",
-                    model=model,
-                )
-                target = 'inherit_id' if model == 'ir.ui.view' else 'company_id'
-                self.assertInvalid(
-                    arch % {'attrs': f"""domain="[('name', '!=', {parent}{field})]" """},
-                    f"""Field '{field}' used in domain of <field name="{target}"> ([('name', '!=', {parent}{field})]) is restricted to the group(s)""",
-                    model=model,
+                    arch % {'attrs': f"""attrs="{{'invisible': [('{parent}name', '=', 'foo')]}}" """},
+                    f"""Field 'name' used in attrs ({{'invisible': [('{parent}name', '=', 'foo')]}}) is restricted to the group(s)""",
                 )
                 self.assertInvalid(
-                    arch % {'attrs': f"""context="{{'default_name': {parent}{field}}}" """},
-                    f"""Field '{field}' used in context ({{'default_name': {parent}{field}}}) is restricted to the group(s)""",
-                    model=model,
+                    arch % {'attrs': f"""domain="[('name', '!=', {parent}name)]" """},
+                    f"""Field 'name' used in domain of <field name="inherit_id"> ([('name', '!=', {parent}name)]) is restricted to the group(s)""",
                 )
                 self.assertInvalid(
-                    arch % {'attrs': f"""decoration-info="{parent}{field} == 'foo'" """},
-                    f"""Field '{field}' used in decoration-info="{parent}{field} == 'foo'" is restricted to the group(s)""",
-                    model=model,
+                    arch % {'attrs': f"""context="{{'default_name': {parent}name}}" """},
+                    f"""Field 'name' used in context ({{'default_name': {parent}name}}) is restricted to the group(s)""",
                 )
+                self.assertInvalid(
+                    arch % {'attrs': f"""decoration-info="{parent}name == 'foo'" """},
+                    f"""Field 'name' used in decoration-info={parent}name == 'foo' is restricted to the group(s)""",
+                )
+
+
+        # Assert using a field restricted to a group
+        # in another field without the same group is invalid
+        validate("""
+            <form string="View">
+                <field name="name" groups="base.group_system"/>
+                <field name="inherit_id" %(attrs)s/>
+            </form>
+        """, valid=False)
+
+        # Assert using a parent field restricted to a group
+        # in a child field without the same group is invalid
+        validate("""
+            <form string="View">
+                <field name="name" groups="base.group_system"/>
+                <field name="inherit_children_ids">
+                    <tree editable="bottom">
+                        <field name="inherit_id" %(attrs)s/>
+                    </tree>
+                </field>
+            </form>
+        """, valid=False, parent=True)
 
         # Assert using a parent field restricted to a group
         # in a child field with the same group is valid
@@ -2445,9 +2536,9 @@ class TestViews(ViewCase):
             <form string="View">
                 <field name="name" groups="base.group_system"/>
                 <field name="inherit_children_ids">
-                    <list editable="bottom">
+                    <tree editable="bottom">
                         <field name="inherit_id" groups="base.group_system" %(attrs)s/>
-                    </list>
+                    </tree>
                 </field>
             </form>
         """, valid=True, parent=True)
@@ -2458,9 +2549,9 @@ class TestViews(ViewCase):
             <form string="View">
                 <field name="name"/>
                 <field name="inherit_children_ids">
-                    <list editable="bottom">
+                    <tree editable="bottom">
                         <field name="inherit_id" groups="base.group_system" %(attrs)s/>
-                    </list>
+                    </tree>
                 </field>
             </form>
         """, valid=True, parent=True)
@@ -2493,6 +2584,16 @@ class TestViews(ViewCase):
             </form>
         """, valid=True)
 
+        # Assert using a field restricted to a group only
+        # in other fields restricted to at least one different group is invalid
+        validate("""
+            <form string="View">
+                <field name="name" groups="base.group_system"/>
+                <field name="inherit_id" groups="base.group_system" %(attrs)s/>
+                <field name="inherit_id" groups="base.group_portal" %(attrs)s/>
+            </form>
+        """, valid=False)
+
         # Assert using a field available twice for 2 different groups
         # in other fields restricted to the same 2 group is valid
         validate("""
@@ -2513,6 +2614,15 @@ class TestViews(ViewCase):
             </form>
         """, valid=True)
 
+        # Assert using a field available for 1 group only
+        # in another field restricted 2 groups is invalid
+        validate("""
+            <form string="View">
+                <field name="name" groups="base.group_system"/>
+                <field name="inherit_id" groups="base.group_portal,base.group_system" %(attrs)s/>
+            </form>
+        """, valid=False)
+
         # Assert using a field restricted to a group
         # in another field restricted to a group including the group for which the field is available is valid
         validate("""
@@ -2528,12 +2638,45 @@ class TestViews(ViewCase):
             <form string="View">
                 <field name="name" groups="base.group_erp_manager"/>
                 <field name="inherit_children_ids">
-                    <list editable="bottom">
+                    <tree editable="bottom">
                         <field name="inherit_id" groups="base.group_system" %(attrs)s/>
-                    </list>
+                    </tree>
                 </field>
             </form>
         """, valid=True, parent=True)
+
+        # Assert using a field restricted to a group
+        # in another field restricted to a group not including the group for which the field is available is invalid
+        validate("""
+            <form string="View">
+                <field name="name" groups="base.group_system"/>
+                <field name="inherit_id" groups="base.group_erp_manager" %(attrs)s/>
+            </form>
+        """, valid=False)
+
+        # Assert using a parent field restricted to a group
+        # in a child field restricted to a group not including the group for which the field is available is invalid
+        validate("""
+            <form string="View">
+                <field name="name" groups="base.group_system"/>
+                <field name="inherit_children_ids">
+                    <tree editable="bottom">
+                        <field name="inherit_id" groups="base.group_erp_manager" %(attrs)s/>
+                    </tree>
+                </field>
+            </form>
+        """, valid=False, parent=True)
+
+        # Assert using a field within a block restricted to a group
+        # in another field not restricted to the same group is invalid
+        validate("""
+            <form string="View">
+                <group groups="base.group_system">
+                    <field name="name"/>
+                </group>
+                <field name="inherit_id" %(attrs)s/>
+            </form>
+        """, valid=False)
 
         # Assert using a field within a block restricted to a group
         # in another field within the same block restricted to a group is valid
@@ -2584,15 +2727,29 @@ class TestViews(ViewCase):
             </form>
         """, valid=True)
 
+        # Assert using a field within a block restricted to a group
+        # in another field within a block restricted to a group not including the group for which the field is available
+        # is invalid
+        validate("""
+            <form string="View">
+                <group groups="base.group_system">
+                    <field name="name"/>
+                </group>
+                <group groups="base.group_erp_manager">
+                    <field name="inherit_id" %(attrs)s/>
+                </group>
+            </form>
+        """, valid=False)
+
         # Assert using a parent field restricted to a group
         # in a child field under a relational field restricted to the same group is valid
         validate("""
             <form string="View">
                 <field name="name" groups="base.group_system"/>
                 <field name="inherit_children_ids" groups="base.group_system">
-                    <list editable="bottom">
+                    <tree editable="bottom">
                         <field name="inherit_id" %(attrs)s/>
-                    </list>
+                    </tree>
                 </field>
             </form>
         """, valid=True, parent=True)
@@ -2604,12 +2761,35 @@ class TestViews(ViewCase):
             <form string="View">
                 <field name="name" groups="base.group_erp_manager"/>
                 <field name="inherit_children_ids" groups="base.group_system">
-                    <list editable="bottom">
+                    <tree editable="bottom">
                         <field name="inherit_id" %(attrs)s/>
-                    </list>
+                    </tree>
                 </field>
             </form>
         """, valid=True, parent=True)
+
+        # Assert using a parent field restricted to a group
+        # in a child field under a relational field restricted
+        # to a group not including the group for which the field is available is invalid
+        validate("""
+            <form string="View">
+                <field name="name" groups="base.group_system"/>
+                <field name="inherit_children_ids" groups="base.group_erp_manager">
+                    <tree editable="bottom">
+                        <field name="inherit_id" %(attrs)s/>
+                    </tree>
+                </field>
+            </form>
+        """, valid=False, parent=True)
+
+        # Assert using a field restricted to users not having a group
+        # in another field not restricted to any group is invalid
+        validate("""
+            <form string="View">
+                <field name="name" groups="!base.group_system"/>
+                <field name="inherit_id" %(attrs)s/>
+            </form>
+        """, valid=False)
 
         # Assert using a field not restricted to any group
         # in another field restricted to users not having a group is valid
@@ -2619,6 +2799,19 @@ class TestViews(ViewCase):
                 <field name="inherit_id" groups="!base.group_system" %(attrs)s/>
             </form>
         """, valid=True)
+
+        # Assert using a field restricted to users not having multiple groups
+        # in another field restricted to users not having one of the group only is invalid
+        # e.g.
+        # if the user is portal, the field "name" will not be in the view
+        # but the field "inherit_id" where "name" is used will be in the view
+        # making it invalid.
+        validate("""
+            <form string="View">
+                <field name="name" groups="!base.group_system,!base.group_portal"/>
+                <field name="inherit_id" groups="!base.group_system" %(attrs)s/>
+            </form>
+        """, valid=False)
 
         # Assert using a field restricted to users not having a group
         # in another field restricted to users not having multiple group including the one above is valid
@@ -2634,6 +2827,19 @@ class TestViews(ViewCase):
         """, valid=True)
 
         # Assert using a field restricted to a non group
+        # in another field for which the non group is not implied is invalid
+        # e.g.
+        # if the user is employee, the field "name" will not be in the view
+        # but the field "inherit_id" where "name" is used will be in the view,
+        # making it invalid.
+        validate("""
+            <form string="View">
+                <field name="name" groups="!base.group_user"/>
+                <field name="inherit_id" groups="!base.group_system" %(attrs)s/>
+            </form>
+        """, valid=False)
+
+        # Assert using a field restricted to a non group
         # in another field restricted to a non group implied in the non group of the available field is valid
         # e.g.
         # if the user is employee, the field "name" will be in the view
@@ -2645,6 +2851,37 @@ class TestViews(ViewCase):
                 <field name="inherit_id" groups="!base.group_user" %(attrs)s/>
             </form>
         """, valid=True)
+
+        # Assert using a field restricted to non-admins, itself in a block restricted to employees,
+        # in another field restricted to a block restricted to employees
+        # is invalid
+        # e.g.
+        # if the user is admin, the field "name" will not be in the view
+        # but the field "inherit_id", where "name" is used, will be in the view,
+        # threfore making it invalid
+        validate("""
+            <form string="View">
+                <group groups="base.group_user">
+                    <field name="name" groups="!base.group_system"/>
+                </group>
+                <group groups="base.group_user">
+                    <field name="inherit_id" %(attrs)s/>
+                </group>
+            </form>
+        """, valid=False)
+
+        # Assert using a field restricted to a group
+        # in another field restricted the opposite group is invalid
+        # e.g.
+        # if the user is admin, the field "name" will be in the view
+        # but the field "inherit_id", where "name" is used, will not be in the view,
+        # therefore making it invalid
+        validate("""
+            <form string="View">
+                <field name="name" groups="base.group_system"/>
+                <field name="inherit_id" groups="!base.group_system" %(attrs)s/>
+            </form>
+        """, valid=False)
 
         # Assert having two times the same field with a mutually exclusive group
         # and using that field in another field without any group is valid
@@ -2686,204 +2923,7 @@ class TestViews(ViewCase):
             </form>
         """, valid=True)
 
-        # The modifier node should have the same group 'base.group_user'
-        # (or a depending group '') that the used field 'access_token'
-        validate("""
-            <form string="View attachment">
-                <field name="access_token"/>
-                <field name="company_id" %(attrs)s groups="base.group_user"/>
-            </form>
-        """, model='ir.attachment', field='access_token', valid=True)
-        validate("""
-            <form string="View attachment">
-                <field name="company_id" %(attrs)s groups="base.group_user"/>
-            </form>
-        """, model='ir.attachment', field='access_token', valid=True)
-        validate("""
-            <form string="View attachment">
-                <field name="company_id" %(attrs)s groups="base.group_erp_manager"/>
-            </form>
-        """, model='ir.attachment', field='access_token', valid=True)
-        validate("""
-            <form string="View attachment">
-                <group groups="base.group_erp_manager">
-                    <field name="company_id" %(attrs)s/>
-                </group>
-            </form>
-        """, model='ir.attachment', field='access_token', valid=True)
-
-        # 'access_token' has 'group_user' groups but only 'group_user' has access to read 'ir.attachment'
-        validate("""
-            <form string="View attachment">
-                <field name="access_token"/>
-                <field name="company_id" %(attrs)s/>
-            </form>
-        """, model='ir.attachment', field='access_token', valid=True)
-        validate("""
-            <form string="View attachment">
-                <field name="access_token"/>
-                <field name="company_id" %(attrs)s groups="base.group_portal"/>
-            </form>
-        """, model='ir.attachment', field='access_token', valid=True)
-        validate("""
-            <form string="View attachment">
-                <field name="company_id" %(attrs)s groups="base.group_portal"/>
-            </form>
-        """, model='ir.attachment', field='access_token', valid=True)
-        validate("""
-            <form string="View attachment">
-                <field name="company_id" %(attrs)s/>
-            </form>
-        """, model='ir.attachment', field='access_token', valid=True)
-
     @mute_logger('odoo.addons.base.models.ir_ui_view')
-    def test_attrs_missing_field(self):
-        user = self.env['res.users'].create({
-            'name': 'A User',
-            'login': 'a_user',
-            'email': 'a@user.com',
-            'groups_id': [(4, self.env.ref('base.group_user').id)],
-        })
-
-        def validate(template, field, demo=True, no_add=False):
-            # add 'access_token' field automatically
-            view = self.View.create({
-                'name': 'Form view attachment',
-                'model': 'ir.attachment',
-                'arch': template,
-            })
-            # cached view
-            arch = self.env['ir.attachment']._get_view_cache(view_id=view.id)['arch']
-            tree = etree.fromstring(arch)
-            nodes = tree.xpath(f"//field[@name='{field}'][@invisible='True'][@readonly='True']")
-            if no_add:
-                nodes = [etree.tostring(node, encoding='unicode') for node in nodes]
-                self.assertFalse(nodes, f"Field '{field}' should not be added automatically")
-                return
-            self.assertTrue(len(nodes) == 1, f"Field '{field}' should be added automatically")
-
-            # admin
-            arch = self.env['ir.attachment'].get_view(view_id=view.id)['arch']
-            tree = etree.fromstring(arch)
-            nodes = tree.xpath(f"//field[@name='{field}'][@invisible='True'][@readonly='True']")
-            self.assertTrue(len(nodes) == 1, f"Field '{field}' should be added automatically")
-
-            # user
-            arch = self.env['ir.attachment'].with_user(user).get_view(view_id=view.id)['arch']
-            tree = etree.fromstring(arch)
-            nodes = tree.xpath(f"//field[@name='{field}'][@invisible='True'][@readonly='True']")
-            if demo:
-                self.assertTrue(len(nodes) == 1, f"Field '{field}' should be added automatically")
-            else:
-                self.assertFalse(nodes, f"Field '{field}' should be added automatically but was removed by access rigth")
-
-        # add missing field
-        validate("""
-                <form string="View attachment">
-                    <field name="company_id" invisible="name != 'toto'"/>
-                </form>
-            """, field='name')
-
-
-        # add missing field with groups
-        validate("""
-                <form string="View attachment">
-                    <field name="company_id" invisible="not access_token" groups="base.group_erp_manager"/>
-                </form>
-            """, field='access_token', demo=False)
-
-        # add missing field with multi groups
-        validate("""
-                <form string="View attachment">
-                    <field name="company_id" invisible="not name" groups="base.group_erp_manager"/>
-                    <field name="company_id" invisible="not name" groups="base.group_system"/>
-                </form>
-            """, field='name', demo=False)
-        # add missing field without group because the view is already restricted to the group 'base.group_user'
-        validate("""
-                <form string="View attachment">
-                    <field name="company_id" invisible="not name" groups="base.group_erp_manager"/>
-                    <field name="company_id" invisible="not name" groups="base.group_system"/>
-                    <field name="company_id" invisible="not name" groups="base.group_multi_company"/>
-                    <field name="company_id" invisible="not name" groups="base.group_user"/>
-                </form>
-            """, field='name', demo=True)
-        validate("""
-                <form string="View attachment">
-                    <field name="company_id" invisible="not name" groups="base.group_erp_manager"/>
-                    <field name="company_id" invisible="not name"/>
-                </form>
-            """, field='name', demo=True)
-
-        # nested groups
-        validate("""
-                <form string="View attachment">
-                    <group groups="base.group_erp_manager">
-                        <field name="company_id" invisible="not access_token"/>
-                    </group>
-                </form>
-            """, field='access_token', demo=False)
-        validate("""
-                <form string="View attachment">
-                    <group groups="base.group_erp_manager">
-                        <field name="company_id" invisible="not name" groups="base.group_multi_company"/>
-                        <field name="company_id" invisible="not name" groups="base.group_user"/>
-                    </group>
-                </form>
-            """, field='name', demo=False)
-        validate("""
-                <form string="View attachment">
-                    <group groups="base.group_erp_manager" invisible="not display_name">
-                        <field name="company_id" invisible="not name" groups="base.group_multi_company"/>
-                        <field name="company_id" invisible="not name" groups="base.group_user"/>
-                    </group>
-                </form>
-            """, field='name', demo=False)
-        validate("""
-                <form string="View attachment">
-                    <group groups="base.group_erp_manager" invisible="not display_name">
-                        <field name="company_id" invisible="not name" groups="base.group_multi_company"/>
-                        <field name="company_id" invisible="not name" groups="base.group_user"/>
-                    </group>
-                </form>
-            """, field='display_name', demo=False)
-        validate("""
-                <form string="View attachment">
-                    <group groups="base.group_user" invisible="not display_name">
-                        <field name="company_id" invisible="not name" groups="base.group_multi_company"/>
-                        <field name="company_id" invisible="not name" groups="base.group_erp_manager"/>
-                    </group>
-                </form>
-            """, field='name', demo=False)
-        validate("""
-                <form string="View attachment">
-                    <group groups="base.group_user" invisible="not display_name">
-                        <field name="company_id" invisible="not name" groups="base.group_multi_company"/>
-                        <field name="company_id" invisible="not name" groups="base.group_erp_manager"/>
-                    </group>
-                </form>
-            """, field='display_name', demo=True)
-
-        # field already exist with implied groups
-        validate("""
-                <form string="View attachment">
-                    <field name="name" groups="base.group_user"/>
-                    <field name="name" groups="base.group_multi_company"/>
-
-                    <group groups="base.group_erp_manager" invisible="not name">
-                        <field name="company_id" invisible="not name" groups="base.group_multi_company"/>
-                        <field name="company_id" invisible="not name" groups="base.group_user"/>
-                    </group>
-                </form>
-            """, field='name', no_add=True)
-
-        # add missing field without group because the view is already restricted to the group 'base.group_user'
-        validate("""
-                <form string="View attachment">
-                    <field name="access_token" invisible="not name"/>
-                </form>
-            """, field='name', demo=True)
-
     def test_empty_groups_attrib(self):
         """Ensure we allow empty groups attribute"""
         view = self.View.create({
@@ -2900,12 +2940,12 @@ class TestViews(ViewCase):
         nodes = tree.xpath("//field[@name='name' and not (@groups)]")
         self.assertEqual(1, len(nodes))
 
-    def test_invisible_groups_with_groups_in_model(self):
+    def test_attrs_groups_with_groups_in_model(self):
         """Tests the attrs is well processed to modifiers for a field node combining:
         - a `groups` attribute on the field node in the view architecture
         - a `groups` attribute on the field in the Python model
         This is an edge case and it worths a unit test."""
-        self.patch(self.env.registry['res.partner'].name, 'groups', 'base.group_system')
+        self.patch(type(self.env['res.partner']).name, 'groups', 'base.group_system')
         self.env.user.groups_id += self.env.ref('base.group_multi_company')
         view = self.View.create({
             'name': 'foo',
@@ -2913,14 +2953,14 @@ class TestViews(ViewCase):
             'arch': """
                 <form>
                     <field name="active"/>
-                    <field name="name" groups="base.group_multi_company" invisible="active"/>
+                    <field name="name" groups="base.group_multi_company" attrs="{'invisible': [('active', '=', True)]}"/>
                 </form>
             """,
         })
         arch = self.env['res.partner'].get_view(view_id=view.id)['arch']
         tree = etree.fromstring(arch)
         node_field_name = tree.xpath('//field[@name="name"]')[0]
-        self.assertEqual(node_field_name.get('invisible'), "active")
+        self.assertEqual(node_field_name.get('modifiers'), '{"invisible": [["active", "=", true]]}')
 
     def test_button(self):
         arch = """
@@ -2948,51 +2988,52 @@ class TestViews(ViewCase):
         self.assertInvalid(arch % 'base.random_xmlid', 'Invalid xmlid base.random_xmlid for button of type action')
         self.assertInvalid('<form><button type="action"/></form>', 'Button must have a name')
         self.assertInvalid('<form><button special="dummy"/></form>', "Invalid special 'dummy' in button")
+        self.assertValid(arch % 'base.action_server_module_immediate_install')
         self.assertInvalid(arch % 'base.partner_root', "base.partner_root is of type res.partner, expected a subclass of ir.actions.actions")
 
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
     def test_tree(self):
         arch = """
-            <list>
+            <tree>
                 <field name="name"/>
                 <button type='object' name="action_archive"/>
                 %s
-            </list>
+            </tree>
         """
         self.assertValid(arch % '')
-        self.assertInvalid(arch % '<group/>', "List child can only have one of field, button, control, groupby, widget, header tag (not group)")
+        self.assertInvalid(arch % '<group/>', "Tree child can only have one of field, button, control, groupby, widget, header tag (not group)")
 
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
     def test_tree_groupby(self):
         arch = """
-            <list>
+            <tree>
                 <field name="name"/>
                 <groupby name="%s">
                     <button type="object" name="action_archive"/>
                 </groupby>
-            </list>
+            </tree>
         """
         self.assertValid(arch % ('model_data_id'))
         self.assertInvalid(arch % ('type'), "Field 'type' found in 'groupby' node can only be of type many2one, found selection")
         self.assertInvalid(arch % ('dummy'), "Field 'dummy' found in 'groupby' node does not exist in model ir.ui.view")
 
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
     def test_tree_groupby_many2one(self):
         arch = """
-            <list>
+            <tree>
                 <field name="name"/>
                 %s
                 <groupby name="model_data_id">
                     %s
-                    <button type="object" name="action_archive" invisible="noupdate" string="Button1"/>
+                    <button type="object" name="action_archive" attrs="{'invisible': [('noupdate', '=', True)]}" string="Button1"/>
                 </groupby>
-            </list>
+            </tree>
         """
-        view = self.assertValid(arch % ('', '<field name="noupdate"/>'))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field[@name="noupdate"][@invisible][@readonly]'))
-
-        view = self.assertValid(arch % ('', ''))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//groupby/field[@name="noupdate"][@invisible][@readonly]'))
-
+        self.assertValid(arch % ('', '<field name="noupdate"/>'))
+        self.assertInvalid(
+            arch % ('', ''),
+            """Field 'noupdate' used in attrs ({'invisible': [('noupdate', '=', True)]}) must be present in view but is missing.""",
+        )
         self.assertInvalid(
             arch % ('<field name="noupdate"/>', ''),
             '''Field "noupdate" does not exist in model "ir.ui.view"''',
@@ -3002,6 +3043,7 @@ class TestViews(ViewCase):
             '''Field "fake_field" does not exist in model "ir.model.data"''',
         )
 
+    @mute_logger('odoo.addons.base.models.ir_ui_view')
     def test_check_xml_on_reenable(self):
         view1 = self.View.create({
             'name': 'valid _check_xml',
@@ -3044,19 +3086,19 @@ class TestViews(ViewCase):
         )
         self.assertInvalid(
             '<form><label for="model"/></form>',
-            """Name or id “model” in <label for="..."> must be present in view but is missing.""",
+            """Name or id 'model' in <label for="..."> must be present in view but is missing.""",
         )
 
     def test_col_colspan_numerical(self):
         self.assertValid('<form><group col="5"></group></form>')
         self.assertInvalid(
             '<form><group col="alpha"></group></form>',
-            "“col” value must be an integer (alpha)",
+            "'col' value must be an integer (alpha)",
         )
         self.assertValid('<form><div colspan="5"></div></form>')
         self.assertInvalid(
             '<form><div colspan="alpha"></div></form>',
-            "“colspan” value must be an integer (alpha)",
+            "'colspan' value must be an integer (alpha)",
         )
 
     def test_valid_alerts(self):
@@ -3082,14 +3124,8 @@ class TestViews(ViewCase):
             '<form><button icon="fa-warning"/></form>',
             'A button with icon attribute (fa-warning) must have title in its tag, parents, descendants or have text'
         )
-        self.assertWarning(
-            '<form><span class="fa fa-warning"/><label for="key"/><field name="key"/></form>',
-            'A <span> with fa class (fa fa-warning) must have title in its tag, parents, descendants or have text'
-        )
         self.assertValid('<form><button icon="fa-warning"/>text</form>')
         self.assertValid('<form><span class="fa fa-warning"/>text</form>')
-        self.assertValid('<form><span class="fa fa-warning"/><label for="key" string="Some Text"/><field name="key"/></form>')
-        self.assertValid('<form><span class="fa fa-warning"/><field name="key" string="Some Text"/></form>')
         self.assertValid('<form>text<span class="fa fa-warning"/></form>')
         self.assertValid('<form><span class="fa fa-warning">text</span></form>')
         self.assertValid('<form><span title="text" class="fa fa-warning"/></form>')
@@ -3143,7 +3179,7 @@ class TestViews(ViewCase):
         self.assertValid('<form><input type="reset" class="btn" role="button"/></form>')
         self.assertValid('<form><div type="reset" class="btn btn-group" role="button"/></form>')
         self.assertValid('<form><div type="reset" class="btn btn-toolbar" role="button"/></form>')
-        self.assertValid('<form><div type="reset" class="btn btn-addr" role="button"/></form>')
+        self.assertValid('<form><div type="reset" class="btn btn-ship" role="button"/></form>')
         self.assertWarning('<form><div class="btn" role="button"/></form>')
         self.assertWarning('<form><input type="email" class="btn" role="button"/></form>')
 
@@ -3190,18 +3226,11 @@ class TestViews(ViewCase):
         )
 
         # replacing an element should validate the whole view
-        view_arch = self.View.get_views([(view0.id, 'form')])['views']['form']['arch']
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
-        view0bis = None
-        view0bis = self.assertValid(
+        self.assertInvalid(
             """<field name="model" position="replace"/>""",
+            """Field 'model' used in domain of <field name="inherit_id"> ([('model', '=', model)]) must be present in view but is missing.""",
             inherit_id=view0.id,
         )
-        view_arch = self.View.get_views([(view0.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
-        view0bis.active = False
-        view_arch = self.View.get_views([(view0.id, 'form')])['views']['form']['arch']
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
 
         # moving an element should have no impact; this test checks that the
         # implementation does not flag the inner element to be validated, which
@@ -3214,12 +3243,12 @@ class TestViews(ViewCase):
         )
 
         # modifying a view extension should validate the other views
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field[@name="name"][@invisible][@readonly]'))
-        view1.arch = """<form position="inside">
-            <field name="type"/>
-        </form>"""
-        view_arch = self.View.get_views([(view0.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//field[@name="name"][@invisible][@readonly]'))
+        with mute_logger('odoo.addons.base.models.ir_ui_view'):
+            with self.assertRaises(ValidationError):
+                with self.cr.savepoint():
+                    view1.arch = """<form position="inside">
+                        <field name="type"/>
+                    </form>"""
 
     def test_graph_fields(self):
         self.assertValid('<graph string="Graph"><field name="model" type="row"/><field name="inherit_id" type="measure"/></graph>')
@@ -3255,114 +3284,6 @@ class TestViews(ViewCase):
             0,
             "The view test_views_test_view_ref should not be in the views of the many2many field groups_id"
         )
-
-    def test_forbidden_owl_directives_in_form(self):
-        arch = "<form>%s</form>"
-
-        self.assertInvalid(
-            arch % ('<span t-esc="x"/>'),
-            """Error while validating view near:
-
-<form __validate__="1"><span t-esc="x"/></form>
-Forbidden owl directive used in arch (t-esc).""",
-        )
-
-        self.assertInvalid(
-            arch % ('<span t-on-click="x.doIt()"/>'),
-            """Error while validating view near:
-
-<form __validate__="1"><span t-on-click="x.doIt()"/></form>
-Forbidden owl directive used in arch (t-on-click).""",
-        )
-
-    @mute_logger('odoo.addons.base.models.ir_ui_view')
-    def test_forbidden_owl_directives_in_kanban(self):
-        arch = "<kanban><templates><t t-name='card'>%s</t></templates></kanban>"
-        self.assertValid(arch % ('<span t-esc="record.resId"/>'))
-        self.assertValid(arch % ('<t t-debug=""/>'))
-
-        self.assertInvalid(
-            arch % ('<span t-on-click="x.doIt()"/>'),
-            """Error while validating view near:
-
-<kanban __validate__="1"><templates><t t-name="card"><span t-on-click="x.doIt()"/></t></templates></kanban>
-Forbidden owl directive used in arch (t-on-click).""",
-        )
-
-    @mute_logger('odoo.addons.base.models.ir_ui_view')
-    def test_forbidden_data_tooltip_attributes_in_form(self):
-        arch = "<form>%s</form>"
-
-        self.assertInvalid(
-            arch % ('<span data-tooltip="Test"/>'),
-            """Error while validating view near:
-
-<form __validate__="1"><span data-tooltip="Test"/></form>
-Forbidden attribute used in arch (data-tooltip)."""
-        )
-
-        self.assertInvalid(
-            arch % ('<span data-tooltip-template="test"/>'),
-            """Error while validating view near:
-
-<form __validate__="1"><span data-tooltip-template="test"/></form>
-Forbidden attribute used in arch (data-tooltip-template)."""
-        )
-
-    @mute_logger('odoo.addons.base.models.ir_ui_view')
-    def test_forbidden_data_tooltip_attributes_in_kanban(self):
-        arch = "<kanban><templates><t t-name='card'>%s</t></templates></kanban>"
-
-        self.assertInvalid(
-            arch % ('<span data-tooltip="Test"/>'),
-            """Error while validating view near:
-
-<kanban __validate__="1"><templates><t t-name="card"><span data-tooltip="Test"/></t></templates></kanban>
-Forbidden attribute used in arch (data-tooltip)."""
-        )
-
-        self.assertInvalid(
-            arch % ('<span data-tooltip-template="test"/>'),
-            """Error while validating view near:
-
-<kanban __validate__="1"><templates><t t-name="card"><span data-tooltip-template="test"/></t></templates></kanban>
-Forbidden attribute used in arch (data-tooltip-template)."""
-        )
-
-        self.assertInvalid(
-            arch % ('<span t-att-data-tooltip="test"/>'),
-            """Error while validating view near:
-
-<kanban __validate__="1"><templates><t t-name="card"><span t-att-data-tooltip="test"/></t></templates></kanban>
-Forbidden attribute used in arch (t-att-data-tooltip)."""
-        )
-
-        self.assertInvalid(
-            arch % ('<span t-attf-data-tooltip-template="{{ test }}"/>'),
-            """Error while validating view near:
-
-<kanban __validate__="1"><templates><t t-name="card"><span t-attf-data-tooltip-template="{{ test }}"/></t></templates></kanban>
-Forbidden attribute used in arch (t-attf-data-tooltip-template)."""
-        )
-
-    @mute_logger('odoo.addons.base.models.ir_ui_view')
-    def test_forbidden_use_of___comp___in_kanban(self):
-        arch = "<kanban><templates><t t-name='card'>%s</t></templates></kanban>"
-        self.assertInvalid(
-            arch % '<t t-esc="__comp__.props.resId"/>',
-            """Error while validating view near:
-
-<kanban __validate__="1"><templates><t t-name="card"><t t-esc="__comp__.props.resId"/></t></templates></kanban>
-Forbidden use of `__comp__` in arch."""
-        )
-
-
-@tagged('post_install', '-at_install')
-class TestDebugger(common.TransactionCase):
-    def test_t_debug_in_qweb_based_views(self):
-        View = self.env['ir.ui.view']
-        views_with_t_debug = View.search([["arch_db", "like", "t-debug="]])
-        self.assertEqual([v.xml_id for v in views_with_t_debug], [])
 
 
 class TestViewTranslations(common.TransactionCase):
@@ -3504,29 +3425,6 @@ class TestViewTranslations(common.TransactionCase):
         self.assertIn("<i>", view_fr.arch_db)
         self.assertIn("<i>", view_fr.arch)
 
-    def test_no_groups_for_inherited(self):
-        parent = self.env["ir.ui.view"].create({
-            "name": "test_no_groups_for_inherited_parent",
-            "model": "ir.ui.view",
-            "arch": "<form></form>",
-        })
-
-        view = self.env["ir.ui.view"].create({
-            "name": "test_no_groups_for_inherited_child",
-            "model": "ir.ui.view",
-            "arch": "<data></data>",
-            "inherit_id": parent.id,
-            "mode": "extension",
-        })
-
-        with self.assertRaises(ValidationError):
-            view.write({'groups_id': [1]})
-
-        view.write({'mode': 'primary'})
-        view.write({'groups_id': [1]})
-
-        with self.assertRaises(ValidationError):
-            view.write({'mode': 'extension'})
 
 class ViewModeField(ViewCase):
     """
@@ -3861,234 +3759,6 @@ class TestViewCombined(ViewCase):
             'arch': '<a position="replace"/>',
         })
 
-    def test_inherit_python_expression(self):
-        main_view = self.View.create({
-            'model': 'res.partner',
-            'arch': '''
-                <form>
-                    <sheet>
-                        <field name="name"/>
-                    </sheet>
-                </form>''',
-        })
-
-        def test_inherit(arch, result):
-            view = self.View.create({
-                'model': 'res.partner',
-                'inherit_id': main_view.id,
-                'mode': 'primary',
-                'arch': arch,
-            })
-            python_expr = etree.fromstring(view.get_combined_arch())[0][0].get('invisible')
-            self.assertEqual(python_expr, result)
-
-        test_inherit('''
-            <data>
-                <xpath expr="//field[@name='name']" position="attributes">
-                    <attribute name="invisible">name == 'a'</attribute>
-                </xpath>
-            </data>
-        ''', "name == 'a'")
-
-        test_inherit('''
-            <data>
-                <xpath expr="//field[@name='name']" position="attributes">
-                    <attribute name="invisible">name == 'a'</attribute>
-                </xpath>
-                <xpath expr="//field[@name='name']" position="attributes">
-                    <attribute name="invisible">True</attribute>
-                </xpath>
-            </data>
-        ''', "True")
-
-        test_inherit('''
-            <data>
-                <xpath expr="//field[@name='name']" position="attributes">
-                    <attribute name="invisible">name == 'a'</attribute>
-                </xpath>
-                <xpath expr="//field[@name='name']" position="attributes">
-                    <attribute name="invisible" add="name == 'b'" separator="or"/>
-                </xpath>
-            </data>
-        ''', "(name == 'a') or (name == 'b')")
-
-        test_inherit('''
-            <data>
-                <xpath expr="//field[@name='name']" position="attributes">
-                    <attribute name="invisible">name == 'e' and name == 'f'</attribute>
-                    <attribute name="invisible" add="id == 33" separator="and"/>
-                </xpath>
-            </data>
-        ''', "(name == 'e' and name == 'f') and (id == 33)")
-
-        test_inherit('''
-            <data>
-                <xpath expr="//field[@name='name']" position="attributes">
-                    <attribute name="invisible">name == 'e' and name == 'f'</attribute>
-                    <attribute name="invisible" add="id == 33" separator="and"/>
-                    <attribute name="invisible" add="id == 42" separator="or"/>
-                    <attribute name="invisible" add="id == 1" separator=" and "/>
-                </xpath>
-            </data>
-        ''', "(((name == 'e' and name == 'f') and (id == 33)) or (id == 42)) and (id == 1)")
-
-        test_inherit('''
-            <data>
-                <xpath expr="//field[@name='name']" position="attributes">
-                    <attribute name="invisible">id == 1</attribute>
-                    <attribute name="invisible" add="id == 2" separator="and"/>
-                    <attribute name="invisible" add="id == 3" separator="and"/>
-                    <attribute name="invisible" add="id == 4" separator="and"/>
-                </xpath>
-            </data>
-        ''', "(((id == 1) and (id == 2)) and (id == 3)) and (id == 4)")
-
-        test_inherit('''
-            <data>
-                <xpath expr="//field[@name='name']" position="attributes">
-                    <attribute name="invisible">(((id == 1) and (id == 2)) and (id == 3)) and (id == 4)</attribute>
-                    <attribute name="invisible" remove="id == 2" separator="and"/>
-                </xpath>
-            </data>
-        ''', "(((id == 1)) and (id == 3)) and (id == 4)")
-
-        test_inherit('''
-            <data>
-                <xpath expr="//field[@name='name']" position="attributes">
-                    <attribute name="invisible">(id == 1) and (id == 2) and (id == 3)</attribute>
-                    <attribute name="invisible" remove="id == 2" separator="and"/>
-                </xpath>
-            </data>
-        ''', "(id == 1) and (id == 3)")
-
-        test_inherit('''
-            <data>
-                <xpath expr="//field[@name='name']" position="attributes">
-                    <attribute name="invisible">(((id == 1) and (id == 2)) and (id == 3)) and (id == 4)</attribute>
-                    <attribute name="invisible" remove="id == 3" separator="and"/>
-                </xpath>
-            </data>
-        ''', "(((id == 1) and (id == 2))) and (id == 4)")
-
-        test_inherit('''
-            <data>
-                <xpath expr="//field[@name='name']" position="attributes">
-                    <attribute name="invisible">id == 1</attribute>
-                    <attribute name="invisible" add="id == 2" separator="and"/>
-                    <attribute name="invisible" remove="id == 2" separator="and"/>
-                    <attribute name="invisible" remove="id == 1" separator="and"/>
-                </xpath>
-            </data>
-        ''', None)
-
-        test_inherit('''
-            <data>
-                <xpath expr="//field[@name='name']" position="attributes">
-                    <attribute name="invisible">id == 1</attribute>
-                    <attribute name="invisible" add="id == 2" separator="and"/>
-                    <attribute name="invisible" add="id == 3" separator="and"/>
-                    <attribute name="invisible" add="id == 4" separator="and"/>
-                    <attribute name="invisible" remove="id == 3" separator="and"/>
-                </xpath>
-            </data>
-        ''', "(((id == 1) and (id == 2))) and (id == 4)")
-
-        test_inherit('''
-            <data>
-                <xpath expr="//field[@name='name']" position="attributes">
-                    <attribute name="invisible">(((id == 1) and (id == 2)) and (id == 3)) and (id == 4)</attribute>
-                    <attribute name="invisible" remove="id == 3" separator="and"/>
-                    <attribute name="invisible" remove="NO_MATCH" separator="and"/>
-                </xpath>
-            </data>
-        ''', "(((id == 1) and (id == 2))) and (id == 4)")
-
-        test_inherit('''
-            <data>
-                <xpath expr="//field[@name='name']" position="attributes">
-                    <attribute name="invisible">id == 1</attribute>
-                    <attribute name="invisible" add="id == 2" separator="and"/>
-                    <attribute name="invisible" remove="id == 2" separator="and"/>
-                    <attribute name="invisible" remove="id == 1" add="name" separator="and"/>
-                </xpath>
-            </data>
-        ''', "name")
-
-        test_inherit('''
-            <data>
-                <xpath expr="//field[@name='name']" position="attributes">
-                    <attribute name="invisible">id == 1</attribute>
-                    <attribute name="invisible" add="id == 2" separator="and"/>
-                    <attribute name="invisible" remove="id == 2" add="name == 'foo'" separator="and"/>
-                    <attribute name="invisible" add="name" separator="and"/>
-                </xpath>
-            </data>
-        ''', "(((id == 1)) and (name == 'foo')) and (name)")
-
-        test_inherit('''
-            <data>
-                <xpath expr="//field[@name='name']" position="attributes">
-                    <attribute name="invisible">1 or not name</attribute>
-                    <attribute name="invisible" remove="1" separator="or"/>
-                </xpath>
-            </data>
-        ''', "not name")
-
-        test_inherit('''
-            <data>
-                <xpath expr="//field[@name='name']" position="attributes">
-                    <attribute name="invisible">1 or not name</attribute>
-                    <attribute name="invisible" add="id == 2" separator="and"/>
-                    <attribute name="invisible" remove="1" separator="or"/>
-                    <attribute name="invisible" remove="not name" separator="and"/>
-                </xpath>
-            </data>
-        ''', "(id == 2)")
-
-        test_inherit('''
-            <data>
-                <xpath expr="//field[@name='name']" position="attributes">
-                    <attribute name="invisible">1 or not name</attribute>
-                    <attribute name="invisible" add="id == 2" separator="and"/>
-                    <attribute name="invisible" remove="1" separator="or"/>
-                </xpath>
-            </data>
-        ''', "(not name) and (id == 2)")
-
-        self.assertInvalid(
-            ''' <data>
-                <xpath expr="//field[@name='name']" position="attributes">
-                    <attribute name="invisible" position="add">True</attribute>
-                </xpath>
-            </data> ''',
-            "Invalid attributes 'position' in element <attribute>",
-            inherit_id=main_view.id,
-            model=main_view.model,
-        )
-
-        self.assertInvalid(
-            ''' <data>
-                <xpath expr="//field[@name='name']" position="attributes">
-                    <attribute name="invisible" add="True">text</attribute>
-                </xpath>
-            </data> ''',
-            "Element <attribute> with 'add' or 'remove' cannot contain text 'text'",
-            inherit_id=main_view.id,
-            model=main_view.model,
-        )
-
-        self.assertInvalid(
-            ''' <data>
-                <xpath expr="//field[@name='name']" position="attributes">
-                    <attribute name="invisible">id == 1</attribute>
-                    <attribute name="invisible" add="id == 2" separator="else"/>
-                </xpath>
-            </data> ''',
-            "Invalid separator 'else' for python expression 'invisible'; valid values are 'and' and 'or'",
-            inherit_id=main_view.id,
-            model=main_view.model,
-        )
-
 
 class TestOptionalViews(ViewCase):
     """
@@ -4272,26 +3942,38 @@ class TestQWebRender(ViewCase):
 
 class TestValidationTools(common.BaseCase):
 
+    def test_get_domain_idents(self):
+        res = view_validation.get_domain_identifiers("['|', ('model', '=', parent.model or need_model), ('need_model', '=', False)]")
+        self.assertEqual(res, ({'model', 'need_model'}, {'parent.model', 'need_model'}))
+
+    def test_process_2_level_parents(self):
+        res = view_validation.get_domain_identifiers("['|', ('model', '=', parent.parent.model)]")
+        self.assertEqual(res, ({'model'}, {'parent.parent.model'}))
+
+    def test_get_dict_asts(self):
+        res = view_validation.get_dict_asts("{'test': False, 'required': [('model', '!=', False)], 'invisible': ['|', ('model', '=', parent.model or need_model), ('need_model', '=', False)]}")
+        self.assertEqual(set(res.keys()), set(['test', 'required', 'invisible']))
+        self.assertIsInstance(res['test'], ast.NameConstant)
+        self.assertIsInstance(res['required'], ast.List)
+        self.assertIsInstance(res['invisible'], ast.List)
+        self.assertEqual(view_validation.get_domain_identifiers(res['invisible']), ({'model', 'need_model'}, {'parent.model', 'need_model'}))
+
     def test_get_expression_identities(self):
         self.assertEqual(
-            view_validation.get_expression_field_names("context_today().strftime('%Y-%m-%d')"),
+            view_validation.get_variable_names("context_today().strftime('%Y-%m-%d')"),
             set(),
         )
         self.assertEqual(
-            view_validation.get_expression_field_names("field and field[0] or not field2"),
+            view_validation.get_variable_names("field and field[0] or not field2"),
             {'field', 'field2'},
         )
         self.assertEqual(
-            view_validation.get_expression_field_names("context_today().strftime('%Y-%m-%d') or field"),
+            view_validation.get_variable_names("context_today().strftime('%Y-%m-%d') or field"),
             {'field'},
         )
         self.assertEqual(
-            view_validation.get_expression_field_names("(datetime.datetime.combine(context_today(), datetime.time(x,y,z)).to_utc()).strftime('%Y-%m-%d %H:%M:%S')"),
+            view_validation.get_variable_names("(datetime.datetime.combine(context_today(), datetime.time(x,y,z)).to_utc()).strftime('%Y-%m-%d %H:%M:%S')"),
             {'x', 'y', 'z'},
-        )
-        self.assertEqual(
-            view_validation.get_expression_field_names("set(field).intersection([1, 2])"),
-            {'field'},
         )
 
 class TestAccessRights(TransactionCaseWithUserDemo):
@@ -4328,7 +4010,7 @@ class TestRenderAllViews(TransactionCaseWithUserDemo):
         count = 0
         elapsed = 0
         for model in env.values():
-            if not model._abstract and model.has_access('read'):
+            if not model._abstract and model.check_access_rights('read', False):
                 with self.subTest(model=model):
                     times = []
                     for _ in range(5):
@@ -4341,1321 +4023,3 @@ class TestRenderAllViews(TransactionCaseWithUserDemo):
 
         _logger.info('Rendered %d views as %s using (best of 5) %ss',
             count, self.env.user.name, elapsed)
-
-
-@common.tagged('post_install', '-at_install', 'post_install_l10n')
-class TestInvisibleField(TransactionCaseWithUserDemo):
-    def test_uncommented_invisible_field(self):
-        # NEVER add new name in this list ! The new addons must add comment for all always invisible field.
-        only_log_modules = (
-            'account',
-            'account_3way_match',
-            'account_accountant',
-            'account_accountant_batch_payment',
-            'account_asset',
-            'account_asset_fleet',
-            'account_auto_transfer',
-            'account_avatax',
-            'account_avatax_geolocalize',
-            'account_avatax_sale',
-            'account_base_import',
-            'account_batch_payment',
-            'account_budget',
-            'account_check_printing',
-            'account_consolidation',
-            'account_debit_note',
-            'account_disallowed_expenses',
-            'account_edi',
-            'account_edi_proxy_client',
-            'account_edi_ubl_cii',
-            'account_external_tax',
-            'account_fleet',
-            'account_followup',
-            'account_intrastat',
-            'account_invoice_extract',
-            'account_online_synchronization',
-            'account_payment',
-            'account_peppol',
-            'account_qr_code_emv',
-            'account_reports',
-            'account_saft_import',
-            'account_sepa',
-            'account_sepa_direct_debit',
-            'account_winbooks_import',
-            'analytic',
-            'appointment',
-            'approvals',
-            'approvals_purchase_stock',
-            'auth_signup',
-            'auth_totp',
-            'barcodes_gs1_nomenclature',
-            'base_address_extended',
-            'base_automation',
-            'base_geolocalize',
-            'base_import_module',
-            'base_install_request',
-            'base_setup',
-            'base_vat',
-            'calendar',
-            'crm',
-            'crm_helpdesk',
-            'crm_iap_enrich',
-            'crm_iap_mine',
-            'data_cleaning',
-            'data_merge',
-            'data_recycle',
-            'delivery',
-            'delivery_dhl',
-            'delivery_easypost',
-            'delivery_fedex',
-            'delivery_iot',
-            'delivery_mondialrelay',
-            'delivery_sendcloud',
-            'delivery_shiprocket',
-            'delivery_starshipit',
-            'delivery_ups',
-            'delivery_ups_rest',
-            'delivery_usps',
-            'digest',
-            'documents',
-            'documents_account',
-            'documents_approvals',
-            'documents_fleet',
-            'documents_l10n_be_hr_payroll',
-            'documents_l10n_ch_hr_payroll',
-            'documents_l10n_hk_hr_payroll',
-            'documents_l10n_ke_hr_payroll',
-            'documents_project',
-            'documents_project_sale',
-            'documents_spreadsheet',
-            'event',
-            'event_booth',
-            'event_booth_sale',
-            'event_crm',
-            'event_sale',
-            'fleet',
-            'frontdesk',
-            'gamification',
-            'helpdesk',
-            'helpdesk_account',
-            'helpdesk_fsm',
-            'helpdesk_fsm_report',
-            'helpdesk_repair',
-            'helpdesk_sale',
-            'helpdesk_sale_loyalty',
-            'helpdesk_sale_timesheet',
-            'helpdesk_stock',
-            'helpdesk_stock_account',
-            'helpdesk_timesheet',
-            'hr',
-            'hr_appraisal',
-            'hr_appraisal_skills',
-            'hr_appraisal_survey',
-            'hr_attendance',
-            'hr_contract',
-            'hr_contract_salary',
-            'hr_contract_salary_holidays',
-            'hr_contract_sign',
-            'hr_expense',
-            'hr_expense_extract',
-            'hr_fleet',
-            'hr_gamification',
-            'hr_holidays',
-            'hr_holidays_attendance',
-            'hr_hourly_cost',
-            'hr_maintenance',
-            'hr_payroll',
-            'hr_payroll_account',
-            'hr_payroll_expense',
-            'hr_recruitment',
-            'hr_recruitment_extract',
-            'hr_recruitment_sign',
-            'hr_recruitment_skills',
-            'hr_recruitment_survey',
-            'hr_referral',
-            'hr_skills',
-            'hr_skills_slides',
-            'hr_skills_survey',
-            'hr_timesheet',
-            'hr_work_entry',
-            'hr_work_entry_contract',
-            'hr_work_entry_holidays_enterprise',
-            'iap',
-            'im_livechat',
-            'industry_fsm',
-            'industry_fsm_report',
-            'industry_fsm_sale',
-            'industry_fsm_sale_report',
-            'industry_fsm_stock',
-            'iot',
-            'knowledge',
-            'l10n_ae_hr_payroll',
-            'l10n_ae_hr_payroll_account',
-            'l10n_ar',
-            'l10n_ar_edi',
-            'l10n_ar_withholding',
-            'l10n_au_hr_payroll',
-            'l10n_au_hr_payroll_account',
-            'l10n_be_codabox',
-            'l10n_be_hr_contract_salary',
-            'l10n_be_hr_payroll',
-            'l10n_be_hr_payroll_dimona',
-            'l10n_be_hr_payroll_fleet',
-            'l10n_be_hr_payroll_sd_worx',
-            'l10n_be_reports',
-            'l10n_be_soda',
-            'l10n_br',
-            'l10n_br_avatax',
-            'l10n_br_edi',
-            'l10n_br_edi_sale',
-            'l10n_br_edi_stock',
-            'l10n_ch',
-            'l10n_ch_hr_payroll',
-            'l10n_ch_hr_payroll_elm_transmission',
-            'l10n_ch_hr_payroll_elm_transmission_account',
-            'l10n_cl',
-            'l10n_cl_edi',
-            'l10n_cl_edi_exports',
-            'l10n_cl_edi_stock',
-            'l10n_cn',
-            'l10n_co_dian',
-            'l10n_co_edi',
-            'l10n_cz_reports_2025',
-            'l10n_de_pos_cert',
-            'l10n_ec',
-            'l10n_ec_edi',
-            'l10n_ec_edi_pos',
-            'l10n_ec_edi_stock',
-            'l10n_ec_website_sale',
-            'l10n_eg_edi_eta',
-            'l10n_eg_hr_payroll',
-            'l10n_employment_hero',
-            'l10n_es_edi_facturae',
-            'l10n_es_edi_sii',
-            'l10n_es_edi_tbai',
-            'l10n_es_edi_tbai_pos',
-            'l10n_es_reports',
-            'l10n_es_reports_modelo130',
-            'l10n_fr_fec_import',
-            'l10n_fr_hr_holidays',
-            'l10n_fr_hr_payroll',
-            'l10n_fr_intrastat',
-            'l10n_fr_intrastat_services',
-            'l10n_fr_pos_cert',
-            'l10n_fr_reports',
-            'l10n_gr_edi',
-            'l10n_hk_hr_payroll',
-            'l10n_hu_edi',
-            'l10n_id_efaktur',
-            'l10n_id_efaktur_coretax',
-            'l10n_in_hr_holidays',
-            'l10n_in_hr_payroll',
-            'l10n_in_hr_payroll_account',
-            'l10n_it_edi',
-            'l10n_it_edi_doi',
-            'l10n_it_edi_sale',
-            'l10n_it_stock_ddt',
-            'l10n_it_xml_export',
-            'l10n_jo_edi',
-            'l10n_jo_hr_payroll',
-            'l10n_jp_zengin',
-            'l10n_ke_edi_oscu',
-            'l10n_ke_edi_oscu_mrp',
-            'l10n_ke_edi_oscu_pos',
-            'l10n_ke_edi_oscu_stock',
-            'l10n_ke_edi_tremol',
-            'l10n_ke_hr_payroll',
-            'l10n_ke_hr_payroll_shif',
-            'l10n_latam_check',
-            'l10n_latam_invoice_document',
-            'l10n_lu_hr_payroll',
-            'l10n_lu_reports',
-            'l10n_ma_hr_payroll',
-            'l10n_mx',
-            'l10n_mx_edi',
-            'l10n_mx_edi_extended',
-            'l10n_mx_edi_landing',
-            'l10n_mx_edi_pos',
-            'l10n_mx_edi_stock',
-            'l10n_mx_gr_edi',
-            'l10n_mx_hr_payroll',
-            'l10n_mx_hr_payroll_account',
-            'l10n_mx_hr_payroll_localisation',
-            'l10n_mx_jo_hr_payroll',
-            'l10n_mx_jo_hr_payroll_account',
-            'l10n_mx_reports',
-            'l10n_mx_xml_polizas',
-            'l10n_my_edi',
-            'l10n_my_edi_extended',
-            'l10n_my_edi_pos',
-            'l10n_nl_reports_sbr',
-            'l10n_nl_reports_sbr_icp',
-            'l10n_nz_eft',
-            'l10n_pe',
-            'l10n_pe_edi',
-            'l10n_pe_edi_pos',
-            'l10n_pe_edi_stock',
-            'l10n_pe_pos',
-            'l10n_pe_reports',
-            'l10n_pe_reports_stock',
-            'l10n_pe_website_sale',
-            'l10n_ph',
-            'l10n_ph_check_printing',
-            'l10n_pl_reports',
-            'l10n_ro_edi',
-            'l10n_ro_edi_stock',
-            'l10n_ro_edi_stock_batch',
-            'l10n_ro_saft',
-            'l10n_sa_edi',
-            'l10n_sa_hr_payroll',
-            'l10n_se',
-            'l10n_se_sie4_import',
-            'l10n_tr_nilvera_edispatch',
-            'l10n_uk_bacs',
-            'l10n_uk_reports',
-            'l10n_uk_reports_cis',
-            'l10n_us_hr_payroll',
-            'l10n_us_hr_payroll_adp',
-            'l10n_uy_edi',
-            'loyalty',
-            'lunch',
-            'mail',
-            'mail_bot_hr',
-            'mail_group',
-            'maintenance',
-            'maintenance_worksheet',
-            'marketing_automation',
-            'marketing_automation_sms',
-            'mass_mailing',
-            'mass_mailing_crm',
-            'mass_mailing_event',
-            'mass_mailing_slides',
-            'mass_mailing_sms',
-            'membership',
-            'mrp',
-            'mrp_account',
-            'mrp_account_enterprise',
-            'mrp_landed_costs',
-            'mrp_maintenance',
-            'mrp_mps',
-            'mrp_plm',
-            'mrp_product_expiry',
-            'mrp_subcontracting',
-            'mrp_subcontracting_dropshipping',
-            'mrp_workorder',
-            'mrp_workorder_expiry',
-            'mrp_workorder_iot',
-            'onboarding',
-            'partner_autocomplete',
-            'partner_commission',
-            'payment',
-            'payment_adyen',
-            'payment_authorize',
-            'payment_custom',
-            'payment_demo',
-            'planning',
-            'point_of_sale',
-            'portal',
-            'pos_enterprise',
-            'pos_hr',
-            'pos_iot',
-            'pos_online_payment',
-            'pos_restaurant',
-            'pos_restaurant_appointment',
-            'pos_self_order',
-            'privacy_lookup',
-            'product',
-            'product_email_template',
-            'product_expiry',
-            'product_margin',
-            'project',
-            'project_enterprise',
-            'project_timesheet_forecast',
-            'project_timesheet_holidays',
-            'project_todo',
-            'purchase',
-            'purchase_product_matrix',
-            'purchase_requisition',
-            'purchase_stock',
-            'quality',
-            'quality_control',
-            'quality_control_iot',
-            'quality_control_picking_batch',
-            'quality_control_worksheet',
-            'quality_iot',
-            'quality_mrp',
-            'quality_mrp_workorder',
-            'rating',
-            'repair',
-            'resource',
-            'room',
-            'sale',
-            'sale_amazon',
-            'sale_crm',
-            'sale_expense',
-            'sale_external_tax',
-            'sale_loyalty',
-            'sale_management',
-            'sale_margin',
-            'sale_pdf_quote_builder',
-            'sale_planning',
-            'sale_product_matrix',
-            'sale_project',
-            'sale_purchase',
-            'sale_renting',
-            'sale_renting_crm',
-            'sale_stock',
-            'sale_stock_renting',
-            'sale_subscription',
-            'sale_timesheet',
-            'sale_timesheet_enterprise',
-            'sales_team',
-            'sign',
-            'sms',
-            'snailmail',
-            'snailmail_account',
-            'social',
-            'social_crm',
-            'social_facebook',
-            'social_instagram',
-            'social_linkedin',
-            'social_push_notifications',
-            'social_twitter',
-            'social_youtube',
-            'spreadsheet_dashboard_edition',
-            'spreadsheet_dashboard_sale_subscription',
-            'stock',
-            'stock_account',
-            'stock_barcode',
-            'stock_barcode_mrp',
-            'stock_barcode_picking_batch',
-            'stock_barcode_product_expiry',
-            'stock_delivery',
-            'stock_enterprise',
-            'stock_intrastat',
-            'stock_landed_costs',
-            'stock_picking_batch',
-            'survey',
-            'test_testing_utilities',
-            'timesheet_grid',
-            'uom',
-            'utm',
-            'voip',
-            'web',
-            'web_studio',
-            'website',
-            'website_appointment',
-            'website_blog',
-            'website_crm_iap_reveal',
-            'website_crm_partner_assign',
-            'website_customer',
-            'website_delivery_sendcloud',
-            'website_event',
-            'website_event_booth_exhibitor',
-            'website_event_exhibitor',
-            'website_event_meet',
-            'website_event_social',
-            'website_event_track',
-            'website_event_track_gantt',
-            'website_event_track_quiz',
-            'website_event_track_social',
-            'website_event_twitter_wall',
-            'website_forum',
-            'website_helpdesk_forum',
-            'website_hr_recruitment',
-            'website_knowledge',
-            'website_livechat',
-            'website_payment',
-            'website_sale',
-            'website_sale_loyalty',
-            'website_sale_slides',
-            'website_sale_stock',
-            'website_slides',
-            'website_slides_survey',
-            'website_sms',
-            'website_studio',
-            'website_twitter_wall',
-            'whatsapp',
-            'whatsapp_payment',
-            'worksheet',
-        )
-
-        modules_without_error = set(self.env['ir.module.module'].search([('state', '=', 'intalled'), ('name', 'in', only_log_modules)]).mapped('name'))
-        module_log_views = defaultdict(list)
-        module_error_views = defaultdict(lambda: defaultdict(list)) 
-        uncommented_regexp = r'''(<field [^>]*invisible=['"](True|1)['"][^>]*>)[\s\t\n ]*(.*)'''
-        views = self.env['ir.ui.view'].search([('type', 'in', ('list', 'form')), '|', ('arch_db', 'like', 'invisible=_True_'), ('arch_db', 'like', 'invisible=_1_')])
-        for view in views.filtered('model_data_id'):
-            module_name = view.model_data_id.module
-            view_name = view.model_data_id.name
-            for field, _val, suffix in re.findall(uncommented_regexp, view.arch_db):
-                if not suffix.startswith('<!--'):
-                    if module_name in only_log_modules:
-                        modules_without_error.discard(module_name)
-                        module_log_views[module_name].append(view_name)
-                        break
-                    else:
-                        module_error_views[module_name][view_name].append(field)
-
-        msg = 'Please indicate why the always invisible fields are present in the view, or remove the field tag.'
-
-        if module_log_views:
-            msg_info = '\n'.join(f'Addons: {module!r}   Views: {names}' for module, names in module_log_views.items())
-            _logger.runbot('%s\n%s', msg, msg_info)
-
-        if module_error_views:
-            error_lines = []
-            for module, view_errors in module_error_views.items():
-                error_lines.append(f"Addon: {module!r}")
-                for view, fields in view_errors.items():
-                    error_lines.append(f"{' ' * 3}View: {view}\n{' ' * 6}Fields:")
-                    error_lines.append("\n".join(f"{' ' * 9}{field}" for field in fields))
-            _logger.error("%s\n%s", msg, "\n".join(error_lines))
-
-        if modules_without_error:
-            _logger.error('Please remove this module names from the white list of this current test: %r', sorted(modules_without_error))
-
-class CompRegexTest(common.TransactionCase):
-    def test_comp_regex(self):
-        self.assertIsNone(re.search(ir_ui_view.COMP_REGEX, ""))
-        self.assertIsNone(re.search(ir_ui_view.COMP_REGEX, "__comp__2"))
-        self.assertIsNone(re.search(ir_ui_view.COMP_REGEX, "__comp___that"))
-        self.assertIsNone(re.search(ir_ui_view.COMP_REGEX, "a__comp__"))
-
-        self.assertIsNotNone(re.search(ir_ui_view.COMP_REGEX, "__comp__"))
-        self.assertIsNotNone(re.search(ir_ui_view.COMP_REGEX, "__comp__ "))
-        self.assertIsNotNone(re.search(ir_ui_view.COMP_REGEX, " __comp__ "))
-        self.assertIsNotNone(re.search(ir_ui_view.COMP_REGEX, "__comp__.props"))
-        self.assertIsNotNone(re.search(ir_ui_view.COMP_REGEX, "__comp__ .props"))
-        self.assertIsNotNone(re.search(ir_ui_view.COMP_REGEX, "__comp__['props']"))
-        self.assertIsNotNone(re.search(ir_ui_view.COMP_REGEX, "__comp__ ['props']"))
-        self.assertIsNotNone(re.search(ir_ui_view.COMP_REGEX, "__comp__[\"props\"]"))
-        self.assertIsNotNone(re.search(ir_ui_view.COMP_REGEX, "__comp__ [\"props\"]"))
-        self.assertIsNotNone(re.search(ir_ui_view.COMP_REGEX, "    __comp__     [\"props\"]    "))
-        self.assertIsNotNone(re.search(ir_ui_view.COMP_REGEX, "record ? __comp__ : false"))
-        self.assertIsNotNone(re.search(ir_ui_view.COMP_REGEX, "!__comp__.props.resId"))
-        self.assertIsNotNone(re.search(ir_ui_view.COMP_REGEX, "{{ __comp__ }}"))
-
-
-@common.tagged('at_install', 'modifiers')
-class ViewModifiers(ViewCase):
-
-    @mute_logger('odoo.addons.base.models.ir_ui_view')
-    def test_01_modifiers(self):
-        def _test_modifiers(what, expected_vnames):
-            if isinstance(what, dict):
-                node = etree.Element('field', {k: str(v) for k, v in what.items()})
-            else:
-                node = etree.fromstring(what) if isinstance(what, str) else what
-            modifiers = {attr: node.attrib[attr] for attr in node.attrib if attr in ir_ui_view.VIEW_MODIFIERS}
-            vnames = set()
-            for attr, expr in modifiers.items():
-                vnames |= view_validation.get_expression_field_names(expr) - {'id'}
-            assert vnames == expected_vnames, f"{vnames!r} != {expected_vnames!r}"
-
-        str_true = "True"
-
-        _test_modifiers('<field name="a"/>', set())
-        _test_modifiers('<field name="a" invisible="1"/>', set())
-        _test_modifiers('<field name="a" readonly="1"/>', set())
-        _test_modifiers('<field name="a" required="1"/>', set())
-        _test_modifiers('<field name="a" invisible="0"/>', set())
-        _test_modifiers('<field name="a" readonly="0"/>', set())
-        _test_modifiers('<field name="a" required="0"/>', set())
-        # TODO: Order is not guaranteed
-        _test_modifiers('<field name="a" invisible="1" required="1"/>',
-            set(),
-        )
-        _test_modifiers('<field name="a" invisible="1" required="0"/>',
-            set(),
-        )
-        _test_modifiers('<field name="a" invisible="0" required="1"/>',
-            set(),
-        )
-        _test_modifiers("""<field name="a" invisible="b == 'c'"/>""",
-            {"b"},
-        )
-        _test_modifiers("""<field name="a" invisible="b == 'c'"/>""",
-            {"b"},
-        )
-        _test_modifiers("""<field name="a" invisible="b == 'c'"/>""",
-            {"b"},
-        )
-        _test_modifiers("""<field name="a" invisible="(b == 'c' or e == 'f')"/>""",
-            {"b", "e"},
-        )
-        _test_modifiers("""<field name="a" invisible="b == 'c'"/>""",
-            {"b"},
-        )
-        _test_modifiers("""<field name="a" invisible="user_id == uid"/>""",
-            {"user_id"},
-        )
-        _test_modifiers("""<field name="a" invisible="(user_id == other_field)"/>""",
-            {"user_id", "other_field"},
-        )
-        _test_modifiers("""<field name="a" invisible="a == parent.b"/>""",
-            {"a", "parent.b"},
-        )
-        _test_modifiers("""<field name="a" invisible="a == context.get('b')"/>""",
-            {"a"},
-        )
-        _test_modifiers("""<field name="a" invisible="a == context['b']"/>""",
-            {"a"},
-        )
-        _test_modifiers("""<field name="a" invisible="company_id == allowed_company_ids[0]"/>""",
-            {"company_id"},
-        )
-        _test_modifiers("""<field name="a" invisible="company_id == (field_1 or False)"/>""",
-            {"company_id", "field_1"},
-        )
-
-        # fields in a list view
-        tree = etree.fromstring('''
-            <list>
-                <header>
-                    <button name="a" invisible="1"/>
-                </header>
-                <field name="a"/>
-                <field name="a" invisible="0"/>
-                <field name="a" column_invisible="1"/>
-                <field name="a" invisible="b == 'c'"/>
-                <field name="a" invisible="(b == 'c')"/>
-            </list>
-        ''')
-        _test_modifiers(tree[0][0], set())
-        _test_modifiers(tree[1], set())
-        _test_modifiers(tree[2], set())
-        _test_modifiers(tree[3], set())
-        _test_modifiers(tree[4], {"b"})
-        _test_modifiers(tree[5], {"b"})
-
-        # The dictionary is supposed to be the result of fields_get().
-        _test_modifiers({}, set())
-        _test_modifiers({"invisible": str_true}, set())
-        _test_modifiers({"invisible": False}, set())
-
-    @mute_logger('odoo.addons.base.models.ir_ui_view')
-    def test_03_modifier_attribute_is_boolean(self):
-        arch = """
-            <form string="View">
-                <field name="model"/>
-                <field name="name" readonly="%s"/>
-            </form>
-        """
-        self.assertValid(arch % '1')
-        self.assertValid(arch % '0')
-        self.assertValid(arch % 'True')
-        self.assertValid(arch % "[('model', '=', '1')]")
-
-    def test_04_modifier_attribute_using_context(self):
-        view = self.assertValid("""
-            <form string="View">
-                <field name="name"
-                    invisible="context.get('foo')"
-                    readonly="context.get('bar')"
-                    required="context.get('baz')"
-                />
-            </form>
-        """)
-        arch = self.View.with_context(foo=True).get_view(view.id)['arch']
-        field_node = etree.fromstring(arch).xpath('//field[@name="name"]')[0]
-        self.assertEqual(field_node.get('invisible'), "context.get('foo')")
-        self.assertEqual(field_node.get('readonly'), "context.get('bar')")
-        self.assertEqual(field_node.get('required'), "context.get('baz')")
-
-    def test_05_modifier_attribute_priority(self):
-        view = self.assertValid("""
-            <form string="View">
-                <field name="type" invisible="1"/>
-                <field name="name" invisible="context.get('foo') and type == 'list'"/>
-            </form>
-        """)
-        for type_value, context, expected in [
-            ('list', {}, False),
-            ('form', {}, False),
-            ('list', {'foo': True}, True),
-            ('form', {'foo': True}, False),
-        ]:
-            arch = self.View.with_context(**context).get_view(view.id)['arch']
-            field_node = etree.fromstring(arch).xpath('//field[@name="name"]')[0]
-            result = field_node.get('invisible')
-            result = safe_eval.safe_eval(result, {'context': context, 'type': type_value})
-            self.assertEqual(bool(result), expected, f"With context: {context}")
-
-    @mute_logger('odoo.addons.base.models.ir_ui_view')
-    def test_10_raise_for_old_attributes(self):
-        arch = """
-            <form string="View">
-                <field name="name"/>
-                <field name="model"/>
-                <field name="inherit_id" attrs="{'readonly': [('model', '=', 'ir.ui.view')]"/>
-            </form>
-        """
-        self.assertInvalid(arch, """no longer used""")
-
-        arch = """
-            <form string="View">
-                <field name="name"/>
-                <field name="model"/>
-                <field name="inherit_id" states="draft,done"/>
-            </form>
-        """
-        self.assertInvalid(arch, """no longer used""")
-
-    @mute_logger('odoo.addons.base.models.ir_ui_view')
-    def test_11_attrs_field(self):
-        arch = """
-            <form string="View">
-                <field name="name"/>%s
-                <field name="inherit_id"
-                       readonly="model == 'ir.ui.view'"/>
-            </form>
-        """
-        view = self.assertValid(arch % '<field name="model"/>')
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
-
-        view = self.assertValid(arch % '')
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
-
-    @mute_logger('odoo.addons.base.models.ir_ui_view')
-    def test_12_invalid_syntax(self):
-        arch = """
-            <form string="View">
-                <field name="name"/>
-                <field name="model"/>
-                <field name="inherit_id"
-                       readonly="model 'ir.ui.view'"/>
-            </form>
-        """
-        self.assertInvalid(
-            arch,
-            """Invalid modifier 'readonly'""",
-        )
-
-        arch = """
-            <form string="View">
-                <field name="name"/>
-                <field name="model"/>
-                <field name="inherit_id"
-                       readonly="bidule.get('truc') === 1 or context.get('truc')"/>
-            </form>
-        """
-        self.assertInvalid(
-            arch,
-            """Invalid modifier 'readonly'""",
-        )
-
-    @mute_logger('odoo.addons.base.models.ir_ui_view')
-    def test_13_attrs_states_invisible_to_modifier(self):
-        view = self.View.create({
-            'name': 'foo',
-            'model': 'ir.module.module',
-            'arch': """
-                <form string="View">
-                    <group invisible="state != 'finished'">
-                        <field name="category_id" invisible="not state" />
-                        <field name="state" invisible="name not in ['qweb-pdf', 'qweb-html', 'qweb-text']"/>
-                        <field name="name" invisible="name != 'bidule' and category_id != uid and state not in ('draf', 'finished')"/>
-                    </group>
-                </form>
-            """,
-        })
-        arch = self.env['ir.module.module'].get_view(view_id=view.id)['arch']
-        tree = etree.fromstring(arch)
-
-        invisible = tree.xpath('//group')[0].get('invisible')
-        self.assertEqual(invisible, "state != 'finished'")
-
-        invisible = tree.xpath('//field[@name="category_id"]')[0].get('invisible')
-        self.assertEqual(invisible, "not state")
-
-        invisible = tree.xpath('//field[@name="state"]')[0].get('invisible')
-        self.assertEqual(invisible, "name not in ['qweb-pdf', 'qweb-html', 'qweb-text']")
-
-        invisible = tree.xpath('//field[@name="name"]')[0].get('invisible')
-        self.assertEqual(invisible, "name != 'bidule' and category_id != uid and state not in ('draf', 'finished')")
-
-    @mute_logger('odoo.addons.base.models.ir_ui_view')
-    def test_14_attrs_subfield(self):
-        arch = """
-            <form string="View">
-                <field name="name"/>%s
-                <field name="inherit_children_ids">
-                    <form string="Children">
-                        <field name="name"/>%s
-                        <field name="inherit_id"
-                               readonly="model == 'ir.ui.view'"/>
-                    </form>
-                </field>
-            </form>
-        """
-        view = self.assertValid(arch % ('', '<field name="model"/>'))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
-
-        view = self.assertValid(arch % ('', ''))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
-
-        view = self.assertValid(arch % ('<field name="model"/>', ''))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
-
-    @mute_logger('odoo.addons.base.models.ir_ui_view')
-    def test_15_attrs_subfield_with_parent(self):
-        arch = """
-            <form string="View">
-                <field name="name"/>%s
-                <field name="inherit_children_ids">
-                    <form string="Children">
-                        <field name="name"/>%s
-                        <field name="inherit_id"
-                               readonly="parent.model == 'ir.ui.view'"/>
-                    </form>
-                </field>
-            </form>
-        """
-        view = self.assertValid(arch % ('<field name="model"/>', ''))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
-
-        view = self.assertValid(arch % ('', ''))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field/form/field[@name="model"][@invisible][@readonly]'))
-
-        view = self.assertValid(arch % ('', '<field name="model"/>'))
-        view_arch = view.get_views([(view.id, 'form')])['views']['form']['arch']
-        self.assertTrue(etree.fromstring(view_arch).xpath('//field[@name="model"][@invisible][@readonly]'))
-        self.assertFalse(etree.fromstring(view_arch).xpath('//field/form/field[@name="model"][@invisible][@readonly]'))
-
-    def test_16_attrs_groups_behavior(self):
-        view = self.View.create({
-            'name': 'foo',
-            'model': 'res.partner',
-            'arch': """
-                <form>
-                    <field name="name"/>
-                    <field name="company_id" groups="base.group_system"/>
-                    <div id="foo"/>
-                    <div id="bar" groups="base.group_system"/>
-                </form>
-            """,
-        })
-        user_demo = self.user_demo
-        # Make sure demo doesn't have the base.group_system
-        self.assertFalse(user_demo.has_group('base.group_system'))
-        arch = self.env['res.partner'].with_user(user_demo).get_view(view_id=view.id)['arch']
-        tree = etree.fromstring(arch)
-        self.assertTrue(tree.xpath('//field[@name="name"]'))
-        self.assertFalse(tree.xpath('//field[@name="company_id"]'))
-        self.assertTrue(tree.xpath('//div[@id="foo"]'))
-        self.assertFalse(tree.xpath('//div[@id="bar"]'))
-
-        user_admin = self.env.ref('base.user_admin')
-        # Make sure admin has the base.group_system
-        self.assertTrue(user_admin.has_group('base.group_system'))
-        arch = self.env['res.partner'].with_user(user_admin).get_view(view_id=view.id)['arch']
-        tree = etree.fromstring(arch)
-        self.assertTrue(tree.xpath('//field[@name="name"]'))
-        self.assertTrue(tree.xpath('//field[@name="company_id"]'))
-        self.assertTrue(tree.xpath('//div[@id="foo"]'))
-        self.assertTrue(tree.xpath('//div[@id="bar"]'))
-
-    @mute_logger('odoo.addons.base.models.ir_ui_view')
-    def test_17_attrs_groups_validation(self):
-        def validate(arch, add_field_with_groups=False, parent=False, model='ir.ui.view'):
-            parent = 'parent.' if parent else ''
-            view = self.assertValid(arch % {'attrs': f"""decoration-info="{parent}name == 'foo'" """}, model=model)
-            result = self.env[model]._get_view_cache(view_id=view.id)
-            tree = etree.fromstring(result['arch'])
-            group_definitions = self.env['res.groups']._get_group_definitions()
-
-            if add_field_with_groups is False:
-                nodes = tree.xpath('//field[@name="name"][@invisible][@readonly]')
-                self.assertEqual(len(nodes), 0, arch)
-            else:
-                nodes = tree.xpath("//field[@name='name'][@invisible='True'][@readonly='True']")
-                self.assertEqual(len(nodes), 1, arch)
-                groups_key = nodes[0].get('__groups_key__')
-                group_repr = str(group_definitions.from_key(groups_key)) if groups_key else ''
-                self.assertEqual(group_repr, add_field_with_groups, arch)
-
-        arch = """
-            <form string="View">
-                <field name="name"/>
-                <field name="inherit_id" %(attrs)s/>
-            </form>
-        """
-        self.assertValid(arch % {'attrs': """invisible="name == 'foo'" """})
-        self.assertValid(arch % {'attrs': """domain="[('name', '!=', name)]" """})
-        self.assertValid(arch % {'attrs': """context="{'default_name': name}" """})
-        self.assertValid(arch % {'attrs': """decoration-info="name == 'foo'" """})
-
-        # add missing field with needed groups
-        validate("""
-            <form string="View">
-                <field name="name"/>
-                <field name="inherit_id" %(attrs)s/>
-            </form>
-        """, add_field_with_groups=False)
-
-        # add missing field
-        validate("""
-            <form string="View">
-                <field name="inherit_id" %(attrs)s/>
-            </form>
-        """, add_field_with_groups='')
-
-        # add the field for all combinations
-        validate("""
-            <form string="View">
-                <field name="name" groups="base.group_public"/>
-                <field name="inherit_id" %(attrs)s/>
-            </form>
-        """, add_field_with_groups='')
-
-        # don't add field because the inherit_id is not accessible by any user (group_user != group_portal)
-        validate("""
-            <form string="View">
-                <group groups="base.group_user">
-                    <field name="name" groups="base.group_public"/>
-                    <field name="inherit_id" groups="base.group_portal" %(attrs)s/>
-                </group>
-            </form>
-        """, add_field_with_groups=False)
-
-        # add missing field with needed groups
-        validate("""
-            <form string="View">
-                <field name="inherit_id" groups="base.group_allow_export" %(attrs)s/>
-            </form>
-        """, add_field_with_groups="'base.group_allow_export'")
-
-        # add missing field because the existing field group does not match
-        validate("""
-            <form string="View">
-                <field name="name" groups="base.group_allow_export"/>
-                <field name="inherit_id" %(attrs)s/>
-            </form>
-        """, add_field_with_groups='')
-
-        # Add missing field because the field name has defined groups.
-        validate("""
-            <form string="View">
-                <field name="name" groups="base.group_allow_export"/>
-                <field name="inherit_children_ids">
-                    <list editable="bottom">
-                        <field name="inherit_id" %(attrs)s/>
-                    </list>
-                </field>
-            </form>
-        """, add_field_with_groups='', parent=True)
-
-        # Don't need to add field if the dependent field is in the same groups
-        validate("""
-            <form string="View">
-                <field name="name" groups="base.group_allow_export"/>
-                <field name="inherit_children_ids">
-                    <list editable="bottom">
-                        <field name="inherit_id" groups="base.group_allow_export" %(attrs)s/>
-                    </list>
-                </field>
-            </form>
-        """, add_field_with_groups=False, parent=True)
-
-        validate("""
-            <form string="View">
-                <field name="name"/>
-                <field name="inherit_children_ids">
-                    <list editable="bottom">
-                        <field name="inherit_id" groups="base.group_allow_export" %(attrs)s/>
-                    </list>
-                </field>
-            </form>
-        """, add_field_with_groups=False, parent=True)
-
-        validate("""
-            <form string="View">
-                <field name="name"/>
-                <field name="inherit_id" %(attrs)s groups="base.group_allow_export"/>
-            </form>
-        """, add_field_with_groups=False)
-
-        validate("""
-            <form string="View">
-                <field name="name" groups="base.group_allow_export"/>
-                <field name="inherit_id" groups="base.group_allow_export" %(attrs)s/>
-            </form>
-        """, add_field_with_groups=False)
-
-        validate("""
-            <form string="View">
-                <field name="name" groups="base.group_portal"/>
-                <field name="name" groups="base.group_allow_export"/>
-                <field name="inherit_id" groups="base.group_allow_export" %(attrs)s/>
-            </form>
-        """, add_field_with_groups=False)
-
-        # Add the missing field only for 'base.group_multi_company' because the
-        # other field is valid.
-        validate("""
-            <form string="View">
-                <field name="name" groups="base.group_allow_export"/>
-                <field name="inherit_id" groups="base.group_allow_export" %(attrs)s/>
-                <field name="inherit_id" groups="base.group_multi_company" %(attrs)s/>
-            </form>
-        """, add_field_with_groups="'base.group_multi_company'")
-
-        # All situations have the field name, not need to add one as invisible.
-        validate("""
-            <form string="View">
-                <field name="name" groups="base.group_allow_export"/>
-                <field name="name" groups="base.group_portal"/>
-                <field name="inherit_id" groups="base.group_allow_export" %(attrs)s/>
-                <field name="inherit_id" groups="base.group_portal" %(attrs)s/>
-            </form>
-        """, add_field_with_groups=False)
-
-        validate("""
-            <form string="View">
-                <field name="name" groups="base.group_portal,base.group_allow_export"/>
-                <field name="inherit_id" groups="base.group_allow_export" %(attrs)s/>
-            </form>
-        """, add_field_with_groups=False)
-
-        # add the missing field to have 'name' when inherit_id is present in the view.
-        validate("""
-            <form string="View">
-                <field name="name" groups="base.group_allow_export"/>
-                <field name="inherit_id" groups="base.group_multi_company,base.group_allow_export" %(attrs)s/>
-            </form>
-        """, add_field_with_groups="'base.group_multi_company' | 'base.group_allow_export'")
-
-        # Should not add the field because when 'inherit_id' is present, 'name' is present
-        validate("""
-            <form string="View">
-                <field name="name" groups="base.group_allow_export"/>
-                <div groups="base.group_multi_company,base.group_system">
-                    <field name="inherit_id" groups="base.group_allow_export" %(attrs)s/>
-                </div>
-            </form>
-        """, add_field_with_groups=False)
-
-        # The view has base.group_system, implied base.group_erp_manager
-        validate("""
-            <form string="View">
-                <field name="name" groups="base.group_system"/>
-                <field name="inherit_id" groups="base.group_erp_manager" %(attrs)s/>
-            </form>
-        """, add_field_with_groups=False)
-
-        # don't add the field because the field 'name' is already present
-        # when the view have 'base.group_erp_manager' in access rigths.
-        validate("""
-            <form string="View">
-                <field name="name" groups="base.group_erp_manager"/>
-                <field name="inherit_children_ids">
-                    <list editable="bottom">
-                        <field name="inherit_id" groups="base.group_multi_company" %(attrs)s/>
-                    </list>
-                </field>
-            </form>
-        """, add_field_with_groups=False, parent=True)
-
-        # add missing field with the same group of the needed
-        validate("""
-            <form string="View">
-                <field name="name" groups="base.group_allow_export"/>
-                <field name="inherit_id" groups="base.group_multi_company" %(attrs)s/>
-            </form>
-        """, add_field_with_groups="'base.group_multi_company'")
-
-        validate("""
-            <form string="View">
-                <field name="name" groups="base.group_allow_export"/>
-                <field name="inherit_children_ids">
-                    <list editable="bottom">
-                        <field name="inherit_id" groups="base.group_multi_company" %(attrs)s/>
-                    </list>
-                </field>
-            </form>
-        """, add_field_with_groups="'base.group_multi_company'", parent=True)
-
-        validate("""
-            <form string="View">
-                <group groups="base.group_allow_export">
-                    <field name="name"/>
-                </group>
-                <field name="inherit_id" %(attrs)s/>
-            </form>
-        """, add_field_with_groups='')
-
-        validate("""
-            <form string="View">
-                <group groups="base.group_allow_export">
-                    <field name="name"/>
-                    <field name="inherit_id" %(attrs)s/>
-                </group>
-            </form>
-        """, add_field_with_groups=False)
-
-        validate("""
-            <form string="View">
-                <group groups="base.group_allow_export">
-                    <field name="name"/>
-                    <field name="inherit_id" %(attrs)s groups="base.group_multi_currency,base.group_multi_company"/>
-                </group>
-            </form>
-        """, add_field_with_groups=False)
-
-        validate("""
-            <form string="View">
-                <group groups="base.group_allow_export">
-                    <field name="name"/>
-                </group>
-                <group groups="base.group_allow_export">
-                    <field name="inherit_id" %(attrs)s/>
-                </group>
-            </form>
-        """, add_field_with_groups=False)
-
-        # view access right has base.group_system implied base.group_erp_manager
-        validate("""
-            <form string="View">
-                <group groups="base.group_erp_manager">
-                    <field name="name"/>
-                </group>
-                <group groups="base.group_allow_export">
-                    <field name="inherit_id" %(attrs)s/>
-                </group>
-            </form>
-        """, add_field_with_groups=False)
-
-        validate("""
-            <form string="View">
-                <group groups="base.group_allow_export">
-                    <field name="name"/>
-                </group>
-                <group groups="base.group_multi_company">
-                    <field name="inherit_id" %(attrs)s/>
-                </group>
-            </form>
-        """, add_field_with_groups="'base.group_multi_company'")
-
-        validate("""
-            <form string="View">
-                <field name="name" groups="base.group_allow_export"/>
-                <field name="inherit_children_ids" groups="base.group_allow_export">
-                    <list editable="bottom">
-                        <field name="inherit_id" %(attrs)s/>
-                    </list>
-                </field>
-            </form>
-        """, add_field_with_groups=False, parent=True)
-
-        validate("""
-            <form string="View">
-                <field name="name" groups="base.group_erp_manager"/>
-                <field name="inherit_children_ids" groups="base.group_allow_export">
-                    <list editable="bottom">
-                        <field name="inherit_id" %(attrs)s/>
-                    </list>
-                </field>
-            </form>
-        """, add_field_with_groups=False, parent=True)
-
-        validate("""
-            <form string="View">
-                <field name="name" groups="base.group_allow_export"/>
-                <field name="inherit_children_ids" groups="base.group_multi_company">
-                    <list editable="bottom">
-                        <field name="inherit_id" %(attrs)s/>
-                    </list>
-                </field>
-            </form>
-        """, add_field_with_groups="'base.group_multi_company'", parent=True)
-
-        validate("""
-            <form string="View">
-                <field name="name" groups="!base.group_allow_export"/>
-                <field name="inherit_id" %(attrs)s/>
-            </form>
-        """, add_field_with_groups='')
-
-        validate("""
-            <form string="View">
-                <field name="name"/>
-                <field name="inherit_id" groups="!base.group_allow_export" %(attrs)s/>
-            </form>
-        """, add_field_with_groups=False)
-
-        validate("""
-            <form string="View">
-                <field name="name" groups="!base.group_allow_export"/>
-                <field name="name" groups="base.group_allow_export"/>
-                <field name="inherit_id" groups="base.group_allow_export" %(attrs)s/>
-            </form>
-        """, add_field_with_groups=False)
-
-        validate("""
-            <form string="View">
-                <field name="name" groups="!base.group_allow_export"/>
-                <field name="name" groups="base.group_allow_export"/>
-                <field name="inherit_id" groups="!base.group_allow_export" %(attrs)s/>
-            </form>
-        """, add_field_with_groups=False)
-
-        validate("""
-            <form string="View">
-                <field name="name" groups="!base.group_allow_export"/>
-                <field name="name" groups="base.group_allow_export"/>
-                <field name="inherit_id" groups="base.group_portal" %(attrs)s/>
-            </form>
-        """, add_field_with_groups=False)
-
-        # Add field because the field 'name' can be hide from the other
-        # negative group
-        validate("""
-            <form string="View">
-                <field name="name" groups="!base.group_multi_company,!base.group_allow_export"/>
-                <field name="inherit_id" groups="!base.group_multi_company" %(attrs)s/>
-            </form>
-        """, add_field_with_groups="~'base.group_multi_company'")
-
-        # don't need to add field with an additional the negative group
-        validate("""
-            <form string="View">
-                <field name="name" groups="!base.group_multi_company"/>
-                <field name="inherit_id" groups="!base.group_multi_company,!base.group_allow_export" %(attrs)s/>
-            </form>
-        """, add_field_with_groups=False)
-
-        # add field with the negative mandatory group (the group is added in order
-        # to only be present in the view when it is needed.)
-        validate("""
-            <form string="View">
-                <field name="name" groups="!base.group_user"/>
-                <field name="inherit_id" groups="!base.group_multi_company" %(attrs)s/>
-            </form>
-        """, add_field_with_groups="~'base.group_multi_company'")
-
-        # fail because the access rights is group_system, no body can see the inherit_id
-        # # don't need to add field, the negative group is a subset of the mandatory group
-        validate("""
-            <form string="View">
-                <field name="name" groups="!base.group_allow_export"/>
-                <field name="inherit_id" groups="!base.group_user" %(attrs)s/>
-            </form>
-        """, add_field_with_groups=False)
-
-        # add missing field with the mandatory group. The field present in view has a
-        # restricted group opposing the desired visibility.
-        validate("""
-            <form string="View">
-                <group groups="base.group_multi_company">
-                    <field name="name" groups="!base.group_allow_export"/>
-                </group>
-                <group groups="base.group_multi_company">
-                    <field name="inherit_id" %(attrs)s/>
-                </group>
-            </form>
-        """, add_field_with_groups="'base.group_multi_company'")
-
-        # add missing field with the mandatory group. The field present in view has a
-        # restricted (negative) group opposing the desired visibility.
-        validate("""
-            <form string="View">
-                <field name="name" groups="base.group_multi_company"/>
-                <field name="inherit_id" groups="!base.group_multi_company" %(attrs)s/>
-            </form>
-        """, add_field_with_groups="~'base.group_multi_company'")
-
-        # don't need to add field (because we can see all time: !base.group_allow_export <> base.group_allow_export).
-        validate("""
-            <form string="View">
-                <field name="name" groups="!base.group_multi_company"/>
-                <field name="name" groups="base.group_multi_company"/>
-                <field name="name" groups="!base.group_portal"/>
-                <field name="name" groups="base.group_portal"/>
-                <field name="inherit_id" %(attrs)s groups="base.group_multi_company"/>
-                <field name="inherit_id" %(attrs)s groups="!base.group_multi_company"/>
-                <field name="inherit_id" %(attrs)s groups="base.group_portal"/>
-                <field name="inherit_id" %(attrs)s groups="!base.group_portal"/>
-                <field name="inherit_id" %(attrs)s/>
-            </form>
-        """, add_field_with_groups=False)
-
-        # No missing combination because '!base.group_allow_export' | 'base.group_allow_export' => *
-        validate("""
-            <form string="View">
-                <field name="name" groups="!base.group_allow_export"/>
-                <field name="name" groups="base.group_allow_export"/>
-                <field name="inherit_id" %(attrs)s groups="base.group_multi_company"/>
-            </form>
-        """, add_field_with_groups=False)
-
-        # No missing combination because '!base.group_allow_export' | 'base.group_allow_export' => *
-        validate("""
-            <form string="View">
-                <field name="name" groups="base.group_multi_company"/>
-                <field name="name" groups="!base.group_allow_export"/>
-                <field name="name" groups="base.group_allow_export"/>
-                <field name="inherit_id" %(attrs)s groups="base.group_multi_company"/>
-                <field name="inherit_id" %(attrs)s groups="base.group_allow_export"/>
-                <field name="inherit_id" %(attrs)s groups="!base.group_allow_export"/>
-                <field name="inherit_id" %(attrs)s groups="base.group_public"/>
-            </form>
-        """, add_field_with_groups=False)
-
-    def test_18_test_missing_group(self):
-        group_a = self.env['res.groups'].create({'name': 'test_a'})
-        data = self.env["ir.model.data"].create({
-            'module': 'base',
-            'name': 'group_test_a',
-            'model': 'res.groups',
-            'res_id': group_a.id,
-        })
-
-        view = self.View.create({
-            'name': 'foo',
-            'model': 'res.partner',
-            'arch': """
-                <form>
-                    <group groups="base.group_user,base.group_test_a">
-                        <group groups="!base.group_system">
-                            <div id="foo"/>
-                        </group>
-                        <group groups="!base.group_test_a">
-                            <div id="bar"/>
-                        </group>
-                    </group>
-                    <group groups="base.group_test_a">
-                        <div id="stuff"/>
-                    </group>
-                </form>
-            """,
-        })
-
-        data.unlink()
-        group_a.unlink()
-
-        user_demo = self.user_demo
-        # Make sure demo doesn't have the base.group_system
-        self.assertFalse(user_demo.has_group('base.group_system'))
-        arch = self.env['res.partner'].with_user(user_demo).get_view(view_id=view.id)['arch']
-        tree = etree.fromstring(arch)
-        self.assertTrue(tree.xpath('//div[@id="foo"]'))
-        self.assertTrue(tree.xpath('//div[@id="bar"]'))
-        self.assertFalse(tree.xpath('//div[@id="stuff"]'))
-
-        user_admin = self.env.ref('base.user_admin')
-        # Make sure admin has the base.group_system
-        self.assertTrue(user_admin.has_group('base.group_system'))
-        arch = self.env['res.partner'].with_user(user_admin).get_view(view_id=view.id)['arch']
-        tree = etree.fromstring(arch)
-        self.assertFalse(tree.xpath('//div[@id="foo"]'))
-        self.assertTrue(tree.xpath('//div[@id="bar"]'))
-        self.assertFalse(tree.xpath('//div[@id="stuff"]'))

@@ -3,17 +3,17 @@
 # 	* link_tracker
 # 
 # Translators:
-# Wil Odoo, 2024
+# Martin Trigaux, 2022
+# Jeffery CHEN <jeffery9@gmail.com>, 2022
 # Chloe Wang, 2024
-# Odoo哥 <vnsoft.he@gmail.com>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server saas~14.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:55+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Odoo哥 <vnsoft.he@gmail.com>, 2024\n"
+"POT-Creation-Date: 2021-07-12 07:50+0000\n"
+"PO-Revision-Date: 2022-09-22 05:53+0000\n"
+"Last-Translator: Chloe Wang, 2024\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/odoo/teams/41243/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,14 +22,11 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: link_tracker
-#: model_terms:ir.ui.view,arch_db:link_tracker.utm_campaign_view_kanban
-msgid "<i class=\"fa fa-fw fa-mouse-pointer\" aria-label=\"Clicks\" role=\"img\"/>"
-msgstr "<i class=\"fa fa-fw fa-mouse-pointer\" aria-label=\"Clicks\" role=\"img\"/>"
-
-#. module: link_tracker
-#: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_view_form
-msgid "<span class=\"o_stat_text\">Visit Page</span>"
-msgstr "<span class=\"o_stat_text\">访问页面</span>"
+#: code:addons/link_tracker/models/link_tracker.py:0
+#: code:addons/link_tracker/models/link_tracker.py:0
+#, python-format
+msgid "%r is not a valid link, links cannot redirect to the current page."
+msgstr "%r不是有效链接，链接不能重定向到当前页面。"
 
 #. module: link_tracker
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker__absolute_url
@@ -72,22 +69,10 @@ msgid "Codes"
 msgstr "代码"
 
 #. module: link_tracker
-#. odoo-python
-#: code:addons/link_tracker/models/link_tracker.py:0
-msgid ""
-"Combinations of Link Tracker values (URL, campaign, medium, source, and label) must be unique.\n"
-"The following combinations are already used: \n"
-"- %(error_lines)s"
-msgstr ""
-"链接追踪工具的数值（网址、推广活动、媒体、来源和标签），其组合必须是唯一的。\n"
-"以下组合已被使用： \n"
-"%(error_lines)s"
-
-#. module: link_tracker
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker_click__country_id
 #: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_click_view_search
 msgid "Country"
-msgstr "国家/地区"
+msgstr "国家"
 
 #. module: link_tracker
 #: model_terms:ir.actions.act_window,help:link_tracker.link_tracker_action
@@ -107,11 +92,12 @@ msgstr "创建人"
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker_click__create_date
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker_code__create_date
 msgid "Created on"
-msgstr "创建日期"
+msgstr "创建时间"
 
 #. module: link_tracker
-#. odoo-python
 #: code:addons/link_tracker/models/link_tracker.py:0
+#: code:addons/link_tracker/models/link_tracker.py:0
+#, python-format
 msgid "Creating a Link Tracker without URL is not possible"
 msgstr "创建没有网址的跟踪链是不可能的"
 
@@ -126,7 +112,7 @@ msgstr "显示名称"
 #: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_click_view_search
 #: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_view_search
 msgid "Group By"
-msgstr "分组方式"
+msgstr "分组"
 
 #. module: link_tracker
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker__short_url_host
@@ -146,6 +132,13 @@ msgid "Internet Protocol"
 msgstr "互联网协议"
 
 #. module: link_tracker
+#: model:ir.model.fields,field_description:link_tracker.field_link_tracker____last_update
+#: model:ir.model.fields,field_description:link_tracker.field_link_tracker_click____last_update
+#: model:ir.model.fields,field_description:link_tracker.field_link_tracker_code____last_update
+msgid "Last Modified on"
+msgstr "最后修改时间"
+
+#. module: link_tracker
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker__write_uid
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker_click__write_uid
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker_code__write_uid
@@ -157,7 +150,7 @@ msgstr "最后更新人"
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker_click__write_date
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker_code__write_date
 msgid "Last Updated on"
-msgstr "上次更新日期"
+msgstr "最后更新时间"
 
 #. module: link_tracker
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker_click__link_id
@@ -194,6 +187,14 @@ msgid "Link Tracker Code"
 msgstr "跟踪链代码"
 
 #. module: link_tracker
+#: code:addons/link_tracker/models/link_tracker.py:0
+#, python-format
+msgid ""
+"Link Tracker values (URL, campaign, medium and source) must be unique (%s, "
+"%s, %s, %s)."
+msgstr "跟踪链的值（URL、活动、媒介和来源）必须是唯一的（%s、%s、%s、%s）。"
+
+#. module: link_tracker
 #: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_view_graph
 #: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_view_search
 #: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_view_tree
@@ -214,7 +215,7 @@ msgstr "邮件渲染混合"
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker__medium_id
 #: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_view_search
 msgid "Medium"
-msgstr "中等"
+msgstr "媒介"
 
 #. module: link_tracker
 #: model_terms:ir.actions.act_window,help:link_tracker.link_tracker_click_action_statistics
@@ -229,7 +230,7 @@ msgstr "点击数"
 #. module: link_tracker
 #: model:ir.model.fields,field_description:link_tracker.field_utm_campaign__click_count
 msgid "Number of clicks generated by the campaign"
-msgstr "活动产生的点击次数"
+msgstr "营销产生的点击次数"
 
 #. module: link_tracker
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker__title
@@ -273,19 +274,19 @@ msgstr "目标网址"
 msgid ""
 "This is a name that helps you keep track of your different campaign efforts,"
 " e.g. Fall_Drive, Christmas_Special"
-msgstr "名称会帮助您追踪不同营销活动，例如：节能减排、圣诞特辑"
+msgstr "名称会帮助您追踪不同营销活动，例如，节能减排、圣诞特辑"
 
 #. module: link_tracker
 #: model:ir.model.fields,help:link_tracker.field_link_tracker__medium_id
 msgid "This is the method of delivery, e.g. Postcard, Email, or Banner Ad"
-msgstr "这是传达方法，例如：明信片、EMail或横幅广告"
+msgstr "这是传达方法，例如，明信片、EMail或横幅广告"
 
 #. module: link_tracker
 #: model:ir.model.fields,help:link_tracker.field_link_tracker__source_id
 msgid ""
 "This is the source of the link, e.g. Search Engine, another domain, or name "
 "of email list"
-msgstr "这是链接源，例如：搜索引擎、其他域名或EMail列表名称"
+msgstr "这是链接源，例如，搜索引擎、其他域名或EMail列表名称"
 
 #. module: link_tracker
 #: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_view_search
@@ -294,7 +295,6 @@ msgstr "标题和网址"
 
 #. module: link_tracker
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker__short_url
-#: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_view_form
 msgid "Tracked URL"
 msgstr "跟踪网址"
 
@@ -329,8 +329,8 @@ msgid "Visit Page"
 msgstr "访问页面"
 
 #. module: link_tracker
-#. odoo-python
 #: code:addons/link_tracker/models/link_tracker.py:0
+#, python-format
 msgid "Visit Webpage"
 msgstr "访问网页"
 
@@ -338,9 +338,3 @@ msgstr "访问网页"
 #: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_view_form
 msgid "Website Link"
 msgstr "网站链接"
-
-#. module: link_tracker
-#. odoo-python
-#: code:addons/link_tracker/models/link_tracker.py:0
-msgid "“%s” is not a valid link, links cannot redirect to the current page."
-msgstr "“%s” 不是有效链接，链接未能重新导向至目前页面。"

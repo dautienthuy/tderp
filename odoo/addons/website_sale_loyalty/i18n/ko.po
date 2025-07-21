@@ -3,17 +3,18 @@
 # 	* website_sale_loyalty
 # 
 # Translators:
-# Wil Odoo, 2024
-# Daye Jeong, 2024
-# Sarah Park, 2025
+# Martin Trigaux, 2022
+# JH CHOI <hwangtog@gmail.com>, 2022
+# Sarah Park, 2023
+# Daye Jeong, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:56+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: Sarah Park, 2025\n"
+"POT-Creation-Date: 2022-10-10 10:24+0000\n"
+"PO-Revision-Date: 2022-09-22 05:57+0000\n"
+"Last-Translator: Daye Jeong, 2025\n"
 "Language-Team: Korean (https://app.transifex.com/odoo/teams/41243/ko/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,26 +23,16 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: website_sale_loyalty
-#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
-msgid "<strong> - </strong>"
-msgstr "<strong> - </strong>"
-
-#. module: website_sale_loyalty
-#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
-msgid "<strong>Coupons - </strong>"
-msgstr "<strong>쿠폰 - </strong>"
-
-#. module: website_sale_loyalty
-#. odoo-python
-#: code:addons/website_sale_loyalty/wizard/coupon_share.py:0
+#: code:addons/website_sale_loyalty/wizard/sale_coupon_share.py:0
+#, python-format
 msgid "A coupon is needed for coupon programs."
 msgstr "쿠폰 프로그램을 사용하려면 쿠폰이 필요합니다."
 
 #. module: website_sale_loyalty
-#. odoo-python
 #: code:addons/website_sale_loyalty/models/loyalty_rule.py:0
+#, python-format
 msgid "A coupon with the same code was found."
-msgstr "동일한 코드를 사용 중인 쿠폰이 이미 존재합니다."
+msgstr "코드가 동일한 쿠폰이 이미 존재합니다."
 
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.loyalty_program_view_form_inherit_website_sale_loyalty
@@ -55,25 +46,15 @@ msgstr "웹사이트에서 이용 가능"
 
 #. module: website_sale_loyalty
 #. odoo-python
-#: code:addons/website_sale_loyalty/controllers/payment.py:0
-msgid ""
-"Cannot process payment: applied reward was changed or has expired.\n"
-"Please refresh the page and try again."
-msgstr ""
-"결제를 처리할 수 없습니다: 리워드 적용 내용이 변경되었거나 만료되었습니다.\n"
-"페이지를 새로고침 후 다시 시도하세요."
+#: code:addons/website_sale_loyalty/controllers/main.py:0
+#, python-format
+msgid "Cannot process payment: applied reward was changed or has expired."
+msgstr "결제 처리 불가: 적용된 보상이 변경되었거나 만료되었습니다."
 
 #. module: website_sale_loyalty
-#. odoo-javascript
-#: code:addons/website_sale_loyalty/static/src/js/portal_loyalty_card.xml:0
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
 msgid "Claim"
 msgstr "청구"
-
-#. module: website_sale_loyalty
-#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
-msgid "Code:"
-msgstr "코드 :"
 
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
@@ -116,6 +97,11 @@ msgid "Discount & Loyalty"
 msgstr "할인 및 적립"
 
 #. module: website_sale_loyalty
+#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.reduction_coupon_code
+msgid "Discount code or gift card"
+msgstr "할인 코드 또는 기프트 카드"
+
+#. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.cart_discount
 msgid "Discount:"
 msgstr "할인 :"
@@ -134,11 +120,6 @@ msgstr "표시명"
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.coupon_share_view_form
 msgid "Done"
 msgstr "완료"
-
-#. module: website_sale_loyalty
-#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
-msgid "Expired Date:"
-msgstr "만료일:"
 
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.coupon_share_view_form
@@ -164,6 +145,11 @@ msgstr "ID"
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
 msgid "Invalid or expired promo code."
 msgstr "프로모션 코드가 잘못되었거나 기간이 만료되었습니다."
+
+#. module: website_sale_loyalty
+#: model:ir.model.fields,field_description:website_sale_loyalty.field_coupon_share____last_update
+msgid "Last Modified on"
+msgstr "최근 수정일"
 
 #. module: website_sale_loyalty
 #: model:ir.model.fields,field_description:website_sale_loyalty.field_coupon_share__write_uid
@@ -221,8 +207,8 @@ msgid "Promo Code"
 msgstr "프로모션 코드"
 
 #. module: website_sale_loyalty
-#. odoo-python
-#: code:addons/website_sale_loyalty/wizard/coupon_share.py:0
+#: code:addons/website_sale_loyalty/wizard/sale_coupon_share.py:0
+#, python-format
 msgid "Provide either a coupon or a program."
 msgstr "쿠폰 또는 프로그램 제공."
 
@@ -235,8 +221,8 @@ msgstr "리디렉션"
 #: model:ir.model.fields,help:website_sale_loyalty.field_coupon_share__program_website_id
 #: model:ir.model.fields,help:website_sale_loyalty.field_loyalty_program__website_id
 #: model:ir.model.fields,help:website_sale_loyalty.field_loyalty_rule__website_id
-msgid "Restrict to a specific website."
-msgstr "특정 웹사이트로만 제한."
+msgid "Restrict publishing to this website."
+msgstr "이 웹 사이트로의 게시를 제한합니다."
 
 #. module: website_sale_loyalty
 #: model:ir.model,name:website_sale_loyalty.model_sale_order
@@ -249,18 +235,13 @@ msgid "Sales Order Line"
 msgstr "판매 주문 내역"
 
 #. module: website_sale_loyalty
-#. odoo-python
-#: code:addons/website_sale_loyalty/wizard/coupon_share.py:0
+#: code:addons/website_sale_loyalty/wizard/sale_coupon_share.py:0
+#: code:addons/website_sale_loyalty/wizard/sale_coupon_share.py:0
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.loyalty_card_view_tree_inherit_website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.loyalty_program_view_tree_inherit_website_sale_loyalty
+#, python-format
 msgid "Share"
 msgstr "공유"
-
-#. module: website_sale_loyalty
-#. odoo-python
-#: code:addons/website_sale_loyalty/wizard/coupon_share.py:0
-msgid "Share %s"
-msgstr "공유 %s"
 
 #. module: website_sale_loyalty
 #: model:ir.model.fields,field_description:website_sale_loyalty.field_coupon_share__share_link
@@ -278,8 +259,8 @@ msgid "Show Discount in Subtotal"
 msgstr "소계에 할인 가격 표시"
 
 #. module: website_sale_loyalty
-#. odoo-python
 #: code:addons/website_sale_loyalty/controllers/main.py:0
+#, python-format
 msgid ""
 "The coupon will be automatically applied when you add something in your "
 "cart."
@@ -291,21 +272,16 @@ msgid "The following promo code was applied on your order:"
 msgstr "프로모션 코드가 적용되었습니다:"
 
 #. module: website_sale_loyalty
-#. odoo-python
 #: code:addons/website_sale_loyalty/models/loyalty_rule.py:0
+#, python-format
 msgid "The promo code must be unique."
 msgstr "프로모션 코드는 고유해야 합니다."
 
 #. module: website_sale_loyalty
-#. odoo-python
-#: code:addons/website_sale_loyalty/wizard/coupon_share.py:0
+#: code:addons/website_sale_loyalty/wizard/sale_coupon_share.py:0
+#, python-format
 msgid "The shared website should correspond to the website of the program."
 msgstr "공유 웹사이트는 해당 프로그램의 웹사이트와 일치해야 합니다."
-
-#. module: website_sale_loyalty
-#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
-msgid "Use"
-msgstr "사용"
 
 #. module: website_sale_loyalty
 #: model:ir.model.fields,field_description:website_sale_loyalty.field_coupon_share__website_id
@@ -327,7 +303,7 @@ msgstr ""
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
 msgid "You have"
-msgstr "다음의"
+msgstr "가 있습니다."
 
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form

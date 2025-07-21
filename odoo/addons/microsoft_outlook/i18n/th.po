@@ -3,15 +3,16 @@
 # 	* microsoft_outlook
 # 
 # Translators:
-# Wil Odoo, 2024
+# Wichanon Jamwutthipreecha, 2022
+# Martin Trigaux, 2022
 # Rasareeyar Lappiam, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:55+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2023-05-23 08:23+0000\n"
+"PO-Revision-Date: 2022-09-22 05:53+0000\n"
 "Last-Translator: Rasareeyar Lappiam, 2024\n"
 "Language-Team: Thai (https://app.transifex.com/odoo/teams/41243/th/)\n"
 "MIME-Version: 1.0\n"
@@ -23,44 +24,37 @@ msgstr ""
 #. module: microsoft_outlook
 #: model_terms:ir.ui.view,arch_db:microsoft_outlook.fetchmail_server_view_form
 #: model_terms:ir.ui.view,arch_db:microsoft_outlook.ir_mail_server_view_form
+msgid ""
+"<i class=\"fa fa-arrow-right\"/>\n"
+"                        Connect your Outlook account"
+msgstr ""
+
+#. module: microsoft_outlook
+#: model_terms:ir.ui.view,arch_db:microsoft_outlook.fetchmail_server_view_form
+#: model_terms:ir.ui.view,arch_db:microsoft_outlook.ir_mail_server_view_form
 msgid "<i class=\"fa fa-cog\" title=\"Edit Settings\"/>"
 msgstr "<i class=\"fa fa-cog\" title=\"แก้ไขการตั้งค่า\"/>"
 
 #. module: microsoft_outlook
 #: model_terms:ir.ui.view,arch_db:microsoft_outlook.fetchmail_server_view_form
-#: model_terms:ir.ui.view,arch_db:microsoft_outlook.ir_mail_server_view_form
 msgid ""
-"<i class=\"oi oi-arrow-right\"/>\n"
-"                        Connect your Outlook account"
-msgstr ""
-"<i class=\"oi oi-arrow-right\"/>\n"
-"                        เชื่อมต่อบัญชี Outlook ของคุณ"
-
-#. module: microsoft_outlook
-#: model_terms:ir.ui.view,arch_db:microsoft_outlook.fetchmail_server_view_form
-msgid ""
-"<span invisible=\"server_type != 'outlook' or not microsoft_outlook_refresh_token\" class=\"badge text-bg-success\">\n"
+"<span attrs=\"{'invisible': ['|', ('server_type', '!=', 'outlook'), ('microsoft_outlook_refresh_token', '=', False)]}\" class=\"badge text-bg-success\">\n"
 "                        Outlook Token Valid\n"
 "                    </span>"
 msgstr ""
-"<span invisible=\"server_type != 'outlook' or not microsoft_outlook_refresh_token\" class=\"badge text-bg-success\">\n"
-"                        โทเค็น Outlook ถูกต้อง\n"
-"                    </span>"
 
 #. module: microsoft_outlook
 #: model_terms:ir.ui.view,arch_db:microsoft_outlook.ir_mail_server_view_form
 msgid ""
-"<span invisible=\"smtp_authentication != 'outlook' or not microsoft_outlook_refresh_token\" class=\"badge text-bg-success\">\n"
+"<span attrs=\"{'invisible': ['|', ('smtp_authentication', '!=', 'outlook'), ('microsoft_outlook_refresh_token', '=', False)]}\" class=\"badge text-bg-success\">\n"
 "                        Outlook Token Valid\n"
 "                    </span>"
 msgstr ""
-"<span invisible=\"smtp_authentication != 'outlook' or not microsoft_outlook_refresh_token\" class=\"badge text-bg-success\">\n"
-"                        โทเค็น Outlook ถูกต้อง\n"
-"                    </span>"
 
 #. module: microsoft_outlook
 #. odoo-python
 #: code:addons/microsoft_outlook/models/microsoft_outlook_mixin.py:0
+#, python-format
 msgid "An error occurred when fetching the access token. %s"
 msgstr "เกิดข้อผิดพลาดขณะดึงข้อมูลโทเค็นเพื่อการเข้าถึง %s"
 
@@ -74,7 +68,7 @@ msgstr "ยืนยันตัวตนด้วย"
 #: model:ir.model.fields,field_description:microsoft_outlook.field_ir_mail_server__microsoft_outlook_uri
 #: model:ir.model.fields,field_description:microsoft_outlook.field_microsoft_outlook_mixin__microsoft_outlook_uri
 msgid "Authentication URI"
-msgstr "URI การยืนยันความถูกต้อง"
+msgstr "URI การยืนยันถูกต้อง"
 
 #. module: microsoft_outlook
 #: model:ir.model,name:microsoft_outlook.model_res_config_settings
@@ -84,6 +78,7 @@ msgstr "ตั้งค่าการกำหนดค่า"
 #. module: microsoft_outlook
 #. odoo-python
 #: code:addons/microsoft_outlook/models/ir_mail_server.py:0
+#, python-format
 msgid ""
 "Connect your Outlook account with the OAuth Authentication process.  \n"
 "By default, only a user with a matching email address will be able to use this server. To extend its use, you should set a \"mail.default.from\" system parameter."
@@ -94,6 +89,7 @@ msgstr ""
 #. module: microsoft_outlook
 #. odoo-python
 #: code:addons/microsoft_outlook/models/fetchmail_server.py:0
+#, python-format
 msgid ""
 "Connect your personal Outlook account using OAuth. \n"
 "You will be redirected to the Outlook login page to accept the permissions."
@@ -124,12 +120,13 @@ msgstr "เซิร์ฟเวอร์อีเมลขาเข้า"
 #. module: microsoft_outlook
 #. odoo-python
 #: code:addons/microsoft_outlook/models/ir_mail_server.py:0
+#, python-format
 msgid ""
-"Incorrect Connection Security for Outlook mail server “%s”. Please set it to"
-" \"TLS (STARTTLS)\"."
+"Incorrect Connection Security for Outlook mail server %r. Please set it to "
+"\"TLS (STARTTLS)\"."
 msgstr ""
-"การรักษาความปลอดภัยการเชื่อมต่อสำหรับเซิร์ฟเวอร์อีเมล Outlook “%s” "
-"ไม่ถูกต้อง กรุณาตั้งค่าเป็น \"TLS (STARTTLS)\""
+"ความปลอดภัยในการเชื่อมต่อไม่ถูกต้องสำหรับเซิร์ฟเวอร์จดหมาย Outlook %r "
+"โปรดตั้งค่าเป็น \"TLS (STARTTLS)\""
 
 #. module: microsoft_outlook
 #: model:ir.model.fields,field_description:microsoft_outlook.field_fetchmail_server__is_microsoft_outlook_configured
@@ -141,7 +138,7 @@ msgstr "มีการกำหนดค่าข้อมูลรับรอ
 #. module: microsoft_outlook
 #: model:ir.model,name:microsoft_outlook.model_ir_mail_server
 msgid "Mail Server"
-msgstr "เมลเซิร์ฟเวอร์"
+msgstr "Outgoing Mail Server"
 
 #. module: microsoft_outlook
 #: model:ir.model,name:microsoft_outlook.model_microsoft_outlook_mixin
@@ -151,6 +148,7 @@ msgstr "Microsoft Outlook มิกซ์อิน"
 #. module: microsoft_outlook
 #. odoo-python
 #: code:addons/microsoft_outlook/models/microsoft_outlook_mixin.py:0
+#, python-format
 msgid "Only the administrator can link an Outlook mail server."
 msgstr "มีเพียงผู้ดูแลระบบเท่านั้นที่สามารถลิงก์เซิร์ฟเวอร์อีเมล Outlook ได้"
 
@@ -194,18 +192,21 @@ msgstr "โทเค็นการรีเฟรช Outlook"
 #. module: microsoft_outlook
 #. odoo-python
 #: code:addons/microsoft_outlook/models/microsoft_outlook_mixin.py:0
+#, python-format
 msgid "Please configure your Outlook credentials."
 msgstr "โปรดกำหนดค่าข้อมูลรับรอง Outlook ของคุณ"
 
 #. module: microsoft_outlook
 #. odoo-python
 #: code:addons/microsoft_outlook/models/microsoft_outlook_mixin.py:0
+#, python-format
 msgid "Please connect with your Outlook account before using it."
 msgstr "โปรดเชื่อมต่อกับบัญชี Outlook ของคุณก่อนใช้งาน"
 
 #. module: microsoft_outlook
 #. odoo-python
 #: code:addons/microsoft_outlook/models/ir_mail_server.py:0
+#, python-format
 msgid ""
 "Please fill the \"Username\" field with your Outlook/Office365 username "
 "(your email address). This should be the same account as the one used for "
@@ -213,17 +214,18 @@ msgid ""
 msgstr ""
 "กรุณากรอกข้อมูลในช่อง \"ชื่อผู้ใช้\" ด้วยชื่อผู้ใช้ Outlook/Office365 ของคุณ"
 " (ที่อยู่อีเมลของคุณ) นี่ควรเป็นบัญชีเดียวกับบัญชีที่ใช้สำหรับ Outlook "
-"OAuthentication โทเค็น"
+"OAuthentication Token"
 
 #. module: microsoft_outlook
 #. odoo-python
 #: code:addons/microsoft_outlook/models/ir_mail_server.py:0
+#, python-format
 msgid ""
-"Please leave the password field empty for Outlook mail server “%s”. The "
-"OAuth process does not require it"
+"Please leave the password field empty for Outlook mail server %r. The OAuth "
+"process does not require it"
 msgstr ""
-"โปรดเว้นช่องรหัสผ่านว่างไว้สำหรับเซิร์ฟเวอร์อีเมล Outlook “%s” กระบวนการ "
-"OAuth ไม่ต้องการสิ่งนี้"
+"โปรดเว้นฟิลด์รหัสผ่านว่างไว้สำหรับเซิร์ฟเวอร์อีเมล Outlook %r กระบวนการ "
+"OAuth ไม่ต้องการมัน"
 
 #. module: microsoft_outlook
 #: model_terms:ir.ui.view,arch_db:microsoft_outlook.ir_mail_server_view_form
@@ -233,8 +235,9 @@ msgstr "อ่านเพิ่มเติม"
 #. module: microsoft_outlook
 #. odoo-python
 #: code:addons/microsoft_outlook/models/fetchmail_server.py:0
-msgid "SSL is required for server “%s”."
-msgstr ""
+#, python-format
+msgid "SSL is required for the server %r."
+msgstr "จำเป็นต้องมี SSL สำหรับเซิร์ฟเวอร์ %r"
 
 #. module: microsoft_outlook
 #: model_terms:ir.ui.view,arch_db:microsoft_outlook.res_config_settings_view_form
@@ -270,6 +273,18 @@ msgstr "URL เพื่อสร้างรหัสการยืนยั�
 
 #. module: microsoft_outlook
 #. odoo-python
+#: code:addons/microsoft_outlook/models/ir_mail_server.py:0
+#, python-format
+msgid ""
+"This server %r can only be used for your personal email address. Please fill"
+" the \"from_filter\" field with %r."
+msgstr ""
+"เซิร์ฟเวอร์ %r นี้สามารถใช้ได้เฉพาะกับที่อยู่อีเมลส่วนตัวของคุณเท่านั้น "
+"กรุณากรอกช่อง \"from_filter\" ด้วย %r"
+
+#. module: microsoft_outlook
+#. odoo-python
 #: code:addons/microsoft_outlook/models/microsoft_outlook_mixin.py:0
+#, python-format
 msgid "Unknown error."
 msgstr "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ"

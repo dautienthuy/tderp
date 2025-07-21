@@ -8,13 +8,15 @@ import pytz
 from dateutil.parser import parse
 from datetime import timedelta
 
-from odoo import api, fields, models
-from odoo.modules.registry import Registry
+from odoo import api, fields, models, registry
+from odoo.tools import ormcache_context
+from odoo.exceptions import UserError
 from odoo.osv import expression
 from odoo.sql_db import BaseCursor
 
 from odoo.addons.microsoft_calendar.utils.microsoft_event import MicrosoftEvent
 from odoo.addons.microsoft_calendar.utils.microsoft_calendar import MicrosoftCalendarService
+from odoo.addons.microsoft_calendar.utils.event_id_storage import IDS_SEPARATOR, combine_ids, split_ids
 from odoo.addons.microsoft_account.models.microsoft_service import TIMEOUT
 
 _logger = logging.getLogger(__name__)
@@ -38,7 +40,7 @@ def after_commit(func):
 
         @self.env.cr.postcommit.add
         def called_after():
-            db_registry = Registry(dbname)
+            db_registry = registry(dbname)
             with db_registry.cursor() as cr:
                 env = api.Environment(cr, uid, context)
                 try:
@@ -57,31 +59,44 @@ class MicrosoftSync(models.AbstractModel):
     _name = 'microsoft.calendar.sync'
     _description = "Synchronize a record with Microsoft Calendar"
 
-    microsoft_id = fields.Char('Organizer event Id', copy=False, index=True)
-    ms_universal_event_id = fields.Char('Universal event Id', copy=False, index=True)
+    microsoft_id = fields.Char('Microsoft Calendar Id', copy=False)
+
+    ms_organizer_event_id = fields.Char(
+        'Organizer event Id',
+        compute='_compute_organizer_event_id',
+        inverse='_set_event_id',
+        search='_search_organizer_event_id',
+    )
+    ms_universal_event_id = fields.Char(
+        'Universal event Id',
+        compute='_compute_universal_event_id',
+        inverse='_set_event_id',
+        search='_search_universal_event_id',
+    )
 
     # This field helps to know when a microsoft event need to be resynced
     need_sync_m = fields.Boolean(default=True, copy=False)
     active = fields.Boolean(default=True)
 
     def write(self, vals):
-        fields_to_sync = [x for x in vals if x in self._get_microsoft_synced_fields()]
-        if fields_to_sync and 'need_sync_m' not in vals and self.env.user._get_microsoft_sync_status() == "sync_active":
+        if 'ms_universal_event_id' in vals:
+            self._from_uids.clear_cache(self)
+
+        fields_to_sync = [x for x in vals.keys() if x in self._get_microsoft_synced_fields()]
+        if fields_to_sync and 'need_sync_m' not in vals and not self.env.user.microsoft_synchronization_stopped:
             vals['need_sync_m'] = True
 
         result = super().write(vals)
 
-        if self.env.user._get_microsoft_sync_status() != "sync_paused":
-            for record in self:
-                if record.need_sync_m and record.microsoft_id:
-                    if not vals.get('active', True):
-                        # We need to delete the event. Cancel is not sufficient. Errors may occur.
-                        record._microsoft_delete(record._get_organizer(), record.microsoft_id, timeout=3)
-                    elif fields_to_sync:
-                        values = record._microsoft_values(fields_to_sync)
-                        if not values:
-                            continue
-                        record._microsoft_patch(record._get_organizer(), record.microsoft_id, values, timeout=3)
+        for record in self.filtered(lambda e: e.need_sync_m and e.ms_organizer_event_id):
+            if not vals.get('active', True):
+                # We need to delete the event. Cancel is not sufficant. Errors may occurs
+                record._microsoft_delete(record._get_organizer(), record.ms_organizer_event_id, timeout=3)
+            elif fields_to_sync:
+                values = record._microsoft_values(fields_to_sync)
+                if not values:
+                    continue
+                record._microsoft_patch(record._get_organizer(), record.ms_organizer_event_id, values, timeout=3)
 
         return result
 
@@ -92,11 +107,52 @@ class MicrosoftSync(models.AbstractModel):
                 vals.update({'need_sync_m': False})
         records = super().create(vals_list)
 
-        if self.env.user._get_microsoft_sync_status() != "sync_paused":
-            for record in records:
-                if record.need_sync_m and record.active:
-                    record._microsoft_insert(record._microsoft_values(self._get_microsoft_synced_fields()), timeout=3)
+        records_to_sync = records.filtered(lambda r: r.need_sync_m and r.active)
+        for record in records_to_sync:
+            record._microsoft_insert(record._microsoft_values(self._get_microsoft_synced_fields()), timeout=3)
         return records
+
+    @api.depends('microsoft_id')
+    def _compute_organizer_event_id(self):
+        for event in self:
+            event.ms_organizer_event_id = split_ids(event.microsoft_id)[0] if event.microsoft_id else False
+
+    @api.depends('microsoft_id')
+    def _compute_universal_event_id(self):
+        for event in self:
+            event.ms_universal_event_id = split_ids(event.microsoft_id)[1] if event.microsoft_id else False
+
+    def _set_event_id(self):
+        for event in self:
+            event.microsoft_id = combine_ids(event.ms_organizer_event_id, event.ms_universal_event_id)
+
+    def _search_event_id(self, operator, value, with_uid):
+        def _domain(v):
+            return ('microsoft_id', '=like', f'%{IDS_SEPARATOR}{v}' if with_uid else f'{v}%')
+
+        if operator == '=' and not value:
+            return (
+                ['|', ('microsoft_id', '=', False), ('microsoft_id', '=ilike', f'%{IDS_SEPARATOR}')]
+                if with_uid
+                else [('microsoft_id', '=', False)]
+            )
+        elif operator == '!=' and not value:
+            return (
+                [('microsoft_id', 'ilike', f'{IDS_SEPARATOR}_')]
+                if with_uid
+                else [('microsoft_id', '!=', False)]
+            )
+        return (
+            ['|'] * (len(value) - 1) + [_domain(v) for v in value]
+            if operator.lower() == 'in'
+            else [_domain(value)]
+        )
+
+    def _search_organizer_event_id(self, operator, value):
+        return self._search_event_id(operator, value, with_uid=False)
+
+    def _search_universal_event_id(self, operator, value):
+        return self._search_event_id(operator, value, with_uid=True)
 
     @api.model
     def _get_microsoft_service(self):
@@ -110,9 +166,8 @@ class MicrosoftSync(models.AbstractModel):
 
     def unlink(self):
         synced = self._get_synced_events()
-        if self.env.user._get_microsoft_sync_status() != "sync_paused":
-            for ev in synced:
-                ev._microsoft_delete(ev._get_organizer(), ev.microsoft_id)
+        for ev in synced:
+            ev._microsoft_delete(ev._get_organizer(), ev.ms_organizer_event_id)
         return super().unlink()
 
     def _write_from_microsoft(self, microsoft_event, vals):
@@ -121,6 +176,13 @@ class MicrosoftSync(models.AbstractModel):
     @api.model
     def _create_from_microsoft(self, microsoft_event, vals_list):
         return self.with_context(dont_notify=True).create(vals_list)
+
+    @api.model
+    @ormcache_context('uids', keys=('active_test',))
+    def _from_uids(self, uids):
+        if not uids:
+            return self.browse()
+        return self.search([('ms_universal_event_id', 'in', uids)])
 
     def _sync_odoo2microsoft(self):
         if not self:
@@ -136,12 +198,9 @@ class MicrosoftSync(models.AbstractModel):
         new_records = records_to_sync - updated_records
 
         for record in cancelled_records._get_synced_events():
-            record._microsoft_delete(record._get_organizer(), record.microsoft_id)
+            record._microsoft_delete(record._get_organizer(), record.ms_organizer_event_id)
         for record in new_records:
             values = record._microsoft_values(self._get_microsoft_synced_fields())
-            sender_user = record._get_event_user_m()
-            if record._is_microsoft_insertion_blocked(sender_user):
-                continue
             if isinstance(values, dict):
                 record._microsoft_insert(values)
             else:
@@ -151,11 +210,10 @@ class MicrosoftSync(models.AbstractModel):
             values = record._microsoft_values(self._get_microsoft_synced_fields())
             if not values:
                 continue
-            record._microsoft_patch(record._get_organizer(), record.microsoft_id, values)
+            record._microsoft_patch(record._get_organizer(), record.ms_organizer_event_id, values)
 
     def _cancel_microsoft(self):
         self.microsoft_id = False
-        self.ms_universal_event_id = False
         self.unlink()
 
     def _sync_recurrence_microsoft2odoo(self, microsoft_events, new_events=None):
@@ -173,7 +231,7 @@ class MicrosoftSync(models.AbstractModel):
                 need_sync_m=False
             )
             to_create = recurrents.filter(
-                lambda e: e.seriesMasterId == new_calendar_recurrence['microsoft_id']
+                lambda e: e.seriesMasterId == new_calendar_recurrence['ms_organizer_event_id']
             )
             recurrents -= to_create
             base_values = dict(
@@ -203,7 +261,10 @@ class MicrosoftSync(models.AbstractModel):
         # is specific to the Microsoft user calendar.
         ms_recurrence_ids = list({x.seriesMasterId for x in recurrents})
         ms_recurrence_uids = {r.id: r.iCalUId for r in microsoft_events if r.id in ms_recurrence_ids}
-        recurrences = self.env['calendar.recurrence'].search([('ms_universal_event_id', 'in', microsoft_events.uids)])
+
+        recurrences = self.env['calendar.recurrence'].search([
+            ('ms_universal_event_id', 'in', ms_recurrence_uids.values())
+        ])
         for recurrent_master_id in ms_recurrence_ids:
             recurrence_id = recurrences.filtered(
                 lambda ev: ev.ms_universal_event_id == ms_recurrence_uids[recurrent_master_id]
@@ -233,7 +294,7 @@ class MicrosoftSync(models.AbstractModel):
         Update Odoo events from Outlook recurrence and events.
         """
         # get the list of events to update ...
-        events_to_update = events.filter(lambda e: e.seriesMasterId == self.microsoft_id)
+        events_to_update = events.filter(lambda e: e.seriesMasterId == self.ms_organizer_event_id)
         if self.end_type in ['count', 'forever']:
             events_to_update = list(events_to_update)[:MAX_RECURRENT_EVENT]
 
@@ -292,12 +353,12 @@ class MicrosoftSync(models.AbstractModel):
         cancelled_recurrences = self.env['calendar.recurrence'].search([
             '|',
             ('ms_universal_event_id', 'in', cancelled.uids),
-            ('microsoft_id', 'in', cancelled.ids),
+            ('ms_organizer_event_id', 'in', cancelled.ids),
         ])
         cancelled_events = self.browse([
             e.odoo_id(self.env)
             for e in cancelled
-            if e.id not in [r.microsoft_id for r in cancelled_recurrences]
+            if e.id not in [r.ms_organizer_event_id for r in cancelled_recurrences]
         ])
         cancelled_recurrences._cancel_microsoft()
         cancelled_events = cancelled_events.exists()
@@ -358,6 +419,11 @@ class MicrosoftSync(models.AbstractModel):
             stop_date_condition = any(event.stop >= lower_bound for event in self.calendar_event_ids)
         return stop_date_condition or update_time_diff >= timedelta(hours=1)
 
+    def _impersonate_user(self, user_id):
+        """ Impersonate a user (mainly the event organizer) to be able to call the Outlook API with its token """
+        # This method is obsolete, as it has been replaced by the `_get_event_user_m` method, which gets the user who will make the request.
+        return user_id.with_user(user_id)
+
     @after_commit
     def _microsoft_delete(self, user_id, event_id, timeout=TIMEOUT):
         """
@@ -409,8 +475,7 @@ class MicrosoftSync(models.AbstractModel):
                 self._ensure_attendees_have_email()
                 event_id, uid = microsoft_service.insert(values, token=token, timeout=timeout)
                 self.with_context(dont_notify=True).write({
-                    'microsoft_id': event_id,
-                    'ms_universal_event_id': uid,
+                    'microsoft_id': combine_ids(event_id, uid),
                     'need_sync_m': False,
                 })
 
@@ -498,10 +563,6 @@ class MicrosoftSync(models.AbstractModel):
                 '&', ('ms_universal_event_id', '=', False), is_active_clause,
                 ('need_sync_m', '=', True),
             ]])
-        # Sync only events created/updated after last sync date (with 5 min of time acceptance).
-        if self.env.user.microsoft_last_sync_date:
-            time_offset = timedelta(minutes=5)
-            domain = expression.AND([domain, [('write_date', '>=', self.env.user.microsoft_last_sync_date - time_offset)]])
         return domain
 
     def _get_event_user_m(self, user_id=None):
@@ -509,23 +570,5 @@ class MicrosoftSync(models.AbstractModel):
         It's possible that a user creates an event and sets another user as the organizer. Using self.env.user will
         cause some issues, and it might not be possible to use this user for sending the request, so this method gets
         the appropriate user accordingly.
-        """
-        raise NotImplementedError()
-
-    def _need_video_call(self):
-        """
-        Implement this method to return True if the event needs a video call
-        :return: bool
-        """
-        self.ensure_one()
-        return True
-
-    def _is_microsoft_insertion_blocked(self, sender_user):
-        """
-        Returns True if the record insertion to Microsoft should be blocked.
-        This is a necessary step for ensuring data match between Odoo and Microsoft,
-        as it prevents attendees to synchronize new records on behalf of the owners,
-        otherwise the event ownership would be lost in Outlook and it would block the
-        future record synchronization for the original owner.
         """
         raise NotImplementedError()

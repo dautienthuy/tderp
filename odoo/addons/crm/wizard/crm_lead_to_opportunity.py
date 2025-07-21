@@ -16,7 +16,7 @@ class Lead2OpportunityPartner(models.TransientModel):
         to ease window action definitions, and be backward compatible. """
         result = super(Lead2OpportunityPartner, self).default_get(fields)
 
-        if 'lead_id' in fields and not result.get('lead_id') and self.env.context.get('active_id'):
+        if not result.get('lead_id') and self.env.context.get('active_id'):
             result['lead_id'] = self.env.context.get('active_id')
 
         if result.get('lead_id'):
@@ -130,9 +130,6 @@ class Lead2OpportunityPartner(models.TransientModel):
                     'user_id': self.user_id.id,
                     'team_id': self.team_id.id,
                 })
-        if self.lead_id != result_opportunity:
-            # Prevent unwanted cascade during unlinks, keeping other operations and overrides possible
-            self.write({'lead_id': result_opportunity})
         (to_merge - result_opportunity).sudo().unlink()
         return result_opportunity
 

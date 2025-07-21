@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime, timedelta
+from psycopg2 import sql
 
 import hashlib
 import pytz
@@ -9,7 +11,7 @@ import threading
 from odoo import fields, models, api, _
 from odoo.addons.base.models.res_partner import _tz_get
 from odoo.exceptions import UserError
-from odoo.tools import split_every, SQL
+from odoo.tools import split_every
 from odoo.tools.misc import _format_time_ago
 from odoo.http import request
 from odoo.osv import expression
@@ -75,18 +77,23 @@ class WebsiteVisitor(models.Model):
     create_date = fields.Datetime('First Connection', readonly=True)
     last_connection_datetime = fields.Datetime('Last Connection', default=fields.Datetime.now, help="Last page view date", readonly=True)
     time_since_last_action = fields.Char('Last action', compute="_compute_time_statistics", help='Time since last page view. E.g.: 2 minutes ago')
-    is_connected = fields.Boolean('Is connected?', compute='_compute_time_statistics', help='A visitor is considered as connected if his last page view was within the last 5 minutes.')
+    is_connected = fields.Boolean('Is connected ?', compute='_compute_time_statistics', help='A visitor is considered as connected if his last page view was within the last 5 minutes.')
 
     _sql_constraints = [
         ('access_token_unique', 'unique(access_token)', 'Access token should be unique.'),
     ]
 
     @api.depends('partner_id')
-    def _compute_display_name(self):
+    def name_get(self):
+        res = []
         for record in self:
             # Accessing name of partner through sudo to avoid infringing
             # record rule if partner belongs to another company.
-            record.display_name = record.partner_id.sudo().name or _('Website Visitor #%s', record.id)
+            res.append((
+                record.id,
+                record.partner_id.sudo().name or _('Website Visitor #%s', record.id)
+            ))
+        return res
 
     @api.depends('access_token')
     def _compute_partner_id(self):
@@ -118,15 +125,15 @@ class WebsiteVisitor(models.Model):
     @api.depends('website_track_ids')
     def _compute_page_statistics(self):
         results = self.env['website.track']._read_group(
-            [('visitor_id', 'in', self.ids), ('url', '!=', False)], ['visitor_id', 'page_id'], ['__count'])
+            [('visitor_id', 'in', self.ids), ('url', '!=', False)], ['visitor_id', 'page_id', 'url'], ['visitor_id', 'page_id', 'url'], lazy=False)
         mapped_data = {}
-        for visitor, page, count in results:
-            visitor_info = mapped_data.get(visitor.id, {'page_count': 0, 'visitor_page_count': 0, 'page_ids': set()})
-            visitor_info['visitor_page_count'] += count
+        for result in results:
+            visitor_info = mapped_data.get(result['visitor_id'][0], {'page_count': 0, 'visitor_page_count': 0, 'page_ids': set()})
+            visitor_info['visitor_page_count'] += result['__count']
             visitor_info['page_count'] += 1
-            if page:
-                visitor_info['page_ids'].add(page.id)
-            mapped_data[visitor.id] = visitor_info
+            if result['page_id']:
+                visitor_info['page_ids'].add(result['page_id'][0])
+            mapped_data[result['visitor_id'][0]] = visitor_info
 
         for visitor in self:
             visitor_info = mapped_data.get(visitor.id, {'page_count': 0, 'visitor_page_count': 0, 'page_ids': set()})
@@ -142,10 +149,10 @@ class WebsiteVisitor(models.Model):
     @api.depends('website_track_ids.page_id')
     def _compute_last_visited_page_id(self):
         results = self.env['website.track']._read_group(
-            [('visitor_id', 'in', self.ids), ('page_id', '!=', False)],
-            ['visitor_id', 'page_id'],
-            order='visit_datetime:max')
-        mapped_data = {visitor.id: page.id for visitor, page in results}
+            [('visitor_id', 'in', self.ids)],
+            ['visitor_id', 'page_id', 'visit_datetime:max'],
+            ['visitor_id', 'page_id'], lazy=False)
+        mapped_data = {result['visitor_id'][0]: result['page_id'][0] for result in results if result['page_id']}
         for visitor in self:
             visitor.last_visited_page_id = mapped_data.get(visitor.id, False)
 
@@ -164,7 +171,7 @@ class WebsiteVisitor(models.Model):
     def _prepare_message_composer_context(self):
         return {
             'default_model': 'res.partner',
-            'default_res_ids': self.partner_id.ids,
+            'default_res_id': self.partner_id.id,
             'default_partner_ids': [self.partner_id.id],
         }
 
@@ -175,6 +182,7 @@ class WebsiteVisitor(models.Model):
         visitor_composer_ctx = self._prepare_message_composer_context()
         compose_form = self.env.ref('mail.email_compose_message_wizard_form', False)
         compose_ctx = dict(
+            default_use_template=False,
             default_composition_mode='comment',
         )
         compose_ctx.update(**visitor_composer_ctx)
@@ -216,7 +224,7 @@ class WebsiteVisitor(models.Model):
             # used instead as the token.
             'partner_id': None if len(str(access_token)) == 32 else access_token,
         }
-        query = SQL("""
+        query = """
             INSERT INTO website_visitor (
                 partner_id, access_token, last_connection_datetime, visit_count, lang_id,
                 website_id, timezone, write_uid, create_uid, write_date, create_date, country_id)
@@ -235,34 +243,32 @@ class WebsiteVisitor(models.Model):
                                     ELSE website_visitor.visit_count
                                 END
             RETURNING id, CASE WHEN create_date = now() at time zone 'UTC' THEN 'inserted' ELSE 'updated' END AS upsert
-        """, **create_values)
+        """
 
         if force_track_values:
-            query = SQL("""
+            create_values['url'] = force_track_values['url']
+            create_values['page_id'] = force_track_values.get('page_id')
+            query = sql.SQL("""
                 WITH visitor AS (
-                    %(query)s, %(url)s AS url, %(page_id)s AS page_id
+                    {query}, %(url)s AS url, %(page_id)s AS page_id
                 ), track AS (
                     INSERT INTO website_track (visitor_id, url, page_id, visit_datetime)
                     SELECT id, url, page_id::integer, now() at time zone 'UTC' FROM visitor
                 )
                 SELECT id, upsert from visitor;
-                """,
-                query=query,
-                url=force_track_values['url'],
-                page_id=force_track_values.get('page_id'),
-            )
+            """).format(query=sql.SQL(query))
 
-        [result] = self.env.execute_query(query)
-        return result
+        self.env.cr.execute(query, create_values)
+        return self.env.cr.fetchone()
 
     def _get_visitor_from_request(self, force_create=False, force_track_values=None):
         """ Return the visitor as sudo from the request.
 
-        :param force_create: force a visitor creation if no visitor exists
+        :param bool force_create: force a visitor creation if no visitor exists
         :param force_track_values: an optional dict to create a track at the
             same time.
         :return: the website visitor if exists or forced, empty recordset
-            otherwise.
+                 otherwise.
         """
 
         # This function can be called in json with mobile app.
@@ -271,15 +277,17 @@ class WebsiteVisitor(models.Model):
         if not (request and request.env and request.env.uid):
             return None
 
+        Visitor = self.env['website.visitor'].sudo()
+        visitor = Visitor
         access_token = self._get_access_token()
 
         if force_create:
             visitor_id, _ = self._upsert_visitor(access_token, force_track_values)
-            return self.env['website.visitor'].sudo().browse(visitor_id)
+            visitor = Visitor.browse(visitor_id)
+        else:
+            visitor = Visitor.search([('access_token', '=', access_token)])
 
-        visitor = self.env['website.visitor'].sudo().search([('access_token', '=', access_token)])
-
-        if not force_create and not self.env.cr.readonly and visitor and not visitor.timezone:
+        if not force_create and visitor and not visitor.timezone:
             tz = self._get_visitor_timezone()
             if tz:
                 visitor._update_visitor_timezone(tz)
@@ -297,7 +305,6 @@ class WebsiteVisitor(models.Model):
         website_track_values = {'url': url}
         if website_page:
             website_track_values['page_id'] = website_page.id
-
         self._get_visitor_from_request(force_create=True, force_track_values=website_track_values)
 
     def _add_tracking(self, domain, website_track_values):
@@ -338,19 +345,14 @@ class WebsiteVisitor(models.Model):
         reason. """
         auto_commit = not getattr(threading.current_thread(), 'testing', False)
         visitor_model = self.env['website.visitor']
-        visitor_ids = visitor_model.sudo().search(self._inactive_visitors_domain(), limit=limit).ids
-        visitor_done = 0
         for inactive_visitors_batch in split_every(
             batch_size,
-            visitor_ids,
+            visitor_model.sudo().search(self._inactive_visitors_domain(), limit=limit).ids,
             visitor_model.browse,
         ):
             inactive_visitors_batch.unlink()
-            visitor_done += len(inactive_visitors_batch)
             if auto_commit:
-                self.env['ir.cron']._notify_progress(done=visitor_done, remaining=len(visitor_ids) - visitor_done)
                 self.env.cr.commit()
-        self.env['ir.cron']._notify_progress(done=visitor_done, remaining=len(visitor_ids) - visitor_done)
 
     def _inactive_visitors_domain(self):
         """ This method defines the domain of visitors that can be cleaned. By
@@ -392,7 +394,7 @@ class WebsiteVisitor(models.Model):
         self.env.cr.execute(query, (date_now, self.id), log_exceptions=False)
 
     def _get_visitor_timezone(self):
-        tz = request.cookies.get('tz') if request else None
+        tz = request.httprequest.cookies.get('tz') if request else None
         if tz in pytz.all_timezones:
             return tz
         elif not self.env.user._is_public():

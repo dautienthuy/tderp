@@ -1,3 +1,5 @@
+/** @odoo-module **/
+
 import { browser } from "../browser/browser";
 import { registry } from "../registry";
 import { NotificationContainer } from "./notification_container";
@@ -15,7 +17,6 @@ const AUTOCLOSE_DELAY = 4000;
  *
  * @typedef {Object} NotificationOptions
  * @property {string} [title]
- * @property {number} [autocloseDelay=4000]
  * @property {"warning" | "danger" | "success" | "info"} [type]
  * @property {boolean} [sticky=false]
  * @property {string} [className]
@@ -24,20 +25,14 @@ const AUTOCLOSE_DELAY = 4000;
  */
 
 export const notificationService = {
-    notificationContainer: NotificationContainer,
-
     start() {
         let notifId = 0;
         const notifications = reactive({});
 
-        registry.category("main_components").add(
-            this.notificationContainer.name,
-            {
-                Component: this.notificationContainer,
-                props: { notifications },
-            },
-            { sequence: 100 }
-        );
+        registry.category("main_components").add("NotificationContainer", {
+            Component: NotificationContainer,
+            props: { notifications },
+        });
 
         /**
          * @param {string} message
@@ -47,48 +42,19 @@ export const notificationService = {
             const id = ++notifId;
             const closeFn = () => close(id);
             const props = Object.assign({}, options, { message, close: closeFn });
-            const autocloseDelay = options.autocloseDelay ?? AUTOCLOSE_DELAY;
             const sticky = props.sticky;
             delete props.sticky;
             delete props.onClose;
-            delete props.autocloseDelay;
-            let closeTimeout;
-            const refresh = sticky
-                ? () => {}
-                : () => {
-                      closeTimeout = browser.setTimeout(closeFn, autocloseDelay);
-                  };
-            const freeze = sticky
-                ? () => {}
-                : () => {
-                      browser.clearTimeout(closeTimeout);
-                  };
-            props.refresh = refreshAll;
-            props.freeze = freezeAll;
             const notification = {
                 id,
                 props,
                 onClose: options.onClose,
-                refresh,
-                freeze,
             };
             notifications[id] = notification;
             if (!sticky) {
-                closeTimeout = browser.setTimeout(closeFn, autocloseDelay);
+                browser.setTimeout(closeFn, AUTOCLOSE_DELAY);
             }
             return closeFn;
-        }
-
-        function refreshAll() {
-            for (const id in notifications) {
-                notifications[id].refresh();
-            }
-        }
-
-        function freezeAll() {
-            for (const id in notifications) {
-                notifications[id].freeze();
-            }
         }
 
         function close(id) {

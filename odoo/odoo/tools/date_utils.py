@@ -1,27 +1,15 @@
 # -*- coding: utf-8 -*-
-import calendar
 import math
+import calendar
 from datetime import date, datetime, time
-from typing import Tuple, TypeVar, Literal, Iterator, Type
-
-import babel
 import pytz
-from dateutil.relativedelta import relativedelta, weekdays
+from dateutil.relativedelta import relativedelta
 
 from .func import lazy
+from odoo.loglevels import ustr
 
-D = TypeVar('D', date, datetime)
 
-__all__ = [
-    'date_range',
-    'get_fiscal_year',
-    'get_month',
-    'get_quarter',
-    'get_quarter_number',
-    'get_timedelta',
-]
-
-def date_type(value: D) -> Type[D]:
+def date_type(value):
     ''' Return either the datetime.datetime class or datetime.date type whether `value` is a datetime or a date.
 
     :param value: A datetime.datetime or datetime.date object.
@@ -30,39 +18,49 @@ def date_type(value: D) -> Type[D]:
     return datetime if isinstance(value, datetime) else date
 
 
-def get_month(date: D) -> Tuple[D, D]:
+def get_month(date):
     ''' Compute the month dates range on which the 'date' parameter belongs to.
+
+    :param date: A datetime.datetime or datetime.date object.
+    :return: A tuple (date_from, date_to) having the same object type as the 'date' parameter.
     '''
-    return date.replace(day=1), date.replace(day=calendar.monthrange(date.year, date.month)[1])
+    date_from = date_type(date)(date.year, date.month, 1)
+    date_to = date_type(date)(date.year, date.month, calendar.monthrange(date.year, date.month)[1])
+    return date_from, date_to
 
 
-def get_quarter_number(date: date) -> int:
+def get_quarter_number(date):
     ''' Get the number of the quarter on which the 'date' parameter belongs to.
+
+    :param date: A datetime.datetime or datetime.date object.
+    :return: A [1-4] integer.
     '''
     return math.ceil(date.month / 3)
 
 
-def get_quarter(date: D) -> Tuple[D, D]:
+def get_quarter(date):
     ''' Compute the quarter dates range on which the 'date' parameter belongs to.
+
+    :param date: A datetime.datetime or datetime.date object.
+    :return: A tuple (date_from, date_to) having the same object type as the 'date' parameter.
     '''
     quarter_number = get_quarter_number(date)
     month_from = ((quarter_number - 1) * 3) + 1
-    date_from = date.replace(month=month_from, day=1)
-    date_to = date_from + relativedelta(months=2)
+    date_from = date_type(date)(date.year, month_from, 1)
+    date_to = (date_from + relativedelta(months=2))
     date_to = date_to.replace(day=calendar.monthrange(date_to.year, date_to.month)[1])
     return date_from, date_to
 
 
-def get_fiscal_year(date: D, day: int = 31, month: int = 12) -> Tuple[D, D]:
+def get_fiscal_year(date, day=31, month=12):
     ''' Compute the fiscal year dates range on which the 'date' parameter belongs to.
     A fiscal year is the period used by governments for accounting purposes and vary between countries.
     By default, calling this method with only one parameter gives the calendar year because the ending date of the
     fiscal year is set to the YYYY-12-31.
-
-    :param date: A date belonging to the fiscal year
+    :param date:    A datetime.datetime or datetime.date object.
     :param day:     The day of month the fiscal year ends.
     :param month:   The month of year the fiscal year ends.
-    :return: The start and end dates of the fiscal year.
+    :return: A tuple (date_from, date_to) having the same object type as the 'date' parameter.
     '''
 
     def fix_day(year, month, day):
@@ -71,23 +69,28 @@ def get_fiscal_year(date: D, day: int = 31, month: int = 12) -> Tuple[D, D]:
             return max_day
         return min(day, max_day)
 
-    date_to = date.replace(month=month, day=fix_day(date.year, month, day))
+    day = fix_day(date.year, month, day)
+    date_to = date_type(date)(date.year, month, day)
 
     if date <= date_to:
         date_from = date_to - relativedelta(years=1)
         day = fix_day(date_from.year, date_from.month, date_from.day)
-        date_from = date_from.replace(day=day)
+        date_from = date_type(date)(date_from.year, date_from.month, day)
         date_from += relativedelta(days=1)
     else:
         date_from = date_to + relativedelta(days=1)
         date_to = date_to + relativedelta(years=1)
         day = fix_day(date_to.year, date_to.month, date_to.day)
-        date_to = date_to.replace(day=day)
+        date_to = date_type(date)(date_to.year, date_to.month, day)
     return date_from, date_to
 
 
-def get_timedelta(qty: int, granularity: Literal['hour', 'day', 'week', 'month', 'year']):
-    """ Helper to get a `relativedelta` object for the given quantity and interval unit.
+def get_timedelta(qty, granularity):
+    """
+        Helper to get a `relativedelta` object for the given quantity and interval unit.
+        :param qty: the number of unit to apply on the timedelta to return
+        :param granularity: Type of period in string, can be year, quarter, month, week, day or hour.
+
     """
     switch = {
         'hour': relativedelta(hours=qty),
@@ -99,10 +102,7 @@ def get_timedelta(qty: int, granularity: Literal['hour', 'day', 'week', 'month',
     return switch[granularity]
 
 
-Granularity = Literal['year', 'quarter', 'month', 'week', 'day', 'hour']
-
-
-def start_of(value: D, granularity: Granularity) -> D:
+def start_of(value, granularity):
     """
     Get start of a time period from a date or a datetime.
 
@@ -141,7 +141,7 @@ def start_of(value: D, granularity: Granularity) -> D:
     return datetime.combine(result, time.min) if is_datetime else result
 
 
-def end_of(value: D, granularity: Granularity) -> D:
+def end_of(value, granularity):
     """
     Get end of a time period from a date or a datetime.
 
@@ -180,7 +180,7 @@ def end_of(value: D, granularity: Granularity) -> D:
     return datetime.combine(result, time.max) if is_datetime else result
 
 
-def add(value: D, *args, **kwargs) -> D:
+def add(value, *args, **kwargs):
     """
     Return the sum of ``value`` and a :class:`relativedelta`.
 
@@ -192,7 +192,7 @@ def add(value: D, *args, **kwargs) -> D:
     return value + relativedelta(*args, **kwargs)
 
 
-def subtract(value: D, *args, **kwargs) -> D:
+def subtract(value, *args, **kwargs):
     """
     Return the difference between ``value`` and a :class:`relativedelta`.
 
@@ -203,42 +203,42 @@ def subtract(value: D, *args, **kwargs) -> D:
     """
     return value - relativedelta(*args, **kwargs)
 
+def json_default(obj):
+    """
+    Properly serializes date and datetime objects.
+    """
+    from odoo import fields
+    if isinstance(obj, datetime):
+        return fields.Datetime.to_string(obj)
+    if isinstance(obj, date):
+        return fields.Date.to_string(obj)
+    if isinstance(obj, lazy):
+        return obj._value
+    return ustr(obj)
 
-def date_range(start: D, end: D, step: relativedelta = relativedelta(months=1)) -> Iterator[datetime]:
+
+def date_range(start, end, step=relativedelta(months=1)):
     """Date range generator with a step interval.
 
-    :param start: beginning date of the range.
-    :param end: ending date of the range.
-    :param step: interval of the range.
+    :param datetime start: beginning date of the range.
+    :param datetime end: ending date of the range.
+    :param relativedelta step: interval of the range.
     :return: a range of datetime from start to end.
+    :rtype: Iterator[datetime]
     """
 
-    if isinstance(start, datetime) and isinstance(end, datetime):
-        are_naive = start.tzinfo is None and end.tzinfo is None
-        are_utc = start.tzinfo == pytz.utc and end.tzinfo == pytz.utc
+    are_naive = start.tzinfo is None and end.tzinfo is None
+    are_utc = start.tzinfo == pytz.utc and end.tzinfo == pytz.utc
 
-        # Cases with miscellenous timezone are more complexe because of DST.
-        are_others = start.tzinfo and end.tzinfo and not are_utc
+    # Cases with miscellenous timezone are more complexe because of DST.
+    are_others = start.tzinfo and end.tzinfo and not are_utc
 
-        if are_others and start.tzinfo.zone != end.tzinfo.zone:
+    if are_others:
+        if start.tzinfo.zone != end.tzinfo.zone:
             raise ValueError("Timezones of start argument and end argument seem inconsistent")
 
-        if not are_naive and not are_utc and not are_others:
-            raise ValueError("Timezones of start argument and end argument mismatch")
-
-        dt = start.replace(tzinfo=None)
-        end_dt = end.replace(tzinfo=None)
-        post_process = start.tzinfo.localize if start.tzinfo else lambda dt: dt
-
-    elif isinstance(start, date) and isinstance(end, date):
-        # FIXME: not correctly typed, and will break if the step is a fractional
-        #        day: `relativedelta` will return a datetime, which can't be
-        #        compared with a `date`
-        dt, end_dt = start, end
-        post_process = lambda dt: dt
-
-    else:
-        raise ValueError("start/end should be both date or both datetime type")
+    if not are_naive and not are_utc and not are_others:
+        raise ValueError("Timezones of start argument and end argument mismatch")
 
     if start > end:
         raise ValueError("start > end, start date must be before end")
@@ -246,46 +246,13 @@ def date_range(start: D, end: D, step: relativedelta = relativedelta(months=1)) 
     if start == start + step:
         raise ValueError("Looks like step is null")
 
-    while dt <= end_dt:
-        yield post_process(dt)
+    if start.tzinfo:
+        localize = start.tzinfo.localize
+    else:
+        localize = lambda dt: dt
+
+    dt = start.replace(tzinfo=None)
+    end = end.replace(tzinfo=None)
+    while dt <= end:
+        yield localize(dt)
         dt = dt + step
-
-
-def weeknumber(locale: babel.Locale, date: date) -> Tuple[int, int]:
-    """Computes the year and weeknumber of `date`. The week number is 1-indexed
-    (so the first week is week number 1).
-
-    For ISO locales (first day of week = monday, min week days = 4) the concept
-    is clear and the Python stdlib implements it directly.
-
-    For other locales, it's basically nonsensical as there is no actual
-    definition. For now we will implement non-split first-day-of-year, that is
-    the first week of the year is the one which contains the first day of the
-    year (taking first day of week in account), and the days of the previous
-    year which are part of that week are considered to be in the next year for
-    calendaring purposes.
-
-    That is December 27, 2015 is in the first week of 2016.
-
-    An alternative is to split the week in two, so the week from December 27,
-    2015 to January 2, 2016 would be *both* W53/2015 and W01/2016.
-    """
-    if locale.first_week_day == 0 and locale.min_week_days == 4:
-        # woohoo nothing to do
-        return date.isocalendar()[:2]
-
-    # first find the first day of the first week of the next year, if the
-    # reference date is after that then it must be in the first week of the next
-    # year, remove this if we decide to implement split weeks instead
-    fdny = date.replace(year=date.year + 1, month=1, day=1) \
-       - relativedelta(weekday=weekdays[locale.first_week_day](-1))
-    if date >= fdny:
-        return date.year + 1, 1
-
-    # otherwise get the number of periods of 7 days between the first day of the
-    # first week and the reference
-    fdow = date.replace(month=1, day=1) \
-       - relativedelta(weekday=weekdays[locale.first_week_day](-1))
-    doy = (date - fdow).days
-
-    return date.year, (doy // 7 + 1)

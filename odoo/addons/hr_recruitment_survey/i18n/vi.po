@@ -3,76 +3,24 @@
 # 	* hr_recruitment_survey
 # 
 # Translators:
-# Wil Odoo, 2024
-# Thi Huong Nguyen, 2025
+# Martin Trigaux, 2022
+# Duy BQ <duybq86@gmail.com>, 2022
+# Vo Thanh Thuy, 2022
+# Thi Huong Nguyen, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-16 13:40+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Thi Huong Nguyen, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2022-09-22 05:52+0000\n"
+"Last-Translator: Thi Huong Nguyen, 2024\n"
 "Language-Team: Vietnamese (https://app.transifex.com/odoo/teams/41243/vi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: vi\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-
-#. module: hr_recruitment_survey
-#: model:mail.template,body_html:hr_recruitment_survey.mail_template_applicant_interview_invite
-msgid ""
-"<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"        Dear <t t-out=\"object.partner_id.name or 'applicant'\">[applicant name]</t><br/><br/>\n"
-"        <t>\n"
-"            You've progressed through the recruitment process and we would like you to answer some questions.\n"
-"        </t>\n"
-"        </p><div style=\"margin: 16px 0px 16px 0px;\">\n"
-"            <a t-att-href=\"(object.get_start_url())\" style=\"background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;\">\n"
-"                <t>\n"
-"                    Start the written interview\n"
-"                </t>\n"
-"            </a>\n"
-"        </div>\n"
-"        <t t-if=\"object.deadline\">\n"
-"            Please answer the interview for <t t-out=\"format_date(object.deadline)\">[deadline date]</t>.<br/><br/>\n"
-"        </t>\n"
-"        <t>\n"
-"            We wish you good luck! Thank you in advance for your participation.\n"
-"        </t>\n"
-"    \n"
-"</div>\n"
-"            "
-msgstr ""
-"<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"        Xin chào <t t-out=\"object.partner_id.name or 'bạn'\">[applicant name]</t><br/><br/>\n"
-"        <t>\n"
-"            Chúng tôi đang xử lý đơn ứng tuyển của bạn và muốn bạn trả lời một số câu hỏi.\n"
-"        </t>\n"
-"        </p><div style=\"margin: 16px 0px 16px 0px;\">\n"
-"            <a t-att-href=\"(object.get_start_url())\" style=\"background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;\">\n"
-"                <t>\n"
-"                    Bắt đầu cuộc phỏng vấn viết\n"
-"                </t>\n"
-"            </a>\n"
-"        </div>\n"
-"        <t t-if=\"object.deadline\">\n"
-"            Hạn trả lời phỏng vấn là <t t-out=\"format_date(object.deadline)\">[deadline date]</t>.<br/><br/>\n"
-"        </t>\n"
-"        <t>\n"
-"            Chúc bạn may mắn và cảm ơn bạn đã tham gia phỏng vấn!\n"
-"        </t>\n"
-"    \n"
-"</div>\n"
-"            "
-
-#. module: hr_recruitment_survey
-#: model_terms:ir.ui.view,arch_db:hr_recruitment_survey.hr_recruitment_survey_button_form_view
-msgid "<i class=\"oi oi-fw oi-arrow-right\"/>Go to Recruitment"
-msgstr "<i class=\"oi oi-fw oi-arrow-right\"/>Đi đến Tuyển dụng"
 
 #. module: hr_recruitment_survey
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_survey.hr_applicant_view_form_inherit
@@ -91,12 +39,7 @@ msgstr "Về bạn"
 #. module: hr_recruitment_survey
 #: model:survey.question,title:hr_recruitment_survey.survey_recruitment_form_p1_q7
 msgid "Activities"
-msgstr "Hoạt động"
-
-#. module: hr_recruitment_survey
-#: model_terms:ir.actions.act_window,help:hr_recruitment_survey.survey_survey_action_recruitment
-msgid "Add a new survey"
-msgstr "Thêm một khảo sát mới"
+msgstr "Các hoạt động"
 
 #. module: hr_recruitment_survey
 #: model:ir.model,name:hr_recruitment_survey.model_hr_applicant
@@ -106,18 +49,13 @@ msgid "Applicant"
 msgstr "Ứng viên"
 
 #. module: hr_recruitment_survey
-#: model:mail.template,name:hr_recruitment_survey.mail_template_applicant_interview_invite
-msgid "Applicant: Interview"
-msgstr "Ứng viên: Phỏng vấn"
-
-#. module: hr_recruitment_survey
 #: model:ir.model.fields,help:hr_recruitment_survey.field_hr_applicant__survey_id
 #: model:ir.model.fields,help:hr_recruitment_survey.field_hr_job__survey_id
 msgid ""
 "Choose an interview form for this job position and you will be able to "
 "print/answer this interview from all applicants who apply for this job"
 msgstr ""
-"Chọn một mẫu phỏng vấn cho Vị trí công việc này và bạn sẽ có thể in / trả "
+"Chọn một mẫu phỏng vấn cho vị trí công việc này và bạn sẽ có thể in / trả "
 "lời phỏng vấn này từ tất cả các ứng viên đăng ký làm việc này"
 
 #. module: hr_recruitment_survey
@@ -128,12 +66,12 @@ msgstr "Hiển thị mẫu phỏng vẫn"
 #. module: hr_recruitment_survey
 #: model:survey.question,title:hr_recruitment_survey.survey_recruitment_form_p1_q4
 msgid "Education"
-msgstr "Giáo dục"
+msgstr "Trình độ"
 
 #. module: hr_recruitment_survey
 #: model:survey.question,title:hr_recruitment_survey.survey_recruitment_form_p1_q2
-msgid "From which university did or will you graduate?"
-msgstr "Bạn đã hoặc sắp tốt nghiệp từ trường đại học nào?"
+msgid "From which university did or will you graduate ?"
+msgstr "Bạn đã (sắp) tốt nghiệp từ trường Đại học nào?"
 
 #. module: hr_recruitment_survey
 #: model:survey.question.answer,value:hr_recruitment_survey.survey_recruitment_form_p1_q8_row2
@@ -174,8 +112,9 @@ msgstr "Mẫu phỏng vấn"
 #. module: hr_recruitment_survey
 #. odoo-python
 #: code:addons/hr_recruitment_survey/models/hr_job.py:0
-msgid "Interview Form: %s"
-msgstr "Biểu mẫu phỏng vấn: %s"
+#, python-format
+msgid "Interview Form : %s"
+msgstr "Interview Form : %s"
 
 #. module: hr_recruitment_survey
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_survey.res_config_settings_view_form
@@ -183,17 +122,14 @@ msgid "Interview Survey"
 msgstr "Khảo sát phỏng vấn"
 
 #. module: hr_recruitment_survey
-#: model:ir.actions.act_window,name:hr_recruitment_survey.survey_survey_action_recruitment
-#: model:ir.ui.menu,name:hr_recruitment_survey.menu_hr_recruitment_config_surveys
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_survey.view_hr_job_kanban_inherit
 msgid "Interviews"
 msgstr "Phỏng vấn"
 
 #. module: hr_recruitment_survey
 #: model:ir.model,name:hr_recruitment_survey.model_hr_job
-#: model:ir.model.fields,field_description:hr_recruitment_survey.field_survey_survey__hr_job_ids
 msgid "Job Position"
-msgstr "Vị trí công việc"
+msgstr "Chức vụ"
 
 #. module: hr_recruitment_survey
 #: model:survey.question,title:hr_recruitment_survey.survey_recruitment_form_p1_q6
@@ -213,12 +149,7 @@ msgstr "Không quan trọng"
 #. module: hr_recruitment_survey
 #: model:survey.question.answer,value:hr_recruitment_survey.survey_recruitment_form_p1_q8_row5
 msgid "Office location"
-msgstr "Vị trí văn phòng"
-
-#. module: hr_recruitment_survey
-#: model:mail.template,subject:hr_recruitment_survey.mail_template_applicant_interview_invite
-msgid "Participate to {{ object.survey_id.display_name }} interview"
-msgstr "Tham gia phỏng vấn {{ object.survey_id.display_name }}"
+msgstr "Địa điểm văn phòng"
 
 #. module: hr_recruitment_survey
 #: model:survey.question,title:hr_recruitment_survey.survey_recruitment_form_p1_q5
@@ -244,12 +175,6 @@ msgstr ""
 "    Việc này sẽ giúp chúng tôi quản lý hồ sơ của bạn."
 
 #. module: hr_recruitment_survey
-#. odoo-python
-#: code:addons/hr_recruitment_survey/models/hr_applicant.py:0
-msgid "Please provide an applicant name."
-msgstr "Vui lòng cung cấp tên ứng viên."
-
-#. module: hr_recruitment_survey
 #: model_terms:survey.question,description:hr_recruitment_survey.survey_recruitment_form_p1_q4
 #: model_terms:survey.question,description:hr_recruitment_survey.survey_recruitment_form_p1_q5
 msgid ""
@@ -264,19 +189,19 @@ msgid ""
 msgstr "Hãy cho chúng tôi biết thêm về bạn: công việc chính của bạn là gì,..."
 
 #. module: hr_recruitment_survey
-#: model:ir.model.fields.selection,name:hr_recruitment_survey.selection__survey_survey__survey_type__recruitment
-msgid "Recruitment"
-msgstr "Tuyển dụng"
-
-#. module: hr_recruitment_survey
 #: model:survey.survey,title:hr_recruitment_survey.survey_recruitment_form
 msgid "Recruitment Form"
 msgstr "Mẫu tuyển dụng"
 
 #. module: hr_recruitment_survey
-#: model:ir.model.fields,field_description:hr_recruitment_survey.field_hr_applicant__response_ids
-msgid "Responses"
-msgstr "Phản hồi"
+#: model:ir.model.fields,field_description:hr_recruitment_survey.field_hr_applicant__response_id
+msgid "Response"
+msgstr "Hồi đáp"
+
+#. module: hr_recruitment_survey
+#: model_terms:ir.ui.view,arch_db:hr_recruitment_survey.hr_applicant_view_form_inherit
+msgid "SEND INTERVIEW"
+msgstr "GỬI PHỎNG VẤN"
 
 #. module: hr_recruitment_survey
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_survey.hr_applicant_view_form_inherit
@@ -284,21 +209,15 @@ msgid "See interview report"
 msgstr "See interview report"
 
 #. module: hr_recruitment_survey
-#: model_terms:ir.ui.view,arch_db:hr_recruitment_survey.hr_applicant_view_form_inherit
-msgid "Send Interview"
-msgstr "Gửi phỏng vấn"
-
-#. module: hr_recruitment_survey
-#. odoo-python
-#: code:addons/hr_recruitment_survey/models/hr_applicant.py:0
-msgid "Send an interview"
-msgstr "Gửi một cuộc phỏng vấn"
+#: model:ir.model.fields,field_description:hr_recruitment_survey.field_hr_applicant__response_state
+msgid "Status"
+msgstr "Trạng thái"
 
 #. module: hr_recruitment_survey
 #. odoo-python
 #: code:addons/hr_recruitment_survey/models/hr_job.py:0
-#: model:ir.model,name:hr_recruitment_survey.model_survey_survey
 #: model:ir.model.fields,field_description:hr_recruitment_survey.field_hr_applicant__survey_id
+#, python-format
 msgid "Survey"
 msgstr "Khảo sát"
 
@@ -306,11 +225,6 @@ msgstr "Khảo sát"
 #: model:ir.model,name:hr_recruitment_survey.model_survey_invite
 msgid "Survey Invitation Wizard"
 msgstr "Survey Invitation Wizard"
-
-#. module: hr_recruitment_survey
-#: model:ir.model.fields,field_description:hr_recruitment_survey.field_survey_survey__survey_type
-msgid "Survey Type"
-msgstr "Loại khảo sát"
 
 #. module: hr_recruitment_survey
 #: model:ir.model,name:hr_recruitment_survey.model_survey_user_input
@@ -324,13 +238,15 @@ msgstr "Cảm ơn bạn đã trả lời khảo sát. Chúng tôi sẽ trả l�
 
 #. module: hr_recruitment_survey
 #. odoo-python
-#: code:addons/hr_recruitment_survey/models/survey_user_input.py:0
+#: code:addons/hr_recruitment_survey/models/survey_invite.py:0
+#, python-format
 msgid "The applicant \"%s\" has finished the survey."
 msgstr "Ứng viên \"%s\" đã hoàn thành khảo sát."
 
 #. module: hr_recruitment_survey
 #. odoo-python
-#: code:addons/hr_recruitment_survey/wizard/survey_invite.py:0
+#: code:addons/hr_recruitment_survey/models/survey_invite.py:0
+#, python-format
 msgid "The survey %(survey_link)s has been sent to %(partner_link)s"
 msgstr "Khảo sát %(survey_link)s đã được gửi tới %(partner_link)s"
 
@@ -346,17 +262,17 @@ msgstr "Bạn có được một nhân viên của chúng tôi giới thiệu kh
 
 #. module: hr_recruitment_survey
 #: model_terms:survey.question,description:hr_recruitment_survey.survey_recruitment_form_p1_q6
-msgid "What are your main knowledge regarding the job you are applying to?"
-msgstr "Bạn biết thông tin gì về công việc mà bạn đang ứng tuyển?"
+msgid "What are your main knowledge regarding the job you are applying to ?"
+msgstr ""
 
 #. module: hr_recruitment_survey
 #: model:survey.question,title:hr_recruitment_survey.survey_recruitment_form_p1_q8
-msgid "What is important for you?"
+msgid "What is important for you ?"
 msgstr "Điều gì quan trọng đối với bạn?"
 
 #. module: hr_recruitment_survey
 #: model:survey.question,title:hr_recruitment_survey.survey_recruitment_form_p1_q1
-msgid "Which country are you from?"
+msgid "Which country are you from ?"
 msgstr "Bạn đến từ quốc gia nào?"
 
 #. module: hr_recruitment_survey
@@ -365,10 +281,8 @@ msgid "Working with state of the art technology"
 msgstr "Làm việc với công nghệ hiện đại"
 
 #. module: hr_recruitment_survey
-#: model_terms:ir.actions.act_window,help:hr_recruitment_survey.survey_survey_action_recruitment
-msgid ""
-"You can create surveys used for recruitments. Design easily your interview,\n"
-"                send invitations and analyze answers."
-msgstr ""
-"Bạn có thể tạo khảo sát sử dụng cho tuyển dụng. Dễ dàng thiết kế phỏng vấn,\n"
-"                gửi lời mời và phân tích câu trả lời."
+#. odoo-python
+#: code:addons/hr_recruitment_survey/models/hr_applicant.py:0
+#, python-format
+msgid "You must define a Contact Name for this applicant."
+msgstr "You must define a Contact Name for this applicant."

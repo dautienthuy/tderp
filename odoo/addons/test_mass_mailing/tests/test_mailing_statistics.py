@@ -29,9 +29,8 @@ class TestMailingStatistics(TestMassMailCommon):
     @users('user_marketing')
     @mute_logger('odoo.addons.mass_mailing.models.mailing', 'odoo.addons.mail.models.mail_mail', 'odoo.addons.mail.models.mail_thread')
     def test_mailing_statistics(self):
-        target_records = self._create_mailing_test_records(model='mailing.test.blacklist', count=13)
+        target_records = self._create_mailing_test_records(model='mailing.test.blacklist', count=11)
         target_records[10]['email_from'] = False  # void email should lead to a 'cancel' trace_status
-        target_records[11]['email_from'] = 'raoul@example¢¡.com'  # wrong email should lead to a 'exception' trace_status
         mailing = self.env['mailing.mailing'].browse(self.mailing_bl.ids)
         mailing.write({'mailing_domain': [('id', 'in', target_records.ids)], 'user_id': self.user_marketing_2.id})
         mailing.action_put_in_queue()
@@ -42,27 +41,20 @@ class TestMailingStatistics(TestMassMailCommon):
         self.gateway_mail_reply_wrecord(MAIL_TEMPLATE, target_records[0], use_in_reply_to=True)
         self.gateway_mail_reply_wrecord(MAIL_TEMPLATE, target_records[1], use_in_reply_to=True)
         self.gateway_mail_reply_wrecord(MAIL_TEMPLATE, target_records[2], use_in_reply_to=True)
-        self.gateway_mail_trace_click(mailing, target_records[0], 'https://www.odoo.be')
-        self.gateway_mail_trace_click(mailing, target_records[2], 'https://www.odoo.be')
-        self.gateway_mail_trace_click(mailing, target_records[3], 'https://www.odoo.be')
-        self.assertEqual(target_records[12].message_bounce, 0)
-        self.gateway_mail_trace_bounce(mailing, target_records[12])
-        self.assertEqual(target_records[12].message_bounce, 1)
+        self.gateway_mail_click(mailing, target_records[0], 'https://www.odoo.be')
+        self.gateway_mail_click(mailing, target_records[2], 'https://www.odoo.be')
+        self.gateway_mail_click(mailing, target_records[3], 'https://www.odoo.be')
 
         # check mailing statistics
-        self.assertEqual(mailing.bounced, 1)
-        self.assertEqual(mailing.bounced_ratio, 9.09)
         self.assertEqual(mailing.canceled, 1)
-        self.assertEqual(mailing.expected, 13)
         self.assertEqual(mailing.clicked, 3)
         self.assertEqual(mailing.clicks_ratio, 30)
         self.assertEqual(mailing.delivered, 10)
-        self.assertEqual(mailing.failed, 1)
         self.assertEqual(mailing.opened, 4)
         self.assertEqual(mailing.opened_ratio, 40)
         self.assertEqual(mailing.replied, 3)
         self.assertEqual(mailing.replied_ratio, 30)
-        self.assertEqual(mailing.sent, 11)
+        self.assertEqual(mailing.sent, 10)
 
         with self.mock_mail_gateway(mail_unlink_sent=True):
             mailing._action_send_statistics()
@@ -77,13 +69,13 @@ class TestMailingStatistics(TestMassMailCommon):
         self.assertEqual(mail.state, 'outgoing')
         # test body content: KPIs
         body_html = html.fromstring(mail.body_html)
-        kpi_values = body_html.xpath('//table[@data-field="mail"]//*[hasclass("kpi_value")]/text()')
+        kpi_values = body_html.xpath('//div[@data-field="mail"]//*[hasclass("kpi_value")]/text()')
         self.assertEqual(
             [t.strip().strip('%') for t in kpi_values],
-            ['83.33', str(mailing.opened_ratio), str(mailing.replied_ratio)]  # first value is received_ratio
+            ['100', str(mailing.opened_ratio), str(mailing.replied_ratio)]
         )
         # test body content: clicks (a bit hackish but hey we are in stable)
-        kpi_click_values = body_html.xpath('//table//tr[contains(@style,"color: #888888")]/td[contains(@style,"width: 30%")]/text()')
+        kpi_click_values = body_html.xpath('//div[hasclass("global_layout")]/table//tr[contains(@style,"color: #888888")]/td[contains(@style,"width: 30%")]/text()')
         first_link_value = int(kpi_click_values[0].strip().split()[1].strip('()'))
         self.assertEqual(first_link_value, mailing.clicked)
 

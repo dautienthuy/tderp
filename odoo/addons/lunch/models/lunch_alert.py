@@ -2,7 +2,7 @@
 import pytz
 import logging
 
-from odoo import api, fields, models, _
+from odoo import api, fields, models
 from odoo.osv import expression
 
 from .lunch_supplier import float_to_time
@@ -127,6 +127,8 @@ class LunchAlert(models.Model):
                 'active': False,
                 'interval_type': 'days',
                 'interval_number': 1,
+                'numbercall': -1,
+                'doall': False,
                 'name': "Lunch: alert chat notification",
                 'model_id': self.env['ir.model']._get_id(self._name),
                 'state': 'code',
@@ -150,18 +152,16 @@ class LunchAlert(models.Model):
         return alerts
 
     def write(self, values):
-        res = super().write(values)
+        super().write(values)
         if not CRON_DEPENDS.isdisjoint(values):
             self._sync_cron()
-        return res
 
     def unlink(self):
         crons = self.cron_id.sudo()
         server_actions = crons.ir_actions_server_id
-        res = super().unlink()
+        super().unlink()
         crons.unlink()
         server_actions.unlink()
-        return res
 
     def _notify_chat(self):
         # Called daily by cron
@@ -193,9 +193,6 @@ class LunchAlert(models.Model):
         partners = self.env['lunch.order'].search(order_domain).user_id.partner_id
         if partners:
             self.env['mail.thread'].message_notify(
-                model=self._name,
-                res_id=self.id,
                 body=self.message,
-                partner_ids=partners.ids,
-                subject=_('Your Lunch Order'),
+                partner_ids=partners.ids
             )

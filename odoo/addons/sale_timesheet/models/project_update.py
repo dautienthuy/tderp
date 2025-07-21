@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import api, models
-from odoo.tools import float_utils, formatLang
+from odoo.tools import float_utils, format_amount, formatLang
 from odoo.tools.misc import format_duration
 
 
@@ -12,51 +12,84 @@ class ProjectUpdate(models.Model):
     @api.model
     def _get_template_values(self, project):
         template_values = super(ProjectUpdate, self)._get_template_values(project)
-        profitability_values = self._get_profitability_values(project)
-        show_profitability = bool(profitability_values and profitability_values.get('account_id') and (profitability_values.get('costs') or profitability_values.get('revenues')))
+        services = self._get_services_values(project)
+        profitability = self._get_profitability_values(project)
+        show_sold = template_values['project'].allow_billable and len(services.get('data', [])) > 0
         return {
             **template_values,
-            'show_profitability': show_profitability,
-            'show_activities': template_values['show_activities'] or show_profitability,
-            'profitability': profitability_values,
+            'show_sold': show_sold,
+            'show_profitability': bool(profitability),
+            'show_activities': template_values['show_activities'] or show_sold or bool(profitability),
+            'services': services,
+            'profitability': profitability,
             'format_value': lambda value, is_hour: str(round(value, 2)) if not is_hour else format_duration(value),
         }
 
     @api.model
+    def _get_services_values(self, project):
+        if not project.allow_billable:
+            return {}
+
+        services = []
+        total_sold, total_effective, total_remaining = 0, 0, 0
+        sols = self.env['sale.order.line'].search(
+            project._get_sale_items_domain([
+                ('is_downpayment', '=', False),
+            ]),
+        )
+        name_by_sol = dict(sols.with_context(with_price_unit=True).name_get())
+        product_uom_unit = self.env.ref('uom.product_uom_unit')
+        product_uom_hour = self.env.ref('uom.product_uom_hour')
+        company_uom = self.env.company.timesheet_encode_uom_id
+        for sol in sols:
+            #We only want to consider hours and days for this calculation
+            is_unit = sol.product_uom == product_uom_unit
+            if sol.product_uom.category_id == company_uom.category_id or is_unit:
+                product_uom_qty = sol.product_uom._compute_quantity(sol.product_uom_qty, company_uom, raise_if_failure=False)
+                qty_delivered = sol.product_uom._compute_quantity(sol.qty_delivered, company_uom, raise_if_failure=False)
+                unit = sol.product_uom if is_unit else company_uom
+                services.append({
+                    'name': name_by_sol[sol.id],
+                    'sold_value': product_uom_qty,
+                    'effective_value': qty_delivered,
+                    'remaining_value': product_uom_qty - qty_delivered,
+                    'unit': unit.name,
+                    'is_unit': is_unit,
+                    'is_hour': unit == product_uom_hour,
+                    'sol': sol,
+                })
+                if sol.product_uom.category_id == company_uom.category_id:
+                    total_sold += product_uom_qty
+                    total_effective += qty_delivered
+        total_remaining = total_sold - total_effective
+
+        return {
+            'data': services,
+            'total_sold': total_sold,
+            'total_effective': total_effective,
+            'total_remaining': total_remaining,
+            'company_unit_name': company_uom.name,
+            'is_hour': company_uom == product_uom_hour,
+        }
+
+    @api.model
     def _get_profitability_values(self, project):
-        costs_revenues = project.account_id and project.allow_billable
-        if not (self.env.user.has_group('project.group_project_manager') and costs_revenues):
+        costs_revenues = project.analytic_account_id and project.allow_billable
+        if not (self.user_has_groups('project.group_project_manager') and costs_revenues):
             return {}
         profitability_items = project._get_profitability_items(False)
-        if project._get_profitability_sequence_per_invoice_type() and profitability_items and 'revenues' in profitability_items and 'costs' in profitability_items:  # sort the data values
-            profitability_items['revenues']['data'] = sorted(profitability_items['revenues']['data'], key=lambda k: k['sequence'])
-            profitability_items['costs']['data'] = sorted(profitability_items['costs']['data'], key=lambda k: k['sequence'])
         costs = sum(profitability_items['costs']['total'].values())
         revenues = sum(profitability_items['revenues']['total'].values())
         margin = revenues + costs
-        to_bill_to_invoice = profitability_items['costs']['total']['to_bill'] + profitability_items['revenues']['total']['to_invoice']
-        billed_invoiced = profitability_items['costs']['total']['billed'] + profitability_items['revenues']['total']['invoiced']
-        expected_percentage, to_bill_to_invoice_percentage, billed_invoiced_percentage = 0, 0, 0
-        if revenues:
-            expected_percentage = formatLang(self.env, (margin / revenues) * 100, digits=0)
-        if profitability_items['revenues']['total']['to_invoice']:
-            to_bill_to_invoice_percentage = formatLang(self.env, (to_bill_to_invoice / profitability_items['revenues']['total']['to_invoice']) * 100, digits=0)
-        if profitability_items['revenues']['total']['invoiced']:
-            billed_invoiced_percentage = formatLang(self.env, (billed_invoiced / profitability_items['revenues']['total']['invoiced']) * 100, digits=0)
         return {
-            'account_id': project.account_id,
-            'costs': profitability_items['costs'],
-            'revenues': profitability_items['revenues'],
-            'expected_percentage': expected_percentage,
-            'to_bill_to_invoice_percentage': to_bill_to_invoice_percentage,
-            'billed_invoiced_percentage': billed_invoiced_percentage,
-            'total': {
-                'costs': costs,
-                'revenues': revenues,
-                'margin': margin,
-                'margin_percentage': formatLang(self.env,
-                                                not float_utils.float_is_zero(costs, precision_digits=2) and (margin / -costs) * 100 or 0.0,
-                                                digits=0),
-            },
-            'labels': project._get_profitability_labels(),
+            'analytic_account_id': project.analytic_account_id,
+            'costs': costs,
+            'costs_formatted': format_amount(self.env, -costs, project.currency_id),
+            'revenues': revenues,
+            'revenues_formatted': format_amount(self.env, revenues, project.currency_id),
+            'margin': margin,
+            'margin_formatted': format_amount(self.env, margin, project.currency_id),
+            'margin_percentage': formatLang(self.env,
+                                            not float_utils.float_is_zero(costs, precision_digits=2) and (margin / -costs) * 100 or 0.0,
+                                            digits=0),
         }

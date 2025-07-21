@@ -2,11 +2,11 @@
 
 from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
-from freezegun import freeze_time
 
 from odoo.exceptions import ValidationError
 from odoo.addons.hr_contract.tests.common import TestContractCommon
 from odoo.tests import tagged
+from odoo.tests import Form
 
 @tagged('test_contracts')
 class TestHrContracts(TestContractCommon):
@@ -16,26 +16,10 @@ class TestHrContracts(TestContractCommon):
         super(TestHrContracts, cls).setUpClass()
         cls.contracts = cls.env['hr.contract'].with_context(tracking_disable=True)
 
-        cls.main_company = cls.env.ref('base.main_company')
-        cls.main_company.contract_expiration_notice_period = 10
-        cls.main_company.work_permit_expiration_notice_period = 10
-
-        cls.company_2 = cls.env['res.company'].create({
-            'name': 'TestCompany2',
-            'contract_expiration_notice_period' : 5,
-            'work_permit_expiration_notice_period': 10,
-        })
-
-        cls.employee2 = cls.env['hr.employee'].create({
-            'name': 'Jane Smith',
-            'work_permit_expiration_date': date(2015, 11, 1) + relativedelta(days=25),
-            'company_id': cls.company_2.id,
-        })
-
-    def create_contract(self, state, kanban_state, start, end=None, employee_id=None):
+    def create_contract(self, state, kanban_state, start, end=None):
         return self.env['hr.contract'].create({
             'name': 'Contract',
-            'employee_id': employee_id or self.employee.id,
+            'employee_id': self.employee.id,
             'state': state,
             'kanban_state': kanban_state,
             'wage': 1,
@@ -138,52 +122,6 @@ class TestHrContracts(TestContractCommon):
         duplicate_employee = self.employee.copy()
         self.assertNotEqual(duplicate_employee.contract_id, contract)
 
-    def test_check_multi_company_contract_expiration(self):
-        """
-            Check that the expiration warnings for contracts and work permits are posted based on the res settings.
-
-           Test flow:
-            - Set contract end day and work permit end days in the main company
-            - Create a John Doe employee in the main company
-            - Create a John Doe's contract
-            - Create a TestCompany2 company and set contract end days and work permit end days
-            - Create a John Smith employee in the TestCompany2 company
-            - Create a John Smith's contract
-            - Run automated actions (HR Contract: update state)
-            - Check if the expiration activity is scheduled or not
-            - A few days after run automated actions (HR Contract: update state)
-            - Again check if the expiration activity is scheduled or not
-        """
-
-        self.employee.work_permit_expiration_date = date(2015, 11, 1) + relativedelta(days=10)
-
-        contract_1 = self.create_contract('open', 'normal', date(2015, 11, 1), date(2015, 11, 20), self.employee.id)
-        contract_2 = self.create_contract('open', 'normal', date(2015, 11, 1), date(2015, 11, 13), self.employee2.id)
-
-        with freeze_time('2015-11-01'):
-            self.env['hr.contract'].update_state()
-
-            mail_activity = self.env['mail.activity'].search([('res_id', '=', contract_1.id), ('res_model', '=', 'hr.contract')])
-            self.assertTrue(mail_activity.exists(), "There should be reminder activity as employee work permit going to end soon")
-            mail_activity.unlink()
-
-            mail_activity2 = self.env['mail.activity'].search([('res_id', '=', contract_2.id), ('res_model', '=', 'hr.contract')])
-            self.assertFalse(mail_activity2.exists(), "There should be no reminder as the contract is not yet about to expire.")
-
-        with freeze_time('2015-11-10'):
-
-            contract_1.kanban_state = 'normal'
-            self.env['hr.contract'].update_state()
-
-            mail_activity2 = self.env['mail.activity'].search([('res_id', '=', contract_2.id), ('res_model', '=', 'hr.contract')])
-            self.assertTrue(mail_activity2.exists(), "There should be reminder activity as employee contract going to end soon")
-
-        with freeze_time('2015-11-15'):
-            self.env['hr.contract'].update_state()
-
-            mail_activity = self.env['mail.activity'].search([('res_id', '=', contract_1.id), ('res_model', '=', 'hr.contract')])
-            self.assertTrue(len(mail_activity) == 2, "There should be reminder activity as employee contract and work permit going to end soon")
-
     def test_contract_calendar_update(self):
         """
         Ensure the employee's working schedule updates after modifying them on
@@ -197,14 +135,14 @@ class TestHrContracts(TestContractCommon):
         calendar2 = self.env['resource.calendar'].create({'name': 'Test Schedule'})
 
         leave1 = self.env['resource.calendar.leaves'].create({
-            'name': "Sick day",
+            'name': 'Sick day',
             'resource_id': self.employee.resource_id.id,
             'calendar_id': calendar1.id,
             'date_from': datetime(2024, 5, 2, 8, 0),
             'date_to': datetime(2024, 5, 2, 17, 0),
         })
         leave2 = self.env['resource.calendar.leaves'].create({
-            'name': "Sick again",
+            'name': 'Sick again',
             'resource_id': self.employee.resource_id.id,
             'calendar_id': calendar1.id,
             'date_from': datetime(2024, 7, 5, 8, 0),
@@ -228,3 +166,34 @@ class TestHrContracts(TestContractCommon):
             calendar2,
             "Leave under active contract should update",
         )
+
+    def test_running_contract_updates_employee_job_info(self):
+        employee = self.env['hr.employee'].create({
+            'name': 'John Doe'
+        })
+        job = self.env['hr.job'].create({
+            'name': 'Software dev'
+        })
+        department = self.env['hr.department'].create({
+            'name': 'R&D'
+        })
+
+        contract_form = Form(self.env['hr.contract'].create({
+            'name': 'Contract',
+            'employee_id': employee.id,
+            'hr_responsible_id': self.env.uid,
+            'job_id': job.id,
+            'department_id': department.id,
+            'wage': 1,
+        }))
+
+        contract_form.save()
+        self.assertFalse(employee.job_id)
+        self.assertFalse(employee.job_title)
+        self.assertFalse(employee.department_id)
+
+        contract_form.state = 'open'
+        contract_form.save()
+        self.assertEqual(contract_form.job_id, employee.job_id)
+        self.assertEqual(contract_form.job_id.name, employee.job_title)
+        self.assertEqual(contract_form.department_id, employee.department_id)

@@ -1,74 +1,40 @@
 /** @odoo-module **/
 
 import { registry } from "@web/core/registry";
-import { _t } from "@web/core/l10n/translation";
-import { useRecordObserver } from "@web/model/relational_model/utils";
+import { _lt } from "@web/core/l10n/translation";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
-import { initializeDesignTabCss } from "@mass_mailing/js/mass_mailing_design_constants"
-import { toInline } from "@web_editor/js/backend/convert_inline";
+import { initializeDesignTabCss } from "mass_mailing.design_constants";
+import { toInline } from "web_editor.convertInline";
 import { loadBundle } from "@web/core/assets";
-import { renderToElement } from "@web/core/utils/render";
+import { qweb } from 'web.core';
 import { useService } from "@web/core/utils/hooks";
-import { HtmlField, htmlField } from "@web_editor/js/backend/html_field";
+import { buildQuery } from "web.rpc";
+import { HtmlField } from "@web_editor/js/backend/html_field";
+import { getWysiwygClass } from 'web_editor.loader';
+import { device } from 'web.config';
+import { MassMailingMobilePreviewDialog } from "./mass_mailing_mobile_preview";
 import { getRangePosition } from '@web_editor/js/editor/odoo-editor/src/utils/utils';
-import { utils as uiUtils } from "@web/core/ui/ui_service";
-import { closestScrollableY } from "@web/core/utils/scrolling";
-import { useThrottleForAnimation } from "@web/core/utils/timing";
-import { onWillUnmount, onWillStart, reactive, status, useSubEnv } from "@odoo/owl";
+
+const {
+    useSubEnv,
+    onWillUpdateProps,
+    status,
+} = owl;
 
 export class MassMailingHtmlField extends HtmlField {
-    static props = {
-        ...standardFieldProps,
-        ...HtmlField.props,
-        filterTemplates: { type: Boolean, optional: true },
-        inlineField: { type: String, optional: true },
-        iframeHtmlClass: { type: String, optional: true },
-    }
-
     setup() {
         super.setup();
 
-        this.fieldConfig = reactive({
-            selectedTheme: null,
-            $scrollable: null,
-        });
-
         useSubEnv({
             onWysiwygReset: this._resetIframe.bind(this),
-            switchImages: this._switchImages.bind(this),
-            fieldConfig: this.fieldConfig,
         });
-
-        onWillStart(async () => {
-            const themesHTML = await this.orm.call(
-                "ir.ui.view",
-                "render_public_asset",
-                ["mass_mailing.email_designer_themes"]
-            );
-            this.themesEl = new DOMParser().parseFromString(themesHTML, "text/html").body;
-        });
-
         this.action = useService('action');
-        this.orm = useService('orm');
+        this.rpc = useService('rpc');
         this.dialog = useService('dialog');
 
-        const onIframeUpdated = this.onIframeUpdated;
-        this.onIframeUpdated = () => {
-            onIframeUpdated();
-            this._updateIframe();
-        };
-        const throttledOnResizeObserved = useThrottleForAnimation(() => {
-            this._resizeMailingEditorIframe();
-            this._repositionMailingEditorSidebar();
-        });
-        this._resizeObserver = new ResizeObserver(throttledOnResizeObserved);
-        onWillUnmount(() => {
-            this._resizeObserver.disconnect();
-        });
-
-        useRecordObserver((record) => {
-            if ("mailing_model_id" in record.data) {
-                this._onModelChange(record);
+        onWillUpdateProps(() => {
+            if (this.props.record.data.mailing_model_id && this.wysiwyg) {
+                this._hideIrrelevantTemplates();
             }
         });
     }
@@ -77,23 +43,14 @@ export class MassMailingHtmlField extends HtmlField {
         return {
             ...super.wysiwygOptions,
             onIframeUpdated: () => this.onIframeUpdated(),
-            getCodeViewValue: (editableEl) => this._getCodeViewValue(editableEl),
             snippets: 'mass_mailing.email_designer_snippets',
             resizable: false,
-            linkOptions: {
-                ...super.wysiwygOptions.linkOptions,
-                initialIsNewWindow: true,
-            },
-            toolbarOptions: {
-                ...super.wysiwygOptions.toolbarOptions,
-                dropDirection: 'dropup',
-            },
+            defaultDataForLinkTools: { isNewWindow: true },
+            toolbarTemplate: 'mass_mailing.web_editor_toolbar',
             onWysiwygBlur: () => {
                 this.commitChanges();
                 this.wysiwyg.odooEditor.toolbarHide();
             },
-            dropImageAsAttachment: false,
-            useResponsiveFontSizes: false,
             ...this.props.wysiwygOptions,
         };
     }
@@ -174,7 +131,11 @@ export class MassMailingHtmlField extends HtmlField {
             // Wait for the css and images to be loaded.
             await iframePromise;
             const editableClone = iframe.contentDocument.querySelector('.note-editable');
-            await toInline($(editableClone), { $iframe: $(iframe), wysiwyg: this.wysiwyg });
+            // The jQuery data are lost because of the cloning operations above.
+            // The hacky fix for stable is to simply add it back manually.
+            // TODO in master: Update toInline to use an options parameter.
+            $(editableClone).data("wysiwyg", this.wysiwyg);
+            await toInline($(editableClone), undefined, $(iframe));
             iframe.remove();
             this.wysiwyg.odooEditor.observerActive('toInline');
             const inlineHtml = editableClone.innerHTML;
@@ -183,120 +144,30 @@ export class MassMailingHtmlField extends HtmlField {
             this.wysiwyg.odooEditor.historyRevertCurrentStep();
 
             const fieldName = this.props.inlineField;
-            await this.props.record.update({[fieldName]: inlineHtml});
-            this._pendingCommitChanges = false;
+            await this.props.record.update({[fieldName]: this._unWrap(inlineHtml)});
+            this._pendingCommitChanges = null;
         })();
         return this._pendingCommitChanges;
     }
     async startWysiwyg(...args) {
         await super.startWysiwyg(...args);
 
-        await loadBundle("mass_mailing.assets_wysiwyg");
+        await loadBundle({
+            jsLibs: [
+                '/mass_mailing/static/src/js/mass_mailing_link_dialog_fix.js',
+                '/mass_mailing/static/src/js/mass_mailing_snippets.js',
+                '/mass_mailing/static/src/snippets/s_masonry_block/options.js',
+                '/mass_mailing/static/src/snippets/s_media_list/options.js',
+                '/mass_mailing/static/src/snippets/s_showcase/options.js',
+                '/mass_mailing/static/src/snippets/s_rating/options.js',
+            ],
+        });
 
         if (status(this) === "destroyed") {
             return;
         }
 
         await this._resetIframe();
-    }
-
-    //--------------------------------------------------------------------------
-    // Private
-    //--------------------------------------------------------------------------
-
-    /**
-     * Resize the given iframe so its height fits its contents and initialize a
-     * resize observer to resize on each size change in its contents.
-     * This also ensures the contents of the sidebar remain visible no matter
-     * how much we resize the iframe and scroll down.
-     *
-     * @private
-     */
-    _updateIframe() {
-        const iframe = this.wysiwyg?.$iframe?.[0];
-        if (!iframe || !iframe.contentDocument) {
-            return;
-        }
-        const hasIframeChanged = !this.iframe || !this.iframe.contentDocument || iframe !== this.iframe;
-        this.iframe = iframe;
-        this._resizeMailingEditorIframe();
-
-        const iframeTarget = this.iframe.contentDocument.querySelector("#iframe_target");
-        if (hasIframeChanged && iframeTarget) {
-            this._resizeObserver.disconnect();
-            this._resizeObserver.observe(iframeTarget);
-        }
-        if (iframeTarget) {
-            const isFullscreen = this._isFullScreen();
-            iframeTarget.style.display = isFullscreen ? "" : "flex";
-            iframeTarget.style.flexDirection = isFullscreen ? "" : "column";
-        }
-    }
-
-    /**
-     * Return true if the mailing editor is in full screen mode, false otherwise.
-     *
-     * @private
-     * @returns {boolean}
-     */
-    _isFullScreen() {
-        return window.top.document.body.classList.contains("o_field_widgetTextHtml_fullscreen");
-    }
-
-    /**
-     * Resize the mailing editor's iframe container so its height fits its
-     * contents. This needs to be called whenever the iframe's contents might
-     * have changed, eg. when adding/removing content to/from it or when a
-     * template is picked.
-     *
-     * @private
-     */
-    _resizeMailingEditorIframe() {
-        if (!this.wysiwyg || !this.iframe) {
-            return;
-        }
-        const minHeight = window.innerHeight - Math.abs(this.iframe.getBoundingClientRect().y);
-        const themeSelectorNew = this.iframe.contentDocument.querySelector(".o_mail_theme_selector_new");
-        const iframeTarget = this.iframe.contentDocument.querySelector("#iframe_target");
-        const elementToResize = themeSelectorNew || iframeTarget;
-        if (elementToResize) {
-            this.iframe.parentNode.style.height = `${this._isFullScreen()
-                ? window.innerHeight
-                : Math.max(elementToResize.scrollHeight, minHeight)}px`;
-        }
-    }
-
-    /**
-     * Reposition the sidebar so it always occupies the full available visible
-     * height, no matter the scroll position. This way, the sidebar is always
-     * visible and as big as possible.
-     *
-     * @private
-     */
-    _repositionMailingEditorSidebar() {
-        const sidebar = document.querySelector("#oe_snippets");
-        if (!sidebar) {
-            return;
-        } else if (this._isFullScreen()) {
-            sidebar.style.height = "";
-            sidebar.style.top = "0";
-        } else if (this.env.inDialog) {
-            const scrollableY = closestScrollableY(sidebar);
-            if (scrollableY) {
-                const rect = scrollableY.getBoundingClientRect();
-                sidebar.style.height = `${rect.height}px`;
-                sidebar.style.top = "0";
-            }
-        } else {
-            const scrollableY = closestScrollableY(sidebar);
-            const top = scrollableY
-                ? `${-1 * (parseInt(getComputedStyle(scrollableY).paddingTop) || 0)}px`
-                : "0";
-            const maxHeight = this.iframe.parentNode.getBoundingClientRect().height;
-            const offsetHeight = window.innerHeight - document.querySelector(".o_content").getBoundingClientRect().y;
-            sidebar.style.height = `${Math.min(maxHeight, offsetHeight)}px`;
-            sidebar.style.top = top;
-        }
     }
 
     async _resetIframe() {
@@ -322,30 +193,33 @@ export class MassMailingHtmlField extends HtmlField {
         this.onIframeUpdated();
     }
 
-    _onModelChange(record) {
-        this._hideIrrelevantTemplates(record);
-    }
-
     async _onSnippetsLoaded() {
-        if (status(this) === 'destroyed') return;
-        if ($(window.top.document).find('.o_mass_mailing_form_full_width')[0]) {
+        if (this.wysiwyg.snippetsMenu && $(window.top.document).find('.o_mass_mailing_form_full_width')[0]) {
             // In full width form mode, ensure the snippets menu's scrollable is
             // in the form view, not in the iframe.
-            this.fieldConfig.$scrollable = $(closestScrollableY(this.wysiwyg.$el[0]));
+            this.wysiwyg.snippetsMenu.$scrollable = this.wysiwyg.$el.closestScrollable();
             // Ensure said scrollable keeps its scrollbar at all times to
             // prevent the scrollbar from appearing at awkward moments (ie: when
             // previewing an option)
-            this.fieldConfig.$scrollable.css('overflow-y', 'scroll');
+            this.wysiwyg.snippetsMenu.$scrollable.css('overflow-y', 'scroll');
         }
+
+        // Remove the web editor menu to avoid flicker (we add it back at the
+        // end of the method)
+        this.wysiwyg.$iframeBody.find('.iframe-utils-zone').addClass('d-none');
 
         // Filter the fetched templates based on the current model
         const args = this.props.filterTemplates
             ? [[['mailing_model_id', '=', this.props.record.data.mailing_model_id[0]]]]
             : [];
 
+        const rpcQuery = buildQuery({
+            model: 'mailing.mailing',
+            method: 'action_fetch_favorites',
+            args: args,
+        })
         // Templates taken from old mailings
-        const result = await this.orm.call('mailing.mailing', 'action_fetch_favorites', args);
-        if (status(this) === 'destroyed') return;
+        const result = await this.rpc(rpcQuery.route, rpcQuery.params);
         const templatesParams = result.map(values => {
             return {
                 id: values.id,
@@ -360,35 +234,69 @@ export class MassMailingHtmlField extends HtmlField {
             };
         });
 
-        const themesEls = this.themesEl.children;
+        const $snippetsSideBar = this.wysiwyg.snippetsMenu.$el;
+        const $themes = $snippetsSideBar.find("#email_designer_themes").children();
+        const $snippets = $snippetsSideBar.find(".oe_snippet");
+        const selectorToKeep = '.o_we_external_history_buttons, .email_designer_top_actions';
+        // Overide `d-flex` class which style is `!important`
+        $snippetsSideBar.find(`.o_we_website_top_actions > *:not(${selectorToKeep})`).attr('style', 'display: none!important');
+
+        if (!odoo.debug) {
+            $snippetsSideBar.find('.o_codeview_btn').hide();
+        }
+        const $codeview = this.wysiwyg.$iframe.contents().find('textarea.o_codeview');
+        // Unbind first the event handler as this method can be called multiple time during the component life.
+        $snippetsSideBar.off('click', '.o_codeview_btn');
+        $snippetsSideBar.on('click', '.o_codeview_btn', () => {
+            this.wysiwyg.odooEditor.observerUnactive();
+            $codeview.toggleClass('d-none');
+            this.wysiwyg.getEditable().toggleClass('d-none');
+            this.wysiwyg.odooEditor.observerActive();
+
+            if ($codeview.hasClass('d-none')) {
+                this.wysiwyg.setValue(this._getCodeViewValue($codeview[0]));
+            } else {
+                $codeview.val(this.wysiwyg.getValue());
+            }
+            this.wysiwyg.snippetsMenu.activateSnippet(false);
+            this.onIframeUpdated();
+        });
+        const $previewBtn = $snippetsSideBar.find('.o_mobile_preview_btn');
+        $previewBtn.off('click');
+        $previewBtn.on('click', () => {
+            $previewBtn.prop('disabled', true); // Prevent double execution when double-clicking on the button
+            let mailingHtml = new DOMParser().parseFromString(this.wysiwyg.getValue(), 'text/html');
+            [...mailingHtml.querySelectorAll('a')].forEach(el => {
+                el.style.setProperty('pointer-events', 'none');
+            });
+            this.mobilePreview = this.dialog.add(MassMailingMobilePreviewDialog, {
+                title: this.env._t("Mobile Preview"),
+                preview: mailingHtml.body.innerHTML,
+            }, {
+                onClose: () => $previewBtn.prop('disabled', false),
+            });
+        });
 
         if (!this._themeParams) {
             // Initialize theme parameters.
             this._themeClassNames = "";
             const displayableThemes =
-                uiUtils.isSmall() ?
-                Array.from(themesEls).filter(theme => !theme.dataset.hideFromMobile) :
-                themesEls;
-            this._themeParams = Array.from(displayableThemes).map((theme) => {
+                device.isMobile ?
+                _.filter($themes, theme => !$(theme).data("hideFromMobile")) :
+                $themes;
+            this._themeParams = _.map(displayableThemes, (theme) => {
                 const $theme = $(theme);
                 const name = $theme.data("name");
-                // TODO remove in master and apply the update in xml directly
-                if (name === "training") {
-                    $theme.get(0).querySelector("div.oe_img_bg").classList.add("col-lg-12");
-                }
                 const classname = "o_" + name + "_theme";
                 this._themeClassNames += " " + classname;
-                const imagesInfo = Object.assign({
+                const imagesInfo = _.defaults($theme.data("imagesInfo") || {}, {
                     all: {}
-                }, $theme.data("imagesInfo") || {});
-                for (const [key, info] of Object.entries(imagesInfo)) {
-                    imagesInfo[key] = Object.assign({
+                });
+                for (const info of Object.values(imagesInfo)) {
+                    _.defaults(info, imagesInfo.all, {
                         module: "mass_mailing",
                         format: "jpg"
-                        },
-                        imagesInfo.all,
-                        info
-                    );
+                    });
                 }
                 return {
                     name: name,
@@ -407,6 +315,7 @@ export class MassMailingHtmlField extends HtmlField {
                 };
             });
         }
+        $themes.parent().remove();
 
         if (!this._themeParams.length) {
             return;
@@ -416,7 +325,7 @@ export class MassMailingHtmlField extends HtmlField {
 
         // Create theme selection screen and check if it must be forced opened.
         // Reforce it opened if the last snippet is removed.
-        const $themeSelectorNew = $(renderToElement("mass_mailing.theme_selector_new", {
+        const $themeSelectorNew = $(qweb.render("mass_mailing.theme_selector_new", {
             themes: themesParams,
             templates: templatesParams,
             modelName: this.props.record.data.mailing_model_id[1] || '',
@@ -438,26 +347,35 @@ export class MassMailingHtmlField extends HtmlField {
             value = this.wysiwyg.getValue();
         }
         let blankEditable = "<p><br></p>";
+        const editableAreaIsEmpty = value === "" || value === blankEditable;
+
+        if (editableAreaIsEmpty) {
+            // unfold to prevent toolbar from going over the menu
+            this.wysiwyg.setSnippetsMenuFolded(false);
+            $themeSelectorNew.appendTo(this.wysiwyg.$iframeBody);
+        }
+
         $themeSelectorNew.on('click', '.dropdown-item', async (e) => {
             e.preventDefault();
             e.stopImmediatePropagation();
 
             const themeName = $(e.currentTarget).attr('id');
 
-            this.fieldConfig.selectedTheme = [...themesParams, ...templatesParams].find(theme => theme.name === themeName);
+            const themeParams = [...themesParams, ...templatesParams].find(theme => theme.name === themeName);
 
-            await this._switchThemes(this.fieldConfig.selectedTheme);
+            await this._switchThemes(themeParams);
             this.wysiwyg.$iframeBody.closest('body').removeClass("o_force_mail_theme_choice");
 
             $themeSelectorNew.remove();
 
-            const isSnippetsFolded = uiUtils.isSmall() || themeName === 'basic';
-            this.wysiwyg.setSnippetsMenuFolded(isSnippetsFolded);
+            this.wysiwyg.setSnippetsMenuFolded(device.isMobile || themeName === 'basic');
+
+            this._switchImages(themeParams, $snippets);
 
             const $editable = this.wysiwyg.$editable.find('.o_editable');
             this.$editorMessageElements = $editable
                 .not('[data-editor-message]')
-                .attr('data-editor-message', _t('DRAG BUILDING BLOCKS HERE'));
+                .attr('data-editor-message', this.env._t('DRAG BUILDING BLOCKS HERE'));
             $editable.filter(':empty').attr('contenteditable', false);
 
             // Wait the next tick because some mutation have to be processed by
@@ -471,7 +389,7 @@ export class MassMailingHtmlField extends HtmlField {
                 const document = this.wysiwyg.odooEditor.document;
                 const selection = document.getSelection();
                 const p = this.wysiwyg.odooEditor.editable.querySelector('p');
-                if (p && selection) {
+                if (p) {
                     const range = document.createRange();
                     range.setStart(p, 0);
                     range.setEnd(p, 0);
@@ -492,7 +410,13 @@ export class MassMailingHtmlField extends HtmlField {
             const $target = $(ev.currentTarget);
             const mailingId = $target.data('id');
 
-            const action = await this.orm.call('mailing.mailing', 'action_remove_favorite', [mailingId]);
+            const rpcQuery = buildQuery({
+                model: 'mailing.mailing',
+                method: 'action_remove_favorite',
+                args: [mailingId],
+            })
+            const action = await this.rpc(rpcQuery.route, rpcQuery.params);
+
             this.action.doAction(action);
 
             $target.parents('.o_mail_template_preview').remove();
@@ -500,9 +424,10 @@ export class MassMailingHtmlField extends HtmlField {
 
         // Clear any previous theme class before adding new one.
         this.wysiwyg.$iframeBody.closest('body').removeClass(this._themeClassNames);
-        this.fieldConfig.selectedTheme = this._getSelectedTheme(themesParams);
-        if (this.fieldConfig.selectedTheme) {
-            this.wysiwyg.$iframeBody.closest('body').addClass(this.fieldConfig.selectedTheme.className);
+        let selectedTheme = this._getSelectedTheme(themesParams);
+        if (selectedTheme) {
+            this.wysiwyg.$iframeBody.closest('body').addClass(selectedTheme.className);
+            this._switchImages(selectedTheme, $snippets);
         } else if (this.wysiwyg.$iframeBody.find('.o_layout').length) {
             themesParams.push({
                 name: 'o_mass_mailing_no_theme',
@@ -512,28 +437,14 @@ export class MassMailingHtmlField extends HtmlField {
                 nowrap: true,
                 get_image_info: function () {}
             });
-            this.fieldConfig.selectedTheme = this._getSelectedTheme(themesParams);
+            selectedTheme = this._getSelectedTheme(themesParams);
         }
 
-        this.wysiwyg.setSnippetsMenuFolded(uiUtils.isSmall() || (this.fieldConfig.selectedTheme && this.fieldConfig.selectedTheme.name === 'basic'));
-        const editableAreaIsEmpty = value === "" || value === blankEditable;
+        this.wysiwyg.setSnippetsMenuFolded(device.isMobile || (selectedTheme && selectedTheme.name === 'basic'));
 
-        if (editableAreaIsEmpty) {
-            // TODO: Refactor this code so that it is clear what we are doing
-            // and so we no longer have to access wysiwyg's state.
-            // We actually hide the OdooEditor toolbar by calling
-            // `wysiwyg.setSnippetsMenuFolded`, but this has the side effect of
-            // showing the SnippetsMenu. Because the SnippetsMenu is now at
-            // the side of the iframe, it is no longer hidden by the
-            // theme-picker, so we manually hide it by changing the prop
-            // `snippetsMenuFolded = true`
-            this.wysiwyg.setSnippetsMenuFolded(false);
-            this.wysiwyg.state.snippetsMenuFolded = true;
-            $themeSelectorNew.appendTo(this.wysiwyg.$iframeBody);
-        }
-
-        if (this.wysiwyg) {
-            this._hideIrrelevantTemplates(this.props.record);
+        this.wysiwyg.$iframeBody.find('.iframe-utils-zone').removeClass('d-none');
+        if (this.env.mailingFilterTemplates && this.wysiwyg) {
+            this._hideIrrelevantTemplates();
         }
         this.wysiwyg.odooEditor.activateContenteditable();
     }
@@ -573,13 +484,10 @@ export class MassMailingHtmlField extends HtmlField {
      *
      * @private
      */
-    _hideIrrelevantTemplates(record) {
-        if (!this.wysiwyg) {
-            return;
-        }
+    _hideIrrelevantTemplates() {
         const iframeContent = this.wysiwyg.$iframe.contents();
 
-        const mailing_model_id = record.data.mailing_model_id[0];
+        const mailing_model_id = this.props.record.data.mailing_model_id[0];
         iframeContent
             .find(`.o_mail_template_preview[model-id!="${mailing_model_id}"]`)
             .addClass('d-none')
@@ -598,7 +506,7 @@ export class MassMailingHtmlField extends HtmlField {
             iframeContent.find('.o_mailing_template_preview_wrapper').removeClass('d-none');
         } else {
             iframeContent.find('.o_mailing_template_message').removeClass('d-none');
-            iframeContent.find('.o_mailing_template_message span').text(record.data.mailing_model_id[1]);
+            iframeContent.find('.o_mailing_template_message span').text(this.props.record.data.mailing_model_id[1]);
             iframeContent.find('.o_mailing_template_preview_wrapper').addClass('d-none');
         }
     }
@@ -613,7 +521,7 @@ export class MassMailingHtmlField extends HtmlField {
         const $layout = this.wysiwyg.$iframeBody.find(".o_layout");
         let selectedTheme = false;
         if ($layout.length !== 0) {
-            themesParams.forEach((themeParams) => {
+            _.each(themesParams, function (themeParams) {
                 if ($layout.hasClass(themeParams.className)) {
                     selectedTheme = themeParams;
                 }
@@ -636,7 +544,6 @@ export class MassMailingHtmlField extends HtmlField {
         for (const img of $container.find("img")) {
             const $img = $(img);
             const src = $img.attr("src");
-            $img.removeAttr('loading');
 
             let m = src.match(/^\/web\/image\/\w+\.s_default_image_(?:theme_[a-z]+_)?(.+)$/);
             if (!m) {
@@ -714,6 +621,7 @@ export class MassMailingHtmlField extends HtmlField {
             this.wysiwyg.$editable[0].focus();
         }
         initializeDesignTabCss(this.wysiwyg.$editable);
+        this.wysiwyg.trigger('reload_snippet_dropzones');
         this.onIframeUpdated();
         this.wysiwyg.odooEditor.historyStep(true);
         // The value of the field gets updated upon editor blur. If for any
@@ -723,43 +631,41 @@ export class MassMailingHtmlField extends HtmlField {
         await this.commitChanges();
         this._switchingTheme = false;
     }
+    async _getWysiwygClass() {
+        return getWysiwygClass({moduleName: 'mass_mailing.wysiwyg'});
+    }
     /**
      * @override
      */
     async _setupReadonlyIframe() {
-        if (!this.props.record.data[this.props.name].length) {
-            this.props.record.data[this.props.name] = this.props.record.data.body_html;
+        if (!this.props.value.length) {
+            this.props.value = this.props.record.data.body_html;
         }
         await super._setupReadonlyIframe();
     }
-    async _lazyloadWysiwyg() {
-        await super._lazyloadWysiwyg(...arguments);
-        const wysiwygModule = await odoo.loader.modules.get('@mass_mailing/js/mass_mailing_wysiwyg');
-        this.Wysiwyg = wysiwygModule.MassMailingWysiwyg;
-    }
 }
 
-export const massMailingHtmlField = {
-    ...htmlField,
-    component: MassMailingHtmlField,
-    displayName: _t("Email"),
-    supportedOptions: [...htmlField.supportedOptions, {
-        label: _t("Filter templates"),
-        name: "filterTemplates",
-        type: "boolean"
-    }, {
-        label: _t("Inline field"),
-        name: "inline-field",
-        type: "field"
-    }],
-    extractProps({ attrs, options }) {
-        const props = htmlField.extractProps(...arguments);
-        props.filterTemplates = options.filterTemplates;
-        props.inlineField = options['inline-field'];
-        props.iframeHtmlClass = attrs.iframeHtmlClass;
-        return props;
-    },
-    fieldDependencies: [{ name: 'body_html', type: 'html', readonly: 'false' }],
+MassMailingHtmlField.props = {
+    ...standardFieldProps,
+    ...HtmlField.props,
+    filterTemplates: { type: Boolean, optional: true },
+    inlineField: { type: String, optional: true },
+    iframeHtmlClass: { type: String, optional: true },
 };
 
-registry.category("fields").add("mass_mailing_html", massMailingHtmlField);
+MassMailingHtmlField.displayName = _lt("Email");
+MassMailingHtmlField.extractProps = (...args) => {
+    const [{ attrs }] = args;
+    const htmlProps = HtmlField.extractProps(...args);
+    return {
+        ...htmlProps,
+        filterTemplates: attrs.options.filterTemplates,
+        inlineField: attrs.options['inline-field'],
+        iframeHtmlClass: attrs['iframeHtmlClass'],
+    };
+};
+MassMailingHtmlField.fieldDependencies = {
+    body_html: { type: 'html' },
+};
+
+registry.category("fields").add("mass_mailing_html", MassMailingHtmlField);

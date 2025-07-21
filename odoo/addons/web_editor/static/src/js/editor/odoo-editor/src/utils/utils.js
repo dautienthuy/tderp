@@ -51,37 +51,18 @@ const tldWhitelist = [
     'vu', 'wf', 'ws', 'ye', 'yt', 'yu', 'za', 'zm', 'zr', 'zw', 'co\\.uk'];
 
 const urlRegexBase = `|(?:www.))[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-zA-Z][a-zA-Z0-9]{1,62}|(?:[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.(?:${tldWhitelist.join('|')})\\b))(?:(?:[/?#])[^\\s]*[^!.,})\\]'"\\s]|(?:[^!(){}.,[\\]'"\\s]+))?`;
+const httpRegex = `(?:https?:\\/\\/)`;
 const httpCapturedRegex= `(https?:\\/\\/)`;
 
-export const URL_REGEX = new RegExp(`((?:(?:${httpCapturedRegex}${urlRegexBase})`, 'i');
+export const URL_REGEX = new RegExp(`((?:(?:${httpRegex}${urlRegexBase})`, 'gi');
+export const URL_REGEX_WITH_INFOS = new RegExp(`((?:(?:${httpCapturedRegex}${urlRegexBase})`, 'gi');
 export const YOUTUBE_URL_GET_VIDEO_ID =
     /^(?:(?:https?:)?\/\/)?(?:(?:www|m)\.)?(?:youtube\.com|youtu\.be)(?:\/(?:[\w-]+\?v=|embed\/|v\/)?)([^\s?&#]+)(?:\S+)?$/i;
 export const EMAIL_REGEX = /^(mailto:)?[\w-.]+@(?:[\w-]+\.)+[\w-]{2,4}$/i;
-export const PHONE_REGEX = /^(tel:(?:\/\/)?)?\+?[\d\s.\-()\/]{3,25}$/;
 
 export const PROTECTED_BLOCK_TAG = ['TR','TD','TABLE','TBODY','UL','OL','LI'];
 
-/**
- * Array of all the classes used by the editor to change the font size.
- *
- * Note: the Bootstrap "small" class is an exception, the editor does not allow
- * to set it but it did in the past and we want to remove it when applying an
- * override of the font-size.
- */
-export const FONT_SIZE_CLASSES = ["display-1-fs", "display-2-fs", "display-3-fs", "display-4-fs", "h1-fs",
-    "h2-fs", "h3-fs", "h4-fs", "h5-fs", "h6-fs", "base-fs", "o_small-fs", "small", "o_small_twelve-fs", "o_small_ten-fs", "o_small_eight-fs"];
-
-/**
- * Array of all the classes used by the editor to change the text style.
- *
- * Note: the Bootstrap "small" class was actually part of "text style"
- * configuration in the past... but also of the "font size" configuration (see
- * FONT_SIZE_CLASSES). It should be mentioned here too.
- */
-export const TEXT_STYLE_CLASSES = ["display-1", "display-2", "display-3", "display-4", "lead", "o_small", "small"];
-
-const ZWNBSP_CHAR = '\ufeff';
-export const ZERO_WIDTH_CHARS = ['\u200b', ZWNBSP_CHAR];
+export const ZERO_WIDTH_CHARS = ['\u200b', '\ufeff'];
 export const ZERO_WIDTH_CHARS_REGEX = new RegExp(`[${ZERO_WIDTH_CHARS.join('')}]`, 'g');
 
 //------------------------------------------------------------------------------
@@ -310,27 +291,22 @@ export function getFurthestUneditableParent(node, parentLimit) {
     return nonEditableElement;
 }
 /**
- * Returns the closest HTMLElement of the provided Node. If the predicate is a
- * string, returns the closest HTMLElement that match the predicate selector. If
- * the predicate is a function, returns the closest element that matches the
- * predicate. Any returned element will be contained within the editable.
+ * Returns the closest HTMLElement of the provided Node
+ * if a 'selector' is provided, Returns the closest HTMLElement that match the selector
  *
  * @param {Node} node
- * @param {string | Function} [predicate='*']
- * @returns {HTMLElement|null}
+ * @param {string} [selector=undefined]
+ * @returns {HTMLElement}
  */
-export function closestElement(node, predicate = "*") {
-    if (!node) return null;
-    let element = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
-    if (typeof predicate === 'function') {
-        while (element && !predicate(element)) {
-            element = element.parentElement;
-        }
-    } else {
-        element = element?.closest(predicate);
+export function closestElement(node, selector) {
+    let element = node;
+    while (element && element.nodeType !== Node.ELEMENT_NODE) {
+        element = element.parentNode;
     }
-
-    return element?.closest('.odoo-editor-editable') && element;
+    if (element && selector) {
+        element = element.closest(selector);
+    }
+    return element && element.querySelector('.odoo-editor-editable') ? null : element;
 }
 
 /**
@@ -510,7 +486,7 @@ export function getNormalizedCursorPosition(node, offset, full = true) {
     while (
         closest &&
         closest !== editable &&
-        (isSelfClosingElement(node) || !closest.isContentEditable)
+        (isVisibleEmpty(node) || !closest.isContentEditable)
     ) {
         // Cannot put the cursor inside those elements, put it before if the
         // offset is 0 and the node is not empty, else after instead.
@@ -543,7 +519,7 @@ export function getNormalizedCursorPosition(node, offset, full = true) {
             let leftVisibleEmpty = false;
             if (leftInlineNode) {
                 leftVisibleEmpty =
-                    isSelfClosingElement(leftInlineNode) ||
+                    isVisibleEmpty(leftInlineNode) ||
                     !closestElement(leftInlineNode).isContentEditable;
                 [node, offset] = leftVisibleEmpty
                     ? rightPos(leftInlineNode)
@@ -554,7 +530,7 @@ export function getNormalizedCursorPosition(node, offset, full = true) {
                 if (rightInlineNode) {
                     const closest = closestElement(rightInlineNode);
                     const rightVisibleEmpty =
-                        isSelfClosingElement(rightInlineNode) ||
+                        isVisibleEmpty(rightInlineNode) ||
                         !closest ||
                         !closest.isContentEditable;
                     if (!(leftVisibleEmpty && rightVisibleEmpty)) {
@@ -898,7 +874,7 @@ export function getSelectedNodes(editable) {
 export function getDeepRange(editable, { range, sel, splitText, select, correctTripleClick } = {}) {
     sel = sel || editable.parentElement && editable.ownerDocument.getSelection();
     if (sel && sel.isCollapsed && sel.anchorNode && sel.anchorNode.nodeName === "BR") {
-        setSelection(sel.anchorNode.parentElement, childNodeIndex(sel.anchorNode));
+        setCursorStart(sel.anchorNode.parentElement, false);
     }
     range = range ? range.cloneRange() : sel && sel.rangeCount && sel.getRangeAt(0).cloneRange();
     if (!range) return;
@@ -952,10 +928,7 @@ export function getDeepRange(editable, { range, sel, splitText, select, correctT
         correctTripleClick &&
         !endOffset &&
         (start !== end || startOffset !== endOffset) &&
-        (!beforeEnd ||
-            (beforeEnd.nodeType === Node.TEXT_NODE &&
-                !isVisibleTextNode(beforeEnd) &&
-                !isZWS(beforeEnd))) &&
+        (!beforeEnd || (beforeEnd.nodeType === Node.TEXT_NODE && !isVisibleStr(beforeEnd))) &&
         !closestElement(endLeaf, 'table') &&
         !isInsideColumn
     ) {
@@ -991,7 +964,6 @@ export function getDeepRange(editable, { range, sel, splitText, select, correctT
 
 export function getAdjacentCharacter(editable, side) {
     let { focusNode, focusOffset } = editable.ownerDocument.getSelection();
-    [focusNode, focusOffset] = getDeepestPosition(focusNode, focusOffset);
     const originalBlock = closestBlock(focusNode);
     let adjacentCharacter;
     while (!adjacentCharacter && focusNode) {
@@ -1015,46 +987,53 @@ export function getAdjacentCharacter(editable, side) {
     return closestBlock(focusNode) === originalBlock ? adjacentCharacter : undefined;
 }
 
-export function isZwnbsp(node) {
+function isZwnbsp(node) {
     return node.nodeType === Node.TEXT_NODE && node.textContent === '\ufeff';
 }
 
 function isTangible(node) {
-    return isVisible(node) || isZwnbsp(node) || hasTangibleContent(node);
+    return isVisible(node) || isZwnbsp(node);
 }
 
-function hasTangibleContent(node) {
-    return [...(node?.childNodes || [])].some(n => isTangible(n));
+function getNextTangibleNode(node) {
+    while (node && !isTangible(node)) {
+        node = node.nextSibling;
+    }
+    return node;
 }
 
 export function getDeepestPosition(node, offset) {
-    let direction = DIRECTIONS.RIGHT;
-    let next = node;
-    while (next) {
-        if (isTangible(next) || isZWS(next)) {
-            // Valid node: update position then try to go deeper.
-            if (next !== node) {
-                [node, offset] = [next, direction ? 0 : nodeSize(next)];
-            }
-            // First switch direction to left if offset is at the end.
-            direction = offset < node.childNodes.length;
-            next = node.childNodes[direction ? offset : offset - 1];
-        } else if (
-            direction &&
-            next.nextSibling &&
-            closestBlock(node)?.contains(next.nextSibling)
-        ) {
-            // Invalid node: skip to next sibling (without crossing blocks).
-            next = next.nextSibling;
+    let found = false;
+    while (node.hasChildNodes()) {
+        let newNode = node.childNodes[offset];
+        if (newNode) {
+            newNode = getNextTangibleNode(newNode);
+            if (!newNode || isVisibleEmpty(newNode)) break;
+            found = true;
+            node = newNode;
+            offset = 0;
         } else {
-            // Invalid node: skip to previous sibling (without crossing blocks).
-            direction = DIRECTIONS.LEFT;
-            next = closestBlock(node)?.contains(next.previousSibling) && next.previousSibling;
+            break;
         }
-        // Avoid too-deep ranges inside self-closing elements like [BR, 0].
-        next = !isSelfClosingElement(next) && next;
     }
-    return [node, offset];
+    if (!found) {
+        while (node.hasChildNodes()) {
+            let newNode = node.childNodes[offset - 1];
+            newNode = getNextTangibleNode(newNode);
+            if (!newNode || isVisibleEmpty(newNode)) break;
+            node = newNode;
+            offset = nodeSize(node);
+        }
+    }
+    let didMove = false;
+    let reversed = false;
+    while (!isTangible(node) && (node.previousSibling || (!reversed && node.nextSibling))) {
+        reversed = reversed || !node.nextSibling;
+        node = reversed ? node.previousSibling : node.nextSibling;
+        offset = reversed ? nodeSize(node) : 0;
+        didMove = true;
+    }
+    return didMove && isTangible(node) ? getDeepestPosition(node, offset) : [node, offset];
 }
 
 export function getCursors(document) {
@@ -1080,27 +1059,8 @@ export function preserveCursor(document) {
         replace = replace || new Map();
         cursorPos[0] = replace.get(cursorPos[0]) || cursorPos[0];
         cursorPos[2] = replace.get(cursorPos[2]) || cursorPos[2];
-        return setSelection(...cursorPos, false);
+        setSelection(...cursorPos, false);
     };
-}
-
-/**
- * Check if the selection starts inside given selector. This function can be
- * used as the `isDisabled` property of a command of the PowerBox to disable
- * a command in the given selectors.
- * @param {string}: comma separated string with all the desired selectors
- * @returns {boolean} true selector is within one of the selector
- * (if the command should be filtered)
- */
-export function isSelectionInSelectors(selector) {
-    let anchor = document.getSelection().anchorNode;
-    if (anchor && anchor.nodeType && anchor.nodeType !== Node.ELEMENT_NODE) {
-        anchor = anchor.parentElement;
-    }
-    if (anchor && closestElement(anchor, selector)) {
-        return true;
-    }
-    return false;
 }
 
 export function getOffsetAndCharSize(nodeValue, offset, direction) {
@@ -1172,23 +1132,8 @@ export const formatsSpecs = {
     fontSize: {
         isFormatted: isFontSize,
         hasStyle: (node) => node.style && node.style['font-size'],
-        addStyle: (node, props) => {
-            node.style['font-size'] = props.size;
-            node.classList.remove(...FONT_SIZE_CLASSES);
-        },
+        addStyle: (node, props) => node.style['font-size'] = props.size,
         removeStyle: (node) => removeStyle(node, 'font-size'),
-    },
-    setFontSizeClassName: {
-        isFormatted: hasClass,
-        hasStyle: (node, props) => FONT_SIZE_CLASSES
-            .find(cls => node.classList.contains(cls)),
-        addStyle: (node, props) => node.classList.add(props.className),
-        removeStyle: (node) => {
-            node.classList.remove(...FONT_SIZE_CLASSES, ...TEXT_STYLE_CLASSES);
-            if (node.classList.length === 0) {
-                node.removeAttribute("class");
-            }
-        },
     },
     switchDirection: {
         isFormatted: isDirectionSwitched,
@@ -1283,17 +1228,8 @@ export const formatSelection = (editor, formatName, {applyStyle, formatProps} = 
         getDeepRange(editor.editable, { splitText: true, select: true, correctTripleClick: true });
     }
 
-    const selectedNodes = getSelectedNodes(editor.editable).filter(
-        (n) =>
-            ((n.nodeType === Node.TEXT_NODE &&
-                (isVisibleTextNode(n) || isZWS(n) || (/^\n+$/.test(n.nodeValue) && !applyStyle))) ||
-                n.nodeName === "BR") &&
-            closestElement(n).isContentEditable
-    );
-
-    const selectedFieldNodes = new Set(getSelectedNodes(editor.editable)
-            .map(n =>closestElement(n, "*[t-field],*[t-out],*[t-esc]"))
-            .filter(Boolean));
+    const selectedNodes = getSelectedNodes(editor.editable)
+        .filter(n => ((n.nodeType === Node.TEXT_NODE && isVisibleTextNode(n)) || n.nodeName === 'BR') && closestElement(n).isContentEditable);
 
     const formatSpec = formatsSpecs[formatName];
     for (const node of selectedNodes) {
@@ -1302,14 +1238,11 @@ export const formatSelection = (editor, formatName, {applyStyle, formatProps} = 
         let parentNode = node.parentElement;
 
         // Remove the format on all inline ancestors until a block or an element
-        // with a class that is not related to font size or color (in case the
-        // formatting comes from the class).
+        // with a class (in case the formating comes from the class).
         while (
             parentNode && !isBlock(parentNode) &&
-            !isUnbreakable(parentNode) && !isUnbreakable(currentNode) &&
-            (parentNode.nodeName === "FONT" ||
-                parentNode.classList.length === 0 ||
-                [...parentNode.classList].every(cls => FONT_SIZE_CLASSES.includes(cls)))
+            !(parentNode.classList && parentNode.classList.length) &&
+            !isUnbreakable(parentNode) && !isUnbreakable(currentNode)
         ) {
             const isUselessZws = parentNode.tagName === 'SPAN' &&
                 parentNode.hasAttribute('data-oe-zws-empty-inline') &&
@@ -1328,11 +1261,8 @@ export const formatSelection = (editor, formatName, {applyStyle, formatProps} = 
 
             parentNode = currentNode.parentElement;
         }
-        const isFormatted =
-            formatName === "setFontSizeClassName" && !formatProps
-                ? hasAnyFontSizeClass
-                : formatSpec.isFormatted;
-        const firstBlockOrClassHasFormat = isFormatted(parentNode, formatProps);
+
+        const firstBlockOrClassHasFormat = formatSpec.isFormatted(parentNode, formatProps);
         if (firstBlockOrClassHasFormat && !applyStyle) {
             formatSpec.addNeutralStyle && formatSpec.addNeutralStyle(getOrCreateSpan(node, inlineAncestors));
         } else if (!firstBlockOrClassHasFormat && applyStyle) {
@@ -1341,7 +1271,7 @@ export const formatSelection = (editor, formatName, {applyStyle, formatProps} = 
                 node.after(tag);
                 tag.append(node);
 
-                if (!isFormatted(tag, formatProps)) {
+                if (!formatSpec.isFormatted(tag, formatProps)) {
                     tag.after(node);
                     tag.remove();
                     formatSpec.addStyle(getOrCreateSpan(node, inlineAncestors), formatProps);
@@ -1349,14 +1279,6 @@ export const formatSelection = (editor, formatName, {applyStyle, formatProps} = 
             } else if (formatName !== 'fontSize' || formatProps.size !== undefined) {
                 formatSpec.addStyle(getOrCreateSpan(node, inlineAncestors), formatProps);
             }
-        }
-    }
-
-    for (const selectedFieldNode of selectedFieldNodes) {
-        if (applyStyle) {
-            formatSpec.addStyle(selectedFieldNode, formatProps);
-        } else {
-            formatSpec.removeStyle(selectedFieldNode);
         }
     }
 
@@ -1388,7 +1310,7 @@ export const formatSelection = (editor, formatName, {applyStyle, formatProps} = 
     }
 }
 export const isLinkEligibleForZwnbsp = (editable, link) => {
-    return link.parentElement.isContentEditable && link.isContentEditable && editable.contains(link) && !(
+    return link.isContentEditable && editable.contains(link) && !(
         [link, ...link.querySelectorAll('*')].some(el => el.nodeName === 'IMG' || isBlock(el)) ||
         link.matches('nav a, a.nav-link')
     );
@@ -1516,7 +1438,7 @@ const computedStyles = new WeakMap();
  * @param node
  */
 export function isBlock(node) {
-    if (!node || node.nodeType !== Node.ELEMENT_NODE) {
+    if (node.nodeType !== Node.ELEMENT_NODE) {
         return false;
     }
     const tagName = node.nodeName.toUpperCase();
@@ -1546,10 +1468,10 @@ export function isBlock(node) {
     // We won't call `getComputedStyle` more than once per node.
     let style = computedStyles.get(node);
     if (!style) {
-        style = node.ownerDocument.defaultView?.getComputedStyle(node);
+        style = node.ownerDocument.defaultView.getComputedStyle(node);
         computedStyles.set(node, style);
     }
-    if (style?.display) {
+    if (style.display) {
         return !style.display.includes('inline') && style.display !== 'contents';
     }
     return blockTagNames.includes(tagName);
@@ -1622,29 +1544,6 @@ export function isFontSize(node, props) {
     return getComputedStyle(element)['font-size'] === props.size;
 }
 /**
- * Return true if the given node classlist contains `props.className`.
- *
- * @param {Object} props
- * @param {Node} node A node to compare the font-size against.
- * @param {String} props.className The name of the class.
- * @returns {boolean}
- */
-export function hasClass(node, props) {
-    const element = closestElement(node);
-    return element.classList.contains(props.className);
-}
-
-/**
- * Return true if the given node has any font-size class.
- *
- * @param {Node} node A node to check for font-size classes.
- * @returns {boolean}
- */
-export function hasAnyFontSizeClass(node) {
-    return FONT_SIZE_CLASSES.find((cls) => node?.classList?.contains(cls));
-}
-
-/**
  * Return true if the given node appears in a different direction than that of
  * the editable ('ltr' or 'rtl').
  *
@@ -1669,14 +1568,9 @@ export function hasAnyFontSizeClass(node) {
  * @returns {boolean}
  */
 export function isSelectionFormat(editable, format) {
-    const selectedNodes = getTraversedNodes(editable).filter(
-        (n) =>
-            n.nodeType === Node.TEXT_NODE &&
-            n.nodeValue.replaceAll(ZWNBSP_CHAR, "").length &&
-            (!/^\n+$/.test(n.nodeValue) || !isBlock(closestElement(n)))
-    );
-    const isFormatted =
-        format === "setFontSizeClassName" ? hasAnyFontSizeClass : formatsSpecs[format].isFormatted;
+    const selectedNodes = getTraversedNodes(editable)
+        .filter(n => n.nodeType === Node.TEXT_NODE && n.nodeValue.trim().length);
+    const isFormatted = formatsSpecs[format].isFormatted;
     return selectedNodes.length && selectedNodes.every(n => isFormatted(n, editable));
 }
 
@@ -1700,8 +1594,7 @@ export function isUnbreakable(node) {
                 node.getAttribute('t-foreach') ||
                 node.getAttribute('t-value') ||
                 node.getAttribute('t-out') ||
-                node.getAttribute('t-raw')) ||
-                node.getAttribute('t-field')) ||
+                node.getAttribute('t-raw'))) ||
         node.matches(".oe_unbreakable, a.btn, a[role='tab'], a[role='button'], li.nav-item")
     );
 }
@@ -1714,8 +1607,7 @@ export function isUnremovable(node) {
             (node.classList.contains('o_editable') || node.getAttribute('t-set') || node.getAttribute('t-call'))) ||
         (node.classList && node.classList.contains('oe_unremovable')) ||
         (node.nodeName === 'SPAN' && node.parentElement && node.parentElement.getAttribute('data-oe-type') === 'monetary') ||
-        (node.ownerDocument && node.ownerDocument.defaultWindow && !ancestors(node).find(ancestor => ancestor.oid === 'root')) || // Node is in DOM but not in editable.
-        (node.dataset && node.dataset.bsToggle === 'tab')
+        (node.ownerDocument && node.ownerDocument.defaultWindow && !ancestors(node).find(ancestor => ancestor.oid === 'root')) // Node is in DOM but not in editable.
     );
 }
 
@@ -1725,18 +1617,13 @@ export function containsUnbreakable(node) {
     }
     return isUnbreakable(node) || containsUnbreakable(node.firstChild);
 }
-
+// TODO rename this function in master: it also handles Odoo icons, not only
+// font awesome ones. Also maybe just use the ICON_SELECTOR and `matches`?
 const iconTags = ['I', 'SPAN'];
 const iconClasses = ['fa', 'fab', 'fad', 'far', 'oi'];
-/**
- * Indicates if the given node is an icon element.
- *
- * @see ICON_SELECTOR
- * @param {?Node} [node]
- * @returns {boolean}
- */
-export function isIconElement(node) {
-    return !!(
+export function isFontAwesome(node) {
+    // See ICON_SELECTOR
+    return (
         node &&
         iconTags.includes(node.nodeName) &&
         iconClasses.some(cls => node.classList.contains(cls))
@@ -1771,33 +1658,20 @@ export function isEditorTab(node) {
 }
 export function isMediaElement(node) {
     return (
-        isIconElement(node) ||
+        isFontAwesome(node) ||
         (node.classList &&
             (node.classList.contains('o_image') || node.classList.contains('media_iframe_video')))
     );
-}
-/**
- * A "protected" node will have its mutations filtered and not be registered
- * in an history step. Some editor features like selection handling, command
- * hint, toolbar, tooltip, etc. are also disabled. Protected roots have their
- * data-oe-protected attribute set to either "" or "true". If the closest parent
- * with a data-oe-protected attribute has the value "false", it is not
- * protected. Unknown values are ignored.
- *
- * @param {Node} node
- * @returns {boolean}
- */
-export function isProtected(node) {
-    const closestProtectedElement = closestElement(node, '[data-oe-protected]');
-    if (closestProtectedElement) {
-        return ["", "true"].includes(closestProtectedElement.dataset.oeProtected);
-    }
-    return false;
 }
 
 // https://developer.mozilla.org/en-US/docs/Glossary/Void_element
 const VOID_ELEMENT_NAMES = ['AREA', 'BASE', 'BR', 'COL', 'EMBED', 'HR', 'IMG',
     'INPUT', 'KEYGEN', 'LINK', 'META', 'PARAM', 'SOURCE', 'TRACK', 'WBR'];
+
+// TODO on master: remove this function.
+export function isVoidElement(node) {
+    return isArtificialVoidElement(node);
+}
 
 export function isArtificialVoidElement(node) {
     return isMediaElement(node) || node.nodeName === 'HR';
@@ -1912,6 +1786,26 @@ export function makeContentsInline(node) {
     }
 }
 
+/**
+ * Returns an array of url infos for url matched in the given string.
+ *
+ * @param {String} string
+ * @returns {Array}
+ */
+export function getUrlsInfosInString(string) {
+    let infos = [],
+        match;
+    while ((match = URL_REGEX_WITH_INFOS.exec(string))) {
+        infos.push({
+            url: match[2] ? match[0] : 'https://' + match[0],
+            label: match[0],
+            index: match.index,
+            length: match[0].length,
+        });
+    }
+    return infos;
+}
+
 // optimize: use the parent Oid to speed up detection
 export function getOuid(node, optimize = false) {
     while (node && !isUnbreakable(node)) {
@@ -1937,8 +1831,8 @@ export function isHtmlContentSupported(node) {
  * @returns {boolean}
  */
 const selfClosingElementTags = ['BR', 'IMG', 'INPUT'];
-export function isSelfClosingElement(node) {
-    return node && selfClosingElementTags.includes(node.nodeName);
+export function isVisibleEmpty(node) {
+    return selfClosingElementTags.includes(node.nodeName);
 }
 /**
  * Returns true if the given node is in a PRE context for whitespace handling.
@@ -1954,11 +1848,22 @@ export function isInPre(node) {
             getComputedStyle(element).getPropertyValue('white-space') === 'pre')
     );
 }
-const whitespace = `[^\\S\\u00A0\\u0009\\ufeff]`; // for formatting (no "real" content) (TODO: 0009 shouldn't be included)
-const whitespaceRegex = new RegExp(`^${whitespace}*$`);
-export function isWhitespace(value) {
+/**
+ * Returns whether the given string (or given text node value)
+ * has at least one visible character or one non colapsed whitespace characters in it.
+ */
+const nonWhitespaces = '\\S\\u00A0\\u0009\\uFEFF';
+const nonWhitespacesRegex = new RegExp(`[${nonWhitespaces}]`);
+export function isVisibleStr(value) {
     const str = typeof value === 'string' ? value : value.nodeValue;
-    return whitespaceRegex.test(str);
+    return nonWhitespacesRegex.test(str) && str !== '\ufeff';
+}
+/**
+ * @param {Node} node
+ * @returns {boolean}
+ */
+export function isContentTextNode(node) {
+    return node.nodeType === Node.TEXT_NODE && (isVisible(node) || isInPre(node));
 }
 /**
  * Returns whether removing the given node from the DOM will have a visible
@@ -1969,45 +1874,29 @@ export function isWhitespace(value) {
  * will always return 'true' while it is sometimes invisible.
  *
  * @param {Node} node
+ * @param {boolean} areBlocksAlwaysVisible
  * @returns {boolean}
  */
-export function isVisible(node) {
-    return !!node && (
-        (node.nodeType === Node.TEXT_NODE && isVisibleTextNode(node)) ||
-        (node.nodeType === Node.ELEMENT_NODE &&
-            (node.getAttribute("t-esc") || node.getAttribute("t-out"))) ||
-        isSelfClosingElement(node) ||
-        isIconElement(node) ||
-        hasVisibleContent(node)
-    );
-}
-export function hasVisibleContent(node) {
-    return [...(node?.childNodes || [])].some(n => isVisible(n));
-}
-
-/**
- * Returns whether an element is a button
- *
- * @param {Node} node
- * @returns {boolean}
- */
-export function isButton(node) {
-    if (!node || node.nodeType !== Node.ELEMENT_NODE) {
-        return false;
+export function isVisible(node, areBlocksAlwaysVisible = true) {
+    if (!node) return false;
+    if (node.nodeType === Node.TEXT_NODE) {
+        return isVisibleTextNode(node);
     }
-    return node.nodeName === "BUTTON" || node.classList.contains("btn");
-}
-
-const visibleCharRegex = /[^\s\u200b]|[\u00A0\u0009]$/; // contains at least a char that is always visible (TODO: 0009 shouldn't be included)
-export function isVisibleTextNode(testedNode) {
-    if (!testedNode || !testedNode.length || testedNode.nodeType !== Node.TEXT_NODE) {
-        return false;
-    }
-    if (visibleCharRegex.test(testedNode.textContent) || (isInPre(testedNode) && isWhitespace(testedNode))) {
+    if ((areBlocksAlwaysVisible && isBlock(node)) || isVisibleEmpty(node)) {
         return true;
     }
-    if (ZERO_WIDTH_CHARS.includes(testedNode.textContent)) {
-        return false; // a ZW(NB)SP is always invisible, regardless of context.
+    return [...node.childNodes].some(n => isVisible(n));
+}
+
+export function isVisibleTextNode(testedNode) {
+    if (!testedNode.length) {
+        return false;
+    }
+    if (isVisibleStr(testedNode)) {
+        return true;
+    }
+    if (testedNode.textContent === '\ufeff') {
+        return false; // a ZWNBSP is _always_ invisible, regardless of context.
     }
     // The following assumes node is made entirely of whitespace and is not
     // preceded of followed by a block.
@@ -2045,13 +1934,9 @@ export function isVisibleTextNode(testedNode) {
             } else {
                 preceding = null;
             }
-        } else if (foundTestedNode && !isWhitespace(node)) {
-            // <block>space<inline>text</inline></block> -> space is visible
-            following = node;
-            break;
         }
     }
-    while (following && !visibleCharRegex.test(following.textContent)) {
+    while (following && /^[\n\t ]*$/.test(following.textContent)) {
         following = following.nextSibling;
     }
     // Missing preceding or following: invisible.
@@ -2064,7 +1949,7 @@ export function isVisibleTextNode(testedNode) {
         return false;
     }
     // Preceding is whitespace or following is whitespace: invisible
-    return visibleCharRegex.test(preceding.textContent);
+    return !/^[\n\t ]*$/.test(preceding.textContent);
 }
 
 export function parentsGet(node, root = undefined) {
@@ -2204,7 +2089,7 @@ export function isEmptyBlock(blockEl) {
     if (!blockEl || blockEl.nodeType !== Node.ELEMENT_NODE) {
         return false;
     }
-    if (isIconElement(blockEl) || visibleCharRegex.test(blockEl.textContent)) {
+    if (isVisibleStr(blockEl.textContent)) {
         return false;
     }
     if (blockEl.querySelectorAll('br').length >= 2) {
@@ -2214,7 +2099,7 @@ export function isEmptyBlock(blockEl) {
     for (const node of nodes) {
         // There is no text and no double BR, the only thing that could make
         // this visible is a "visible empty" node like an image.
-        if (node.nodeName != 'BR' && (isSelfClosingElement(node) || isIconElement(node))) {
+        if (node.nodeName != 'BR' && (isVisibleEmpty(node) || isFontAwesome(node))) {
             return false;
         }
     }
@@ -2242,58 +2127,6 @@ export function isShrunkBlock(blockEl) {
 export function isColorGradient(value) {
     // FIXME duplicated in @web_editor/utils.js
     return value && value.includes('-gradient(');
-}
-
-/**
- * Finds the font size to display for the current selection. We cannot rely
- * on the computed font-size only as font-sizes are responsive and we always
- * want to display the desktop (integer when possible) one.
- *
- * @private
- * @todo probably move `getCSSVariableValue` and `convertNumericToUnit` as
- *       odoo-editor utils.
- * @param {Selection} sel The current selection.
- * @returns {Float} The font size to display.
- */
-export function getFontSizeDisplayValue(sel, getCSSVariableValue, convertNumericToUnit) {
-    const tagNameRelatedToFontSize = ["h1", "h2", "h3", "h4", "h5", "h6"];
-    const styleClassesRelatedToFontSize = ["display-1", "display-2", "display-3", "display-4", "lead"];
-    const closestStartContainerEl = closestElement(sel.getRangeAt(0).startContainer);
-    const closestFontSizedEl = closestStartContainerEl.closest(`
-        [style*='font-size'],
-        ${FONT_SIZE_CLASSES.map(className => `.${className}`)},
-        ${styleClassesRelatedToFontSize.map(className => `.${className}`)},
-        ${tagNameRelatedToFontSize}
-    `);
-    let remValue;
-    if (closestFontSizedEl) {
-        const useFontSizeInput = closestFontSizedEl.style.fontSize;
-        if (useFontSizeInput) {
-            // Use the computed value to always convert to px. However, this
-            // currently does not check that the inline font-size is the one
-            // actually having an effect (there could be an !important CSS rule
-            // forcing something else).
-            // TODO align with the behavior of the rest of the editor snippet
-            // options.
-            return parseFloat(getComputedStyle(closestStartContainerEl).fontSize);
-        }
-        // It's a class font size or a hN tag. We don't return the computed
-        // font size because it can be different from the one displayed in
-        // the toolbar because it's responsive.
-        const fontSizeClass = FONT_SIZE_CLASSES.find(
-            className => closestFontSizedEl.classList.contains(className));
-        let fsName;
-        if (fontSizeClass) {
-            fsName = fontSizeClass.substring(0, fontSizeClass.length - 3); // Without -fs
-        } else {
-            fsName = styleClassesRelatedToFontSize.find(
-                    className => closestFontSizedEl.classList.contains(className))
-                || closestFontSizedEl.tagName.toLowerCase();
-        }
-        remValue = parseFloat(getCSSVariableValue(`${fsName}-font-size`));
-    }
-    const pxValue = remValue && convertNumericToUnit(remValue, "rem", "px");
-    return pxValue || parseFloat(getComputedStyle(closestStartContainerEl).fontSize);
 }
 
 //------------------------------------------------------------------------------
@@ -2355,11 +2188,6 @@ export function splitElement(element, offset) {
     for (const child of [...element.childNodes]) {
         index < offset ? before.appendChild(child) : after.appendChild(child);
         index++;
-    }
-    // e.g.: <p>Test/banner</p> + ENTER <=> <p>Test</p><div class="o_editor_banner>...</div><p><br></p>
-    const blockEl = closestBlock(after);
-    if (blockEl) {
-        fillEmpty(blockEl);
     }
     element.before(before);
     element.after(after);
@@ -2485,7 +2313,7 @@ export function fillEmpty(el) {
         blockEl.appendChild(br);
         fillers.br = br;
     }
-    if (!isTangible(el) && !el.hasAttribute("data-oe-zws-empty-inline") && isEmptyBlock(el)) {
+    if (!isVisible(el) && !el.hasAttribute("data-oe-zws-empty-inline")) {
         // As soon as there is actual content in the node, the zero-width space
         // is removed by the sanitize function.
         const zws = document.createTextNode('\u200B');
@@ -2497,18 +2325,6 @@ export function fillEmpty(el) {
             previousSibling.remove();
         }
         setSelection(zws, 0, zws, 0);
-    }
-    // If the element is empty and inside an <a> tag with 'inline' display,
-    // it's not possible to place the cursor in element even if it contains
-    // ZWSP. To make the element cursor-friendly, change its display to
-    // 'inline-block'.
-    if (
-        !isVisible(el) &&
-        el.nodeName !== 'A' &&
-        closestElement(el, 'a') &&
-        getComputedStyle(el).display === 'inline'
-    ) {
-        el.style.display = 'inline-block';
     }
     return fillers;
 }
@@ -2526,6 +2342,20 @@ export function insertAndSelectZws(selection) {
     selection.getRangeAt(0).selectNode(zws);
     return zws;
 }
+/**
+ * Removes the given node if invisible and all its invisible ancestors.
+ *
+ * @param {Node} node
+ * @returns {Node} the first visible ancestor of node (or itself)
+ */
+export function clearEmpty(node) {
+    while (!isVisible(node)) {
+        const toRemove = node;
+        node = node.parentNode;
+        toRemove.remove();
+    }
+    return node;
+}
 
 export function setTagName(el, newTagName) {
     if (el.tagName === newTagName) {
@@ -2533,7 +2363,6 @@ export function setTagName(el, newTagName) {
     }
     const n = document.createElement(newTagName);
     if (el.nodeName !== 'LI') {
-        el.style.removeProperty('list-style');
         const attributes = el.attributes;
         for (const attr of attributes) {
             n.setAttribute(attr.name, attr.value);
@@ -2608,16 +2437,6 @@ export function moveNodes(
     // Return cursor position, but don't change it
     const firstNode = nodes.find(node => !!node.parentNode);
     return firstNode ? leftPos(firstNode) : [destinationEl, destinationOffset];
-}
-/**
- * Remove ouid of a node and it's descendants in order to allow that tree
- * to be moved into another parent.
- */
-export function resetOuids(node) {
-    node.ouid = undefined;
-    for (const descendant of descendants(node)) {
-        descendant.ouid = undefined;
-    }
 }
 
 //------------------------------------------------------------------------------
@@ -2749,15 +2568,16 @@ export function getState(el, offset, direction, leftCType) {
 
     let domPath;
     let inverseDOMPath;
-    const whitespaceAtStartRegex = new RegExp('^' + whitespace + '+');
-    const whitespaceAtEndRegex = new RegExp(whitespace + '+$');
+    let expr;
     const reasons = [];
     if (direction === DIRECTIONS.LEFT) {
         domPath = leftDOMPath(el, offset, reasons);
         inverseDOMPath = rightDOMPath(el, offset);
+        expr = new RegExp(`[^${nonWhitespaces}]$`);
     } else {
         domPath = rightDOMPath(el, offset, reasons);
         inverseDOMPath = leftDOMPath(el, offset);
+        expr = new RegExp(`^[^${nonWhitespaces}]`);
     }
 
     // TODO I think sometimes, the node we have to consider as the
@@ -2775,20 +2595,19 @@ export function getState(el, offset, direction, leftCType) {
     let lastSpace = null;
     for (const node of domPath) {
         if (node.nodeType === Node.TEXT_NODE) {
-            // ZWNBSP are technical characters which should be ignored.
-            const value = node.nodeValue.replaceAll('\ufeff', '');
+            const value = node.nodeValue;
             // If we hit a text node, the state depends on the path direction:
             // any space encountered backwards is a visible space if we hit
             // visible content afterwards. If going forward, spaces are only
             // visible if we have content backwards.
             if (direction === DIRECTIONS.LEFT) {
-                if (!isWhitespace(value)) {
+                if (isVisibleStr(value)) {
                     if (lastSpace) {
                         cType = CTYPES.SPACE;
                     } else {
                         const rightLeaf = rightLeafOnlyNotBlockPath(node).next().value;
-                        const hasContentRight = rightLeaf && !whitespaceAtStartRegex.test(rightLeaf.textContent);
-                        cType = !hasContentRight && whitespaceAtEndRegex.test(node.textContent) ? CTYPES.SPACE : CTYPES.CONTENT;
+                        const hasContentRight = rightLeaf && !rightLeaf.textContent.startsWith(' ');
+                        cType = !hasContentRight && node.textContent.endsWith(' ') ? CTYPES.SPACE : CTYPES.CONTENT;
                     }
                     break;
                 }
@@ -2797,10 +2616,10 @@ export function getState(el, offset, direction, leftCType) {
                 }
             } else {
                 leftCType = leftCType || getState(el, offset, DIRECTIONS.LEFT).cType;
-                if (whitespaceAtStartRegex.test(value)) {
+                if (expr.test(value)) {
                     const leftLeaf = leftLeafOnlyNotBlockPath(node).next().value;
-                    const hasContentLeft = leftLeaf && !whitespaceAtEndRegex.test(leftLeaf.textContent);
-                    const rct = !isWhitespace(value)
+                    const hasContentLeft = leftLeaf && !leftLeaf.textContent.endsWith(' ');
+                    const rct = isVisibleStr(value)
                         ? CTYPES.CONTENT
                         : getState(...rightPos(node), DIRECTIONS.RIGHT).cType;
                     cType =
@@ -2809,7 +2628,7 @@ export function getState(el, offset, direction, leftCType) {
                             : rct;
                     break;
                 }
-                if (!isWhitespace(value)) {
+                if (isVisibleStr(value)) {
                     cType = CTYPES.CONTENT;
                     break;
                 }
@@ -3029,13 +2848,14 @@ export function restoreState(prevStateData, debug=false) {
  * @param {boolean} [rule.brVisibility]
  */
 export function enforceWhitespace(el, offset, direction, rule) {
-    let domPath, whitespaceAtEdgeRegex;
+    let domPath;
+    let expr;
     if (direction === DIRECTIONS.LEFT) {
         domPath = leftLeafOnlyNotBlockPath(el, offset);
-        whitespaceAtEdgeRegex = new RegExp(whitespace + '+$');
+        expr = new RegExp(`[^${nonWhitespaces}]+$`);
     } else {
         domPath = rightLeafOnlyNotBlockPath(el, offset);
-        whitespaceAtEdgeRegex = new RegExp('^' + whitespace + '+');
+        expr = new RegExp(`^[^${nonWhitespaces}]+`);
     }
 
     const invisibleSpaceTextNodes = [];
@@ -3054,20 +2874,20 @@ export function enforceWhitespace(el, offset, direction, rule) {
             }
             break;
         } else if (node.nodeType === Node.TEXT_NODE && !isInPre(node)) {
-            if (whitespaceAtEdgeRegex.test(node.nodeValue)) {
+            if (expr.test(node.nodeValue)) {
                 // If we hit spaces going in the direction, either they are in a
                 // visible text node and we have to change the visibility of
                 // those spaces, or it is in an invisible text node. In that
                 // last case, we either remove the spaces if there are spaces in
                 // a visible text node going further in the direction or we
                 // change the visiblity or those spaces.
-                if (!isWhitespace(node)) {
+                if (isVisibleStr(node)) {
                     foundVisibleSpaceTextNode = node;
                     break;
                 } else {
                     invisibleSpaceTextNodes.push(node);
                 }
-            } else if (!isWhitespace(node)) {
+            } else if (isVisibleStr(node)) {
                 break;
             }
         } else {
@@ -3112,7 +2932,7 @@ export function enforceWhitespace(el, offset, direction, rule) {
         ) {
             spaceVisibility = false;
         }
-        spaceNode.nodeValue = spaceNode.nodeValue.replace(whitespaceAtEdgeRegex, spaceVisibility ? '\u00A0' : '');
+        spaceNode.nodeValue = spaceNode.nodeValue.replace(expr, spaceVisibility ? '\u00A0' : '');
     }
 }
 
@@ -3172,9 +2992,9 @@ export function rgbToHex(rgb = '', node = null) {
     }
 }
 
-export function parseHTML(document, html) {
+export function parseHTML(html) {
     const fragment = document.createDocumentFragment();
-    const parser = new document.defaultView.DOMParser();
+    const parser = new DOMParser();
     const parsedDocument = parser.parseFromString(html, 'text/html');
     fragment.replaceChildren(...parsedDocument.body.childNodes);
     return fragment;
@@ -3351,13 +3171,6 @@ export function isMacOS() {
  */
 export function cleanZWS(node) {
     [node, ...descendants(node)]
-        .filter(node => node.nodeType === Node.TEXT_NODE && node.nodeValue.includes('\u200B'))
-        .forEach((node) => {
-            node.nodeValue = node.nodeValue.replace(/\u200B/g, "");
-
-            // If a node becomes empty after removing ZWS, remove it.
-            if (node.nodeValue === "") {
-                node.remove();
-            }
-        });
+        .filter(node => node.nodeType === Node.TEXT_NODE)
+        .forEach(node => node.nodeValue = node.nodeValue.replace(/\u200B/g, ''));
 }

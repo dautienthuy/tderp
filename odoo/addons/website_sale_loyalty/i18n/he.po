@@ -3,24 +3,22 @@
 # 	* website_sale_loyalty
 # 
 # Translators:
-# yael terner, 2024
-# שהאב חוסיין <shhab89@gmail.com>, 2024
-# Ha Ketem <haketem@gmail.com>, 2024
-# Martin Trigaux, 2024
-# yotam katzuni, 2024
-# Roy Sayag, 2024
-# Lilach Gilliam <lilach.gilliam@gmail.com>, 2024
-# ZVI BLONDER <ZVIBLONDER@gmail.com>, 2024
+# שהאב חוסיין <shhab89@gmail.com>, 2022
+# Lilach Gilliam <lilach.gilliam@gmail.com>, 2022
+# Martin Trigaux, 2022
+# ZVI BLONDER <ZVIBLONDER@gmail.com>, 2022
+# yotam katzuni, 2022
+# Roy Sayag, 2022
+# Ha Ketem <haketem@gmail.com>, 2022
 # tomerlayline, 2024
-# or balmas, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:56+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: or balmas, 2025\n"
+"POT-Creation-Date: 2022-10-10 10:24+0000\n"
+"PO-Revision-Date: 2022-09-22 05:57+0000\n"
+"Last-Translator: tomerlayline, 2024\n"
 "Language-Team: Hebrew (https://app.transifex.com/odoo/teams/41243/he/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -29,31 +27,21 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n == 1 && n % 1 == 0) ? 0 : (n == 2 && n % 1 == 0) ? 1: 2;\n"
 
 #. module: website_sale_loyalty
-#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
-msgid "<strong> - </strong>"
-msgstr "<strong> - </strong>"
-
-#. module: website_sale_loyalty
-#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
-msgid "<strong>Coupons - </strong>"
-msgstr ""
-
-#. module: website_sale_loyalty
-#. odoo-python
-#: code:addons/website_sale_loyalty/wizard/coupon_share.py:0
+#: code:addons/website_sale_loyalty/wizard/sale_coupon_share.py:0
+#, python-format
 msgid "A coupon is needed for coupon programs."
 msgstr "דרוש קופון לתכניות קופונים."
 
 #. module: website_sale_loyalty
-#. odoo-python
 #: code:addons/website_sale_loyalty/models/loyalty_rule.py:0
+#, python-format
 msgid "A coupon with the same code was found."
 msgstr ""
 
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.loyalty_program_view_form_inherit_website_sale_loyalty
 msgid "All websites"
-msgstr "כל האתרים"
+msgstr ""
 
 #. module: website_sale_loyalty
 #: model:ir.model.fields,field_description:website_sale_loyalty.field_loyalty_program__ecommerce_ok
@@ -62,23 +50,15 @@ msgstr "זמין באתר האינטרנט"
 
 #. module: website_sale_loyalty
 #. odoo-python
-#: code:addons/website_sale_loyalty/controllers/payment.py:0
-msgid ""
-"Cannot process payment: applied reward was changed or has expired.\n"
-"Please refresh the page and try again."
+#: code:addons/website_sale_loyalty/controllers/main.py:0
+#, python-format
+msgid "Cannot process payment: applied reward was changed or has expired."
 msgstr ""
 
 #. module: website_sale_loyalty
-#. odoo-javascript
-#: code:addons/website_sale_loyalty/static/src/js/portal_loyalty_card.xml:0
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
 msgid "Claim"
 msgstr ""
-
-#. module: website_sale_loyalty
-#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
-msgid "Code:"
-msgstr "קוד:"
 
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
@@ -121,9 +101,14 @@ msgid "Discount & Loyalty"
 msgstr "הנחות ותכניות"
 
 #. module: website_sale_loyalty
+#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.reduction_coupon_code
+msgid "Discount code or gift card"
+msgstr "קוד הנחנה או כרטיס מתנה"
+
+#. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.cart_discount
 msgid "Discount:"
-msgstr "הנחה:"
+msgstr "הנחה"
 
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.cart_discount
@@ -139,11 +124,6 @@ msgstr "שם לתצוגה"
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.coupon_share_view_form
 msgid "Done"
 msgstr "בוצע"
-
-#. module: website_sale_loyalty
-#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
-msgid "Expired Date:"
-msgstr "תאריך תפוגה:"
 
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.coupon_share_view_form
@@ -169,6 +149,11 @@ msgstr "מזהה"
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
 msgid "Invalid or expired promo code."
 msgstr "קוד הקופון לא חוקי או שפג תוקפו."
+
+#. module: website_sale_loyalty
+#: model:ir.model.fields,field_description:website_sale_loyalty.field_coupon_share____last_update
+msgid "Last Modified on"
+msgstr "שינוי אחרון ב"
 
 #. module: website_sale_loyalty
 #: model:ir.model.fields,field_description:website_sale_loyalty.field_coupon_share__write_uid
@@ -208,7 +193,7 @@ msgstr "כלל מועדון לקוחות"
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
 msgid "Pay with eWallet"
-msgstr "שלם עם ארנק דיגיטלי"
+msgstr ""
 
 #. module: website_sale_loyalty
 #: model:ir.model.fields,field_description:website_sale_loyalty.field_coupon_share__program_id
@@ -226,8 +211,8 @@ msgid "Promo Code"
 msgstr "קוד"
 
 #. module: website_sale_loyalty
-#. odoo-python
-#: code:addons/website_sale_loyalty/wizard/coupon_share.py:0
+#: code:addons/website_sale_loyalty/wizard/sale_coupon_share.py:0
+#, python-format
 msgid "Provide either a coupon or a program."
 msgstr ""
 
@@ -240,8 +225,8 @@ msgstr "הפנייה מחדש"
 #: model:ir.model.fields,help:website_sale_loyalty.field_coupon_share__program_website_id
 #: model:ir.model.fields,help:website_sale_loyalty.field_loyalty_program__website_id
 #: model:ir.model.fields,help:website_sale_loyalty.field_loyalty_rule__website_id
-msgid "Restrict to a specific website."
-msgstr "הגבל לאתר ספציפי."
+msgid "Restrict publishing to this website."
+msgstr "הגבל את הפרסום לאתר זה."
 
 #. module: website_sale_loyalty
 #: model:ir.model,name:website_sale_loyalty.model_sale_order
@@ -254,18 +239,13 @@ msgid "Sales Order Line"
 msgstr "שורת הזמנת לקוח"
 
 #. module: website_sale_loyalty
-#. odoo-python
-#: code:addons/website_sale_loyalty/wizard/coupon_share.py:0
+#: code:addons/website_sale_loyalty/wizard/sale_coupon_share.py:0
+#: code:addons/website_sale_loyalty/wizard/sale_coupon_share.py:0
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.loyalty_card_view_tree_inherit_website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.loyalty_program_view_tree_inherit_website_sale_loyalty
+#, python-format
 msgid "Share"
 msgstr "שתף"
-
-#. module: website_sale_loyalty
-#. odoo-python
-#: code:addons/website_sale_loyalty/wizard/coupon_share.py:0
-msgid "Share %s"
-msgstr ""
 
 #. module: website_sale_loyalty
 #: model:ir.model.fields,field_description:website_sale_loyalty.field_coupon_share__share_link
@@ -275,16 +255,16 @@ msgstr "שתף קישור"
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.coupon_share_view_form
 msgid "Share Loyalty Card"
-msgstr "שתף כרטיס נאמנות"
+msgstr ""
 
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.snippet_options
 msgid "Show Discount in Subtotal"
-msgstr "הצגת הנחה בסכום הביניים"
+msgstr ""
 
 #. module: website_sale_loyalty
-#. odoo-python
 #: code:addons/website_sale_loyalty/controllers/main.py:0
+#, python-format
 msgid ""
 "The coupon will be automatically applied when you add something in your "
 "cart."
@@ -296,20 +276,15 @@ msgid "The following promo code was applied on your order:"
 msgstr ""
 
 #. module: website_sale_loyalty
-#. odoo-python
 #: code:addons/website_sale_loyalty/models/loyalty_rule.py:0
+#, python-format
 msgid "The promo code must be unique."
-msgstr "קוד ההנחה חייב להיות ייחודי."
-
-#. module: website_sale_loyalty
-#. odoo-python
-#: code:addons/website_sale_loyalty/wizard/coupon_share.py:0
-msgid "The shared website should correspond to the website of the program."
 msgstr ""
 
 #. module: website_sale_loyalty
-#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
-msgid "Use"
+#: code:addons/website_sale_loyalty/wizard/sale_coupon_share.py:0
+#, python-format
+msgid "The shared website should correspond to the website of the program."
 msgstr ""
 
 #. module: website_sale_loyalty

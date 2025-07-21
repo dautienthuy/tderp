@@ -1,10 +1,10 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from datetime import date, datetime, timedelta
 from dateutil.relativedelta import relativedelta
 
-from odoo import Command
 from odoo.exceptions import ValidationError
-from odoo.tests import Form, TransactionCase
+from odoo.tests.common import Form, TransactionCase
 
 
 class TestInventory(TransactionCase):
@@ -18,12 +18,12 @@ class TestInventory(TransactionCase):
         cls.uom_unit = cls.env.ref('uom.product_uom_unit')
         cls.product1 = cls.env['product.product'].create({
             'name': 'Product A',
-            'is_storable': True,
+            'type': 'product',
             'categ_id': cls.env.ref('product.product_category_all').id,
         })
         cls.product2 = cls.env['product.product'].create({
             'name': 'Product A',
-            'is_storable': True,
+            'type': 'product',
             'tracking': 'serial',
             'categ_id': cls.env.ref('product.product_category_all').id,
         })
@@ -66,6 +66,7 @@ class TestInventory(TransactionCase):
         lot1 = self.env['stock.lot'].create({
             'name': 'sn2',
             'product_id': self.product2.id,
+            'company_id': self.env.company.id,
         })
         inventory_quant = self.env['stock.quant'].create({
             'location_id': self.stock_location.id,
@@ -97,6 +98,7 @@ class TestInventory(TransactionCase):
         lot1 = self.env['stock.lot'].create({
             'name': 'sn2',
             'product_id': self.product2.id,
+            'company_id': self.env.company.id,
         })
         inventory_quant = self.env['stock.quant'].create({
             'location_id': self.stock_location.id,
@@ -124,6 +126,7 @@ class TestInventory(TransactionCase):
         lot1 = self.env['stock.lot'].create({
             'name': 'sn2',
             'product_id': self.product2.id,
+            'company_id': self.env.company.id,
         })
         self.env['stock.quant'].create({
             'location_id': self.stock_location.id,
@@ -217,8 +220,7 @@ class TestInventory(TransactionCase):
         (move_stock_pack + move_pack_cust)._action_confirm()
         move_stock_pack._action_assign()
         self.assertEqual(move_stock_pack.state, 'assigned')
-        move_stock_pack.move_line_ids.quantity = 10
-        move_stock_pack.picked = True
+        move_stock_pack.move_line_ids.qty_done = 10
         move_stock_pack._action_done()
         self.assertEqual(move_stock_pack.state, 'done')
         self.assertEqual(move_pack_cust.state, 'assigned')
@@ -236,13 +238,13 @@ class TestInventory(TransactionCase):
         self.assertEqual(self.env['stock.quant']._gather(self.product1, self.pack_location).quantity, 8.0)
         self.assertEqual(self.env['stock.quant']._get_available_quantity(self.product1, self.pack_location), 0)
         self.assertEqual(move_pack_cust.state, 'partially_available')
-        self.assertEqual(move_pack_cust.quantity, 8)
+        self.assertEqual(move_pack_cust.reserved_availability, 8)
 
         # If the user tries to assign again, only 8 products are available and thus the reservation
         # state should not change.
         move_pack_cust._action_assign()
         self.assertEqual(move_pack_cust.state, 'partially_available')
-        self.assertEqual(move_pack_cust.quantity, 8)
+        self.assertEqual(move_pack_cust.reserved_availability, 8)
 
         # Make a new inventory adjustment and add two new products.
         inventory_quant = self.env['stock.quant'].search([
@@ -256,7 +258,7 @@ class TestInventory(TransactionCase):
 
         # Nothing should have changed for our pack move
         self.assertEqual(move_pack_cust.state, 'partially_available')
-        self.assertEqual(move_pack_cust.quantity, 8)
+        self.assertEqual(move_pack_cust.reserved_availability, 8)
 
         # Running _action_assign will now find the new available quantity. Since the products
         # are not differentiated (no lot/pack/owner), even if the new available quantity is not directly
@@ -265,8 +267,7 @@ class TestInventory(TransactionCase):
         self.assertEqual(move_pack_cust.state, 'assigned')
 
         # move all the things
-        move_pack_cust.move_line_ids.quantity = 10
-        move_pack_cust.picked = True
+        move_pack_cust.move_line_ids.qty_done = 10
         move_stock_pack._action_done()
 
         self.assertEqual(self.env['stock.quant']._get_available_quantity(self.product1, self.pack_location), 0)
@@ -322,69 +323,6 @@ class TestInventory(TransactionCase):
         })
         self.assertEqual(inventory_quant.inventory_quantity_set, False)
 
-    def test_inventory_request_count_quantity(self):
-        """ Ensures when a request to count a quant for tracked product is done, other quants for
-        the same product in the same location are also marked as to count."""
-        # Config: enable tracking and multilocations.
-        self.env.user.groups_id = [
-            Command.link(self.env.ref('stock.group_production_lot').id),
-            Command.link(self.env.ref('stock.group_stock_multi_locations').id)
-        ]
-        # Creates other locations.
-        stock_location_2 = self.env['stock.location'].create({
-            'name': 'stock 2',
-            'location_id': self.stock_location.location_id.id,
-        })
-        sub_location = self.env['stock.location'].create({
-            'name': 'stock 2',
-            'location_id': self.stock_location.id,
-        })
-        # Creates some quants for product2 (tracked by serail numbers.)
-        serial_numbers = self.env['stock.lot'].create([{
-            'product_id': self.product2.id,
-            'name': f'sn{i + 1}'
-        } for i in range(4)])
-        quants = self.env['stock.quant'].create([
-            {
-                'location_id': self.stock_location.id,
-                'product_id': self.product2.id,
-                'lot_id': serial_numbers[0].id,
-                'inventory_quantity': 1,
-            },
-            {
-                'location_id': self.stock_location.id,
-                'product_id': self.product2.id,
-                'lot_id': serial_numbers[1].id,
-                'inventory_quantity': 1,
-            },
-            {
-                'location_id': sub_location.id,
-                'product_id': self.product2.id,
-                'lot_id': serial_numbers[2].id,
-                'inventory_quantity': 1,
-            },
-            {
-                'location_id': stock_location_2.id,
-                'product_id': self.product2.id,
-                'lot_id': serial_numbers[3].id,
-                'inventory_quantity': 1,
-            }
-        ])
-        # Request count for 1 quant => The other quant in the same location
-        # should also be updated, other quants shouldn't
-        request_wizard = self.env['stock.request.count'].create({
-            'quant_ids': quants[1].ids,
-            'set_count': 'empty',
-            'user_id': self.env.user.id,
-        })
-        request_wizard.action_request_count()
-        self.assertRecordValues(quants, [
-            {'lot_id': serial_numbers[0].id, 'user_id': self.env.user.id, 'location_id': self.stock_location.id},
-            {'lot_id': serial_numbers[1].id, 'user_id': self.env.user.id, 'location_id': self.stock_location.id},
-            {'lot_id': serial_numbers[2].id, 'user_id': False, 'location_id': sub_location.id},
-            {'lot_id': serial_numbers[3].id, 'user_id': False, 'location_id': stock_location_2.id},
-        ])
-
     def test_inventory_outdate_1(self):
         """ Checks that applying an inventory adjustment that is outdated due to
         its corresponding quant being modified after its inventory quantity is set
@@ -415,8 +353,7 @@ class TestInventory(TransactionCase):
         })
         move_out._action_confirm()
         move_out._action_assign()
-        move_out.move_line_ids.quantity = 3
-        move_out.picked = True
+        move_out.move_line_ids.qty_done = 3
         move_out._action_done()
 
         # Ensure that diff didn't change.
@@ -456,11 +393,9 @@ class TestInventory(TransactionCase):
             'product_uom': self.uom_unit.id,
             'product_uom_qty': 4.0,
         })
-        quant.invalidate_recordset()
         move_out._action_confirm()
         move_out._action_assign()
-        move_out.move_line_ids.quantity = 4
-        move_out.picked = True
+        move_out.move_line_ids.qty_done = 4
         move_out._action_done()
 
         self.assertEqual(quant.inventory_quantity, 7)
@@ -504,7 +439,7 @@ class TestInventory(TransactionCase):
         # Create quant for product3
         product3 = self.env['product.product'].create({
             'name': 'Product C',
-            'is_storable': True,
+            'type': 'product',
             'categ_id': self.env.ref('product.product_category_all').id,
         })
         self.env['stock.quant'].create({

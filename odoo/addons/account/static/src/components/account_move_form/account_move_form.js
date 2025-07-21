@@ -8,44 +8,27 @@ import { FormCompiler } from "@web/views/form/form_compiler";
 import { FormRenderer } from "@web/views/form/form_renderer";
 import { FormController } from '@web/views/form/form_controller';
 import { useService } from "@web/core/utils/hooks";
-import {_t} from "@web/core/l10n/translation";
 
-
-export class AccountMoveFormController extends FormController {
+export class AccountMoveController extends FormController {
     setup() {
         super.setup();
         this.account_move_service = useService("account_move");
     }
-
-    get cogMenuProps() {
-        return {
-            ...super.cogMenuProps,
-            printDropdownTitle: _t("Download"),
-            loadExtraPrintItems: this.loadExtraPrintItems.bind(this),
-        };
-    }
-
-    async loadExtraPrintItems() {
-        if (!this.model.root.isNew) {
-            return []
-        }
-        return this.orm.call("account.move", "get_extra_print_items", [this.model.root.resId]);
-    }
-
 
     async deleteRecord() {
         if ( !await this.account_move_service.addDeletionDialog(this, this.model.root.resId)) {
             return super.deleteRecord(...arguments);
         }
     }
-}
+};
 
 export class AccountMoveFormNotebook extends Notebook {
-    static template = "account.AccountMoveFormNotebook";
-    static props = {
-        ...Notebook.props,
-        onBeforeTabSwitch: { type: Function, optional: true },
-    };
+    onAnchorClicked(ev) {
+        if (ev.detail.detail.id === "#outstanding") {
+            ev.preventDefault();
+            ev.detail.detail.originalEv.preventDefault();
+        }
+    }
 
     async changeTabTo(page_id) {
         if (this.props.onBeforeTabSwitch) {
@@ -54,25 +37,29 @@ export class AccountMoveFormNotebook extends Notebook {
         this.state.currentPage = page_id;
     }
 }
-
+AccountMoveFormNotebook.template = "account.AccountMoveFormNotebook";
+AccountMoveFormNotebook.props = {
+    ...Notebook.props,
+    onBeforeTabSwitch: { type: Function, optional: true },
+}
 export class AccountMoveFormRenderer extends FormRenderer {
-    static components = {
-        ...FormRenderer.components,
-        AccountMoveFormNotebook: AccountMoveFormNotebook,
-    };
-
     async saveBeforeTabChange() {
-        if (this.props.record.isInEdition && await this.props.record.isDirty()) {
+        if (this.props.record.mode === "edit" && this.props.record.isDirty) {
             const contentEl = document.querySelector('.o_content');
             const scrollPos = contentEl.scrollTop;
-            await this.props.record.save();
+            await this.props.record.save({
+                stayInEdition: true,
+            });
             if (scrollPos) {
                 contentEl.scrollTop = scrollPos;
             }
         }
     }
 }
-
+AccountMoveFormRenderer.components = {
+    ...FormRenderer.components,
+    AccountMoveFormNotebook: AccountMoveFormNotebook,
+}
 export class AccountMoveFormCompiler extends FormCompiler {
     compileNotebook(el, params) {
         const originalNoteBook = super.compileNotebook(...arguments);
@@ -80,7 +67,7 @@ export class AccountMoveFormCompiler extends FormCompiler {
         for (const attr of originalNoteBook.attributes) {
             noteBook.setAttribute(attr.name, attr.value);
         }
-        noteBook.setAttribute("onBeforeTabSwitch", "() => __comp__.saveBeforeTabChange()");
+        noteBook.setAttribute("onBeforeTabSwitch", "() => this.saveBeforeTabChange()");
         const slots = originalNoteBook.childNodes;
         append(noteBook, [...slots]);
         return noteBook;
@@ -91,7 +78,7 @@ export const AccountMoveFormView = {
     ...formView,
     Renderer: AccountMoveFormRenderer,
     Compiler: AccountMoveFormCompiler,
-    Controller: AccountMoveFormController,
+    Controller: AccountMoveController,
 };
 
 registry.category("views").add("account_move_form", AccountMoveFormView);

@@ -26,14 +26,13 @@ You can assign several contracts per employee.
         'report/hr_contract_history_report_views.xml',
         'views/hr_contract_views.xml',
         'views/hr_employee_views.xml',
+        'views/hr_employee_public_views.xml',
         'views/resource_calendar_views.xml',
-        'views/res_config_settings_views.xml',
         'wizard/hr_departure_wizard_views.xml',
     ],
     'demo': ['data/hr_contract_demo.xml'],
     'installable': True,
     'application': True,
-    'uninstall_hook': "uninstall_hook",
     'assets': {
         'web.assets_backend': [
             'hr_contract/static/src/**/*',

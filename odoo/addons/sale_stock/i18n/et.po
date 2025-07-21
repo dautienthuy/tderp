@@ -3,30 +3,29 @@
 # 	* sale_stock
 # 
 # Translators:
-# JanaAvalah, 2024
-# Martin Trigaux, 2024
-# Arma Gedonsky <armagedonsky@hot.ee>, 2024
-# Anna, 2024
-# Ants Peetsalu <ants@avalah.ee>, 2024
-# Algo Kärp <algokarp@gmail.com>, 2024
-# Egon Raamat <egon@avalah.ee>, 2024
+# Gert Valdek <gert@airobot.ee>, 2022
+# Ants Peetsalu <ants@avalah.ee>, 2022
+# Andre Roomet <andreroomet@gmail.com>, 2022
+# Egon Raamat <egon@avalah.ee>, 2022
+# Martin Trigaux, 2022
+# Arma Gedonsky <armagedonsky@hot.ee>, 2022
+# Eneli Õigus <enelioigus@gmail.com>, 2022
+# Martin Aavastik <martin@avalah.ee>, 2022
+# Algo Kärp <algokarp@gmail.com>, 2022
+# Triine Aavik <triine@avalah.ee>, 2022
+# Rivo Zängov <eraser@eraser.ee>, 2022
+# Piia Paurson <piia@avalah.ee>, 2022
+# Leaanika Randmets, 2023
 # Stevin Lilla, 2024
-# Triine Aavik <triine@avalah.ee>, 2024
-# Eneli Õigus <enelioigus@gmail.com>, 2024
-# Piia Paurson <piia@avalah.ee>, 2024
-# Martin Aavastik <martin@avalah.ee>, 2024
-# Leaanika Randmets, 2024
 # Katrin Kampura, 2024
-# Siim Raasuke, 2024
-# Tairi Tiimann, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-19 20:37+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Tairi Tiimann, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:55+0000\n"
+"Last-Translator: Katrin Kampura, 2024\n"
 "Language-Team: Estonian (https://app.transifex.com/odoo/teams/41243/et/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -41,32 +40,44 @@ msgid ""
 "                Manual actions may be needed."
 msgstr ""
 ".\n"
-"                Vaja võib olla käsitsi toiminguid."
+"                Manuaalsed tegevused võivad olla vajalikud."
 
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_portal_content_inherit_sale_stock
-msgid "<i class=\"fa fa-fw fa-clock-o\"/> Awaiting arrival"
-msgstr "<i class=\"fa fa-fw fa-clock-o\"/> Saabumise ootel"
+msgid "<i class=\"fa fa-fw fa-clock-o\"/> <b>Preparation</b>"
+msgstr "<i class=\"fa fa-fw fa-clock-o\"/> <b>Ettevalmistus</b>"
 
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_portal_content_inherit_sale_stock
-msgid "<i class=\"fa fa-fw fa-clock-o\"/>Preparation"
-msgstr "<i class=\"fa fa-fw fa-clock-o\"/>Ettevalmistus"
+msgid "<i class=\"fa fa-fw fa-times\"/> <b>Cancelled</b>"
+msgstr "<i class=\"fa fa-fw fa-times\"/> <b>Tühistatud</b>"
 
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_portal_content_inherit_sale_stock
-msgid "<i class=\"fa fa-fw fa-times\"/> Cancelled"
-msgstr "<i class=\"fa fa-fw fa-times\"/> Tühistatud"
+msgid "<i class=\"fa fa-fw fa-truck\"/> <b>Shipped</b>"
+msgstr "<i class=\"fa fa-fw fa-truck\"/> <b>Tarnitud</b>"
 
 #. module: sale_stock
-#: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_portal_content_inherit_sale_stock
-msgid "<i class=\"fa fa-fw fa-times\"/>Cancelled"
-msgstr "<i class=\"fa fa-fw fa-times\"/>Tühistatud"
+#: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_cancel_view_form_inherit
+msgid ""
+"<span attrs=\"{'invisible': [('display_delivery_alert', '=', False)]}\">\n"
+"                    Some deliveries are already done. Returns can be created from the Delivery Orders.\n"
+"                </span>"
+msgstr ""
+"<span attrs=\"{'invisible': [('display_delivery_alert', '=', False)]}\">\n"
+"                    Mõned tarned on juba tehtud. Tagastust saab luua saatelehtedelt.\n"
+"                </span>"
 
 #. module: sale_stock
-#: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_portal_content_inherit_sale_stock
-msgid "<i class=\"fa fa-fw fa-truck\"/> Received"
-msgstr "<i class=\"fa fa-fw fa-truck\"/> Vastu võetud"
+#: model_terms:ir.ui.view,arch_db:sale_stock.res_config_settings_view_form_stock
+msgid ""
+"<span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-"
+"specific.\" role=\"img\" aria-label=\"Values set here are company-"
+"specific.\" groups=\"base.group_multi_company\"/>"
+msgstr ""
+"<span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-"
+"specific.\" role=\"img\" aria-label=\"Values set here are company-"
+"specific.\" groups=\"base.group_multi_company\"/>"
 
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.stock_production_lot_view_form
@@ -74,71 +85,53 @@ msgid "<span class=\"o_stat_text\">Sales</span>"
 msgstr "<span class=\"o_stat_text\">Müügid</span>"
 
 #. module: sale_stock
-#: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_portal_content_inherit_sale_stock
-msgid ""
-"<span class=\"small badge rounded-pill text-bg-success orders_label_text_align\">\n"
-"                                        <i class=\"fa fa-fw fa-truck\"/> Shipped\n"
-"                                    </span>"
-msgstr ""
-"<span class=\"small badge rounded-pill text-bg-success orders_label_text_align\">\n"
-"                                        <i class=\"fa fa-fw fa-truck\"/>Tarnitud\n"
-"                                    </span>"
-
-#. module: sale_stock
-#: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_cancel_view_form_inherit
-msgid ""
-"<span invisible=\"not display_delivery_alert\">\n"
-"                    Some deliveries are already done. Returns can be created from the Delivery Orders.\n"
-"                </span>"
-msgstr ""
-"<span invisible=\"not display_delivery_alert\">\n"
-"                    Mõned tarned on juba tehtud. Tagastust saab luua saatelehtedelt.\n"
-"                </span>"
-
-#. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.report_delivery_document_inherit_sale_stock
-msgid "<strong>Customer Reference</strong>"
+msgid "<strong>Customer Reference:</strong>"
 msgstr "<strong>Kliendi viide:</strong>"
 
 #. module: sale_stock
-#: model_terms:ir.ui.view,arch_db:sale_stock.report_delivery_document_inherit_sale_stock
-#: model_terms:ir.ui.view,arch_db:sale_stock.report_saleorder_document_inherit_sale_stock
-msgid "<strong>Incoterm</strong>"
-msgstr "<strong>Tarnetingimus</strong><br/>"
+#: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_portal_content_inherit_sale_stock
+msgid "<strong>Delivery Orders</strong>"
+msgstr "<strong>Saatelehed</strong>"
 
 #. module: sale_stock
-#: model:ir.model.fields,help:sale_stock.field_sale_order_line__is_storable
-msgid "A storable product is a product for which you manage stock."
-msgstr ""
-"Ladustatav toode on toode, millel haldate laovarusid. Alla peab olema laetud Lao moodul.\n"
-"Tarbitav toode on toode, millel ei hallata laovarusid.\n"
-"Teenus on Teie poolt pakutav mittemateriaalne toode."
+#: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_portal_content_inherit_sale_stock
+msgid "<strong>Incoterm: </strong>"
+msgstr "<strong>Tarnetingimus: </strong>"
+
+#. module: sale_stock
+#: model_terms:ir.ui.view,arch_db:sale_stock.report_invoice_document_inherit_sale_stock
+#: model_terms:ir.ui.view,arch_db:sale_stock.report_saleorder_document_inherit_sale_stock
+msgid "<strong>Incoterm:</strong>"
+msgstr "<strong>Tarnetingimus:</strong>"
 
 #. module: sale_stock
 #: model:ir.model.fields,help:sale_stock.field_sale_order_line__qty_delivered_method
 msgid ""
-"According to product configuration, the delivered quantity can be automatically computed by mechanism:\n"
+"According to product configuration, the delivered quantity can be automatically computed by mechanism :\n"
 "  - Manual: the quantity is set manually on the line\n"
 "  - Analytic From expenses: the quantity is the quantity sum from posted expenses\n"
 "  - Timesheet: the quantity is the sum of hours recorded on tasks linked to this sale line\n"
 "  - Stock Moves: the quantity comes from confirmed pickings\n"
 msgstr ""
 "Vastavalt toote konfiguratsioonile saab tarnitud koguse automaatselt arvutada mehhanismi abil:\n"
-"- Käsitsi: kogus määratakse reale käsitsi\n"
-"- Analüütiliste kulude alusel: kogus on postitatud kuludest tulenevate koguste summa\n"
-"- Ajaarvestus: kogus on müügireaga seotud ülesannetele logitud tundide summa.\n"
-"- Laoliikumised: kogus tuleb kinnitatud korjetest\n"
+"  - Käsitsi: kogus määratakse reale käsitsi\n"
+"  - Analüütiline kulude alusel: kogus on summa postitatud kuludest\n"
+"  - Ajaarvestus: kogus on müügireaga seotud ülesannetele logitud tundide alusel.\n"
+"  - Laoliikumised: kogus tuleb kinnitatud siiretest\n"
 
 #. module: sale_stock
 #. odoo-javascript
+#: code:addons/sale_stock/static/src/legacy/qty_at_date_widget.xml:0
 #: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.xml:0
+#, python-format
 msgid "All planned operations included"
-msgstr "Kõik planeeritud toimingud kaasa arvatud"
+msgstr "Kaasa arvatud kõik planeeritud toimingud"
 
 #. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_stock_rules_report__so_route_ids
 msgid "Apply specific routes"
-msgstr "Rakenda konkreetseid marsruute"
+msgstr "Rakenda spetsiifilised marsruudid"
 
 #. module: sale_stock
 #: model:ir.model.fields.selection,name:sale_stock.selection__sale_order__picking_policy__direct
@@ -147,35 +140,32 @@ msgstr "Esimesel võimalusel"
 
 #. module: sale_stock
 #. odoo-javascript
+#: code:addons/sale_stock/static/src/legacy/qty_at_date_widget.js:0
 #: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.xml:0
+#, python-format
 msgid "Availability"
 msgstr "Saadavus"
 
 #. module: sale_stock
 #. odoo-javascript
+#: code:addons/sale_stock/static/src/legacy/qty_at_date_widget.xml:0
 #: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.xml:0
+#, python-format
 msgid "Available"
 msgstr "Saadaval"
 
 #. module: sale_stock
 #. odoo-javascript
+#: code:addons/sale_stock/static/src/legacy/qty_at_date_widget.xml:0
 #: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.xml:0
+#, python-format
 msgid "Available in stock"
 msgstr "Saadaval laos"
 
 #. module: sale_stock
-#: model:ir.model.fields,help:sale_stock.field_sale_order__delivery_status
-msgid ""
-"Blue: Not Delivered/Started\n"
-"            Orange: Partially Delivered\n"
-"            Green: Fully Delivered"
-msgstr ""
-
-#. module: sale_stock
 #: model:ir.model.fields,help:sale_stock.field_stock_rules_report__so_route_ids
 msgid "Choose to apply SO lines specific routes."
-msgstr ""
-"Valige müügitellimuse ridadele konkreetsete marsruutide rakendamiseks."
+msgstr "Valige rakendamaks müügitellimuse ridadele spetsiifilised marsruudid."
 
 #. module: sale_stock
 #: model:ir.model,name:sale_stock.model_res_company
@@ -185,17 +175,12 @@ msgstr "Ettevõtted"
 #. module: sale_stock
 #: model:ir.model.fields,help:sale_stock.field_sale_order__effective_date
 msgid "Completion date of the first delivery order."
-msgstr "Esimese saatelehe täitmise kuupäev."
+msgstr "Esimese tarnetellimuse täitmise kuupäev."
 
 #. module: sale_stock
 #: model:ir.model,name:sale_stock.model_res_config_settings
 msgid "Config Settings"
 msgstr "Seadistused"
-
-#. module: sale_stock
-#: model_terms:ir.ui.view,arch_db:sale_stock.report_delivery_document_inherit_sale_stock
-msgid "Customer reference"
-msgstr "Kliendi viide"
 
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_portal_content_inherit_sale_stock
@@ -220,7 +205,7 @@ msgstr "Tarne märguanne"
 #. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order__delivery_count
 msgid "Delivery Orders"
-msgstr "Kauba väljastus"
+msgstr "Saatelehed"
 
 #. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order__delivery_status
@@ -235,10 +220,10 @@ msgid ""
 "shipping, the shipping policy of the order will be taken into account to "
 "either use the minimum or maximum lead time of the order lines."
 msgstr ""
-"Kliendile lubatav tarnekuupäev, mis arvutatakse teenustoodete puhul "
-"tellimusridade minimaalsest täitmisajast. Tarne puhul võetakse tellimuse "
-"saatmistingimuste järgi arvesse kas minimaalset või maksimaalset "
-"tellimusridade täitmisaega."
+"Teie klientidele lubatav tarnekuupäev, arvutatakse minimaalsest "
+"tellimusridade ettevalmistusajast teenustoodete puhul. Tarnel võtab "
+"tellimuse tarnepoliis arvesse kas minimaalse või maksimaalse tellimusridade "
+"ettevalmistusaja."
 
 #. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order_line__display_qty_widget
@@ -246,11 +231,27 @@ msgid "Display Qty Widget"
 msgstr "Kuva koguse vidin"
 
 #. module: sale_stock
+#: model:res.groups,name:sale_stock.group_display_incoterm
+msgid "Display incoterms on Sales Order and related invoices"
+msgstr "Kuva rahvusvahelisi tarnetingimusi müügitellimustel ja seotud arvetel"
+
+#. module: sale_stock
+#: model_terms:ir.ui.view,arch_db:sale_stock.res_config_settings_view_form_sale
+msgid "Display incoterms on orders &amp; invoices"
+msgstr "Kuva rahvusvahelisi tingimusi tellimustel ja arvetel"
+
+#. module: sale_stock
 #. odoo-python
 #: code:addons/sale_stock/models/sale_order.py:0
+#, python-format
 msgid ""
 "Do not forget to change the partner on the following delivery orders: %s"
-msgstr "Ära unusta muuta partnerit järgnevatel saatelehtedel: %s"
+msgstr "Ärge unustage muuta partnerit järgnevatel saatelehtedel: %s"
+
+#. module: sale_stock
+#: model_terms:ir.ui.view,arch_db:sale_stock.res_config_settings_view_form_stock
+msgid "Documentation"
+msgstr "Dokumentatsioon"
 
 #. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order__effective_date
@@ -265,13 +266,15 @@ msgstr "Siirdel esines(id) erand(id):"
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.exception_on_so
 msgid "Exception(s) occurred on the sale order(s):"
-msgstr "Müügitellimus(t)es ilmnes erand(eid):"
+msgstr ""
+"Müügitellimuses ilmnes erand(id):\n"
+" "
 
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.exception_on_picking
 #: model_terms:ir.ui.view,arch_db:sale_stock.exception_on_so
 msgid "Exception(s):"
-msgstr "Muudatus(ed):"
+msgstr "Erand(id)"
 
 #. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order__expected_date
@@ -280,9 +283,11 @@ msgstr "Eeldatav kuupäev"
 
 #. module: sale_stock
 #. odoo-javascript
+#: code:addons/sale_stock/static/src/legacy/qty_at_date_widget.xml:0
 #: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.xml:0
+#, python-format
 msgid "Expected Delivery"
-msgstr "Eeldatav tarne"
+msgstr "Millal?"
 
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.view_order_form_inherit_sale_stock
@@ -296,9 +301,11 @@ msgstr "Prognoosi eeldatav kuupäev"
 
 #. module: sale_stock
 #. odoo-javascript
+#: code:addons/sale_stock/static/src/legacy/qty_at_date_widget.xml:0
 #: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.xml:0
+#, python-format
 msgid "Forecasted Stock"
-msgstr "Prognoositud laovaru"
+msgstr "Prognoos"
 
 #. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order_line__free_qty_today
@@ -341,14 +348,10 @@ msgid "Incoterm Location"
 msgstr "Tarnetingimuse asukoht"
 
 #. module: sale_stock
-#: model_terms:ir.ui.view,arch_db:sale_stock.report_delivery_document_inherit_sale_stock
-msgid "Incoterm details"
-msgstr "Tarnetingimuse detailid"
-
-#. module: sale_stock
-#: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_portal_content_inherit_sale_stock
-msgid "Incoterm:"
-msgstr "Tarnetingimus;"
+#: model:ir.model.fields,field_description:sale_stock.field_res_config_settings__group_display_incoterm
+#: model_terms:ir.ui.view,arch_db:sale_stock.res_config_settings_view_form_sale
+msgid "Incoterms"
+msgstr "Rahvusvahelised tarnetingimused"
 
 #. module: sale_stock
 #: model:ir.model.fields,help:sale_stock.field_sale_order__incoterm
@@ -377,7 +380,7 @@ msgstr "On Tellimuseks Teha (MTO)"
 #. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order__json_popover
 msgid "JSON data for the popover widget"
-msgstr "JSON andmed popover vidina jaoks"
+msgstr "JSON data for the popover widget"
 
 #. module: sale_stock
 #: model:ir.model,name:sale_stock.model_account_move
@@ -390,11 +393,6 @@ msgid "Journal Item"
 msgstr "Andmiku kanderida"
 
 #. module: sale_stock
-#: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_portal_content_inherit_sale_stock
-msgid "Last Delivery Orders"
-msgstr "Viimased kauba väljastused"
-
-#. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order_line__customer_lead
 msgid "Lead Time"
 msgstr "Viiteaeg"
@@ -403,6 +401,13 @@ msgstr "Viiteaeg"
 #: model:ir.model,name:sale_stock.model_stock_lot
 msgid "Lot/Serial"
 msgstr "Partii/seerianumber"
+
+#. module: sale_stock
+#. odoo-python
+#: code:addons/sale_stock/models/sale_order_line.py:0
+#, python-format
+msgid "Make To Order"
+msgstr "Telli/tooda tellimuse korral"
 
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.exception_on_so
@@ -444,14 +449,24 @@ msgid "Move forward expected delivery dates by"
 msgstr "Liiguta eeldatud tarnekuupäev ettepoole"
 
 #. module: sale_stock
-#: model_terms:ir.ui.view,arch_db:sale_stock.sale_stock_help_message_template
-msgid "No delivery yet! Automate them with sales orders."
-msgstr "Tarned puuduvad. Automatiseeri need müügitellimustega."
+#. odoo-javascript
+#: code:addons/sale_stock/static/src/legacy/qty_at_date_widget.xml:0
+#, python-format
+msgid "No enough future availaibility"
+msgstr "Tulevikus ei ole piisavalt saadavust"
 
 #. module: sale_stock
 #. odoo-javascript
 #: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.xml:0
+#, python-format
 msgid "No future availability"
+msgstr "Tulevikus ei ole saadavust"
+
+#. module: sale_stock
+#. odoo-javascript
+#: code:addons/sale_stock/static/src/legacy/qty_at_date_widget.xml:0
+#, python-format
+msgid "No future availaibility"
 msgstr "Tulevikus ei ole saadavust"
 
 #. module: sale_stock
@@ -462,6 +477,7 @@ msgstr "Ei ole tarnitud"
 #. module: sale_stock
 #. odoo-javascript
 #: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.xml:0
+#, python-format
 msgid "Not enough future availability"
 msgstr "Tulevikus ei ole piisavat saadavust"
 
@@ -475,7 +491,9 @@ msgstr ""
 
 #. module: sale_stock
 #. odoo-javascript
+#: code:addons/sale_stock/static/src/legacy/qty_at_date_widget.xml:0
 #: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.xml:0
+#, python-format
 msgid "On"
 msgstr "sellel"
 
@@ -501,11 +519,6 @@ msgid "Product"
 msgstr "Toode"
 
 #. module: sale_stock
-#: model:ir.model,name:sale_stock.model_stock_move_line
-msgid "Product Moves (Stock Move Line)"
-msgstr "Toote liikumised (toote liikumise rida)"
-
-#. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order_line__qty_available_today
 msgid "Qty Available Today"
 msgstr "Saadaval kogus täna"
@@ -518,50 +531,25 @@ msgstr "Kogus tarnimiseks"
 #. module: sale_stock
 #. odoo-javascript
 #: code:addons/sale_stock/static/src/sale_stock_forecasted/forecasted_details.xml:0
+#, python-format
 msgid "Quotations"
 msgstr "Pakkumised"
 
 #. module: sale_stock
-#: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_portal_content_inherit_sale_stock
-msgid "RETURN"
-msgstr "TAGASTA"
-
-#. module: sale_stock
-#: model_terms:ir.ui.view,arch_db:sale_stock.sale_stock_help_message_template
-msgid ""
-"Reduce back orders with reservations, locations management, smart\n"
-"                replenishment propositions, shipping connectors, barcode scanner, etc."
-msgstr ""
-"Vähendage järeltellimusi reserveeringute, asukohtade haldamise, tarkade\n"
-"                kauba tellimimise soovitustega, tarnijate liidestustega, triipkoodi skänneriga, jne. "
-
-#. module: sale_stock
 #. odoo-javascript
+#: code:addons/sale_stock/static/src/legacy/qty_at_date_widget.xml:0
 #: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.xml:0
+#, python-format
 msgid "Remaining demand available at"
 msgstr "Järelejäänud vajadus saadaval"
 
 #. module: sale_stock
-#. odoo-python
-#: code:addons/sale_stock/models/sale_order_line.py:0
-msgid "Replenish on Order (MTO)"
-msgstr "Telli nõudluse korral (MTO)"
-
-#. module: sale_stock
 #. odoo-javascript
+#: code:addons/sale_stock/static/src/legacy/qty_at_date_widget.xml:0
 #: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.xml:0
+#, python-format
 msgid "Reserved"
 msgstr "Reserveeritud"
-
-#. module: sale_stock
-#: model:ir.model,name:sale_stock.model_stock_return_picking
-msgid "Return Picking"
-msgstr "Tagastuskorje"
-
-#. module: sale_stock
-#: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_portal_content_inherit_sale_stock
-msgid "Returns"
-msgstr "Tagastused"
 
 #. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order_line__route_id
@@ -616,7 +604,6 @@ msgstr "Müügitellimuse rida"
 
 #. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_stock_lot__sale_order_ids
-#: model_terms:ir.ui.view,arch_db:sale_stock.sale_stock_help_message_template
 msgid "Sales Orders"
 msgstr "Müügitellimused"
 
@@ -633,7 +620,7 @@ msgstr "Planeeri tarned varasemaks, et vältida viivitusi"
 #. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order_line__scheduled_date
 msgid "Scheduled Date"
-msgstr "Planeeritud kuupäev"
+msgstr "Planeeritud saatmise kuupäev"
 
 #. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_res_config_settings__security_lead
@@ -684,7 +671,7 @@ msgid "Stock Moves"
 msgstr "Laosiirded"
 
 #. module: sale_stock
-#: model:ir.model,name:sale_stock.model_stock_forecasted_product_product
+#: model:ir.model,name:sale_stock.model_report_stock_report_product_product_replenishment
 msgid "Stock Replenishment Report"
 msgstr "Lao juurdetellimise aruanne"
 
@@ -706,34 +693,27 @@ msgstr "Laoreegli aruanne"
 #. module: sale_stock
 #. odoo-javascript
 #: code:addons/sale_stock/static/src/xml/delay_alert.xml:0
+#, python-format
 msgid "The delivery"
 msgstr "Transport"
 
 #. module: sale_stock
 #. odoo-python
 #: code:addons/sale_stock/models/sale_order.py:0
+#, python-format
 msgid ""
 "The delivery address has been changed on the Sales Order<br/>\n"
-"                        From <strong>\"%(old_address)s\"</strong> to <strong>\"%(new_address)s\"</strong>,\n"
+"                        From <strong>\"%s\"</strong> To <strong>\"%s\"</strong>,\n"
 "                        You should probably update the partner on this document."
 msgstr ""
-"Tarneaadressi on muudetud müügitellimusel<br/>\n"
-"                        Lähtekohast<strong>\"%(old_address)s\"</strong> sihtkohta<strong>\"%(new_address)s\"</strong>,\n"
-"                        Tõenäoliselt peaksid dokumendil uuendama partnerit. "
-
-#. module: sale_stock
-#. odoo-javascript
-#: code:addons/sale_stock/static/src/product_catalog/sale_order_line/sale_order_line.js:0
-msgid ""
-"The ordered quantity cannot be decreased below the amount already delivered."
-" Instead, create a return in your inventory."
-msgstr ""
-"Tellitud kogust ei saa muuta alla juba tarnitud koguste. Selle asemel looge "
-"laos tagastus."
+"Tarneaardess on muudetud müügitellimusel<br/>\n"
+"                        Asukohast <strong>\"%s\"</strong> Asukohta <strong>\"%s\"</strong>,\n"
+"                        Te peaksite uuendama partnerit sellel dokumendil."
 
 #. module: sale_stock
 #. odoo-python
 #: code:addons/sale_stock/models/sale_order_line.py:0
+#, python-format
 msgid ""
 "The ordered quantity of a sale order line cannot be decreased below the "
 "amount already delivered. Instead, create a return in your inventory."
@@ -743,19 +723,16 @@ msgstr ""
 
 #. module: sale_stock
 #. odoo-javascript
+#: code:addons/sale_stock/static/src/legacy/qty_at_date_widget.xml:0
 #: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.xml:0
+#, python-format
 msgid "This product is replenished on demand."
 msgstr "Seda toodet tellitakse vastavalt nõudlusele."
 
 #. module: sale_stock
-#: model:ir.model.fields,field_description:sale_stock.field_sale_order_line__is_storable
-msgid "Track Inventory"
-msgstr "Jälgi laoseisu"
-
-#. module: sale_stock
 #: model:ir.model,name:sale_stock.model_stock_picking
 msgid "Transfer"
-msgstr "Siirded"
+msgstr "Ülekanne"
 
 #. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order__picking_ids
@@ -769,7 +746,9 @@ msgstr "Kasutaja"
 
 #. module: sale_stock
 #. odoo-javascript
+#: code:addons/sale_stock/static/src/legacy/qty_at_date_widget.xml:0
 #: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.xml:0
+#, python-format
 msgid "View Forecast"
 msgstr "Vaata prognoosi"
 
@@ -779,7 +758,6 @@ msgid "Virtual Available At Date"
 msgstr "Virtuaalne saadavus kuupäeval"
 
 #. module: sale_stock
-#: model:ir.model,name:sale_stock.model_stock_warehouse
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order__warehouse_id
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order_line__warehouse_id
 #: model:ir.model.fields,field_description:sale_stock.field_sale_report__warehouse_id
@@ -789,6 +767,7 @@ msgstr "Ladu"
 #. module: sale_stock
 #. odoo-python
 #: code:addons/sale_stock/models/sale_order.py:0
+#, python-format
 msgid "Warning!"
 msgstr "Hoiatus!"
 
@@ -803,19 +782,6 @@ msgid "When to start shipping"
 msgstr "Millal alustada saatmist?"
 
 #. module: sale_stock
-#. odoo-python
-#: code:addons/sale_stock/models/sale_order.py:0
-msgid ""
-"You must have a warehouse for line using a delivery in different company."
-msgstr "Reale, mis tarnitakse teise ettevõttesse, peab olema määratud ladu."
-
-#. module: sale_stock
-#. odoo-python
-#: code:addons/sale_stock/models/sale_order.py:0
-msgid "You must set a warehouse on your sale order to proceed."
-msgstr ""
-
-#. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.exception_on_so
 msgid "cancelled"
 msgstr "tühistatud"
@@ -823,7 +789,7 @@ msgstr "tühistatud"
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.res_config_settings_view_form_stock
 msgid "days"
-msgstr "päev(a)"
+msgstr "päeva pärast"
 
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.exception_on_picking
@@ -839,10 +805,11 @@ msgstr "tellitud selle asemel"
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.exception_on_picking
 msgid "processed instead of"
-msgstr "selle asemel töödeldud"
+msgstr "protsessitud selle asemel"
 
 #. module: sale_stock
 #. odoo-javascript
 #: code:addons/sale_stock/static/src/xml/delay_alert.xml:0
+#, python-format
 msgid "will be late."
 msgstr "hilineb."

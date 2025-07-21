@@ -1,3 +1,5 @@
+/** @odoo-module **/
+
 import { ActionSwiper } from "@web/core/action_swiper/action_swiper";
 import { CalendarCommonRenderer } from "./calendar_common/calendar_common_renderer";
 import { CalendarYearRenderer } from "./calendar_year/calendar_year_renderer";
@@ -5,22 +7,6 @@ import { CalendarYearRenderer } from "./calendar_year/calendar_year_renderer";
 import { Component } from "@odoo/owl";
 
 export class CalendarRenderer extends Component {
-    static template = "web.CalendarRenderer";
-    static components = {
-        day: CalendarCommonRenderer,
-        week: CalendarCommonRenderer,
-        month: CalendarCommonRenderer,
-        year: CalendarYearRenderer,
-        ActionSwiper,
-    };
-    static props = {
-        model: Object,
-        isWeekendVisible: Boolean,
-        createRecord: Function,
-        editRecord: Function,
-        deleteRecord: Function,
-        setDate: Function,
-    };
     get calendarComponent() {
         return this.constructor.components[this.props.model.scale];
     }
@@ -42,3 +28,11 @@ export class CalendarRenderer extends Component {
         };
     }
 }
+CalendarRenderer.components = {
+    day: CalendarCommonRenderer,
+    week: CalendarCommonRenderer,
+    month: CalendarCommonRenderer,
+    year: CalendarYearRenderer,
+    ActionSwiper,
+};
+CalendarRenderer.template = "web.CalendarRenderer";

@@ -1,10 +1,10 @@
 /** @odoo-module **/
 
-import { _t } from "@web/core/l10n/translation";
 import { registry } from "@web/core/registry";
 import { EditMenuDialog } from '@website/components/dialog/edit_menu';
 import { OptimizeSEODialog } from '@website/components/dialog/seo';
 import {PagePropertiesDialog} from '@website/components/dialog/page_properties';
+import {sprintf} from '@web/core/utils/strings';
 
 /**
  * This service displays contextual menus, depending of the state of the
@@ -20,13 +20,13 @@ export const websiteCustomMenus = {
             get(xmlId) {
                 return registry.category('website_custom_menus').get(xmlId, null);
             },
-            async open(customMenu) {
+            open(customMenu) {
                 const menuConfig = this.get(customMenu.xmlid);
                 if (menuConfig.openWidget) {
                     return menuConfig.openWidget(services);
                 }
                 const menuProps = {
-                    ...(menuConfig.getProps && (await menuConfig.getProps(services))),
+                    ...(menuConfig.getProps && menuConfig.getProps(services)),
                     // Values on 'dynamicProps' are retrieved after the content is loaded (e.g. id of
                     // the content menu to be edited).
                     ...customMenu.dynamicProps,
@@ -53,7 +53,7 @@ export const websiteCustomMenus = {
                             // 'navbar menus' display system.
                             filteredSections.push(...website.currentWebsite.metadata.contentMenus.map((menu, index) => ({
                                 ...section,
-                                name: _t("Edit %s", menu[0]),
+                                name: sprintf(env._t("Edit %s"), menu[0]),
                                 dynamicProps: {rootID: parseInt(menu[1], 10)},
                                 // Prevent a 't-foreach' duplicate key on menus template.
                                 id: `${section.id}-${index}`,
@@ -80,16 +80,17 @@ registry.category('website_custom_menus').add('website.menu_edit_menu', {
     Component: EditMenuDialog,
     isDisplayed: (env) => !!env.services.website.currentWebsite
         && env.services.website.isDesigner
+        && !env.services.ui.isSmall
         && !env.services.website.currentWebsite.metadata.translatable,
 });
 registry.category('website_custom_menus').add('website.menu_optimize_seo', {
     Component: OptimizeSEODialog,
     isDisplayed: (env) => env.services.website.currentWebsite
-        && env.services.website.isRestrictedEditor
+        && env.services.website.isDesigner
         && !!env.services.website.currentWebsite.metadata.canOptimizeSeo,
 });
 registry.category('website_custom_menus').add('website.menu_ace_editor', {
-    openWidget: (services) => services.website.context.showResourceEditor = true,
+    openWidget: (services) => services.website.context.showAceEditor = true,
     isDisplayed: (env) => env.services.website.currentWebsite
         && env.services.website.currentWebsite.metadata.viewXmlid
         && !env.services.ui.isSmall,
@@ -98,36 +99,15 @@ registry.category('website_custom_menus').add('website.menu_page_properties', {
     Component: PagePropertiesDialog,
     isDisplayed: (env) => env.services.website.currentWebsite
         && env.services.website.isDesigner
-        && !!env.services.website.currentWebsite.metadata.mainObject,
-    getProps: async ({ orm, website }) => {
-        const mainObject = website.currentWebsite.metadata.mainObject;
-        const isPage = mainObject.model === "website.page";
-        const model = isPage ? "website.page.properties" : "website.page.properties.base";
-        return {
-            resId: await orm.call(model, "create", [
-                isPage
-                    ? {
-                          target_model_id: mainObject.id,
-                          website_id: website.currentWebsite.id,
-                      }
-                    : {
-                          target_model_id: `${mainObject.model},${mainObject.id}`,
-                          url: window.location.pathname,
-                          website_id: website.currentWebsite.id,
-                      },
-            ]),
-            resModel: model,
-            onRecordSaved: async (record) => {
-                const page = isPage
-                    ? (await orm.read("website.page", [mainObject.id], ["website_id", "url"]))[0]
-                    : undefined;
-                return website.goToWebsite({
-                    websiteId: page?.website_id?.[0] ?? website.currentWebsite.id,
-                    path: page?.url ?? website.currentWebsite.metadata.path,
-                });
-            },
-        };
-    },
+        && !!env.services.website.currentWebsite.metadata.mainObject
+        && env.services.website.currentWebsite.metadata.mainObject.model === 'website.page',
+    getProps: (services) => ({
+        onRecordSaved: (record) => {
+            return services.orm.read('website.page', [record.resId], ['url']).then(res => {
+                services.website.goToWebsite({websiteId: record.data.website_id[0], path: res[0]['url']});
+            });
+        },
+    })
 });
 registry.category('website_custom_menus').add('website.custom_menu_edit_menu', {
     Component: EditMenuDialog,
@@ -136,5 +116,6 @@ registry.category('website_custom_menus').add('website.custom_menu_edit_menu', {
     // the 'EditMenuDialog' component.
     isDisplayed: (env) => env.services.website.currentWebsite
         && env.services.website.currentWebsite.metadata.contentMenus
-        && env.services.website.currentWebsite.metadata.contentMenus.length,
+        && env.services.website.currentWebsite.metadata.contentMenus.length
+        && !env.services.ui.isSmall,
 });

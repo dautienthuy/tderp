@@ -3,46 +3,38 @@
 import { registry } from "@web/core/registry";
 import { ControlPanel } from "@web/search/control_panel/control_panel";
 import { DashboardLoader, Status } from "./dashboard_loader";
-import { SpreadsheetComponent } from "@spreadsheet/actions/spreadsheet_component";
-import { useSetupAction } from "@web/search/action_hook";
+import spreadsheet from "@spreadsheet/o_spreadsheet/o_spreadsheet_extended";
+import { useSetupAction } from "@web/webclient/actions/action_hook";
 import { DashboardMobileSearchPanel } from "./mobile_search_panel/mobile_search_panel";
 import { MobileFigureContainer } from "./mobile_figure_container/mobile_figure_container";
 import { FilterValue } from "@spreadsheet/global_filters/components/filter_value/filter_value";
+import { loadSpreadsheetDependencies } from "@spreadsheet/helpers/helpers";
 import { useService } from "@web/core/utils/hooks";
-import { standardActionServiceProps } from "@web/webclient/actions/action_service";
-import { SpreadsheetShareButton } from "@spreadsheet/components/share_button/share_button";
-import { useSpreadsheetPrint } from "@spreadsheet/hooks";
-import { Registry } from "@odoo/o-spreadsheet";
-import { router } from "@web/core/browser/router";
 
-import { Component, onWillStart, useState, useEffect } from "@odoo/owl";
-
-export const dashboardActionRegistry = new Registry();
+const { Spreadsheet } = spreadsheet;
+const { Component, onWillStart, useState, useEffect } = owl;
 
 export class SpreadsheetDashboardAction extends Component {
-    static template = "spreadsheet_dashboard.DashboardAction";
-    static components = {
-        ControlPanel,
-        SpreadsheetComponent,
-        FilterValue,
-        DashboardMobileSearchPanel,
-        MobileFigureContainer,
-        SpreadsheetShareButton,
-    };
-    static props = { ...standardActionServiceProps };
-
     setup() {
         this.Status = Status;
-        this.controlPanelDisplay = {};
+        this.controlPanelDisplay = {
+            "top-left": true,
+            "top-right": true,
+            "bottom-left": false,
+            "bottom-right": false,
+        };
         this.orm = useService("orm");
-        this.actionService = useService("action");
+        this.router = useService("router");
         // Use the non-protected orm service (`this.env.services.orm` instead of `useService("orm")`)
         // because spreadsheets models are preserved across multiple components when navigating
         // with the breadcrumb
         // TODO write a test
         /** @type {DashboardLoader}*/
-        this.loader = useState(new DashboardLoader(this.env, this.env.services.orm));
+        this.loader = useState(
+            new DashboardLoader(this.env, this.env.services.orm, this._fetchDashboardData)
+        );
         onWillStart(async () => {
+            await loadSpreadsheetDependencies();
             if (this.props.state && this.props.state.dashboardLoader) {
                 const { groups, dashboards } = this.props.state.dashboardLoader;
                 this.loader.restoreFromState(groups, dashboards);
@@ -55,7 +47,7 @@ export class SpreadsheetDashboardAction extends Component {
             }
         });
         useEffect(
-            () => router.pushState({ dashboard_id: this.activeDashboardId }),
+            () => this.router.pushState({ dashboard_id: this.activeDashboardId }),
             () => [this.activeDashboardId]
         );
         useEffect(
@@ -69,7 +61,7 @@ export class SpreadsheetDashboardAction extends Component {
             },
             () => {
                 const dashboard = this.state.activeDashboard;
-                return [dashboard?.model, dashboard?.status];
+                return [dashboard && dashboard.model, dashboard && dashboard.status];
             }
         );
         useSetupAction({
@@ -80,13 +72,8 @@ export class SpreadsheetDashboardAction extends Component {
                 };
             },
         });
-        useSpreadsheetPrint(() => this.state.activeDashboard?.model);
         /** @type {{ activeDashboard: import("./dashboard_loader").Dashboard}} */
-        this.state = useState({ activeDashboard: undefined, sidebarExpanded: true });
-    }
-
-    get dashboardButton() {
-        return dashboardActionRegistry.getAll()[0];
+        this.state = useState({ activeDashboard: undefined });
     }
 
     /**
@@ -137,39 +124,23 @@ export class SpreadsheetDashboardAction extends Component {
     }
 
     /**
-     * @param {number} id - The ID of the dashboard to be edited.
-     * @returns {Promise<void>}
+     * @private
+     * @param {number} dashboardId
+     * @returns {Promise<{ data: string, revisions: object[] }>}
      */
-    async editDashboard(id) {
-        const action = await this.env.services.orm.call(
-            "spreadsheet.dashboard",
-            "action_edit_dashboard",
-            [id]
-        );
-        this.actionService.doAction(action);
-    }
-
-    async shareSpreadsheet(data, excelExport) {
-        const url = await this.orm.call("spreadsheet.dashboard.share", "action_get_share_url", [
-            {
-                dashboard_id: this.activeDashboardId,
-                spreadsheet_data: JSON.stringify(data),
-                excel_files: excelExport.files,
-            },
-        ]);
-        return url;
-    }
-
-    toggleSidebar() {
-        this.state.sidebarExpanded = !this.state.sidebarExpanded;
-    }
-
-    get activeDashboardGroupName() {
-        return this.getDashboardGroups().find((group) =>
-            group.dashboards.some((d) => d.id === this.activeDashboardId)
-        )?.name;
+    async _fetchDashboardData(dashboardId) {
+        const [record] = await this.orm.read("spreadsheet.dashboard", [dashboardId], ["raw"]);
+        return { data: record.raw, revisions: [] };
     }
 }
+SpreadsheetDashboardAction.template = "spreadsheet_dashboard.DashboardAction";
+SpreadsheetDashboardAction.components = {
+    ControlPanel,
+    Spreadsheet,
+    FilterValue,
+    DashboardMobileSearchPanel,
+    MobileFigureContainer,
+};
 
 registry
     .category("actions")

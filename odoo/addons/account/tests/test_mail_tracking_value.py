@@ -4,18 +4,13 @@
 
 from odoo import Command
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.addons.mail.tests.common import MailCommon
+from odoo.addons.test_mail.tests.common import TestMailCommon
 from odoo.tests import Form
 from odoo.tests.common import tagged
 
 
 @tagged('post_install', '-at_install')
-class TestTracking(AccountTestInvoicingCommon, MailCommon):
-
-    @classmethod
-    def default_env_context(cls):
-        # OVERRIDE
-        return {}
+class TestTracking(AccountTestInvoicingCommon, TestMailCommon):
 
     def test_aml_change_tracking(self):
         """ tests that the field_groups is correctly set """
@@ -34,14 +29,11 @@ class TestTracking(AccountTestInvoicingCommon, MailCommon):
         new_value = account_move.invoice_line_ids.account_id
 
         self.flush_tracking()
-        # Isolate the tracked value for the invoice line because changing the account has recomputed the taxes.
-        tracking_value = account_move.message_ids.sudo().tracking_value_ids\
-            .filtered(lambda t: t.field_id.name == 'account_id' and t.old_value_integer == old_value.id)
-        self.assertTracking(tracking_value.mail_message_id, [
+        self.assertTracking(account_move.message_ids, [
             ('account_id', 'many2one', old_value, new_value),
         ])
 
-        self.assertEqual(len(tracking_value), 1)
-        self.assertTrue(tracking_value.field_id)
-        field = self.env[tracking_value.field_id.model]._fields[tracking_value.field_id.name]
-        self.assertFalse(field.groups, "There is no group on account.move.line.account_id")
+        tracking_value = account_move.message_ids.sudo().tracking_value_ids
+        tracking_value._compute_field_groups()
+
+        self.assertEqual(tracking_value.field_groups, False, "There is no group on account.move.line.account_id")

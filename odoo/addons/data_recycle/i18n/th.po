@@ -3,15 +3,18 @@
 # 	* data_recycle
 # 
 # Translators:
-# Wil Odoo, 2024
+# Khwunchai Jaengsawang <khwunchai.j@ku.th>, 2022
+# Martin Trigaux, 2022
+# Wichanon Jamwutthipreecha, 2022
+# Rasareeyar Lappiam, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 08:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Wil Odoo, 2024\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2022-09-22 05:45+0000\n"
+"Last-Translator: Rasareeyar Lappiam, 2023\n"
 "Language-Team: Thai (https://app.transifex.com/odoo/teams/41243/th/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -31,6 +34,7 @@ msgstr ""
 #. module: data_recycle
 #. odoo-python
 #: code:addons/data_recycle/models/data_recycle_record.py:0
+#, python-format
 msgid "**Record Deleted**"
 msgstr "**ลบบันทึกแล้ว**"
 
@@ -58,7 +62,7 @@ msgstr "โดยอัตโนมัติ"
 #. module: data_recycle
 #: model:ir.model.fields,field_description:data_recycle.field_data_recycle_record__company_id
 msgid "Company"
-msgstr "บริษัท"
+msgstr "บริษัทเดียว"
 
 #. module: data_recycle
 #: model:ir.ui.menu,name:data_recycle.menu_data_cleaning_config
@@ -90,14 +94,9 @@ msgstr "การล้างข้อมูล"
 
 #. module: data_recycle
 #: model:ir.actions.server,name:data_recycle.ir_cron_clean_records_ir_actions_server
+#: model:ir.cron,cron_name:data_recycle.ir_cron_clean_records
 msgid "Data Recycle: Clean Records"
 msgstr "การรีไซเคิลข้อมูล: บันทึกที่สะอาด"
-
-#. module: data_recycle
-#. odoo-python
-#: code:addons/data_recycle/models/data_recycle_model.py:0
-msgid "Data to Recycle"
-msgstr "ข้อมูลเพื่อรีไซเคิล"
 
 #. module: data_recycle
 #: model:ir.model.fields.selection,name:data_recycle.selection__data_recycle_model__notify_frequency_period__days
@@ -157,6 +156,12 @@ msgstr "ไอดี"
 #: model:ir.model.fields,field_description:data_recycle.field_data_recycle_model__include_archived
 msgid "Include Archived"
 msgstr "รวมที่เก็บถาวรแล้ว"
+
+#. module: data_recycle
+#: model:ir.model.fields,field_description:data_recycle.field_data_recycle_model____last_update
+#: model:ir.model.fields,field_description:data_recycle.field_data_recycle_record____last_update
+msgid "Last Modified on"
+msgstr "แก้ไขครั้งล่าสุดเมื่อ"
 
 #. module: data_recycle
 #: model:ir.model.fields,field_description:data_recycle.field_data_recycle_model__last_notification
@@ -248,7 +253,7 @@ msgstr "บันทึก"
 #. module: data_recycle
 #: model:ir.model.fields,field_description:data_recycle.field_data_recycle_model__records_to_recycle_count
 msgid "Records To Recycle"
-msgstr "บันทึกที่จะรีไซเคิล"
+msgstr "บันทึกเพื่อรีไซเคิล"
 
 #. module: data_recycle
 #: model:ir.model.fields,field_description:data_recycle.field_data_recycle_model__recycle_action
@@ -268,13 +273,13 @@ msgstr "โมเดลรีไซเคิล"
 #. module: data_recycle
 #: model:ir.model.fields,field_description:data_recycle.field_data_recycle_model__recycle_record_ids
 msgid "Recycle Record"
-msgstr "รีไซเคิลบันทึก"
+msgstr "บันทึกรีไซเคิล"
 
 #. module: data_recycle
 #: model:ir.ui.menu,name:data_recycle.menu_data_cleaning_config_rules_recycle
 #: model:ir.ui.menu,name:data_recycle.menu_data_recycle_record
 msgid "Recycle Records"
-msgstr "รีไซเคิลบันทึก"
+msgstr "บันทึกรีไซเคิล"
 
 #. module: data_recycle
 #: model_terms:ir.ui.view,arch_db:data_recycle.view_data_recycle_record_list
@@ -324,6 +329,7 @@ msgstr "ความถี่ในการแจ้งเตือนควร
 #. module: data_recycle
 #. odoo-python
 #: code:addons/data_recycle/models/data_recycle_model.py:0
+#, python-format
 msgid "This model doesn't manage archived records. Only deletion is possible."
 msgstr "โมเดลนี้ไม่ได้จัดการบันทึกที่ถูกเก็บถาวร ทำได้เพียงลบเท่านั้น"
 
@@ -335,12 +341,14 @@ msgstr "ฟิลด์เวลา"
 #. module: data_recycle
 #. odoo-python
 #: code:addons/data_recycle/models/data_recycle_record.py:0
+#, python-format
 msgid "Undefined Name"
 msgstr "ชื่อที่ไม่ได้กำหนด"
 
 #. module: data_recycle
 #. odoo-javascript
 #: code:addons/data_recycle/static/src/views/data_recycle_list_view.xml:0
+#, python-format
 msgid "Unselect"
 msgstr "ยกเลิกการเลือก"
 
@@ -348,6 +356,7 @@ msgstr "ยกเลิกการเลือก"
 #. odoo-javascript
 #: code:addons/data_recycle/static/src/views/data_recycle_list_view.xml:0
 #: model_terms:ir.ui.view,arch_db:data_recycle.view_data_recycle_record_list
+#, python-format
 msgid "Validate"
 msgstr "ตรวจสอบ"
 

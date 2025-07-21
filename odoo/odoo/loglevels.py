@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-import contextlib
-import warnings
+
+import sys
 
 LOG_NOTSET = 'notset'
 LOG_DEBUG = 'debug'
@@ -14,12 +14,6 @@ LOG_CRITICAL = 'critical'
 # There are here until we refactor tools so that this module doesn't depends on tools.
 
 def get_encodings(hint_encoding='utf-8'):
-    warnings.warn(
-        "Deprecated since Odoo 18. Mostly nonsensical as the "
-        "second/third encoding it yields is latin-1 which always succeeds...",
-        stacklevel=2,
-        category=DeprecationWarning,
-    )
     fallbacks = {
         'latin1': 'latin9',
         'iso-8859-1': 'iso8859-15',
@@ -44,6 +38,9 @@ def get_encodings(hint_encoding='utf-8'):
         if prefenc:
             yield prefenc
 
+# not using pycompat to avoid circular import: pycompat is in tools much of
+# which comes back to import loglevels
+text_type = type(u'')
 def ustr(value, hint_encoding='utf-8', errors='strict'):
     """This method is similar to the builtin `unicode`, except
     that it may try multiple encodings to find one that works
@@ -62,21 +59,12 @@ def ustr(value, hint_encoding='utf-8', errors='strict'):
     :raise: UnicodeError if value cannot be coerced to unicode
     :return: unicode string representing the given value
     """
-    warnings.warn(
-        "Deprecated since Odoo 18: ustr() is a garbage bag of weirdo fallbacks "
-        "which mostly don't do anything as\n"
-        "- the first attempt will always work if errors is not `strict`\n"
-        "- if utf8 fails it moves on to latin-1 which always works\n"
-        "- and it always tries hint-encoding twice",
-        stacklevel=2,
-        category=DeprecationWarning,
-    )
     # We use direct type comparison instead of `isinstance`
     # as much as possible, in order to make the most common
     # cases faster (isinstance/issubclass are significantly slower)
     ttype = type(value)
 
-    if ttype is str:
+    if ttype is text_type:
         return value
 
     # special short-circuit for str, as we still needs to support
@@ -85,28 +73,32 @@ def ustr(value, hint_encoding='utf-8', errors='strict'):
 
         # try hint_encoding first, avoids call to get_encoding()
         # for the most common case
-        with contextlib.suppress(Exception):
+        try:
             return value.decode(hint_encoding, errors=errors)
+        except Exception:
+            pass
 
         # rare: no luck with hint_encoding, attempt other ones
         for ln in get_encodings(hint_encoding):
-            with contextlib.suppress(Exception):
+            try:
                 return value.decode(ln, errors=errors)
+            except Exception:
+                pass
 
     if isinstance(value, Exception):
         return exception_to_unicode(value)
 
     # fallback for non-string values
     try:
-        return str(value)
-    except Exception as e:
-        raise UnicodeError(f'unable to convert {value!r}') from e
+        return text_type(value)
+    except Exception:
+        raise UnicodeError('unable to convert %r' % (value,))
 
 
 def exception_to_unicode(e):
     if getattr(e, 'args', ()):
-        return "\n".join(map(str, e.args))
+        return "\n".join((ustr(a) for a in e.args))
     try:
-        return str(e)
+        return text_type(e)
     except Exception:
-        return "Unknown message"
+        return u"Unknown message"

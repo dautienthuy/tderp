@@ -7,7 +7,6 @@ from odoo.exceptions import UserError, ValidationError
 
 class ProductCategory(models.Model):
     _name = "product.category"
-    _inherit = ['mail.thread']
     _description = "Product Category"
     _parent_name = "parent_id"
     _parent_store = True
@@ -19,12 +18,11 @@ class ProductCategory(models.Model):
         'Complete Name', compute='_compute_complete_name', recursive=True,
         store=True)
     parent_id = fields.Many2one('product.category', 'Parent Category', index=True, ondelete='cascade')
-    parent_path = fields.Char(index=True)
+    parent_path = fields.Char(index=True, unaccent=False)
     child_id = fields.One2many('product.category', 'parent_id', 'Child Categories')
     product_count = fields.Integer(
         '# Products', compute='_compute_product_count',
         help="The number of products under this category (Does not consider the children categories)")
-    product_properties_definition = fields.PropertiesDefinition('Product Properties')
 
     @api.depends('name', 'parent_id.complete_name')
     def _compute_complete_name(self):
@@ -35,8 +33,8 @@ class ProductCategory(models.Model):
                 category.complete_name = category.name
 
     def _compute_product_count(self):
-        read_group_res = self.env['product.template']._read_group([('categ_id', 'child_of', self.ids)], ['categ_id'], ['__count'])
-        group_data = {categ.id: count for categ, count in read_group_res}
+        read_group_res = self.env['product.template'].read_group([('categ_id', 'child_of', self.ids)], ['categ_id'], ['categ_id'])
+        group_data = dict((data['categ_id'][0], data['categ_id_count']) for data in read_group_res)
         for categ in self:
             product_count = 0
             for sub_categ_id in categ.search([('id', 'child_of', categ.ids)]).ids:
@@ -45,20 +43,17 @@ class ProductCategory(models.Model):
 
     @api.constrains('parent_id')
     def _check_category_recursion(self):
-        if self._has_cycle():
+        if not self._check_recursion():
             raise ValidationError(_('You cannot create recursive categories.'))
 
     @api.model
     def name_create(self, name):
-        category = self.create({'name': name})
-        return category.id, category.display_name
+        return self.create({'name': name}).name_get()[0]
 
-    @api.depends_context('hierarchical_naming')
-    def _compute_display_name(self):
-        if self.env.context.get('hierarchical_naming', True):
-            return super()._compute_display_name()
-        for record in self:
-            record.display_name = record.name
+    def name_get(self):
+        if not self.env.context.get('hierarchical_naming', True):
+            return [(record.id, record.name) for record in self]
+        return super().name_get()
 
     @api.ondelete(at_uninstall=False)
     def _unlink_except_default_category(self):

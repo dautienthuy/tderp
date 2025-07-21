@@ -51,8 +51,7 @@ class TestUom(UomCommon):
                 'factor_inv': 1,
                 'uom_type': 'reference',
                 'rounding': 1.0,
-                'category_id': time_category.id,
-                'active': False,
+                'category_id': time_category.id
             })
 
     def test_40_custom_uom(self):

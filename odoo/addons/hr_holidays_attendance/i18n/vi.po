@@ -3,16 +3,17 @@
 # 	* hr_holidays_attendance
 # 
 # Translators:
+# Martin Trigaux, 2022
 # Wil Odoo, 2024
-# Thi Huong Nguyen, 2025
+# Thi Huong Nguyen, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-06 14:58+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Thi Huong Nguyen, 2025\n"
+"POT-Creation-Date: 2025-02-03 09:16+0000\n"
+"PO-Revision-Date: 2022-09-22 05:46+0000\n"
+"Last-Translator: Thi Huong Nguyen, 2024\n"
 "Language-Team: Vietnamese (https://app.transifex.com/odoo/teams/41243/vi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -23,38 +24,36 @@ msgstr ""
 #. module: hr_holidays_attendance
 #. odoo-python
 #: code:addons/hr_holidays_attendance/models/hr_leave_type.py:0
+#, python-format
 msgid "%s hours available"
 msgstr "%s giờ còn lại"
 
 #. module: hr_holidays_attendance
-#: model:ir.model,name:hr_holidays_attendance.model_hr_leave_accrual_level
-msgid "Accrual Plan Level"
-msgstr "Mức độ phương pháp tích lũy"
-
-#. module: hr_holidays_attendance
 #: model:ir.model,name:hr_holidays_attendance.model_hr_attendance
 msgid "Attendance"
-msgstr "Chấm công"
-
-#. module: hr_holidays_attendance
-#: model:ir.model.fields.selection,name:hr_holidays_attendance.selection__hr_leave_accrual_level__frequency_hourly_source__attendance
-msgid "Attendances"
-msgstr "Chấm công"
+msgstr "Chuyên cần"
 
 #. module: hr_holidays_attendance
 #. odoo-javascript
 #: code:addons/hr_holidays_attendance/static/src/xml/time_off_calendar.xml:0
+#, python-format
 msgid "Available"
-msgstr "Có hàng"
+msgstr "Khả dụng"
 
 #. module: hr_holidays_attendance
-#: model:ir.model.fields.selection,name:hr_holidays_attendance.selection__hr_leave_accrual_level__frequency_hourly_source__calendar
-msgid "Calendar"
-msgstr "Lịch"
+#: model:ir.model,name:hr_holidays_attendance.model_res_company
+msgid "Companies"
+msgstr "Công ty"
+
+#. module: hr_holidays_attendance
+#: model:ir.model.fields,field_description:hr_holidays_attendance.field_hr_leave_allocation__hr_attendance_overtime
+msgid "Count Extra Hours"
+msgstr "Đếm giờ làm thêm"
 
 #. module: hr_holidays_attendance
 #. odoo-javascript
 #: code:addons/hr_holidays_attendance/static/src/xml/time_off_calendar.xml:0
+#, python-format
 msgid "Days"
 msgstr "Ngày"
 
@@ -84,32 +83,22 @@ msgid "Extra Hours Available"
 msgstr "Có giờ làm thêm"
 
 #. module: hr_holidays_attendance
-#: model:ir.model.fields,field_description:hr_holidays_attendance.field_hr_leave_accrual_level__frequency_hourly_source
-msgid "Frequency Hourly Source"
-msgstr "Frequency Hourly Source"
-
-#. module: hr_holidays_attendance
 #. odoo-javascript
 #: code:addons/hr_holidays_attendance/static/src/xml/time_off_calendar.xml:0
+#, python-format
 msgid "Hours"
 msgstr "Giờ"
 
 #. module: hr_holidays_attendance
-#: model:ir.model.fields,help:hr_holidays_attendance.field_hr_leave_accrual_level__frequency_hourly_source
-msgid ""
-"If the source is set to \"Calendar\", the amount of worked hours will be "
-"computed based on the Employee's working schedule. Otherwise, the amount of "
-"worked hours will be based on Attendance records."
-msgstr ""
-"Nếu nguồn được đặt thành \"Lịch\", số giờ làm việc sẽ được tính dựa vào lịch"
-" làm việc của Nhân viên. Nếu không, số giờ làm việc sẽ dựa trên dữ liệu Chấm"
-" công."
+#: model:ir.model.fields,field_description:hr_holidays_attendance.field_hr_leave_type__hr_attendance_overtime
+msgid "Hr Attendance Overtime"
+msgstr "Nhân sự có mặt quá giờ "
 
 #. module: hr_holidays_attendance
 #: model:ir.actions.act_window,name:hr_holidays_attendance.hr_leave_allocation_overtime_action
 #: model:ir.actions.act_window,name:hr_holidays_attendance.hr_leave_allocation_overtime_manager_action
 msgid "New Allocation Request"
-msgstr "Đơn phân bổ mới"
+msgstr "Yêu cầu phân bổ mới"
 
 #. module: hr_holidays_attendance
 #: model:ir.model.fields,help:hr_holidays_attendance.field_hr_leave_type__overtime_deductible
@@ -117,18 +106,17 @@ msgid ""
 "Once a time off of this type is approved, extra hours in attendances will be"
 " deducted."
 msgstr ""
-"Khi ngày nghỉ của loại này được duyệt, giờ làm thêm trong chấm công sẽ được "
+"Khi nghỉ phép của loại này được duyệt, giờ làm thêm trong điểm danh sẽ được "
 "trừ đi."
 
 #. module: hr_holidays_attendance
 #. odoo-python
 #: code:addons/hr_holidays_attendance/models/hr_leave_allocation.py:0
+#, python-format
 msgid ""
 "Only an Officer or Administrator is allowed to edit the allocation duration "
 "in this status."
 msgstr ""
-"Chỉ có Người phụ trách hoặc Quản trị viên mới được phép chỉnh sửa thời hạn "
-"phân bổ trong trạng thái này."
 
 #. module: hr_holidays_attendance
 #: model:ir.model.fields,field_description:hr_holidays_attendance.field_hr_leave__overtime_deductible
@@ -147,13 +135,9 @@ msgid "Save"
 msgstr "Lưu"
 
 #. module: hr_holidays_attendance
-#: model_terms:ir.ui.view,arch_db:hr_holidays_attendance.hr_leave_accrual_level_view_form
-msgid "Source"
-msgstr "Nguồn"
-
-#. module: hr_holidays_attendance
 #. odoo-python
 #: code:addons/hr_holidays_attendance/models/hr_leave_allocation.py:0
+#, python-format
 msgid ""
 "The employee does not have enough extra hours to extend this allocation."
 msgstr "Nhân viên không có đủ số giờ làm thêm để kéo dài phân bổ này."
@@ -161,18 +145,29 @@ msgstr "Nhân viên không có đủ số giờ làm thêm để kéo dài phân
 #. module: hr_holidays_attendance
 #. odoo-python
 #: code:addons/hr_holidays_attendance/models/hr_leave.py:0
+#, python-format
 msgid "The employee does not have enough extra hours to extend this leave."
 msgstr "Nhân viên không có đủ số giờ làm thêm để kéo dài nghỉ phép này."
 
 #. module: hr_holidays_attendance
 #. odoo-python
+#: code:addons/hr_holidays_attendance/models/hr_leave_allocation.py:0
+#, python-format
+msgid ""
+"The employee does not have enough extra hours to request this allocation."
+msgstr "Nhân viên không có đủ số giờ làm thêm để yêu cầu phân bổ này."
+
+#. module: hr_holidays_attendance
+#. odoo-python
 #: code:addons/hr_holidays_attendance/models/hr_leave.py:0
+#, python-format
 msgid "The employee does not have enough extra hours to request this leave."
 msgstr "Nhân viên không có đủ số giờ làm thêm để yêu cầu nghỉ phép này."
 
 #. module: hr_holidays_attendance
 #. odoo-python
 #: code:addons/hr_holidays_attendance/models/hr_leave_allocation.py:0
+#, python-format
 msgid ""
 "The employee does not have enough overtime hours to request this leave."
 msgstr "Nhân viên không có đủ số giờ làm thêm để yêu cầu nghỉ phép này."
@@ -180,17 +175,17 @@ msgstr "Nhân viên không có đủ số giờ làm thêm để yêu cầu ngh�
 #. module: hr_holidays_attendance
 #: model:ir.model,name:hr_holidays_attendance.model_hr_leave
 msgid "Time Off"
-msgstr "Ngày nghỉ"
+msgstr "Nghỉ phép"
 
 #. module: hr_holidays_attendance
 #: model:ir.model,name:hr_holidays_attendance.model_hr_leave_allocation
 msgid "Time Off Allocation"
-msgstr "Phân bổ thời gian ngày nghỉ"
+msgstr "Phân bổ thời gian nghỉ phép"
 
 #. module: hr_holidays_attendance
 #: model:ir.model,name:hr_holidays_attendance.model_hr_leave_type
 msgid "Time Off Type"
-msgstr "Loại Ngày nghỉ"
+msgstr "Loại Nghỉ phép"
 
 #. module: hr_holidays_attendance
 #: model:ir.model.fields,field_description:hr_holidays_attendance.field_hr_leave__employee_overtime
@@ -206,5 +201,6 @@ msgstr "Người dùng"
 #. module: hr_holidays_attendance
 #. odoo-python
 #: code:addons/hr_holidays_attendance/models/hr_leave.py:0
+#, python-format
 msgid "You do not have enough extra hours to request this leave"
 msgstr "Bạn không có đủ số giờ làm thêm để yêu cầu nghỉ phép này"

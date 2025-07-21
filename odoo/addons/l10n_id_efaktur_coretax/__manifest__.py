@@ -2,7 +2,7 @@
 
 {
     'name': 'Indonesia E-faktur (Coretax)',
-    'icon': '/account/static/description/l10n.png',
+    'icon': '/l10n_id/static/description/icon.png',
     'version': '1.0',
     'description': """
         E-invoicing feature provided by DJP (Indonesian Tax Office). As of January 1st 2025,
@@ -28,14 +28,11 @@
         # Views
         "views/product_template.xml",
         "views/product_code.xml",
-        "views/uom_code.xml",
         "views/res_partner.xml",
         "views/account_move.xml",
         "views/efaktur_document.xml",
-        "views/uom_uom.xml",
     ],
     'installable': True,
     'auto_install': True,
-    'post_init_hook': '_post_init_hook',
     'license': 'LGPL-3',
 }

@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import api, fields, models, _
+from odoo.addons.http_routing.models.ir_http import slug
 
 
 class EventEvent(models.Model):
@@ -19,8 +20,8 @@ class EventEvent(models.Model):
         domain=[('menu_type', '=', 'exhibitor')])
 
     def _compute_sponsor_count(self):
-        data = self.env['event.sponsor']._read_group([('event_id', 'in', self.ids)], ['event_id'], ['__count'])
-        result = {event.id: count for event, count in data}
+        data = self.env['event.sponsor']._read_group([], ['event_id'], ['event_id'])
+        result = dict((data['event_id'][0], data['event_id_count']) for data in data)
         for event in self:
             event.sponsor_count = result.get(event.id, 0)
 
@@ -58,5 +59,5 @@ class EventEvent(models.Model):
     def _get_website_menu_entries(self):
         self.ensure_one()
         return super(EventEvent, self)._get_website_menu_entries() + [
-            (_('Exhibitors'), '/event/%s/exhibitors' % self.env['ir.http']._slug(self), False, 60, 'exhibitor')
+            (_('Exhibitors'), '/event/%s/exhibitors' % slug(self), False, 60, 'exhibitor')
         ]

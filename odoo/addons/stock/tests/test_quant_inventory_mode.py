@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.mail.tests.common import mail_new_test_user
-from odoo.tests import Form, TransactionCase
+from odoo.tests.common import Form, TransactionCase
 from odoo.exceptions import AccessError, UserError
 
 
@@ -18,17 +18,17 @@ class TestEditableQuant(TransactionCase):
         Location = cls.env['stock.location']
         cls.product = Product.create({
             'name': 'Product A',
-            'is_storable': True,
+            'type': 'product',
             'categ_id': cls.env.ref('product.product_category_all').id,
         })
         cls.product2 = Product.create({
             'name': 'Product B',
-            'is_storable': True,
+            'type': 'product',
             'categ_id': cls.env.ref('product.product_category_all').id,
         })
         cls.product_tracked_sn = Product.create({
             'name': 'Product tracked by SN',
-            'is_storable': True,
+            'type': 'product',
             'tracking': 'serial',
             'categ_id': cls.env.ref('product.product_category_all').id,
         })
@@ -243,8 +243,9 @@ class TestEditableQuant(TransactionCase):
         self.assertEqual(self.product.qty_available, 75)
         smls = self.env['stock.move.line'].search([('product_id', '=', self.product.id)])
         self.assertRecordValues(smls, [
-            {'quantity': 100},
-            {'quantity': 25},
+            {'qty_done': 100},
+            {'qty_done': 25},
+            {'qty_done': 0},
         ])
 
     def test_edit_quant_5(self):
@@ -272,6 +273,7 @@ class TestEditableQuant(TransactionCase):
         sn1 = self.env['stock.lot'].create({
             'name': 'serial1',
             'product_id': self.product_tracked_sn.id,
+            'company_id': self.env.company.id,
         })
 
         self.Quant.create({

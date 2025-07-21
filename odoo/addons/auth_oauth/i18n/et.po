@@ -3,21 +3,24 @@
 # 	* auth_oauth
 # 
 # Translators:
-# Siim Raasuke, 2024
-# Martin Trigaux, 2024
-# Triine Aavik <triine@avalah.ee>, 2024
-# JanaAvalah, 2024
+# Martin Trigaux, 2022
+# Triine Aavik <triine@avalah.ee>, 2022
+# Martin Talts <martin.t@avalah.ee>, 2022
+# Arma Gedonsky <armagedonsky@hot.ee>, 2022
+# Andre Roomet <andreroomet@gmail.com>, 2022
+# Egon Raamat <egon@avalah.ee>, 2022
+# JanaAvalah, 2022
 # Birgit Vijar, 2024
-# Stevin Lilla, 2024
 # Anna, 2024
+# Stevin Lilla, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 08:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Anna, 2024\n"
+"POT-Creation-Date: 2022-09-20 09:01+0000\n"
+"PO-Revision-Date: 2022-09-22 05:45+0000\n"
+"Last-Translator: Stevin Lilla, 2024\n"
 "Language-Team: Estonian (https://app.transifex.com/odoo/teams/41243/et/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -31,8 +34,13 @@ msgid "- or -"
 msgstr "- või -"
 
 #. module: auth_oauth
-#. odoo-python
+#: model_terms:ir.ui.view,arch_db:auth_oauth.res_config_settings_view_form
+msgid "<i class=\"fa fa-fw fa-arrow-right\"/>Tutorial"
+msgstr "<i class=\"fa fa-fw fa-arrow-right\"/>Õpetus"
+
+#. module: auth_oauth
 #: code:addons/auth_oauth/controllers/main.py:0
+#, python-format
 msgid "Access Denied"
 msgstr "Juurdepääs keelatud"
 
@@ -85,7 +93,7 @@ msgstr "Loonud"
 #. module: auth_oauth
 #: model:ir.model.fields,field_description:auth_oauth.field_auth_oauth_provider__create_date
 msgid "Created on"
-msgstr "Loodud"
+msgstr "Loomise kuupäev"
 
 #. module: auth_oauth
 #: model:ir.model.fields,field_description:auth_oauth.field_auth_oauth_provider__data_endpoint
@@ -95,7 +103,12 @@ msgstr "Andmepunkt"
 #. module: auth_oauth
 #: model:ir.model.fields,field_description:auth_oauth.field_auth_oauth_provider__display_name
 msgid "Display Name"
-msgstr "Kuvatav nimi"
+msgstr "Näidatav nimi"
+
+#. module: auth_oauth
+#: model_terms:ir.ui.view,arch_db:auth_oauth.res_config_settings_view_form
+msgid "Documentation"
+msgstr "Dokumentatsioon"
 
 #. module: auth_oauth
 #: model_terms:ir.ui.view,arch_db:auth_oauth.res_config_settings_view_form
@@ -108,9 +121,14 @@ msgid "ID"
 msgstr "ID"
 
 #. module: auth_oauth
+#: model:ir.model.fields,field_description:auth_oauth.field_auth_oauth_provider____last_update
+msgid "Last Modified on"
+msgstr "Viimati muudetud"
+
+#. module: auth_oauth
 #: model:ir.model.fields,field_description:auth_oauth.field_auth_oauth_provider__write_uid
 msgid "Last Updated by"
-msgstr "Viimati uuendatud"
+msgstr "Viimati uuendas"
 
 #. module: auth_oauth
 #: model:ir.model.fields,field_description:auth_oauth.field_auth_oauth_provider__write_date
@@ -201,7 +219,7 @@ msgstr "Maht"
 #. module: auth_oauth
 #: model:ir.model.fields,field_description:auth_oauth.field_auth_oauth_provider__sequence
 msgid "Sequence"
-msgstr "Jada"
+msgstr "Järjestus"
 
 #. module: auth_oauth
 #: model:ir.model.fields,field_description:auth_oauth.field_res_config_settings__server_uri_google
@@ -209,8 +227,8 @@ msgid "Server uri"
 msgstr "Server uri"
 
 #. module: auth_oauth
-#. odoo-python
 #: code:addons/auth_oauth/controllers/main.py:0
+#, python-format
 msgid "Sign up is not allowed on this database."
 msgstr "Sisselogimine ei lubatud selles andmebaasis."
 
@@ -218,11 +236,6 @@ msgstr "Sisselogimine ei lubatud selles andmebaasis."
 #: model:ir.model,name:auth_oauth.model_ir_config_parameter
 msgid "System Parameter"
 msgstr "Süsteemi parameeter"
-
-#. module: auth_oauth
-#: model_terms:ir.ui.view,arch_db:auth_oauth.res_config_settings_view_form
-msgid "Tutorial"
-msgstr ""
 
 #. module: auth_oauth
 #: model:ir.model,name:auth_oauth.model_res_users
@@ -235,8 +248,8 @@ msgid "UserInfo URL"
 msgstr "Kasutajainfo URL"
 
 #. module: auth_oauth
-#. odoo-python
 #: code:addons/auth_oauth/controllers/main.py:0
+#, python-format
 msgid ""
 "You do not have access to this database or your invitation has expired. "
 "Please ask for an invitation and be sure to follow the link in your "

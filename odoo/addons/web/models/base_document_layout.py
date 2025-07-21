@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
-import os
+import markupsafe
 from markupsafe import Markup
-from math import ceil
 
-from odoo import api, fields, models
+from odoo import api, fields, models, tools
 
 from odoo.addons.base.models.ir_qweb_fields import nl2br
-from odoo.tools import html2plaintext, is_html_empty, image as tools
-from odoo.tools.misc import file_path
+from odoo.modules import get_resource_path
+from odoo.tools import html2plaintext, is_html_empty
 
 try:
     import sass as libsass
@@ -47,7 +46,7 @@ class BaseDocumentLayout(models.TransientModel):
         if 'company_name' not in address_format:
             address_format = '%(company_name)s\n' + address_format
             company_data['company_name'] = company_data['company_name'] or company.name
-        return nl2br(address_format) % company_data
+        return Markup(nl2br(address_format)) % company_data
 
     def _clean_address_format(self, address_format, company_data):
         missing_company_data = [k for k, v in company_data.items() if not v]
@@ -126,28 +125,21 @@ class BaseDocumentLayout(models.TransientModel):
 
         for wizard in self:
             if wizard.report_layout_id:
+                # guarantees that bin_size is always set to False,
+                # so the logo always contains the bin data instead of the binary size
                 if wizard.env.context.get('bin_size'):
-                    # guarantees that bin_size is always set to False,
-                    # so the logo always contains the bin data instead of the binary size
-                    wizard = wizard.with_context(bin_size=False)
-                wizard.preview = wizard.env['ir.ui.view']._render_template(
-                    wizard._get_preview_template(),
-                    wizard._get_render_information(styles),
-                )
+                    wizard_with_logo = wizard.with_context(bin_size=False)
+                else:
+                    wizard_with_logo = wizard
+                preview_css = markupsafe.Markup(self._get_css_for_preview(styles, wizard_with_logo.id))
+                ir_ui_view = wizard_with_logo.env['ir.ui.view']
+                wizard.preview = ir_ui_view._render_template('web.report_invoice_wizard_preview', {
+                    'company': wizard_with_logo,
+                    'preview_css': preview_css,
+                    'is_html_empty': is_html_empty,
+                })
             else:
                 wizard.preview = False
-
-    def _get_preview_template(self):
-        return 'web.report_invoice_wizard_preview'
-
-    def _get_render_information(self, styles):
-        self.ensure_one()
-        preview_css = self._get_css_for_preview(styles, self.id)
-        return {
-            'company': self,
-            'preview_css': preview_css,
-            'is_html_empty': is_html_empty,
-        }
 
     @api.onchange('company_id')
     def _onchange_company_id(self):
@@ -224,7 +216,7 @@ class BaseDocumentLayout(models.TransientModel):
             return False, False
 
         base_w, base_h = image.size
-        w = ceil(50 * base_w / base_h)
+        w = int(50 * base_w / base_h)
         h = 50
 
         # Converts to RGBA (if already RGBA, this is a noop)
@@ -257,6 +249,14 @@ class BaseDocumentLayout(models.TransientModel):
             primary, secondary = secondary, primary
 
         return tools.rgb_to_hex(primary), tools.rgb_to_hex(secondary)
+
+    @api.model
+    def action_open_base_document_layout(self, action_ref=None):
+        if not action_ref:
+            action_ref = 'web.action_base_document_layout_configurator'
+        res = self.env["ir.actions.actions"]._for_xml_id(action_ref)
+        self.env[res["res_model"]].check_access_rights('write')
+        return res
 
     def document_layout_save(self):
         # meant to be overridden
@@ -291,33 +291,23 @@ class BaseDocumentLayout(models.TransientModel):
         Simply copied and adapted slightly
         """
 
-        def scss_importer(path, *args):
-            *parent_path, file = os.path.split(path)
-            try:
-                parent_path = file_path(os.path.join(*parent_path))
-            except FileNotFoundError:
-                parent_path = file_path(os.path.join(bootstrap_path, *parent_path))
-            return [(os.path.join(parent_path, file),)]
-
         # No scss ? still valid, returns empty css
         if not scss_source.strip():
             return ""
 
         precision = 8
         output_style = 'expanded'
-        bootstrap_path = file_path('web/static/lib/bootstrap/scss')
+        bootstrap_path = get_resource_path('web', 'static', 'lib', 'bootstrap', 'scss')
 
         try:
-            compiled_css = libsass.compile(
+            return libsass.compile(
                 string=scss_source,
                 include_paths=[
                     bootstrap_path,
                 ],
-                importers=[(0, scss_importer)],
                 output_style=output_style,
                 precision=precision,
             )
-            return Markup(compiled_css) if isinstance(compiled_css, Markup) else compiled_css
         except libsass.CompileError as e:
             raise libsass.CompileError(e.args[0])
 

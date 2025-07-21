@@ -1,24 +1,18 @@
 /** @odoo-module */
-// @ts-check
 
-import { LOADING_ERROR, LoadableDataSource, getFields } from "./data_source";
+import { LoadableDataSource } from "./data_source";
 import { Domain } from "@web/core/domain";
-import { user } from "@web/core/user";
+import { LoadingDataError } from "@spreadsheet/o_spreadsheet/errors";
 import { omit } from "@web/core/utils/objects";
 
 /**
- * @typedef {import("@spreadsheet").OdooField} OdooField
- * @typedef {import("@spreadsheet").OdooFields} OdooFields
+ * @typedef {import("@spreadsheet/data_sources/metadata_repository").Field} Field
  */
 
 /**
  * @typedef {Object} OdooModelMetaData
  * @property {string} resModel
- * @property {OdooFields} [fields]
- *
- * @typedef {Object} OdooModelSearchParams
- * @property {Object} context
- * @property {Array<string>} domain
+ * @property {Array<Object>|undefined} fields
  */
 
 export class OdooViewsDataSource extends LoadableDataSource {
@@ -31,18 +25,15 @@ export class OdooViewsDataSource extends LoadableDataSource {
      */
     constructor(services, params) {
         super(services);
-        /** @type {OdooModelMetaData} */
         this._metaData = JSON.parse(JSON.stringify(params.metaData));
         /** @protected */
         this._initialSearchParams = JSON.parse(JSON.stringify(params.searchParams));
-        const userContext = user.context;
         this._initialSearchParams.context = omit(
             this._initialSearchParams.context || {},
-            ...Object.keys(userContext)
+            ...Object.keys(this._orm.user.context)
         );
         /** @private */
         this._customDomain = this._initialSearchParams.domain;
-        this._metaDataLoaded = false;
     }
 
     /**
@@ -51,44 +42,34 @@ export class OdooViewsDataSource extends LoadableDataSource {
     get _searchParams() {
         return {
             ...this._initialSearchParams,
-            domain: this.getComputedDomain(),
+            domain: this._customDomain,
         };
     }
 
     async loadMetadata() {
         if (!this._metaData.fields) {
-            this._metaData.fields = await getFields(this.serverData, this._metaData.resModel);
-        }
-        this._metaDataLoaded = true;
-    }
-
-    /**
-     * Ensure that the metadata are loaded. If not, throw an error
-     */
-    _assertMetaDataLoaded() {
-        if (!this._isModelValid) {
-            throw this.loadError;
-        }
-        if (!this._metaDataLoaded) {
-            this.loadMetadata();
-            throw LOADING_ERROR;
+            this._metaData.fields = await this._metadataRepository.fieldsGet(
+                this._metaData.resModel
+            );
         }
     }
 
     /**
-     * @returns {OdooFields} List of fields
+     * @returns {Record<string, Field>} List of fields
      */
     getFields() {
-        this._assertMetaDataLoaded();
+        if (this._metaData.fields === undefined) {
+            this.loadMetadata();
+            throw new LoadingDataError();
+        }
         return this._metaData.fields;
     }
 
     /**
      * @param {string} field Field name
-     * @returns {OdooField | undefined} Field
+     * @returns {Field | undefined} Field
      */
     getField(field) {
-        this._assertMetaDataLoaded();
         return this._metaData.fields[field];
     }
 
@@ -108,31 +89,15 @@ export class OdooViewsDataSource extends LoadableDataSource {
      * @returns {Array}
      */
     getComputedDomain() {
-        const userContext = user.context;
-        return new Domain(this._customDomain).toList({
-            ...this._initialSearchParams.context,
-            ...userContext,
-        });
+        return this._customDomain;
     }
 
-    /**
-     * Get the current domain as a string
-     * @returns { string }
-     */
-    getInitialDomainString() {
-        return new Domain(this._initialSearchParams.domain).toString();
-    }
-
-    /**
-     *
-     * @param {string} domain
-     */
     addDomain(domain) {
-        const newDomain = Domain.and([this._initialSearchParams.domain, domain]).toString();
+        const newDomain = Domain.and([this._initialSearchParams.domain, domain]);
         if (newDomain.toString() === new Domain(this._customDomain).toString()) {
             return;
         }
-        this._customDomain = newDomain;
+        this._customDomain = newDomain.toList();
         if (this._loadPromise === undefined) {
             // if the data source has never been loaded, there's no point
             // at reloading it now.
@@ -144,9 +109,7 @@ export class OdooViewsDataSource extends LoadableDataSource {
     /**
      * @returns {Promise<string>} Display name of the model
      */
-    async getModelLabel() {
-        const model = this._metaData.resModel;
-        const result = await this.serverData.fetch("ir.model", "display_name_for", [[model]]);
-        return (result[0] && result[0].display_name) || "";
+    getModelLabel() {
+        return this._metadataRepository.modelDisplayName(this._metaData.resModel);
     }
 }

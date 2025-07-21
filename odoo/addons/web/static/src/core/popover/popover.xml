@@ -1,20 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
 
-    <t t-name="web.Popover">
-        <div
-            t-ref="ref"
-            t-att-class="defaultClassObj"
-            t-att-role="props.role"
-            t-on-pointerenter="() => props.holdOnHover and position.lock()"
-            t-on-pointerleave="() => props.holdOnHover and position.unlock()"
+    <t t-name="web.PopoverWowl" owl="1">
+        <div role="tooltip" class="o_popover popover mw-100 shadow-sm"
+            t-att-class="props.popoverClass"
+            t-ref="popper"
+            t-att-popover-id="props.id"
         >
-            <t
-                t-component="props.component"
-                t-props="props.componentProps"
-                close="props.close"
-            />
-            <div t-if="props.arrow" class="popover-arrow"/>
+            <div class="popover-arrow"/>
+            <t t-slot="default" />
         </div>
     </t>
 

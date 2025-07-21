@@ -1,6 +1,7 @@
-/** @odoo-module **/
+odoo.define('website_event_booth_exhibitor.booth_sponsor_details', function (require) {
+'use strict';
 
-import publicWidget from "@web/legacy/js/public/public_widget";
+var publicWidget = require('web.public.widget');
 
 publicWidget.registry.boothSponsorDetails = publicWidget.Widget.extend({
     selector: '#o_wbooth_contact_details_form',
@@ -14,23 +15,15 @@ publicWidget.registry.boothSponsorDetails = publicWidget.Widget.extend({
 
     _onClickContactDetails(ev) {
         this.useContactDetails = ev.currentTarget.checked;
-        this.el
-            .querySelector("#o_wbooth_contact_details")
-            .classList.toggle("d-none", !this.useContactDetails);
-        this.el
-            .querySelectorAll(
-                "label[for='sponsor_name'] > .mandatory_mark, label[for='sponsor_email'] > .mandatory_mark"
-            )
-            .forEach((el) => {
-                el.classList.toggle("d-none", this.useContactDetails);
-            });
-        this.el
-            .querySelectorAll("input[name='contact_name'], input[name='contact_email']")
-            .forEach((inputEl) => (inputEl.required = this.useContactDetails));
+        this.$('#o_wbooth_contact_details').toggleClass('d-none', !this.useContactDetails);
+        this.$('label[for="sponsor_name"] > .mandatory_mark, label[for="sponsor_email"] > .mandatory_mark').toggleClass('d-none', this.useContactDetails);
+        this.$('input[name="contact_name"], input[name="contact_email"]').attr('required', this.useContactDetails);
     },
 
 });
 
-export default {
-    boothSponsorDetails: publicWidget.registry.boothSponsorDetails,
-};
+    return {
+        boothSponsorDetails: publicWidget.registry.boothSponsorDetails,
+    };
+
+});

@@ -3,22 +3,23 @@
 # 	* account_check_printing
 # 
 # Translators:
-# Audrius Palenskis <audrius.palenskis@gmail.com>, 2024
-# UAB "Draugiški sprendimai" <transifex@draugiskisprendimai.lt>, 2024
-# Arunas V. <arunas@devoro.com>, 2024
+# Rytis Štreimikis <r.streimikis@hotmail.lt>, 2022
+# grupoda2 <dmitrijus.ivanovas@gmail.com>, 2022
+# Arunas V. <arunas@devoro.com>, 2022
+# UAB "Draugiški sprendimai" <transifex@draugiskisprendimai.lt>, 2022
+# digitouch UAB <digitouchagencyeur@gmail.com>, 2022
+# Audrius Palenskis <audrius.palenskis@gmail.com>, 2022
+# Martin Trigaux, 2022
+# Linas Versada <linaskrisiukenas@gmail.com>, 2022
 # Gailius Kazlauskas <gailius@vialaurea.lt>, 2024
-# Martin Trigaux, 2024
-# digitouch UAB <digitouchagencyeur@gmail.com>, 2024
-# Linas Versada <linaskrisiukenas@gmail.com>, 2024
-# Wil Odoo, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 08:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Wil Odoo, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2022-09-22 05:44+0000\n"
+"Last-Translator: Gailius Kazlauskas <gailius@vialaurea.lt>, 2024\n"
 "Language-Team: Lithuanian (https://app.transifex.com/odoo/teams/41243/lt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -29,8 +30,9 @@ msgstr ""
 #. module: account_check_printing
 #. odoo-python
 #: code:addons/account_check_printing/models/account_journal.py:0
-msgid "%(journal)s: Check Number Sequence"
-msgstr ""
+#, python-format
+msgid " : Check Number Sequence"
+msgstr ": Kvito numerio eiliškumas"
 
 #. module: account_check_printing
 #: model_terms:ir.ui.view,arch_db:account_check_printing.account_journal_dashboard_kanban_view_inherited
@@ -57,18 +59,11 @@ msgid "Amount in Words"
 msgstr "Suma žodžiais"
 
 #. module: account_check_printing
-#. odoo-python
-#: code:addons/account_check_printing/models/account_payment.py:0
-msgid "Bills"
-msgstr "Sąskaitos"
-
-#. module: account_check_printing
 #: model_terms:ir.ui.view,arch_db:account_check_printing.print_pre_numbered_checks_view
 msgid "Cancel"
 msgstr "Atšaukti"
 
 #. module: account_check_printing
-#: model:ir.model.fields,field_description:account_check_printing.field_account_journal__bank_check_printing_layout
 #: model:ir.model.fields,field_description:account_check_printing.field_res_company__account_check_printing_layout
 #: model:ir.model.fields,field_description:account_check_printing.field_res_config_settings__account_check_printing_layout
 msgid "Check Layout"
@@ -109,6 +104,7 @@ msgstr "Viršutinė kvito paraštė"
 #. module: account_check_printing
 #. odoo-python
 #: code:addons/account_check_printing/models/account_payment.py:0
+#, python-format
 msgid "Check numbers can only consist of digits"
 msgstr ""
 
@@ -124,8 +120,6 @@ msgid "Check to print"
 msgstr "Kvitas spausdinimui"
 
 #. module: account_check_printing
-#. odoo-python
-#: code:addons/account_check_printing/models/account_payment.py:0
 #: model:account.payment.method,name:account_check_printing.account_payment_method_check
 msgid "Checks"
 msgstr "Kvitai"
@@ -139,6 +133,7 @@ msgstr "Kvitų numeravimo eiliškumas."
 #. odoo-python
 #: code:addons/account_check_printing/models/account_journal.py:0
 #: model_terms:ir.ui.view,arch_db:account_check_printing.view_payment_check_printing_search
+#, python-format
 msgid "Checks to Print"
 msgstr "Kvitai spausdinimui"
 
@@ -158,6 +153,11 @@ msgid "Config Settings"
 msgstr "Konfigūracijos nustatymai"
 
 #. module: account_check_printing
+#: model:ir.model,name:account_check_printing.model_res_partner
+msgid "Contact"
+msgstr "Kontaktas"
+
+#. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_print_prenumbered_checks__create_uid
 msgid "Created by"
 msgstr "Sukūrė"
@@ -168,11 +168,6 @@ msgid "Created on"
 msgstr "Sukurta"
 
 #. module: account_check_printing
-#: model_terms:ir.ui.view,arch_db:account_check_printing.view_account_journal_form_inherited
-msgid "Default"
-msgstr "Numatytasis"
-
-#. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_print_prenumbered_checks__display_name
 msgid "Display Name"
 msgstr "Rodomas pavadinimas"
@@ -180,6 +175,8 @@ msgstr "Rodomas pavadinimas"
 #. module: account_check_printing
 #. odoo-python
 #: code:addons/account_check_printing/models/account_payment.py:0
+#: code:addons/account_check_printing/models/account_payment.py:0
+#, python-format
 msgid "Go to the configuration panel"
 msgstr "Eiti į nustatymų skydelį"
 
@@ -191,6 +188,7 @@ msgstr "ID"
 #. module: account_check_printing
 #. odoo-python
 #: code:addons/account_check_printing/models/account_payment.py:0
+#, python-format
 msgid ""
 "In order to print multiple checks at once, they must belong to the same bank"
 " journal."
@@ -202,6 +200,16 @@ msgstr ""
 #: model:ir.model,name:account_check_printing.model_account_journal
 msgid "Journal"
 msgstr "Žurnalas"
+
+#. module: account_check_printing
+#: model:ir.model,name:account_check_printing.model_account_move
+msgid "Journal Entry"
+msgstr "Žurnalo įrašas"
+
+#. module: account_check_printing
+#: model:ir.model.fields,field_description:account_check_printing.field_print_prenumbered_checks____last_update
+msgid "Last Modified on"
+msgstr "Paskutinį kartą keista"
 
 #. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_print_prenumbered_checks__write_uid
@@ -252,6 +260,7 @@ msgstr "Kito kvito numeris"
 #. odoo-python
 #: code:addons/account_check_printing/models/account_journal.py:0
 #: code:addons/account_check_printing/wizard/print_prenumbered_checks.py:0
+#, python-format
 msgid "Next Check Number should only contains numbers."
 msgstr ""
 
@@ -262,6 +271,8 @@ msgstr "Nieko"
 
 #. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_account_payment__payment_method_line_id
+#: model:ir.model.fields,field_description:account_check_printing.field_res_partner__property_payment_method_id
+#: model:ir.model.fields,field_description:account_check_printing.field_res_users__property_payment_method_id
 msgid "Payment Method"
 msgstr "Mokėjimo būdas"
 
@@ -278,6 +289,7 @@ msgstr "Mokėjimai"
 #. module: account_check_printing
 #. odoo-python
 #: code:addons/account_check_printing/models/account_payment.py:0
+#, python-format
 msgid ""
 "Payments to print as a checks must have 'Check' selected as payment method "
 "and not have already been reconciled"
@@ -293,6 +305,22 @@ msgid ""
 msgstr ""
 "Įveskite pirmojo iš anksto atspausdinto kvito, kurį rengiatės spausdinti, "
 "numerį."
+
+#. module: account_check_printing
+#: model:ir.model.fields,field_description:account_check_printing.field_account_bank_statement_line__preferred_payment_method_id
+#: model:ir.model.fields,field_description:account_check_printing.field_account_move__preferred_payment_method_id
+#: model:ir.model.fields,field_description:account_check_printing.field_account_payment__preferred_payment_method_id
+msgid "Preferred Payment Method"
+msgstr ""
+
+#. module: account_check_printing
+#: model:ir.model.fields,help:account_check_printing.field_res_partner__property_payment_method_id
+#: model:ir.model.fields,help:account_check_printing.field_res_users__property_payment_method_id
+msgid ""
+"Preferred payment method when paying this vendor. This is used to filter "
+"vendor bills by preferred payment method to register payments in mass. Use "
+"cases: create bank files for batch wires, check runs."
+msgstr ""
 
 #. module: account_check_printing
 #: model_terms:ir.ui.view,arch_db:account_check_printing.print_pre_numbered_checks_view
@@ -320,14 +348,14 @@ msgstr "Spausdinti datos etiketę"
 #: code:addons/account_check_printing/models/account_payment.py:0
 #: model:ir.model,name:account_check_printing.model_print_prenumbered_checks
 #: model_terms:ir.ui.view,arch_db:account_check_printing.print_pre_numbered_checks_view
+#, python-format
 msgid "Print Pre-numbered Checks"
 msgstr "Spausdinti iš anksto sunumeruotus kvitus"
 
 #. module: account_check_printing
-#. odoo-python
-#: code:addons/account_check_printing/models/account_payment.py:0
-msgid "Refunds"
-msgstr "Kreditavimai"
+#: model:ir.model,name:account_check_printing.model_account_payment_register
+msgid "Register Payment"
+msgstr "Užregistruoti mokėjimą"
 
 #. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_res_company__account_check_printing_margin_right
@@ -362,6 +390,7 @@ msgstr ""
 #. module: account_check_printing
 #. odoo-python
 #: code:addons/account_check_printing/models/account_payment.py:0
+#, python-format
 msgid ""
 "Something went wrong with Check Layout, please select another layout in "
 "Invoicing/Accounting Settings and try again."
@@ -370,6 +399,7 @@ msgstr ""
 #. module: account_check_printing
 #. odoo-python
 #: code:addons/account_check_printing/models/account_payment.py:0
+#, python-format
 msgid ""
 "The following numbers are already used:\n"
 "%s"
@@ -378,6 +408,7 @@ msgstr ""
 #. module: account_check_printing
 #. odoo-python
 #: code:addons/account_check_printing/models/account_journal.py:0
+#, python-format
 msgid ""
 "The last check number was %s. In order to avoid a check being rejected by "
 "the bank, you can only use a greater number."
@@ -433,6 +464,7 @@ msgstr ""
 #. module: account_check_printing
 #. odoo-python
 #: code:addons/account_check_printing/models/account_payment.py:0
+#, python-format
 msgid ""
 "You have to choose a check layout. For this, go in Invoicing/Accounting "
 "Settings, search for 'Checks layout' and set one."

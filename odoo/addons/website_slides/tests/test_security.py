@@ -3,7 +3,6 @@
 import base64
 
 from odoo import http
-from odoo.addons.base.tests.test_mimetypes import PNG
 from odoo.addons.mail.tests.common import mail_new_test_user
 from odoo.addons.website_slides.tests import common
 from odoo.exceptions import AccessError
@@ -44,17 +43,6 @@ class TestAccess(common.SlidesCase):
         self.slide.with_user(self.user_emp).read(['name'])
 
         # not member anymore -> cannot read
-        membership.action_archive()
-        self.channel.with_user(self.user_emp).read(['name'])
-        with self.assertRaises(AccessError):
-            self.slide.with_user(self.user_emp).read(['name'])
-
-        # re-activate member -> can read again
-        membership.action_unarchive()
-        self.channel.with_user(self.user_emp).read(['name'])
-        self.slide.with_user(self.user_emp).read(['name'])
-
-        # unlink membership -> cannot read
         membership.unlink()
         self.channel.with_user(self.user_emp).read(['name'])
         with self.assertRaises(AccessError):
@@ -164,264 +152,6 @@ class TestAccess(common.SlidesCase):
         self.slide.with_user(self.user_emp).read(['name'])
         self.slide.with_user(self.user_portal).read(['name'])
         self.slide.with_user(self.user_public).read(['name'])
-
-    @mute_logger('odoo.models', 'odoo.addons.base.models.ir_rule')
-    def test_access_channel_visibility_public(self):
-        self.channel.write({'visibility': 'public'})
-        self.slide.write({'is_preview': True})
-        self.slide.flush_model()
-
-        self.channel.with_user(self.user_officer).read(['name'])
-        self.channel.with_user(self.user_manager).read(['name'])
-        self.channel.with_user(self.user_emp).read(['name'])
-        self.channel.with_user(self.user_portal).read(['name'])
-        self.channel.with_user(self.user_public).read(['name'])
-
-        self.slide.with_user(self.user_officer).read(['name'])
-        self.slide.with_user(self.user_manager).read(['name'])
-        self.slide.with_user(self.user_emp).read(['name'])
-        self.slide.with_user(self.user_portal).read(['name'])
-        self.slide.with_user(self.user_public).read(['name'])
-
-    @mute_logger('odoo.models', 'odoo.addons.base.models.ir_rule')
-    def test_access_channel_public_with_website_published(self):
-        self.channel.write({'visibility': 'public', 'website_published': False})
-
-        self.channel.with_user(self.user_officer).read(['name'])
-        self.channel.with_user(self.user_manager).read(['name'])
-        with self.assertRaises(AccessError):
-            self.channel.with_user(self.user_emp).read(['name'])
-        with self.assertRaises(AccessError):
-            self.channel.with_user(self.user_portal).read(['name'])
-        with self.assertRaises(AccessError):
-            self.channel.with_user(self.user_public).read(['name'])
-
-        self.slide.with_user(self.user_officer).read(['name'])
-        self.slide.with_user(self.user_manager).read(['name'])
-        with self.assertRaises(AccessError):
-            self.slide.with_user(self.user_emp).read(['name'])
-        with self.assertRaises(AccessError):
-            self.slide.with_user(self.user_portal).read(['name'])
-        with self.assertRaises(AccessError):
-            self.slide.with_user(self.user_public).read(['name'])
-
-    @mute_logger('odoo.models', 'odoo.addons.base.models.ir_rule')
-    def test_access_channel_visibility_members(self):
-        self.channel.write({'visibility': 'members'})
-        self.channel.flush_model()
-        user_emp_membership = self.env['slide.channel.partner'].create({
-            'channel_id': self.channel.id,
-            'partner_id': self.user_emp.partner_id.id,
-        })
-
-        self.channel.with_user(self.user_emp).read(['name'])
-        with self.assertRaises(AccessError):
-            self.channel.with_user(self.user_portal).read(['name'])
-
-        user_emp_membership.action_archive()
-        with self.assertRaises(AccessError):
-            self.channel.with_user(self.user_emp).read(['name'])
-        with self.assertRaises(AccessError):
-            self.slide.with_user(self.user_emp).read(['name'])
-
-        user_emp_membership.unlink()
-        with self.assertRaises(AccessError):
-            self.channel.with_user(self.user_emp).read(['name'])
-
-    @mute_logger('odoo.models', 'odoo.addons.base.models.ir_rule')
-    def test_access_channel_visiblilty_members_as_invited(self):
-        self.channel.visibility = 'members'
-        self.channel.flush_recordset()
-
-        with self.assertRaises(AccessError):
-            self.channel.with_user(self.user_portal).read(['name'])
-
-        user_portal_membership = self.env['slide.channel.partner'].create({
-            'channel_id': self.channel.id,
-            'partner_id': self.user_portal.partner_id.id,
-            'member_status': 'invited'
-        })
-        self.channel.with_user(self.user_portal).read(['name'])
-
-        user_portal_membership.action_archive()
-        with self.assertRaises(AccessError):
-            self.channel.with_user(self.user_portal).read(['name'])
-
-    @mute_logger('odoo.models', 'odoo.addons.base.models.ir_rule')
-    def test_access_channel_members_with_website_published(self):
-        self.channel.write({'visibility': 'members', 'website_published': False})
-        self.channel.flush_model()
-
-        with self.assertRaises(AccessError):
-            self.channel.with_user(self.user_emp).read(['name'])
-
-        with self.assertRaises(AccessError):
-            self.channel.with_user(self.user_portal).read(['name'])
-
-    @mute_logger('odoo.models', 'odoo.addons.base.models.ir_rule')
-    def test_access_channel_visibility_connected(self):
-        self.channel.write({'visibility': 'connected'})
-
-        self.channel.with_user(self.user_officer).read(['name'])
-        self.channel.with_user(self.user_manager).read(['name'])
-        self.channel.with_user(self.user_emp).read(['name'])
-        self.channel.with_user(self.user_portal).read(['name'])
-        with self.assertRaises(AccessError):
-            self.channel.with_user(self.user_public).read(['name'])
-
-        self.slide.with_user(self.user_officer).read(['name'])
-        self.slide.with_user(self.user_manager).read(['name'])
-        with self.assertRaises(AccessError):
-            self.slide.with_user(self.user_emp).read(['name'])
-        with self.assertRaises(AccessError):
-            self.slide.with_user(self.user_portal).read(['name'])
-        with self.assertRaises(AccessError):
-            self.slide.with_user(self.user_public).read(['name'])
-
-    @mute_logger('odoo.models', 'odoo.addons.base.models.ir_rule')
-    def test_access_channel_visiblilty_connected_as_invited(self):
-        self.channel.visibility = 'connected'
-        self.channel.flush_recordset()
-
-        self.env['slide.channel.partner'].create({
-            'channel_id': self.channel.id,
-            'partner_id': self.user_emp.partner_id.id,
-            'member_status': 'invited'
-        })
-        self.channel.with_user(self.user_emp).read(['name'])
-
-    @mute_logger('odoo.models', 'odoo.addons.base.models.ir_rule')
-    def test_access_slide_slide_as_invited(self):
-        """ Check that preview slides are visible to logged invited attendees, but not others, nor non published ones."""
-        self.env['slide.channel.partner'].create({
-            'channel_id': self.channel.id,
-            'partner_id': self.user_portal.partner_id.id,
-            'member_status': 'invited'
-        })
-        with self.assertRaises(AccessError):
-            self.slide.with_user(self.user_portal).read(['name'])
-
-        self.slide.is_preview = True
-        self.slide.with_user(self.user_portal).read(['name'])
-
-        self.channel.visibility = 'connected'
-        self.channel.flush_recordset()
-        self.slide.with_user(self.user_portal).read(['name'])
-
-        self.channel.visibility = 'members'
-        self.channel.flush_recordset()
-        self.slide.with_user(self.user_portal).read(['name'])
-
-        self.slide.is_published = False
-        self.slide.flush_recordset(['is_published'])
-        with self.assertRaises(AccessError):
-            self.slide.with_user(self.user_portal).read(['name'])
-
-
-class TestAccessHttp(common.SlidesCase, HttpCase):
-    @mute_logger('odoo.models', 'odoo.addons.base.models.ir_rule', 'odoo.http')
-    def test_access_slide_attachment(self):
-        """Check the document of slides, pdf or images, stored in a binary field, so as `ir.attachment`,
-        are accessible to a user according to his access to the slide itself"""
-        image_placeholder = self.env['ir.binary']._placeholder()
-
-        slides = self.env['slide.slide'].create([
-            {
-                'name': 'Foo',
-                'channel_id': self.channel.id,
-                'slide_category': 'infographic',
-                'is_published': True,
-                'binary_content': PNG,
-                'is_preview': True,
-            },
-            {
-                'name': 'Bar',
-                'channel_id': self.channel.id,
-                'slide_category': 'document',
-                'is_published': True,
-                'binary_content': base64.b64encode(b'bar'),
-                'is_preview': True,
-            },
-        ])
-        slide_image, slide_pdf = slides
-
-        def can_read_slides_content(user, can_read):
-            self.authenticate(user.login, user.login)
-
-            # Image slide
-            for url in [
-                f'/slides/slide/{slide_image.id}/get_image?field=image_1024',
-                f'/web/image/slide.slide/{slide_image.id}/image_1024',
-                f'/web/content/slide.slide/{slide_image.id}/binary_content',
-                f'/web/content/slide.slide/{slide_image.id}/image_binary_content',
-            ]:
-                response = self.url_open(url)
-                if can_read:
-                    self.assertEqual(
-                        base64.b64encode(response.content),
-                        PNG,
-                        f'{user.login} must be able to see the slide image',
-                    )
-                else:
-                    self.assertTrue(
-                        response.status_code == 404 or response.content in (image_placeholder, b''),
-                        f'{user.login} must not be able to see the slide image',
-                    )
-
-            # PDF Slide
-            for url in [
-                f'/slides/slide/{slide_pdf.id}/pdf_content',
-                f'/web/content/slide.slide/{slide_pdf.id}/binary_content',
-                f'/web/content/slide.slide/{slide_pdf.id}/document_binary_content',
-            ]:
-                response = self.url_open(url)
-                if can_read:
-                    self.assertEqual(
-                        response.content,
-                        b'bar',
-                        f'{user.login} must be able to see the slide pdf',
-                    )
-                else:
-                    self.assertTrue(
-                        response.status_code == 404 or response.url.endswith('/slides?invite_error=no_rights'),
-                        f'{user.login} must not be able to see the slide pdf',
-                    )
-
-        for user, expected in [
-            (self.user_public, True),
-            (self.user_portal, True),
-            (self.user_emp, True),
-            (self.user_manager, True),
-            (self.user_officer, True),
-        ]:
-            can_read_slides_content(user, expected)
-
-        slides.is_preview = False
-
-        for user, expected in [
-            (self.user_public, False),
-            (self.user_portal, False),
-            (self.user_emp, False),
-            (self.user_manager, True),
-            (self.user_officer, True),
-        ]:
-            can_read_slides_content(user, expected)
-
-        membership = self.env['slide.channel.partner'].create({
-            'channel_id': self.channel.id,
-            'partner_id': self.user_emp.partner_id.id,
-        })
-        can_read_slides_content(self.user_emp, True)
-        membership.unlink()
-        can_read_slides_content(self.user_emp, False)
-
-        membership = self.env['slide.channel.partner'].create({
-            'channel_id': self.channel.id,
-            'partner_id': self.user_portal.partner_id.id,
-        })
-        can_read_slides_content(self.user_portal, True)
-        membership.unlink()
-        can_read_slides_content(self.user_portal, False)
 
 
 @tagged('functional', 'security')
@@ -596,8 +326,10 @@ class TestAccessFeatures(common.SlidesCase):
             resource1.with_user(self.user_public).write({'name': 'other name'})
             resource3.with_user(self.user_public).write({'name': 'other name'})
 
-        # public access to knowing if there are resources
-        self.assertTrue(self.slide_3.with_user(self.user_public).sudo().slide_resource_ids)
+        # public access to knowing if there are resources, also by type
+        self.assertTrue(self.slide_3.with_user(self.user_public)._has_additional_resources())
+        self.assertTrue(self.slide_3.with_user(self.user_public)._has_additional_resources('file'))
+        self.assertTrue(self.slide_3.with_user(self.user_public)._has_additional_resources('url'))
 
         # No random portal access
         with self.assertRaises(AccessError):
@@ -636,24 +368,22 @@ class TestAccessFeatures(common.SlidesCase):
         self.env['slide.slide.resource'].with_user(self.user_manager).create(resource_values)
 
 
-@tagged("functional")
+@tagged('functional')
 class TestReview(common.SlidesCase, HttpCase):
-    @mute_logger("odoo.addons.http_routing.models.ir_http", "odoo.http")
+    @mute_logger('odoo.addons.http_routing.models.ir_http', 'odoo.http')
     def test_channel_multiple_reviews(self):
         self.authenticate("admin", "admin")
 
         res1 = self.opener.post(
-            url="%s/mail/message/post" % self.base_url(),
+            url='%s/mail/chatter_post' % self.base_url(),
             json={
-                "params": {
-                    "thread_model": "slide.channel",
-                    "thread_id": self.channel.id,
-                    "post_data": {
-                        "body": "My first review :)",
-                        "subtype_xmlid": "mail.mt_comment",
-                        "rating_value": "2",
-                    },
-                    "pid": self.env.user.partner_id.id,
+                'params': {
+                    'res_id': self.channel.id,
+                    'res_model': 'slide.channel',
+                    'message': 'My first review :)',
+                    'rating_value': '2',
+                    'pid': self.env.user.partner_id.id,
+                    'csrf_token': http.Request.csrf_token(self),
                 },
             },
         )
@@ -661,17 +391,15 @@ class TestReview(common.SlidesCase, HttpCase):
 
 
         res2 = self.opener.post(
-            url="%s/mail/message/post" % self.base_url(),
+            url='%s/mail/chatter_post' % self.base_url(),
             json={
-                "params": {
-                    "thread_model": "slide.channel",
-                    "thread_id": self.channel.id,
-                    "post_data": {
-                        "body": "My second review :)",
-                        "subtype_xmlid": "mail.mt_comment",
-                        "rating_value": "2",
-                    },
-                    "pid": self.env.user.partner_id.id,
+                'params': {
+                    'res_id': self.channel.id,
+                    'res_model': 'slide.channel',
+                    'message': 'My second review :)',
+                    'rating_value': '2',
+                    'pid': self.env.user.partner_id.id,
+                    'csrf_token': http.Request.csrf_token(self),
                 },
             },
         )

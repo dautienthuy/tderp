@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import Command
@@ -10,23 +11,11 @@ from odoo.addons.sale_purchase.tests.common import TestCommonSalePurchaseNoChart
 class TestSalePurchase(TestCommonSalePurchaseNoChart):
 
     @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-
-        cls.company_data_2 = cls.setup_other_company()
+    def setUpClass(cls, chart_template_ref=None):
+        super().setUpClass(chart_template_ref=chart_template_ref)
 
         # create a generic Sale Order with 2 classical products and a purchase service
-        SaleOrder = cls.env['sale.order']
-        cls.analytic_plan = cls.env['account.analytic.plan'].create({'name': 'Plan Test'})
-        cls.test_analytic_account_1, cls.test_analytic_account_2 = cls.env['account.analytic.account'].create([
-            {
-                'name': 'analytic_account_test_1',
-                'plan_id': cls.analytic_plan.id,
-            }, {
-                'name': 'analytic_account_test_2',
-                'plan_id': cls.analytic_plan.id,
-            },
-        ])
+        SaleOrder = cls.env['sale.order'].with_context(tracking_disable=True)
         cls.sale_order_1 = SaleOrder.create({
             'partner_id': cls.partner_a.id,
             'partner_invoice_id': cls.partner_a.id,
@@ -91,8 +80,6 @@ class TestSalePurchase(TestCommonSalePurchaseNoChart):
 
         self.assertEqual(len(purchase_order), 1, "Only one PO should have been created, from the 2 Sales orders")
         self.assertEqual(len(purchase_order.order_line), 2, "The purchase order should have 2 lines")
-        self.assertIn(self.sale_order_1.name, purchase_order.origin, "The PO should have SO 1 in its source documents")
-        self.assertIn(self.sale_order_2.name, purchase_order.origin, "The PO should have SO 2 in its source documents")
         self.assertEqual(len(purchase_lines_so1), 1, "Only one SO line from SO 1 should have create a PO line")
         self.assertEqual(len(purchase_lines_so2), 1, "Only one SO line from SO 2 should have create a PO line")
         self.assertEqual(len(purchase_order.activity_ids), 0, "No activity should be scheduled on the PO")
@@ -101,10 +88,6 @@ class TestSalePurchase(TestCommonSalePurchaseNoChart):
         self.assertNotEqual(purchase_line1.product_id, purchase_line2.product_id, "The 2 PO line should have different products")
         self.assertEqual(purchase_line1.product_id, self.sol1_service_purchase_1.product_id, "The create PO line must have the same product as its mother SO line")
         self.assertEqual(purchase_line2.product_id, self.sol2_service_purchase_2.product_id, "The create PO line must have the same product as its mother SO line")
-
-        self.assertEqual(purchase_line1.price_unit, self.supplierinfo1.price, "Unit price should be taken from the vendor line")
-        self.assertEqual(purchase_line2.price_unit, self.supplierinfo2.price, "Unit price should be taken from the vendor line")
-        self.assertEqual(purchase_line1.discount, self.supplierinfo1.discount, "Discount should be taken from the vendor line")
 
         purchase_order.button_cancel()
 
@@ -336,13 +319,10 @@ class TestSalePurchase(TestCommonSalePurchaseNoChart):
         - We process an order on company_2, while being logged in company_1
 
         The order must be processed without generating a PO, respecting the product
-        setting for this order's company. We also check that the opposite case holds
-        true as well (i.e. PO is generated when confirming with a company that isn't
-        configured for it, but the SO's company is)
+        setting for this order's company.
         """
         company_1 = self.env.company
         company_2 = self.company_data_2['company']
-        self.env.user.company_ids += company_2
         self.assertTrue(self.service_purchase_1.service_to_purchase)
         self.assertFalse(self.service_purchase_1.with_company(company_2).service_to_purchase)
         order = self.env['sale.order'].create({
@@ -355,56 +335,5 @@ class TestSalePurchase(TestCommonSalePurchaseNoChart):
                 })
             ]
         })
-        # FIXME: there is some sort of multi-company misconfiguration with the permissions that require a sudo here
-        # for this test to run. Issue doesn't occur when running test locally => probably some other module is messing
-        # with the permissions and/or there's an issue with the subsidiary setup
-        order.sudo().with_company(company_1).action_confirm()
+        order.with_company(company_1).action_confirm()
         self.assertFalse(order.purchase_order_count)
-
-        order2 = self.env['sale.order'].create({
-            'partner_id': self.partner_a.id,
-            'company_id': company_1.id,
-            'order_line': [
-                Command.create({
-                    'product_id': self.service_purchase_1.id,
-                    'product_uom_qty': 1,
-                })
-            ]
-        })
-
-        # FIXME: same sudo issue as above
-        order2.sudo().with_company(company_2).action_confirm()
-        self.assertTrue(order2.purchase_order_count)
-
-    def test_service_to_purchase_branch_tax_propagation(self):
-        """
-        Ensure that SO/PO of a branch can use root company's taxes
-        """
-        branch = self.env['res.company'].create({
-            'name': "Branch Company",
-            'parent_id': self.env.company.id,
-        })
-        self.env.user.company_id = branch
-        service_product = self.env['product.product'].create({
-            'name': "Branch Out-sourced Service",
-            'standard_price': 200.0,
-            'type': 'service',
-            'invoice_policy': 'delivery',
-            'taxes_id': self.company_data['default_tax_sale'],
-            'supplier_taxes_id': self.company_data['default_tax_purchase'],
-            'service_to_purchase': True,
-            'seller_ids': [Command.create({
-                'partner_id': self.partner_b.id,
-                'min_qty': 1,
-                'price': 100,
-            })],
-        })
-        so = self.env['sale.order'].create({
-            'partner_id': self.partner_a.id,
-            'order_line': [Command.create({
-                'product_id': service_product.id,
-            })],
-        })
-        self.assertEqual(so.order_line.tax_id, self.company_data['default_tax_sale'])
-        so.action_confirm()
-        self.assertEqual(so.order_line.purchase_line_ids.taxes_id, self.company_data['default_tax_purchase'])

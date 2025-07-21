@@ -1,15 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-import logging
-import threading
+
+from odoo.tests.common import HttpCase, tagged, ChromeBrowser
+from odoo.tools import config, logging
 from unittest.mock import patch
-
-from odoo.http import Controller, request, route
-from odoo.tests.common import ChromeBrowser, HttpCase, tagged
-from odoo.tools import config
-
-_logger = logging.getLogger(__name__)
-
 
 @tagged('-at_install', 'post_install')
 class TestHttpCase(HttpCase):
@@ -52,26 +46,29 @@ class TestHttpCase(HttpCase):
                 text = log.split('.browser:', 1)[1]
                 if text == 'test successful':
                     continue
-                if text.startswith('heap '):
-                    continue
                 self.assertEqual(text, "Object(custom=Object, value=1, description='dummy')")
                 console_log_count += 1
         self.assertEqual(console_log_count, 1)
 
-@tagged('-at_install', 'post_install')
-class TestRunbotLog(HttpCase):
-    def test_runbot_js_log(self):
-        """Test that a ChromeBrowser console.dir is handled server side as a log of level RUNBOT."""
-        log_message = 'this is a small test'
-        with self.assertLogs() as log_catcher:
-            self.browser_js("about:blank", f"console.runbot = console.dir; console.runbot('{log_message}'); console.log('test successful');")
-        found = False
-        for record in log_catcher.records:
-            if record.message == log_message:
-                self.assertEqual(record.levelno, logging.RUNBOT)
-                self.assertTrue(record.name.endswith('browser'))
-                found = True
-        self.assertTrue(found, "Runbot log not found")
+    @patch.dict(config.options, {"dev_mode": []})
+    def test_404_assets(self):
+        IrAttachment = self.env['ir.attachment']
+        # Ensure no assets exists
+        IrAttachment.search([('url', '=like', '/web/assets/%')]).unlink()
+        response = self.url_open('/NoSuchPage')
+        self.assertEqual(response.status_code, 404, "Page should not exist")
+        self.assertFalse(
+            IrAttachment.search_count([('url', '=like', '/web/assets/%')]),
+            "Assets should not have been generated because the transaction was rolled back"
+            # Well, they should - but this is part of a compromise to avoid
+            # being in the way of the read-only mode.
+        )
+        response = self.url_open('/')
+        self.assertEqual(response.status_code, 200, "Page should exist")
+        self.assertTrue(
+            IrAttachment.search_count([('url', '=like', '/web/assets/%')]),
+            "Assets should have been generated"
+        )
 
 
 @tagged('-at_install', 'post_install')
@@ -82,6 +79,7 @@ class TestChromeBrowser(HttpCase):
         with patch.dict(config.options, {'screencasts': screencasts_dir, 'screenshots': config['screenshots']}):
             self.browser = ChromeBrowser(self)
         self.addCleanup(self.browser.stop)
+        self.addCleanup(self.browser.clear)
 
     def test_screencasts(self):
         self.browser.start_screencast()
@@ -90,62 +88,3 @@ class TestChromeBrowser(HttpCase):
         code = "setTimeout(() => console.log('test successful'), 2000); setInterval(() => document.body.innerText = (new Date()).getTime(), 100);"
         self.browser._wait_code_ok(code, 10)
         self.browser._save_screencast()
-
-
-@tagged('-at_install', 'post_install')
-class TestChromeBrowserOddDimensions(TestChromeBrowser):
-    browser_size = "1215x768"
-
-
-class TestRequestRemaining(HttpCase):
-    # This test case tries to reproduce the case where a request is lost between two test and is execute during the secone one.
-    #
-    # - Test A browser js finishes with a pending request
-    # - _wait_remaining_requests misses the request since the thread may not be totally spawned (or correctly named)
-    # - Test B starts and a SELECT is executed
-    # - The request is executed and makes a concurrent fetchall
-    # - The test B tries to fetchall and fails since the cursor is already used by the request
-    #
-    # Note that similar cases can also consume savepoint, make the main cursor readonly, ...
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.thread_a = None
-        # this lock is used to ensure the request is executed after test b starts
-        cls.main_lock = threading.Lock()
-        cls.main_lock.acquire()
-
-    def test_requests_a(self):
-        class Dummycontroller(Controller):
-            @route('/web/concurrent', type='http', auth='public', sitemap=False)
-            def wait(c, **params):
-                self.assertEqual(request.env.cr.__class__.__name__, 'TestCursor')
-                request.env.cr.execute('SELECT 1')
-                request.env.cr.fetchall()
-                # not that the previous queries are not really needed since the http stack will check the registry
-                # but this makes the test more clear and robust
-                _logger.info('B finish')
-
-        self.env.registry.clear_cache('routing')
-        self.addCleanup(self.env.registry.clear_cache, 'routing')
-
-        def late_request_thread():
-            # In some rare case the request may arrive after _wait_remaining_requests.
-            # this thread is trying to reproduce this case.
-            _logger.info('Waiting for B to start')
-            if self.main_lock.acquire(timeout=10):
-                self.url_open("/web/concurrent", timeout=10)
-            else:
-                _logger.error('Something went wrong and thread was not able to aquire lock')
-        TestRequestRemaining.thread_a = threading.Thread(target=late_request_thread)
-        self.thread_a.start()
-
-    def test_requests_b(self):
-        self.env.cr.execute('SELECT 1')
-        with self.assertLogs('odoo.tests.common') as lc:
-            self.main_lock.release()
-            _logger.info('B started, waiting for A to finish')
-            self.thread_a.join()
-        self.assertEqual(lc.output[0].split(':', 1)[1], 'odoo.tests.common:Request with path /web/concurrent has been ignored during test as it it does not contain the test_cursor cookie or it is expired. (required "/base/tests/test_http_case.py:TestRequestRemaining.test_requests_b", got "/base/tests/test_http_case.py:TestRequestRemaining.test_requests_a")')
-        self.env.cr.fetchall()

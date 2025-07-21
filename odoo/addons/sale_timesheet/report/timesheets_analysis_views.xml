@@ -1,34 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="timesheets_analysis_report_list_inherited" model="ir.ui.view">
-        <field name="name">timesheets.analysis.report.list.inherited</field>
-        <field name="model">timesheets.analysis.report</field>
-        <field name="inherit_id" ref="hr_timesheet.timesheets_analysis_report_list"/>
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='task_id']" position="after">
-                <field name="so_line"
-                       optional="show"
-                       options="{'no_open': True}"
-                       placeholder="Non-billable"
-                />
-                <field name="timesheet_invoice_type" optional="hide"/>
-                <field name="timesheet_invoice_id" optional="hide"/>
-                <field name="timesheet_revenues" optional="hide" sum="Total"/>
-                <field name="margin" optional="hide" sum="Total"/>
-            </xpath>
-        </field>
-    </record>
-
-    <record id="timesheete_analysis_report_form" model="ir.ui.view">
-        <field name="name">timesheets.analysis.report.form</field>
-        <field name="model">timesheets.analysis.report</field>
-        <field name="inherit_id" ref="hr_timesheet.timesheets_analysis_report_form"/>
-        <field name="arch" type="xml">
-            <xpath expr="//sheet/group/group" position="inside">
-                <field name="so_line" widget="so_line_field" placeholder="Non-billable"/>
-            </xpath>
-        </field>
-    </record>
 
     <record id="timesheets_analysis_report_pivot_inherit" model="ir.ui.view">
         <field name="name">timesheets.analysis.report.pivot</field>
@@ -120,7 +91,7 @@
         <field name="name">timesheets.analysis.report.pivot</field>
         <field name="model">timesheets.analysis.report</field>
         <field name="arch" type="xml">
-            <pivot string="Timesheets Analysis" sample="1">
+            <pivot string="Timesheets Analysis" sample="1" disable_linking="True">
                 <field name="date" interval="month" type="row"/>
                 <field name="timesheet_invoice_type" type="col"/>
                 <field name="amount" string="Timesheet Costs"/>
@@ -135,7 +106,7 @@
         <field name="name">timesheets.analysis.report.graph</field>
         <field name="model">timesheets.analysis.report</field>
         <field name="arch" type="xml">
-            <graph string="Timesheets" sample="1" js_class="hr_timesheet_graphview">
+            <graph string="Timesheets" sample="1" js_class="hr_timesheet_graphview" disable_linking="True">
                 <field name="amount" string="Timesheet Costs"/>
                 <field name="unit_amount" type="measure" widget="timesheet_uom"/>
                 <field name="billable_time" widget="timesheet_uom"/>
@@ -148,18 +119,34 @@
     <record id="hr_timesheet_report_search_sale_timesheet" model="ir.ui.view">
         <field name="name">timesheets.analysis.report.search</field>
         <field name="model">timesheets.analysis.report</field>
-        <field name="inherit_id" ref="sale_timesheet.timesheet_view_search"/>
-        <field name="mode">primary</field>
+        <field name="inherit_id" ref="hr_timesheet.hr_timesheet_report_search"/>
         <field name="arch" type="xml">
-            <search position="attributes">
-                    <attribute name="string">Timesheet Report</attribute>
-                </search>
-            <xpath expr="//field[@name='order_id']" position="after">
+            <xpath expr="//field[@name='task_id']" position="after">
+                <field name="order_id" string="Sales Order" groups="sales_team.group_sale_salesman"/>
                 <field name="so_line" groups="sales_team.group_sale_salesman"/>
             </xpath>
-            <xpath expr="//filter[@name='groupby_sale_order_item']" position="before">
+            <xpath expr="//filter[@name='month']" position="before">
+                <filter name="billable_fixed" string="Billed at a Fixed Price" domain="[('timesheet_invoice_type', '=', 'billable_fixed')]"
+                    groups="sales_team.group_sale_salesman"/>
+                <filter name="billable_time" string="Billed on Timesheets" domain="[('timesheet_invoice_type', '=', 'billable_time')]"
+                    groups="sales_team.group_sale_salesman"/>
+                <filter name="billable_milestones" string="Billed on Milestones" domain="[('timesheet_invoice_type', '=', 'billable_milestones')]"
+                    groups="sales_team.group_sale_salesman"/>
+                <filter name="billable_manual" string="Billed Manually" domain="[('timesheet_invoice_type', '=', 'billable_manual')]"
+                    groups="sales_team.group_sale_salesman"/>
+                <filter name="non_billable" string="Non-Billable" domain="[('timesheet_invoice_type', '=', 'non_billable')]"
+                    groups="sales_team.group_sale_salesman"/>
+                <separator/>
+            </xpath>
+            <xpath expr="//filter[@name='groupby_employee']" position="after">
                 <filter string="Sales Order" name="groupby_sale_order" domain="[]"
                     context="{'group_by': 'order_id'}" groups="sales_team.group_sale_salesman"/>
+                <filter string="Sales Order Item" name="groupby_sale_order_item" domain="[]"
+                    context="{'group_by': 'so_line'}" groups="sales_team.group_sale_salesman"/>
+                <filter string="Invoice" name="groupby_invoice" domain="[]"
+                    context="{'group_by': 'timesheet_invoice_id'}" groups="sales_team.group_sale_salesman"/>
+                <filter string="Billable Type" name="groupby_timesheet_invoice_type" domain="[]"
+                    context="{'group_by': 'timesheet_invoice_type'}" groups="sales_team.group_sale_salesman"/>
             </xpath>
         </field>
     </record>
@@ -167,7 +154,6 @@
     <record id="timesheet_action_billing_report" model="ir.actions.act_window">
         <field name="name">Timesheets by Billing Type</field>
         <field name="res_model">timesheets.analysis.report</field>
-        <field name="path">timesheets-billing</field>
         <field name="domain">[('project_id', '!=', False)]</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
@@ -190,13 +176,6 @@
         <field name="sequence" eval="6"/>
         <field name="view_mode">graph</field>
         <field name="view_id" ref="timesheets_analysis_report_graph_invoice_type"/>
-        <field name="act_window_id" ref="timesheet_action_billing_report"/>
-    </record>
-
-    <record id="timesheet_action_view_report_by_billing_rate_list" model="ir.actions.act_window.view">
-        <field name="sequence" eval="10"/>
-        <field name="view_mode">list</field>
-        <field name="view_id" ref="hr_timesheet.timesheets_analysis_report_list"/>
         <field name="act_window_id" ref="timesheet_action_billing_report"/>
     </record>
 

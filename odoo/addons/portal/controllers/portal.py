@@ -1,5 +1,8 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import base64
+import json
 import math
 import re
 
@@ -130,6 +133,9 @@ def _build_url_w_params(url_string, query_params, remove_duplicates=True):
 
 class CustomerPortal(Controller):
 
+    MANDATORY_BILLING_FIELDS = ["name", "phone", "email", "street", "city", "country_id"]
+    OPTIONAL_BILLING_FIELDS = ["zipcode", "state_id", "vat", "company_name"]
+
     _items_per_page = 80
 
     def _prepare_portal_layout_values(self):
@@ -142,10 +148,6 @@ class CustomerPortal(Controller):
         partner_sudo = request.env.user.partner_id
         if partner_sudo.user_id and not partner_sudo.user_id._is_public():
             sales_user_sudo = partner_sudo.user_id
-        else:
-            fallback_sales_user = partner_sudo.commercial_partner_id.user_id
-            if fallback_sales_user and not fallback_sales_user._is_public():
-                sales_user_sudo = fallback_sales_user
 
         return {
             'sales_user': sales_user_sudo,
@@ -161,19 +163,13 @@ class CustomerPortal(Controller):
         """
         return {}
 
-    @route(['/my/counters'], type='json', auth="user", website=True, readonly=True)
+    @route(['/my/counters'], type='json', auth="user", website=True)
     def counters(self, counters, **kw):
-        cache = (request.session.portal_counters or {}).copy()
-        res = self._prepare_home_portal_values(counters)
-        cache.update({k: bool(v) for k, v in res.items() if k.endswith('_count')})
-        if cache != request.session.portal_counters:
-            request.session.portal_counters = cache
-        return res
+        return self._prepare_home_portal_values(counters)
 
     @route(['/my', '/my/home'], type='http', auth="user", website=True)
     def home(self, **kw):
         values = self._prepare_portal_layout_values()
-        values.update(self._prepare_home_portal_values([]))
         return request.render("portal.portal_my_home", values)
 
     @route(['/my/account'], type='http', auth='user', website=True)
@@ -186,15 +182,12 @@ class CustomerPortal(Controller):
         })
 
         if post and request.httprequest.method == 'POST':
-            if not partner.can_edit_vat():
-                post['country_id'] = str(partner.country_id.id)
-
             error, error_message = self.details_form_validate(post)
             values.update({'error': error, 'error_message': error_message})
             values.update(post)
             if not error:
-                values = {key: post[key] for key in self._get_mandatory_fields()}
-                values.update({key: post[key] for key in self._get_optional_fields() if key in post})
+                values = {key: post[key] for key in self.MANDATORY_BILLING_FIELDS}
+                values.update({key: post[key] for key in self.OPTIONAL_BILLING_FIELDS if key in post})
                 for field in set(['country_id', 'state_id']) & set(values.keys()):
                     try:
                         values[field] = int(values[field])
@@ -263,7 +256,7 @@ class CustomerPortal(Controller):
                 msg = _('The old password you provided is incorrect, your password was not changed.')
             return {'errors': {'password': {'old': msg}}}
         except UserError as e:
-            return {'errors': {'password': str(e)}}
+            return {'errors': {'password': e.name}}
 
         # update session token so the user does not get logged out (cache cleared by passwd change)
         new_token = request.env.user._compute_session_token(request.session.sid)
@@ -276,13 +269,12 @@ class CustomerPortal(Controller):
         values = self._prepare_portal_layout_values()
         values['get_error'] = get_error
         values['open_deactivate_modal'] = True
-        credential = {'login': request.env.user.login, 'password': password, 'type': 'password'}
 
         if validation != request.env.user.login:
             values['errors'] = {'deactivate': 'validation'}
         else:
             try:
-                request.env['res.users']._check_credentials(credential, {'interactive': True})
+                request.env['res.users']._check_credentials(password, {'interactive': True})
                 request.env.user.sudo()._deactivate_portal_user(**post)
                 request.session.logout()
                 return request.redirect('/web/login?message=%s' % urls.url_quote(_('Account deleted!')))
@@ -295,6 +287,63 @@ class CustomerPortal(Controller):
             'X-Frame-Options': 'SAMEORIGIN',
             'Content-Security-Policy': "frame-ancestors 'self'",
         })
+
+    @http.route('/portal/attachment/add', type='http', auth='public', methods=['POST'], website=True)
+    def attachment_add(self, name, file, res_model, res_id, access_token=None, **kwargs):
+        """Process a file uploaded from the portal chatter and create the
+        corresponding `ir.attachment`.
+
+        The attachment will be created "pending" until the associated message
+        is actually created, and it will be garbage collected otherwise.
+
+        :param name: name of the file to save.
+        :type name: string
+
+        :param file: the file to save
+        :type file: werkzeug.FileStorage
+
+        :param res_model: name of the model of the original document.
+            To check access rights only, it will not be saved here.
+        :type res_model: string
+
+        :param res_id: id of the original document.
+            To check access rights only, it will not be saved here.
+        :type res_id: int
+
+        :param access_token: access_token of the original document.
+            To check access rights only, it will not be saved here.
+        :type access_token: string
+
+        :return: attachment data {id, name, mimetype, file_size, access_token}
+        :rtype: dict
+        """
+        try:
+            self._document_check_access(res_model, int(res_id), access_token=access_token)
+        except (AccessError, MissingError) as e:
+            raise UserError(_("The document does not exist or you do not have the rights to access it."))
+
+        IrAttachment = request.env['ir.attachment']
+
+        # Avoid using sudo when not necessary: internal users can create attachments,
+        # as opposed to public and portal users.
+        if not request.env.user._is_internal():
+            IrAttachment = IrAttachment.sudo().with_context(binary_field_real_user=IrAttachment.env.user)
+
+        # At this point the related message does not exist yet, so we assign
+        # those specific res_model and res_is. They will be correctly set
+        # when the message is created: see `portal_chatter_post`,
+        # or garbage collected otherwise: see  `_garbage_collect_attachments`.
+        attachment = IrAttachment.create({
+            'name': name,
+            'datas': base64.b64encode(file.read()),
+            'res_model': 'mail.compose.message',
+            'res_id': 0,
+            'access_token': IrAttachment._generate_access_token(),
+        })
+        return request.make_response(
+            data=json.dumps(attachment.read(['id', 'name', 'mimetype', 'file_size', 'access_token'])[0]),
+            headers=[('Content-Type', 'application/json')]
+        )
 
     @http.route('/portal/attachment/remove', type='json', auth='public')
     def attachment_remove(self, attachment_id, access_token=None):
@@ -311,7 +360,7 @@ class CustomerPortal(Controller):
         if attachment_sudo.res_model != 'mail.compose.message' or attachment_sudo.res_id != 0:
             raise UserError(_("The attachment %s cannot be removed because it is not in a pending state.", attachment_sudo.name))
 
-        if attachment_sudo.env['mail.message'].search_count([('attachment_ids', 'in', attachment_sudo.ids)], limit=1):
+        if attachment_sudo.env['mail.message'].search([('attachment_ids', 'in', attachment_sudo.ids)]):
             raise UserError(_("The attachment %s cannot be removed because it is linked to a message.", attachment_sudo.name))
 
         return attachment_sudo.unlink()
@@ -320,18 +369,10 @@ class CustomerPortal(Controller):
         error = dict()
         error_message = []
 
-        request.update_context(portal_form_country_id=data['country_id'])
-        partner = request.env.user.partner_id
-
         # Validation
-        for field_name in self._get_mandatory_fields():
+        for field_name in self.MANDATORY_BILLING_FIELDS:
             if not data.get(field_name):
-                if field_name == 'country_id' and not partner.can_edit_vat():
-                    # you cannot edit the country ID in that case so we skip the error, see the XML form for details
-                    continue
                 error[field_name] = 'missing'
-                if field_name == 'zipcode':
-                    error['zip'] = 'missing'
 
         # email validation
         if data.get('email') and not tools.single_email_re.match(data.get('email')):
@@ -339,6 +380,7 @@ class CustomerPortal(Controller):
             error_message.append(_('Invalid Email! Please enter a valid email address.'))
 
         # vat validation
+        partner = request.env.user.partner_id
         if data.get("vat") and partner and partner.vat != data.get("vat"):
             # Check the VAT if it is the public user too.
             if partner_creation or partner.can_edit_vat():
@@ -362,20 +404,12 @@ class CustomerPortal(Controller):
         if [err for err in error.values() if err == 'missing']:
             error_message.append(_('Some required fields are empty.'))
 
-        unknown = [k for k in data if k not in self._get_mandatory_fields() + self._get_optional_fields()]
+        unknown = [k for k in data if k not in self.MANDATORY_BILLING_FIELDS + self.OPTIONAL_BILLING_FIELDS]
         if unknown:
             error['common'] = 'Unknown field'
             error_message.append("Unknown field '%s'" % ','.join(unknown))
 
         return error, error_message
-
-    def _get_mandatory_fields(self):
-        """ This method is there so that we can override the mandatory fields """
-        return ["name", "phone", "email", "street", "city", "country_id"]
-
-    def _get_optional_fields(self):
-        """ This method is there so that we can override the optional fields """
-        return ["street2", "zipcode", "state_id", "vat", "company_name"]
 
     def _document_check_access(self, model_name, document_id, access_token=None):
         """Check if current user is allowed to access the specified record.
@@ -392,7 +426,8 @@ class CustomerPortal(Controller):
         if not document_sudo:
             raise MissingError(_("This document does not exist."))
         try:
-            document.check_access('read')
+            document.check_access_rights('read')
+            document.check_access_rule('read')
         except AccessError:
             if not access_token or not document_sudo.access_token or not consteq(document_sudo.access_token, access_token):
                 raise
@@ -448,18 +483,14 @@ class CustomerPortal(Controller):
 
         method_name = '_render_qweb_%s' % (report_type)
         report = getattr(ReportAction, method_name)(report_ref, list(model.ids), data={'report_type': report_type})[0]
-        headers = self._get_http_headers(model, report_type, report, download)
-        return request.make_response(report, headers=list(headers.items()))
-
-    def _get_http_headers(self, model, report_type, report, download):
-        headers = {
-            'Content-Type': 'application/pdf' if report_type == 'pdf' else 'text/html',
-            'Content-Length': len(report),
-        }
-        if report_type == 'pdf':
-            filename = "%s.pdf" % (re.sub(r'\W+', '_', model._get_report_base_filename()))
-            headers['Content-Disposition'] = content_disposition(filename, disposition_type='attachment' if download else 'inline')
-        return headers
+        reporthttpheaders = [
+            ('Content-Type', 'application/pdf' if report_type == 'pdf' else 'text/html'),
+            ('Content-Length', len(report)),
+        ]
+        if report_type == 'pdf' and download:
+            filename = "%s.pdf" % (re.sub(r'\W+', '-', model._get_report_base_filename()))
+            reporthttpheaders.append(('Content-Disposition', content_disposition(filename)))
+        return request.make_response(report, headers=reporthttpheaders)
 
 def get_error(e, path=''):
     """ Recursively dereferences `path` (a period-separated sequence of dict

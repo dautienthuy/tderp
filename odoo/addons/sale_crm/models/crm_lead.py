@@ -3,7 +3,7 @@
 
 from dateutil.relativedelta import relativedelta
 
-from odoo import api, fields, models, _
+from odoo import api, fields, models
 from odoo.osv import expression
 
 
@@ -46,8 +46,8 @@ class CrmLead(models.Model):
         action = self.env["ir.actions.actions"]._for_xml_id("sale.action_quotations_with_onboarding")
         action['context'] = self._prepare_opportunity_quotation_context()
         action['context']['search_default_draft'] = 1
-        action['domain'] = expression.AND([[('opportunity_id', '=', self.id)], self._get_action_view_sale_quotation_domain()])
-        quotations = self.order_ids.filtered_domain(self._get_action_view_sale_quotation_domain())
+        action['domain'] = expression.AND([[('opportunity_id', '=', self.id)], self._get_lead_quotation_domain()])
+        quotations = self.order_ids.filtered_domain(self._get_lead_quotation_domain())
         if len(quotations) == 1:
             action['views'] = [(self.env.ref('sale.view_order_form').id, 'form')]
             action['res_id'] = quotations.id
@@ -67,9 +67,6 @@ class CrmLead(models.Model):
             action['views'] = [(self.env.ref('sale.view_order_form').id, 'form')]
             action['res_id'] = orders.id
         return action
-
-    def _get_action_view_sale_quotation_domain(self):
-        return [('state', 'in', ('draft', 'sent', 'cancel'))]
 
     def _get_lead_quotation_domain(self):
         return [('state', 'in', ('draft', 'sent'))]
@@ -101,12 +98,3 @@ class CrmLead(models.Model):
         # add all the orders from all lead to merge
         fields_info['order_ids'] = lambda fname, leads: [(4, order.id) for order in leads.order_ids]
         return fields_info
-
-    def _update_revenues_from_so(self, order):
-        for opportunity in self:
-            if (
-                (opportunity.expected_revenue or 0) < order.amount_untaxed
-                and order.currency_id == opportunity.company_id.currency_id
-            ):
-                opportunity.expected_revenue = order.amount_untaxed
-                opportunity._track_set_log_message(_('Expected revenue has been updated based on the linked Sales Orders.'))

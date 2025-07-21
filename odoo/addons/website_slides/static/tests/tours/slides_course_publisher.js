@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { clickOnEditAndWaitEditMode, registerWebsitePreviewTour } from '@website/js/tours/tour_utils';
+import wTourUtils from 'website.tour_utils';
 import slidesTourTools from '@website_slides/../tests/tours/slides_tour_tools';
 
 /**
@@ -10,79 +10,75 @@ import slidesTourTools from '@website_slides/../tests/tours/slides_tour_tools';
  * they create some lessons in it;
  * they publishe it;
  */
-registerWebsitePreviewTour('course_publisher', {
-    // TODO: replace by getClientActionURL when it's added
-    url: '/slides'
-}, () => [{
+wTourUtils.registerWebsitePreviewTour('course_publisher', {
+    // TODO: replace by wTourUtils.getClientActionURL when it's added
+    url: '/slides',
+    test: true
+}, [{
     content: 'eLearning: click on New (top-menu)',
-    trigger: 'div.o_new_content_container a',
-    run: "click",
+    trigger: 'div.o_new_content_container a'
 }, {
     content: 'eLearning: click on New Course',
-    trigger: '#o_new_content_menu_choices a:contains("Course")',
-    run: "click",
+    trigger: '#o_new_content_menu_choices a:contains("Course")'
 }, {
     content: 'eLearning: set name',
-    trigger: "modal:not(.o_inactive_modal) div[name=name] input",
-    run: "edit How to Déboulonnate",
+    trigger: 'input[name="name"]',
+    run: 'text How to Déboulonnate',
 }, {
     content: 'eLearning: click on tags',
-    trigger: ".modal .o_field_many2many_tags input",
-    run: "edit Gard",
+    trigger: '.o_field_many2manytags input',
+    run: 'text Gard',
 }, {
     content: 'eLearning: select gardener tag',
-    trigger: ".modal .ui-autocomplete a:contains(Gardener)",
-    run: "click",
+    trigger: '.ui-autocomplete a:contains("Gardener")',
+    in_modal: false,
 }, {
     content: 'eLearning: set description',
-    trigger: 'modal .o_field_html[name="description"] .odoo-editor-editable p',
-    run: "editor Déboulonnate is very common at Fleurus",
+    trigger: '.o_field_html[name="description"]',
+    run: 'text Déboulonnate is very common at Fleurus',
 }, {
     content: 'eLearning: we want reviews',
     trigger: '.o_field_boolean[name="allow_comment"] input',
-    run: "click",
 }, {
     content: 'eLearning: seems cool, create it',
-    trigger: ".modal button:contains(Save)",
-    run: "click",
+    trigger: 'button:contains("Save")',
 },
-...clickOnEditAndWaitEditMode(),
+...wTourUtils.clickOnEditAndWaitEditMode(),
 {
     content: 'eLearning: double click image to edit it',
-    trigger: ':iframe img.o_wslides_course_pict',
+    trigger: 'iframe img.o_wslides_course_pict',
     run: 'dblclick',
 }, {
     content: 'eLearning: click "Add URL" to trigger URL box',
     trigger: '.o_upload_media_url_button',
-    run: "click",
 }, {
     content: 'eLearning: add a bioutifoul URL',
     trigger: 'input.o_we_url_input',
-    run: "edit https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/ThreeTimeAKCGoldWinnerPembrookeWelshCorgi.jpg/800px-ThreeTimeAKCGoldWinnerPembrookeWelshCorgi.jpg",
-},
-{
-    trigger: ".o_we_url_success",
-},
-{
+    run: 'text https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/ThreeTimeAKCGoldWinnerPembrookeWelshCorgi.jpg/800px-ThreeTimeAKCGoldWinnerPembrookeWelshCorgi.jpg'
+}, {
     content: 'eLearning: click "Add URL" really adding image',
     trigger: '.o_upload_media_url_button',
-    run: "click",
+    extra_trigger: '.o_we_url_success',
 }, {
     content: 'eLearning: is the Corgi set ?',
-    trigger: ':iframe img.o_wslides_course_pict[data-original-src$="GoldWinnerPembrookeWelshCorgi.jpg"]',
-    run: "click",
+    trigger: 'iframe img.o_wslides_course_pict',
+    run: function () {
+        const $imgCorgi = $('.o_website_preview iframe').contents().find('img.o_wslides_course_pict');
+        if ($imgCorgi.attr('src').endsWith('GoldWinnerPembrookeWelshCorgi.jpg')) {
+            $imgCorgi.addClass('o_wslides_tour_success');
+        }
+    },
+}, {
+    content: 'eLearning: the Corgi is set !',
+    trigger: 'iframe img.o_wslides_course_pict.o_wslides_tour_success',
 }, {
     content: 'eLearning: save course edition',
     trigger: 'button[data-action="save"]',
-    run: "click",
-},
-{
-    trigger: ":iframe body:not(.editor_enable)", // wait for editor to close
-},
-{
-    // check membership
+}, {
     content: 'eLearning: course create with current member',
-    trigger: ':iframe .o_wslides_js_course_join:contains("You\'re enrolled")',
+    extra_trigger: 'iframe body:not(.editor_enable)',  // wait for editor to close
+    trigger: 'iframe .o_wslides_js_course_join:contains("You\'re enrolled")',
+    run: function () {} // check membership
 }
 ].concat(
     slidesTourTools.addExistingCourseTag(true),
@@ -91,12 +87,10 @@ registerWebsitePreviewTour('course_publisher', {
     slidesTourTools.addVideoToSection('Introduction', false, true),
     [{
     content: 'eLearning: publish newly added course',
-    trigger: ':iframe span:contains("Dschinghis Khan - Dschinghis Khan (1979)")',  // wait for slide to appear
+    trigger: 'iframe span:contains("Dschinghis Khan - Dschinghis Khan (1979)")',  // wait for slide to appear
     // trigger: 'span.o_wslides_js_slide_toggle_is_preview:first',
-    run() {
-        document.querySelector(
-            ".o_website_preview :iframe span.o_wslides_js_slide_toggle_is_preview"
-        ).click();
+    run: function () {
+        $('.o_website_preview iframe').contents().find('span.o_wslides_js_slide_toggle_is_preview:first')[0].click();
     }
 }]
 //     [

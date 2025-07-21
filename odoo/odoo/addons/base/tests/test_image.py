@@ -3,10 +3,11 @@
 
 import base64
 import io
+import binascii
 
 from PIL import Image, ImageDraw, PngImagePlugin
 
-from odoo.tools import image as tools
+from odoo import tools
 from odoo.exceptions import UserError
 from odoo.tests.common import TransactionCase
 
@@ -176,19 +177,6 @@ class TestImage(TransactionCase):
         res = tools.image_process(self.img_1920x1080_jpeg)
         self.assertLessEqual(len(res), len(self.img_1920x1080_jpeg))
 
-        # CASE: JPEG optimize + bigger size => original
-        pil_image = Image.new('RGB', (1920, 1080), color=self.bg_color)
-        # Drawing non trivial content so that optimization matters.
-        ImageDraw.Draw(pil_image).ellipse(xy=[
-            (400, 0),
-            (1500, 1080)
-        ], fill=self.fill_color, outline=(240, 25, 40), width=10)
-        image = tools.image_apply_opt(pil_image, 'JPEG')
-        res = tools.image_process(image, quality=50)
-        self.assertLess(len(res), len(image), "Low quality image should be smaller than original")
-        res = tools.image_process(image, quality=99)
-        self.assertEqual(len(res), len(image), "Original should be returned if size increased")
-
         # CASE: GIF doesn't apply quality, just optimize
         image = tools.image_apply_opt(Image.new('RGB', (1080, 1920)), 'GIF')
         res = tools.image_process(image)
@@ -290,21 +278,6 @@ class TestImage(TransactionCase):
         image = img_open(tools.image_process(image_1080_1920_tiff, quality=95))
         self.assertEqual(image.format, 'JPEG', "unsupported format to JPEG")
 
-    def test_17_get_webp_size(self):
-        # Using 32 bytes image headers as data.
-        # Lossy webp: 550x368
-        webp_lossy = b'RIFFhv\x00\x00WEBPVP8 \\v\x00\x00\xd2\xbe\x01\x9d\x01*&\x02p\x01>\xd5'
-        size = tools.get_webp_size(webp_lossy)
-        self.assertEqual((550, 368), size, "Wrong resolution for lossy webp")
-        # Lossless webp: 421x163
-        webp_lossless = b'RIFF\xba\x84\x00\x00WEBPVP8L\xad\x84\x00\x00/\xa4\x81(\x10MHr\x1bI\x92\xa4'
-        size = tools.get_webp_size(webp_lossless)
-        self.assertEqual((421, 163), size, "Wrong resolution for lossless webp")
-        # Extended webp: 800x600
-        webp_extended = b'RIFF\x80\xce\x00\x00WEBPVP8X\n\x00\x00\x00\x10\x00\x00\x00\x1f\x03\x00W\x02\x00AL'
-        size = tools.get_webp_size(webp_extended)
-        self.assertEqual((800, 600), size, "Wrong resolution for extended webp")
-
     def test_20_image_data_uri(self):
         """Test that image_data_uri is working as expected."""
         self.assertEqual(tools.image_data_uri(base64.b64encode(self.img_1x1_png)), 'data:image/png;base64,' + base64.b64encode(self.img_1x1_png).decode('ascii'))
@@ -368,4 +341,4 @@ class TestImage(TransactionCase):
         """converts to RGB when saving as JPEG"""
         image1 = Image.new('P', (1, 1), color='red')
         image2 = Image.new('RGB', (1, 1), color='red')
-        self.assertEqual(tools.image_apply_opt(image1, 'JPEG'), tools.image_apply_opt(image2, 'JPEG'))
+        self.assertEqual(tools.image.image_apply_opt(image1, 'JPEG'), tools.image.image_apply_opt(image2, 'JPEG'))

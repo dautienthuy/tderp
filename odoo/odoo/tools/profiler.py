@@ -11,11 +11,9 @@ import threading
 import re
 import functools
 
-from psycopg2 import OperationalError
+from psycopg2 import sql
 
 from odoo import tools
-from odoo.tools import SQL
-
 
 _logger = logging.getLogger(__name__)
 
@@ -115,20 +113,13 @@ class Collector:
 
     def add(self, entry=None, frame=None):
         """ Add an entry (dict) to this collector. """
+        # todo add entry count limit
         self._entries.append({
             'stack': self._get_stack_trace(frame),
             'exec_context': getattr(self.profiler.init_thread, 'exec_context', ()),
             'start': real_time(),
             **(entry or {}),
         })
-
-    def progress(self, entry=None, frame=None):
-        """ Checks if the limits were met and add to the entries"""
-        if self.profiler.entry_count_limit \
-            and self.profiler.entry_count() >= self.profiler.entry_count_limit:
-            self.profiler.end()
-
-        self.add(entry=entry, frame=frame)
 
     def _get_stack_trace(self, frame=None):
         """ Return the stack trace to be included in a given entry. """
@@ -148,9 +139,6 @@ class Collector:
             self._processed = True
         return self._entries
 
-    def summary(self):
-        return f"{'='*10} {self.name} {'='*10} \n Entries: {len(self._entries)}"
-
 
 class SQLCollector(Collector):
     """
@@ -168,19 +156,12 @@ class SQLCollector(Collector):
         self.profiler.init_thread.query_hooks.remove(self.hook)
 
     def hook(self, cr, query, params, query_start, query_time):
-        self.progress({
+        self.add({
             'query': str(query),
             'full_query': str(cr._format(query, params)),
             'start': query_start,
             'time': query_time,
         })
-
-    def summary(self):
-        total_time = sum(entry['time'] for entry in self._entries) or 1
-        sql_entries = ''
-        for entry in self._entries:
-            sql_entries += f"\n{'-' * 100}'\n'{entry['time']}  {'*' * int(entry['time'] / total_time * 100)}'\n'{entry['full_query']}"
-        return super().summary() + sql_entries
 
 
 class PeriodicCollector(Collector):
@@ -211,7 +192,7 @@ class PeriodicCollector(Collector):
                 # is incorrectly attributed to the last frame.
                 self._entries[-1]['stack'].append(('profiling', 0, '⚠ Profiler freezed for %s s' % duration, ''))
                 self.last_frame = None  # skip duplicate detection for the next frame.
-            self.progress()
+            self.add()
             last_time = real_time()
             time.sleep(self.frame_interval)
 
@@ -225,14 +206,14 @@ class PeriodicCollector(Collector):
         init_thread = self.profiler.init_thread
         if not hasattr(init_thread, 'profile_hooks'):
             init_thread.profile_hooks = []
-        init_thread.profile_hooks.append(self.progress)
+        init_thread.profile_hooks.append(self.add)
 
         self.__thread.start()
 
     def stop(self):
         self.active = False
         self.__thread.join()
-        self.profiler.init_thread.profile_hooks.remove(self.progress)
+        self.profiler.init_thread.profile_hooks.remove(self.add)
 
     def add(self, entry=None, frame=None):
         """ Add an entry (dict) to this collector. """
@@ -268,7 +249,7 @@ class SyncCollector(Collector):
         if event == 'call' and _frame.f_back:
             # we need the parent frame to determine the line number of the call
             entry['parent_frame'] = _format_frame(_frame.f_back)
-        self.progress(entry, frame=_frame)
+        self.add(entry, frame=_frame)
         return self.hook
 
     def _get_stack_trace(self, frame=None):
@@ -527,7 +508,7 @@ class Profiler:
     Will save sql and async stack trace by default.
     """
     def __init__(self, collectors=None, db=..., profile_session=None,
-                 description=None, disable_gc=False, params=None, log=False):
+                 description=None, disable_gc=False, params=None):
         """
         :param db: database name to use to save results.
             Will try to define database automatically by default.
@@ -549,10 +530,6 @@ class Profiler:
         self.filecache = {}
         self.params = params or {}  # custom parameters usable by collectors
         self.profile_id = None
-        self.log = log
-        self.sub_profilers = []
-        self.entry_count_limit = int(self.params.get("entry_count_limit", 0))   # the limit could be set using a smarter way
-        self.done = False
 
         if db is ...:
             # determine database from current thread
@@ -607,12 +584,6 @@ class Profiler:
         return self
 
     def __exit__(self, *args):
-        self.end()
-
-    def end(self):
-        if self.done:
-            return
-        self.done = True
         try:
             for collector in self.collectors:
                 collector.stop()
@@ -635,26 +606,18 @@ class Profiler:
                     for collector in self.collectors:
                         if collector.entries:
                             values[collector.name] = json.dumps(collector.entries)
-                    query = SQL(
-                        "INSERT INTO ir_profile(%s) VALUES %s RETURNING id",
-                        SQL(",").join(map(SQL.identifier, values)),
-                        tuple(values.values()),
+                    query = sql.SQL("INSERT INTO {}({}) VALUES %s RETURNING id").format(
+                        sql.Identifier("ir_profile"),
+                        sql.SQL(",").join(map(sql.Identifier, values)),
                     )
-                    cr.execute(query)
+                    cr.execute(query, [tuple(values.values())])
                     self.profile_id = cr.fetchone()[0]
                     _logger.info('ir_profile %s (%s) created', self.profile_id, self.profile_session)
-        except OperationalError:
-            _logger.exception("Could not save profile in database")
         finally:
             if self.disable_gc:
                 gc.enable()
             if self.params:
                 del self.init_thread.profiler_params
-            if self.log:
-                _logger.info(self.summary())
-
-    def _get_cm_proxy(self):
-        return _Nested(self)
 
     def _add_file_lines(self, stack):
         for index, frame in enumerate(stack):
@@ -713,27 +676,6 @@ class Profiler:
             "duration": self.duration,
             "collectors": {collector.name: collector.entries for collector in self.collectors},
         }, indent=4)
-
-    def summary(self):
-        result = ''
-        for profiler in [self, *self.sub_profilers]:
-            for collector in profiler.collectors:
-                result += f'\n{self.description}\n{collector.summary()}'
-        return result
-
-
-class _Nested:
-    __slots__ = ("__profiler",)
-
-    def __init__(self, profiler):
-        self.__profiler = profiler
-
-    def __enter__(self):
-        self.__profiler.__enter__()
-        return self
-
-    def __exit__(self, *args):
-        return self.__profiler.__exit__(*args)
 
 
 class Nested:

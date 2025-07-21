@@ -3,16 +3,16 @@
 # 	* website_sale_wishlist
 # 
 # Translators:
-# Wil Odoo, 2024
-# Manon Rondou, 2025
+# Martin Trigaux, 2022
+# Jolien De Paepe, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-27 18:40+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: Manon Rondou, 2025\n"
+"POT-Creation-Date: 2022-09-20 09:02+0000\n"
+"PO-Revision-Date: 2022-09-22 05:57+0000\n"
+"Last-Translator: Jolien De Paepe, 2023\n"
 "Language-Team: French (https://app.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -32,11 +32,11 @@ msgstr ""
 #. module: website_sale_wishlist
 #: model_terms:ir.ui.view,arch_db:website_sale_wishlist.product_add_to_wishlist
 msgid ""
-"<i class=\"fa fa-heart-o me-2\" role=\"img\" aria-label=\"Add to wishlist\"/>\n"
-"                    Add to wishlist"
+"<i class=\"fa fa-heart-o me-2\" role=\"img\" aria-label=\"Add to "
+"wishlist\"/>Add to wishlist"
 msgstr ""
-"<i class=\"fa fa-heart-o me-2\" role=\"img\" aria-label=\"Add to wishlist\"/>\n"
-"                    Ajouter à la liste de souhaits"
+"<i class=\"fa fa-heart-o me-2\" role=\"img\" aria-label=\"Add to "
+"wishlist\"/>Ajouter à la liste de souhaits"
 
 #. module: website_sale_wishlist
 #: model_terms:ir.ui.view,arch_db:website_sale_wishlist.product_wishlist
@@ -44,25 +44,21 @@ msgid "<small><i class=\"fa fa-trash-o\"/> Remove</small>"
 msgstr "<small><i class=\"fa fa-trash-o\"/> Supprimer</small>"
 
 #. module: website_sale_wishlist
-#: model_terms:ir.ui.view,arch_db:website_sale_wishlist.product_wishlist
-msgid ""
-"<span class=\"fa fa-fw fa-shopping-cart o_not-animable\"/>\n"
-"                                                <span class=\"d-none d-md-inline\">Add</span>"
-msgstr ""
-
-#. module: website_sale_wishlist
 #: model_terms:ir.ui.view,arch_db:website_sale_wishlist.add_to_wishlist
-msgid ""
-"<span class=\"fa fa-heart o_not-animable\" role=\"img\" aria-label=\"Add to "
-"wishlist\"/>"
+msgid "<span class=\"fa fa-heart\" role=\"img\" aria-label=\"Add to wishlist\"/>"
 msgstr ""
-"<span class=\"fa fa-heart o_not-animable\" role=\"img\" aria-label=\"Ajouter"
-" à la liste de souhaits\"/>"
+"<span class=\"fa fa-heart\" role=\"img\" aria-label=\"Ajouter à la liste de "
+"souhaits\"/>"
 
 #. module: website_sale_wishlist
 #: model:ir.model.fields,field_description:website_sale_wishlist.field_product_wishlist__active
 msgid "Active"
-msgstr "Actif"
+msgstr "Active"
+
+#. module: website_sale_wishlist
+#: model_terms:ir.ui.view,arch_db:website_sale_wishlist.product_wishlist
+msgid "Add <span class=\"d-none d-md-inline\">to Cart</span>"
+msgstr "Ajouter <span class=\"d-none d-md-inline\">au panier</span>"
 
 #. module: website_sale_wishlist
 #: model_terms:ir.ui.view,arch_db:website_sale_wishlist.product_wishlist
@@ -72,7 +68,6 @@ msgstr ""
 
 #. module: website_sale_wishlist
 #: model_terms:ir.ui.view,arch_db:website_sale_wishlist.add_to_wishlist
-#: model_terms:ir.ui.view,arch_db:website_sale_wishlist.snippet_options
 msgid "Add to Wishlist"
 msgstr "Ajouter à la liste de souhaits"
 
@@ -103,8 +98,8 @@ msgstr "Créé le"
 
 #. module: website_sale_wishlist
 #: model:ir.model.fields,field_description:website_sale_wishlist.field_product_wishlist__currency_id
-msgid "Default Currency"
-msgstr "Devise par défaut"
+msgid "Currency"
+msgstr "Devise"
 
 #. module: website_sale_wishlist
 #: model:ir.model.fields,field_description:website_sale_wishlist.field_product_wishlist__display_name
@@ -122,14 +117,19 @@ msgid "ID"
 msgstr "ID"
 
 #. module: website_sale_wishlist
+#: model:ir.model.fields,field_description:website_sale_wishlist.field_product_wishlist____last_update
+msgid "Last Modified on"
+msgstr "Dernière modification le"
+
+#. module: website_sale_wishlist
 #: model:ir.model.fields,field_description:website_sale_wishlist.field_product_wishlist__write_uid
 msgid "Last Updated by"
-msgstr "Mis à jour par"
+msgstr "Dernière mise à jour par"
 
 #. module: website_sale_wishlist
 #: model:ir.model.fields,field_description:website_sale_wishlist.field_product_wishlist__write_date
 msgid "Last Updated on"
-msgstr "Mis à jour le"
+msgstr "Dernière mise à jour le"
 
 #. module: website_sale_wishlist
 #: model_terms:ir.ui.view,arch_db:website_sale_wishlist.product_wishlist
@@ -139,7 +139,7 @@ msgstr "Ma liste de souhaits"
 #. module: website_sale_wishlist
 #: model:ir.model.fields,field_description:website_sale_wishlist.field_product_wishlist__partner_id
 msgid "Owner"
-msgstr "Détenteur"
+msgstr "Propriétaire"
 
 #. module: website_sale_wishlist
 #: model:ir.model.fields,field_description:website_sale_wishlist.field_product_wishlist__price
@@ -183,19 +183,14 @@ msgid "Product image"
 msgstr "Image du produit"
 
 #. module: website_sale_wishlist
-#: model_terms:ir.ui.view,arch_db:website_sale_wishlist.product_cart_lines
-msgid "Save for Later"
-msgstr "Enregistrer pour plus tard"
-
-#. module: website_sale_wishlist
 #: model_terms:ir.ui.view,arch_db:website_sale_wishlist.product_wishlist
 msgid "Shop Wishlist"
 msgstr "Liste de souhaits"
 
 #. module: website_sale_wishlist
 #: model_terms:ir.ui.view,arch_db:website_sale_wishlist.snippet_options
-msgid "Show/hide empty wishlist"
-msgstr "Afficher/masquer la liste de souhaits vide"
+msgid "Show Empty Wishlist"
+msgstr "Afficher la liste de souhaits vide"
 
 #. module: website_sale_wishlist
 #: model:ir.model,name:website_sale_wishlist.model_res_users
@@ -205,13 +200,12 @@ msgstr "Utilisateur"
 #. module: website_sale_wishlist
 #: model:ir.model.fields,field_description:website_sale_wishlist.field_product_wishlist__website_id
 msgid "Website"
-msgstr "Site Web"
+msgstr "Site web"
 
 #. module: website_sale_wishlist
 #: model:ir.model.fields,field_description:website_sale_wishlist.field_res_partner__wishlist_ids
 #: model:ir.model.fields,field_description:website_sale_wishlist.field_res_users__wishlist_ids
 #: model_terms:ir.ui.view,arch_db:website_sale_wishlist.header_wishlist_link
-#: model_terms:ir.ui.view,arch_db:website_sale_wishlist.product_cart_lines
 #: model_terms:ir.ui.view,arch_db:website_sale_wishlist.snippet_options
 msgid "Wishlist"
 msgstr "Liste de souhaits"

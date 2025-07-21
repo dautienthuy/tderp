@@ -3,15 +3,17 @@
 # 	* pos_stripe
 # 
 # Translators:
-# Wil Odoo, 2025
+# Ivan Kropotkin <yelizariev@itpp.dev>, 2022
+# Martin Trigaux, 2022
+# Wil Odoo, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-27 13:03+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Wil Odoo, 2025\n"
+"POT-Creation-Date: 2023-05-23 08:22+0000\n"
+"PO-Revision-Date: 2022-09-22 05:54+0000\n"
+"Last-Translator: Wil Odoo, 2024\n"
 "Language-Team: Russian (https://app.transifex.com/odoo/teams/41243/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,12 +24,16 @@ msgstr ""
 #. module: pos_stripe
 #. odoo-python
 #: code:addons/pos_stripe/models/pos_payment_method.py:0
+#, python-format
 msgid "Complete the Stripe onboarding for company %s."
 msgstr "Завершите ввод в эксплуатацию Stripe для компании %s."
 
 #. module: pos_stripe
 #. odoo-python
 #: code:addons/pos_stripe/models/pos_payment_method.py:0
+#: code:addons/pos_stripe/models/pos_payment_method.py:0
+#: code:addons/pos_stripe/models/pos_payment_method.py:0
+#, python-format
 msgid "Do not have access to fetch token from Stripe"
 msgstr "У вас нет доступа к получению токена из Stripe"
 
@@ -41,27 +47,32 @@ msgstr ""
 
 #. module: pos_stripe
 #. odoo-javascript
-#: code:addons/pos_stripe/static/src/app/payment_stripe.js:0
+#: code:addons/pos_stripe/static/src/js/payment_stripe.js:0
+#, python-format
 msgid "Failed to discover: %s"
 msgstr "Не удалось обнаружить: %s"
 
 #. module: pos_stripe
 #. odoo-javascript
-#: code:addons/pos_stripe/static/src/app/payment_stripe.js:0
+#: code:addons/pos_stripe/static/src/js/payment_stripe.js:0
+#: code:addons/pos_stripe/static/src/js/payment_stripe.js:0
+#, python-format
 msgid "Failed to load resource: net::ERR_INTERNET_DISCONNECTED."
 msgstr "Не удалось загрузить ресурс: net::ERR_INTERNET_DISCONNECTED."
 
 #. module: pos_stripe
 #. odoo-javascript
-#: code:addons/pos_stripe/static/src/app/payment_stripe.js:0
+#: code:addons/pos_stripe/static/src/js/payment_stripe.js:0
+#, python-format
 msgid "No available Stripe readers."
 msgstr "Нет доступных считывателей Stripe."
 
 #. module: pos_stripe
 #. odoo-javascript
-#: code:addons/pos_stripe/static/src/app/payment_stripe.js:0
-msgid "Payment cancelled because not reader connected"
-msgstr ""
+#: code:addons/pos_stripe/static/src/js/payment_stripe.js:0
+#, python-format
+msgid "Payment canceled because not reader connected"
+msgstr "Платеж отменен, потому что не подключен считыватель"
 
 #. module: pos_stripe
 #: model:ir.model,name:pos_stripe.model_pos_payment_method
@@ -69,20 +80,28 @@ msgid "Point of Sale Payment Methods"
 msgstr "Способы оплаты в торговых точках"
 
 #. module: pos_stripe
+#: model:ir.model,name:pos_stripe.model_pos_session
+msgid "Point of Sale Session"
+msgstr "Смена"
+
+#. module: pos_stripe
 #. odoo-javascript
-#: code:addons/pos_stripe/static/src/app/payment_stripe.js:0
+#: code:addons/pos_stripe/static/src/js/payment_stripe.js:0
+#, python-format
 msgid "Reader disconnected"
 msgstr "Считыватель отключен"
 
 #. module: pos_stripe
 #. odoo-python
 #: code:addons/pos_stripe/models/pos_payment_method.py:0
+#, python-format
 msgid "Stripe"
 msgstr "Stripe"
 
 #. module: pos_stripe
 #. odoo-javascript
-#: code:addons/pos_stripe/static/src/app/payment_stripe.js:0
+#: code:addons/pos_stripe/static/src/js/payment_stripe.js:0
+#, python-format
 msgid "Stripe Error"
 msgstr "Ошибка полосы"
 
@@ -94,23 +113,32 @@ msgstr "Серийный номер полосы"
 #. module: pos_stripe
 #. odoo-python
 #: code:addons/pos_stripe/models/pos_payment_method.py:0
+#, python-format
 msgid "Stripe payment provider for company %s is missing"
 msgstr "Поставщик платежей Stripe для компании %s отсутствует"
 
 #. module: pos_stripe
 #. odoo-javascript
-#: code:addons/pos_stripe/static/src/app/payment_stripe.js:0
+#: code:addons/pos_stripe/static/src/js/payment_stripe.js:0
+#, python-format
 msgid "Stripe readers %s not listed in your account"
 msgstr "Читатели Stripe %s не указаны в вашем аккаунте"
 
 #. module: pos_stripe
 #. odoo-python
 #: code:addons/pos_stripe/models/pos_payment_method.py:0
-msgid ""
-"Terminal %(terminal)s is already used on payment method %(payment_method)s."
+#, python-format
+msgid "Terminal %s is already used on payment method %s."
+msgstr "Терминал %s уже используется для способа оплаты %s."
+
+#. module: pos_stripe
+#. odoo-python
+#: code:addons/pos_stripe/models/pos_payment_method.py:0
+#: code:addons/pos_stripe/models/pos_payment_method.py:0
+#, python-format
+msgid "There are some issues between us and Stripe, try again later."
 msgstr ""
-"Терминал %(terminal)s уже используется для способа оплаты "
-"%(payment_method)s."
+"Между нами и Stripe возникли некоторые проблемы, повторите попытку позже."
 
 #. module: pos_stripe
 #: model:ir.model.fields,help:pos_stripe.field_pos_payment_method__stripe_serial_number

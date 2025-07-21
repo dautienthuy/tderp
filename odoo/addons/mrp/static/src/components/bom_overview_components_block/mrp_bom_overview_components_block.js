@@ -3,27 +3,10 @@
 import { useBus } from "@web/core/utils/hooks";
 import { BomOverviewLine } from "../bom_overview_line/mrp_bom_overview_line";
 import { BomOverviewExtraBlock } from "../bom_overview_extra_block/mrp_bom_overview_extra_block";
-import { Component, onWillUnmount, onWillUpdateProps, useState } from "@odoo/owl";
+
+const { Component, onWillUnmount, onWillUpdateProps, useState } = owl;
 
 export class BomOverviewComponentsBlock extends Component {
-    static template = "mrp.BomOverviewComponentsBlock";
-    static components = {
-        BomOverviewLine,
-        BomOverviewComponentsBlock,
-        BomOverviewExtraBlock,
-    };
-    static props = {
-        unfoldAll: { type: Boolean, optional: true },
-        showOptions: Object,
-        currentWarehouseId: { type: Number, optional: true },
-        data: Object,
-        precision: Number,
-        changeFolded: Function,
-    };
-    static defaultProps = {
-        unfoldAll: false,
-    };
-
     setup() {
         const childFoldstate = this.childIds.reduce((prev, curr) => ({ ...prev, [curr]: !this.props.unfoldAll}), {});
         this.state = useState({
@@ -35,7 +18,7 @@ export class BomOverviewComponentsBlock extends Component {
         }
 
         if (this.hasComponents) {
-            useBus(this.env.overviewBus, "toggle-fold-all", () => this._toggleFoldAll());
+            useBus(this.env.overviewBus, "unfold-all", () => this._unfoldAll());
         }
 
         onWillUpdateProps(newProps => {
@@ -62,12 +45,11 @@ export class BomOverviewComponentsBlock extends Component {
         this.props.changeFolded({ ids: [foldId], isFolded: newState });
     }
 
-    _toggleFoldAll() {
+    _unfoldAll() {
         const allChildIds = this.childIds;
-
-        this.state.unfoldAll = !this.state.unfoldAll;
-        allChildIds.forEach(id => this.state[id] = !this.state.unfoldAll);
-        this.props.changeFolded({ ids: allChildIds, isFolded: !this.state.unfoldAll });
+        this.state.unfoldAll = true;
+        allChildIds.forEach(id => this.state[id] = false);
+        this.props.changeFolded({ ids: allChildIds, isFolded: false });
     }
 
     //---- Getters ----
@@ -82,7 +64,7 @@ export class BomOverviewComponentsBlock extends Component {
 
     get childIds() {
         return this.hasComponents ? this.data.components.map(c => this.getIdentifier(c)) : [];
-    }
+    } 
 
     get identifier() {
         return this.getIdentifier(this.data);
@@ -102,3 +84,21 @@ export class BomOverviewComponentsBlock extends Component {
         return `${type ? type : data.type}_${data.index}`;
     }
 }
+
+BomOverviewComponentsBlock.template = "mrp.BomOverviewComponentsBlock";
+BomOverviewComponentsBlock.components = {
+    BomOverviewLine,
+    BomOverviewComponentsBlock,
+    BomOverviewExtraBlock,
+};
+BomOverviewComponentsBlock.props = {
+    unfoldAll: { type: Boolean, optional: true },
+    showOptions: Object,
+    currentWarehouseId: { type: Number, optional: true },
+    data: Object,
+    precision: Number,
+    changeFolded: Function,
+};
+BomOverviewComponentsBlock.defaultProps = {
+    unfoldAll: false,
+};

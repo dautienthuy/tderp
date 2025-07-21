@@ -19,12 +19,6 @@ class TestMembership(TestSalesCommon):
         })
         cls.env['ir.config_parameter'].set_param('sales_team.membership_multi', True)
 
-    def test_archive_user_archives_team_member(self):
-        """Test that archiving a user also archives their linked team member."""
-        self.assertTrue(self.sales_team_1_m1.active)
-        self.user_sales_leads.action_archive()
-        self.assertFalse(self.sales_team_1_m1.active)
-
     @users('user_sales_manager')
     def test_fields(self):
         self.assertTrue(self.sales_team_1.with_user(self.env.user).is_membership_multi)
@@ -280,6 +274,24 @@ class TestMembership(TestSalesCommon):
         # change team of membership should raise unicity constraint
         with self.assertRaises(exceptions.UserError), mute_logger('odoo.sql_db'):
             added.write({'crm_team_id': sales_team_1.id})
+
+    def test_sales_team_member_search(self):
+        """ when a search is triggered on the member_ids field in crm.team
+        it is currently returning the archived records also. this test will
+        ensure that the search wont return archived record.
+
+        this is to fix unwanted ORM behavior
+        """
+        self.env['res.partner'].create({'name': 'Test Partner', 'team_id': self.new_team.id})
+        self.env['crm.team.member'].create({
+            'user_id': self.env.uid,
+            'crm_team_id': self.new_team.id,
+            'active': False,
+        })
+        partner_exists = self.env['res.partner'].search([
+            ('team_id.member_ids', 'in', [self.env.uid])
+        ])
+        self.assertFalse(partner_exists, msg="Partner should return empty as current user is removed from team")
 
     def test_users_sale_team_id(self):
         self.assertTrue(self.sales_team_1.sequence < self.new_team.sequence)

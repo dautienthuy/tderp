@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="attribute_tree_view" model="ir.ui.view">
-        <field name="name">product.attribute.list</field>
+        <field name="name">product.attribute.tree</field>
         <field name="model">product.attribute</field>
         <field name="arch" type="xml">
-            <list string="Variant Values">
+            <tree string="Variant Values" default_order="sequence, id">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="display_type"/>
                 <field name="create_variant"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -20,72 +20,32 @@
             <form string="Product Attribute">
             <field name="number_related_products" invisible="1"/>
             <sheet>
-                <widget
-                    name="web_ribbon"
-                    title="Archived"
-                    bg_color="text-bg-danger"
-                    invisible="active"
-                />
                 <div class="oe_button_box" name="button_box">
-                    <button name="action_open_product_template_attribute_lines"
-                            type="object"
-                            class="oe_stat_button"
-                            icon="fa-bars"
-                            invisible="not number_related_products">
+                    <button class="oe_stat_button" name="action_open_related_products"
+                            type="object" icon="fa-bars"
+                            attrs="{'invisible': [('number_related_products', '=', [])]}">
                         <div class="o_stat_info">
                             <span class="o_stat_value"><field name="number_related_products"/></span>
-                            <span class="o_stat_text">Products</span>
+                            <span class="o_stat_text">Related Products</span>
                         </div>
                     </button>
                 </div>
-                <group name="main_fields">
-                    <group name="sale_main_fields">
-                        <label for="name" string="Attribute Name"/>
-                        <field name="name" nolabel="1"/>
-                        <field name="display_type" widget="radio" options="{'horizontal': True}"/>
-                        <field name="create_variant"
-                               widget="radio"
-                               options="{'horizontal': True}"
-                               readonly="number_related_products != 0 or display_type == 'multi'"
-                               force_save="1"/>
-                    </group>
+                <group name="main_fields" class="o_label_nowrap">
+                    <label for="name" string="Attribute Name"/>
+                    <field name="name" nolabel="1"/>
+                    <field name="display_type" widget="radio"/>
+                    <field name="create_variant" widget="radio" attrs="{'readonly': [('number_related_products', '!=', 0)]}"/>
                 </group>
                 <notebook>
                     <page string="Attribute Values" name="attribute_values">
-                        <field name="value_ids" widget="pavs_one2many" nolabel="1">
-                            <list string="Values" editable="bottom">
+                        <field name="value_ids" widget="one2many" nolabel="1">
+                            <tree string="Values" editable="bottom">
                                 <field name="sequence" widget="handle"/>
                                 <field name="name"/>
-                                <field name="display_type" column_invisible="True"/>
-                                <field name="is_custom" width="120px"
-                                       column_invisible="parent.display_type == 'multi'"/>
-                                <field name="html_color"
-                                       widget="color"
-                                       column_invisible="parent.display_type != 'color'"
-                                       invisible="image"/>
-                                <field name="image"
-                                       widget="image"
-                                       options="{'size': [70, 70]}"
-                                       class="oe_avatar text-start float-none"
-                                       column_invisible="parent.display_type != 'color'"/>
-                                <field name="default_extra_price" width="160px"/>
-                                <button
-                                    name="action_add_to_products"
-                                    string="Add to products"
-                                    type="object"
-                                    icon="fa-plus"
-                                    column_invisible="parent.number_related_products &lt; 1"
-                                    invisible="pav_attribute_line_ids"
-                                />
-                                <button
-                                    name="action_update_prices"
-                                    string="Update extra prices"
-                                    type="object"
-                                    icon="fa-refresh"
-                                    column_invisible="parent.number_related_products &lt; 1"
-                                    invisible="not pav_attribute_line_ids or not default_extra_price_changed"
-                                />
-                            </list>
+                                <field name="display_type" invisible="1"/>
+                                <field name="is_custom" groups="product.group_product_variant"/>
+                                <field name="html_color" attrs="{'column_invisible': [('parent.display_type', '!=', 'color')]}" widget="color"/>
+                            </tree>
                         </field>
                     </page>
                 </notebook>
@@ -96,8 +56,9 @@
 
     <record id="attribute_action" model="ir.actions.act_window">
         <field name="name">Attributes</field>
+        <field name="type">ir.actions.act_window</field>
         <field name="res_model">product.attribute</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">tree,form</field>
     </record>
 
     <record id="product_template_attribute_line_form" model="ir.ui.view">
@@ -111,10 +72,10 @@
                     <label for="attribute_id" string="Attribute Name"/>
                     <field name="attribute_id" nolabel="1"/>
                     <field name="value_ids" widget="one2many">
-                        <list string="Values">
+                        <tree string="Values">
                             <field name="name"/>
                             <field name="html_color"/>
-                        </list>
+                        </tree>
                         <form string="Values">
                             <field name="name"/>
                         </form>
@@ -125,42 +86,41 @@
     </record>
 
     <record id="product_template_attribute_value_view_tree" model="ir.ui.view">
-        <field name="name">product.template.attribute.value.view.list</field>
+        <field name="name">product.template.attribute.value.view.tree</field>
         <field name="model">product.template.attribute.value</field>
+        <field name="type">tree</field>
         <field name="arch" type="xml">
-            <list string="Attributes" create="0" delete="0" multi_edit="1">
-                <field name="product_tmpl_id" string="Product" column_invisible="context.get('product_invisible', False)"/>
+            <tree string="Attributes" create="0" delete="0">
                 <field name="attribute_id" optional="hide"/>
                 <field name="name"/>
                 <field name="display_type" optional="hide"/>
-                <field name="html_color" invisible="display_type != 'color' or image" widget="color"/>
-                <field name="image" invisible="display_type != 'color'" widget="image" options="{'size': [70, 70]}"/>
+                <field name="html_color" attrs="{'invisible': [('display_type', '!=', 'color')]}" widget="color"/>
                 <field name="ptav_active" optional="hide"/>
                 <field name="price_extra" widget="monetary" options="{'field_digits': True}"/>
-                <field name="currency_id" column_invisible="True"/>
-            </list>
+                <field name="currency_id" invisible="1"/>
+            </tree>
         </field>
     </record>
 
     <record id="product_template_attribute_value_view_form" model="ir.ui.view">
         <field name="name">product.template.attribute.value.view.form.</field>
         <field name="model">product.template.attribute.value</field>
+        <field name="type">form</field>
         <field name="arch" type="xml">
             <form string="Product Attribute" create="0" delete="0">
                 <sheet>
                     <group>
-                        <field name="ptav_active" readonly="1" invisible="ptav_active"/>
+                        <field name="ptav_active" readonly="1" attrs="{'invisible': [('ptav_active', '=', True)]}"/>
                         <field name="name"/>
                         <field name="display_type" invisible="1"/>
-                        <field name="html_color" invisible="display_type != 'color' or image"/>
-                        <field name="image" invisible="display_type != 'color' or not image" widget="image" options="{'size': [70, 70]}"/>
+                        <field name="html_color" attrs="{'invisible': [('display_type', '!=', 'color')]}"/>
                         <field name="price_extra" widget="monetary" options="{'field_digits': True}"/>
                         <field name="currency_id" invisible="1"/>
-                        <field name="exclude_for" widget="one2many" mode="list">
-                            <list editable="bottom">
+                        <field name="exclude_for" widget="one2many" mode="tree">
+                            <tree editable="bottom">
                                 <field name="product_tmpl_id" />
                                 <field name="value_ids" widget="many2many_tags" options="{'no_create': True}" />
-                            </list>
+                            </tree>
                         </field>
                     </group>
                 </sheet>
@@ -175,17 +135,6 @@
                 <field name="name"/>
                 <filter string="Active" name="active" domain="[('ptav_active', '=', True)]"/>
                 <filter string="Inactive" name="inactive" domain="[('ptav_active', '=', False)]"/>
-            </search>
-        </field>
-    </record>
-
-    <record id="product_attribute_search" model="ir.ui.view">
-        <field name="name">product.attribute.view.search</field>
-        <field name="model">product.attribute</field>
-        <field name="arch" type="xml">
-            <search>
-                <filter string="Inactive" name="inactive" domain="[('active', '=', False)]"/>
-                <field name="name"/>
             </search>
         </field>
     </record>

@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import json
 from io import BytesIO
-from zipfile import ZipFile, ZIP_DEFLATED
+from zipfile import ZipFile
 
 from odoo.tools import cloc
 from odoo.addons.base.tests import test_cloc
@@ -16,21 +16,6 @@ VALID_XML = """
         </div>
     </t>
 </templates>
-"""
-VALID_XML_2 = """<?xml version="1.0" encoding="UTF-8"?>
-<odoo>
-    <template id="template_2">
-        <t t-name="stock_barcode.LineComponent">
-            <div t-if="line.picking_id and line.picking_id.origin" name="origin">
-                <i class="fa fa-fw fa-file" />
-                <span t-esc="line.picking_id.origin" />
-            </div>
-        </t>
-    </template>
-    <record id="base.view_company_form" model="ir.ui.view">
-        <field name="active" eval="True"/>
-    </record>
-</odoo>
 """
 
 class TestClocFields(test_cloc.TestClocCustomization):
@@ -161,7 +146,7 @@ class TestClocFields(test_cloc.TestClocCustomization):
             archive.writestr('test_imported_module/static/src/js/test.xml', VALID_XML)
 
         # Import test module
-        self.env['ir.module.module']._import_zipfile(stream)
+        self.env['ir.module.module'].import_zipfile(stream)
         cl = cloc.Cloc()
         cl.count_customization(self.env)
         self.assertEqual(cl.code.get('test_imported_module', 0), 35)
@@ -216,7 +201,7 @@ class TestClocFields(test_cloc.TestClocCustomization):
         ]
 
         # Import test module
-        self.env['ir.module.module']._import_zipfile(stream)
+        self.env['ir.module.module'].import_zipfile(stream)
         # Create exclude xml_id
         for name in id_names:
             rec = self.env.ref(f'test_imported_module.{name}')
@@ -225,52 +210,3 @@ class TestClocFields(test_cloc.TestClocCustomization):
         cl = cloc.Cloc()
         cl.count_customization(self.env)
         self.assertEqual(cl.code.get('test_imported_module', 0), 0)
-
-    def test_exclude_cloc_imported_module(self):
-        manifest_content = json.dumps({
-            'name': 'test_imported_module',
-            'description': 'Test',
-            'data': ['data/test.xml'],
-            'assets': {
-                'web.assets_backend': [
-                    'test_imported_module/static/src/js/test.js',
-                    'test_imported_module/static/src/js/test.scss',
-                    'test_imported_module/static/src/js/test.xml',
-                ]
-            },
-            'cloc_exclude': [
-                    'static/**/*',
-                    'data/test.xml',
-            ],
-            'license': 'LGPL-3',
-        })
-
-        stream = BytesIO()
-        with ZipFile(stream, 'w', compression=ZIP_DEFLATED) as archive:
-            archive.writestr('test_imported_module/__manifest__.py', manifest_content)
-            archive.writestr('test_imported_module/static/src/js/test.js', test_cloc.JS_TEST)
-            archive.writestr('test_imported_module/static/src/js/test.scss', test_cloc.SCSS_TEST)
-            archive.writestr('test_imported_module/static/src/js/test.xml', VALID_XML)
-            archive.writestr('test_imported_module/data/test.xml', VALID_XML_2)
-        # Import test module
-        self.env['ir.module.module']._import_zipfile(stream)
-
-        # Import a second time to upgrade, test that it does not raise error
-        self.env['ir.module.module']._import_zipfile(stream)
-
-        cl = cloc.Cloc()
-        cl.count_customization(self.env)
-        self.assertEqual(cl.code.get('test_imported_module', 0), 0)
-
-        # Uninstall data module
-        self.env['ir.module.module'].search([('name', '=', 'test_imported_module')]).module_uninstall()
-
-        # Check that the database is cleaned after uninstallation
-        attachments = self.env['ir.attachment'].search([('url', 'ilike', 'test_imported_module/static/src/js/test_js')])
-        self.assertFalse(attachments, "No more attachment from assets should remain in the db")
-
-        irmodeldata = self.env['ir.model.data'].search([('module', '=', '__cloc_exclude__')])
-        self.assertTrue(
-            len(irmodeldata) == 1 and irmodeldata.res_id == self.env.ref('base.view_company_form').id,
-            "Only base form view should remain excluded",
-        )

@@ -18,14 +18,19 @@ Allows users to create custom dashboard.
         'security/ir.model.access.csv',
         'views/board_views.xml',
         ],
+    'application': False,
     'assets': {
         'web.assets_backend': [
             'board/static/src/**/*.scss',
             'board/static/src/**/*.js',
             'board/static/src/**/*.xml',
         ],
-        'web.assets_unit_tests': [
-            'board/static/tests/**/*.test.js',
+        'web.qunit_suite_tests': [
+            'board/static/tests/**/*',
+            ('remove', 'board/static/tests/mobile/**/*'), # mobile test
+        ],
+        'web.qunit_mobile_suite_tests': [
+            'board/static/tests/mobile/**/*',
         ],
     },
     'license': 'LGPL-3',

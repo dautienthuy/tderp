@@ -12,8 +12,8 @@ from odoo.addons.sale_purchase.tests.common import TestCommonSalePurchaseNoChart
 class TestLeadTime(TestCommonSalePurchaseNoChart):
 
     @classmethod
-    def setUpClass(cls):
-        super(TestLeadTime, cls).setUpClass()
+    def setUpClass(cls, chart_template_ref=None):
+        super(TestLeadTime, cls).setUpClass(chart_template_ref=chart_template_ref)
 
         cls.buy_route = cls.env.ref('purchase_stock.route_warehouse0_buy')
         cls.mto_route = cls.env.ref('stock.route_warehouse0_mto')
@@ -24,6 +24,7 @@ class TestLeadTime(TestCommonSalePurchaseNoChart):
             'login': 'grand.horus',
             'email': 'grand.horus@chansonbelge.dz',
         })
+
 
     def test_supplier_lead_time(self):
         """ Basic stock configuration and a supplier with a minimum qty and a lead time """
@@ -38,7 +39,7 @@ class TestLeadTime(TestCommonSalePurchaseNoChart):
 
         product = self.env['product.product'].create({
             'name': 'corpse starch',
-            'is_storable': True,
+            'type': 'product',
             'seller_ids': [(6, 0, seller.ids)],
             'route_ids': [(6, 0, (self.mto_route + self.buy_route).ids)],
         })
@@ -62,6 +63,7 @@ class TestLeadTime(TestCommonSalePurchaseNoChart):
         self.assertEqual(po.order_line.price_unit, seller.price)
 
     def test_dynamic_lead_time_delay(self):
+        stock_location = self.env.user._get_default_warehouse_id().lot_stock_id
         self.product_a.write({
             'seller_ids': [(0, 0, {
                 'partner_id': self.partner_a.id,
@@ -69,7 +71,9 @@ class TestLeadTime(TestCommonSalePurchaseNoChart):
                 'delay': 7,
                 'product_id': self.product_a.id,
             })],
+            'type': 'product',
         })
+        self.env['stock.quant']._update_available_quantity(self.product_a, stock_location, 0)
         product = self.product_a
         sale_order = self.env['sale.order'].create({
             'partner_id': self.partner_b.id,

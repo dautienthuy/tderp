@@ -6,40 +6,33 @@ import os
 import shutil
 import subprocess
 import tempfile
-import zipfile
-from contextlib import closing
+import threading
+import traceback
 from xml.etree import ElementTree as ET
+import zipfile
+
+from psycopg2 import sql
+from pytz import country_timezones
+from functools import wraps
+from contextlib import closing
+from decorator import decorator
 
 import psycopg2
-from psycopg2.extensions import quote_ident
-from decorator import decorator
-from pytz import country_timezones
 
 import odoo
+from odoo import SUPERUSER_ID
+from odoo.exceptions import AccessDenied
 import odoo.release
 import odoo.sql_db
 import odoo.tools
-from odoo import SUPERUSER_ID
-from odoo.exceptions import AccessDenied
-from odoo.release import version_info
 from odoo.sql_db import db_connect
-from odoo.tools import SQL
-from odoo.tools.misc import exec_pg_environ, find_pg_tool
+from odoo.release import version_info
+from odoo.tools import find_pg_tool, exec_pg_environ
 
 _logger = logging.getLogger(__name__)
 
-
 class DatabaseExists(Warning):
     pass
-
-
-def database_identifier(cr, name: str) -> SQL:
-    """Quote a database identifier.
-
-    Use instead of `SQL.identifier` to accept all kinds of identifiers.
-    """
-    name = quote_ident(name, cr._cnx)
-    return SQL(name)
 
 
 def check_db_management_enabled(method):
@@ -98,6 +91,7 @@ def _initialize_db(id, db_name, demo, lang, user_password, login='admin', countr
                     values['email'] = emails[0]
             env.ref('base.user_admin').write(values)
 
+            cr.execute('SELECT login, password FROM res_users ORDER BY login')
             cr.commit()
     except Exception as e:
         _logger.exception('CREATE DATABASE failed:')
@@ -116,11 +110,10 @@ def _create_empty_database(name):
             cr._cnx.autocommit = True
 
             # 'C' collate is only safe with template0, but provides more useful indexes
-            cr.execute(SQL(
-                "CREATE DATABASE %s ENCODING 'unicode' %s TEMPLATE %s",
-                database_identifier(cr, name),
-                SQL("LC_COLLATE 'C'") if chosen_template == 'template0' else SQL(""),
-                database_identifier(cr, chosen_template),
+            collate = sql.SQL("LC_COLLATE 'C'" if chosen_template == 'template0' else "")
+            cr.execute(
+                sql.SQL("CREATE DATABASE {} ENCODING 'unicode' {} TEMPLATE {}").format(
+                sql.Identifier(name), collate, sql.Identifier(chosen_template)
             ))
 
     # TODO: add --extension=trigram,unaccent
@@ -140,14 +133,6 @@ def _create_empty_database(name):
     except psycopg2.Error as e:
         _logger.warning("Unable to create PostgreSQL extensions : %s", e)
 
-    # restore legacy behaviour on pg15+
-    try:
-        db = odoo.sql_db.db_connect(name)
-        with db.cursor() as cr:
-            cr.execute("GRANT CREATE ON SCHEMA PUBLIC TO PUBLIC")
-    except psycopg2.Error as e:
-        _logger.warning("Unable to make public schema public-accessible: %s", e)
-
 @check_db_management_enabled
 def exp_create_database(db_name, demo, lang, user_password='admin', login='admin', country_code=None, phone=None):
     """ Similar to exp_create but blocking."""
@@ -165,10 +150,9 @@ def exp_duplicate_database(db_original_name, db_name, neutralize_database=False)
         # database-altering operations cannot be executed inside a transaction
         cr._cnx.autocommit = True
         _drop_conn(cr, db_original_name)
-        cr.execute(SQL(
-            "CREATE DATABASE %s ENCODING 'unicode' TEMPLATE %s",
-            database_identifier(cr, db_name),
-            database_identifier(cr, db_original_name),
+        cr.execute(sql.SQL("CREATE DATABASE {} ENCODING 'unicode' TEMPLATE {}").format(
+            sql.Identifier(db_name),
+            sql.Identifier(db_original_name)
         ))
 
     registry = odoo.modules.registry.Registry.new(db_name)
@@ -215,7 +199,7 @@ def exp_drop(db_name):
         _drop_conn(cr, db_name)
 
         try:
-            cr.execute(SQL('DROP DATABASE %s', database_identifier(cr, db_name)))
+            cr.execute(sql.SQL('DROP DATABASE {}').format(sql.Identifier(db_name)))
         except Exception as e:
             _logger.info('DROP DB: %s failed:\n%s', db_name, e)
             raise Exception("Couldn't drop database %s: %s" % (db_name, e))
@@ -366,7 +350,7 @@ def exp_rename(old_name, new_name):
         cr._cnx.autocommit = True
         _drop_conn(cr, old_name)
         try:
-            cr.execute(SQL('ALTER DATABASE %s RENAME TO %s', database_identifier(cr, old_name), database_identifier(cr, new_name)))
+            cr.execute(sql.SQL('ALTER DATABASE {} RENAME TO {}').format(sql.Identifier(old_name), sql.Identifier(new_name)))
             _logger.info('RENAME DB: %s -> %s', old_name, new_name)
         except Exception as e:
             _logger.info('RENAME DB: %s -> %s failed:\n%s', old_name, new_name, e)
@@ -418,15 +402,16 @@ def list_dbs(force=False):
         return res
 
     chosen_template = odoo.tools.config['db_template']
-    templates_list = tuple({'postgres', chosen_template})
+    templates_list = tuple(set(['postgres', chosen_template]))
     db = odoo.sql_db.db_connect('postgres')
     with closing(db.cursor()) as cr:
         try:
             cr.execute("select datname from pg_database where datdba=(select usesysid from pg_user where usename=current_user) and not datistemplate and datallowconn and datname not in %s order by datname", (templates_list,))
-            return [name for (name,) in cr.fetchall()]
+            res = [odoo.tools.ustr(name) for (name,) in cr.fetchall()]
         except Exception:
             _logger.exception('Listing databases failed:')
-            return []
+            res = []
+    return res
 
 def list_db_incompatible(databases):
     """"Check a list of databases if they are compatible with this version of Odoo
@@ -438,7 +423,7 @@ def list_db_incompatible(databases):
     server_version = '.'.join(str(v) for v in version_info[:2])
     for database_name in databases:
         with closing(db_connect(database_name).cursor()) as cr:
-            if odoo.tools.sql.table_exists(cr, 'ir_module_module'):
+            if odoo.tools.table_exists(cr, 'ir_module_module'):
                 cr.execute("SELECT latest_version FROM ir_module_module WHERE name=%s", ('base',))
                 base_version = cr.fetchone()
                 if not base_version or not base_version[0]:
@@ -462,7 +447,7 @@ def exp_list(document=False):
     return list_dbs()
 
 def exp_list_lang():
-    return odoo.tools.misc.scan_languages()
+    return odoo.tools.scan_languages()
 
 def exp_list_countries():
     list_countries = []

@@ -6,20 +6,18 @@ import json
 import logging
 import netifaces as ni
 import os
-import socket
 import subprocess
+import threading
 import time
-import werkzeug
+
 import urllib3
 
 from odoo import http
-from odoo.addons.hw_drivers.browser import Browser, BrowserState
 from odoo.addons.hw_drivers.connection_manager import connection_manager
 from odoo.addons.hw_drivers.driver import Driver
+from odoo.addons.hw_drivers.event_manager import event_manager
 from odoo.addons.hw_drivers.main import iot_devices
 from odoo.addons.hw_drivers.tools import helpers
-from odoo.addons.hw_drivers.tools.helpers import Orientation
-from odoo.tools.misc import file_path
 
 path = os.path.realpath(os.path.join(os.path.dirname(__file__), '../../views'))
 loader = jinja2.FileSystemLoader(path)
@@ -31,8 +29,6 @@ pos_display_template = jinja_env.get_template('pos_display.html')
 
 _logger = logging.getLogger(__name__)
 
-MIN_IMAGE_VERSION_WAYLAND = 25.03
-
 
 class DisplayDriver(Driver):
     connection_type = 'display'
@@ -42,24 +38,20 @@ class DisplayDriver(Driver):
         self.device_type = 'display'
         self.device_connection = 'hdmi'
         self.device_name = device['name']
+        self.event_data = threading.Event()
         self.owner = False
-        self.customer_display_data = {}
-        self.url, self.orientation = helpers.load_browser_state()
+        self.rendered_html = ''
         if self.device_identifier != 'distant_display':
             self._x_screen = device.get('x_screen', '0')
-            self.browser = Browser(
-                self.url or 'http://localhost:8069/point_of_sale/display/' + self.device_identifier,
-                self._x_screen,
-                os.environ.copy(),
-            )
-            self.update_url(self.load_url())
+            self.load_url()
 
         self._actions.update({
             'update_url': self._action_update_url,
             'display_refresh': self._action_display_refresh,
+            'take_control': self._action_take_control,
+            'customer_facing_display': self._action_customer_facing_display,
+            'get_owner': self._action_get_owner,
         })
-
-        self.set_orientation(self.orientation)
 
     @classmethod
     def supported(cls, device):
@@ -71,21 +63,22 @@ class DisplayDriver(Driver):
         return len(displays) and iot_devices[displays[0]]
 
     def run(self):
-        while self.device_identifier != 'distant_display' and not self._stopped.is_set() and "pos_customer_display" not in self.url:
+        while self.device_identifier != 'distant_display' and not self._stopped.is_set():
             time.sleep(60)
-            if self.url != 'http://localhost:8069/point_of_sale/display/' + self.device_identifier and self.browser.state != BrowserState.KIOSK:
+            if self.url != 'http://localhost:8069/point_of_sale/display/' + self.device_identifier:
                 # Refresh the page every minute
-                self.browser.refresh()
+                self.call_xdotools('F5')
 
     def update_url(self, url=None):
-        self.url = (
-            url
-            or helpers.load_browser_state()[0]
-            or 'http://localhost:8069/point_of_sale/display/' + self.device_identifier
-        )
-
-        browser_state = BrowserState.KIOSK if "/pos-self/" in self.url else BrowserState.FULLSCREEN
-        self.browser.open_browser(self.url, browser_state)
+        os.environ['DISPLAY'] = ":0." + self._x_screen
+        os.environ['XAUTHORITY'] = '/run/lightdm/pi/xauthority'
+        firefox_env = os.environ.copy()
+        firefox_env['HOME'] = '/tmp/' + self._x_screen
+        self.url = url or 'http://localhost:8069/point_of_sale/display/' + self.device_identifier
+        new_window = subprocess.call(['xdotool', 'search', '--onlyvisible', '--screen', self._x_screen, '--class', 'Firefox'])
+        subprocess.Popen(['firefox', self.url], env=firefox_env)
+        if new_window:
+            self.call_xdotools('F11')
 
     def load_url(self):
         url = None
@@ -94,10 +87,7 @@ class DisplayDriver(Driver):
             urllib3.disable_warnings()
             http = urllib3.PoolManager(cert_reqs='CERT_NONE')
             try:
-                response = http.request(
-                    'GET',
-                    "%s/iot/box/%s/display_url" % (helpers.get_odoo_server_url(), helpers.get_mac_address())
-                )
+                response = http.request('GET', "%s/iot/box/%s/display_url" % (helpers.get_odoo_server_url(), helpers.get_mac_address()))
                 if response.status == 200:
                     data = json.loads(response.data.decode('utf8'))
                     url = data[self.device_identifier]
@@ -105,8 +95,40 @@ class DisplayDriver(Driver):
                 url = response.data.decode('utf8')
             except Exception:
                 pass
+        return self.update_url(url)
 
-        return url
+    def call_xdotools(self, keystroke):
+        os.environ['DISPLAY'] = ":0." + self._x_screen
+        os.environ['XAUTHORITY'] = "/run/lightdm/pi/xauthority"
+        try:
+            subprocess.call(['xdotool', 'search', '--sync', '--onlyvisible', '--screen', self._x_screen, '--class', 'Firefox', 'key', keystroke])
+            return "xdotool succeeded in stroking " + keystroke
+        except:
+            return "xdotool threw an error, maybe it is not installed on the IoTBox"
+
+    def update_customer_facing_display(self, origin, html=None):
+        if origin == self.owner:
+            self.rendered_html = html
+            self.event_data.set()
+
+    def get_serialized_order(self):
+        # IMPLEMENTATION OF LONGPOLLING
+        # Times out 2 seconds before the JS request does
+        if self.event_data.wait(28):
+            self.event_data.clear()
+            return {'rendered_html': self.rendered_html}
+        return {'rendered_html': False}
+
+    def take_control(self, new_owner, html=None):
+        # ALLOW A CASHIER TO TAKE CONTROL OVER THE POSBOX, IN CASE OF MULTIPLE CASHIER PER DISPLAY
+        self.owner = new_owner
+        self.rendered_html = html
+        self.data = {
+            'value': '',
+            'owner': self.owner,
+        }
+        event_manager.device_changed(self)
+        self.event_data.set()
 
     def _action_update_url(self, data):
         if self.device_identifier != 'distant_display':
@@ -114,66 +136,75 @@ class DisplayDriver(Driver):
 
     def _action_display_refresh(self, data):
         if self.device_identifier != 'distant_display':
-            self.browser.refresh()
+            self.call_xdotools('F5')
 
-    def set_orientation(self, orientation=Orientation.NORMAL):
-        if self.device_identifier == 'distant_display':
-            # Avoid calling xrandr if no display is connected
-            return
+    def _action_take_control(self, data):
+        self.take_control(self.data.get('owner'), data.get('html'))
 
-        if type(orientation) is not Orientation:
-            raise TypeError("orientation must be of type Orientation")
+    def _action_customer_facing_display(self, data):
+        self.update_customer_facing_display(self.data.get('owner'), data.get('html'))
 
-        if float(helpers.get_version()[1:]) >= MIN_IMAGE_VERSION_WAYLAND:
-            subprocess.run(['wlr-randr', '--output', self.device_identifier, '--transform', orientation.value], check=True)
-            # Update touchscreen mapping to this display
-            with helpers.writable():
-                subprocess.run(['sed', '-i', f's/HDMI-A-[12]/{self.device_identifier}/', '/home/odoo/.config/labwc/rc.xml'])
-            # Tell labwc to reload its configuration
-            subprocess.run(['pkill', '-HUP', 'labwc'])
-        else:
-            subprocess.run(['xrandr', '-o', orientation.name.lower()], check=True)
-            subprocess.run([file_path('hw_drivers/tools/sync_touchscreen.sh'), str(int(self._x_screen) + 1)], check=False)
-        helpers.save_browser_state(orientation=orientation)
-
+    def _action_get_owner(self, data):
+        self.data = {
+            'value': '',
+            'owner': self.owner,
+        }
+        event_manager.device_changed(self)
 
 class DisplayController(http.Controller):
+
+    @http.route('/hw_proxy/display_refresh', type='json', auth='none', cors='*')
+    def display_refresh(self):
+        display = DisplayDriver.get_default_display()
+        if display and display.device_identifier != 'distant_display':
+            return display.call_xdotools('F5')
+
     @http.route('/hw_proxy/customer_facing_display', type='json', auth='none', cors='*')
-    def customer_facing_display(self, action, pos_id=None, access_token=None, data=None):
-        display = self.ensure_display()
-        if action in ['open', 'open_kiosk']:
-            origin = helpers.get_odoo_server_url()
-            if action == 'open_kiosk':
-                url = f"{origin}/pos-self/{pos_id}?access_token={access_token}"
-                display.set_orientation(Orientation.RIGHT)
-            else:
-                url = f"{origin}/pos_customer_display/{pos_id}/{access_token}"
-            display.update_url(url)
-            return {'status': 'opened'}
-        if action == 'close':
-            helpers.unlink_file('browser-url.conf')
-            helpers.unlink_file('screen-orientation.conf')
-            display.browser.disable_kiosk_mode()
-            display.update_url()
-            return {'status': 'closed'}
-        if action == 'set':
-            display.customer_display_data = data
+    def customer_facing_display(self, html=None):
+        display = DisplayDriver.get_default_display()
+        if display:
+            display.update_customer_facing_display(http.request.httprequest.remote_addr, html)
             return {'status': 'updated'}
-        if action == 'get':
-            return {'status': 'retrieved', 'data': display.customer_display_data}
-        if action == 'rotate_screen':
-            display.set_orientation(Orientation[data.upper()])
-            return {'status': 'rotated'}
+        return {'status': 'failed'}
 
-    def ensure_display(self):
-        display: DisplayDriver = DisplayDriver.get_default_display()
-        if not display:
-            raise werkzeug.exceptions.ServiceUnavailable(description="No display connected")
-        return display
+    @http.route('/hw_proxy/take_control', type='json', auth='none', cors='*')
+    def take_control(self, html=None):
+        display = DisplayDriver.get_default_display()
+        if display:
+            display.take_control(http.request.httprequest.remote_addr, html)
+            return {
+                'status': 'success',
+                'message': 'You now have access to the display',
+            }
 
-    @http.route(['/point_of_sale/display', '/point_of_sale/display/<string:display_identifier>'], auth='none')
+    @http.route('/hw_proxy/test_ownership', type='json', auth='none', cors='*')
+    def test_ownership(self):
+        display = DisplayDriver.get_default_display()
+        if display and display.owner == http.request.httprequest.remote_addr:
+            return {'status': 'OWNER'}
+        return {'status': 'NOWNER'}
+
+    @http.route(['/point_of_sale/get_serialized_order', '/point_of_sale/get_serialized_order/<string:display_identifier>'], type='json', auth='none')
+    def get_serialized_order(self, display_identifier=None):
+        if display_identifier:
+            display = iot_devices.get(display_identifier)
+        else:
+            display = DisplayDriver.get_default_display()
+
+        if display:
+            return display.get_serialized_order()
+        return {
+            'rendered_html': False,
+            'error': "No display found",
+        }
+
+    @http.route(['/point_of_sale/display', '/point_of_sale/display/<string:display_identifier>'], type='http', auth='none')
     def display(self, display_identifier=None):
+        cust_js = None
         interfaces = ni.interfaces()
+
+        with open(os.path.join(os.path.dirname(__file__), "../../static/src/js/worker.js")) as js:
+            cust_js = js.read()
 
         display_ifaces = []
         for iface_id in interfaces:
@@ -190,24 +221,14 @@ class DisplayController(http.Controller):
                             'icon': 'sitemap' if 'eth' in iface_id else 'wifi',
                         })
 
-        default_display = DisplayDriver.get_default_display()
-        if not display_identifier and default_display != 0:
-            display_identifier = default_display.device_identifier
+        if not display_identifier:
+            display_identifier = DisplayDriver.get_default_display().device_identifier
 
         return pos_display_template.render({
             'title': "Odoo -- Point of Sale",
             'breadcrumb': 'POS Client display',
+            'cust_js': cust_js,
             'display_ifaces': display_ifaces,
             'display_identifier': display_identifier,
-            'hostname': socket.gethostname(),
             'pairing_code': connection_manager.pairing_code,
         })
-
-    @http.route('/point_of_sale/iot_devices', type='json', auth='none', methods=['POST'])
-    def get_iot_devices(self):
-        iot_device = [{
-            'name': iot_devices[device].device_name,
-            'type': iot_devices[device].device_type,
-        } for device in iot_devices]
-
-        return json.dumps({'iot_device_status': iot_device})

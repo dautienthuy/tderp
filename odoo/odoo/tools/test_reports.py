@@ -14,6 +14,7 @@ from lxml import etree
 from subprocess import Popen, PIPE
 
 from .. import api
+from . import ustr, config
 from .safe_eval import safe_eval
 
 _logger = logging.getLogger(__name__)
@@ -40,20 +41,21 @@ def try_report(cr, uid, rname, ids, data=None, context=None, our_module=None, re
     if res_format == 'pdf':
         if res_data[:5] != b'%PDF-':
             raise ValueError("Report %s produced a non-pdf header, %r" % (rname, res_data[:10]))
-        res_text = None
+        res_text = False
         try:
             fd, rfname = tempfile.mkstemp(suffix=res_format)
             os.write(fd, res_data)
             os.close(fd)
 
-            proc = Popen(['pdftotext', '-enc', 'UTF-8', '-nopgbrk', rfname, '-'], shell=False, stdout=PIPE, encoding="utf-8")
-            res_text, _stderr = proc.communicate()
+            proc = Popen(['pdftotext', '-enc', 'UTF-8', '-nopgbrk', rfname, '-'], shell=False, stdout=PIPE)
+            stdout, stderr = proc.communicate()
+            res_text = ustr(stdout)
             os.unlink(rfname)
         except Exception:
             _logger.debug("Unable to parse PDF report: install pdftotext to perform automated tests.")
 
-        if res_text:
-            for line in res_text.splitlines():
+        if res_text is not False:
+            for line in res_text.split('\n'):
                 if ('[[' in line) or ('[ [' in line):
                     _logger.error("Report %s may have bad expression near: \"%s\".", rname, line[80:])
             # TODO more checks, what else can be a sign of a faulty report?
@@ -139,7 +141,7 @@ def try_report_action(cr, uid, action_id, active_model=None, active_ids=None,
         env = env(context=context)
         if action['type'] in ['ir.actions.act_window', 'ir.actions.submenu']:
             for key in ('res_id', 'res_model', 'view_mode',
-                        'limit', 'search_view_id'):
+                        'limit', 'search_view', 'search_view_id'):
                 datas[key] = action.get(key, datas.get(key, None))
 
             view_id = False

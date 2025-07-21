@@ -3,15 +3,17 @@
 # 	* website_crm_iap_reveal
 # 
 # Translators:
-# Wil Odoo, 2024
+# Khwunchai Jaengsawang <khwunchai.j@ku.th>, 2022
+# Martin Trigaux, 2022
+# Wichanon Jamwutthipreecha, 2022
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 17.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-26 21:56+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: Wil Odoo, 2024\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:56+0000\n"
+"Last-Translator: Wichanon Jamwutthipreecha, 2022\n"
 "Language-Team: Thai (https://app.transifex.com/odoo/teams/41243/th/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -56,7 +58,7 @@ msgstr "กฎการสร้างลูกค้าเป้าหมาย
 #. module: website_crm_iap_reveal
 #: model:ir.model,name:website_crm_iap_reveal.model_crm_reveal_view
 msgid "CRM Reveal View"
-msgstr "CRM มุมมองเปิดเผย"
+msgstr "CRM Reveal View"
 
 #. module: website_crm_iap_reveal
 #: model:ir.model.fields,help:website_crm_iap_reveal.field_crm_reveal_rule__lead_for
@@ -66,7 +68,7 @@ msgstr "เลือกว่าจะติดตามบริษัทเท
 #. module: website_crm_iap_reveal
 #: model:ir.model.fields.selection,name:website_crm_iap_reveal.selection__crm_reveal_rule__lead_for__companies
 msgid "Companies"
-msgstr "บริษัท"
+msgstr "หลายบริษัท"
 
 #. module: website_crm_iap_reveal
 #: model:ir.model.fields.selection,name:website_crm_iap_reveal.selection__crm_reveal_rule__lead_for__people
@@ -135,6 +137,7 @@ msgstr "แสดงชื่อ"
 #. module: website_crm_iap_reveal
 #. odoo-python
 #: code:addons/website_crm_iap_reveal/models/crm_reveal_rule.py:0
+#, python-format
 msgid "Enter Valid Regex."
 msgstr "ป้อน Regex ที่ถูกต้อง"
 
@@ -196,6 +199,12 @@ msgid "Industries"
 msgstr "อุตสาหกรรม"
 
 #. module: website_crm_iap_reveal
+#: model:ir.model.fields,field_description:website_crm_iap_reveal.field_crm_reveal_rule____last_update
+#: model:ir.model.fields,field_description:website_crm_iap_reveal.field_crm_reveal_view____last_update
+msgid "Last Modified on"
+msgstr "แก้ไขครั้งล่าสุดเมื่อ"
+
+#. module: website_crm_iap_reveal
 #: model:ir.model.fields,field_description:website_crm_iap_reveal.field_crm_reveal_rule__write_uid
 #: model:ir.model.fields,field_description:website_crm_iap_reveal.field_crm_reveal_view__write_uid
 msgid "Last Updated by"
@@ -236,6 +245,7 @@ msgstr "มุมมองการสร้างลูกค้าเป้า
 
 #. module: website_crm_iap_reveal
 #: model:ir.actions.server,name:website_crm_iap_reveal.ir_cron_crm_reveal_lead_ir_actions_server
+#: model:ir.cron,cron_name:website_crm_iap_reveal.ir_cron_crm_reveal_lead
 msgid "Lead Generation: Leads/Opportunities Generation"
 msgstr "การสร้างลูกค้าเป้าหมาย: การสร้างลูกค้าเป้าหมาย/โอกาส"
 
@@ -271,7 +281,7 @@ msgstr "อนุญาตให้มีผู้ติดต่อได้ส
 #. module: website_crm_iap_reveal
 #: model:ir.model.fields.selection,name:website_crm_iap_reveal.selection__crm_reveal_rule__priority__1
 msgid "Medium"
-msgstr "วิธีที่เข้ามา"
+msgstr "สื่อกลาง"
 
 #. module: website_crm_iap_reveal
 #: model:ir.model.fields.selection,name:website_crm_iap_reveal.selection__crm_reveal_view__reveal_state__not_found
@@ -308,7 +318,7 @@ msgid ""
 "Only visitors of following states will be converted into "
 "leads/opportunities."
 msgstr ""
-"เฉพาะผู้เยี่ยมชมจากรัฐต่อไปนี้เท่านั้นที่จะถูกแปลงเป็นลูกค้าเป้าหมาย/ผู้ที่มีโอกาสจะซื้อ"
+"เฉพาะผู้เยี่ยมชมจากรัฐต่อไปนี้เท่านั้นที่จะถูกแปลงเป็นลูกค้าเป้าหมาย/โอกาส"
 
 #. module: website_crm_iap_reveal
 #: model:ir.model.fields.selection,name:website_crm_iap_reveal.selection__crm_reveal_rule__lead_type__opportunity
@@ -328,13 +338,14 @@ msgstr "เงื่อนไขการสร้างโอกาสการ
 #. module: website_crm_iap_reveal
 #. odoo-python
 #: code:addons/website_crm_iap_reveal/models/crm_reveal_rule.py:0
+#, python-format
 msgid "Opportunity created by Odoo Lead Generation"
 msgstr "โอกาสที่สร้างโดย ตัวสร้างลูกค้าเป้าหมาย Odoo "
 
 #. module: website_crm_iap_reveal
 #: model:ir.model.fields,field_description:website_crm_iap_reveal.field_crm_reveal_rule__other_role_ids
 msgid "Other Roles"
-msgstr "บทบาทอื่น"
+msgstr "บทบาทอื่น ๆ "
 
 #. module: website_crm_iap_reveal
 #: model:ir.model.fields,field_description:website_crm_iap_reveal.field_crm_reveal_rule__preferred_role_id
@@ -390,7 +401,7 @@ msgstr "พนักงานขาย"
 #. module: website_crm_iap_reveal
 #: model_terms:ir.ui.view,arch_db:website_crm_iap_reveal.crm_reveal_rule_view_search
 msgid "Search CRM Reveal Rule"
-msgstr "ค้นหา CRM กฎที่เปิดเผย"
+msgstr "ค้นหา CRM Reveal Rule"
 
 #. module: website_crm_iap_reveal
 #: model:ir.model.fields,field_description:website_crm_iap_reveal.field_crm_reveal_rule__seniority_id
@@ -406,12 +417,12 @@ msgstr "ลำดับ"
 #. module: website_crm_iap_reveal
 #: model:ir.model.fields,field_description:website_crm_iap_reveal.field_crm_reveal_view__reveal_state
 msgid "State"
-msgstr "สถานะ"
+msgstr "รัฐ"
 
 #. module: website_crm_iap_reveal
 #: model:ir.model.fields,field_description:website_crm_iap_reveal.field_crm_reveal_rule__state_ids
 msgid "States"
-msgstr "สถานะ"
+msgstr "รัฐ"
 
 #. module: website_crm_iap_reveal
 #: model:ir.model.fields,field_description:website_crm_iap_reveal.field_crm_reveal_rule__suffix
@@ -456,7 +467,7 @@ msgstr "ประเภท"
 #. module: website_crm_iap_reveal
 #: model:ir.model.fields,field_description:website_crm_iap_reveal.field_crm_reveal_rule__regex_url
 msgid "URL Expression"
-msgstr "ตัวสั่งงาน URL"
+msgstr "URL Expression"
 
 #. module: website_crm_iap_reveal
 #: model_terms:ir.ui.view,arch_db:website_crm_iap_reveal.crm_reveal_rule_form

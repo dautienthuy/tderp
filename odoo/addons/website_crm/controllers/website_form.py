@@ -16,15 +16,22 @@ class WebsiteForm(form.WebsiteForm):
             country = visitor_partner.country_id or request.env.company.country_id
             if country:
                 return country
-        country_code = request.geoip.country_code
+        country_code = request.geoip.get('country_code')
         if country_code:
             return request.env['res.country'].sudo().search([('code', '=', country_code)], limit=1)
         return request.env['res.country']
 
+    def _get_phone_fields_to_validate(self):
+        return ['phone', 'mobile']
+
     # Check and insert values from the form on the model <model> + validation phone fields
     def _handle_website_form(self, model_name, **kwargs):
         model_record = request.env['ir.model'].sudo().search([('model', '=', model_name), ('website_form_access', '=', True)])
-        if model_record:
+        if model_record and hasattr(request.env[model_name], '_phone_format') or hasattr(request.env[model_name], 'phone_get_sanitized_number'):
+            # filter on either custom _phone_format method, either phone_get_sanitized_number but directly
+            # call phone_format from phone validation herebelow to simplify things as we don't have real
+            # records but a dictionary of value at this point (record.phone_get_sanitized_number would
+            # not work)
             try:
                 data = self.extract_data(model_record, request.params)
             except:
@@ -32,7 +39,7 @@ class WebsiteForm(form.WebsiteForm):
                 pass
             else:
                 record = data.get('record', {})
-                phone_fields = request.env[model_name]._phone_get_number_fields()
+                phone_fields = self._get_phone_fields_to_validate()
                 country = request.env['res.country'].browse(record.get('country_id'))
                 contact_country = country if country.exists() else self._get_country()
                 for phone_field in phone_fields:
@@ -48,8 +55,8 @@ class WebsiteForm(form.WebsiteForm):
                     request.params.update({phone_field: fmt_number})
 
         if model_name == 'crm.lead' and not request.params.get('state_id'):
-            geoip_country_code = request.geoip.country_code
-            geoip_state_code = request.geoip.subdivisions[0].iso_code if request.geoip.subdivisions else None
+            geoip_country_code = request.geoip.get('country_code')
+            geoip_state_code = request.geoip.get('region')
             if geoip_country_code and geoip_state_code:
                 state = request.env['res.country.state'].search([('code', '=', geoip_state_code), ('country_id.code', '=', geoip_country_code)])
                 if state:
@@ -57,10 +64,10 @@ class WebsiteForm(form.WebsiteForm):
         return super(WebsiteForm, self)._handle_website_form(model_name, **kwargs)
 
     def insert_record(self, request, model, values, custom, meta=None):
-        is_lead_model = model.sudo().model == 'crm.lead'
+        is_lead_model = model.model == 'crm.lead'
         if is_lead_model:
             values_email_normalized = tools.email_normalize(values.get('email_from'))
-            visitor_sudo = request.env['website.visitor']._get_visitor_from_request(force_create=True)
+            visitor_sudo = request.env['website.visitor']._get_visitor_from_request()
             visitor_partner = visitor_sudo.partner_id
             if values_email_normalized and visitor_partner and visitor_partner.email_normalized == values_email_normalized:
                 # Here, 'phone' in values has already been formatted, see _handle_website_form.
@@ -69,16 +76,14 @@ class WebsiteForm(form.WebsiteForm):
                 # or if both numbers (after formating) are the same. This way we get additional phone
                 # if possible, without modifying an existing one. (see inverse function on model crm.lead)
                 if values_phone and visitor_partner.phone:
-                    if values_phone == visitor_partner.phone:
-                        values['partner_id'] = visitor_partner.id
-                    elif (visitor_partner._phone_format('phone') or visitor_partner.phone) == values_phone:
+                    if visitor_partner._phone_format(visitor_partner.phone) == values_phone:
                         values['partner_id'] = visitor_partner.id
                 else:
                     values['partner_id'] = visitor_partner.id
             if 'company_id' not in values:
                 values['company_id'] = request.website.company_id.id
             lang = request.context.get('lang', False)
-            values['lang_id'] = values.get('lang_id') or request.env['res.lang']._get_data(code=lang).id
+            values['lang_id'] = values.get('lang_id') or request.env['res.lang']._lang_get_id(lang)
 
         result = super(WebsiteForm, self).insert_record(request, model, values, custom, meta=meta)
 

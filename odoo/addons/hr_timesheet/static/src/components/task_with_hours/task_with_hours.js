@@ -1,18 +1,12 @@
 /** @odoo-module **/
 
 import { registry } from "@web/core/registry";
-import { Many2OneField, many2OneField } from "@web/views/fields/many2one/many2one_field";
-import { onWillStart } from "@odoo/owl";
+import { Many2OneField } from "@web/views/fields/many2one/many2one_field";
 
-export class TaskWithHours extends Many2OneField {
-    setup() {
-        super.setup();
-        onWillStart(this.onWillStart);
-    }
 
-    async onWillStart() { }
+class TaskWithHours extends Many2OneField {
 
-    canCreate() {
+    get canCreate() {
         return Boolean(this.context.default_project_id);
     }
 
@@ -28,7 +22,7 @@ export class TaskWithHours extends Many2OneField {
      * @override
      */
     get context() {
-        return { ...super.context, hr_timesheet_display_remaining_hours: true };
+        return {...super.context, hr_timesheet_display_remaining_hours: true};
     }
 
     /**
@@ -36,7 +30,7 @@ export class TaskWithHours extends Many2OneField {
      */
     get Many2XAutocompleteProps() {
         const props = super.Many2XAutocompleteProps;
-        if (!this.canCreate()) {
+        if (!this.canCreate) {
             props.quickCreate = null;
         }
         return props;
@@ -48,15 +42,10 @@ export class TaskWithHours extends Many2OneField {
     computeActiveActions(props) {
         super.computeActiveActions(props);
         const activeActions = this.state.activeActions;
-        activeActions.create = activeActions.create && this.canCreate(props);
-        activeActions.createEdit = activeActions.createEdit && this.canCreate(props);
+        activeActions.create = activeActions.create && this.canCreate;
+        activeActions.createEdit = activeActions.create;
     }
 
 }
 
-export const taskWithHours = {
-    ...many2OneField,
-    component: TaskWithHours,
-};
-
-registry.category("fields").add("task_with_hours", taskWithHours);
+registry.category("fields").add("task_with_hours", TaskWithHours);

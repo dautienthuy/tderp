@@ -1,9 +1,7 @@
-/** @odoo-module **/
+/** @odoo-module alias=website_sale_stock.website_sale**/
 
-import { WebsiteSale } from '@website_sale/js/website_sale';
-import { rpc } from "@web/core/network/rpc";
-import { isEmail } from '@web/core/utils/strings';
-import VariantMixin from "@website_sale/js/sale_variant_mixin";
+import { WebsiteSale } from 'website_sale.website_sale';
+import { is_email } from 'web.utils';
 
 WebsiteSale.include({
     events: Object.assign({}, WebsiteSale.prototype.events, {
@@ -36,13 +34,16 @@ WebsiteSale.include({
         const formEl = stockNotificationEl.querySelector('#stock_notification_form');
         const email = stockNotificationEl.querySelector('#stock_notification_input').value.trim();
 
-        if (!isEmail(email)) {
+        if (!is_email(email)) {
             return this._displayEmailIncorrectMessage(stockNotificationEl);
         }
 
-        rpc("/shop/add/stock_notification", {
-            product_id: productId,
-            email,
+        this._rpc({
+            route: "/shop/add/stock_notification",
+            params: {
+                product_id: productId,
+                email,
+            },
         }).then((data) => {
             const message = stockNotificationEl.querySelector('#stock_notification_success_message');
 
@@ -56,26 +57,6 @@ WebsiteSale.include({
     _displayEmailIncorrectMessage(stockNotificationEl) {
         const incorrectIconEl = stockNotificationEl.querySelector('#stock_notification_input_incorrect');
         incorrectIconEl.classList.remove('d-none');
-    },
-
-    /**
-     * Adds the stock checking to the regular _onChangeCombination method
-     * @override
-     */
-    _onChangeCombination: function () {
-        this._super.apply(this, arguments);
-        VariantMixin._onChangeCombinationStock.apply(this, arguments);
-    },
-    /**
-     * Recomputes the combination after adding a product to the cart
-     * @override
-     */
-    _onClickAdd(ev) {
-        return this._super.apply(this, arguments).then(() => {
-            if ($('div.availability_messages').length) {
-                this._getCombinationInfo(ev);
-            }
-        });
     }
 });
 

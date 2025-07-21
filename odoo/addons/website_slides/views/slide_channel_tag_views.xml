@@ -28,22 +28,22 @@
     </record>
 
     <record id="slide_channel_tag_view_tree" model="ir.ui.view">
-        <field name="name">slide.channel.tag.view.list</field>
+        <field name="name">slide.channel.tag.view.tree</field>
         <field name="model">slide.channel.tag</field>
         <field name="arch" type="xml">
-            <list string="Course Tags" editable="top">
+            <tree string="Course Tags" editable="top">
                 <field name="sequence" widget="handle"/>
-                <field name="group_sequence" column_invisible="True"/>
+                <field name="group_sequence" invisible="1"/>
                 <field name="name"/>
                 <field name="group_id"/>
-            </list>
+            </tree>
         </field>
     </record>
 
     <record id="slide_channel_tag_action" model="ir.actions.act_window">
         <field name="name">Course Tags</field>
         <field name="res_model">slide.channel.tag</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">tree,form</field>
     </record>
 
     <!-- SLIDE.CHANNEL.TAG.GROUP -->
@@ -67,19 +67,20 @@
                     <div class="oe_title">
                         <label for="name" string="Course Group Name"/>
                         <h1><field name="name" default_focus="1" placeholder="e.g. Your Level"/></h1>
+                        <label for="is_published" string="Menu Entry" class="me-4"/>
+                        <field name="is_published"/><br/>
                     </div>
                     <group>
-                        <field name="is_published" string="Menu Entry"/>
                         <field name="tag_ids" nolabel="1" colspan="2">
-                            <list editable="bottom">
+                            <tree editable="bottom">
                                 <field name="sequence" widget="handle"/>
-                                <field name="group_sequence" column_invisible="True"/>
+                                <field name="group_sequence" invisible="1"/>
                                 <field name="name" string="Tag Name"/>
                                 <field name="color" string="Color" widget="color_picker"/>
                                 <control>
                                     <create string="Add a tag"/>
                                 </control>
-                            </list>
+                            </tree>
                         </field>
                     </group>
                 </sheet>
@@ -88,22 +89,22 @@
     </record>
 
     <record id="slide_channel_tag_group_view_tree" model="ir.ui.view">
-        <field name="name">slide.channel.tag.group.view.list</field>
+        <field name="name">slide.channel.tag.group.view.tree</field>
         <field name="model">slide.channel.tag.group</field>
         <field name="arch" type="xml">
-            <list string="Course Tag Groups">
+            <tree string="Course Tag Groups">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="is_published" string="Menu Entry"/>
                 <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
-            </list>
+            </tree>
         </field>
     </record>
 
     <record id="slide_channel_tag_group_action" model="ir.actions.act_window">
         <field name="name">Course Groups</field>
         <field name="res_model">slide.channel.tag.group</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create a Course Group

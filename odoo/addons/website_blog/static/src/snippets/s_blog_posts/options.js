@@ -1,9 +1,10 @@
-/** @odoo-module **/
+odoo.define('website_blog.s_blog_posts_options', function (require) {
+'use strict';
 
-import options from "@web_editor/js/editor/snippets.options";
-import dynamicSnippetOptions from "@website/snippets/s_dynamic_snippet/options";
+const options = require('web_editor.snippets.options');
+const dynamicSnippetOptions = require('website.s_dynamic_snippet_options');
 
-import wUtils from "@website/js/utils";
+var wUtils = require('website.utils');
 
 const dynamicSnippetBlogPostsOptions = dynamicSnippetOptions.extend({
     /**
@@ -14,6 +15,14 @@ const dynamicSnippetBlogPostsOptions = dynamicSnippetOptions.extend({
         this._super.apply(this, arguments);
         this.modelNameFilter = 'blog.post';
         this.blogs = {};
+    },
+    /**
+     * @override
+     */
+    onBuilt() {
+        this._super.apply(this, arguments);
+        // TODO Remove in master.
+        this.$target[0].dataset['snippet'] = 's_blog_posts';
     },
 
     //--------------------------------------------------------------------------
@@ -26,21 +35,8 @@ const dynamicSnippetBlogPostsOptions = dynamicSnippetOptions.extend({
      * @private
      */
     _computeWidgetVisibility: function (widgetName, params) {
-        const templateKey = this.$target.get(0).dataset.templateKey;
-
         if (widgetName === 'hover_effect_opt') {
-            return templateKey === 'website_blog.dynamic_filter_template_blog_post_big_picture';
-        } else if (widgetName === 'picture_size_opt') {
-            return templateKey === 'website_blog.dynamic_filter_template_blog_post_big_picture' ||
-            templateKey === 'website_blog.dynamic_filter_template_blog_post_horizontal' ||
-            templateKey === 'website_blog.dynamic_filter_template_blog_post_card';
-        } else if (widgetName === 'teaser_opt') {
-            return templateKey === 'website_blog.dynamic_filter_template_blog_post_card' ||
-            templateKey === 'website_blog.dynamic_filter_template_blog_post_list';
-        } else if (widgetName === 'date_opt') {
-            return templateKey === 'website_blog.dynamic_filter_template_blog_post_card' ||
-            templateKey === 'website_blog.dynamic_filter_template_blog_post_horizontal' ||
-            templateKey === 'website_blog.dynamic_filter_template_blog_post_list';
+            return this.$target.get(0).dataset.templateKey === 'website_blog.dynamic_filter_template_blog_post_big_picture';
         }
         return this._super.apply(this, arguments);
     },
@@ -50,7 +46,14 @@ const dynamicSnippetBlogPostsOptions = dynamicSnippetOptions.extend({
      * @returns {Promise}
      */
     _fetchBlogs: function () {
-        return this.orm.searchRead("blog.blog", wUtils.websiteDomain(this), ["id", "name"]);
+        return this._rpc({
+            model: 'blog.blog',
+            method: 'search_read',
+            kwargs: {
+                domain: wUtils.websiteDomain(this),
+                fields: ['id', 'name'],
+            }
+        });
     },
     /**
      *
@@ -90,4 +93,5 @@ const dynamicSnippetBlogPostsOptions = dynamicSnippetOptions.extend({
 
 options.registry.dynamic_snippet_blog_posts = dynamicSnippetBlogPostsOptions;
 
-export default dynamicSnippetBlogPostsOptions;
+return dynamicSnippetBlogPostsOptions;
+});

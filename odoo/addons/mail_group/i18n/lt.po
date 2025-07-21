@@ -3,28 +3,25 @@
 # 	* mail_group
 # 
 # Translators:
-# UAB "Draugiški sprendimai" <transifex@draugiskisprendimai.lt>, 2024
-# Audrius Palenskis <audrius.palenskis@gmail.com>, 2024
-# Gailius Kazlauskas <gailius@vialaurea.lt>, 2024
-# Silvija Butko <silvija.butko@gmail.com>, 2024
-# Arunas V. <arunas@devoro.com>, 2024
+# Silvija Butko <silvija.butko@gmail.com>, 2022
+# Monika Raciunaite <monika.raciunaite@gmail.com>, 2022
+# Jonas Zinkevicius <jozi@odoo.com>, 2022
+# UAB "Draugiški sprendimai" <transifex@draugiskisprendimai.lt>, 2022
+# Arunas V. <arunas@devoro.com>, 2022
+# Linas Versada <linaskrisiukenas@gmail.com>, 2022
+# Audrius Palenskis <audrius.palenskis@gmail.com>, 2022
+# Martin Trigaux, 2022
+# Antanas Muliuolis <an.muliuolis@gmail.com>, 2022
+# digitouch UAB <digitouchagencyeur@gmail.com>, 2022
 # Ramunė ViaLaurea <ramune.vialaurea@gmail.com>, 2024
-# myacc-pro, 2024
-# Antanas Muliuolis <an.muliuolis@gmail.com>, 2024
-# Nerijus, 2024
-# Martin Trigaux, 2024
-# Monika Raciunaite <monika.raciunaite@gmail.com>, 2024
-# Jonas Zinkevicius <jozi@odoo.com>, 2024
-# digitouch UAB <digitouchagencyeur@gmail.com>, 2024
-# Linas Versada <linaskrisiukenas@gmail.com>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-16 13:40+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Linas Versada <linaskrisiukenas@gmail.com>, 2024\n"
+"POT-Creation-Date: 2023-05-23 08:23+0000\n"
+"PO-Revision-Date: 2022-09-22 05:53+0000\n"
+"Last-Translator: Ramunė ViaLaurea <ramune.vialaurea@gmail.com>, 2024\n"
 "Language-Team: Lithuanian (https://app.transifex.com/odoo/teams/41243/lt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -34,7 +31,9 @@ msgstr ""
 
 #. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_message_reject_form
-msgid ") <span invisible=\"not send_email\">and send them an email</span>."
+msgid ""
+") <span attrs=\"{'invisible': [('send_email', '=', False)]}\">and send them "
+"an email</span>."
 msgstr ""
 
 #. module: mail_group
@@ -46,11 +45,11 @@ msgstr ""
 #: model:mail.template,body_html:mail_group.mail_template_list_subscribe
 msgid ""
 "<div style=\"margin: 0px; padding: 0px;\">\n"
-"                Hello,<br/><br/>\n"
-"                You have requested to be subscribed to the mailing list <strong t-out=\"object.name or ''\"/>.\n"
-"                <br/><br/>\n"
-"                To confirm, please visit the following link: <strong t-if=\"ctx.get('token_url')\"><a t-att-href=\"ctx['token_url']\"><t t-out=\"ctx['token_url'] or ''\"/></a></strong>\n"
-"                <br/><br/>\n"
+"                Hello,<br><br>\n"
+"                You have requested to be subscribed to the mailing list <strong t-out=\"object.name or ''\"></strong>.\n"
+"                <br><br>\n"
+"                To confirm, please visit the following link: <strong t-if=\"ctx.get('token_url')\"><a t-att-href=\"ctx['token_url']\"><t t-out=\"ctx['token_url'] or ''\"></t></a></strong>\n"
+"                <br><br>\n"
 "                If this was a mistake or you did not requested this action, please ignore this message.\n"
 "            </div>\n"
 "        "
@@ -60,11 +59,11 @@ msgstr ""
 #: model:mail.template,body_html:mail_group.mail_template_list_unsubscribe
 msgid ""
 "<div style=\"margin: 0px; padding: 0px;\">\n"
-"                Hello,<br/><br/>\n"
-"                You have requested to be unsubscribed to the mailing list <strong t-out=\"object.name or ''\"/>.\n"
-"                <br/><br/>\n"
-"                To confirm, please visit the following link: <strong t-if=\"ctx.get('token_url')\"><a t-att-href=\"ctx['token_url']\"><t t-out=\"ctx['token_url'] or ''\"/></a></strong>.\n"
-"                <br/><br/>\n"
+"                Hello,<br><br>\n"
+"                You have requested to be unsubscribed to the mailing list <strong t-out=\"object.name or ''\"></strong>.\n"
+"                <br><br>\n"
+"                To confirm, please visit the following link: <strong t-if=\"ctx.get('token_url')\"><a t-att-href=\"ctx['token_url']\"><t t-out=\"ctx['token_url'] or ''\"></t></a></strong>.\n"
+"                <br><br>\n"
 "                If this was a mistake or you did not requested this action, please ignore this message.\n"
 "            </div>\n"
 "        "
@@ -74,16 +73,62 @@ msgstr ""
 #: model:mail.template,body_html:mail_group.mail_template_guidelines
 msgid ""
 "<div>\n"
-"                <p>Hello <t t-out=\"object.partner_id.name or ''\"/>,</p>\n"
-"                <p>Please find below the guidelines of the <t t-out=\"object.mail_group_id.name\"/> mailing list.</p>\n"
-"                <p><t t-out=\"object.mail_group_id.moderation_guidelines_msg or ''\"/></p>\n"
+"                <p>Hello <t t-out=\"object.partner_id.name or ''\"></t>,</p>\n"
+"                <p>Please find below the guidelines of the <t t-out=\"object.mail_group_id.name\"></t> mailing list.</p>\n"
+"                <p><t t-out=\"object.mail_group_id.moderation_guidelines_msg or ''\"></t></p>\n"
 "            </div>\n"
 "        "
 msgstr ""
 
 #. module: mail_group
+#: model_terms:ir.ui.view,arch_db:mail_group.group_message
+msgid ""
+"<i class=\"fa fa-arrow-left\" role=\"img\" aria-label=\"Previous message\" "
+"title=\"Previous message\"/>"
+msgstr ""
+
+#. module: mail_group
+#: model_terms:ir.ui.view,arch_db:mail_group.group_message
+msgid ""
+"<i class=\"fa fa-arrow-right\" role=\"img\" aria-label=\"Next message\" "
+"title=\"Next message\"/>"
+msgstr ""
+
+#. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.message_footer
 msgid "<i class=\"fa fa-calendar\" role=\"img\" aria-label=\"Date\" title=\"Date\"/>"
+msgstr ""
+
+#. module: mail_group
+#: model_terms:ir.ui.view,arch_db:mail_group.message_attachments
+msgid ""
+"<i class=\"fa fa-chevron-down\" role=\"img\" aria-label=\"Show attachments\""
+" title=\"Show attachments\"/>"
+msgstr ""
+"<i class=\"fa fa-chevron-down\" role=\"img\" aria-label=\"Show attachments\""
+" title=\"Show attachments\"/>"
+
+#. module: mail_group
+#: model_terms:ir.ui.view,arch_db:mail_group.messages_short
+msgid ""
+"<i class=\"fa fa-chevron-down\" role=\"img\" aria-label=\"Show replies\" "
+"title=\"Show replies\"/>"
+msgstr ""
+
+#. module: mail_group
+#: model_terms:ir.ui.view,arch_db:mail_group.message_attachments
+msgid ""
+"<i class=\"fa fa-chevron-right\" role=\"img\" aria-label=\"Hide "
+"attachments\" title=\"Hide attachments\"/>"
+msgstr ""
+"<i class=\"fa fa-chevron-right\" role=\"img\" aria-label=\"Hide "
+"attachments\" title=\"Hide attachments\"/>"
+
+#. module: mail_group
+#: model_terms:ir.ui.view,arch_db:mail_group.messages_short
+msgid ""
+"<i class=\"fa fa-chevron-right\" role=\"img\" aria-label=\"Hide replies\" "
+"title=\"Hide replies\"/>"
 msgstr ""
 
 #. module: mail_group
@@ -104,48 +149,6 @@ msgid ""
 msgstr ""
 
 #. module: mail_group
-#: model_terms:ir.ui.view,arch_db:mail_group.group_message
-msgid ""
-"<i class=\"oi oi-arrow-left\" role=\"img\" aria-label=\"Previous message\" "
-"title=\"Previous message\"/>"
-msgstr ""
-
-#. module: mail_group
-#: model_terms:ir.ui.view,arch_db:mail_group.group_message
-msgid ""
-"<i class=\"oi oi-arrow-right\" role=\"img\" aria-label=\"Next message\" "
-"title=\"Next message\"/>"
-msgstr ""
-
-#. module: mail_group
-#: model_terms:ir.ui.view,arch_db:mail_group.message_attachments
-msgid ""
-"<i class=\"oi oi-chevron-down\" role=\"img\" aria-label=\"Show attachments\""
-" title=\"Show attachments\"/>"
-msgstr ""
-
-#. module: mail_group
-#: model_terms:ir.ui.view,arch_db:mail_group.messages_short
-msgid ""
-"<i class=\"oi oi-chevron-down\" role=\"img\" aria-label=\"Show replies\" "
-"title=\"Show replies\"/>"
-msgstr ""
-
-#. module: mail_group
-#: model_terms:ir.ui.view,arch_db:mail_group.message_attachments
-msgid ""
-"<i class=\"oi oi-chevron-right\" role=\"img\" aria-label=\"Hide "
-"attachments\" title=\"Hide attachments\"/>"
-msgstr ""
-
-#. module: mail_group
-#: model_terms:ir.ui.view,arch_db:mail_group.messages_short
-msgid ""
-"<i class=\"oi oi-chevron-right\" role=\"img\" aria-label=\"Hide replies\" "
-"title=\"Hide replies\"/>"
-msgstr ""
-
-#. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.messages_short
 msgid "<span class=\"bg-warning\">Pending</span>"
 msgstr ""
@@ -153,8 +156,8 @@ msgstr ""
 #. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_message_view_form
 msgid ""
-"<span class=\"ms-2 badge text-bg-success\" invisible=\"author_moderation != 'allow'\">Whitelisted</span>\n"
-"                            <span class=\"ms-2 badge text-bg-danger\" invisible=\"author_moderation != 'ban'\">Banned</span>"
+"<span class=\"ms-2 badge text-bg-success\" attrs=\"{'invisible': [('author_moderation', '!=', 'allow')]}\">Whitelisted</span>\n"
+"                            <span class=\"ms-2 badge text-bg-danger\" attrs=\"{'invisible': [('author_moderation', '!=', 'ban')]}\">Banned</span>"
 msgstr ""
 
 #. module: mail_group
@@ -225,18 +228,8 @@ msgid "Alias Contact Security"
 msgstr "Pseudonimo kontakto apsauga"
 
 #. module: mail_group
-#: model:ir.model.fields,field_description:mail_group.field_mail_group__alias_domain_id
-msgid "Alias Domain"
-msgstr "Pseudonimo domenas"
-
-#. module: mail_group
-#: model:ir.model.fields,field_description:mail_group.field_mail_group__alias_domain
-msgid "Alias Domain Name"
-msgstr "Pseudonimo pavadinimas"
-
-#. module: mail_group
-#: model:ir.model.fields,field_description:mail_group.field_mail_group__alias_full_name
-msgid "Alias Email"
+#: model:ir.model.fields,field_description:mail_group.field_mail_group__alias_fullname
+msgid "Alias Full Name"
 msgstr ""
 
 #. module: mail_group
@@ -245,14 +238,9 @@ msgid "Alias Name"
 msgstr "Pseudonimo vardas"
 
 #. module: mail_group
-#: model:ir.model.fields,field_description:mail_group.field_mail_group__alias_status
-msgid "Alias Status"
-msgstr ""
-
-#. module: mail_group
-#: model:ir.model.fields,help:mail_group.field_mail_group__alias_status
-msgid "Alias status assessed on the last message received."
-msgstr ""
+#: model:ir.model.fields,field_description:mail_group.field_mail_group__alias_domain
+msgid "Alias domain"
+msgstr "Pseudonimo domenas"
 
 #. module: mail_group
 #: model:ir.model.fields,field_description:mail_group.field_mail_group__alias_model_id
@@ -284,6 +272,7 @@ msgstr "Visada leisti"
 #. module: mail_group
 #. odoo-javascript
 #: code:addons/mail_group/static/src/js/mail_group.js:0
+#, python-format
 msgid "An email with instructions has been sent."
 msgstr ""
 
@@ -384,8 +373,8 @@ msgstr "Dukterinis"
 
 #. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_form
-msgid "Choose or configure a custom domain"
-msgstr ""
+msgid "Configure a custom domain"
+msgstr "Nustatyti pasirinktinį domeną"
 
 #. module: mail_group
 #: model:mail.template,subject:mail_group.mail_template_list_subscribe
@@ -473,11 +462,11 @@ msgstr "El. paštas"
 #. module: mail_group
 #. odoo-python
 #: code:addons/mail_group/models/mail_group.py:0
+#, python-format
 msgid "Email %s is invalid"
 msgstr ""
 
 #. module: mail_group
-#: model:ir.model.fields,field_description:mail_group.field_mail_group__alias_email
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_form
 msgid "Email Alias"
 msgstr "El. pašto pseudonimas"
@@ -495,11 +484,6 @@ msgid ""
 msgstr ""
 "Siuntėjo el. pašto adresas. Šis laukas yra nustatomas, kai nerandamas "
 "sutampantis partneris, ir jis pakeičia autoriaus ID lauką susirašinėjime."
-
-#. module: mail_group
-#: model:ir.model.fields,help:mail_group.field_mail_group__alias_domain
-msgid "Email domain e.g. 'example.com' in 'odoo@example.com'"
-msgstr ""
 
 #. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_form
@@ -555,6 +539,7 @@ msgstr "Grupės pavadinimas"
 #. module: mail_group
 #. odoo-python
 #: code:addons/mail_group/models/mail_group_message.py:0
+#, python-format
 msgid "Group message can only be linked to mail group. Current model is %s."
 msgstr ""
 
@@ -609,14 +594,18 @@ msgstr "Paveikslėlis"
 #. module: mail_group
 #. odoo-python
 #: code:addons/mail_group/models/mail_group.py:0
+#: code:addons/mail_group/models/mail_group.py:0
+#, python-format
 msgid "Invalid action for URL generation (%s)"
 msgstr ""
 
 #. module: mail_group
 #. odoo-python
 #: code:addons/mail_group/models/mail_group_moderation.py:0
-msgid "Invalid email address “%s”"
-msgstr ""
+#: code:addons/mail_group/models/mail_group_moderation.py:0
+#, python-format
+msgid "Invalid email address %r"
+msgstr "Negalimas el. pašto adresas %r"
 
 #. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.invalid_token_subscription
@@ -650,6 +639,15 @@ msgid "Join"
 msgstr "Prisijungti"
 
 #. module: mail_group
+#: model:ir.model.fields,field_description:mail_group.field_mail_group____last_update
+#: model:ir.model.fields,field_description:mail_group.field_mail_group_member____last_update
+#: model:ir.model.fields,field_description:mail_group.field_mail_group_message____last_update
+#: model:ir.model.fields,field_description:mail_group.field_mail_group_message_reject____last_update
+#: model:ir.model.fields,field_description:mail_group.field_mail_group_moderation____last_update
+msgid "Last Modified on"
+msgstr "Paskutinį kartą keista"
+
+#. module: mail_group
 #: model:ir.model.fields,field_description:mail_group.field_mail_group__write_uid
 #: model:ir.model.fields,field_description:mail_group.field_mail_group_member__write_uid
 #: model:ir.model.fields,field_description:mail_group.field_mail_group_message__write_uid
@@ -676,11 +674,6 @@ msgstr "Laisvadienis"
 #. module: mail_group
 #: model_terms:ir.actions.act_window,help:mail_group.mail_group_member_action
 msgid "Let people subscribe to your list online or manually add them here."
-msgstr ""
-
-#. module: mail_group
-#: model:ir.model.fields,field_description:mail_group.field_mail_group__alias_incoming_local
-msgid "Local-part based incoming detection"
 msgstr ""
 
 #. module: mail_group
@@ -718,6 +711,7 @@ msgstr ""
 
 #. module: mail_group
 #: model:ir.actions.server,name:mail_group.ir_cron_mail_notify_group_moderators_ir_actions_server
+#: model:ir.cron,cron_name:mail_group.ir_cron_mail_notify_group_moderators
 msgid "Mail List: Notify group moderators"
 msgstr ""
 
@@ -815,6 +809,7 @@ msgstr ""
 #. module: mail_group
 #. odoo-python
 #: code:addons/mail_group/models/mail_group.py:0
+#, python-format
 msgid "Messages are pending moderation"
 msgstr ""
 
@@ -862,6 +857,7 @@ msgstr ""
 #. module: mail_group
 #. odoo-python
 #: code:addons/mail_group/models/mail_group.py:0
+#, python-format
 msgid "Moderated group must have moderators."
 msgstr ""
 
@@ -900,6 +896,7 @@ msgstr "Moderatoriai"
 #. module: mail_group
 #. odoo-python
 #: code:addons/mail_group/models/mail_group.py:0
+#, python-format
 msgid "Moderators must have an email address."
 msgstr ""
 
@@ -916,7 +913,7 @@ msgstr "Pavadinimas"
 #. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_groups
 msgid ""
-"Need to unsubscribe? <br/>It's right here! <span class=\"oi fa-2x oi-arrow-"
+"Need to unsubscribe? <br/>It's right here! <span class=\"fa fa-2x fa-arrow-"
 "down float-end\" role=\"img\" aria-label=\"\" title=\"Read this !\"/>"
 msgstr ""
 
@@ -964,6 +961,7 @@ msgstr ""
 #. module: mail_group
 #. odoo-python
 #: code:addons/mail_group/models/mail_group.py:0
+#, python-format
 msgid ""
 "Only an administrator or a moderator can send guidelines to group members."
 msgstr ""
@@ -971,13 +969,8 @@ msgstr ""
 #. module: mail_group
 #. odoo-python
 #: code:addons/mail_group/models/mail_group.py:0
+#, python-format
 msgid "Only members can send email to the mailing list."
-msgstr ""
-
-#. module: mail_group
-#. odoo-python
-#: code:addons/mail_group/models/mail_group.py:0
-msgid "Only selected groups of users can send email to the mailing list."
 msgstr ""
 
 #. module: mail_group
@@ -990,6 +983,11 @@ msgstr ""
 "Pasirinktinis įrašo ID, prie kurio bus prisegti visi įeinantys laiškai, net "
 "jei į jį ir neatsakė. Jei nustatyta, tai visiškai išjungs naujų įrašų "
 "kūrimą."
+
+#. module: mail_group
+#: model:ir.model.fields,field_description:mail_group.field_mail_group__alias_user_id
+msgid "Owner"
+msgstr "Savininkas"
 
 #. module: mail_group
 #: model:ir.model.fields,field_description:mail_group.field_mail_group_message__group_message_parent_id
@@ -1092,6 +1090,7 @@ msgstr ""
 #. module: mail_group
 #. odoo-python
 #: code:addons/mail_group/wizard/mail_group_message_reject.py:0
+#, python-format
 msgid "Re: %s"
 msgstr "Re: %s"
 
@@ -1237,7 +1236,9 @@ msgstr "Tema"
 #. module: mail_group
 #. odoo-javascript
 #: code:addons/mail_group/static/src/js/mail_group.js:0
+#: code:addons/mail_group/static/src/js/mail_group.js:0
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_groups
+#, python-format
 msgid "Subscribe"
 msgstr "Prenumeruoti"
 
@@ -1249,6 +1250,7 @@ msgstr ""
 #. module: mail_group
 #. odoo-python
 #: code:addons/mail_group/models/mail_group.py:0
+#, python-format
 msgid ""
 "Template \"mail_group.mail_template_guidelines\" was not found. No email has"
 " been sent. Please contact an administrator to fix this issue."
@@ -1262,6 +1264,7 @@ msgstr "Ačiū!"
 #. module: mail_group
 #. odoo-python
 #: code:addons/mail_group/models/mail_group.py:0
+#, python-format
 msgid "The \"Authorized Group\" is missing."
 msgstr ""
 
@@ -1273,24 +1276,28 @@ msgstr ""
 #. module: mail_group
 #. odoo-python
 #: code:addons/mail_group/models/mail_group_message.py:0
+#, python-format
 msgid "The email \"%s\" is not valid."
 msgstr ""
 
 #. module: mail_group
 #. odoo-python
 #: code:addons/mail_group/models/mail_group.py:0
+#, python-format
 msgid "The group of the message do not match."
 msgstr ""
 
 #. module: mail_group
 #. odoo-python
 #: code:addons/mail_group/models/mail_group.py:0
+#, python-format
 msgid "The guidelines description is empty."
 msgstr ""
 
 #. module: mail_group
 #. odoo-python
 #: code:addons/mail_group/models/mail_group.py:0
+#, python-format
 msgid "The guidelines description is missing."
 msgstr ""
 
@@ -1317,36 +1324,55 @@ msgstr ""
 #. module: mail_group
 #. odoo-python
 #: code:addons/mail_group/models/mail_group.py:0
+#, python-format
 msgid "The notification message is missing."
 msgstr ""
 
 #. module: mail_group
+#: model:ir.model.fields,help:mail_group.field_mail_group__alias_user_id
+msgid ""
+"The owner of records created upon receiving emails on this alias. If this "
+"field is not set the system will attempt to find the right owner based on "
+"the sender (From) address, or will use the Administrator account if no "
+"system user is found for that address."
+msgstr ""
+"Įrašų, sukuriamų gaunant laiškus šiuo vardu, šeimininkas. Jei šis laukas "
+"nėra nustatytas, sistema bandys surasti tikrąjį šeimininką pagal siuntėjo "
+"(nuo) adresą arba naudos administratoriaus paskyrą, jei tam adresui "
+"sistemoje nerandamas vartotojas."
+
+#. module: mail_group
 #. odoo-python
 #: code:addons/mail_group/models/mail_group.py:0
+#, python-format
 msgid "The partner can not be found."
 msgstr ""
 
 #. module: mail_group
 #. odoo-python
 #: code:addons/mail_group/models/mail_group_message.py:0
+#, python-format
 msgid "The record of the message should be the group."
 msgstr ""
 
 #. module: mail_group
 #. odoo-javascript
 #: code:addons/mail_group/static/src/js/mail_group.js:0
+#, python-format
 msgid "This email is already subscribed."
 msgstr ""
 
 #. module: mail_group
 #. odoo-javascript
 #: code:addons/mail_group/static/src/js/mail_group.js:0
+#, python-format
 msgid "This email is not subscribed."
 msgstr ""
 
 #. module: mail_group
 #. odoo-python
 #: code:addons/mail_group/models/mail_group_message.py:0
+#, python-format
 msgid "This message can not be moderated"
 msgstr ""
 
@@ -1358,6 +1384,7 @@ msgstr ""
 #. module: mail_group
 #. odoo-python
 #: code:addons/mail_group/models/mail_group_message.py:0
+#, python-format
 msgid "Those messages can not be moderated: %s."
 msgstr ""
 
@@ -1369,9 +1396,11 @@ msgstr ""
 #. module: mail_group
 #. odoo-javascript
 #: code:addons/mail_group/static/src/js/mail_group.js:0
+#: code:addons/mail_group/static/src/js/mail_group.js:0
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_groups
+#, python-format
 msgid "Unsubscribe"
-msgstr "Atsisakyti"
+msgstr "Nebeprenumeruoti"
 
 #. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_footer
@@ -1398,6 +1427,7 @@ msgstr ""
 #. module: mail_group
 #. odoo-python
 #: code:addons/mail_group/models/mail_group_message.py:0
+#, python-format
 msgid "Wrong status (%s)"
 msgstr ""
 
@@ -1414,11 +1444,6 @@ msgstr "Turite moderuojamų žinučių, eikite į peržiūrėti jų."
 #. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_footer
 msgid "_______________________________________________"
-msgstr ""
-
-#. module: mail_group
-#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_form
-msgid "alias"
 msgstr ""
 
 #. module: mail_group
@@ -1439,11 +1464,6 @@ msgstr "pagal"
 #. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_form
 msgid "e.g. \"Newsletter\""
-msgstr ""
-
-#. module: mail_group
-#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_form
-msgid "e.g. mycompany.com"
 msgstr ""
 
 #. module: mail_group

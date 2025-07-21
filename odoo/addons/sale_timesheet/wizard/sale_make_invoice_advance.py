@@ -13,7 +13,7 @@ class SaleAdvancePaymentInv(models.TransientModel):
     date_end_invoice_timesheet = fields.Date(
         string="End Date",
         help="Only timesheets not yet invoiced (and validated, if applicable) from this period will be invoiced. If the period is not indicated, all timesheets not yet invoiced (and validated, if applicable) will be invoiced without distinction.")
-    invoicing_timesheet_enabled = fields.Boolean(compute='_compute_invoicing_timesheet_enabled', store=True, export_string_translation=False)
+    invoicing_timesheet_enabled = fields.Boolean(compute='_compute_invoicing_timesheet_enabled', store=True)
 
     #=== COMPUTE METHODS ===#
 
@@ -46,6 +46,6 @@ class SaleAdvancePaymentInv(models.TransientModel):
             return sale_orders.with_context(
                 timesheet_start_date=self.date_start_invoice_timesheet,
                 timesheet_end_date=self.date_end_invoice_timesheet
-            )._create_invoices(final=self.deduct_down_payments, grouped=not self.consolidated_billing)
+            )._create_invoices(final=self.deduct_down_payments)
 
         return super()._create_invoices(sale_orders)

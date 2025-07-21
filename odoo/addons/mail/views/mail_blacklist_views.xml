@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <record id="mail_blacklist_view_tree" model="ir.ui.view">
-        <field name="name">mail.blacklist.view.list</field>
+        <field name="name">mail.blacklist.view.tree</field>
         <field name="model">mail.blacklist</field>
         <field name="arch" type="xml">
-            <list string="Email Blacklist">
+            <tree string="Email Blacklist">
                 <field name="create_date" string="Blacklist Date"/>
                 <field name="email"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -19,18 +19,25 @@
                 <header>
                     <button name="mail_action_blacklist_remove" string="Unblacklist"
                         type="object" class="oe_highlight" context="{'default_email': email}"
-                        invisible="not active or not email"/>
+                        attrs="{'invisible': ['|', ('active', '=', False), ('email', '=', False)]}"/>
                     <button name="action_add" string="Blacklist"
                         type="object" class="oe_highlight"
-                        invisible="active or not email"/>
+                        attrs="{'invisible': ['|', ('active', '=', True), ('email', '=', False)]}"/>
                 </header>
                 <sheet>
-                    <div class="badge rounded-pill text-bg-danger float-end fs-6 border-0" invisible="active">Archived</div>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                     <group>
-                        <field name="email"/>
+                        <group>
+                            <field name="email"/>
+                            <field name="active" readonly="1"/>
+                            <br/>
+                        </group>
                     </group>
                 </sheet>
-                <chatter/>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="message_ids"/>
+                </div>
             </form>
         </field>
     </record>

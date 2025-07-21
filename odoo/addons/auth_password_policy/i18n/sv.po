@@ -3,18 +3,19 @@
 # 	* auth_password_policy
 # 
 # Translators:
-# Chrille Hedberg <hedberg.chrille@gmail.com>, 2024
-# Simon S, 2024
-# Lasse L, 2024
-# Jakob Krabbe <jakob.krabbe@vertel.se>, 2024
+# Martin Trigaux, 2022
+# Simon S, 2022
+# Chrille Hedberg <hedberg.chrille@gmail.com>, 2022
+# Anders Wallenquist <anders.wallenquist@vertel.se>, 2022
+# Lasse L, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 08:40+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Jakob Krabbe <jakob.krabbe@vertel.se>, 2024\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2022-09-22 05:45+0000\n"
+"Last-Translator: Lasse L, 2023\n"
 "Language-Team: Swedish (https://app.transifex.com/odoo/teams/41243/sv/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -43,12 +44,21 @@ msgstr ""
 #. module: auth_password_policy
 #. odoo-javascript
 #: code:addons/auth_password_policy/static/src/password_field.js:0
+#, python-format
 msgid "Password"
 msgstr "Lösenord"
 
 #. module: auth_password_policy
+#. odoo-python
+#: code:addons/auth_password_policy/models/res_users.py:0
+#, python-format
+msgid "Passwords must have at least %d characters, got %d."
+msgstr "Lösenord måste ha minst %d tecken, fick %d."
+
+#. module: auth_password_policy
 #. odoo-javascript
 #: code:addons/auth_password_policy/static/src/password_meter.js:0
+#, python-format
 msgid ""
 "Required: %s\n"
 "\n"
@@ -64,29 +74,29 @@ msgid "User"
 msgstr "Användare"
 
 #. module: auth_password_policy
-#. odoo-python
-#: code:addons/auth_password_policy/models/res_users.py:0
-msgid ""
-"Your password must contain at least %(minimal_length)d characters and only "
-"has %(current_count)d."
-msgstr ""
-"Ditt lösenord måste innehålla minst %(minimal_length)d tecken och har endast"
-" %(current_count)d."
-
-#. module: auth_password_policy
 #. odoo-javascript
 #: code:addons/auth_password_policy/static/src/password_policy.js:0
+#, python-format
 msgid "at least %s character classes"
 msgstr "minst %s teckenklasser"
 
 #. module: auth_password_policy
 #. odoo-javascript
 #: code:addons/auth_password_policy/static/src/password_policy.js:0
+#, python-format
 msgid "at least %s characters"
 msgstr "minst %s tecken"
 
 #. module: auth_password_policy
 #. odoo-javascript
 #: code:addons/auth_password_policy/static/src/password_policy.js:0
+#, python-format
 msgid "at least %s words"
 msgstr "minst %s ord"
+
+#. module: auth_password_policy
+#. odoo-javascript
+#: code:addons/auth_password_policy/static/src/password_meter.js:0
+#, python-format
+msgid "no requirements"
+msgstr "inga krav"

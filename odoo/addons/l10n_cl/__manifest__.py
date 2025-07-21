@@ -1,15 +1,15 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+# Copyright (c) 2019 - Blanco Martín & Asociados. https://www.bmya.cl
 {
     'name': 'Chile - Accounting',
-    'icon': '/account/static/description/l10n.png',
-    'countries': ['cl'],
-    'version': '3.1',
+    'version': "3.0",
     'description': """
 Chilean accounting chart and tax localization.
 Plan contable chileno e impuestos de acuerdo a disposiciones vigentes.
     """,
     'author': 'Blanco Martín & Asociados',
-    'website': 'https://www.odoo.com/documentation/master/applications/finance/fiscal_localizations/chile.html',
+    'website': 'https://www.odoo.com/documentation/16.0/applications/finance/accounting/fiscal_localizations/localizations/chile.html',
     'category': 'Accounting/Localizations/Account Charts',
     'depends': [
         'contacts',
@@ -17,9 +17,7 @@ Plan contable chileno e impuestos de acuerdo a disposiciones vigentes.
         'l10n_latam_base',
         'l10n_latam_invoice_document',
         'uom',
-        'account',
-    ],
-    'auto_install': ['account'],
+        ],
     'data': [
         'views/account_move_view.xml',
         'views/account_tax_view.xml',
@@ -31,7 +29,9 @@ Plan contable chileno e impuestos de acuerdo a disposiciones vigentes.
         'views/res_config_settings_view.xml',
         'data/l10n_cl_chart_data.xml',
         'data/account_tax_report_data.xml',
+        'data/account_tax_group_data.xml',
         'data/account_tax_tags_data.xml',
+        'data/account_tax_data.xml',
         'data/l10n_latam_identification_type_data.xml',
         'data/l10n_latam.document.type.csv',
         'data/product_data.xml',
@@ -41,10 +41,12 @@ Plan contable chileno e impuestos de acuerdo a disposiciones vigentes.
         'data/res.bank.csv',
         'data/res.country.csv',
         'data/res_partner.xml',
+        'data/account_fiscal_template.xml',
+        'data/account_chart_template_data.xml',
     ],
     'demo': [
-        'demo/partner_demo.xml',
         'demo/demo_company.xml',
+        'demo/partner_demo.xml',
     ],
     'license': 'LGPL-3',
 }

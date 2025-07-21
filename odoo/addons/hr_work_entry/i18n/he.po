@@ -3,25 +3,24 @@
 # 	* hr_work_entry
 # 
 # Translators:
-# Ha Ketem <haketem@gmail.com>, 2024
-# ilan kl <ilan@qaroads.co.il>, 2024
-# yael terner, 2024
-# Netta Waizer, 2024
-# Roy Sayag, 2024
-# Lilach Gilliam <lilach.gilliam@gmail.com>, 2024
-# Yihya Hugirat <hugirat@gmail.com>, 2024
-# ExcaliberX <excaliberx@gmail.com>, 2024
-# Martin Trigaux, 2024
-# ZVI BLONDER <ZVIBLONDER@gmail.com>, 2024
-# Orel Nahmany, 2024
+# ExcaliberX <excaliberx@gmail.com>, 2022
+# ilan kl <ilan@qaroads.co.il>, 2022
+# Lilach Gilliam <lilach.gilliam@gmail.com>, 2022
+# hed shefer <hed@laylinetech.com>, 2022
+# Yihya Hugirat <hugirat@gmail.com>, 2022
+# Netta Waizer, 2022
+# ZVI BLONDER <ZVIBLONDER@gmail.com>, 2023
+# Ha Ketem <haketem@gmail.com>, 2023
+# yael terner, 2023
+# Martin Trigaux, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-25 07:48+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Orel Nahmany, 2024\n"
+"POT-Creation-Date: 2023-04-14 05:51+0000\n"
+"PO-Revision-Date: 2022-09-22 05:52+0000\n"
+"Last-Translator: Martin Trigaux, 2023\n"
 "Language-Team: Hebrew (https://app.transifex.com/odoo/teams/41243/he/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -32,15 +31,8 @@ msgstr ""
 #. module: hr_work_entry
 #. odoo-python
 #: code:addons/hr_work_entry/models/hr_employee.py:0
+#, python-format
 msgid "%s work entries"
-msgstr ""
-
-#. module: hr_work_entry
-#: model_terms:ir.ui.view,arch_db:hr_work_entry.hr_employee_view_form
-msgid ""
-"<span class=\"o_stat_text\">\n"
-"                            Work Entries\n"
-"                            </span>"
 msgstr ""
 
 #. module: hr_work_entry
@@ -78,12 +70,16 @@ msgid "Cancelled"
 msgstr "בוטל"
 
 #. module: hr_work_entry
-#: model:ir.model.fields,help:hr_work_entry.field_hr_work_entry__code
 #: model:ir.model.fields,help:hr_work_entry.field_hr_work_entry_type__code
 msgid ""
 "Careful, the Code is used in many references, changing it could lead to "
 "unwanted changes."
 msgstr ""
+
+#. module: hr_work_entry
+#: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry_type__code
+msgid "Code"
+msgstr "קוד"
 
 #. module: hr_work_entry
 #: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry__color
@@ -110,17 +106,6 @@ msgstr "מתנגש"
 #: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry__conflict
 msgid "Conflicts"
 msgstr "מתנגש"
-
-#. module: hr_work_entry
-#: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry__country_id
-#: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry_type__country_id
-msgid "Country"
-msgstr "ארץ"
-
-#. module: hr_work_entry
-#: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry_type__country_code
-msgid "Country Code"
-msgstr "קוד מדינה"
 
 #. module: hr_work_entry
 #: model_terms:ir.actions.act_window,help:hr_work_entry.hr_work_entry_type_action
@@ -171,9 +156,13 @@ msgstr "שם לתצוגה"
 
 #. module: hr_work_entry
 #: model:ir.model.fields.selection,name:hr_work_entry.selection__hr_work_entry__state__draft
-#: model_terms:ir.ui.view,arch_db:hr_work_entry.hr_work_entry_view_search
 msgid "Draft"
 msgstr "טיוטה"
+
+#. module: hr_work_entry
+#: model_terms:ir.ui.view,arch_db:hr_work_entry.hr_work_entry_type_view_kanban
+msgid "Dropdown menu"
+msgstr "תפריט נשלף"
 
 #. module: hr_work_entry
 #: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry__duration
@@ -194,12 +183,6 @@ msgid "End"
 msgstr "סיום"
 
 #. module: hr_work_entry
-#: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry__external_code
-#: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry_type__external_code
-msgid "External Code"
-msgstr ""
-
-#. module: hr_work_entry
 #: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry__date_start
 msgid "From"
 msgstr "מ"
@@ -213,11 +196,6 @@ msgstr "רשומת עבודה של משאבי אנוש"
 #: model:ir.model,name:hr_work_entry.model_hr_work_entry_type
 msgid "HR Work Entry Type"
 msgstr "סוג רשומת עבודה של משאבי אנוש"
-
-#. module: hr_work_entry
-#: model:ir.model.fields,field_description:hr_work_entry.field_hr_employee__has_work_entries
-msgid "Has Work Entries"
-msgstr ""
 
 #. module: hr_work_entry
 #: model:ir.model.fields,field_description:hr_work_entry.field_hr_user_work_entry_employee__id
@@ -234,6 +212,13 @@ msgid ""
 msgstr ""
 "אם השדה פעיל מוגדר כ- לא נכון, הוא יאפשר להסתיר את סוג רשומת העבודה מבלי "
 "להסיר אותה."
+
+#. module: hr_work_entry
+#: model:ir.model.fields,field_description:hr_work_entry.field_hr_user_work_entry_employee____last_update
+#: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry____last_update
+#: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry_type____last_update
+msgid "Last Modified on"
+msgstr "שינוי אחרון ב"
 
 #. module: hr_work_entry
 #: model:ir.model.fields,field_description:hr_work_entry.field_hr_user_work_entry_employee__write_uid
@@ -271,17 +256,6 @@ msgid "Note: Validated work entries cannot be modified."
 msgstr ""
 
 #. module: hr_work_entry
-#: model:hr.work.entry.type,name:hr_work_entry.overtime_work_entry_type
-msgid "Overtime Hours"
-msgstr ""
-
-#. module: hr_work_entry
-#: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry__code
-#: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry_type__code
-msgid "Payroll Code"
-msgstr "קוד שכר"
-
-#. module: hr_work_entry
 #: model:ir.model,name:hr_work_entry.model_resource_calendar_leaves
 msgid "Resource Time Off Detail"
 msgstr "פרט חופשה של משאב"
@@ -304,6 +278,7 @@ msgstr "רצף"
 #. module: hr_work_entry
 #. odoo-javascript
 #: code:addons/hr_work_entry/static/src/xml/work_entry_templates.xml:0
+#, python-format
 msgid "Solve conflicts first"
 msgstr "פתור התנגשויות קודם"
 
@@ -323,25 +298,9 @@ msgid "State"
 msgstr "סטטוס"
 
 #. module: hr_work_entry
-#: model:ir.model.fields,help:hr_work_entry.field_hr_work_entry_type__country_code
-msgid ""
-"The ISO country code in two chars. \n"
-"You can use this field for quick search."
-msgstr ""
-"קוד ארץ ISO בשני תווים. \n"
-"ניתן להשתמש בשדה זה לחיפוש מהיר."
-
-#. module: hr_work_entry
-#. odoo-python
-#: code:addons/hr_work_entry/models/hr_work_entry.py:0
+#: model:ir.model.constraint,message:hr_work_entry.constraint_hr_work_entry_type_unique_work_entry_code
 msgid "The same code cannot be associated to multiple work entry types."
 msgstr "לא ניתן לקשר לאותו קוד סוגים רבים של רשומות עבודה."
-
-#. module: hr_work_entry
-#. odoo-python
-#: code:addons/hr_work_entry/models/hr_work_entry.py:0
-msgid "This work entry is validated. You can't delete it."
-msgstr ""
 
 #. module: hr_work_entry
 #: model_terms:ir.ui.view,arch_db:hr_work_entry.hr_work_entry_type_view_form
@@ -368,24 +327,19 @@ msgstr "סוג"
 #. module: hr_work_entry
 #. odoo-python
 #: code:addons/hr_work_entry/models/hr_work_entry.py:0
+#, python-format
 msgid "Undefined"
 msgstr "לא מוגדר"
 
 #. module: hr_work_entry
 #. odoo-python
 #: code:addons/hr_work_entry/models/hr_work_entry.py:0
+#, python-format
 msgid "Undefined Type"
 msgstr ""
 
 #. module: hr_work_entry
-#: model:ir.model.fields,help:hr_work_entry.field_hr_work_entry__external_code
-#: model:ir.model.fields,help:hr_work_entry.field_hr_work_entry_type__external_code
-msgid "Use this code to export your data to a third party"
-msgstr ""
-
-#. module: hr_work_entry
 #: model:ir.model.fields.selection,name:hr_work_entry.selection__hr_work_entry__state__validated
-#: model_terms:ir.ui.view,arch_db:hr_work_entry.hr_work_entry_view_search
 msgid "Validated"
 msgstr "אושרה"
 
@@ -400,6 +354,7 @@ msgid "Work Detail"
 msgstr "פרטי עבודה"
 
 #. module: hr_work_entry
+#: model_terms:ir.ui.view,arch_db:hr_work_entry.hr_employee_view_form
 #: model_terms:ir.ui.view,arch_db:hr_work_entry.hr_work_entry_view_pivot
 msgid "Work Entries"
 msgstr "כניסות לעבודה"
@@ -445,20 +400,6 @@ msgstr "סוגי רשומות עבודה"
 #: model:ir.model.constraint,message:hr_work_entry.constraint_hr_work_entry__work_entry_has_end
 msgid "Work entry must end. Please define an end date or a duration."
 msgstr "רשומת עבודה חייבת להסתיים. אנא הגדר תאריך סיום או משך זמן."
-
-#. module: hr_work_entry
-#. odoo-python
-#: code:addons/hr_work_entry/models/hr_work_entry.py:0
-msgid ""
-"You can't change the Country of this work entry type cause it's currently "
-"used by the system. You need to delete related working entries first."
-msgstr ""
-
-#. module: hr_work_entry
-#. odoo-python
-#: code:addons/hr_work_entry/models/hr_work_entry.py:0
-msgid "You can't change the country of this specific work entry type."
-msgstr ""
 
 #. module: hr_work_entry
 #: model:ir.model.constraint,message:hr_work_entry.constraint_hr_user_work_entry_employee_user_id_employee_id_unique

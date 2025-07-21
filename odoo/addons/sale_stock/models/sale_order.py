@@ -5,7 +5,6 @@ import json
 import logging
 
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError
 from odoo.tools import float_compare
 
 _logger = logging.getLogger(__name__)
@@ -21,12 +20,14 @@ class SaleOrder(models.Model):
     picking_policy = fields.Selection([
         ('direct', 'As soon as possible'),
         ('one', 'When all products are ready')],
-        string='Shipping Policy', required=True, default='direct',
+        string='Shipping Policy', required=True, readonly=True, default='direct',
+        states={'draft': [('readonly', False)], 'sent': [('readonly', False)]},
         help="If you deliver all products at once, the delivery order will be scheduled based on the greatest "
         "product lead time. Otherwise, it will be based on the shortest.")
     warehouse_id = fields.Many2one(
-        'stock.warehouse', string='Warehouse',
+        'stock.warehouse', string='Warehouse', required=True,
         compute='_compute_warehouse_id', store=True, readonly=False, precompute=True,
+        states={'sale': [('readonly', True)], 'done': [('readonly', True)], 'cancel': [('readonly', False)]},
         check_company=True)
     picking_ids = fields.One2many('stock.picking', 'sale_id', string='Transfers')
     delivery_count = fields.Integer(string='Delivery Orders', compute='_compute_picking_ids')
@@ -35,10 +36,7 @@ class SaleOrder(models.Model):
         ('started', 'Started'),
         ('partial', 'Partially Delivered'),
         ('full', 'Fully Delivered'),
-    ], string='Delivery Status', compute='_compute_delivery_status', store=True,
-       help="Blue: Not Delivered/Started\n\
-            Orange: Partially Delivered\n\
-            Green: Fully Delivered")
+    ], string='Delivery Status', compute='_compute_delivery_status', store=True)
     procurement_group_id = fields.Many2one('procurement.group', 'Procurement Group', copy=False)
     effective_date = fields.Datetime("Effective Date", compute='_compute_effective_date', store=True, help="Completion date of the first delivery order.")
     expected_date = fields.Datetime( help="Delivery date you can promise to the customer, computed from the minimum lead time of "
@@ -58,19 +56,15 @@ class SaleOrder(models.Model):
         """
         if column_name != "warehouse_id":
             return super(SaleOrder, self)._init_column(column_name)
-
-        default_warehouse = self.env["stock.warehouse"].search([], limit=1)
-
-        query = """
-        UPDATE sale_order so
-        SET warehouse_id = COALESCE(wh.id, %s)
-        FROM stock_warehouse wh
-        WHERE so.company_id = wh.company_id and so.warehouse_id IS NULL and wh.active
-        """
-        params = [default_warehouse.id]
-
-        _logger.debug("Initializing column '%s' in table '%s'", column_name, self._table)
-        self._cr.execute(query, params)
+        field = self._fields[column_name]
+        default = self.env['stock.warehouse'].search([('company_id', '=', self.env.company.id)], limit=1)
+        value = field.convert_to_write(default, self)
+        value = field.convert_to_column(value, self)
+        if value is not None:
+            _logger.debug("Table '%s': setting default value of new column %s to %r",
+                self._table, column_name, value)
+            query = f'UPDATE "{self._table}" SET "{column_name}" = %s WHERE "{column_name}" IS NULL'
+            self._cr.execute(query, (value,))
 
     @api.depends('picking_ids.date_done')
     def _compute_effective_date(self):
@@ -103,41 +97,19 @@ class SaleOrder(models.Model):
             return super()._select_expected_date(expected_dates)
         return max(expected_dates)
 
-    @api.constrains('warehouse_id', 'state', 'order_line')
-    def _check_warehouse(self):
-        """ Ensure that the warehouse is set in case of storable products """
-        orders_without_wh = self.filtered(lambda order: order.state not in ('draft', 'cancel') and not order.warehouse_id)
-        company_ids_with_wh = {group['company_id'][0] for group in self.env['stock.warehouse'].read_group(domain=[('company_id', 'in', orders_without_wh.mapped('company_id').ids)], fields=['id:recordset'], groupby=['company_id'])} if orders_without_wh else {}
-        other_company = set()
-        for order_line in orders_without_wh.order_line:
-            if order_line.product_id.type != 'consu':
-                continue
-            if order_line.route_id.company_id and order_line.route_id.company_id != order_line.company_id:
-                other_company.add(order_line.route_id.company_id.id)
-                continue
-            if order_line.order_id.company_id.id in company_ids_with_wh:
-                raise UserError(_('You must set a warehouse on your sale order to proceed.'))
-            self.env['stock.warehouse'].with_company(order_line.order_id.company_id)._warehouse_redirect_warning()
-        other_company_warehouses = self.env['stock.warehouse'].search([('company_id', 'in', list(other_company))])
-        if any(c not in other_company_warehouses.company_id.ids for c in other_company):
-            raise UserError(_("You must have a warehouse for line using a delivery in different company."))
-
     def write(self, values):
         if values.get('order_line') and self.state == 'sale':
             for order in self:
                 pre_order_line_qty = {order_line: order_line.product_uom_qty for order_line in order.mapped('order_line') if not order_line.is_expense}
 
-        if values.get('partner_shipping_id') and self._context.get('update_delivery_shipping_partner'):
-            for order in self:
-                order.picking_ids.partner_id = values.get('partner_shipping_id')
-        elif values.get('partner_shipping_id'):
+        if values.get('partner_shipping_id'):
             new_partner = self.env['res.partner'].browse(values.get('partner_shipping_id'))
             for record in self:
                 picking = record.mapped('picking_ids').filtered(lambda x: x.state not in ('done', 'cancel'))
+                addresses = (record.partner_shipping_id.display_name, new_partner.display_name)
                 message = _("""The delivery address has been changed on the Sales Order<br/>
-                        From <strong>"%(old_address)s"</strong> to <strong>"%(new_address)s"</strong>,
-                        You should probably update the partner on this document.""",
-                            old_address=record.partner_shipping_id.display_name, new_address=new_partner.display_name)
+                        From <strong>"%s"</strong> To <strong>"%s"</strong>,
+                        You should probably update the partner on this document.""") % addresses
                 picking.activity_schedule('mail.mail_activity_data_warning', note=message, user_id=self.env.user.id)
 
         if 'commitment_date' in values:
@@ -149,13 +121,13 @@ class SaleOrder(models.Model):
 
         res = super(SaleOrder, self).write(values)
         if values.get('order_line') and self.state == 'sale':
+            rounding = self.env['decimal.precision'].precision_get('Product Unit of Measure')
             for order in self:
                 to_log = {}
-                order.order_line.fetch(['product_uom', 'product_uom_qty', 'display_type', 'is_downpayment'])
                 for order_line in order.order_line:
-                    if order_line.display_type or order_line.is_downpayment:
+                    if order_line.display_type:
                         continue
-                    if float_compare(order_line.product_uom_qty, pre_order_line_qty.get(order_line, 0.0), precision_rounding=order_line.product_uom.rounding) < 0:
+                    if float_compare(order_line.product_uom_qty, pre_order_line_qty.get(order_line, 0.0), precision_rounding=order_line.product_uom.rounding or rounding) < 0:
                         to_log[order_line] = (order_line.product_uom_qty, pre_order_line_qty.get(order_line, 0.0))
                 if to_log:
                     documents = self.env['stock.picking'].sudo()._log_activity_get_documents(to_log, 'move_ids', 'UP')
@@ -190,7 +162,7 @@ class SaleOrder(models.Model):
     def _compute_warehouse_id(self):
         for order in self:
             default_warehouse_id = self.env['ir.default'].with_company(
-                order.company_id.id)._get_model_defaults('sale.order').get('warehouse_id')
+                order.company_id.id).get_model_defaults('sale.order').get('warehouse_id')
             if order.state in ['draft', 'sent'] or not order.ids:
                 # Should expect empty
                 if default_warehouse_id is not None:
@@ -208,8 +180,8 @@ class SaleOrder(models.Model):
             res['warning'] = {
                 'title': _('Warning!'),
                 'message': _(
-                    'Do not forget to change the partner on the following delivery orders: %s',
-                    ','.join(pickings.mapped('name')))
+                    'Do not forget to change the partner on the following delivery orders: %s'
+                ) % (','.join(pickings.mapped('name')))
             }
         return res
 
@@ -256,13 +228,12 @@ class SaleOrder(models.Model):
             picking_id = picking_id[0]
         else:
             picking_id = pickings[0]
-        action['context'] = dict(default_partner_id=self.partner_id.id, default_picking_type_id=picking_id.picking_type_id.id, default_origin=self.name, default_group_id=picking_id.group_id.id)
+        action['context'] = dict(self._context, default_partner_id=self.partner_id.id, default_picking_type_id=picking_id.picking_type_id.id, default_origin=self.name, default_group_id=picking_id.group_id.id)
         return action
 
     def _prepare_invoice(self):
         invoice_vals = super(SaleOrder, self)._prepare_invoice()
         invoice_vals['invoice_incoterm_id'] = self.incoterm.id
-        invoice_vals['delivery_date'] = self.effective_date
         return invoice_vals
 
     def _log_decrease_ordered_quantity(self, documents, cancel=False):

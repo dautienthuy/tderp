@@ -3,16 +3,18 @@
 # 	* sales_team
 # 
 # Translators:
+# 敬雲 林 <chingyun@yuanchih-consult.com>, 2022
+# Martin Trigaux, 2023
+# Tony Ng, 2023
 # Wil Odoo, 2024
-# Tony Ng, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-16 13:40+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Tony Ng, 2025\n"
+"POT-Creation-Date: 2022-10-04 09:25+0000\n"
+"PO-Revision-Date: 2022-09-22 05:55+0000\n"
+"Last-Translator: Wil Odoo, 2024\n"
 "Language-Team: Chinese (Taiwan) (https://app.transifex.com/odoo/teams/41243/zh_TW/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,10 +23,20 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: sales_team
+#: model_terms:ir.ui.view,arch_db:sales_team.crm_team_view_kanban_dashboard
+msgid "<i class=\"fa fa-ellipsis-v\" role=\"img\" aria-label=\"Manage\" title=\"Manage\"/>"
+msgstr "<i class=\"fa fa-ellipsis-v\" role=\"img\" aria-label=\"Manage\" title=\"Manage\"/>"
+
+#. module: sales_team
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_member_view_kanban
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_view_form
 msgid "<i class=\"fa fa-envelope me-1\" role=\"img\" aria-label=\"Email\" title=\"Email\"/>"
 msgstr "<i class=\"fa fa-envelope me-1\" role=\"img\" aria-label=\"電郵\" title=\"電郵\"/>"
+
+#. module: sales_team
+#: model_terms:ir.ui.view,arch_db:sales_team.crm_team_member_view_kanban
+msgid "<span class=\"bg-odoo\">Archived</span>"
+msgstr ""
 
 #. module: sales_team
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_view_kanban_dashboard
@@ -39,13 +51,13 @@ msgstr "<span>報表</span>"
 #. module: sales_team
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_view_kanban_dashboard
 msgid "<span>View</span>"
-msgstr "<span>檢視</span>"
+msgstr "<span>視圖</span>"
 
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team__message_needaction
 #: model:ir.model.fields,field_description:sales_team.field_crm_team_member__message_needaction
 msgid "Action Needed"
-msgstr "需要採取行動"
+msgstr "需採取行動"
 
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team__active
@@ -70,21 +82,28 @@ msgid ""
 msgstr "添加團隊成員，系統將自動將其檔分配給該銷售團隊。"
 
 #. module: sales_team
-#. odoo-python
-#: code:addons/sales_team/models/crm_team_member.py:0
+#: code:addons/sales_team/models/crm_team.py:0
+#, python-format
 msgid ""
-"Adding %(user_name)s in this team will remove them from %(team_names)s. "
-"Working in multiple teams? Activate the option under Configuration>Settings."
-msgstr ""
-"若將 %(user_name)s 加入此團隊，會同時在 %(team_names)s 團隊移除此使用者。要在多個團隊中工作？可在「配置 > "
-"設定」中，啟用相關選項。"
+"Adding %(user_name)s in this team would remove him/her from its current team"
+" %(team_name)s."
+msgstr "在此團隊中添加 %(user_name)s 會將他/她從其當前團隊 %(team_name)s 中刪除。"
 
 #. module: sales_team
-#. odoo-python
-#: code:addons/sales_team/models/crm_team.py:0
+#: code:addons/sales_team/models/crm_team_member.py:0
+#, python-format
 msgid ""
-"Adding %(user_names)s in this team will remove them from %(team_names)s."
-msgstr "若將 %(user_name)s 加入此團隊，會同時在 %(team_names)s 團隊移除此使用者。"
+"Adding %(user_name)s in this team would remove him/her from its current "
+"teams %(team_names)s."
+msgstr "在此團隊中添加 %(user_name)s 會將他/她從其當前團隊 %(team_names)s 中刪除。"
+
+#. module: sales_team
+#: code:addons/sales_team/models/crm_team.py:0
+#, python-format
+msgid ""
+"Adding %(user_names)s in this team would remove them from their current "
+"teams (%(team_names)s)."
+msgstr "在此團隊中添加 %(user_names)s 會將他們從當前團隊 (%(team_names)s) 中刪除。"
 
 #. module: sales_team
 #: model:res.groups,name:sales_team.group_sale_manager
@@ -93,7 +112,6 @@ msgstr "管理員"
 
 #. module: sales_team
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_member_view_form
-#: model_terms:ir.ui.view,arch_db:sales_team.crm_team_member_view_kanban
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_member_view_search
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_view_form
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_view_search
@@ -113,8 +131,8 @@ msgid "Avatar"
 msgstr "頭像"
 
 #. module: sales_team
-#. odoo-python
 #: code:addons/sales_team/models/crm_team.py:0
+#, python-format
 msgid "Big Pretty Button :)"
 msgstr "大漂亮按鈕：）"
 
@@ -124,8 +142,8 @@ msgid "CRM Tag"
 msgstr "CRM 標籤"
 
 #. module: sales_team
-#. odoo-python
 #: code:addons/sales_team/models/crm_team.py:0
+#, python-format
 msgid "Cannot delete default team \"%s\""
 msgstr "無法刪除預設團隊\"%s\""
 
@@ -142,11 +160,11 @@ msgstr "顏色索引"
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team__company_id
 #: model:ir.model.fields,field_description:sales_team.field_crm_team_member__company_id
-#: model_terms:ir.ui.view,arch_db:sales_team.crm_team_view_search
 msgid "Company"
 msgstr "公司"
 
 #. module: sales_team
+#: model:ir.ui.menu,name:sales_team.menu_sale_config
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_view_kanban_dashboard
 msgid "Configuration"
 msgstr "配置"
@@ -155,6 +173,11 @@ msgstr "配置"
 #: model:crm.tag,name:sales_team.categ_oppor7
 msgid "Consulting"
 msgstr "諮詢"
+
+#. module: sales_team
+#: model:ir.model,name:sales_team.model_res_partner
+msgid "Contact"
+msgstr "聯絡人"
 
 #. module: sales_team
 #: model_terms:ir.actions.act_window,help:sales_team.sales_team_crm_tag_action
@@ -176,7 +199,7 @@ msgstr "建立活動類型"
 #: model:ir.model.fields,field_description:sales_team.field_crm_team__create_uid
 #: model:ir.model.fields,field_description:sales_team.field_crm_team_member__create_uid
 msgid "Created by"
-msgstr "建立人員"
+msgstr "創立者"
 
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_tag__create_date
@@ -188,7 +211,7 @@ msgstr "建立於"
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team__currency_id
 msgid "Currency"
-msgstr "貨幣"
+msgstr "幣別"
 
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team__dashboard_button_name
@@ -198,7 +221,7 @@ msgstr "儀表板按鈕"
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team__dashboard_graph_data
 msgid "Dashboard Graph Data"
-msgstr "Dashboard圖表數據"
+msgstr "儀錶板圖像資料"
 
 #. module: sales_team
 #: model_terms:ir.actions.act_window,help:sales_team.crm_team_action_pipeline
@@ -235,6 +258,13 @@ msgid ""
 msgstr "最喜歡的團隊在儀表板中顯示它們並輕鬆存取它們。"
 
 #. module: sales_team
+#: model_terms:ir.ui.view,arch_db:sales_team.crm_team_view_form
+msgid ""
+"Follow this salesteam to automatically track the events associated to users "
+"of this team."
+msgstr "追蹤此銷售團隊，自動追蹤此團隊中使用者關聯的事件。"
+
+#. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team__message_follower_ids
 #: model:ir.model.fields,field_description:sales_team.field_crm_team_member__message_follower_ids
 msgid "Followers"
@@ -249,12 +279,12 @@ msgstr "關注人（業務夥伴）"
 #. module: sales_team
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_member_view_search
 msgid "Group By"
-msgstr "分組依據"
+msgstr "分組方式"
 
 #. module: sales_team
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_view_search
 msgid "Group By..."
-msgstr "分組依據⋯"
+msgstr "分組方式⋯"
 
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team__has_message
@@ -267,7 +297,7 @@ msgstr "有訊息"
 #: model:ir.model.fields,field_description:sales_team.field_crm_team__id
 #: model:ir.model.fields,field_description:sales_team.field_crm_team_member__id
 msgid "ID"
-msgstr "識別號"
+msgstr "ID"
 
 #. module: sales_team
 #: model:ir.model.fields,help:sales_team.field_crm_team__is_membership_multi
@@ -290,6 +320,14 @@ msgid "If checked, some messages have a delivery error."
 msgstr "勾選代表有訊息發生傳送錯誤。"
 
 #. module: sales_team
+#: model:ir.model.fields,help:sales_team.field_res_partner__team_id
+#: model:ir.model.fields,help:sales_team.field_res_users__team_id
+msgid ""
+"If set, this Sales Team will be used for sales and assignments related to "
+"this partner"
+msgstr "如果設置，此銷售團隊將用於與此合作夥伴相關的銷售和分配"
+
+#. module: sales_team
 #: model:ir.model.fields,help:sales_team.field_crm_team__active
 msgid ""
 "If the active field is set to false, it will allow you to hide the Sales "
@@ -299,12 +337,12 @@ msgstr "如果有效欄位設定為false，它將允許您隱藏銷售團隊而�
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team_member__image_1920
 msgid "Image"
-msgstr "圖片"
+msgstr "圖像"
 
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team_member__image_128
 msgid "Image (128)"
-msgstr "圖像 (128)"
+msgstr "Image (128)"
 
 #. module: sales_team
 #: model:crm.tag,name:sales_team.categ_oppor4
@@ -316,6 +354,13 @@ msgstr "資訊"
 #: model:ir.model.fields,field_description:sales_team.field_crm_team_member__message_is_follower
 msgid "Is Follower"
 msgstr "是關注人"
+
+#. module: sales_team
+#: model:ir.model.fields,field_description:sales_team.field_crm_tag____last_update
+#: model:ir.model.fields,field_description:sales_team.field_crm_team____last_update
+#: model:ir.model.fields,field_description:sales_team.field_crm_team_member____last_update
+msgid "Last Modified on"
+msgstr "最後修改於"
 
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_tag__write_uid
@@ -330,6 +375,12 @@ msgstr "最後更新者"
 #: model:ir.model.fields,field_description:sales_team.field_crm_team_member__write_date
 msgid "Last Updated on"
 msgstr "最後更新於"
+
+#. module: sales_team
+#: model:ir.model.fields,field_description:sales_team.field_crm_team__message_main_attachment_id
+#: model:ir.model.fields,field_description:sales_team.field_crm_team_member__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "主要附件"
 
 #. module: sales_team
 #: model:ir.model.fields,help:sales_team.field_res_users__sale_team_id
@@ -351,7 +402,7 @@ msgstr "成員警告"
 #. module: sales_team
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_view_form
 msgid "Members"
-msgstr "成員"
+msgstr "會員"
 
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team__member_warning
@@ -373,7 +424,7 @@ msgstr "訊息"
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team_member__mobile
 msgid "Mobile"
-msgstr "行動電話"
+msgstr "手機"
 
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team__is_membership_multi
@@ -423,7 +474,7 @@ msgstr "電話"
 #. module: sales_team
 #: model:crm.team,name:sales_team.pos_sales_team
 msgid "Point of Sale"
-msgstr "POS營業點"
+msgstr "POS"
 
 #. module: sales_team
 #: model:crm.team,name:sales_team.crm_team_1
@@ -434,12 +485,6 @@ msgstr "售前"
 #: model:crm.tag,name:sales_team.categ_oppor1
 msgid "Product"
 msgstr "商品"
-
-#. module: sales_team
-#: model:ir.model.fields,field_description:sales_team.field_crm_team__rating_ids
-#: model:ir.model.fields,field_description:sales_team.field_crm_team_member__rating_ids
-msgid "Ratings"
-msgstr "評分"
 
 #. module: sales_team
 #: model:crm.team,name:sales_team.team_sales_department
@@ -461,6 +506,8 @@ msgstr "銷售人員"
 #: model:ir.model,name:sales_team.model_crm_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team__name
 #: model:ir.model.fields,field_description:sales_team.field_crm_team_member__crm_team_id
+#: model:ir.model.fields,field_description:sales_team.field_res_partner__team_id
+#: model:ir.model.fields,field_description:sales_team.field_res_users__team_id
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_member_view_search
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_view_form
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_view_tree
@@ -506,15 +553,15 @@ msgid "Salesteams Search"
 msgstr "銷售團隊查詢"
 
 #. module: sales_team
-#. odoo-python
 #: code:addons/sales_team/models/crm_team.py:0
+#, python-format
 msgid "Sample data"
-msgstr "範例資料"
+msgstr "演示資料"
 
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team__sequence
 msgid "Sequence"
-msgstr "序列號"
+msgstr "序號"
 
 #. module: sales_team
 #: model:crm.tag,name:sales_team.categ_oppor3
@@ -538,8 +585,8 @@ msgstr "標籤名稱"
 
 #. module: sales_team
 #: model:ir.model.constraint,message:sales_team.constraint_crm_tag_name_uniq
-msgid "Tag name already exists!"
-msgstr "標籤名稱已存在!"
+msgid "Tag name already exists !"
+msgstr "標籤名已存在!"
 
 #. module: sales_team
 #: model:ir.actions.act_window,name:sales_team.sales_team_crm_tag_action
@@ -582,7 +629,7 @@ msgstr "銷售團隊的顏色"
 #. module: sales_team
 #: model:ir.model.fields,help:sales_team.field_crm_team_member__company_id
 msgid "The default company for this user."
-msgstr "此使用者的預設公司."
+msgstr "此使用者的預設公司。"
 
 #. module: sales_team
 #: model_terms:ir.actions.act_window,help:sales_team.mail_activity_type_action_config_sales
@@ -590,6 +637,14 @@ msgid ""
 "Those represent the different categories of things you have to do (e.g. "
 "\"Call\" or \"Prepare meeting\")."
 msgstr "這些代表您必須做的不同類別的事情（例如“打電話”或“準備會議”）。"
+
+#. module: sales_team
+#: code:addons/sales_team/models/crm_team.py:0
+#, python-format
+msgid ""
+"To add a Salesperson into multiple Teams, activate the Multi-Team option in "
+"settings."
+msgstr "要將銷售人員添加到多個團隊中，請在設置中勾選多團隊選項。"
 
 #. module: sales_team
 #: model:crm.tag,name:sales_team.categ_oppor6
@@ -609,8 +664,9 @@ msgid "UX: Limit to team company or all if no company"
 msgstr "UX：如果沒有公司，則僅限於團隊公司或全部"
 
 #. module: sales_team
-#. odoo-python
 #: code:addons/sales_team/models/crm_team.py:0
+#: code:addons/sales_team/models/crm_team.py:0
+#, python-format
 msgid "Undefined graph model for Sales Team: %s"
 msgstr "銷售團隊的不確定圖模型：%s"
 
@@ -678,15 +734,8 @@ msgid "Website"
 msgstr "網站"
 
 #. module: sales_team
-#. odoo-python
-#: code:addons/sales_team/models/crm_team.py:0
-msgid ""
-"Working in multiple teams? Activate the option under Configuration>Settings."
-msgstr "要在多個團隊中工作？可在「配置 > 設定」中，啟用相關選項。"
-
-#. module: sales_team
-#. odoo-python
 #: code:addons/sales_team/models/crm_team_member.py:0
+#, python-format
 msgid ""
 "You are trying to create duplicate membership(s). We found that "
 "%(duplicates)s already exist(s)."
@@ -701,6 +750,11 @@ msgstr "例如,北美"
 #: model_terms:ir.ui.view,arch_db:sales_team.sales_team_crm_tag_view_form
 msgid "e.g. Services"
 msgstr "例如,服務"
+
+#. module: sales_team
+#: model:crm.team,name:sales_team.ebay_sales_team
+msgid "eBay"
+msgstr "eBay"
 
 #. module: sales_team
 #: model:res.groups,comment:sales_team.group_sale_salesman_all_leads

@@ -34,22 +34,23 @@
         </record>
 
         <record id="res_company_ldap_view_tree" model="ir.ui.view">
-            <field name="name">res.company.ldap.list</field>
+            <field name="name">res.company.ldap.tree</field>
             <field name="model">res.company.ldap</field>
             <field name="arch" type="xml">
-                <list string="LDAP Configuration">
+                <tree string="LDAP Configuration">
                     <field name="company"/>
                     <field name="ldap_server"/>
                     <field name="ldap_server_port"/>
-                </list>
+                </tree>
             </field>
         </record>
 
         <!-- ldap installer  action -->
         <record id="action_ldap_installer" model="ir.actions.act_window">
              <field name="name">Setup your LDAP Server</field>
+             <field name="type">ir.actions.act_window</field>
              <field name="res_model">res.company.ldap</field>
-             <field name="view_mode">list,form</field>
+             <field name="view_mode">tree,form</field>
         </record>
 
 </odoo>

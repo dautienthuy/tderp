@@ -1,7 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import base64
-import logging
 
 from dateutil.relativedelta import relativedelta
 
@@ -9,30 +8,25 @@ from odoo import http, tests
 from odoo.addons.base.tests.common import HttpCaseWithUserPortal
 from odoo.addons.gamification.tests.common import HttpCaseGamification
 from odoo.fields import Command, Datetime
-from odoo.tools import mute_logger
-from odoo.tools.misc import file_open
+from odoo.modules.module import get_module_resource
 
-_logger = logging.getLogger(__name__)
 
 class TestUICommon(HttpCaseGamification, HttpCaseWithUserPortal):
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        # remove demo data
-        cls.env["slide.channel"].search([]).unlink()
 
     def setUp(self):
         super().setUp()
         self.env.ref('gamification.rank_student').description_motivational = """
-            <div class="d-flex align-items-center">
-                <div class="flex-grow-1">Reach the next rank and gain a very nice mug!</div>
-                <img class="ms-3 img img-fluid" style="max-height: 72px;" src="/gamification/static/img/rank_misc_mug.png"/>
+            <div class="media align-items-center">
+                <div class="media-body">Reach the next rank and gain a very nice mug !</div>
+                <img class="ml-3 img img-fluid" style="max-height: 72px;" src="/gamification/static/img/rank_misc_mug.png"/>
             </div>"""
 
+
         # Load pdf and img contents
-        pdf_content = base64.b64encode(file_open('website_slides/static/src/img/presentation.pdf', "rb").read())
-        img_content = base64.b64encode(file_open('website_slides/static/src/img/slide_demo_gardening_1.jpg', "rb").read())
+        pdf_path = get_module_resource('website_slides', 'static', 'src', 'img', 'presentation.pdf')
+        pdf_content = base64.b64encode(open(pdf_path, "rb").read())
+        img_path = get_module_resource('website_slides', 'static', 'src', 'img', 'slide_demo_gardening_1.jpg')
+        img_content = base64.b64encode(open(img_path, "rb").read())
 
         self.channel = self.env['slide.channel'].create({
             'name': 'Basics of Gardening - Test',
@@ -113,34 +107,6 @@ class TestUICommon(HttpCaseGamification, HttpCaseWithUserPortal):
 @tests.common.tagged('post_install', '-at_install')
 class TestUi(TestUICommon):
 
-    @mute_logger("odoo.http", "odoo.addons.base.models.ir_rule", "werkzeug")
-    def test_course_access_fail_redirection(self):
-        """Test that the user is redirected to /slides with en error displayed instead of the standard error page."""
-        self.channel.visibility = "members"
-        urls = (
-            f"/slides/aaa-{self.channel.id}",
-            f"/slides/{self.channel.id}",
-            f"/slides/{self.channel.id}/page/1",
-            f"/slides/aaa-{self.channel.id}/page/1",
-            f"/slides/slide/{self.channel.slide_ids[0].id}",
-            f"/slides/slide/aaa-{self.channel.slide_ids[0].id}",
-            f"/slides/slide/{self.channel.slide_ids[0].id}/pdf_content",
-            f"/slides/slide/aaa-{self.channel.slide_ids[0].id}/pdf_content",
-        )
-        for url in urls:
-            response = self.url_open(url, allow_redirects=False)
-            self.assertURLEqual(response.headers.get("Location"), "/slides?invite_error=no_rights")
-
-        # auth="user" has priority
-        urls = (
-            f"/slides/slide/aaa-{self.channel.slide_ids[0].id}/set_completed",
-            f"/slides/slide/{self.channel.slide_ids[0].id}/set_completed",
-        )
-        for url in urls:
-            response = self.url_open(url, allow_redirects=False)
-            location = self.parse_http_location(response.headers.get("Location"))
-            self.assertEqual(location.path, "/web/login")
-
     def test_course_member_employee(self):
         user_demo = self.user_demo
         user_demo.write({
@@ -148,7 +114,11 @@ class TestUi(TestUICommon):
             'groups_id': [(6, 0, self.env.ref('base.group_user').ids)]
         })
 
-        self.start_tour('/slides', 'course_member', login=user_demo.login)
+        self.browser_js(
+            '/slides',
+            'odoo.__DEBUG__.services["web_tour.tour"].run("course_member")',
+            'odoo.__DEBUG__.services["web_tour.tour"].tours.course_member.ready',
+            login=user_demo.login)
 
     def test_course_member_elearning_officer(self):
         user_demo = self.user_demo
@@ -157,13 +127,21 @@ class TestUi(TestUICommon):
             'groups_id': [(6, 0, (self.env.ref('base.group_user') | self.env.ref('website_slides.group_website_slides_officer')).ids)]
         })
 
-        self.start_tour('/slides', 'course_member', login=user_demo.login)
+        self.browser_js(
+            '/slides',
+            'odoo.__DEBUG__.services["web_tour.tour"].run("course_member")',
+            'odoo.__DEBUG__.services["web_tour.tour"].tours.course_member.ready',
+            login=user_demo.login)
 
     def test_course_member_portal(self):
         user_portal = self.user_portal
         user_portal.karma = 1
 
-        self.start_tour('/slides', 'course_member', login=user_portal.login)
+        self.browser_js(
+            '/slides',
+            'odoo.__DEBUG__.services["web_tour.tour"].run("course_member")',
+            'odoo.__DEBUG__.services["web_tour.tour"].tours.course_member.ready',
+            login=user_portal.login)
 
     def test_full_screen_edition_website_restricted_editor(self):
         # group_website_designer
@@ -183,7 +161,11 @@ class TestUi(TestUICommon):
             'partner_id': self.partner_demo.id,
         })
 
-        self.start_tour(self.env['website'].get_client_action_url('/slides'), 'full_screen_web_editor', login=user_demo.login)
+        self.browser_js(
+            self.env['website'].get_client_action_url('/slides'),
+            'odoo.__DEBUG__.services["web_tour.tour"].run("full_screen_web_editor")',
+            'odoo.__DEBUG__.services["web_tour.tour"].tours.full_screen_web_editor.ready',
+            login=user_demo.login)
 
     def test_course_reviews_elearning_officer(self):
         user_demo = self.user_demo
@@ -196,44 +178,15 @@ class TestUi(TestUICommon):
         self.channel.with_user(user_demo).message_post(
             body='Log note', subtype_xmlid='mail.mt_note', message_type='comment')
 
-        self.start_tour('/slides', 'course_reviews', login=user_demo.login)
+        self.browser_js(
+            '/slides',
+            'odoo.__DEBUG__.services["web_tour.tour"].run("course_reviews")',
+            'odoo.__DEBUG__.services["web_tour.tour"].tours.course_reviews.ready',
+            login=user_demo.login)
 
-    def test_course_reviews_reaction_public(self):
-        password = "Pl1bhD@2!kXZ"
-        manager = self.user_admin
-        manager.write({"password": password})
-
-        message = self.channel.message_post(
-            body="Bad course!",
-            message_type="comment",
-            rating_value="1",
-            subtype_xmlid="mail.mt_comment"
-        )
-        self.authenticate(manager.login, password)
-        self._add_reaction(message, "😊")
-
-        self.start_tour("/slides", "course_reviews_reaction_public", login=None)
-
-    def _add_reaction(self, message, reaction):
-        self.make_jsonrpc_request(
-            "/mail/message/reaction",
-            {
-                "action": "add",
-                "content": reaction,
-                "message_id": message.id,
-            },
-        )
 
 @tests.common.tagged('post_install', '-at_install')
 class TestUiPublisher(HttpCaseGamification):
-
-    def fetch_proxy(self, url):
-        if url.endswith('ThreeTimeAKCGoldWinnerPembrookeWelshCorgi.jpg'):
-            _logger.info('External chrome request during tests: Sending dummy image for %s', url)
-            with file_open('base/tests/odoo.jpg', 'rb') as f:
-                content = f.read()
-            return self.make_fetch_proxy_response(content)
-        return super().fetch_proxy(url)
 
     def test_course_publisher_elearning_manager(self):
         user_demo = self.user_demo
@@ -250,45 +203,11 @@ class TestUiPublisher(HttpCaseGamification):
         ])
         self.env['slide.tag'].create({'name': 'Practice'})
 
-        self.start_tour(self.env['website'].get_client_action_url('/slides'), 'course_publisher_standard', login=user_demo.login)
-
-
-@tests.common.tagged('post_install', '-at_install')
-class TestUiMemberInvited(TestUICommon):
-
-    def setUp(self):
-        super(TestUiMemberInvited, self).setUp()
-        self.channel_partner_portal = self.env['slide.channel.partner'].create({
-            'channel_id': self.channel.id,
-            'partner_id': self.user_portal.partner_id.id,
-            'member_status': 'invited',
-            'last_invitation_date': Datetime.now(),
-        })
-        self.portal_invite_url = self.channel_partner_portal.invitation_link
-
-    def test_invite_check_channel_preview_as_logged_connected_on_invite(self):
-        self.channel.enroll = 'invite'
-        self.channel.visibility = 'connected'
-        self.start_tour(self.portal_invite_url, 'invite_check_channel_preview_as_logged', login='portal')
-
-    def test_invite_check_channel_preview_as_public_connected_on_invite(self):
-        self.channel.enroll = 'invite'
-        self.channel.visibility = 'connected'
-        self.start_tour(self.portal_invite_url, 'invite_check_channel_preview_as_public', login=None)
-
-    def test_invite_check_channel_preview_as_logged_members(self):
-        self.channel.visibility = 'members'
-        self.start_tour(self.portal_invite_url, 'invite_check_channel_preview_as_logged', login='portal')
-
-    def test_invite_check_channel_preview_as_public_members(self):
-        self.channel.visibility = 'members'
-        self.start_tour(self.portal_invite_url, 'invite_check_channel_preview_as_public', login=None)
-
-    def test_invite_check_channel_preview_as_logged_public(self):
-        self.start_tour(self.portal_invite_url, 'invite_check_channel_preview_as_logged', login='portal')
-
-    def test_invite_check_channel_preview_as_public_public(self):
-        self.start_tour(self.portal_invite_url, 'invite_check_channel_preview_as_public', login=None)
+        self.browser_js(
+            self.env['website'].get_client_action_url('/slides'),
+            'odoo.__DEBUG__.services["web_tour.tour"].run("course_publisher_standard")',
+            'odoo.__DEBUG__.services["web_tour.tour"].tours.course_publisher_standard.ready',
+            login=user_demo.login)
 
 
 @tests.common.tagged('external', 'post_install', '-standard', '-at_install')
@@ -302,7 +221,11 @@ class TestUiPublisherYoutube(HttpCaseGamification):
         })
         self.env.ref('website_slides.slide_channel_demo_3_furn0')._remove_membership(self.env.ref('base.partner_demo').ids)
 
-        self.start_tour('/slides', 'course_member_youtube', login=user_demo.login)
+        self.browser_js(
+            '/slides',
+            'odoo.__DEBUG__.services["web_tour.tour"].run("course_member_youtube")',
+            'odoo.__DEBUG__.services["web_tour.tour"].tours.course_member_youtube.ready',
+            login=user_demo.login)
 
     def test_course_publisher_elearning_manager(self):
         user_demo = self.user_demo
@@ -310,4 +233,22 @@ class TestUiPublisherYoutube(HttpCaseGamification):
             'groups_id': [(5, 0), (4, self.env.ref('base.group_user').id), (4, self.env.ref('website_slides.group_website_slides_manager').id)]
         })
 
-        self.start_tour(self.env['website'].get_client_action_url('/slides'), 'course_publisher', login=user_demo.login)
+        self.browser_js(
+            self.env['website'].get_client_action_url('/slides'),
+            'odoo.__DEBUG__.services["web_tour.tour"].run("course_publisher")',
+            'odoo.__DEBUG__.services["web_tour.tour"].tours.course_publisher.ready',
+            login=user_demo.login)
+
+@tests.common.tagged('external', 'post_install', '-standard', '-at_install')
+class TestPortalComposer(TestUICommon):
+    def test_portal_composer_attachment(self):
+        """Check that the access token is returned when we upload an attachment."""
+        self.authenticate('demo', 'demo')
+        response = self.url_open('/portal/attachment/add', data={
+            'name': 'image.png',
+            'res_id': self.channel.id,
+            'res_model': 'slide.channel',
+            'csrf_token': http.WebRequest.csrf_token(self),
+        }, files={'file': ('image.png', '', 'image/png')})
+        self.assertTrue(response.ok)
+        self.assertTrue(response.json().get('access_token'))

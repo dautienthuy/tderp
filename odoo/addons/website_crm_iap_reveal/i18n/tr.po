@@ -3,24 +3,22 @@
 # 	* website_crm_iap_reveal
 # 
 # Translators:
-# emre oktem, 2024
-# Levent Karakaş <levent@mektup.at>, 2024
-# Halil, 2024
-# Martin Trigaux, 2024
-# Ediz Duman <neps1192@gmail.com>, 2024
-# Nadir Gazioglu <nadirgazioglu@gmail.com>, 2024
-# Murat Kaplan <muratk@projetgrup.com>, 2024
-# Umur Akın <umura@projetgrup.com>, 2024
-# Ertuğrul Güreş <ertugrulg@projetgrup.com>, 2024
-# Deniz Guvener_Odoo <degu@odoo.com>, 2025
+# Martin Trigaux, 2022
+# Ediz Duman <neps1192@gmail.com>, 2022
+# Levent Karakaş <levent@mektup.at>, 2022
+# Nadir Gazioglu <nadirgazioglu@gmail.com>, 2022
+# Murat Kaplan <muratk@projetgrup.com>, 2022
+# Umur Akın <umura@projetgrup.com>, 2022
+# Ertuğrul Güreş <ertugrulg@projetgrup.com>, 2022
+# Halil, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 17.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-26 21:56+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: Deniz Guvener_Odoo <degu@odoo.com>, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:56+0000\n"
+"Last-Translator: Halil, 2023\n"
 "Language-Team: Turkish (https://app.transifex.com/odoo/teams/41243/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -34,8 +32,8 @@ msgid ""
 "1 credit is consumed per visitor matching the website traffic conditions and"
 " whose company can be identified.<br/>"
 msgstr ""
-"Web sitesi trafiği koşullarıyla eşleşen ve şirketi tanımlanabilen her "
-"ziyaretçi için 1 kredi kullanılır.<br/>"
+"Web sitesi trafik koşullarına uyan ve şirketi tanımlanabilen ziyaretçi "
+"başına 1 kredi tüketilir.<br/>"
 
 #. module: website_crm_iap_reveal
 #: model_terms:ir.ui.view,arch_db:website_crm_iap_reveal.crm_reveal_rule_form
@@ -126,12 +124,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:website_crm_iap_reveal.field_crm_reveal_rule__create_uid
 #: model:ir.model.fields,field_description:website_crm_iap_reveal.field_crm_reveal_view__create_uid
 msgid "Created by"
-msgstr "Tarafından oluşturuldu"
+msgstr "Oluşturan"
 
 #. module: website_crm_iap_reveal
 #: model:ir.model.fields,field_description:website_crm_iap_reveal.field_crm_reveal_rule__create_date
 msgid "Created on"
-msgstr "Oluşturuldu"
+msgstr "Oluşturulma"
 
 #. module: website_crm_iap_reveal
 #: model:ir.model.fields,field_description:website_crm_iap_reveal.field_crm_reveal_rule__lead_for
@@ -142,11 +140,12 @@ msgstr "Veri İzleme"
 #: model:ir.model.fields,field_description:website_crm_iap_reveal.field_crm_reveal_rule__display_name
 #: model:ir.model.fields,field_description:website_crm_iap_reveal.field_crm_reveal_view__display_name
 msgid "Display Name"
-msgstr "İsim Göster"
+msgstr "Görünüm Adı"
 
 #. module: website_crm_iap_reveal
 #. odoo-python
 #: code:addons/website_crm_iap_reveal/models/crm_reveal_rule.py:0
+#, python-format
 msgid "Enter Valid Regex."
 msgstr "Geçerli değeri girin."
 
@@ -168,7 +167,7 @@ msgstr "Boyuta Göre Filtrele"
 #. module: website_crm_iap_reveal
 #: model_terms:ir.ui.view,arch_db:website_crm_iap_reveal.crm_reveal_rule_form
 msgid "From"
-msgstr "Başlama"
+msgstr "Başlangıç"
 
 #. module: website_crm_iap_reveal
 #: model:ir.model.fields,field_description:website_crm_iap_reveal.field_crm_reveal_rule__lead_ids
@@ -206,6 +205,12 @@ msgstr "IP Adresi"
 #: model:ir.model.fields,field_description:website_crm_iap_reveal.field_crm_reveal_rule__industry_tag_ids
 msgid "Industries"
 msgstr "Sektörler"
+
+#. module: website_crm_iap_reveal
+#: model:ir.model.fields,field_description:website_crm_iap_reveal.field_crm_reveal_rule____last_update
+#: model:ir.model.fields,field_description:website_crm_iap_reveal.field_crm_reveal_view____last_update
+msgid "Last Modified on"
+msgstr "Son Düzenleme"
 
 #. module: website_crm_iap_reveal
 #: model:ir.model.fields,field_description:website_crm_iap_reveal.field_crm_reveal_rule__write_uid
@@ -248,6 +253,7 @@ msgstr "Potansiyel Müşteri Oluşturma Görünümleri"
 
 #. module: website_crm_iap_reveal
 #: model:ir.actions.server,name:website_crm_iap_reveal.ir_cron_crm_reveal_lead_ir_actions_server
+#: model:ir.cron,cron_name:website_crm_iap_reveal.ir_cron_crm_reveal_lead
 msgid "Lead Generation: Leads/Opportunities Generation"
 msgstr "Aday Oluşturma: Adaylar/Fırsatlar Oluşturma"
 
@@ -285,7 +291,7 @@ msgstr "En fazla 5 kişiye izin verilir!"
 #. module: website_crm_iap_reveal
 #: model:ir.model.fields.selection,name:website_crm_iap_reveal.selection__crm_reveal_rule__priority__1
 msgid "Medium"
-msgstr "Aracı:"
+msgstr "Orta"
 
 #. module: website_crm_iap_reveal
 #: model:ir.model.fields.selection,name:website_crm_iap_reveal.selection__crm_reveal_view__reveal_state__not_found
@@ -343,6 +349,7 @@ msgstr "Fırsat Oluşturma Şartları"
 #. module: website_crm_iap_reveal
 #. odoo-python
 #: code:addons/website_crm_iap_reveal/models/crm_reveal_rule.py:0
+#, python-format
 msgid "Opportunity created by Odoo Lead Generation"
 msgstr "Odoo Aday Oluşturma ile oluşturulan fırsat"
 
@@ -368,9 +375,9 @@ msgid ""
 "to target the homepage. Example: /page* to track all the pages which begin "
 "with /page"
 msgstr ""
-"Web sitesi sayfalarını izlemek için regex ifadesi. Tüm web sitesini izlemek "
-"için boş bırakın, yalnızca ana sayfayı hedeflemek için / kullanın. Örnek: "
-"/sayfa* ifadesi, /sayfa ile başlayan tüm sayfaları izler."
+"Web sitesi sayfalarını izlemek için Regex. Web sitesinin tamamını izlemek "
+"veya / ana sayfayı hedeflemek için boş bırakın. Örnek: /page* /page ile "
+"başlayan tüm sayfaları izlemek için"
 
 #. module: website_crm_iap_reveal
 #: model:ir.model.fields,help:website_crm_iap_reveal.field_crm_reveal_rule__website_id
@@ -416,7 +423,7 @@ msgstr "Kıdem"
 #. module: website_crm_iap_reveal
 #: model:ir.model.fields,field_description:website_crm_iap_reveal.field_crm_reveal_rule__sequence
 msgid "Sequence"
-msgstr "Sıralama"
+msgstr "Sıra"
 
 #. module: website_crm_iap_reveal
 #: model:ir.model.fields,field_description:website_crm_iap_reveal.field_crm_reveal_view__reveal_state
@@ -445,10 +452,10 @@ msgid ""
 "criteria. Their details will show up in the history thread of generated "
 "leads/opportunities. One credit is consumed per tracked contact."
 msgstr ""
-"Bu, rolleri/kıdemlerinin kriterlerinizle eşleşmesi halinde izlenecek "
-"kişilerin sayısıdır. Bu kişilerin ayrıntıları, oluşturulan müşteri adayları "
-"veya fırsatların geçmiş dizisinde görünecektir. Takip edilen kişi başına bir"
-" kredi kullanılır."
+"Bu, rollerinin / kıdemlerinin ölçütlerinizle eşleşip eşleşmediğini izlenecek"
+" ilgili kişi sayısıdır. Ayrıntıları, oluşturulan potansiyel müşterilerin / "
+"fırsatların geçmiş başlığında görünecektir. İzlenen kişi başına bir kredi "
+"kullanılır."
 
 #. module: website_crm_iap_reveal
 #: model:ir.model.fields,help:website_crm_iap_reveal.field_crm_reveal_rule__suffix
@@ -456,8 +463,8 @@ msgid ""
 "This will be appended in name of generated lead so you can identify "
 "lead/opportunity is generated with this rule"
 msgstr ""
-"Bu ifade, oluşturulan müşteri adayının adına eklenecek ve bu kural ile "
-"oluşturulduğunu tanımlamanızı sağlayacaktır."
+"Bu, oluşturulan adayın ismine eklenmiş olacaktır, bu yüzden, bu rol ile "
+"oluşturulan adayı/fırsatı tanımlayabilirsiniz"
 
 #. module: website_crm_iap_reveal
 #: model:ir.model.fields.selection,name:website_crm_iap_reveal.selection__crm_reveal_view__reveal_state__to_process
@@ -467,7 +474,7 @@ msgstr "İşlenecek"
 #. module: website_crm_iap_reveal
 #: model:ir.model.fields,field_description:website_crm_iap_reveal.field_crm_reveal_rule__lead_type
 msgid "Type"
-msgstr "Tip"
+msgstr "Tür"
 
 #. module: website_crm_iap_reveal
 #: model:ir.model.fields,field_description:website_crm_iap_reveal.field_crm_reveal_rule__regex_url
@@ -485,8 +492,8 @@ msgid ""
 "Used to order the rules with same URL and countries. Rules with a lower "
 "sequence number will be processed first."
 msgstr ""
-"Aynı URL ve ülkelere sahip kuralları sıralamak için kullanılır. Daha düşük "
-"sıra numarasına sahip kurallar önce işlenir."
+"Aynı URL ve ülkelerle kuralları sipariş etmek için kullanılır. İlk önce sıra"
+" numarası düşük olan kurallar işlenecektir."
 
 #. module: website_crm_iap_reveal
 #: model:ir.model.fields.selection,name:website_crm_iap_reveal.selection__crm_reveal_rule__priority__3
@@ -532,4 +539,4 @@ msgstr "personel"
 #. module: website_crm_iap_reveal
 #: model_terms:ir.ui.view,arch_db:website_crm_iap_reveal.crm_reveal_rule_form
 msgid "to"
-msgstr "den"
+msgstr "kime"

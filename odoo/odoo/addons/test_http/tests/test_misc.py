@@ -1,7 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import json
-from importlib import metadata
 from io import StringIO
 from socket import gethostbyname
 from unittest.mock import patch
@@ -13,10 +12,14 @@ from odoo.tests.common import HOST, new_test_user, get_db_name, BaseCase
 from odoo.tools import config, file_path, parse_version
 from odoo.addons.test_http.controllers import CT_JSON
 
-from odoo.addons.test_http.utils import TEST_IP
 from .test_common import TestHttpBase
 
-werkzeug_version = metadata.version('werkzeug')
+try:
+    from importlib import metadata
+    werkzeug_version = metadata.version('werkzeug')
+except ImportError:
+    import werkzeug
+    werkzeug_version = werkzeug.__version__
 
 
 @tagged('post_install', '-at_install')
@@ -102,40 +105,7 @@ class TestHttpMisc(TestHttpBase):
                 self.assertNotIn('error', res_rpc.keys(), res_rpc.get('error', {}).get('data', {}).get('message'))
                 self.assertIn(milky_way.name, res_rpc['result'], "QWeb template was correctly rendered")
 
-    def test_misc5_geoip(self):
-        res = self.nodb_url_open('/test_http/geoip')
-        res.raise_for_status()
-        self.assertEqual(res.json(), {
-            'city': None,
-            'country_code': None,
-            'country_name': None,
-            'latitude': None,
-            'longitude': None,
-            'region': None,
-            'time_zone': None,
-        })
-
-        # Fake client IP using proxy_mode and a forged X-Forwarded-For http header
-        headers = {
-            'Host': '',
-            'X-Forwarded-For': TEST_IP,
-            'X-Forwarded-Host': 'odoo.com',
-            'X-Forwarded-Proto': 'https'
-        }
-        with patch.dict(odoo.tools.config.options, {'proxy_mode': True}):
-            res = self.nodb_url_open('/test_http/geoip', headers=headers)
-            res.raise_for_status()
-            self.assertEqual(res.json(), {
-                'city': None,
-                'country_code': 'FR',
-                'country_name': 'France',
-                'latitude': 48.8582,
-                'longitude': 2.3387,
-                'region': None,
-                'time_zone': 'Europe/Paris',
-            })
-
-    def test_misc6_upload_file_retry(self):
+    def test_misc5_upload_file_retry(self):
         from odoo.addons.test_http import controllers  # pylint: disable=C0415
 
         with patch.object(controllers, "should_fail", True), StringIO("Hello world!") as file:
@@ -143,8 +113,6 @@ class TestHttpMisc(TestHttpBase):
             self.assertEqual(res.status_code, 200)
             self.assertEqual(res.text, file.getvalue())
 
-    def test_misc7_robotstxt(self):
-        self.nodb_url_open('/robots.txt').raise_for_status()
 
 @tagged('post_install', '-at_install')
 class TestHttpCors(TestHttpBase):
@@ -195,12 +163,10 @@ class TestHttpEnsureDb(TestHttpBase):
         self.db_list = ['db0', 'db1']
 
     def test_ensure_db0_db_selector(self):
-        for url in ('/web', '/test_http/ensure_db'):
-            with self.subTest(url=url):
-                res = self.multidb_url_open(url)
-                res.raise_for_status()
-                self.assertEqual(res.status_code, 303)
-                self.assertURLEqual(res.headers.get('Location'), '/web/database/selector')
+        res = self.multidb_url_open('/test_http/ensure_db')
+        res.raise_for_status()
+        self.assertEqual(res.status_code, 303)
+        self.assertURLEqual(res.headers.get('Location'), '/web/database/selector')
 
     def test_ensure_db1_grant_db(self):
         res = self.multidb_url_open('/test_http/ensure_db?db=db0')

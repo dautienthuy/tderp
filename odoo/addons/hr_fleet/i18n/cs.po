@@ -3,16 +3,19 @@
 # 	* hr_fleet
 # 
 # Translators:
-# Wil Odoo, 2024
-# Marta Wacławek, 2025
+# Ladislav Tomm <tomm@helemik.cz>, 2022
+# karolína schusterová <karolina.schusterova@vdp.sk>, 2022
+# Jaroslav Helemik Nemec <nemec@helemik.cz>, 2022
+# Jiří Podhorecký, 2022
+# Jakub Smolka, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-23 18:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Marta Wacławek, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2022-09-22 05:46+0000\n"
+"Last-Translator: Jakub Smolka, 2023\n"
 "Language-Team: Czech (https://app.transifex.com/odoo/teams/41243/cs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,26 +24,11 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n <= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
 
 #. module: hr_fleet
-#: model_terms:ir.ui.view,arch_db:hr_fleet.fleet_vehicle_log_contract_view_form_inherit_hr
-msgid "<span class=\"o_stat_text\">Employee</span>"
-msgstr "<span class=\"o_stat_text\">Zaměstnanec</span>"
-
-#. module: hr_fleet
 #: model_terms:ir.ui.view,arch_db:hr_fleet.fleet_vehicle_view_form_inherit_hr
 msgid ""
 "<span class=\"o_stat_value\">1</span>\n"
 "                        <span class=\"o_stat_text\">Employee</span>"
 msgstr ""
-
-#. module: hr_fleet
-#: model:ir.model,name:hr_fleet.model_mail_activity_plan_template
-msgid "Activity plan template"
-msgstr "Šablona plánu aktivity"
-
-#. module: hr_fleet
-#: model:ir.model.fields,field_description:hr_fleet.field_mail_activity_plan_template__responsible_type
-msgid "Assignment"
-msgstr "Úkol"
 
 #. module: hr_fleet
 #: model_terms:ir.ui.view,arch_db:hr_fleet.fleet_vehicle_assignation_log_employee_view_list
@@ -51,6 +39,7 @@ msgstr "Přílohy"
 #. module: hr_fleet
 #. odoo-python
 #: code:addons/hr_fleet/models/employee.py:0
+#, python-format
 msgid "Cannot remove address from employees with linked cars."
 msgstr ""
 
@@ -71,9 +60,14 @@ msgid "Current Driver"
 msgstr "Současný řidič"
 
 #. module: hr_fleet
+#: model_terms:ir.ui.view,arch_db:hr_fleet.fleet_vehicle_view_search_inherit_hr
+msgid "Current Driver (Employee)"
+msgstr ""
+
+#. module: hr_fleet
 #: model:ir.model,name:hr_fleet.model_hr_departure_wizard
 msgid "Departure Wizard"
-msgstr "Průvodce odchodem"
+msgstr "Průvodce odjezdem"
 
 #. module: hr_fleet
 #: model_terms:ir.ui.view,arch_db:hr_fleet.fleet_vehicle_log_contract_view_form_inherit_hr
@@ -93,7 +87,7 @@ msgstr ""
 #. module: hr_fleet
 #: model:ir.model,name:hr_fleet.model_fleet_vehicle_assignation_log
 msgid "Drivers history on a vehicle"
-msgstr "Historie řidičů vozidla"
+msgstr "Historie řidičů na vozidle"
 
 #. module: hr_fleet
 #: model:ir.model,name:hr_fleet.model_hr_employee
@@ -102,26 +96,9 @@ msgid "Employee"
 msgstr "Zaměstnanec"
 
 #. module: hr_fleet
-#. odoo-python
-#: code:addons/hr_fleet/models/mail_activity_plan_template.py:0
-msgid "Employee %s is not linked to a vehicle."
-msgstr ""
-
-#. module: hr_fleet
 #: model:ir.model.fields,field_description:hr_fleet.field_fleet_vehicle__driver_employee_name
 msgid "Employee Name"
-msgstr "Jméno zaměstnance"
-
-#. module: hr_fleet
-#: model:ir.model.fields.selection,name:hr_fleet.selection__mail_activity_plan_template__responsible_type__fleet_manager
-msgid "Fleet Manager"
-msgstr "Manažer vozového parku"
-
-#. module: hr_fleet
-#. odoo-python
-#: code:addons/hr_fleet/models/mail_activity_plan_template.py:0
-msgid "Fleet Manager is limited to Employee plans."
-msgstr ""
+msgstr "jméno zaměstnance"
 
 #. module: hr_fleet
 #: model_terms:ir.ui.view,arch_db:hr_fleet.view_employee_form
@@ -134,13 +111,7 @@ msgid "Future Driver (Employee)"
 msgstr ""
 
 #. module: hr_fleet
-#. odoo-python
-#: code:addons/hr_fleet/models/employee.py:0
-msgid "History Employee Cars"
-msgstr ""
-
-#. module: hr_fleet
-#: model:ir.model.fields,field_description:hr_fleet.field_hr_employee__license_plate
+#: model_terms:ir.ui.view,arch_db:hr_fleet.view_employee_filter
 msgid "License Plate"
 msgstr "Poznávací značka"
 
@@ -159,7 +130,7 @@ msgstr "Počet příloh"
 #. module: hr_fleet
 #: model:ir.model,name:hr_fleet.model_fleet_vehicle_odometer
 msgid "Odometer log for a vehicle"
-msgstr "Historie tachometru vozidla"
+msgstr "Historie tachometru pro vozidlo"
 
 #. module: hr_fleet
 #: model:ir.model,name:hr_fleet.model_hr_employee_public
@@ -169,7 +140,7 @@ msgstr "Veřejný zaměstnanec"
 #. module: hr_fleet
 #. odoo-python
 #: code:addons/hr_fleet/models/fleet_vehicle.py:0
-#: code:addons/hr_fleet/models/fleet_vehicle_log_contract.py:0
+#, python-format
 msgid "Related Employee"
 msgstr ""
 
@@ -181,17 +152,12 @@ msgstr "Uvolněte služební auto"
 #. module: hr_fleet
 #: model:ir.model,name:hr_fleet.model_fleet_vehicle_log_services
 msgid "Services for vehicles"
-msgstr "Údržby vozidla"
-
-#. module: hr_fleet
-#. odoo-python
-#: code:addons/hr_fleet/models/mail_activity_plan_template.py:0
-msgid "The vehicle of employee %(employee)s is not linked to a fleet manager."
-msgstr ""
+msgstr "Servisy pro vozidlo"
 
 #. module: hr_fleet
 #. odoo-javascript
 #: code:addons/hr_fleet/static/src/views/hr_fleet_kanban/hr_fleet_kanban_controller.xml:0
+#, python-format
 msgid "Upload"
 msgstr "Nahrát"
 

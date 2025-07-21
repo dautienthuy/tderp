@@ -3,17 +3,17 @@
 # 	* phone_validation
 # 
 # Translators:
-# Daye Jeong, 2025
-# Wil Odoo, 2025
-# Sarah Park, 2025
+# Martin Trigaux, 2022
+# Sarah Park, 2023
+# Daye Jeong, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-23 18:40+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Sarah Park, 2025\n"
+"POT-Creation-Date: 2022-09-20 09:03+0000\n"
+"PO-Revision-Date: 2022-09-22 05:53+0000\n"
+"Last-Translator: Daye Jeong, 2023\n"
 "Language-Team: Korean (https://app.transifex.com/odoo/teams/41243/ko/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,10 +22,11 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: phone_validation
-#. odoo-python
 #: code:addons/phone_validation/models/phone_blacklist.py:0
-msgid "%(error)s Please correct the number and try again."
-msgstr "%(error)s 번호를 수정하고 다시 시도해 주세요."
+#: code:addons/phone_validation/models/phone_blacklist.py:0
+#, python-format
+msgid " Please correct the number and try again."
+msgstr "전화번호 수정 후 다시 시도하세요."
 
 #. module: phone_validation
 #: model:ir.model.fields,field_description:phone_validation.field_mail_thread_phone__message_needaction
@@ -36,7 +37,7 @@ msgstr "조치 필요"
 #. module: phone_validation
 #: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist__active
 msgid "Active"
-msgstr "활성화"
+msgstr "활성"
 
 #. module: phone_validation
 #: model_terms:ir.actions.act_window,help:phone_validation.phone_blacklist_action
@@ -50,16 +51,10 @@ msgid "Archived"
 msgstr "보관됨"
 
 #. module: phone_validation
-#. odoo-python
-#: code:addons/phone_validation/models/mail_thread_phone.py:0
+#: code:addons/phone_validation/models/phone_blacklist.py:0
+#, python-format
 msgid "Are you sure you want to unblacklist this Phone Number?"
 msgstr "이 전화번호를 차단 해제하시겠습니까?"
-
-#. module: phone_validation
-#. odoo-python
-#: code:addons/phone_validation/models/phone_blacklist.py:0
-msgid "Are you sure you want to unblacklist this phone number?"
-msgstr "이 전화번호의 차단을 해제하시겠습니까?"
 
 #. module: phone_validation
 #: model:ir.model.fields,field_description:phone_validation.field_mail_thread_phone__message_attachment_count
@@ -68,48 +63,48 @@ msgid "Attachment Count"
 msgstr "첨부 파일 수"
 
 #. module: phone_validation
-#: model:ir.model,name:phone_validation.model_base
-msgid "Base"
-msgstr "기준액"
-
-#. module: phone_validation
 #: model_terms:ir.ui.view,arch_db:phone_validation.phone_blacklist_view_form
 msgid "Blacklist"
-msgstr "수신 거부"
+msgstr "블랙리스트"
 
 #. module: phone_validation
 #: model_terms:ir.ui.view,arch_db:phone_validation.phone_blacklist_view_tree
 msgid "Blacklist Date"
-msgstr "수신 거부일"
+msgstr "블랙리스트 날짜"
 
 #. module: phone_validation
 #: model:ir.model.fields,field_description:phone_validation.field_mail_thread_phone__mobile_blacklisted
 msgid "Blacklisted Phone Is Mobile"
-msgstr "수신 거부 연락처가 휴대폰입니다"
+msgstr "블랙리스트 연락처가 휴대폰입니다"
 
 #. module: phone_validation
 #: model:ir.actions.act_window,name:phone_validation.phone_blacklist_action
 msgid "Blacklisted Phone Numbers"
-msgstr "수신 거부로 등록된 전화번호"
+msgstr "블랙리스트에 등록된 전화번호"
 
 #. module: phone_validation
 #: model:ir.model.fields,field_description:phone_validation.field_mail_thread_phone__phone_blacklisted
 msgid "Blacklisted Phone is Phone"
-msgstr "수신 거부 연락처가 전화번호입니다"
+msgstr "블랙리스트 연락처가 전화번호입니다"
 
 #. module: phone_validation
 #: model_terms:ir.actions.act_window,help:phone_validation.phone_blacklist_action
 msgid "Blacklisted phone numbers won't receive SMS Mailings anymore."
-msgstr "수신 거부로 등록된 전화번호는 더 이상 SMS 메일링이 수신되지 않습니다."
+msgstr "블랙리스트에 등록된 전화번호는 더 이상 SMS 메일링을 수신하지 않습니다."
 
 #. module: phone_validation
-#. odoo-python
 #: code:addons/phone_validation/models/res_users.py:0
+#, python-format
 msgid ""
 "Blocked by deletion of portal account %(portal_user_name)s by %(user_name)s "
 "(#%(user_id)s)"
 msgstr ""
 "%(user_name)s (#%(user_id)s) 사용자가 포털 계정 %(portal_user_name)s 삭제로 인해 차단됨"
+
+#. module: phone_validation
+#: model_terms:ir.ui.view,arch_db:phone_validation.phone_blacklist_remove_view_form
+msgid "Confirm"
+msgstr "승인"
 
 #. module: phone_validation
 #: model:ir.model,name:phone_validation.model_res_partner
@@ -131,7 +126,7 @@ msgstr "작성일자"
 #. module: phone_validation
 #: model_terms:ir.ui.view,arch_db:phone_validation.phone_blacklist_remove_view_form
 msgid "Discard"
-msgstr "취소"
+msgstr "작성 취소"
 
 #. module: phone_validation
 #: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist__display_name
@@ -156,7 +151,7 @@ msgstr "팔로워"
 #: model:ir.model.fields,field_description:phone_validation.field_mail_thread_phone__message_partner_ids
 #: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist__message_partner_ids
 msgid "Followers (Partners)"
-msgstr "팔로워 (협력사)"
+msgstr "팔로워 (파트너)"
 
 #. module: phone_validation
 #: model:ir.model.fields,field_description:phone_validation.field_mail_thread_phone__has_message
@@ -188,32 +183,14 @@ msgid ""
 "If the sanitized phone number is on the blacklist, the contact won't receive"
 " mass mailing sms anymore, from any list"
 msgstr ""
-"검증한 전화번호가 블랙리스트에 있는 번호인 경우, 어느 목록에서도 해당 연락처에 대해서는 더 이상 대량 발송 SMS를 보내지 않게 "
-"됩니다. "
+"블랙리스트에 있는 전화번호가 없는 번호인 경우, 어느 목록에서도 해당 연락처에 대해서는 더 이상 대량 발송 SMS를 보내지 않게 됩니다."
+" "
 
 #. module: phone_validation
-#. odoo-python
 #: code:addons/phone_validation/tools/phone_validation.py:0
-msgid "Impossible number %s: not a valid country prefix."
-msgstr "잘못된 숫자 %s: 올바른 국가 코드가 아닙니다."
-
-#. module: phone_validation
-#. odoo-python
-#: code:addons/phone_validation/tools/phone_validation.py:0
-msgid "Impossible number %s: not enough digits."
-msgstr "잘못된 숫자 %s: 숫자가 부족합니다."
-
-#. module: phone_validation
-#. odoo-python
-#: code:addons/phone_validation/tools/phone_validation.py:0
+#, python-format
 msgid "Impossible number %s: probably invalid number of digits."
 msgstr "가능하지 않은 번호 %s: 자릿수가 잘못되었습니다."
-
-#. module: phone_validation
-#. odoo-python
-#: code:addons/phone_validation/tools/phone_validation.py:0
-msgid "Impossible number %s: too many digits."
-msgstr "잘못된 숫자 %s: 입력된 숫자가 너무 많습니다."
 
 #. module: phone_validation
 #: model:ir.model.fields,help:phone_validation.field_mail_thread_phone__mobile_blacklisted
@@ -236,14 +213,15 @@ msgstr ""
 "번호를 구분하는데 사용합니다."
 
 #. module: phone_validation
-#. odoo-python
 #: code:addons/phone_validation/tools/phone_validation.py:0
+#, python-format
 msgid "Invalid number %s: probably incorrect prefix."
 msgstr "잘못된 번호 %s: 접두사가 잘못되었습니다."
 
 #. module: phone_validation
-#. odoo-python
 #: code:addons/phone_validation/models/mail_thread_phone.py:0
+#: code:addons/phone_validation/models/mail_thread_phone.py:0
+#, python-format
 msgid "Invalid primary phone field on model %s"
 msgstr "%s 모델에 대한 첫번째 전화번호 필드가 잘못되었습니다"
 
@@ -252,6 +230,12 @@ msgstr "%s 모델에 대한 첫번째 전화번호 필드가 잘못되었습니�
 #: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist__message_is_follower
 msgid "Is Follower"
 msgstr "팔로워임"
+
+#. module: phone_validation
+#: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist____last_update
+#: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist_remove____last_update
+msgid "Last Modified on"
+msgstr "최근 수정일"
 
 #. module: phone_validation
 #: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist__write_uid
@@ -266,6 +250,12 @@ msgid "Last Updated on"
 msgstr "최근 갱신 일자"
 
 #. module: phone_validation
+#: model:ir.model.fields,field_description:phone_validation.field_mail_thread_phone__message_main_attachment_id
+#: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "주요 첨부 파일"
+
+#. module: phone_validation
 #: model:ir.model.fields,field_description:phone_validation.field_mail_thread_phone__message_has_error
 #: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist__message_has_error
 msgid "Message Delivery error"
@@ -278,8 +268,8 @@ msgid "Messages"
 msgstr "메시지"
 
 #. module: phone_validation
-#. odoo-python
 #: code:addons/phone_validation/models/mail_thread_phone.py:0
+#, python-format
 msgid "Missing definition of phone fields."
 msgstr "전화 필드에 대한 정의가 누락되었습니다."
 
@@ -310,7 +300,7 @@ msgstr "조치가 필요한 메시지 수"
 #: model:ir.model.fields,help:phone_validation.field_mail_thread_phone__message_has_error_counter
 #: model:ir.model.fields,help:phone_validation.field_phone_blacklist__message_has_error_counter
 msgid "Number of messages with delivery error"
-msgstr "전송 오류가 발생한 메시지 수입니다."
+msgstr "전송 오류 메시지 수"
 
 #. module: phone_validation
 #: model:ir.model.fields,help:phone_validation.field_phone_blacklist__number
@@ -328,17 +318,17 @@ msgstr "전화번호 / SMS"
 #: model_terms:ir.ui.view,arch_db:phone_validation.phone_blacklist_view_form
 #: model_terms:ir.ui.view,arch_db:phone_validation.phone_blacklist_view_tree
 msgid "Phone Blacklist"
-msgstr "수신 거부 전화번호"
+msgstr "전화번호 블랙리스트"
 
 #. module: phone_validation
 #: model:ir.model,name:phone_validation.model_mail_thread_phone
 msgid "Phone Blacklist Mixin"
-msgstr "수신 거부 전화번호 혼합"
+msgstr "전화번호 블랙리스트 혼합"
 
 #. module: phone_validation
 #: model:ir.model.fields,field_description:phone_validation.field_mail_thread_phone__phone_sanitized_blacklisted
 msgid "Phone Blacklisted"
-msgstr "수신 거부 전화번호"
+msgstr "전화번호 블랙리스트"
 
 #. module: phone_validation
 #: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist__number
@@ -353,8 +343,8 @@ msgid "Phone/Mobile"
 msgstr "전화번호/휴대전화"
 
 #. module: phone_validation
-#. odoo-python
 #: code:addons/phone_validation/models/mail_thread_phone.py:0
+#, python-format
 msgid ""
 "Please enter at least 3 characters when searching a Phone/Mobile number."
 msgstr "전화나 휴대폰 번호 검색 시 3자 이상 입력하세요."
@@ -367,9 +357,8 @@ msgstr "사유"
 
 #. module: phone_validation
 #: model:ir.model,name:phone_validation.model_phone_blacklist_remove
-#: model_terms:ir.ui.view,arch_db:phone_validation.phone_blacklist_remove_view_form
 msgid "Remove phone from blacklist"
-msgstr "수신 거부 목록에서 휴대폰 번호 삭제"
+msgstr "블랙리스트에서 휴대폰 번호 삭제"
 
 #. module: phone_validation
 #: model:ir.model.fields,field_description:phone_validation.field_mail_thread_phone__phone_sanitized
@@ -377,39 +366,26 @@ msgid "Sanitized Number"
 msgstr "제거된 번호"
 
 #. module: phone_validation
-#. odoo-python
 #: code:addons/phone_validation/tools/phone_validation.py:0
+#, python-format
 msgid "Unable to parse %(phone)s: %(error)s"
 msgstr "%(phone)s 분석을 할 수 없습니다: %(error)s"
 
 #. module: phone_validation
 #: model_terms:ir.ui.view,arch_db:phone_validation.phone_blacklist_view_form
 msgid "Unblacklist"
-msgstr "수신 거부 해제"
+msgstr "블랙리스트 해제"
 
 #. module: phone_validation
-#. odoo-python
-#: code:addons/phone_validation/wizard/phone_blacklist_remove.py:0
-msgid "Unblock Reason: %(reason)s"
-msgstr "차단 해제 사유: %(reason)s"
+#: code:addons/phone_validation/models/phone_blacklist.py:0
+#, python-format
+msgid "Unblacklisting Reason: %s"
+msgstr ""
 
 #. module: phone_validation
 #: model:ir.model,name:phone_validation.model_res_users
 msgid "User"
 msgstr "사용자"
-
-#. module: phone_validation
-#. odoo-python
-#: code:addons/phone_validation/models/mail_thread_phone.py:0
-msgid ""
-"You do not have the access right to unblacklist phone numbers. Please "
-"contact your administrator."
-msgstr "전화번호를 블랙리스트에서 제외할 수 있는 권한이 없습니다. 관리자에게 문의하시기 바랍니다."
-
-#. module: phone_validation
-#: model_terms:ir.ui.view,arch_db:phone_validation.phone_blacklist_remove_view_form
-msgid "e.g \"Asked to receive our next newsletters\""
-msgstr "예: \"다음 뉴스레터 수신 요청\""
 
 #. module: phone_validation
 #: model_terms:ir.ui.view,arch_db:phone_validation.phone_blacklist_remove_view_form

@@ -22,19 +22,19 @@ class TestStockLandedCostsMrp(ValuationReconciliationTestCommon):
         # Create product refrigerator & oven
         cls.product_component1 = cls.env['product.product'].create({
             'name': 'Component1',
-            'is_storable': True,
+            'type': 'product',
             'standard_price': 1.0,
             'categ_id': cls.categ_all.id
         })
         cls.product_component2 = cls.env['product.product'].create({
             'name': 'Component2',
-            'is_storable': True,
+            'type': 'product',
             'standard_price': 2.0,
             'categ_id': cls.categ_all.id
         })
         cls.product_refrigerator = cls.env['product.product'].create({
             'name': 'Refrigerator',
-            'is_storable': True,
+            'type': 'product',
             'categ_id': cls.categ_all.id
         })
         cls.uom_unit = cls.env.ref('uom.product_uom_unit')

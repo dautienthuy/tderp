@@ -1,19 +1,13 @@
 /** @odoo-module **/
 
 import { registry } from "@web/core/registry";
-import { useService, useBus } from "@web/core/utils/hooks";
+import { useService } from "@web/core/utils/hooks";
 import { BomOverviewControlPanel } from "../bom_overview_control_panel/mrp_bom_overview_control_panel";
 import { BomOverviewTable } from "../bom_overview_table/mrp_bom_overview_table";
-import { Component, EventBus, onWillStart, useSubEnv, useState } from "@odoo/owl";
-import { standardActionServiceProps } from "@web/webclient/actions/action_service";
+
+const { Component, EventBus, onWillStart, useSubEnv, useState } = owl;
 
 export class BomOverviewComponent extends Component {
-    static template = "mrp.BomOverviewComponent";
-    static components = {
-        BomOverviewControlPanel,
-        BomOverviewTable,
-    };
-    static props = { ...standardActionServiceProps };
     setup() {
         this.orm = useService("orm");
         this.context = this.props.action.context;
@@ -29,7 +23,7 @@ export class BomOverviewComponent extends Component {
         this.state = useState({
             showOptions: {
                 uom: false,
-                availabilities: false || Boolean(this.props.action.context.activate_availabilities),
+                availabilities: true,
                 costs: true,
                 operations: true,
                 leadTimes: true,
@@ -40,18 +34,11 @@ export class BomOverviewComponent extends Component {
             bomData: {},
             precision: 2,
             bomQuantity: null,
-            allFolded: true,
         });
 
         useSubEnv({
             overviewBus: new EventBus(),
         });
-
-        useBus(
-            this.env.overviewBus,
-            "toggle-fold-all",
-            () => (this.state.allFolded = !this.state.allFolded)
-        );
 
         onWillStart(async () => {
             await this.getWarehouses();
@@ -62,13 +49,6 @@ export class BomOverviewComponent extends Component {
     //---- Data ----
 
     async initBomData() {
-        const variantId = this.props.action.context.active_product_id;
-        const resModel = this.props.action.context.active_model;
-        this.state.currentVariantId = false;
-        if (resModel === 'product.product' && variantId !== undefined) {
-            this.state.currentVariantId = variantId;
-        }
-
         const bomData = await this.getBomData();
         this.state.bomQuantity = bomData["bom_qty"];
         this.state.showOptions.uom = bomData["is_uom_applied"];
@@ -76,7 +56,7 @@ export class BomOverviewComponent extends Component {
         this.variants = bomData["variants"];
         this.showVariants = bomData["is_variant_applied"];
         if (this.showVariants) {
-            this.state.currentVariantId ||= Object.keys(this.variants)[0];
+            this.state.currentVariantId = Object.keys(this.variants)[0];
         }
         this.state.precision = bomData["precision"];
     }
@@ -89,7 +69,7 @@ export class BomOverviewComponent extends Component {
         ];
         const context = { ...this.context};
         if (this.state.currentWarehouse) {
-            context.warehouse_id = this.state.currentWarehouse.id;
+            context.warehouse = this.state.currentWarehouse.id;
         }
         const bomData = await this.orm.call(
             "report.mrp.report_bom_structure",
@@ -129,7 +109,7 @@ export class BomOverviewComponent extends Component {
             await this.getBomData();
         }
     }
-
+    
     async onChangeVariant(variantId) {
         if (this.state.currentVariantId != variantId) {
             this.state.currentVariantId = variantId;
@@ -178,5 +158,11 @@ export class BomOverviewComponent extends Component {
         return reportName;
     }
 }
+
+BomOverviewComponent.template = "mrp.BomOverviewComponent";
+BomOverviewComponent.components = {
+    BomOverviewControlPanel,
+    BomOverviewTable,
+};
 
 registry.category("actions").add("mrp_bom_report", BomOverviewComponent);

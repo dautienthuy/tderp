@@ -1,17 +1,13 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tests import tagged
-
-from odoo.addons.sale.tests.test_sale_product_attribute_value_config import TestSaleProductAttributeValueCommon
 from odoo.addons.website.tools import MockRequest
-from odoo.addons.website_sale_stock.tests.common import WebsiteSaleStockCommon
+from odoo.addons.sale.tests.test_sale_product_attribute_value_config import TestSaleProductAttributeValueCommon
+from odoo.tests import tagged
 
 
 @tagged('post_install', '-at_install')
-class TestWebsiteSaleStockProductWarehouse(
-    TestSaleProductAttributeValueCommon, WebsiteSaleStockCommon
-):
+class TestWebsiteSaleStockProductWarehouse(TestSaleProductAttributeValueCommon):
 
     @classmethod
     def setUpClass(cls):
@@ -23,38 +19,67 @@ class TestWebsiteSaleStockProductWarehouse(
         cls.website = cls.env['website'].create({'name': 'Website Company C'})
         cls.website.company_id = cls.company
 
-        # Set two warehouses (one was created on company creation)
-        cls.warehouse_1 = cls.env['stock.warehouse'].search([
-            ('company_id', '=', cls.company.id)
-        ])
-        cls.warehouse_2 = cls._create_warehouse()
-        cls.product_A = cls._create_product()
-        cls.product_B = cls._create_product()
-        cls.test_env = cls.env['base'].with_context(
-            website_id=cls.website.id,
-            website_sale_stock_get_quantity=True,
-        ).env
+            # Set two warehouses (one was created on company creation)
+        cls.warehouse_1 = cls.env['stock.warehouse'].search([('company_id', '=', cls.company.id)])
+        cls.warehouse_2 = cls.env['stock.warehouse'].create({
+            'name': 'Warehouse 2',
+            'code': 'WH2'
+        })
+
+        # Create two stockable products
+        cls.product_A = cls.env['product.product'].create({
+            'name': 'Product A',
+            'allow_out_of_stock_order': False,
+            'type': 'product',
+            'default_code': 'E-COM1',
+        })
+
+        cls.product_B = cls.env['product.product'].create({
+            'name': 'Product B',
+            'allow_out_of_stock_order': False,
+            'type': 'product',
+            'default_code': 'E-COM2',
+        })
 
         # Add 10 Product A in WH1 and 15 Product 1 in WH2
-        cls._add_product_qty_to_wh(cls.product_A.id, 10, cls.warehouse_1.lot_stock_id.id)
-        cls._add_product_qty_to_wh(cls.product_A.id, 15, cls.warehouse_2.lot_stock_id.id)
+        quants = cls.env['stock.quant'].with_context(inventory_mode=True).create([{
+            'product_id': cls.product_A.id,
+            'inventory_quantity': qty,
+            'location_id': wh.lot_stock_id.id,
+        } for wh, qty in [(cls.warehouse_1, 10.0), (cls.warehouse_2, 15.0)]])
 
         # Add 10 Product 2 in WH2
-        cls._add_product_qty_to_wh(cls.product_B.id, 10, cls.warehouse_2.lot_stock_id.id)
+        quants |= cls.env['stock.quant'].with_context(inventory_mode=True).create({
+            'product_id': cls.product_B.id,
+            'inventory_quantity': 10.0,
+            'location_id': cls.warehouse_2.lot_stock_id.id,
+        })
+        quants.action_apply_inventory()
 
-    def test_get_combination_info_free_qty_when_warehouse_is_set(self):
-        self.website.warehouse_id = self.warehouse_2
-        combination_info = self.product_A.with_env(self.test_env)._get_combination_info_variant()
-        self.assertEqual(combination_info['free_qty'], 15)
-        combination_info = self.product_B.with_env(self.test_env)._get_combination_info_variant()
-        self.assertEqual(combination_info['free_qty'], 10)
+    def test_01_get_combination_info(self):
+        """ Checked that correct product quantity is shown in website according
+        to the warehouse which is set in current website.
+          - Set Warehouse 1, Warehouse 2 or none in website and:
+            - Check available quantity of Product A and Product B in website
+        When the user doesn't set any warehouse, the module should still select
+        a default one.
+        """
 
-    def test_get_combination_info_free_qty_when_no_warehouse_is_set(self):
-        self.website.warehouse_id = False
-        combination_info = self.product_A.with_env(self.test_env)._get_combination_info_variant()
-        self.assertEqual(combination_info['free_qty'], 25)
-        combination_info = self.product_B.with_env(self.test_env)._get_combination_info_variant()
-        self.assertEqual(combination_info['free_qty'], 10)
+        for wh, qty_a, qty_b in [(self.warehouse_1, 10, 0), (self.warehouse_2, 15, 10), (False, 10, 0)]:
+            # set warehouse_id
+            self.website.warehouse_id = wh
+
+            product = self.product_A.with_context(website_id=self.website.id)
+            combination_info = product.product_tmpl_id.with_context(website_sale_stock_get_quantity=True)._get_combination_info()
+
+            # Check available quantity of product is according to warehouse
+            self.assertEqual(combination_info['free_qty'], qty_a, "%s units of Product A should be available in warehouse %s" % (qty_a, wh))
+
+            product = self.product_B.with_context(website_id=self.website.id)
+            combination_info = product.product_tmpl_id.with_context(website_sale_stock_get_quantity=True)._get_combination_info()
+
+            # Check available quantity of product is according to warehouse
+            self.assertEqual(combination_info['free_qty'], qty_b, "%s units of Product B should be available in warehouse %s" % (qty_b, wh))
 
     def test_02_update_cart_with_multi_warehouses(self):
         """ When the user updates his cart and increases a product quantity, if
@@ -74,14 +99,8 @@ class TestWebsiteSaleStockProductWarehouse(
 
         with MockRequest(self.env, website=self.website, sale_order_id=so.id):
             website_so = self.website.sale_get_order()
-            self.assertEqual(
-                website_so.order_line.product_id.virtual_available,
-                25,
-                "This quantity should be based on all warehouses.",
-            )
+            self.assertEqual(website_so.order_line.product_id.virtual_available, 10, "This quantity should be based on SO's warehouse")
 
-            values = so._cart_update(
-                product_id=self.product_A.id, line_id=so.order_line.id, set_qty=30
-            )
+            values = so._cart_update(product_id=self.product_A.id, line_id=so.order_line.id, set_qty=20)
             self.assertTrue(values.get('warning', False))
-            self.assertEqual(values.get('quantity'), 25)
+            self.assertEqual(values.get('quantity'), 10)

@@ -1,24 +1,24 @@
 /** @odoo-module */
 
 import { registry } from "@web/core/registry";
-import { Component } from "@odoo/owl";
-import { standardFieldProps } from "@web/views/fields/standard_field_props";
 
-class ChangeLine extends Component {
-    static template = "account.ResequenceChangeLine";
-    static props = ["changeLine", "ordering"];
-}
+const { Component, onWillUpdateProps } = owl;
+
+class ChangeLine extends Component {}
+ChangeLine.template = "account.ResequenceChangeLine";
+ChangeLine.props = ["changeLine", "ordering"];
 
 class ShowResequenceRenderer extends Component {
-    static template = "account.ResequenceRenderer";
-    static components = { ChangeLine };
-    static props = { ...standardFieldProps };
-    getValue() {
-        const value = this.props.record.data[this.props.name];
-        return value ? JSON.parse(value) : { changeLines: [], ordering: "date" };
+    setup() {
+        this.formatData(this.props);
+        onWillUpdateProps((nextProps) => this.formatData(nextProps));
+    }
+
+    formatData(props) {
+        this.data = props.value ? JSON.parse(props.value) : { changeLines: [], ordering: "date" };
     }
 }
+ShowResequenceRenderer.template = "account.ResequenceRenderer";
+ShowResequenceRenderer.components = { ChangeLine };
 
-registry.category("fields").add("account_resequence_widget", {
-    component: ShowResequenceRenderer,
-});
+registry.category("fields").add("account_resequence_widget", ShowResequenceRenderer);

@@ -3,20 +3,20 @@
 # 	* base_geolocalize
 # 
 # Translators:
-# Albena Mincheva <albena_vicheva@abv.bg>, 2024
-# Maria Boyadjieva <marabo2000@gmail.com>, 2024
-# Ивайло Малинов <iv.malinov@gmail.com>, 2024
-# Rosen Vladimirov <vladimirov.rosen@gmail.com>, 2024
-# aleksandar ivanov, 2024
+# KeyVillage, 2023
+# aleksandar ivanov, 2023
+# Maria Boyadjieva <marabo2000@gmail.com>, 2023
+# Albena Mincheva <albena_vicheva@abv.bg>, 2023
+# Ивайло Малинов <iv.malinov@gmail.com>, 2023
 # Venelin Stoykov, 2024
 # Petko Karamotchev, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:55+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2022-09-20 09:01+0000\n"
+"PO-Revision-Date: 2022-09-22 05:45+0000\n"
 "Last-Translator: Petko Karamotchev, 2024\n"
 "Language-Team: Bulgarian (https://app.transifex.com/odoo/teams/41243/bg/)\n"
 "MIME-Version: 1.0\n"
@@ -31,8 +31,8 @@ msgid "API"
 msgstr "Приложно-програмен интерфейс - API"
 
 #. module: base_geolocalize
-#. odoo-python
 #: code:addons/base_geolocalize/models/base_geocoder.py:0
+#, python-format
 msgid ""
 "API key for GeoCoding (Places) required.\n"
 "Visit https://developers.google.com/maps/documentation/geocoding/get-api-key for more information."
@@ -56,7 +56,7 @@ msgstr ""
 #. module: base_geolocalize
 #: model:ir.model,name:base_geolocalize.model_res_config_settings
 msgid "Config Settings"
-msgstr "Конфигурационни настройки"
+msgstr "Настройки"
 
 #. module: base_geolocalize
 #: model:ir.model,name:base_geolocalize.model_res_partner
@@ -66,7 +66,7 @@ msgstr "Контакт"
 #. module: base_geolocalize
 #: model:ir.model.fields,field_description:base_geolocalize.field_base_geo_provider__create_uid
 msgid "Created by"
-msgstr "Създаден от"
+msgstr "Създадено от"
 
 #. module: base_geolocalize
 #: model:ir.model.fields,field_description:base_geolocalize.field_base_geo_provider__create_date
@@ -79,9 +79,9 @@ msgid "Display Name"
 msgstr "Име за показване"
 
 #. module: base_geolocalize
-#. odoo-python
 #: code:addons/base_geolocalize/models/base_geocoder.py:0
-msgid "Error with geolocation server: %s"
+#, python-format
+msgid "Error with geolocation server:"
 msgstr ""
 
 #. module: base_geolocalize
@@ -126,6 +126,11 @@ msgid "Key:"
 msgstr "Ключ:"
 
 #. module: base_geolocalize
+#: model:ir.model.fields,field_description:base_geolocalize.field_base_geo_provider____last_update
+msgid "Last Modified on"
+msgstr "Последна промяна на"
+
+#. module: base_geolocalize
 #: model:ir.model.fields,field_description:base_geolocalize.field_base_geo_provider__write_uid
 msgid "Last Updated by"
 msgstr "Последно актуализирано от"
@@ -151,8 +156,8 @@ msgid "Name"
 msgstr "Име"
 
 #. module: base_geolocalize
-#. odoo-python
 #: code:addons/base_geolocalize/models/res_partner.py:0
+#, python-format
 msgid "No match found for %(partner_names)s address(es)."
 msgstr ""
 
@@ -162,8 +167,8 @@ msgid "Partner Assignment"
 msgstr ""
 
 #. module: base_geolocalize
-#. odoo-python
 #: code:addons/base_geolocalize/models/base_geocoder.py:0
+#, python-format
 msgid "Provider %s is not implemented for geolocation service."
 msgstr ""
 
@@ -180,12 +185,12 @@ msgstr ""
 #. module: base_geolocalize
 #: model:ir.model.fields,field_description:base_geolocalize.field_base_geo_provider__tech_name
 #: model:ir.model.fields,field_description:base_geolocalize.field_res_config_settings__geoloc_provider_techname
-msgid "Technical Name"
-msgstr "Technical Name"
+msgid "Tech Name"
+msgstr ""
 
 #. module: base_geolocalize
-#. odoo-python
 #: code:addons/base_geolocalize/models/base_geocoder.py:0
+#, python-format
 msgid ""
 "Unable to geolocate, received the error:\n"
 "%s\n"
@@ -209,7 +214,7 @@ msgid ""
 msgstr ""
 
 #. module: base_geolocalize
-#. odoo-python
 #: code:addons/base_geolocalize/models/res_partner.py:0
+#, python-format
 msgid "Warning"
 msgstr "Внимание"

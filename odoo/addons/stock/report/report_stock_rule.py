@@ -69,7 +69,7 @@ class ReportStockRule(models.AbstractModel):
             'locations': locations,
             'header_lines': header_lines,
             'route_lines': route_lines,
-            'is_rtl': self.env['res.lang']._lang_get(self.env.user.lang).direction == 'rtl',
+            'is_rtl': self.env['res.lang']._lang_get_direction(self.env.user.lang) == 'rtl',
         }
 
     @api.model
@@ -87,8 +87,7 @@ class ReportStockRule(models.AbstractModel):
     @api.model
     def _get_rule_loc(self, rule, product):
         rule.ensure_one()
-        destination = rule.location_dest_id if rule.action != "pull" else rule.picking_type_id.default_location_dest_id
-        return {'rule': rule, 'source': rule.location_src_id, 'destination': destination}
+        return {'rule': rule, 'source': rule.location_src_id, 'destination': rule.location_dest_id}
 
     @api.model
     def _sort_locations(self, rules_and_loc, warehouses):

@@ -11,7 +11,7 @@ class WebsiteSaleSlides(WebsiteSlides):
     @route('/slides/get_course_products', type='json', auth='user')
     def get_course_products(self):
         """Return a list of the course products values with formatted price."""
-        products = request.env['product.product'].search([('service_tracking', '=', 'course')])
+        products = request.env['product.product'].search([('detailed_type', '=', 'course')])
 
         return [{
             'id': product.id,
@@ -25,7 +25,9 @@ class WebsiteSaleSlides(WebsiteSlides):
             # search the product to apply ACLs, notably on published status, to avoid access errors
             product = request.env['product.product'].search([('id', '=', channel.product_id.id)]) if channel.product_id else request.env['product.product']
             if product:
-                values['product_info'] = product._get_combination_info_variant()
+                pricelist = request.website.get_current_pricelist()
+                values['product_info'] = channel.product_id.product_tmpl_id._get_combination_info(product_id=channel.product_id.id, pricelist=pricelist)
+                values['product_info']['currency_id'] = request.website.currency_id
             else:
                 values['product_info'] = False
         return values

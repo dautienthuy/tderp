@@ -3,17 +3,18 @@
 # 	* base_geolocalize
 # 
 # Translators:
-# Wil Odoo, 2024
-# Erwin van der Ploeg <erwin@odooexperts.nl>, 2024
-# Manon Rondou, 2025
+# Martin Trigaux, 2022
+# Gunther Clauwaert <gclauwae@hotmail.com>, 2022
+# Erwin van der Ploeg <erwin@odooexperts.nl>, 2022
+# Jolien De Paepe, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:55+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Manon Rondou, 2025\n"
+"POT-Creation-Date: 2022-09-20 09:01+0000\n"
+"PO-Revision-Date: 2022-09-22 05:45+0000\n"
+"Last-Translator: Jolien De Paepe, 2023\n"
 "Language-Team: Dutch (https://app.transifex.com/odoo/teams/41243/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -27,8 +28,8 @@ msgid "API"
 msgstr "API"
 
 #. module: base_geolocalize
-#. odoo-python
 #: code:addons/base_geolocalize/models/base_geocoder.py:0
+#, python-format
 msgid ""
 "API key for GeoCoding (Places) required.\n"
 "Visit https://developers.google.com/maps/documentation/geocoding/get-api-key for more information."
@@ -54,7 +55,7 @@ msgstr "Berekenen op basis van adres"
 #. module: base_geolocalize
 #: model:ir.model,name:base_geolocalize.model_res_config_settings
 msgid "Config Settings"
-msgstr "Configuratie-instellingen"
+msgstr "Configuratie instellingen"
 
 #. module: base_geolocalize
 #: model:ir.model,name:base_geolocalize.model_res_partner
@@ -77,10 +78,10 @@ msgid "Display Name"
 msgstr "Schermnaam"
 
 #. module: base_geolocalize
-#. odoo-python
 #: code:addons/base_geolocalize/models/base_geocoder.py:0
-msgid "Error with geolocation server: %s"
-msgstr "Fout met geolocatieserver %s"
+#, python-format
+msgid "Error with geolocation server:"
+msgstr "Error met geolocatie server:"
 
 #. module: base_geolocalize
 #: model:ir.model,name:base_geolocalize.model_base_geocoder
@@ -111,7 +112,7 @@ msgstr "Datum geolocatie"
 #. module: base_geolocalize
 #: model:ir.model.fields,field_description:base_geolocalize.field_res_config_settings__geoloc_provider_googlemap_key
 msgid "Google Map API Key"
-msgstr "Google Maps API Key"
+msgstr "Google Map API key"
 
 #. module: base_geolocalize
 #: model:ir.model.fields,field_description:base_geolocalize.field_base_geo_provider__id
@@ -122,6 +123,11 @@ msgstr "ID"
 #: model_terms:ir.ui.view,arch_db:base_geolocalize.res_config_settings_view_form
 msgid "Key:"
 msgstr "Sleutel:"
+
+#. module: base_geolocalize
+#: model:ir.model.fields,field_description:base_geolocalize.field_base_geo_provider____last_update
+msgid "Last Modified on"
+msgstr "Laatst gewijzigd op"
 
 #. module: base_geolocalize
 #: model:ir.model.fields,field_description:base_geolocalize.field_base_geo_provider__write_uid
@@ -149,8 +155,8 @@ msgid "Name"
 msgstr "Naam"
 
 #. module: base_geolocalize
-#. odoo-python
 #: code:addons/base_geolocalize/models/res_partner.py:0
+#, python-format
 msgid "No match found for %(partner_names)s address(es)."
 msgstr "Geen overeenkomst gevonden voor %(partner_names)s adres(sen)."
 
@@ -160,8 +166,8 @@ msgid "Partner Assignment"
 msgstr "Partnertoekenning"
 
 #. module: base_geolocalize
-#. odoo-python
 #: code:addons/base_geolocalize/models/base_geocoder.py:0
+#, python-format
 msgid "Provider %s is not implemented for geolocation service."
 msgstr "Aanbieder %s is niet geïmplementeerd voor geolocatie diensten."
 
@@ -178,12 +184,12 @@ msgstr "Lokalisatie vernieuwen"
 #. module: base_geolocalize
 #: model:ir.model.fields,field_description:base_geolocalize.field_base_geo_provider__tech_name
 #: model:ir.model.fields,field_description:base_geolocalize.field_res_config_settings__geoloc_provider_techname
-msgid "Technical Name"
+msgid "Tech Name"
 msgstr "Technische naam"
 
 #. module: base_geolocalize
-#. odoo-python
 #: code:addons/base_geolocalize/models/base_geocoder.py:0
+#, python-format
 msgid ""
 "Unable to geolocate, received the error:\n"
 "%s\n"
@@ -216,7 +222,7 @@ msgstr ""
 "key voor meer informatie"
 
 #. module: base_geolocalize
-#. odoo-python
 #: code:addons/base_geolocalize/models/res_partner.py:0
+#, python-format
 msgid "Warning"
 msgstr "Waarschuwing"

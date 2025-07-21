@@ -15,6 +15,6 @@ class AccountPaymentMethod(models.Model):
                 continue
             res[code] = {
                 'mode': 'electronic',
-                'type': ('bank',),
+                'domain': [('type', '=', 'bank')],
             }
         return res

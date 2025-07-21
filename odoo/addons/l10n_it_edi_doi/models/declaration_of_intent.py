@@ -7,7 +7,7 @@ from odoo.tools.misc import formatLang
 
 class L10nItDeclarationOfIntent(models.Model):
     _name = "l10n_it_edi_doi.declaration_of_intent"
-    _inherit = ['mail.thread.main.attachment', 'mail.activity.mixin']
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = "Declaration of Intent"
     _order = 'protocol_number_part1, protocol_number_part2'
 
@@ -33,7 +33,7 @@ class L10nItDeclarationOfIntent(models.Model):
         string='Company',
         index=True,
         required=True,
-        default=lambda self: self.env.company._accessible_branches()[:1],
+        default=lambda self: self.env.company,
     )
 
     partner_id = fields.Many2one(
@@ -143,10 +143,8 @@ class L10nItDeclarationOfIntent(models.Model):
          "The Threshold of a Declaration of Intent must be positive."),
     ]
 
-    @api.depends('protocol_number_part1', 'protocol_number_part2')
-    def _compute_display_name(self):
-        for record in self:
-            record.display_name = f"{record.protocol_number_part1}-{record.protocol_number_part2}"
+    def name_get(self):
+        return [(record.id, f"{record.protocol_number_part1}-{record.protocol_number_part2}") for record in self]
 
     @api.depends('invoice_ids', 'invoice_ids.state', 'invoice_ids.l10n_it_edi_doi_amount')
     def _compute_invoiced(self):
@@ -183,13 +181,13 @@ class L10nItDeclarationOfIntent(models.Model):
         if self.currency_id.compare_amounts(updated_remaining, 0) >= 0:
             return ''
         return _(
-            'Pay attention, the threshold of your Declaration of Intent %(name)s of %(threshold)s is exceeded by %(exceeded)s, this document included.\n'
-            'Invoiced: %(invoiced)s; Not Yet Invoiced: %(not_yet_invoiced)s',
-            name=self.display_name,
-            threshold=formatLang(self.env, self.threshold, currency_obj=self.currency_id),
-            exceeded=formatLang(self.env, - updated_remaining, currency_obj=self.currency_id),
-            invoiced=formatLang(self.env, invoiced, currency_obj=self.currency_id),
-            not_yet_invoiced=formatLang(self.env, not_yet_invoiced, currency_obj=self.currency_id),
+            'Pay attention, the threshold of your Declaration of Intent %s of %s is exceeded by %s, this document included.\n'
+            'Invoiced: %s; Not Yet Invoiced: %s',
+            self.display_name,
+            formatLang(self.env, self.threshold, currency_obj=self.currency_id),
+            formatLang(self.env, - updated_remaining, currency_obj=self.currency_id),
+            formatLang(self.env, invoiced, currency_obj=self.currency_id),
+            formatLang(self.env, not_yet_invoiced, currency_obj=self.currency_id),
         )
 
     def _get_validity_errors(self, company, partner, currency):
@@ -201,14 +199,14 @@ class L10nItDeclarationOfIntent(models.Model):
         errors = []
         for declaration in self:
             if not company or declaration.company_id != company:
-                errors.append(_("The Declaration of Intent belongs to company %(declaration_company)s, not %(company)s.",
-                                declaration_company=declaration.company_id.name, company=company.name))
+                errors.append(_("The Declaration of Intent belongs to company %s, not %s.",
+                                declaration.company_id.name, company.name))
             if not currency or declaration.currency_id != currency:
-                errors.append(_("The Declaration of Intent uses currency %(declaration_currency)s, not %(currency)s.",
-                                declaration_currency=declaration.currency_id.name, currency=currency.name))
+                errors.append(_("The Declaration of Intent uses currency %s, not %s.",
+                                declaration.currency_id.name, currency.name))
             if not partner or declaration.partner_id != partner.commercial_partner_id:
-                errors.append(_("The Declaration of Intent belongs to partner %(declaration_partner)s, not %(partner)s.",
-                                declaration_partner=declaration.partner_id.name, partner=partner.commercial_partner_id.name))
+                errors.append(_("The Declaration of Intent belongs to partner %s, not %s.",
+                                declaration.partner_id.name, partner.commercial_partner_id.name))
         return errors
 
     def _get_validity_warnings(self, company, partner, currency, date, invoiced_amount=0, only_blocking=False, sales_order=False):
@@ -230,8 +228,8 @@ class L10nItDeclarationOfIntent(models.Model):
                 if declaration.state != 'active':
                     errors.append(_("The Declaration of Intent must be active."))
                 if not sales_order and (not date or declaration.start_date > date or declaration.end_date < date):
-                    errors.append(_("The Declaration of Intent is valid from %(start_date)s to %(end_date)s, not on %(date)s.",
-                                    start_date=declaration.start_date, end_date=declaration.end_date, date=date))
+                    errors.append(_("The Declaration of Intent is valid from %s to %s, not on %s.",
+                                    declaration.start_date, declaration.end_date, date))
         return errors
 
     @api.model
@@ -291,7 +289,7 @@ class L10nItDeclarationOfIntent(models.Model):
             'type': 'ir.actions.act_window',
             'res_model': 'sale.order',
             'domain': [('id', 'in', self.sale_order_ids.ids)],
-            'views': [(self.env.ref('l10n_it_edi_doi.view_quotation_tree').id, 'list'), (False, 'form')],
+            'views': [(self.env.ref('l10n_it_edi_doi.view_quotation_tree').id, 'tree'), (False, 'form')],
             'search_view_id': [self.env.ref('sale.sale_order_view_search_inherit_quotation').id],
             'context': {
                 'search_default_sales': 1,
@@ -305,7 +303,7 @@ class L10nItDeclarationOfIntent(models.Model):
             'type': 'ir.actions.act_window',
             'res_model': 'account.move',
             'domain': [('id', 'in', self.invoice_ids.ids)],
-            'views': [(self.env.ref('l10n_it_edi_doi.view_move_tree').id, 'list'), (False, 'form')],
+            'views': [(self.env.ref('l10n_it_edi_doi.view_move_tree').id, 'tree'), (False, 'form')],
             'search_view_id': [self.env.ref('account.view_account_invoice_filter').id],
             'context': {
                 'search_default_posted': 1,

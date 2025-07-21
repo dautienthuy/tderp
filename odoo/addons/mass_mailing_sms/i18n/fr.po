@@ -3,16 +3,18 @@
 # 	* mass_mailing_sms
 # 
 # Translators:
-# Wil Odoo, 2024
-# Manon Rondou, 2025
+# Martin Trigaux, 2022
+# Cécile Collart <cco@odoo.com>, 2022
+# Jolien De Paepe, 2023
+# Manon Rondou, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-14 20:47+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Manon Rondou, 2025\n"
+"POT-Creation-Date: 2022-10-04 09:24+0000\n"
+"PO-Revision-Date: 2022-09-22 05:53+0000\n"
+"Last-Translator: Manon Rondou, 2024\n"
 "Language-Team: French (https://app.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -23,19 +25,22 @@ msgstr ""
 #. module: mass_mailing_sms
 #. odoo-javascript
 #: code:addons/mass_mailing_sms/static/src/components/sms_widget/fields_sms_widget.js:0
-msgid " (including link trackers and opt-out link)"
+#, python-format
+msgid " (including link trackers and opt-out link) "
 msgstr "(y compris les trackers de liens et le lien de désinscription)"
 
 #. module: mass_mailing_sms
 #. odoo-javascript
 #: code:addons/mass_mailing_sms/static/src/components/sms_widget/fields_sms_widget.js:0
-msgid " (including link trackers)"
+#, python-format
+msgid " (including link trackers) "
 msgstr "(y compris les trackers de liens)"
 
 #. module: mass_mailing_sms
 #. odoo-javascript
 #: code:addons/mass_mailing_sms/static/src/components/sms_widget/fields_sms_widget.js:0
-msgid " (including opt-out link)"
+#, python-format
+msgid " (including opt-out link) "
 msgstr "(y compris le lien de désinscription)"
 
 #. module: mass_mailing_sms
@@ -48,8 +53,8 @@ msgstr ""
 "+33 545 55 55 55"
 
 #. module: mass_mailing_sms
-#. odoo-python
 #: code:addons/mass_mailing_sms/models/mailing_mailing.py:0
+#, python-format
 msgid "24H Stats of %(mailing_type)s \"%(mailing_name)s\""
 msgstr "24 heures de statistiques de %(mailing_type)s \"%(mailing_name)s\""
 
@@ -57,68 +62,60 @@ msgstr "24 heures de statistiques de %(mailing_type)s \"%(mailing_name)s\""
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_list_view_kanban
 msgid ""
 "<br/>\n"
-"                    <span class=\"text-muted\">\n"
+"                    <span class=\"text-secondary\">\n"
 "                        <i class=\"fa fa-phone\"/> Contacts\n"
 "                    </span>"
 msgstr ""
 "<br/>\n"
-"                    <span class=\"text-muted\">\n"
+"                    <span class=\"text-secondary\">\n"
 "                        <i class=\"fa fa-phone\"/> Contacts\n"
 "                    </span>"
 
 #. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_form_sms
 msgid ""
-"<span name=\"canceled_text_sms\" invisible=\"mailing_type != 'sms'\">SMS "
-"Text Message have been cancelled and will not be sent.</span>"
+"<span name=\"canceled_text_sms\" attrs=\"{'invisible': [('mailing_type', "
+"'!=', 'sms')]}\">SMS Text Message have been canceled and will not be "
+"sent.</span>"
 msgstr ""
-"<span name=\"canceled_text_sms\" invisible=\"mailing_type != 'sms'\">SMS ont"
-" été annulés et ne seront pas envoyés.</span>"
+"<span name=\"canceled_text_sms\" attrs=\"{'invisible': [('mailing_type', "
+"'!=', 'sms')]}\">SMS ont été annulés et ne seront pas envoyés.</span>"
 
 #. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_form_sms
 msgid ""
-"<span name=\"failed_text_sms\" invisible=\"mailing_type != 'sms'\">SMS Text "
-"Messages could not be delivered.</span>"
+"<span name=\"failed_text_sms\" attrs=\"{'invisible': [('mailing_type', '!=',"
+" 'sms')]}\">SMS Text Message could not be sent.</span>"
 msgstr ""
-"<span name=\"failed_text_sms\" invisible=\"mailing_type != 'sms'\">SMS n'ont"
-" pas pu être livrés.</span>"
+"<span name=\"failed_text_sms\" attrs=\"{'invisible': [('mailing_type', '!=',"
+" 'sms')]}\">Le SMS n'a pas pu être envoyé.</span>"
 
 #. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_form_sms
 msgid ""
-"<span name=\"next_departure_text\" invisible=\"mailing_type != 'sms'\">This "
-"SMS marketing is scheduled for </span>"
+"<span name=\"next_departure_text\" attrs=\"{'invisible': [('mailing_type', "
+"'!=', 'sms')]}\">This SMS marketing is scheduled for </span>"
 msgstr ""
-"<span name=\"next_departure_text\" invisible=\"mailing_type != 'sms'\">Ce "
-"SMS marketing est prévu pour </span>"
+"<span name=\"next_departure_text\" attrs=\"{'invisible': [('mailing_type', "
+"'!=', 'sms')]}\">Ce SMS marketing est prévu pour </span>"
 
 #. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_form_sms
 msgid ""
-"<span name=\"process_text_sms\" invisible=\"mailing_type != 'sms'\">SMS Text"
-" Messages are being processed.</span>"
+"<span name=\"scheduled_text_sms\" attrs=\"{'invisible': [('mailing_type', "
+"'!=', 'sms')]}\">SMS Text Message are in queue and will be sent soon.</span>"
 msgstr ""
-"<span name=\"process_text_sms\" invisible=\"mailing_type != 'sms'\">SMS sont"
-" en cours de traitement.</span>"
+"<span name=\"scheduled_text_sms\" attrs=\"{'invisible': [('mailing_type', "
+"'!=', 'sms')]}\">SMS sont dans la file et seront bientôt envoyés.</span>"
 
 #. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_form_sms
 msgid ""
-"<span name=\"scheduled_text_sms\" invisible=\"mailing_type != 'sms'\">SMS "
-"Text Messages are in queue and will be sent soon.</span>"
+"<span name=\"sent_sms\" attrs=\"{'invisible': [('mailing_type', '!=', "
+"'sms')]}\">SMS Text Message have been sent.</span>"
 msgstr ""
-"<span name=\"scheduled_text_sms\" invisible=\"mailing_type != 'sms'\">SMS "
-"sont dans la file d'attente et seront envoyés sous peu.</span>"
-
-#. module: mass_mailing_sms
-#: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_form_sms
-msgid ""
-"<span name=\"sent_sms\" invisible=\"mailing_type != 'sms'\">SMS Text "
-"Messages have been sent.</span>"
-msgstr ""
-"<span name=\"sent_sms\" invisible=\"mailing_type != 'sms'\">SMS ont été "
-"envoyés.</span>"
+"<span name=\"sent_sms\" attrs=\"{'invisible': [('mailing_type', '!=', "
+"'sms')]}\">SMS ont été envoyés.</span>"
 
 #. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_trace_view_form_sms
@@ -154,11 +151,6 @@ msgstr ""
 
 #. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_trace_view_form_sms
-msgid "<strong>This SMS could not be delivered.</strong>"
-msgstr "<strong>Ce SMS n'a pas pu être livré.</strong>"
-
-#. module: mass_mailing_sms
-#: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_trace_view_form_sms
 msgid "<strong>This SMS could not be sent.</strong>"
 msgstr "<strong>Ce SMS n'a pas pu être envoyé.</strong>"
 
@@ -174,14 +166,13 @@ msgid "A/B Test"
 msgstr "Test A/B"
 
 #. module: mass_mailing_sms
-#: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_mailing__ab_testing_mailings_sms_count
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_utm_campaign__ab_testing_mailings_sms_count
 msgid "A/B Test Mailings SMS #"
 msgstr "SMS de tests A/B #"
 
 #. module: mass_mailing_sms
-#. odoo-python
 #: code:addons/mass_mailing_sms/models/mailing_mailing.py:0
+#, python-format
 msgid "A/B Test: %s"
 msgstr "Test A/B : %s"
 
@@ -208,20 +199,24 @@ msgid "Average of Clicked"
 msgstr "Moyenne de clics"
 
 #. module: mass_mailing_sms
-#. odoo-python
 #: code:addons/mass_mailing_sms/models/mailing_mailing.py:0
+#, python-format
 msgid "BOUNCED (%i)"
 msgstr "REJETÉ (%i)"
 
 #. module: mass_mailing_sms
-#. odoo-python
+#: model:utm.tag,name:mass_mailing_sms.mailing_tag_0
+msgid "Bioutifoul SMS"
+msgstr "Bioutifoul SMS"
+
+#. module: mass_mailing_sms
 #: code:addons/mass_mailing_sms/controllers/main.py:0
+#, python-format
 msgid ""
-"Blacklist through SMS Marketing unsubscribe (mailing ID: %(mailing_id)s - "
-"model: %(model)s)"
+"Blacklist through SMS Marketing unsubscribe (mailing ID: %s - model: %s)"
 msgstr ""
-"Liste noire par désabonnement SMS Marketing (ID de mailing : %(mailing_id)s "
-"- modèle : %(model)s)"
+"Liste noire par désabonnement SMS Marketing (ID de mailing : %s - modèle : "
+"%s)"
 
 #. module: mass_mailing_sms
 #: model:ir.model.fields.selection,name:mass_mailing_sms.selection__mailing_trace__failure_type__sms_blacklist
@@ -241,7 +236,7 @@ msgstr "Numéros de téléphone sur liste noire"
 #. module: mass_mailing_sms
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_contact__phone_blacklisted
 msgid "Blacklisted Phone is Phone"
-msgstr "Le téléphone sur liste noire est fixe"
+msgstr "Le téléphone sur liste noire est un téléphone fixe"
 
 #. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_tree_sms
@@ -250,8 +245,8 @@ msgid "Bounced (%)"
 msgstr "Rebond (%)"
 
 #. module: mass_mailing_sms
-#. odoo-python
 #: code:addons/mass_mailing_sms/models/mailing_mailing.py:0
+#, python-format
 msgid "CLICKED (%i)"
 msgstr "CLIQUÉ (%i)"
 
@@ -266,6 +261,11 @@ msgstr "Campagne"
 #: model:ir.ui.menu,name:mass_mailing_sms.menu_email_campaigns
 msgid "Campaigns"
 msgstr "Campagnes"
+
+#. module: mass_mailing_sms
+#: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_sms_test_view_form
+msgid "Cancel"
+msgstr "Annuler"
 
 #. module: mass_mailing_sms
 #: model:ir.model.fields,help:mass_mailing_sms.field_mailing_sms_test__numbers
@@ -294,16 +294,6 @@ msgstr ""
 #: model:ir.ui.menu,name:mass_mailing_sms.mass_mailing_sms_menu_configuration
 msgid "Configuration"
 msgstr "Configuration"
-
-#. module: mass_mailing_sms
-#: model:ir.model.fields.selection,name:mass_mailing_sms.selection__mailing_trace__failure_type__sms_country_not_supported
-msgid "Country Not Supported"
-msgstr "Pays non pris en charge"
-
-#. module: mass_mailing_sms
-#: model:ir.model.fields.selection,name:mass_mailing_sms.selection__mailing_trace__failure_type__sms_registration_needed
-msgid "Country-specific Registration Required"
-msgstr "Inscription spécifique à chaque pays requise"
 
 #. module: mass_mailing_sms
 #: model_terms:ir.actions.act_window,help:mass_mailing_sms.mailing_list_action_sms
@@ -337,11 +327,6 @@ msgid "Date"
 msgstr "Date"
 
 #. module: mass_mailing_sms
-#: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_sms_test_view_form
-msgid "Discard"
-msgstr "Ignorer"
-
-#. module: mass_mailing_sms
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_sms_test__display_name
 msgid "Display Name"
 msgstr "Nom d'affichage"
@@ -353,8 +338,8 @@ msgid "Duplicate"
 msgstr "Dupliquer"
 
 #. module: mass_mailing_sms
-#. odoo-python
 #: code:addons/mass_mailing_sms/models/res_users.py:0
+#, python-format
 msgid "Email Marketing"
 msgstr "E-mail Marketing"
 
@@ -362,11 +347,6 @@ msgstr "E-mail Marketing"
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_contact_view_search
 msgid "Exclude Blacklisted Phone"
 msgstr "Exclure les téléphones mis sur liste noire"
-
-#. module: mass_mailing_sms
-#: model:ir.model.fields.selection,name:mass_mailing_sms.selection__mailing_trace__failure_type__sms_expired
-msgid "Expired"
-msgstr "Expiré"
 
 #. module: mass_mailing_sms
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_trace__failure_type
@@ -443,7 +423,7 @@ msgid ""
 " mass mailing sms anymore, from any list"
 msgstr ""
 "Si le numéro de téléphone nettoyé est sur liste noire, le contact ne recevra"
-" plus de campagnes de mail, d'aucunes listes."
+" plus de campagnes de mail par SMS, d'aucunes listes."
 
 #. module: mass_mailing_sms
 #: model:ir.model.fields,help:mass_mailing_sms.field_mailing_mailing__sms_force_send
@@ -469,8 +449,7 @@ msgid ""
 msgstr ""
 "Indique si un numéro de téléphone nettoyé et sur liste noire est un numéro "
 "de téléphone portable. Aide à distinguer quel numéro est sur liste noire "
-"quand il y a à la fois un champ portable et un champ téléphone fixe dans un "
-"modèle."
+"quand il y a et un champ portable et un champ téléphone fixe dans un modèle."
 
 #. module: mass_mailing_sms
 #: model:ir.model.fields,help:mass_mailing_sms.field_mailing_contact__phone_blacklisted
@@ -481,13 +460,12 @@ msgid ""
 msgstr ""
 "Indique si un numéro de téléphone nettoyé et sur liste noire est un numéro "
 "de téléphone portable. Aide à distinguer quel numéro est sur liste noire "
-"quand il y a à la fois un champ portable et un champ téléphone fixe dans un "
-"modèle."
+"quand il y a et un champ portable et un champ téléphone fixe dans un modèle."
 
 #. module: mass_mailing_sms
 #: model:ir.model.fields.selection,name:mass_mailing_sms.selection__mailing_trace__failure_type__sms_credit
 msgid "Insufficient Credit"
-msgstr "Crédit insuffisant"
+msgstr "Crédit Insuffisant"
 
 #. module: mass_mailing_sms
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_mailing__sms_has_insufficient_credit
@@ -500,35 +478,24 @@ msgid "Insufficient credits"
 msgstr "Crédits insuffisants"
 
 #. module: mass_mailing_sms
-#: model:ir.model.fields.selection,name:mass_mailing_sms.selection__mailing_trace__failure_type__sms_invalid_destination
-msgid "Invalid Destination"
-msgstr "Destination invalide"
-
-#. module: mass_mailing_sms
-#. odoo-python
-#: code:addons/mass_mailing_sms/controllers/main.py:0
-msgid "Invalid number %s"
-msgstr "Numéro invalide %s"
-
-#. module: mass_mailing_sms
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_contact__message_is_follower
 msgid "Is Follower"
 msgstr "Est un abonné"
 
 #. module: mass_mailing_sms
+#: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_sms_test____last_update
+msgid "Last Modified on"
+msgstr "Dernière modification le"
+
+#. module: mass_mailing_sms
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_sms_test__write_uid
 msgid "Last Updated by"
-msgstr "Mis à jour par"
+msgstr "Dernière mise à jour par"
 
 #. module: mass_mailing_sms
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_sms_test__write_date
 msgid "Last Updated on"
-msgstr "Mis à jour le"
-
-#. module: mass_mailing_sms
-#: model:ir.model,name:mass_mailing_sms.model_sms_tracker
-msgid "Link SMS to mailing/sms tracking models"
-msgstr "Lier le SMS aux modèles de suivi mailing/sms"
+msgstr "Dernière mise à jour le"
 
 #. module: mass_mailing_sms
 #: model:ir.ui.menu,name:mass_mailing_sms.link_tracker_menu
@@ -568,12 +535,7 @@ msgstr "Listes de diffusion"
 #. module: mass_mailing_sms
 #: model:ir.model,name:mass_mailing_sms.model_mailing_trace
 msgid "Mailing Statistics"
-msgstr "Statistiques des e-mails"
-
-#. module: mass_mailing_sms
-#: model:ir.model.fields,field_description:mass_mailing_sms.field_sms_tracker__mailing_trace_id
-msgid "Mailing Trace"
-msgstr "Suivi de l'envoi"
+msgstr "Statistiques des emails"
 
 #. module: mass_mailing_sms
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_mailing__mailing_type
@@ -590,9 +552,14 @@ msgstr ""
 "marketing de votre répertoire de contacts."
 
 #. module: mass_mailing_sms
+#: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_contact__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "Pièce jointe principale"
+
+#. module: mass_mailing_sms
 #: model:ir.model.fields.selection,name:mass_mailing_sms.selection__utm_campaign__ab_testing_sms_winner_selection__manual
 msgid "Manual"
-msgstr "Manuelle"
+msgstr "Manuel"
 
 #. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_trace_view_form_sms
@@ -603,7 +570,7 @@ msgstr "Marketing"
 #: model:ir.model,name:mass_mailing_sms.model_mailing_mailing
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_sms_sms__mailing_id
 msgid "Mass Mailing"
-msgstr "E-mail Marketing"
+msgstr "Email Marketing"
 
 #. module: mass_mailing_sms
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_utm_campaign__mailing_sms_ids
@@ -643,21 +610,11 @@ msgstr "Pas encore de données !"
 #. module: mass_mailing_sms
 #: model_terms:ir.actions.act_window,help:mass_mailing_sms.mailing_list_action_sms
 msgid ""
-"No need to import mailing lists, you can send SMS to contacts saved in other"
-" Odoo apps."
+"No need to import mailing lists, you can send SMS Text Messages to contacts "
+"saved in other Odoo apps."
 msgstr ""
-"Pas besoin d'importer des listes de diffusion. Vous pouvez envoyer des SMS "
-"aux contacts enregistrés dans d'autres apps d'Odoo."
-
-#. module: mass_mailing_sms
-#: model:ir.model.fields.selection,name:mass_mailing_sms.selection__mailing_trace__failure_type__sms_not_allowed
-msgid "Not Allowed"
-msgstr "Non autorisé"
-
-#. module: mass_mailing_sms
-#: model:ir.model.fields.selection,name:mass_mailing_sms.selection__mailing_trace__failure_type__sms_not_delivered
-msgid "Not Delivered"
-msgstr "Non livré"
+"Pas besoin d'importer des listes de diffusion, vous pouvez envoyer des SMS "
+"aux contacts enregistrés dans d'autres applications Odoo."
 
 #. module: mass_mailing_sms
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_trace__sms_number
@@ -666,8 +623,8 @@ msgid "Number"
 msgstr "Numéro"
 
 #. module: mass_mailing_sms
-#. odoo-python
 #: code:addons/mass_mailing_sms/controllers/main.py:0
+#, python-format
 msgid "Number %s not found"
 msgstr "Numéro %s non trouvé"
 
@@ -702,15 +659,6 @@ msgid "Number(s)"
 msgstr "Numéro(s)"
 
 #. module: mass_mailing_sms
-#: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_form_sms
-msgid ""
-"Once you send these text messages, they'll be making a grand entrance in all"
-" pockets, creating quite the bzzzzz!"
-msgstr ""
-"Une fois que vous aurez envoyé ces SMS, ils feront une entrée fracassante "
-"dans toutes les poches, créant un véritable buzz !"
-
-#. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_trace_view_tree_sms
 msgid "Open Recipient"
 msgstr "Ouvrir destinataire"
@@ -718,7 +666,7 @@ msgstr "Ouvrir destinataire"
 #. module: mass_mailing_sms
 #: model:ir.model.fields.selection,name:mass_mailing_sms.selection__mailing_trace__failure_type__sms_optout
 msgid "Opted Out"
-msgstr "Désinscrit"
+msgstr "Désabonné"
 
 #. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_form_sms
@@ -746,15 +694,10 @@ msgid "Please enter your phone number"
 msgstr "Veuillez saisir votre numéro de téléphone"
 
 #. module: mass_mailing_sms
-#. odoo-python
 #: code:addons/mass_mailing_sms/models/mailing_mailing.py:0
+#, python-format
 msgid "RECEIVED (%i)"
 msgstr "REÇU (%i)"
-
-#. module: mass_mailing_sms
-#: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_contact__rating_ids
-msgid "Ratings"
-msgstr "Évaluations"
 
 #. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_tree_sms
@@ -763,13 +706,8 @@ msgid "Recipients"
 msgstr "Destinataires"
 
 #. module: mass_mailing_sms
-#: model:ir.model.fields.selection,name:mass_mailing_sms.selection__mailing_trace__failure_type__sms_rejected
-msgid "Rejected"
-msgstr "Rejeté"
-
-#. module: mass_mailing_sms
-#. odoo-python
 #: code:addons/mass_mailing_sms/models/mailing_mailing.py:0
+#, python-format
 msgid "Report for %(expected)i %(mailing_type)s Sent"
 msgstr "Rapport pour %(expected)i %(mailing_type)s envoyés"
 
@@ -779,7 +717,7 @@ msgid "Reporting"
 msgstr "Analyse"
 
 #. module: mass_mailing_sms
-#: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_trace__sms_id
+#: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_trace__sms_sms_id
 #: model:ir.model.fields.selection,name:mass_mailing_sms.selection__mailing_mailing__mailing_type__sms
 #: model:ir.model.fields.selection,name:mass_mailing_sms.selection__mailing_trace__trace_type__sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.utm_campaign_view_form
@@ -808,19 +746,23 @@ msgid "SMS Delivery error"
 msgstr "Erreur d'envoi SMS"
 
 #. module: mass_mailing_sms
-#: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_trace__sms_id_int
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_trace_view_form
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_trace_view_form_sms
 msgid "SMS ID"
 msgstr "ID du SMS"
 
 #. module: mass_mailing_sms
-#. odoo-python
+#: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_trace__sms_sms_id_int
+msgid "SMS ID (tech)"
+msgstr "ID du SMS (tech)"
+
+#. module: mass_mailing_sms
 #: code:addons/mass_mailing_sms/models/res_users.py:0
 #: model:ir.actions.act_window,name:mass_mailing_sms.mailing_mailing_action_sms
 #: model:ir.ui.menu,name:mass_mailing_sms.mass_mailing_sms_menu_mass_sms
 #: model:ir.ui.menu,name:mass_mailing_sms.mass_mailing_sms_menu_root
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_tree_sms
+#, python-format
 msgid "SMS Marketing"
 msgstr "SMS Marketing"
 
@@ -838,11 +780,11 @@ msgstr "Abonnement SMS"
 #. module: mass_mailing_sms
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_mailing__sms_template_id
 msgid "SMS Template"
-msgstr "Modèle SMS"
+msgstr "Modèle de SMS"
 
 #. module: mass_mailing_sms
-#. odoo-python
 #: code:addons/mass_mailing_sms/models/mailing_mailing.py:0
+#, python-format
 msgid "SMS Text Message"
 msgstr "SMS"
 
@@ -857,20 +799,15 @@ msgid "SMS Traces"
 msgstr "Traces des SMS"
 
 #. module: mass_mailing_sms
-#: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_trace__sms_tracker_ids
-msgid "SMS Trackers"
-msgstr "Trackers SMS"
-
-#. module: mass_mailing_sms
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_mailing__ab_testing_sms_winner_selection
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_utm_campaign__ab_testing_sms_winner_selection
 msgid "SMS Winner Selection"
 msgstr "Sélection du gagnant par SMS"
 
 #. module: mass_mailing_sms
-#. odoo-python
 #: code:addons/mass_mailing_sms/wizard/sms_composer.py:0
-msgid "STOP SMS: %(unsubscribe_url)s"
+#, python-format
+msgid "STOP SMS : %(unsubscribe_url)s"
 msgstr "STOP SMS : %(unsubscribe_url)s"
 
 #. module: mass_mailing_sms
@@ -880,6 +817,7 @@ msgstr "Numéro nettoyé"
 
 #. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_form_sms
+#: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_sms_test_view_form
 msgid "Send"
 msgstr "Envoyer"
 
@@ -894,10 +832,9 @@ msgid "Send Now"
 msgstr "Envoyer maintenant"
 
 #. module: mass_mailing_sms
-#: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_list_view_form
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.utm_campaign_view_form
 msgid "Send SMS"
-msgstr "Envoyer un SMS"
+msgstr "Envoyer le SMS"
 
 #. module: mass_mailing_sms
 #: model:ir.model,name:mass_mailing_sms.model_sms_composer
@@ -906,23 +843,17 @@ msgstr "Assistant d'envoi de SMS"
 
 #. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_sms_test_view_form
-msgid "Send Test"
-msgstr "Envoyer un test"
-
-#. module: mass_mailing_sms
-#: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_sms_test_view_form
 msgid "Send a Sample SMS"
 msgstr "Envoyer un SMS test"
 
 #. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_sms_test_view_form
-msgid "Send a sample SMS for testing purpose to the numbers below."
-msgstr "Envoyer un exemple de SMS à des fins de test aux numéros suivants."
-
-#. module: mass_mailing_sms
-#: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_form_sms
-msgid "Send to all"
-msgstr "Envoyer à tous"
+msgid ""
+"Send a sample SMS for testing purpose to the numbers below (carriage-return-"
+"separated list)."
+msgstr ""
+"Envoyez un exemple de SMS à des fins de test aux numéros ci-dessous (liste "
+"séparée par des retours à la ligne)."
 
 #. module: mass_mailing_sms
 #: model:ir.model.fields.selection,name:mass_mailing_sms.selection__mailing_trace__failure_type__sms_server
@@ -940,32 +871,36 @@ msgid "Status"
 msgstr "Statut"
 
 #. module: mass_mailing_sms
-#. odoo-python
-#: code:addons/mass_mailing_sms/models/mailing_mailing.py:0
-#: model:ir.actions.act_window,name:mass_mailing_sms.mailing_sms_test_action
-msgid "Test Mailing"
-msgstr "Mailing test"
-
-#. module: mass_mailing_sms
 #: model:ir.model,name:mass_mailing_sms.model_mailing_sms_test
 msgid "Test SMS Mailing"
 msgstr "Test de l'envoi de SMS"
 
 #. module: mass_mailing_sms
-#. odoo-python
-#: code:addons/mass_mailing_sms/wizard/mailing_sms_test.py:0
-msgid "Test SMS could not be sent to %(destination)s: %(state)s"
-msgstr "Impossible d'envoyer le SMS à %(destination)s: %(state)s"
+#: model:ir.actions.act_window,name:mass_mailing_sms.mailing_sms_test_action
+msgid "Test SMS Marketing"
+msgstr "Tester la campagne de SMS Marketing"
 
 #. module: mass_mailing_sms
-#. odoo-python
 #: code:addons/mass_mailing_sms/wizard/mailing_sms_test.py:0
+#, python-format
+msgid "Test SMS could not be sent to %s:<br>%s"
+msgstr "Le SMS n'a pas pu être envoyé à %s:<br>%s"
+
+#. module: mass_mailing_sms
+#: code:addons/mass_mailing_sms/models/mailing_mailing.py:0
+#, python-format
+msgid "Test SMS marketing"
+msgstr "Tester la campagne de SMS Marketing"
+
+#. module: mass_mailing_sms
+#: code:addons/mass_mailing_sms/wizard/mailing_sms_test.py:0
+#, python-format
 msgid "Test SMS successfully sent to %s"
 msgstr "Le SMS a été envoyé avec succès à %s"
 
 #. module: mass_mailing_sms
-#. odoo-python
 #: code:addons/mass_mailing_sms/models/utm.py:0
+#, python-format
 msgid ""
 "The UTM medium '%s' cannot be deleted as it is used in some main functional "
 "flows, such as the SMS Marketing."
@@ -974,8 +909,8 @@ msgstr ""
 "certains flux fonctionnels principaux, comme l'application SMS Marketing."
 
 #. module: mass_mailing_sms
-#. odoo-python
 #: code:addons/mass_mailing_sms/wizard/mailing_sms_test.py:0
+#, python-format
 msgid "The following numbers are not correctly encoded: %s"
 msgstr "Les numéros suivants ne sont pas correctement encodés : %s"
 
@@ -989,8 +924,23 @@ msgstr "Une erreur s'est produite lors de la tentative de désabonnement"
 msgid ""
 "This phone number is blacklisted for SMS Marketing. Click to unblacklist."
 msgstr ""
-"Ce numéro de téléphone est sur liste noire pour le SMS Marketing. Cliquez "
-"pour l'enlever de la liste noire."
+"Ce numéro de téléphone est sur liste noire pour SMS Marketing. Cliquez pour "
+"le supprimer de la liste noire."
+
+#. module: mass_mailing_sms
+#: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_form_sms
+msgid ""
+"This will send SMS to all recipients now. Do you still want to proceed ?"
+msgstr ""
+"Vous êtes sur le point d'envoyer des SMS à tous les destinataires. Voulez-"
+"vous toujours continuer ?"
+
+#. module: mass_mailing_sms
+#: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_form_sms
+msgid "This will send SMS to all recipients. Do you still want to proceed ?"
+msgstr ""
+"Vous êtes sur le point d'envoyer des SMS à tous les destinataires. Voulez-"
+"vous toujours continuer ?"
 
 #. module: mass_mailing_sms
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_mailing__sms_subject
@@ -1042,8 +992,8 @@ msgid "Unsubscribe me"
 msgstr "Désabonnez-moi"
 
 #. module: mass_mailing_sms
-#. odoo-python
 #: code:addons/mass_mailing_sms/models/mailing_mailing.py:0
+#, python-format
 msgid "Unsupported %s for mass SMS"
 msgstr "Non pris en charge %s pour les SMS de masse"
 
@@ -1085,6 +1035,11 @@ msgstr ""
 #: model:ir.model.fields.selection,name:mass_mailing_sms.selection__mailing_trace__failure_type__sms_number_format
 msgid "Wrong Number Format"
 msgstr "Mauvais format de numéro"
+
+#. module: mass_mailing_sms
+#: model:utm.campaign,title:mass_mailing_sms.utm_campaign_0
+msgid "XMas Promo"
+msgstr "Promo de Noël"
 
 #. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_form_sms

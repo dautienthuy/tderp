@@ -1,20 +1,8 @@
-/**
- * Returns a promise resolved after 'wait' milliseconds
- *
- * @param {int} [wait=0] the delay in ms
- * @return {Promise}
- */
-export function delay(wait) {
-    return new Promise(function (resolve) {
-        setTimeout(resolve, wait);
-    });
-}
+/** @odoo-module **/
 
 /**
  * KeepLast is a concurrency primitive that manages a list of tasks, and only
  * keeps the last task active.
- *
- * @template T
  */
 export class KeepLast {
     constructor() {
@@ -23,6 +11,7 @@ export class KeepLast {
     /**
      * Register a new task
      *
+     * @template T
      * @param {Promise<T>} promise
      * @returns {Promise<T>}
      */
@@ -90,8 +79,8 @@ export class Mutex {
      * Add a computation to the queue, it will be executed as soon as the
      * previous computations are completed.
      *
-     * @param {() => (void | Promise<void>)} action a function which may return a Promise
-     * @returns {Promise<void>}
+     * @param {function} action a function which may return a Promise
+     * @returns {Promise}
      */
     async exec(action) {
         this._queueSize++;
@@ -114,7 +103,7 @@ export class Mutex {
         return this._lock;
     }
     /**
-     * @returns {Promise<void>} resolved as soon as the Mutex is unlocked
+     * @returns {Promise} resolved as soon as the Mutex is unlocked
      *   (directly if it is currently idle)
      */
     getUnlockedDef() {
@@ -129,8 +118,6 @@ export class Mutex {
  * promise which resolves as soon as a promise, among all added promises, is
  * resolved. The race is thus over. From that point, a new race will begin the
  * next time a promise will be added.
- *
- * @template T
  */
 export class Race {
     constructor() {
@@ -144,8 +131,8 @@ export class Race {
      * resolves as soon as the race is over, with the value of the first resolved
      * promise added to the race.
      *
-     * @param {Promise<T>} promise
-     * @returns {Promise<T>}
+     * @param {Promise} promise
+     * @returns {Promise}
      */
     add(promise) {
         if (!this.currentProm) {
@@ -168,7 +155,7 @@ export class Race {
         return this.currentProm;
     }
     /**
-     * @returns {Promise<T>|null} promise resolved as soon as the race is over, or
+     * @returns {Promise|null} promise resolved as soon as the race is over, or
      *   null if there is no race ongoing)
      */
     getCurrentProm() {
@@ -179,7 +166,7 @@ export class Race {
 /**
  * Deferred is basically a resolvable/rejectable extension of Promise.
  */
-export class Deferred extends Promise {
+export class Deferred {
     constructor() {
         let resolve;
         let reject;

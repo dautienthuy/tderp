@@ -3,16 +3,19 @@
 # 	* website_crm_partner_assign
 # 
 # Translators:
-# Wil Odoo, 2024
-# Junko Augias, 2025
+# Martin Trigaux, 2022
+# Andy Yiu, 2022
+# 江口和志 <sandwhale1010@gmail.com>, 2023
+# Ryoko Tsuda <ryoko@quartile.co>, 2023
+# Junko Augias, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-16 13:41+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: Junko Augias, 2025\n"
+"POT-Creation-Date: 2023-05-23 08:24+0000\n"
+"PO-Revision-Date: 2022-09-22 05:56+0000\n"
+"Last-Translator: Junko Augias, 2024\n"
 "Language-Team: Japanese (https://app.transifex.com/odoo/teams/41243/ja/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -28,40 +31,28 @@ msgstr "案件数"
 #. module: website_crm_partner_assign
 #. odoo-javascript
 #: code:addons/website_crm_partner_assign/static/src/js/crm_partner_assign.js:0
+#, python-format
 msgid "%s's Opportunity"
 msgstr "%sの案件"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.crm_lead_view_kanban
 msgid ""
-"(<i class=\"fa fa-long-arrow-right me-1\" aria-label=\"Assigned Partner\" "
+"<i class=\"fa fa-arrow-circle-right\" aria-label=\"Assigned Partner\" "
 "title=\"Assigned Partner\"/>"
 msgstr ""
-"(<i class=\"fa fa-long-arrow-right me-1\" aria-label=\"Assigned Partner\" "
+"<i class=\"fa fa-arrow-circle-right\" aria-label=\"Assigned Partner\" "
 "title=\"Assigned Partner\"/>"
 
 #. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.partner
-msgid "<i class=\"fa fa-chevron-left me-2\"/>Back to resellers"
-msgstr "<i class=\"fa fa-chevron-left me-2\"/>リセラーに戻る"
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
+msgid "<i class=\"fa fa-file-text-o\"/> I'm interested"
+msgstr "<i class=\"fa fa-file-text-o\"/>興味があります "
 
 #. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid ""
-"<i class=\"fa fa-info-circle me-2\"/>\n"
-"                There are no matching partners found for the selected country. Displaying results across all countries instead."
-msgstr ""
-"<i class=\"fa fa-info-circle me-2\"/>\n"
-"                選択した国に一致する取引先が見つかりません。代わりに全ての国の結果を表示します。"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.ref_country
-msgid ""
-"<i class=\"fa fa-map-marker\" role=\"img\" aria-label=\"Open map\" "
-"title=\"Open map\"/>"
-msgstr ""
-"<i class=\"fa fa-map-marker\" role=\"img\" aria-label=\"Open map\" "
-"title=\"Open map\"/>"
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
+msgid "<i class=\"fa fa-fw fa-times\"/> I'm not interested"
+msgstr "<i class=\"fa fa-fw fa-times\"/>興味なし"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
@@ -76,7 +67,33 @@ msgstr "<option>国...</option>"
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
 msgid "<option>States...</option>"
-msgstr "<option>都道府県/州...</option>"
+msgstr "<option>州/都道府県...</option>"
+
+#. module: website_crm_partner_assign
+#. odoo-python
+#: code:addons/website_crm_partner_assign/models/crm_lead.py:0
+#, python-format
+msgid "<p>I am interested by this lead.</p>"
+msgstr ""
+
+#. module: website_crm_partner_assign
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
+msgid "<small class=\"me-2 mt-1 float-start\"><b>Stage:</b></small>"
+msgstr "<small class=\"me-2 mt-1 float-start\"><b>ステージ:</b></small>"
+
+#. module: website_crm_partner_assign
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
+msgid "<small class=\"text-muted\">Opportunity - </small>"
+msgstr "<small class=\"text-muted\">案件 - </small>"
+
+#. module: website_crm_partner_assign
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
+msgid ""
+"<span class=\"fa fa-envelope fa-fw\" role=\"img\" aria-label=\"Email\" "
+"title=\"Email\"/>"
+msgstr ""
+"<span class=\"fa fa-envelope fa-fw\" role=\"img\" aria-label=\"Email\" "
+"title=\"Email\"/>"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
@@ -84,9 +101,41 @@ msgid "<span class=\"fa fa-envelope\" role=\"img\" aria-label=\"Email\" title=\"
 msgstr "<span class=\"fa fa-envelope\" role=\"img\" aria-label=\"Email\" title=\"Email\"/>"
 
 #. module: website_crm_partner_assign
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.ref_country
+msgid ""
+"<span class=\"fa fa-external-link\" role=\"img\" aria-label=\"External "
+"link\" title=\"External link\"/>"
+msgstr ""
+"<span class=\"fa fa-external-link\" role=\"img\" aria-label=\"External "
+"link\" title=\"External link\"/>"
+
+#. module: website_crm_partner_assign
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
+msgid ""
+"<span class=\"fa fa-map-marker fa-fw\" role=\"img\" aria-label=\"Address\" "
+"title=\"Address\"/>"
+msgstr ""
+"<span class=\"fa fa-map-marker fa-fw\" role=\"img\" aria-label=\"Address\" "
+"title=\"Address\"/>"
+
+#. module: website_crm_partner_assign
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
+msgid ""
+"<span class=\"fa fa-mobile fa-fw\" role=\"img\" aria-label=\"Mobile\" "
+"title=\"Mobile\"/>"
+msgstr ""
+"<span class=\"fa fa-mobile fa-fw\" role=\"img\" aria-label=\"Mobile\" "
+"title=\"Mobile\"/>"
+
+#. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
 msgid "<span class=\"fa fa-mobile\" role=\"img\" aria-label=\"Mobile\" title=\"Mobile\"/>"
 msgstr "<span class=\"fa fa-mobile\" role=\"img\" aria-label=\"Mobile\" title=\"Mobile\"/>"
+
+#. module: website_crm_partner_assign
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
+msgid "<span class=\"fa fa-phone fa-fw\" role=\"img\" aria-label=\"Phone\" title=\"Phone\"/>"
+msgstr "<span class=\"fa fa-phone fa-fw\" role=\"img\" aria-label=\"Phone\" title=\"Phone\"/>"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
@@ -95,44 +144,49 @@ msgstr "<span class=\"fa fa-phone\" role=\"img\" aria-label=\"Phone\" title=\"Ph
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
-msgid ""
-"<span class=\"input-group-text o_input_group_date_icon\">\n"
-"                                                        <span class=\"fa fa-calendar\" role=\"img\" aria-label=\"Calendar\" title=\"Calendar\"/>\n"
-"                                                    </span>"
-msgstr ""
-"<span class=\"input-group-text o_input_group_date_icon\">\n"
-"                                                        <span class=\"fa fa-calendar\" role=\"img\" aria-label=\"Calendar\" title=\"Calendar\"/>\n"
-"                                                    </span>"
+msgid "<span class=\"fa fa-user fa-fw\" role=\"img\" aria-label=\"User\" title=\"User\"/>"
+msgstr "<span class=\"fa fa-user fa-fw\" role=\"img\" aria-label=\"User\" title=\"User\"/>"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
 msgid ""
-"<span class=\"input-group-text o_input_group_date_icon\">\n"
-"                                                        <span class=\"fa fa-calendar\" role=\"img\" aria-label=\"Calendar\"/>\n"
-"                                                    </span>"
+"<span class=\"input-group-text\" data-target=\"#exp_closing_div\" data-toggle=\"datetimepicker\">\n"
+"                                                                <span class=\"fa fa-calendar\" role=\"img\" aria-label=\"Calendar\"/>\n"
+"                                                            </span>"
 msgstr ""
-"<span class=\"input-group-text o_input_group_date_icon\">\n"
-"                                                        <span class=\"fa fa-calendar\" role=\"img\" aria-label=\"Calendar\"/>\n"
-"                                                    </span>"
+"<span class=\"input-group-text\" data-target=\"#exp_closing_div\" data-toggle=\"datetimepicker\">\n"
+"                                                                <span class=\"fa fa-calendar\" role=\"img\" aria-label=\"Calendar\"/>\n"
+"                                                            </span>"
+
+#. module: website_crm_partner_assign
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
+msgid ""
+"<span class=\"input-group-text\" data-target=\"#next_activity_div\" data-toggle=\"datetimepicker\">\n"
+"                                                                <span class=\"fa fa-calendar\" role=\"img\" aria-label=\"Calendar\" title=\"Calendar\"/>\n"
+"                                                            </span>"
+msgstr ""
+"<span class=\"input-group-text\" data-target=\"#next_activity_div\" data-toggle=\"datetimepicker\">\n"
+"                                                                <span class=\"fa fa-calendar\" role=\"img\" aria-label=\"Calendar\" title=\"Calendar\"/>\n"
+"                                                            </span>"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.view_crm_lead_opportunity_geo_assign_form
 msgid ""
-"<span class=\"oe_grey\" invisible=\"partner_latitude &lt;= 0\">N </span>\n"
-"                                    <span class=\"oe_grey\" invisible=\"partner_latitude &gt;= 0\">S </span>"
+"<span class=\"oe_grey\" attrs=\"{'invisible':[('partner_latitude','&lt;=',0)]}\">N </span>\n"
+"                                    <span class=\"oe_grey\" attrs=\"{'invisible':[('partner_latitude','&gt;=',0)]}\">S </span>"
 msgstr ""
-"<span class=\"oe_grey\" invisible=\"partner_latitude &lt;= 0\">N </span>\n"
-"                                    <span class=\"oe_grey\" invisible=\"partner_latitude &gt;= 0\">S </span>"
+"<span class=\"oe_grey\" attrs=\"{'invisible':[('partner_latitude','&lt;=',0)]}\">N </span>\n"
+"                                    <span class=\"oe_grey\" attrs=\"{'invisible':[('partner_latitude','&gt;=',0)]}\">S </span>"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.view_crm_lead_opportunity_geo_assign_form
 msgid ""
-"<span class=\"oe_grey\" invisible=\"partner_longitude &lt;= 0\">E </span>\n"
-"                                    <span class=\"oe_grey\" invisible=\"partner_longitude &gt;= 0\">W </span>\n"
+"<span class=\"oe_grey\" attrs=\"{'invisible':[('partner_longitude','&lt;=',0)]}\">E </span>\n"
+"                                    <span class=\"oe_grey\" attrs=\"{'invisible':[('partner_longitude','&gt;=',0)]}\">W </span>\n"
 "                                    <span class=\"oe_grey ps-1\">) </span>"
 msgstr ""
-"<span class=\"oe_grey\" invisible=\"partner_longitude &lt;= 0\">E </span>\n"
-"                                    <span class=\"oe_grey\" invisible=\"partner_longitude &gt;= 0\">W </span>\n"
+"<span class=\"oe_grey\" attrs=\"{'invisible':[('partner_longitude','&lt;=',0)]}\">E </span>\n"
+"                                    <span class=\"oe_grey\" attrs=\"{'invisible':[('partner_longitude','&gt;=',0)]}\">W </span>\n"
 "                                    <span class=\"oe_grey ps-1\">) </span>"
 
 #. module: website_crm_partner_assign
@@ -167,8 +221,14 @@ msgstr "<span class=\"text-muted\"> - </span>"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunities
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
 msgid "<span> at </span>"
 msgstr "<span> 以下にて:</span>"
+
+#. module: website_crm_partner_assign
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
+msgid "<strong class=\"col-12 col-sm-3\">Address</strong>"
+msgstr "<strong class=\"col-12 col-sm-3\">住所</strong>"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
@@ -191,6 +251,12 @@ msgid "<strong class=\"col-12 col-sm-4\">Priority</strong>"
 msgstr "<strong class=\"col-12 col-sm-4\">優先</strong>"
 
 #. module: website_crm_partner_assign
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
+msgid "<strong>Message and communication history</strong>"
+msgstr "<strong>メッセージとコミュニケーション履歴</strong>"
+
+#. module: website_crm_partner_assign
 #: model:mail.template,body_html:website_crm_partner_assign.email_template_lead_forward_mail
 msgid ""
 "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;\"><tr><td align=\"center\">\n"
@@ -201,12 +267,12 @@ msgid ""
 "        <td align=\"center\" style=\"min-width: 590px;\">\n"
 "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
 "                <tr><td valign=\"middle\">\n"
-"                    <span style=\"font-size: 10px;\">Your leads</span><br/>\n"
-"                </td><td valign=\"middle\" align=\"right\" t-if=\"not user.company_id.uses_default_logo\">\n"
-"                    <img t-attf-src=\"/logo.png?company={{ user.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"user.company_id.name\"/>\n"
+"                    <span style=\"font-size: 10px;\">Your leads</span><br>\n"
+"                </td><td valign=\"middle\" align=\"right\">\n"
+"                    <img t-attf-src=\"/logo.png?company={{ user.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"user.company_id.name\">\n"
 "                </td></tr>\n"
 "                <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
-"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:16px 0px 16px 0px;\"/>\n"
+"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:16px 0px 16px 0px;\">\n"
 "                </td></tr>\n"
 "            </table>\n"
 "        </td>\n"
@@ -218,22 +284,22 @@ msgid ""
 "                <tr>\n"
 "                    <td valign=\"top\" style=\"font-size: 13px;\">\n"
 "                        <div>\n"
-"                            Hello,<br/>\n"
-"                            We have been contacted by those prospects that are in your region. Thus, the following leads have been assigned to <t t-out=\"ctx['partner_id'].name or ''\"/>:<br/>\n"
+"                            Hello,<br>\n"
+"                            We have been contacted by those prospects that are in your region. Thus, the following leads have been assigned to <t t-out=\"ctx['partner_id'].name or ''\"></t>:<br>\n"
 "                            <ol>\n"
-"                                <li t-foreach=\"ctx['partner_leads']\" t-as=\"lead\"><a t-att-href=\"lead['lead_link']\" t-out=\"lead['lead_id'].name or 'Subject Undefined'\">Subject Undefined</a>, <t t-out=\"lead['lead_id'].partner_name or lead['lead_id'].contact_name or 'Contact Name Undefined'\">Contact Name Undefined</t>, <t t-out=\"lead['lead_id'].country_id and lead['lead_id'].country_id.name or 'Country Undefined'\">Country Undefined</t>, <t t-out=\"lead['lead_id'].email_from or 'Email Undefined' or ''\">Email Undefined</t>, <t t-out=\"lead['lead_id'].phone or ''\">+1 650-123-4567</t> </li><br/>\n"
+"                                <li t-foreach=\"ctx['partner_leads']\" t-as=\"lead\"><a t-att-href=\"lead['lead_link']\" t-out=\"lead['lead_id'].name or 'Subject Undefined'\">Subject Undefined</a>, <t t-out=\"lead['lead_id'].partner_name or lead['lead_id'].contact_name or 'Contact Name Undefined'\">Contact Name Undefined</t>, <t t-out=\"lead['lead_id'].country_id and lead['lead_id'].country_id.name or 'Country Undefined'\">Country Undefined</t>, <t t-out=\"lead['lead_id'].email_from or 'Email Undefined' or ''\">Email Undefined</t>, <t t-out=\"lead['lead_id'].phone or ''\">+1 650-123-4567</t> </li><br>\n"
 "                            </ol>\n"
 "                            <t t-if=\"ctx.get('partner_in_portal')\">\n"
-"                                Please connect to your <a t-att-href=\"'%s?db=%s' % (object.get_base_url(), object.env.cr.dbname)\">Partner Portal</a> to get details. On each lead are two buttons on the top left corner that you should press after having contacted the lead: \"I'm interested\" &amp; \"I'm not interested\".<br/>\n"
+"                                Please connect to your <a t-att-href=\"'%s?db=%s' % (object.get_base_url(), object.env.cr.dbname)\">Partner Portal</a> to get details. On each lead are two buttons on the top left corner that you should press after having contacted the lead: \"I'm interested\" &amp; \"I'm not interested\".<br>\n"
 "                            </t>\n"
 "                            <t t-else=\"\">\n"
 "                                You do not have yet a portal access to our database. Please contact\n"
-"                                <t t-out=\"ctx['partner_id'].user_id and ctx['partner_id'].user_id.email and 'your account manager %s (%s)' % (ctx['partner_id'].user_id.name,ctx['partner_id'].user_id.email) or 'us'\">us</t>.<br/>\n"
+"                                <t t-out=\"ctx['partner_id'].user_id and ctx['partner_id'].user_id.email and 'your account manager %s (%s)' % (ctx['partner_id'].user_id.name,ctx['partner_id'].user_id.email) or 'us'\">us</t>.<br>\n"
 "                            </t>\n"
-"                            The lead will be sent to another partner if you do not contact the lead before 20 days.<br/><br/>\n"
-"                            Thank you,<br/>\n"
-"                            <t t-out=\"ctx['partner_id'].user_id and ctx['partner_id'].user_id.signature or ''\"/>\n"
-"                            <br/>\n"
+"                            The lead will be sent to another partner if you do not contact the lead before 20 days.<br><br>\n"
+"                            Thank you,<br>\n"
+"                            <t t-out=\"ctx['partner_id'].user_id and ctx['partner_id'].user_id.signature or ''\"></t>\n"
+"                            <br>\n"
 "                            <t t-if=\"not ctx['partner_id'].user_id\">\n"
 "                                PS: It looks like you do not have an account manager assigned to you, please contact us.\n"
 "                            </t>\n"
@@ -242,7 +308,7 @@ msgid ""
 "                </tr>\n"
 "                <tr>\n"
 "                    <td style=\"text-align:center;\">\n"
-"                        <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                        <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\">\n"
 "                    </td>\n"
 "                </tr>\n"
 "            </table>\n"
@@ -279,91 +345,6 @@ msgid ""
 "</table>\n"
 "            "
 msgstr ""
-"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;\"><tr><td align=\"center\">\n"
-"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"padding: 16px; background-color: white; color: #454748; border-collapse:separate;\">\n"
-"<tbody>\n"
-"    <!-- HEADER -->\n"
-"    <tr>\n"
-"        <td align=\"center\" style=\"min-width: 590px;\">\n"
-"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
-"                <tr><td valign=\"middle\">\n"
-"                    <span style=\"font-size: 10px;\">あなたのリード</span><br/>\n"
-"                </td><td valign=\"middle\" align=\"right\" t-if=\"not user.company_id.uses_default_logo\">\n"
-"                    <img t-attf-src=\"/logo.png?company={{ user.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"user.company_id.name\"/>\n"
-"                </td></tr>\n"
-"                <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
-"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:16px 0px 16px 0px;\"/>\n"
-"                </td></tr>\n"
-"            </table>\n"
-"        </td>\n"
-"    </tr>\n"
-"    <!-- CONTENT -->\n"
-"    <tr>\n"
-"        <td align=\"center\" style=\"min-width: 590px;\">\n"
-"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
-"                <tr>\n"
-"                    <td valign=\"top\" style=\"font-size: 13px;\">\n"
-"                        <div>\n"
-"                            こんにちは。<br/>\n"
-"                            あなたの地域にいる見込み客から連絡がありました。そのため、リードが割当てられました <t t-out=\"ctx['partner_id'].name or ''\"/>:<br/>\n"
-"                            <ol>\n"
-"                                <li t-foreach=\"ctx['partner_leads']\" t-as=\"lead\"><a t-att-href=\"lead['lead_link']\" t-out=\"lead['lead_id'].name or 'Subject Undefined'\">題名未定義</a>、 <t t-out=\"lead['lead_id'].partner_name or lead['lead_id'].contact_name or 'Contact Name Undefined'\">連絡先名未定義</t>、 <t t-out=\"lead['lead_id'].country_id and lead['lead_id'].country_id.name or 'Country Undefined'\">国未定義</t>、 <t t-out=\"lead['lead_id'].email_from or 'Email Undefined' or ''\">メール未定義</t>, <t t-out=\"lead['lead_id'].phone or ''\">+1 650-123-4567</t> </li><br/>\n"
-"                            </ol>\n"
-"                            <t t-if=\"ctx.get('partner_in_portal')\">\n"
-"                                <a t-att-href=\"'%s?db=%s' % (object.get_base_url(), object.env.cr.dbname)\">取引先ポータル</a> に接続し、詳細を取得して下さい。各リードには左上に2つのボタンがあり、リードに連絡した後に押して下さい。: \"興味あり\" &amp; \"興味なし\"。<br/>\n"
-"                            </t>\n"
-"                            <t t-else=\"\">\n"
-"                                Y当社のデータベースのポータルアクセス権がまだありません。\n"
-"                                <t t-out=\"ctx['partner_id'].user_id and ctx['partner_id'].user_id.email and 'your account manager %s (%s)' % (ctx['partner_id'].user_id.name,ctx['partner_id'].user_id.email) or 'us'\">当社</t>あてにご連絡下さい。<br/>\n"
-"                            </t>\n"
-"                            20日以内にリードに連絡しない場合は、リードは他の取引先に送られます。<br/><br/>\n"
-"                            宜しくお願い致します。<br/>\n"
-"                            <t t-out=\"ctx['partner_id'].user_id and ctx['partner_id'].user_id.signature or ''\"/>\n"
-"                            <br/>\n"
-"                            <t t-if=\"not ctx['partner_id'].user_id\">\n"
-"                                PS: 担当のアカウントマネジャーがいないようです。当社にご連絡下さい。\n"
-"                            </t>\n"
-"                        </div>\n"
-"                    </td>\n"
-"                </tr>\n"
-"                <tr>\n"
-"                    <td style=\"text-align:center;\">\n"
-"                        <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
-"                    </td>\n"
-"                </tr>\n"
-"            </table>\n"
-"        </td>\n"
-"    </tr>\n"
-"    <!-- FOOTER -->\n"
-"    <tr>\n"
-"        <td align=\"center\" style=\"min-width: 590px;\">\n"
-"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; font-size: 11px; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
-"                <tr><td valign=\"middle\" align=\"left\">\n"
-"                    <t t-out=\"user.company_id.name or ''\">YourCompany</t>\n"
-"                </td></tr>\n"
-"                <tr><td valign=\"middle\" align=\"left\" style=\"opacity: 0.7;\">\n"
-"                    <t t-out=\"user.company_id.phone or ''\">+1 650-123-4567</t>\n"
-"                    <t t-if=\"user.company_id.phone and (user.company_id.email or user.company_id.website)\">|</t>\n"
-"                    <a t-if=\"user.company_id.email\" t-att-href=\"'mailto:%s' % user.company_id.email\" style=\"text-decoration:none; color: #454748;\" t-out=\"user.company_id.email or ''\">info@yourcompany.com</a>\n"
-"                    <t t-if=\"user.company_id.email and user.company_id.website\">|</t>\n"
-"                    <a t-if=\"user.company_id.website\" t-att-href=\"'%s' % user.company_id.website\" style=\"text-decoration:none; color: #454748;\" t-out=\"user.company_id.website or ''\">http://www.example.com</a>\n"
-"                </td></tr>\n"
-"            </table>\n"
-"        </td>\n"
-"    </tr>\n"
-"</tbody>\n"
-"</table>\n"
-"</td></tr>\n"
-"<!-- POWERED BY -->\n"
-"<tr><td align=\"center\" style=\"min-width: 590px;\">\n"
-"    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: #F1F1F1; color: #454748; padding: 8px; border-collapse:separate;\">\n"
-"      <tr><td style=\"text-align: center; font-size: 13px;\">\n"
-"        Powered by <a target=\"_blank\" href=\"https://www.odoo.com?utm_source=db&amp;utm_medium=website\" style=\"color: #875A7B;\">Odoo</a>\n"
-"      </td></tr>\n"
-"    </table>\n"
-"</td></tr>\n"
-"</table>\n"
-"            "
 
 #. module: website_crm_partner_assign
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_partner_report_assign__activation
@@ -380,8 +361,9 @@ msgstr "アクティベーション"
 #: code:addons/website_crm_partner_assign/controllers/main.py:0
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_partner_activation__active
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_partner_grade__active
+#, python-format
 msgid "Active"
-msgstr "アクティブ"
+msgstr "有効"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunities
@@ -389,35 +371,31 @@ msgid "Add an opportunity"
 msgstr "案件を追加"
 
 #. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.snippet_options
-msgid "Address"
-msgstr "住所"
-
-#. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
-msgid "Address:"
-msgstr ""
-"住所:\n"
-" "
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
+msgid "Address"
+msgstr "アドレス"
 
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/controllers/main.py:0
+#, python-format
 msgid "All Categories"
 msgstr "全カテゴリ"
 
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/controllers/main.py:0
+#, python-format
 msgid "All Countries"
 msgstr "すべての国"
 
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/models/crm_lead.py:0
-msgid "All fields are required!"
-msgstr "全フィールドが必要です！"
+#, python-format
+msgid "All fields are required !"
+msgstr ""
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.res_partner_activation_view_search
@@ -430,15 +408,15 @@ msgstr "アーカイブ済"
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_lead_assignation__partner_assigned_id
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.crm_lead_partner_filter
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.crm_opportunity_partner_filter
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.view_crm_lead_opportunity_geo_assign_form
 msgid "Assigned Partner"
 msgstr "割当てたパートナ"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.crm_lead_merge_summary_inherit_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
 msgid "Assigned Partner:"
-msgstr "割当済の取引先"
+msgstr "割当てたパートナ"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.view_crm_lead_opportunity_geo_assign_form
@@ -449,11 +427,6 @@ msgstr "自動割当"
 #: model:ir.model.fields,help:website_crm_partner_assign.field_crm_lead_forward_to_partner__body
 msgid "Automatically sanitized HTML contents"
 msgstr "自動サニタイズ済HTML内容"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.partner
-msgid "Back to resellers list"
-msgstr "リセラーリストへ戻る"
 
 #. module: website_crm_partner_assign
 #: model:res.partner.grade,name:website_crm_partner_assign.res_partner_grade_data_bronze
@@ -467,13 +440,13 @@ msgstr "CRMパートナーシップ分析"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
-msgid "Campaign:"
-msgstr "キャンペーン:"
+msgid "Campaign"
+msgstr "キャンペーン"
 
 #. module: website_crm_partner_assign
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_partner_grade__can_publish
 msgid "Can Publish"
-msgstr "公開可"
+msgstr "公開可能"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.crm_lead_forward_to_partner_form
@@ -481,15 +454,14 @@ msgstr "公開可"
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunities
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
 msgid "Cancel"
-msgstr "キャンセル"
+msgstr "取消"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
 msgid "City"
-msgstr "市"
+msgstr "市区町村"
 
 #. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunities
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
@@ -499,16 +471,10 @@ msgstr "閉じる"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
-msgid "Communication history"
-msgstr "通信履歴"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunities
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
 msgid "Confirm"
-msgstr "確定"
+msgstr "確認"
 
 #. module: website_crm_partner_assign
 #: model:ir.model,name:website_crm_partner_assign.model_res_partner
@@ -520,9 +486,16 @@ msgstr "連絡先"
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/controllers/main.py:0
+#: code:addons/website_crm_partner_assign/controllers/main.py:0
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_leads
+#, python-format
 msgid "Contact Name"
 msgstr "連絡先名"
+
+#. module: website_crm_partner_assign
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
+msgid "Contact a reseller"
+msgstr ""
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunities
@@ -581,19 +554,14 @@ msgid "Current stage of the opportunity"
 msgstr "案件の現状ステージ"
 
 #. module: website_crm_partner_assign
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
+msgid "Customer"
+msgstr "顧客"
+
+#. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
 msgid "Customer Name"
 msgstr "顧客名"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
-msgid "Customer:"
-msgstr "顧客："
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.layout
-msgid "DROP BUILDING BLOCKS HERE TO MAKE THEM AVAILABLE ACROSS ALL RESELLERS"
-msgstr "全てのリセラーが利用できるように、ビルディングブロックをここにドロップします。"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_leads
@@ -641,16 +609,9 @@ msgid "Edit Opportunity"
 msgstr "案件を編集"
 
 #. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid "Edit to add a short description"
-msgstr "編集して短い説明を追加"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_leads
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunities
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
 msgid "Email"
-msgstr "メール"
+msgstr "Eメール"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.crm_lead_forward_to_partner_form
@@ -664,6 +625,10 @@ msgstr "見込"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
+msgid "Expected Closing"
+msgstr "見込成約"
+
+#. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
 msgid "Expected Closing:"
 msgstr "見込成約:"
@@ -671,38 +636,19 @@ msgstr "見込成約:"
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/controllers/main.py:0
+#, python-format
 msgid "Expected Revenue"
-msgstr "見込収益"
+msgstr "見込売上"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid "Filter by category"
-msgstr "カテゴリごとのフィルタ"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid "Filter by country"
+msgid "Filter by Country"
 msgstr "国ごとのフィルタ"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid "Filters"
-msgstr "フィルタ"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid "Find a reseller"
-msgstr "リセラーを探す"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_home_lead
-msgid "Follow and convert your leads"
-msgstr "リードのフォローとコンバージョン"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_home_lead
-msgid "Follow and convert your opportunities"
-msgstr "案件のフォローとコンバージョン"
+msgid "Filter by Level"
+msgstr ""
 
 #. module: website_crm_partner_assign
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_lead_forward_to_partner__partner_id
@@ -723,12 +669,6 @@ msgstr "パートナへ転送する"
 #: model:ir.actions.act_window,name:website_crm_partner_assign.action_crm_send_mass_forward
 msgid "Forward to partner"
 msgstr "取引先に転送"
-
-#. module: website_crm_partner_assign
-#. odoo-python
-#: code:addons/website_crm_partner_assign/controllers/main.py:0
-msgid "Future Activities"
-msgstr "今後の活動"
 
 #. module: website_crm_partner_assign
 #: model:mail.template,subject:website_crm_partner_assign.email_template_lead_forward_mail
@@ -763,11 +703,6 @@ msgid ""
 msgstr "この取引先にリードを割り当てる確率を提示して下さい。（0は割り当てないことを意味します）"
 
 #. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid "Go to reseller"
-msgstr "リセラーへ移動"
-
-#. module: website_crm_partner_assign
 #: model:res.partner.grade,name:website_crm_partner_assign.res_partner_grade_data_gold
 msgid "Gold"
 msgstr "ゴールド"
@@ -785,18 +720,14 @@ msgstr "グループ化"
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/models/crm_lead.py:0
-msgid "I am interested by this lead."
-msgstr "このリードに興味があります。"
-
-#. module: website_crm_partner_assign
-#. odoo-python
-#: code:addons/website_crm_partner_assign/models/crm_lead.py:0
+#, python-format
 msgid "I am not interested by this lead. I contacted the lead."
-msgstr "このリードに興味がありません。リードに連絡済です。"
+msgstr "このリードに興味がありません。リードに接触しました。"
 
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/models/crm_lead.py:0
+#, python-format
 msgid "I am not interested by this lead. I have not contacted the lead."
 msgstr "このリードに興味がありません。リードに未連絡です。"
 
@@ -804,16 +735,6 @@ msgstr "このリードに興味がありません。リードに未連絡です
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
 msgid "I have contacted the customer"
 msgstr "顧客に連絡済です。"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
-msgid "I'm interested"
-msgstr "興味があります"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
-msgid "I'm not interested"
-msgstr "興味ありません"
 
 #. module: website_crm_partner_assign
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_lead_assignation__id
@@ -853,6 +774,15 @@ msgid "Is Published"
 msgstr "公開済"
 
 #. module: website_crm_partner_assign
+#: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_lead_assignation____last_update
+#: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_lead_forward_to_partner____last_update
+#: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_partner_report_assign____last_update
+#: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_partner_activation____last_update
+#: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_partner_grade____last_update
+msgid "Last Modified on"
+msgstr "最終更新日"
+
+#. module: website_crm_partner_assign
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_lead_assignation__write_uid
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_lead_forward_to_partner__write_uid
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_partner_activation__write_uid
@@ -874,12 +804,6 @@ msgid "Last date this case was forwarded/assigned to a partner"
 msgstr "当件がパートナに転送/割当てられて最後の日付"
 
 #. module: website_crm_partner_assign
-#. odoo-python
-#: code:addons/website_crm_partner_assign/controllers/main.py:0
-msgid "Late Activities"
-msgstr "遅れた活動"
-
-#. module: website_crm_partner_assign
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_partner_report_assign__date_review
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_partner__date_review
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_users__date_review
@@ -888,7 +812,6 @@ msgstr "最新取引先レビュー"
 
 #. module: website_crm_partner_assign
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_lead_assignation__lead_id
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_leads
 msgid "Lead"
 msgstr "リード"
 
@@ -957,20 +880,26 @@ msgid "Link to Lead"
 msgstr "リードへリンク"
 
 #. module: website_crm_partner_assign
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
+msgid "Looking For a Local Store?"
+msgstr ""
+
+#. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/controllers/main.py:0
+#, python-format
 msgid "Lost"
 msgstr "失注"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
-msgid "Medium:"
-msgstr "媒体:"
+msgid "Medium"
+msgstr "媒体"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
 msgid "Mobile"
-msgstr "モバイル"
+msgstr "携帯電話"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.crm_lead_partner_filter
@@ -981,7 +910,11 @@ msgstr "自分の割当済取引先"
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/controllers/main.py:0
+#: code:addons/website_crm_partner_assign/controllers/main.py:0
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_partner_activation__name
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_leads
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunities
+#, python-format
 msgid "Name"
 msgstr "名称"
 
@@ -993,6 +926,8 @@ msgstr "新規案件"
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/controllers/main.py:0
+#: code:addons/website_crm_partner_assign/controllers/main.py:0
+#, python-format
 msgid "Newest"
 msgstr "最新"
 
@@ -1013,12 +948,6 @@ msgid "Next Partner Review"
 msgstr "次の取引先レビュー"
 
 #. module: website_crm_partner_assign
-#. odoo-python
-#: code:addons/website_crm_partner_assign/controllers/main.py:0
-msgid "No Activities"
-msgstr "活動なし"
-
-#. module: website_crm_partner_assign
 #: model_terms:ir.actions.act_window,help:website_crm_partner_assign.action_report_crm_partner_assign
 msgid "No data yet!"
 msgstr "まだデータはありません！"
@@ -1030,24 +959,15 @@ msgstr "利用可能な取引先がありません"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid "No results found for \""
-msgstr "の結果は見つかりませんでした"
+msgid "No result found"
+msgstr "結果が見つかりません"
 
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/models/crm_lead.py:0
-msgid "Not allowed to update the following field(s): %s."
-msgstr "以下のフィールドをアップデートする権限なし:%s"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid "Open categories dropdown"
-msgstr "カテゴリドロップダウンを開く"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid "Open countries dropdown"
-msgstr "国のドロップダウンを開く"
+#, python-format
+msgid "Not allowed to update the following field(s) : %s."
+msgstr ""
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_home_lead
@@ -1067,9 +987,16 @@ msgid "Opportunity"
 msgstr "案件"
 
 #. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
-msgid "Opportunity -"
-msgstr "案件 - "
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.partner
+msgid "Our Partners"
+msgstr "当社のパートナー"
+
+#. module: website_crm_partner_assign
+#. odoo-python
+#: code:addons/website_crm_partner_assign/controllers/main.py:0
+#, python-format
+msgid "Overdue Activities"
+msgstr "過去期日の活動"
 
 #. module: website_crm_partner_assign
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_partner_report_assign__partner_id
@@ -1094,7 +1021,7 @@ msgstr "取引先アクティベーション"
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_lead_assignation__forward_id
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_lead_forward_to_partner__assignation_lines
 msgid "Partner Assignment"
-msgstr "取引先割当"
+msgstr "パートナーの割当て"
 
 #. module: website_crm_partner_assign
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_lead__date_partner_assign
@@ -1109,7 +1036,7 @@ msgstr "取引先割当日:"
 #. module: website_crm_partner_assign
 #: model:ir.model,name:website_crm_partner_assign.model_res_partner_grade
 msgid "Partner Grade"
-msgstr "取引先等級"
+msgstr "取引先グレード"
 
 #. module: website_crm_partner_assign
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_partner__grade_id
@@ -1179,8 +1106,6 @@ msgid "Partnerships"
 msgstr "パートナーシップ"
 
 #. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_leads
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunities
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
 msgid "Phone"
 msgstr "電話"
@@ -1199,6 +1124,7 @@ msgstr "確度:"
 #. odoo-python
 #: code:addons/website_crm_partner_assign/controllers/main.py:0
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
+#, python-format
 msgid "Probability"
 msgstr "確度"
 
@@ -1211,7 +1137,7 @@ msgstr "評価"
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
 msgid "Rating: #{lead.priority} on 3"
-msgstr "評価: 3の#{lead.priority} "
+msgstr "評価: ３の#{lead.priority} "
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
@@ -1247,25 +1173,23 @@ msgstr "参照"
 #. odoo-python
 #: code:addons/website_crm_partner_assign/models/website.py:0
 #: model:ir.ui.menu,name:website_crm_partner_assign.crm_menu_resellers
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.layout
+#, python-format
 msgid "Resellers"
 msgstr "リセラー"
 
 #. module: website_crm_partner_assign
+#: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_partner_report_assign__team_id
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
-msgid "Sales Team:"
-msgstr "販売チーム:"
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.view_report_crm_partner_assign_filter
+msgid "Sales Team"
+msgstr "販売チーム"
 
 #. module: website_crm_partner_assign
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.view_report_crm_partner_assign_filter
 msgid "Salesperson"
 msgstr "販売担当者"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
-msgid "Salesperson:"
-msgstr "販売担当者:"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
@@ -1275,22 +1199,7 @@ msgstr "検索"
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.res_partner_grade_view_search
 msgid "Search Partner Grade"
-msgstr "取引先等級を検索"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid "See all resellers"
-msgstr "全リセラーを見る"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid "See categories filters"
-msgstr "カテゴリフィルタを見る"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid "See countries filters"
-msgstr "全ての国フィルタを見る"
+msgstr "取引先グレードを検索"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.crm_lead_forward_to_partner_form
@@ -1300,7 +1209,7 @@ msgstr "送信"
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.view_crm_lead_opportunity_geo_assign_form
 msgid "Send Email"
-msgstr "メールを送信"
+msgstr "Eメール送信"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.crm_lead_forward_to_partner_form
@@ -1318,17 +1227,19 @@ msgstr "リードが割当られたときに取引先に送信されます。"
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_partner_grade__sequence
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_users__grade_sequence
 msgid "Sequence"
-msgstr "シーケンス"
+msgstr "付番"
 
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/wizard/crm_forward_to_partner.py:0
+#, python-format
 msgid "Set an email address for the partner %s"
-msgstr "取引先%s用にEメールアドレスを設定"
+msgstr "取引先%s用にメールアドレスを設定"
 
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/wizard/crm_forward_to_partner.py:0
+#, python-format
 msgid "Set an email address for the partner(s): %s"
 msgstr "取引先用: %sにEメールアドレスを設定"
 
@@ -1351,13 +1262,9 @@ msgstr "スパム"
 #. odoo-python
 #: code:addons/website_crm_partner_assign/controllers/main.py:0
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunities
+#, python-format
 msgid "Stage"
 msgstr "ステージ"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
-msgid "Stage:"
-msgstr "ステージ："
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
@@ -1377,13 +1284,14 @@ msgstr "タグ"
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/wizard/crm_forward_to_partner.py:0
+#, python-format
 msgid "The Forward Email Template is not in the database"
 msgstr "転送Eメールテンプレートはデータベースにありません。"
 
 #. module: website_crm_partner_assign
 #: model:ir.model.fields,help:website_crm_partner_assign.field_res_partner_grade__website_url
 msgid "The full URL to access the document through the website."
-msgstr "サイト経由して、文書にアクセスする完全なURL。"
+msgstr "ウェブサイトを介してドキュメントにアクセスするために完全なURLです。"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_leads
@@ -1398,8 +1306,16 @@ msgstr "案件がありません。"
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/models/crm_lead.py:0
+#, python-format
 msgid "There is no country set in addresses for %(lead_names)s."
 msgstr " %(lead_names)s用の住所に国が設定されていません。"
+
+#. module: website_crm_partner_assign
+#. odoo-python
+#: code:addons/website_crm_partner_assign/controllers/main.py:0
+#, python-format
+msgid "This Week Activities"
+msgstr "今週の活動"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
@@ -1423,6 +1339,7 @@ msgstr "これらの情報は、オンボーディング・プロセスにおけ
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/controllers/main.py:0
+#, python-format
 msgid "Today Activities"
 msgstr "本日の活動"
 
@@ -1439,11 +1356,12 @@ msgstr "ユーザ"
 #. module: website_crm_partner_assign
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_partner_grade__website_published
 msgid "Visible on current website"
-msgstr "現在のサイトに表示"
+msgstr "現在のウェブサイトで見える状態"
 
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/models/crm_lead.py:0
+#, python-format
 msgid "Warning"
 msgstr "警告"
 
@@ -1455,7 +1373,7 @@ msgstr "ウェブサイト"
 #. module: website_crm_partner_assign
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_partner_grade__website_url
 msgid "Website URL"
-msgstr "サイトURL"
+msgstr "ウェブサイトURL"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
@@ -1470,6 +1388,7 @@ msgstr "なぜこのリードに興味がなのですか？"
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/controllers/main.py:0
+#, python-format
 msgid "Won"
 msgstr "成約"
 
@@ -1500,11 +1419,6 @@ msgid "e.g. Gold Partner"
 msgstr "例: ゴールド取引先"
 
 #. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid "in"
-msgstr ":"
-
-#. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.crm_lead_merge_summary_inherit_partner_assign
 msgid "latitude,"
 msgstr "緯度、"
@@ -1521,17 +1435,12 @@ msgstr "on"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid "reference"
-msgstr "参照"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid "references"
-msgstr "参照"
+msgid "reference(s)"
+msgstr ""
 
 #. module: website_crm_partner_assign
 #: model:ir.model.fields.selection,name:website_crm_partner_assign.selection__crm_lead_forward_to_partner__forward_type__assigned
 msgid ""
 "several partners: automatic assignment, using GPS coordinates and partner's "
 "grades"
-msgstr "複数の取引先: GPS座標とパートナの等級を利用した自動割当"
+msgstr "複数のパートナ：GPS座標とパートナの等級を利用した自動割り当て"

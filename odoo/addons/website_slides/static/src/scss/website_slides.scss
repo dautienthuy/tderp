@@ -16,7 +16,7 @@ $o-wslides-fs-side-width: 300px;
 // If '-webkit-line-clamp' is not supported, a less effective
 // 'line-height' fallback will be used instead.
 $truncate-limits: 2, 3, 10;
-$line-height-truncate: 1.5em;
+$line-height-truncate: 1.25em;
 
 @each $limit in $truncate-limits {
     .o_wslides_desc_truncate_#{$limit} {
@@ -51,9 +51,62 @@ $line-height-truncate: 1.5em;
 
 .o_wslides_arrow {
     position: absolute;
-    top: 0;
+    height: 24px;
+    margin-left: -5px;
+    margin-top: 10px;
+    line-height: 1.8em;
+    padding-left: 8px;
+    padding-right: 5px;
+    background: #17A2B8;
+    color: white;
+    box-shadow: 0px 0px 3px  gray;
+    z-index: 1;
+
+    text-decoration: none;
+
+    &:after {
+        // the triangle
+        content: "";
+        position: absolute;
+        height: 0px;
+        width: 0px;
+        right: 0;
+        margin-right: -15px;
+        border-left: 15px solid #17A2B8;
+        border-bottom: 12px solid transparent;
+        border-top: 12px solid transparent;
+    }
 }
 
+// Color tags according to assigned background color.
+.o_wslides_channel_tag {
+    vertical-align: middle;
+    @for $size from 1 through length($o-colors) {
+        &.o_tag_color_#{$size - 1} {
+            $background-color: white;
+            // no color selected
+            @if $size == 1 {
+                & {
+                    color: black;
+                    background-color: $background-color;
+                    box-shadow: inset 0 0 0 1px nth($o-colors, $size);
+                }
+            } @else {
+                $background-color: nth($o-colors, $size);
+                & {
+                    color: white;
+                    background-color: $background-color;
+                }
+            }
+            @at-root a#{&} {
+                &:hover {
+                    color: color-contrast($background-color);
+                    background-color: darken($background-color, 10%);
+                }
+            }
+        }
+    }
+}
 
 .o_wslides_body {
     > #wrapwrap > main {
@@ -68,6 +121,8 @@ $line-height-truncate: 1.5em;
         top: -40px;
 
         @include media-breakpoint-up(lg) {
+            font-size: 1rem;
+
             .o_wslides_nav_navbar_right {
                 padding-left: $spacer;
                 margin-left: auto;
@@ -112,7 +167,7 @@ $line-height-truncate: 1.5em;
 
     .o_wslides_js_lesson_quiz_question {
         .list-group-item  {
-            @include font-size(1rem);
+            font-size: 1rem;
 
             input:checked + i.fa-circle {
                 color: $primary !important;
@@ -132,7 +187,7 @@ $line-height-truncate: 1.5em;
     a.o_wslides_js_quiz_is_correct {
         color: black;
         input:checked + i.fa-check-circle-o {
-            color: $success !important;
+            color: $primary !important;
         }
     }
 
@@ -176,15 +231,15 @@ $line-height-truncate: 1.5em;
 }
 
 .o_wslides_channel_completion_completed {
-    @include font-size(1rem);
+    font-size: 1rem;
 }
 
 // New home page
 // **************************************************
 .o_wslides_home_main {
     .o_wslides_home_aside_loggedin {
-        background: none;
         @include media-breakpoint-up(lg) {
+            background: none;
             border: none;
         }
     }
@@ -196,6 +251,7 @@ $line-height-truncate: 1.5em;
     .o_wprofile_progress_circle {
         margin-left: auto;
         margin-right: auto;
+        max-width: 200px;
     }
 }
 
@@ -471,7 +527,6 @@ $line-height-truncate: 1.5em;
             background-position: center;
             padding-bottom: 35%;
         }
-
     }
     .o_wslides_lesson_card {
         .o_wslides_background_image img {
@@ -479,7 +534,6 @@ $line-height-truncate: 1.5em;
             width: 100%;
             object-fit: cover;
         }
-
     }
 }
 
@@ -505,13 +559,6 @@ $line-height-truncate: 1.5em;
             }
         }
 
-        .o_wslides_lesson_aside_list_links i {
-            padding-right: 10px;
-            &.fa-flag {
-                padding-right: 6px;
-            }
-        }
-
         .o_wslides_lesson_aside_list {
             .o_wslides_lesson_aside_list_link {
                 @include o-hover-text-color($gray-600, $headings-color );
@@ -528,7 +575,7 @@ $line-height-truncate: 1.5em;
                 line-height: unset;
             }
             .o_wslides_button_complete {
-                margin-left: 3px;
+                margin-left: 5px;
             }
             button.o_wslides_button_complete i {
                 color: $gray-600;
@@ -569,27 +616,6 @@ $line-height-truncate: 1.5em;
     height: 80px;
 }
 
-.o_wslides_fs_sidebar_section {
-    a[aria-expanded="true"] i.fa-caret-left{
-        display: none;
-    }
-    a[aria-expanded="false"] i.fa-caret-down{
-        display: none;
-    }
-}
-
-li.o_wslides_fs_sidebar_list_item:not(.active) {
-    ul.small {
-        display:none;
-    }
-}
-
-li.o_wslides_fs_sidebar_list_item.active {
-    a.o_wslides_fs_slide_link {
-        font-weight: 300;
-    }
-}
-
 // Modals
 // **************************************************
 
@@ -610,13 +636,10 @@ li.o_wslides_fs_sidebar_list_item.active {
 
 .o_wslides_quiz_modal {
     @include media-breakpoint-up (sm) {
-        height: 461px;
-
         .modal-body {
             overflow: visible!important;
 
             .o_wslides_quiz_modal_close_btn {
-                top: 5px;
                 right: 5px;
             }
 
@@ -625,10 +648,14 @@ li.o_wslides_fs_sidebar_list_item.active {
             }
         }
 
-        .o_wslides_quiz_modal_hero {
-            margin-left: -30px;
-            position: absolute;
-            margin-top: -45px;
+        .modal-content {
+            height: 461px;
+
+            .o_wslides_quiz_modal_hero {
+                margin-left: -30px;
+                position: absolute;
+                margin-top: -45px;
+            }
         }
     }
 
@@ -639,45 +666,28 @@ li.o_wslides_fs_sidebar_list_item.active {
 
         .progress-bar {
             transition: width 0.8s ease;
-            &.level-up {
+
+            &.no-transition {
                 transition: none;
-                animation: 0.8s ease 0s progress-bar-level-complete, 0.9s ease 0.8s progress-bar-level-up
             }
-        }
-        @keyframes progress-bar-level-complete {
-            to {width: 100%;}
-        }
-        @keyframes progress-bar-level-up {
-            0% {width: 0%;}
-            11% {transition: width;}
         }
     }
 
-    .tooltip.bs-tooltip-top {
-        transform: translate(-50%, -100%);
-        transition: left 0.8s ease;
-        &.level-up {
-            transition: none;
-            animation: 0.8s ease 0s tooltip-level-complete, 0.9s ease 0.8s tooltip-level-up
-        }
-        .tooltip-inner {
-            background-color: #875A7B;
-            padding:5px 15px;
-            font-weight:bold;
-            @include font-size(13px);
-        }
-        .tooltip-arrow {
-            position: absolute;
-            left: 50%;
-            transform: translate(-50%, 0px);
-        }
-        @keyframes tooltip-level-complete {
-            to {left: 100%;}
-        }
-        @keyframes tooltip-level-up {
-            0% {left: 0%;}
-            11% {transition: left;}
-        }
+    .tooltip > .tooltip-inner {
+        background-color: #875A7B;
+        padding:5px 15px;
+        font-weight:bold;
+        font-size:13px;
+    }
+
+    .tooltip > .arrow {
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 5px solid #875A7B;
+    }
+
+    .tooltip > .arrow::before {
+        display: none;
     }
 }
 

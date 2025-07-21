@@ -3,18 +3,27 @@
 # 	* crm
 # 
 # Translators:
-# JernejEditor, 2024
-# Wil Odoo, 2024
-# Neun Pro, 2025
-# Aleš Pipan, 2025
+# laznikd <laznik@mentis.si>, 2022
+# Vida Potočnik <vida.potocnik@mentis.si>, 2022
+# jl2035 <jaka.luthar@gmail.com>, 2022
+# Boris Kodelja <boris@hbs.si>, 2022
+# matjaz k <matjaz@mentis.si>, 2022
+# Tadej Lupšina <tadej@hbs.si>, 2022
+# Jasmina Macur <jasmina@hbs.si>, 2022
+# Matjaz Mozetic <m.mozetic@matmoz.si>, 2022
+# Martin Trigaux, 2022
+# Tomaž Jug <tomaz@editor.si>, 2023
+# Neun Pro, 2023
+# Grega Vavtar <grega@hbs.si>, 2023
+# Katja Deržič, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-10 13:22+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Aleš Pipan, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2022-09-22 05:45+0000\n"
+"Last-Translator: Katja Deržič, 2024\n"
 "Language-Team: Slovenian (https://app.transifex.com/odoo/teams/41243/sl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -26,6 +35,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:crm.field_crm_team__lead_all_assigned_month_count
 msgid "# Leads/Opps assigned this month"
 msgstr "# Leads/Opps assigned this month"
+
+#. module: crm
+#: model:ir.model.fields,field_description:crm.field_crm_lead__calendar_event_count
+msgid "# Meetings"
+msgstr "# Sestanki"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_recurring_plan__number_of_months
@@ -50,30 +64,35 @@ msgstr "# Unassigned Leads"
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_team.py:0
+#, python-format
 msgid "%(assigned)s leads allocated among %(team_count)s teams."
 msgstr "%(assigned)s leads allocated among %(team_count)s teams."
 
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_team.py:0
+#, python-format
 msgid "%(assigned)s leads allocated to %(team_name)s team."
 msgstr "%(assigned)s leads allocated to %(team_name)s team."
 
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_lead.py:0
+#, python-format
 msgid "%(attach_name)s (from %(lead_name)s)"
 msgstr "%(attach_name)s (from %(lead_name)s)"
 
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_team.py:0
+#, python-format
 msgid "%(duplicates)s duplicates leads have been merged."
 msgstr "%(duplicates)s duplicates leads have been merged."
 
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_team.py:0
+#, python-format
 msgid ""
 "%(members_assigned)s leads assigned among %(member_count)s salespersons."
 msgstr ""
@@ -81,19 +100,29 @@ msgstr ""
 
 #. module: crm
 #. odoo-python
+#: code:addons/crm/models/res_config_settings.py:0
+#, python-format
+msgid "%s and %s"
+msgstr "%s and %s"
+
+#. module: crm
+#. odoo-python
 #: code:addons/crm/models/crm_lead.py:0
+#, python-format
 msgid "%s's opportunity"
 msgstr "%s's opportunity"
 
 #. module: crm
 #. odoo-javascript
 #: code:addons/crm/static/src/js/tours/crm.js:0
+#, python-format
 msgid "<b>Create your first opportunity.</b>"
 msgstr "<b>Create your first opportunity.</b>"
 
 #. module: crm
 #. odoo-javascript
 #: code:addons/crm/static/src/js/tours/crm.js:0
+#, python-format
 msgid ""
 "<b>Drag &amp; drop opportunities</b> between columns as you progress in your"
 " sales cycle."
@@ -102,43 +131,35 @@ msgstr ""
 " sales cycle."
 
 #. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.res_config_settings_view_form
+msgid "<b>Predictive Lead Scoring</b>"
+msgstr "<b>Predictive Lead Scoring</b>"
+
+#. module: crm
 #. odoo-javascript
 #: code:addons/crm/static/src/js/tours/crm.js:0
+#, python-format
 msgid "<b>Write a few letters</b> to look for a company, or create a new one."
 msgstr ""
 "<b>Vpišite nekaj črk</b> za iskanje po podjetjih ali za kreiranje novega."
 
 #. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
-msgid ""
-"<i class=\"fa fa-gear\" role=\"img\" title=\"Switch to automatic "
-"probability\" aria-label=\"Switch to automatic probability\"/>"
-msgstr ""
-"<i class=\"fa fa-gear\" role=\"img\" title=\"Switch to automatic "
-"probability\" aria-label=\"Switch to automatic probability\"/>"
-
-#. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.sales_team_form_view_in_crm
-msgid "<i class=\"fa fa-info-circle me-2\" title=\"Assigned Lead Count\"/>"
-msgstr "<i class=\"fa fa-info-circle me-2\" title=\"Assigned Lead Count\"/>"
-
-#. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_partner_kanban_view
 msgid ""
-"<i class=\"fa fa-star me-1\" aria-label=\"Opportunities\" role=\"img\" "
+"<i class=\"fa fa-fw fa-star\" aria-label=\"Opportunities\" role=\"img\" "
 "title=\"Opportunities\"/>"
 msgstr ""
-"<i class=\"fa fa-star me-1\" aria-label=\"Opportunities\" role=\"img\" "
+"<i class=\"fa fa-fw fa-star\" aria-label=\"Opportunities\" role=\"img\" "
 "title=\"Opportunities\"/>"
 
 #. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.res_config_settings_view_form
+#: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
 msgid ""
-"<i class=\"oi oi-arrow-right\"/>\n"
-"                                Install Extension"
+"<i class=\"fa fa-gear\" role=\"img\" title=\"Switch to automatic "
+"probability\" aria-label=\"Switch to automatic probability\"/>"
 msgstr ""
-"<i class=\"oi oi-arrow-right\"/>\n"
-"                                Namestite razširitev"
+"<i class=\"fa fa-gear\" role=\"img\" title=\"Switch to automatic "
+"probability\" aria-label=\"Switch to automatic probability\"/>"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.res_config_settings_view_form
@@ -150,44 +171,58 @@ msgstr ""
 "fa-fw fa-refresh\"/>"
 
 #. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.crm_case_kanban_view_leads
+msgid "<span class=\"bg-danger\">Lost</span>"
+msgstr "<span class=\"bg-danger\">Lost</span>"
+
+#. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
 msgid ""
 "<span class=\"fa fa-exclamation-triangle text-warning oe_edit_only\" "
 "title=\"By saving this change, the customer email will also be updated.\" "
-"invisible=\"not partner_email_update\"/>"
+"attrs=\"{'invisible': [('partner_email_update', '=', False)]}\"/>"
 msgstr ""
 "<span class=\"fa fa-exclamation-triangle text-warning oe_edit_only\" "
 "title=\"By saving this change, the customer email will also be updated.\" "
-"invisible=\"not partner_email_update\"/>"
+"attrs=\"{'invisible': [('partner_email_update', '=', False)]}\"/>"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
 msgid ""
 "<span class=\"fa fa-exclamation-triangle text-warning oe_edit_only\" "
 "title=\"By saving this change, the customer phone number will also be "
-"updated.\" invisible=\"not partner_phone_update\"/>"
+"updated.\" attrs=\"{'invisible': [('partner_phone_update', '=', False)]}\"/>"
 msgstr ""
 "<span class=\"fa fa-exclamation-triangle text-warning oe_edit_only\" "
 "title=\"By saving this change, the customer phone number will also be "
-"updated.\" invisible=\"not partner_phone_update\"/>"
+"updated.\" attrs=\"{'invisible': [('partner_phone_update', '=', False)]}\"/>"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
 msgid ""
-"<span class=\"o_stat_text\" invisible=\"duplicate_lead_count &lt; 2\">Similar Leads</span>\n"
-"                                    <span class=\"o_stat_text\" invisible=\"duplicate_lead_count &gt; 1\">Similar Lead</span>"
+"<span class=\"o_stat_text\" attrs=\"{'invisible': [('calendar_event_count', '&lt;', 2)]}\"> Meetings</span>\n"
+"                                    <span class=\"o_stat_text\" attrs=\"{'invisible': [('calendar_event_count', '&gt;', 1)]}\"> Meeting</span>"
 msgstr ""
-"<span class=\"o_stat_text\" invisible=\"duplicate_lead_count &lt; 2\">Podobne potencialne stranke</span>\n"
-"                                    <span class=\"o_stat_text\" invisible=\"duplicate_lead_count &gt; 1\">Podobna potencialna stranka</span>"
+"<span class=\"o_stat_text\" attrs=\"{'invisible': [('calendar_event_count', '&lt;', 2)]}\"> Meetings</span>\n"
+"                                    <span class=\"o_stat_text\" attrs=\"{'invisible': [('calendar_event_count', '&gt;', 1)]}\"> Meeting</span>"
+
+#. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
+msgid ""
+"<span class=\"o_stat_text\" attrs=\"{'invisible': [('duplicate_lead_count', '&lt;', 2)]}\">Similar Leads</span>\n"
+"                                    <span class=\"o_stat_text\" attrs=\"{'invisible': [('duplicate_lead_count', '&gt;', 1)]}\">Similar Lead</span>"
+msgstr ""
+"<span class=\"o_stat_text\" attrs=\"{'invisible': [('duplicate_lead_count', '&lt;', 2)]}\">Similar Leads</span>\n"
+"                                    <span class=\"o_stat_text\" attrs=\"{'invisible': [('duplicate_lead_count', '&gt;', 1)]}\">Similar Lead</span>"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.utm_campaign_view_form
 msgid ""
-"<span class=\"o_stat_text\" invisible=\"not use_leads\">Leads</span>\n"
-"                        <span class=\"o_stat_text\" invisible=\"use_leads\">Opportunities</span>"
+"<span class=\"o_stat_text\" attrs=\"{'invisible': [('use_leads', '=', False)]}\">Leads</span>\n"
+"                        <span class=\"o_stat_text\" attrs=\"{'invisible': [('use_leads', '=', True)]}\">Opportunities</span>"
 msgstr ""
-"<span class=\"o_stat_text\" invisible=\"not use_leads\">Potencialne stranke</span>\n"
-"                        <span class=\"o_stat_text\" invisible=\"use_leads\">Priložnosti</span>"
+"<span class=\"o_stat_text\" attrs=\"{'invisible': [('use_leads', '=', False)]}\">Leads</span>\n"
+"                        <span class=\"o_stat_text\" attrs=\"{'invisible': [('use_leads', '=', True)]}\">Opportunities</span>"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lost_reason_view_form
@@ -196,11 +231,6 @@ msgstr "<span class=\"o_stat_text\"> Leads</span>"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
-msgid "<span class=\"oe_grey p-2 text-nowrap d-none d-sm-block\"> at </span>"
-msgstr ""
-
-#. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
 msgid ""
 "<span class=\"oe_grey p-2\" groups=\"crm.group_use_recurring_revenues\"> + </span>\n"
 "                                        <span class=\"oe_grey p-2\" groups=\"!crm.group_use_recurring_revenues\"> at </span>"
@@ -210,8 +240,13 @@ msgstr ""
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
-msgid "<span class=\"oe_grey p-2\"> %</span>"
-msgstr ""
+msgid "<span class=\"oe_grey p-2\"> at </span>"
+msgstr "<span class=\"oe_grey p-2\">ob </span>"
+
+#. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
+msgid "<span class=\"oe_grey\"> %</span>"
+msgstr "<span class=\"oe_grey\"> %</span>"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_team_member_view_form
@@ -222,15 +257,6 @@ msgstr "<span class=\"oe_inline\"> (max) </span>"
 #: model_terms:ir.ui.view,arch_db:crm.crm_team_member_view_form
 msgid "<span class=\"oe_inline\"> / </span>"
 msgstr "<span class=\"oe_inline\"> / </span>"
-
-#. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.sales_team_form_view_in_crm
-msgid ""
-"<span> leads assigned this month\n"
-"                            on a maximum of </span>"
-msgstr ""
-"<span> dodeljene stranke v tem mesecu\n"
-"                            na največ </span>"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_merge_summary
@@ -246,11 +272,16 @@ msgstr "<span>Merged the Lead/Opportunity</span>"
 #: model_terms:ir.ui.view,arch_db:crm.res_config_settings_view_form
 msgid ""
 "<span>Periodically assign leads based on rules</span><br/>\n"
-"                                <span invisible=\"not crm_use_auto_assignment\">\n"
-"                                    All sales teams will use this setting by default unless\n"
-"                                    specified otherwise.\n"
-"                                </span>"
+"                                    <span attrs=\"{'invisible': [('crm_use_auto_assignment', '=', False)]}\">\n"
+"                                        All sales teams will use this setting by default unless\n"
+"                                        specified otherwise.\n"
+"                                    </span>"
 msgstr ""
+"<span>Periodically assign leads based on rules</span><br/>\n"
+"                                    <span attrs=\"{'invisible': [('crm_use_auto_assignment', '=', False)]}\">\n"
+"                                        All sales teams will use this setting by default unless\n"
+"                                        specified otherwise.\n"
+"                                    </span>"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_merge_summary
@@ -268,13 +299,13 @@ msgid ""
 "        <td align=\"center\" style=\"min-width: 590px;\">\n"
 "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"background-color: white; padding: 0; border-collapse:separate;\">\n"
 "                <tr><td valign=\"middle\">\n"
-"                    <span style=\"font-size: 10px;\">Your Lead/Opportunity</span><br/>\n"
+"                    <span style=\"font-size: 10px;\">Your Lead/Opportunity</span><br>\n"
 "                    <span style=\"font-size: 20px; font-weight: bold;\" t-out=\"object.name or ''\">Interest in your products</span>\n"
 "                </td><td valign=\"middle\" align=\"right\">\n"
-"                    <img t-attf-src=\"/logo.png?company={{ object.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: 48px;\" t-att-alt=\"object.company_id.name\"/>\n"
+"                    <img t-attf-src=\"/logo.png?company={{ object.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: 48px;\" t-att-alt=\"object.company_id.name\">\n"
 "                </td></tr>\n"
 "                <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
-"                    <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:4px 0px 32px 0px;\"/>\n"
+"                    <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:4px 0px 32px 0px;\">\n"
 "                </td></tr>\n"
 "            </table>\n"
 "        </td>\n"
@@ -286,15 +317,15 @@ msgid ""
 "                <tr>\n"
 "                    <td valign=\"top\" style=\"font-size: 13px;\">\n"
 "                        <div>\n"
-"                            Hi <t t-out=\"object.partner_id and object.partner_id.name or ''\">Deco Addict</t>,<br/><br/>\n"
+"                            Hi <t t-out=\"object.partner_id and object.partner_id.name or ''\">Deco Addict</t>,<br><br>\n"
 "                            Welcome to <t t-out=\"object.company_id.name or ''\">My Company (San Francisco)</t>.\n"
-"                            It's great to meet you! Now that you're on board, you'll discover what <t t-out=\"object.company_id.name or ''\">My Company (San Francisco)</t> has to offer. My name is <t t-out=\"object.user_id.name or ''\">Marc Demo</t> and I'll help you get the most out of Odoo. Could we plan a quick demo soon?<br/>\n"
-"                            Feel free to reach out at any time!<br/><br/>\n"
-"                            Best,<br/>\n"
+"                            It's great to meet you! Now that you're on board, you'll discover what <t t-out=\"object.company_id.name or ''\">My Company (San Francisco)</t> has to offer. My name is <t t-out=\"object.user_id.name or ''\">Marc Demo</t> and I'll help you get the most out of Odoo. Could we plan a quick demo soon?<br>\n"
+"                            Feel free to reach out at any time!<br><br>\n"
+"                            Best,<br>\n"
 "                            <t t-if=\"object.user_id\">\n"
 "                                <b><t t-out=\"object.user_id.name or ''\">Marc Demo</t></b>\n"
-"                                <br/>Email: <t t-out=\"object.user_id.email or ''\">mark.brown23@example.com</t>\n"
-"                                <br/>Phone: <t t-out=\"object.user_id.phone or ''\">+1 650-123-4567</t>\n"
+"                                <br>Email: <t t-out=\"object.user_id.email or ''\">mark.brown23@example.com</t>\n"
+"                                <br>Phone: <t t-out=\"object.user_id.phone or ''\">+1 650-123-4567</t>\n"
 "                            </t>\n"
 "                            <t t-else=\"\">\n"
 "                                <t t-out=\"object.company_id.name or ''\">My Company (San Francisco)</t>\n"
@@ -308,8 +339,8 @@ msgid ""
 "    <!-- FOOTER -->\n"
 "    <tr>\n"
 "        <td align=\"center\" style=\"min-width: 590px; padding: 0 8px 0 8px; font-size:11px;\">\n"
-"            <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 4px 0px;\"/>\n"
-"            <b t-out=\"object.company_id.name or ''\">My Company (San Francisco)</b><br/>\n"
+"            <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 4px 0px;\">\n"
+"            <b t-out=\"object.company_id.name or ''\">My Company (San Francisco)</b><br>\n"
 "            <div style=\"color: #999999;\">\n"
 "                <t t-out=\"object.company_id.phone or ''\">+1 650-123-4567</t>\n"
 "                <t t-if=\"object.company_id.email\">\n"
@@ -334,18 +365,18 @@ msgstr ""
 "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;\"><tr><td align=\"center\">\n"
 "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"padding: 24px; background-color: white; color: #454748; border-collapse:separate;\">\n"
 "<tbody>\n"
-"    <!-- GLAVA -->\n"
+"    <!-- HEADER -->\n"
 "    <tr>\n"
 "        <td align=\"center\" style=\"min-width: 590px;\">\n"
 "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"background-color: white; padding: 0; border-collapse:separate;\">\n"
 "                <tr><td valign=\"middle\">\n"
-"                    <span style=\"font-size: 10px;\">Vaša potencialna stranka/priložnost</span><br/>\n"
-"                    <span style=\"font-size: 20px; font-weight: bold;\" t-out=\"object.name or ''\">Zanimanje za vaše izdelke</span>\n"
+"                    <span style=\"font-size: 10px;\">Your Lead/Opportunity</span><br>\n"
+"                    <span style=\"font-size: 20px; font-weight: bold;\" t-out=\"object.name or ''\">Interest in your products</span>\n"
 "                </td><td valign=\"middle\" align=\"right\">\n"
-"                    <img t-attf-src=\"/logo.png?company={{ object.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: 48px;\" t-att-alt=\"object.company_id.name\"/>\n"
+"                    <img t-attf-src=\"/logo.png?company={{ object.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: 48px;\" t-att-alt=\"object.company_id.name\">\n"
 "                </td></tr>\n"
 "                <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
-"                    <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:4px 0px 32px 0px;\"/>\n"
+"                    <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:4px 0px 32px 0px;\">\n"
 "                </td></tr>\n"
 "            </table>\n"
 "        </td>\n"
@@ -357,19 +388,18 @@ msgstr ""
 "                <tr>\n"
 "                    <td valign=\"top\" style=\"font-size: 13px;\">\n"
 "                        <div>\n"
-"                            Živjo <t t-out=\"object.partner_id and object.partner_id.name or ''\">Deco Addict</t>,<br/><br/>\n"
-"                            Pozdravljeni v <t t-out=\"object.company_id.name or ''\">Moje podjetje (Novo mesto)</t>.\n"
-"                            Veseli me, da sem vas spoznal! Zdaj, ko ste na krovu, boste odkrili, kaj <t t-out=\"object.company_id.name or ''\">Moje podjetje (Novo mesto)\n"
-"</t> ponuja. Moje ime je <t t-out=\"object.user_id.name or ''\">Marko Demo</t> in pomagal vam bom kar najbolje izkoristiti Odoo. Ali lahko kmalu načrtujemo kratko predstavitev?<br/>\n"
-"                            Kadarkoli se lahko obrnete na nas!<br/><br/>\n"
-"                            Lep pozdrav,<br/>\n"
+"                            Hi <t t-out=\"object.partner_id and object.partner_id.name or ''\">Deco Addict</t>,<br><br>\n"
+"                            Welcome to <t t-out=\"object.company_id.name or ''\">My Company (San Francisco)</t>.\n"
+"                            It's great to meet you! Now that you're on board, you'll discover what <t t-out=\"object.company_id.name or ''\">My Company (San Francisco)</t> has to offer. My name is <t t-out=\"object.user_id.name or ''\">Marc Demo</t> and I'll help you get the most out of Odoo. Could we plan a quick demo soon?<br>\n"
+"                            Feel free to reach out at any time!<br><br>\n"
+"                            Best,<br>\n"
 "                            <t t-if=\"object.user_id\">\n"
-"                                <b><t t-out=\"object.user_id.name or ''\">Marko Demo</t></b>\n"
-"                                <br/>E-pošta: <t t-out=\"object.user_id.email or ''\">marko.demo25@primer.si</t>\n"
-"                                <br/>Telefon: <t t-out=\"object.user_id.phone or ''\">05 123-4567</t>\n"
+"                                <b><t t-out=\"object.user_id.name or ''\">Marc Demo</t></b>\n"
+"                                <br>Email: <t t-out=\"object.user_id.email or ''\">mark.brown23@example.com</t>\n"
+"                                <br>Phone: <t t-out=\"object.user_id.phone or ''\">+1 650-123-4567</t>\n"
 "                            </t>\n"
 "                            <t t-else=\"\">\n"
-"                                <t t-out=\"object.company_id.name or ''\">Moje podjetje (Novo mesto)</t>\n"
+"                                <t t-out=\"object.company_id.name or ''\">My Company (San Francisco)</t>\n"
 "                            </t>\n"
 "                        </div>\n"
 "                    </td>\n"
@@ -377,18 +407,18 @@ msgstr ""
 "            </table>\n"
 "        </td>\n"
 "    </tr>\n"
-"    <!-- NOGA-->\n"
+"    <!-- FOOTER -->\n"
 "    <tr>\n"
 "        <td align=\"center\" style=\"min-width: 590px; padding: 0 8px 0 8px; font-size:11px;\">\n"
-"            <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 4px 0px;\"/>\n"
-"            <b t-out=\"object.company_id.name or ''\">Moje podjetje (Novo mesto)</b><br/>\n"
+"            <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 4px 0px;\">\n"
+"            <b t-out=\"object.company_id.name or ''\">My Company (San Francisco)</b><br>\n"
 "            <div style=\"color: #999999;\">\n"
-"                <t t-out=\"object.company_id.phone or ''\">05 123-4567</t>\n"
+"                <t t-out=\"object.company_id.phone or ''\">+1 650-123-4567</t>\n"
 "                <t t-if=\"object.company_id.email\">\n"
-"                    | <a t-attf-href=\"'mailto:%s' % {{ object.company_id.email }}\" style=\"text-decoration:none; color: #999999;\" t-out=\"object.company_id.email or ''\">info@vasepodjetje.si</a>\n"
+"                    | <a t-attf-href=\"'mailto:%s' % {{ object.company_id.email }}\" style=\"text-decoration:none; color: #999999;\" t-out=\"object.company_id.email or ''\">info@yourcompany.com</a>\n"
 "                </t>\n"
 "                <t t-if=\"object.company_id.website\">\n"
-"                    | <a t-attf-href=\"'%s' % {{ object.company_id.website }}\" style=\"text-decoration:none; color: #999999;\" t-out=\"object.company_id.website or ''\">http://www.primer.si</a>\n"
+"                    | <a t-attf-href=\"'%s' % {{ object.company_id.website }}\" style=\"text-decoration:none; color: #999999;\" t-out=\"object.company_id.website or ''\">http://www.example.com</a>\n"
 "                </t>\n"
 "            </div>\n"
 "        </td>\n"
@@ -396,9 +426,9 @@ msgstr ""
 "</tbody>\n"
 "</table>\n"
 "</td></tr>\n"
-"<!-- POGANJA -->\n"
+"<!-- POWERED BY -->\n"
 "<tr><td align=\"center\" style=\"min-width: 590px;\">\n"
-"    POGANJA ga<a target=\"_blank\" href=\"https://www.odoo.com?utm_source=db&amp;utm_medium=email\" style=\"color: #875A7B;\">Odoo</a>\n"
+"    Powered by <a target=\"_blank\" href=\"https://www.odoo.com?utm_source=db&amp;utm_medium=email\" style=\"color: #875A7B;\">Odoo</a>\n"
 "</td></tr>\n"
 "</table>\n"
 "        "
@@ -428,19 +458,6 @@ msgstr ""
 "have no next activity."
 
 #. module: crm
-#. odoo-python
-#: code:addons/crm/models/crm_lead.py:0
-msgid "A new lead has been created and is not assigned to any team."
-msgstr ""
-"Nova možna stranka je bila ustvarjena in ni bila dodeljena nobeni ekipi."
-
-#. module: crm
-#. odoo-python
-#: code:addons/crm/models/crm_lead.py:0
-msgid "A new lead has been created for the team \"%(team_name)s\"."
-msgstr "Za ekipo je bilo ustvarjeno novo vodstvo \"%(team_name)s\"."
-
-#. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.sales_team_form_view_in_crm
 msgid "Accept Emails From"
 msgstr "Sprejemaj e-pošto od"
@@ -455,7 +472,6 @@ msgstr "Potreben je ukrep"
 #: model:ir.model.fields,field_description:crm.field_crm_lead__active
 #: model:ir.model.fields,field_description:crm.field_crm_lost_reason__active
 #: model:ir.model.fields,field_description:crm.field_crm_recurring_plan__active
-#: model_terms:ir.ui.view,arch_db:crm.crm_lost_reason_view_search
 #: model_terms:ir.ui.view,arch_db:crm.crm_opportunity_report_view_search
 msgid "Active"
 msgstr "Aktivno"
@@ -469,7 +485,6 @@ msgstr "Aktivne priložnosti"
 #: model:ir.actions.act_window,name:crm.crm_activity_report_action
 #: model:ir.model.fields,field_description:crm.field_crm_lead__activity_ids
 #: model:ir.ui.menu,name:crm.crm_activity_report_menu
-#: model:ir.ui.menu,name:crm.crm_team_menu_config_activities
 #: model_terms:ir.ui.view,arch_db:crm.crm_team_view_kanban_dashboard
 msgid "Activities"
 msgstr "Aktivnosti"
@@ -487,16 +502,6 @@ msgid "Activities Done Target"
 msgstr "Cilj opravljenih aktivnosti"
 
 #. module: crm
-#: model_terms:ir.actions.act_window,help:crm.crm_activity_report_action
-#: model_terms:ir.actions.act_window,help:crm.crm_activity_report_action_team
-msgid ""
-"Activities marked as Done on Leads will appear here, providing an overview "
-"of lead interactions."
-msgstr ""
-"Tukaj se bodo prikazale dejavnosti, označene kot Dokončano za možne stranke,"
-" ki nudijo pregled interakcij z možnimi strankami."
-
-#. module: crm
 #: model:ir.model,name:crm.model_mail_activity
 #: model_terms:ir.ui.view,arch_db:crm.crm_activity_report_view_search
 msgid "Activity"
@@ -510,12 +515,7 @@ msgstr "Opis aktivnosti"
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__activity_exception_decoration
 msgid "Activity Exception Decoration"
-msgstr "Izjema pri oznaki aktivnosti"
-
-#. module: crm
-#: model:ir.ui.menu,name:crm.mail_activity_plan_menu_config_lead
-msgid "Activity Plans"
-msgstr "Načrti dejavnosti"
+msgstr "Activity Exception Decoration"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__activity_state
@@ -531,7 +531,7 @@ msgstr "Tip aktivnosti"
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__activity_type_icon
 msgid "Activity Type Icon"
-msgstr "Ikona vrste dejavnosti"
+msgstr "Activity Type Icon"
 
 #. module: crm
 #: model:ir.ui.menu,name:crm.crm_team_menu_config_activity_types
@@ -542,15 +542,6 @@ msgstr "Tipi aktivnosti"
 #: model_terms:ir.ui.view,arch_db:crm.crm_case_tree_view_oppor
 msgid "Activity by"
 msgstr "Activity by"
-
-#. module: crm
-#: model_terms:ir.actions.act_window,help:crm.mail_activity_plan_action_lead
-msgid ""
-"Activity plans are used to assign a list of activities in just a few clicks\n"
-"                    (e.g. \"Demo Preparation Process\", \"Qualification\", ...)"
-msgstr ""
-"Načrti dejavnosti se uporabljajo za dodelitev seznama dejavnosti v le nekaj klikih\n"
-"                    (e.g. \"Postopek priprave predstavitve\", \"Kvalifikacija\", ...)"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
@@ -565,6 +556,7 @@ msgstr "Add a qualification step before the creation of an opportunity"
 #. module: crm
 #. odoo-javascript
 #: code:addons/crm/static/src/views/forecast_kanban/forecast_kanban_column_quick_create.js:0
+#, python-format
 msgid "Add next %s"
 msgstr "Add next %s"
 
@@ -599,34 +591,14 @@ msgid "Alias Contact Security"
 msgstr "Varnostne nastavitve vzdevka stika"
 
 #. module: crm
-#: model:ir.model.fields,field_description:crm.field_crm_team__alias_domain_id
-msgid "Alias Domain"
-msgstr "Domenski vzdevek"
-
-#. module: crm
-#: model:ir.model.fields,field_description:crm.field_crm_team__alias_domain
-msgid "Alias Domain Name"
-msgstr "Vzdevek domenskega imena"
-
-#. module: crm
-#: model:ir.model.fields,field_description:crm.field_crm_team__alias_full_name
-msgid "Alias Email"
-msgstr "Vzdevek za E-mail"
-
-#. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_team__alias_name
 msgid "Alias Name"
 msgstr "Naziv vzdevka"
 
 #. module: crm
-#: model:ir.model.fields,field_description:crm.field_crm_team__alias_status
-msgid "Alias Status"
-msgstr "Vzdevek status"
-
-#. module: crm
-#: model:ir.model.fields,help:crm.field_crm_team__alias_status
-msgid "Alias status assessed on the last message received."
-msgstr "Stanje vzdevka je ocenjeno pri zadnjem prejetem sporočilu."
+#: model:ir.model.fields,field_description:crm.field_crm_team__alias_domain
+msgid "Alias domain"
+msgstr "Domenski vzdevek"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_team__alias_model_id
@@ -636,6 +608,7 @@ msgstr "Model vzdevka"
 #. module: crm
 #. odoo-javascript
 #: code:addons/crm/static/src/js/tours/crm.js:0
+#, python-format
 msgid "All set. Let’s <b>Schedule</b> it."
 msgstr "All set. Let’s <b>Schedule</b> it."
 
@@ -656,12 +629,14 @@ msgstr "Uveljavi razdvajanje"
 #: model_terms:ir.ui.view,arch_db:crm.crm_opportunity_report_view_search
 #: model_terms:ir.ui.view,arch_db:crm.crm_recurring_plan_view_search
 #: model_terms:ir.ui.view,arch_db:crm.view_crm_case_leads_filter
+#: model_terms:ir.ui.view,arch_db:crm.view_crm_case_opportunities_filter
 msgid "Archived"
 msgstr "Arhivirano"
 
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_team.py:0
+#, python-format
 msgid ""
 "As you are a member of no Sales Team, you are showed the Pipeline of the <b>first team by default.</b>\n"
 "                                        To work with the CRM, you should <a name=\"%d\" type=\"action\" tabindex=\"-1\">join a team.</a>"
@@ -672,12 +647,18 @@ msgstr ""
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_team.py:0
+#, python-format
 msgid ""
 "As you are a member of no Sales Team, you are showed the Pipeline of the <b>first team by default.</b>\n"
 "                                        To work with the CRM, you should join a team."
 msgstr ""
 "As you are a member of no Sales Team, you are showed the Pipeline of the <b>first team by default.</b>\n"
 "                                        To work with the CRM, you should join a team."
+
+#. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.res_config_settings_view_form
+msgid "Assign Documentation"
+msgstr "Assign Documentation"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.sales_team_form_view_in_crm
@@ -705,6 +686,11 @@ msgid "Assign this opportunity to"
 msgstr "To priložnost dodeli"
 
 #. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.sales_team_form_view_in_crm
+msgid "Assigned Leads Count"
+msgstr "Assigned Leads Count"
+
+#. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_activity_report__author_id
 #: model_terms:ir.ui.view,arch_db:crm.crm_activity_report_view_search
 msgid "Assigned To"
@@ -729,6 +715,7 @@ msgstr "Assignment Rules"
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_team.py:0
+#, python-format
 msgid "Assignment domain for team %(team)s is incorrectly formatted"
 msgstr "Assignment domain for team %(team)s is incorrectly formatted"
 
@@ -791,6 +778,7 @@ msgstr "Blacklisted Phone is Phone"
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_lead.py:0
+#, python-format
 msgid "Boom! Team record for the past 30 days."
 msgstr "Bum! Ekipni rekord v zadnjih 30 dneh."
 
@@ -823,13 +811,14 @@ msgstr "CRM Stopnje"
 
 #. module: crm
 #: model:ir.actions.server,name:crm.ir_cron_crm_lead_assign_ir_actions_server
+#: model:ir.cron,cron_name:crm.ir_cron_crm_lead_assign
 msgid "CRM: Lead Assignment"
 msgstr "CRM: Lead Assignment"
 
 #. module: crm
 #: model:ir.model,name:crm.model_calendar_event
 msgid "Calendar Event"
-msgstr "Dogodek v koledarju"
+msgstr "Calendar Event"
 
 #. module: crm
 #: model:mail.activity.type,name:crm.mail_activity_demo_call_demo
@@ -864,15 +853,6 @@ msgid "Channel"
 msgstr "Kanal"
 
 #. module: crm
-#: model_terms:digest.tip,tip_description:crm.digest_tip_crm_6
-msgid ""
-"Check the Stage Tracker of Leads to identify bottlenecks in your Sales "
-"process."
-msgstr ""
-"Preverite Stage Tracker of Leads, da prepoznate ozka grla v vašem prodajnem "
-"procesu."
-
-#. module: crm
 #: model:ir.model.fields,help:crm.field_crm_team__use_leads
 msgid ""
 "Check this box to filter and qualify incoming requests as leads before "
@@ -896,7 +876,6 @@ msgid "City"
 msgstr "Kraj"
 
 #. module: crm
-#: model:ir.model.fields,help:crm.field_crm_activity_report__tag_ids
 #: model:ir.model.fields,help:crm.field_crm_lead__tag_ids
 msgid ""
 "Classify and analyze your lead/opportunity categories like: Training, "
@@ -908,6 +887,7 @@ msgstr ""
 #. module: crm
 #. odoo-javascript
 #: code:addons/crm/static/src/js/tours/crm.js:0
+#, python-format
 msgid ""
 "Click on the breadcrumb to go back to your Pipeline. Odoo will save all "
 "modifications as you navigate."
@@ -928,6 +908,7 @@ msgstr "Datum zaključka"
 #. module: crm
 #. odoo-python
 #: code:addons/crm/wizard/crm_lead_to_opportunity.py:0
+#, python-format
 msgid "Closed/Dead leads cannot be converted into opportunities."
 msgstr "Zaključeni/Opuščeni indici ne morejo biti pretvorjeni v priložnosti."
 
@@ -983,7 +964,19 @@ msgid "Configuration"
 msgstr "Nastavitve"
 
 #. module: crm
-#: model_terms:web_tour.tour,rainbow_man_message:crm.crm_tour
+#: model_terms:ir.ui.view,arch_db:crm.sales_team_form_view_in_crm
+msgid "Configure a custom domain"
+msgstr "Configure a custom domain"
+
+#. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.crm_lead_pls_update_view_form
+msgid "Confirm"
+msgstr "Potrdi"
+
+#. module: crm
+#. odoo-javascript
+#: code:addons/crm/static/src/js/tours/crm.js:0
+#, python-format
 msgid "Congrats, best of luck catching such big fish! :)"
 msgstr "Congrats, best of luck catching such big fish! :)"
 
@@ -994,8 +987,6 @@ msgstr "Consider leads created as of the:"
 
 #. module: crm
 #: model:ir.model,name:crm.model_res_partner
-#: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
-#: model_terms:ir.ui.view,arch_db:crm.quick_create_opportunity_form
 msgid "Contact"
 msgstr "Stik"
 
@@ -1076,6 +1067,7 @@ msgstr "Spremeni v priložnosti"
 #: model:ir.actions.act_window,name:crm.action_crm_lead2opportunity_partner
 #: model:ir.model.fields.selection,name:crm.selection__crm_lead2opportunity_partner__name__convert
 #: model:ir.model.fields.selection,name:crm.selection__crm_lead2opportunity_partner_mass__name__convert
+#, python-format
 msgid "Convert to opportunity"
 msgstr "Spremeni v priložnost"
 
@@ -1093,6 +1085,13 @@ msgstr ""
 #: model:ir.model.fields.selection,name:crm.selection__crm_lead__phone_state__correct
 msgid "Correct"
 msgstr "Pravilno"
+
+#. module: crm
+#. odoo-javascript
+#: code:addons/crm/static/src/views/crm_kanban/crm_kanban_renderer.js:0
+#, python-format
+msgid "Count"
+msgstr "Štetje"
 
 #. module: crm
 #: model:ir.model.fields,help:crm.field_crm_lead__message_bounce
@@ -1125,11 +1124,6 @@ msgid "Create a Lead"
 msgstr "Create a Lead"
 
 #. module: crm
-#: model_terms:ir.actions.act_window,help:crm.mail_activity_plan_action_lead
-msgid "Create a Lead Activity Plan"
-msgstr "Ustvarite načrt aktivnosti za novo stranko"
-
-#. module: crm
 #: model_terms:ir.actions.act_window,help:crm.crm_lost_reason_action
 msgid "Create a Lost Reason"
 msgstr "Create a Lost Reason"
@@ -1155,12 +1149,14 @@ msgstr "Ustvari novo stranko"
 #: code:addons/crm/models/crm_lead.py:0
 #: model_terms:ir.actions.act_window,help:crm.crm_case_form_view_salesteams_lead
 #: model_terms:ir.actions.act_window,help:crm.crm_case_form_view_salesteams_opportunity
+#, python-format
 msgid "Create a new lead"
 msgstr "Ustvari nov indic"
 
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_team.py:0
+#, python-format
 msgid "Create an Opportunity"
 msgstr "Create an Opportunity"
 
@@ -1168,6 +1164,7 @@ msgstr "Create an Opportunity"
 #. odoo-python
 #: code:addons/crm/models/crm_lead.py:0
 #: model_terms:ir.ui.view,arch_db:crm.crm_action_helper
+#, python-format
 msgid "Create an opportunity to start playing with your pipeline."
 msgstr "Ustvarite priložnost, da začnete delo s svojim prodajnim tokom."
 
@@ -1242,14 +1239,17 @@ msgstr "Custom Bounced Message"
 #: model:ir.model.fields,field_description:crm.field_crm_lead2opportunity_partner__partner_id
 #: model:ir.model.fields,field_description:crm.field_crm_lead2opportunity_partner_mass__partner_id
 #: model:ir.model.fields,field_description:crm.field_crm_lead__partner_id
+#: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
 #: model_terms:ir.ui.view,arch_db:crm.view_crm_case_opportunities_filter
 #: model_terms:ir.ui.view,arch_db:crm.view_crm_lead2opportunity_partner
+#, python-format
 msgid "Customer"
 msgstr "Stranka"
 
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_lead.py:0
+#, python-format
 msgid "Customer Email"
 msgstr "E-pošta stranke"
 
@@ -1257,7 +1257,7 @@ msgstr "E-pošta stranke"
 #: model:ir.ui.menu,name:crm.res_partner_menu_customer
 #: model_terms:ir.ui.view,arch_db:crm.view_crm_lead2opportunity_partner_mass
 msgid "Customers"
-msgstr "Kupci"
+msgstr "Stranke"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_opportunity_report_view_search
@@ -1282,6 +1282,7 @@ msgstr "Dnevi do končanja"
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_lead.py:0
+#, python-format
 msgid "Deadline: %s"
 msgstr "Deadline: %s"
 
@@ -1364,7 +1365,8 @@ msgstr "Prikazani naziv"
 
 #. module: crm
 #. odoo-python
-#: code:addons/crm/models/digest.py:0
+#: code:addons/crm/models/digest.py:0 code:addons/crm/models/digest.py:0
+#, python-format
 msgid "Do not have access, skip this data for user's digest email"
 msgstr ""
 "Nimate dostopa, preskočite te podatke v uporabnikovem e-poštnem povzetku."
@@ -1376,6 +1378,11 @@ msgid "Do not link to a customer"
 msgstr "Ne poveži s stranko"
 
 #. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.res_config_settings_view_form
+msgid "Documentation"
+msgstr "Dokumentacija"
+
+#. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_team_member_view_form
 #: model_terms:ir.ui.view,arch_db:crm.sales_team_form_view_in_crm
 msgid "Domain"
@@ -1384,15 +1391,20 @@ msgstr "Domena"
 #. module: crm
 #. odoo-javascript
 #: code:addons/crm/static/src/js/tours/crm.js:0
-msgid "Drag your opportunity to <b>Won</b> when you get the deal. Congrats!"
-msgstr ""
-"Povlecite svojo priložnost na <b>Zmaga</b> ko dobiš dogovor. Čestitke!"
+#, python-format
+msgid "Drag your opportunity to <b>Won</b> when you get the deal. Congrats !"
+msgstr "Drag your opportunity to <b>Won</b> when you get the deal. Congrats !"
 
 #. module: crm
-#. odoo-python
-#: code:addons/crm/models/crm_lead.py:0
-msgid "Duration: %s"
-msgstr "Trajanje: %s"
+#: model_terms:ir.ui.view,arch_db:crm.crm_case_kanban_view_leads
+msgid "Dropdown menu"
+msgstr "Spusti seznam"
+
+#. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
+#: model_terms:ir.ui.view,arch_db:crm.quick_create_opportunity_form
+msgid "E.g. Monthly"
+msgstr "Npr. Mesečno"
 
 #. module: crm
 #: model_terms:ir.actions.act_window,help:crm.crm_lead_action_forecast
@@ -1413,15 +1425,9 @@ msgid "Email"
 msgstr "E-pošta"
 
 #. module: crm
-#: model:ir.model.fields,field_description:crm.field_crm_team__alias_email
 #: model_terms:ir.ui.view,arch_db:crm.sales_team_form_view_in_crm
 msgid "Email Alias"
-msgstr "Email vzdevek"
-
-#. module: crm
-#: model:ir.model.fields,field_description:crm.field_crm_lead__email_domain_criterion
-msgid "Email Domain Criterion"
-msgstr "Kriterij e-poštne domene"
+msgstr "Email alias"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__email_state
@@ -1437,11 +1443,6 @@ msgstr "Email cc"
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_merge_summary
 msgid "Email cc:"
 msgstr "Email cc:"
-
-#. module: crm
-#: model:ir.model.fields,help:crm.field_crm_team__alias_domain
-msgid "Email domain e.g. 'example.com' in 'odoo@example.com'"
-msgstr "E-poštna domena, npr. »example.com« v »odoo@example.com«"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_merge_summary
@@ -1495,11 +1496,6 @@ msgstr ""
 #: model:ir.model.fields,help:crm.field_crm_lead__date_deadline
 msgid "Estimate of the date on which the opportunity will be won."
 msgstr "Ocena datuma, ko bo priložnost pridobljena"
-
-#. module: crm
-#: model:ir.model.fields,field_description:crm.field_crm_team__lead_all_assigned_month_exceeded
-msgid "Exceed monthly lead assignement"
-msgstr "Preseganje mesečne dodelitve vodilnih strank"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_activity_report__date_deadline
@@ -1635,14 +1631,16 @@ msgstr "Forecast Analysis"
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_lead.py:0
+#, python-format
 msgid "From %(source_name)s"
 msgstr "From %(source_name)s"
 
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_lead.py:0
-msgid "From %(source_name)s: %(source_subject)s"
-msgstr "Od %(source_name)s: %(source_subject)s"
+#, python-format
+msgid "From %(source_name)s : %(source_subject)s"
+msgstr "From %(source_name)s : %(source_subject)s"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.view_crm_case_leads_filter
@@ -1673,7 +1671,8 @@ msgstr "Give your team the requirements to move an opportunity to this stage."
 
 #. module: crm
 #. odoo-python
-#: code:addons/crm/models/crm_lead.py:0
+#: code:addons/crm/models/crm_lead.py:0 code:addons/crm/models/crm_lead.py:0
+#, python-format
 msgid "Go, go, go! Congrats for your first deal."
 msgstr "Bravo! Čestitke ob vašem prvem poslu."
 
@@ -1733,7 +1732,7 @@ msgstr "Ikona"
 #. module: crm
 #: model:ir.model.fields,help:crm.field_crm_lead__activity_exception_icon
 msgid "Icon to indicate an exception activity."
-msgstr "Ikona za označevanje izjemne aktivnosti."
+msgstr "Icon to indicate an exception activity."
 
 #. module: crm
 #: model:ir.model.fields,help:crm.field_crm_lead2opportunity_partner__force_assignment
@@ -1755,6 +1754,16 @@ msgstr "Če je označeno, zahtevajo nova sporočila vašo pozornost."
 #: model:ir.model.fields,help:crm.field_crm_lead__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
 msgstr "Če je označeno, nekatera sporočila vsebujejo napako pri dostavi."
+
+#. module: crm
+#: model:ir.model.fields,help:crm.field_res_partner__team_id
+#: model:ir.model.fields,help:crm.field_res_users__team_id
+msgid ""
+"If set, this Sales Team will be used for sales and assignments related to "
+"this partner"
+msgstr ""
+"If set, this Sales Team will be used for sales and assignments related to "
+"this partner"
 
 #. module: crm
 #: model:ir.model.fields,help:crm.field_crm_team__alias_bounced_content
@@ -1792,6 +1801,7 @@ msgstr "Uvoz in sinhronizacija"
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_lead.py:0
+#, python-format
 msgid "Import Template for Leads & Opportunities"
 msgstr "Uvozi predlogo za indice & priložnosti"
 
@@ -1801,10 +1811,15 @@ msgid "Inactive"
 msgstr "Neaktivno"
 
 #. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.crm_lost_reason_view_search
+msgid "Include archived"
+msgstr "Include archived"
+
+#. module: crm
 #: model:ir.model.fields.selection,name:crm.selection__crm_lead__email_state__incorrect
 #: model:ir.model.fields.selection,name:crm.selection__crm_lead__phone_state__incorrect
 msgid "Incorrect"
-msgstr "Nepravilno"
+msgstr "Incorrect"
 
 #. module: crm
 #: model:ir.model.fields,help:crm.field_crm_lead__mobile_blacklisted
@@ -1842,6 +1857,7 @@ msgstr ""
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/res_config_settings.py:0
+#, python-format
 msgid ""
 "Invalid repeat frequency. Consider changing frequency type instead of using "
 "large numbers."
@@ -1870,11 +1886,6 @@ msgid "Is automated probability?"
 msgstr "Is automated probability?"
 
 #. module: crm
-#: model:ir.model.fields,help:crm.field_crm_lead__duration_tracking
-msgid "JSON that maps ids from a many2one field to seconds spent"
-msgstr "JSON, ki preslika ID-je iz polja »mnogo v eno« v porabljene sekunde"
-
-#. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__function
 msgid "Job Position"
 msgstr "Delovno mesto"
@@ -1883,6 +1894,11 @@ msgstr "Delovno mesto"
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_merge_summary
 msgid "Job Position:"
 msgstr "Job Position:"
+
+#. module: crm
+#: model:ir.model.fields,field_description:crm.field_crm_lead__kanban_state
+msgid "Kanban State"
+msgstr "Kanban stanje"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_digest_digest__kpi_crm_lead_created_value
@@ -1910,20 +1926,30 @@ msgid "Language:"
 msgstr "Language:"
 
 #. module: crm
-#: model:ir.model.fields,field_description:crm.field_crm_lead__date_automation_last
+#: model:ir.model.fields,field_description:crm.field_crm_lead__date_action_last
 msgid "Last Action"
 msgstr "Zadnja aktivnost"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_merge_summary
-msgid "Last Automation:"
-msgstr "Zadnja avtomatizacija:"
+msgid "Last Action:"
+msgstr "Last Action:"
 
 #. module: crm
-#. odoo-python
-#: code:addons/crm/models/crm_lead.py:0
-msgid "Last Meeting"
-msgstr "Zadnji sestanek"
+#: model:ir.model.fields,field_description:crm.field_crm_activity_report____last_update
+#: model:ir.model.fields,field_description:crm.field_crm_lead2opportunity_partner____last_update
+#: model:ir.model.fields,field_description:crm.field_crm_lead2opportunity_partner_mass____last_update
+#: model:ir.model.fields,field_description:crm.field_crm_lead____last_update
+#: model:ir.model.fields,field_description:crm.field_crm_lead_lost____last_update
+#: model:ir.model.fields,field_description:crm.field_crm_lead_pls_update____last_update
+#: model:ir.model.fields,field_description:crm.field_crm_lead_scoring_frequency____last_update
+#: model:ir.model.fields,field_description:crm.field_crm_lead_scoring_frequency_field____last_update
+#: model:ir.model.fields,field_description:crm.field_crm_lost_reason____last_update
+#: model:ir.model.fields,field_description:crm.field_crm_merge_opportunity____last_update
+#: model:ir.model.fields,field_description:crm.field_crm_recurring_plan____last_update
+#: model:ir.model.fields,field_description:crm.field_crm_stage____last_update
+msgid "Last Modified on"
+msgstr "Zadnjič spremenjeno"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__date_last_stage_update
@@ -1984,6 +2010,7 @@ msgstr "Lead Assign"
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_team.py:0
+#, python-format
 msgid "Lead Assignment requested by %(user_name)s"
 msgstr "Lead Assignment requested by %(user_name)s"
 
@@ -2006,11 +2033,6 @@ msgstr "Ustvarjanje indicev"
 #: model_terms:ir.ui.view,arch_db:crm.res_config_settings_view_form
 msgid "Lead Mining"
 msgstr "Lead Mining"
-
-#. module: crm
-#: model:ir.actions.act_window,name:crm.mail_activity_plan_action_lead
-msgid "Lead Plans"
-msgstr "Planiranje strank"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_team__lead_properties_definition
@@ -2043,19 +2065,6 @@ msgid "Lead Scoring Starting Date in String"
 msgstr "Lead Scoring Starting Date in String"
 
 #. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.crm_activity_report_view_search
-#: model_terms:ir.ui.view,arch_db:crm.crm_activity_report_view_tree
-msgid "Lead Tags"
-msgstr "Oznake za stranke"
-
-#. module: crm
-#: model:ir.model.fields,help:crm.field_crm_team_member__lead_day_count
-msgid "Lead assigned to this member this last day (lost one excluded)"
-msgstr ""
-"Potencialna stranka je bila dodeljena temu članu v zadnjem dnevu (izgubljena"
-" stranka ni vključena)."
-
-#. module: crm
 #: model:ir.model.fields,help:crm.field_crm_team_member__lead_month_count
 msgid "Lead assigned to this member those last 30 days"
 msgstr "Lead assigned to this member those last 30 days"
@@ -2063,12 +2072,14 @@ msgstr "Lead assigned to this member those last 30 days"
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_lead.py:0
+#, python-format
 msgid "Lead or Opportunity"
 msgstr "Lead or Opportunity"
 
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_team.py:0
+#, python-format
 msgid ""
 "Lead/Opportunities automatic assignment is limited to managers or "
 "administrators"
@@ -2091,7 +2102,6 @@ msgstr "Lead/Opportunity created"
 #: code:addons/crm/models/crm_lost_reason.py:0
 #: model:ir.actions.act_window,name:crm.crm_case_form_view_salesteams_lead
 #: model:ir.actions.act_window,name:crm.crm_lead_all_leads
-#: model:ir.model.fields,field_description:crm.field_crm_lead_lost__lead_ids
 #: model:ir.model.fields,field_description:crm.field_crm_team__use_leads
 #: model:ir.model.fields,field_description:crm.field_res_config_settings__group_use_lead
 #: model:ir.ui.menu,name:crm.crm_menu_leads
@@ -2101,7 +2111,7 @@ msgstr "Lead/Opportunity created"
 #: model_terms:ir.ui.view,arch_db:crm.crm_opportunity_report_view_search
 #: model_terms:ir.ui.view,arch_db:crm.crm_team_view_kanban_dashboard
 #: model_terms:ir.ui.view,arch_db:crm.sales_team_form_view_in_crm
-#: model_terms:ir.ui.view,arch_db:crm.utm_campaign_view_kanban
+#, python-format
 msgid "Leads"
 msgstr "Indici"
 
@@ -2109,11 +2119,6 @@ msgstr "Indici"
 #: model:ir.model.fields,field_description:crm.field_crm_team_member__lead_month_count
 msgid "Leads (30 days)"
 msgstr "Leads (30 days)"
-
-#. module: crm
-#: model:ir.model.fields,field_description:crm.field_crm_team_member__lead_day_count
-msgid "Leads (last 24h)"
-msgstr "indici (v zadnjih 24 urah)"
 
 #. module: crm
 #: model:ir.actions.act_window,name:crm.action_report_crm_lead_salesteam
@@ -2137,6 +2142,7 @@ msgstr ""
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_team.py:0
+#, python-format
 msgid "Leads Assigned"
 msgstr "Leads Assigned"
 
@@ -2161,6 +2167,18 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_activity
 msgid "Leads or Opportunities"
 msgstr "Leads or Opportunities"
+
+#. module: crm
+#. odoo-python
+#: code:addons/crm/models/crm_team.py:0
+#: code:addons/crm/models/crm_team_member.py:0
+#, python-format
+msgid ""
+"Leads team allocation should be done for at least 0.2 or maximum 30 work "
+"days, not %.2f."
+msgstr ""
+"Leads team allocation should be done for at least 0.2 or maximum 30 work "
+"days, not %.2f."
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.view_crm_case_leads_filter
@@ -2199,18 +2217,14 @@ msgstr "Število indici/priložnosti"
 #. module: crm
 #. odoo-javascript
 #: code:addons/crm/static/src/js/tours/crm.js:0
+#, python-format
 msgid "Let's <b>Schedule an Activity.</b>"
 msgstr "Let's <b>Schedule an Activity.</b>"
 
 #. module: crm
-#: model_terms:ir.actions.act_window,help:crm.crm_activity_report_action
-#: model_terms:ir.actions.act_window,help:crm.crm_activity_report_action_team
-msgid "Let's get to work!"
-msgstr "Lotimo se dela!"
-
-#. module: crm
 #. odoo-javascript
 #: code:addons/crm/static/src/js/tours/crm.js:0
+#, python-format
 msgid "Let’s have a look at an Opportunity."
 msgstr "Let’s have a look at an Opportunity."
 
@@ -2231,11 +2245,6 @@ msgstr ""
 "internem sklicu."
 
 #. module: crm
-#: model:ir.model.fields,field_description:crm.field_crm_team__alias_incoming_local
-msgid "Local-part based incoming detection"
-msgstr "Lokalno zaznavanje dohodnih delov"
-
-#. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__lang_code
 msgid "Locale Code"
 msgstr "Lokalna koda"
@@ -2248,25 +2257,30 @@ msgstr "Looks like nothing is planned."
 #. module: crm
 #. odoo-javascript
 #: code:addons/crm/static/src/js/tours/crm.js:0
+#, python-format
 msgid ""
-"Looks like nothing is planned. :(<br><br><i>Tip: Schedule activities to keep"
-" track of everything you have to do!</i>"
+"Looks like nothing is planned. :(<br><br><i>Tip : Schedule activities to "
+"keep track of everything you have to do!</i>"
 msgstr ""
-"Zdi se, da ni nič načrtovano. :(<br><br><i>Nasvet: Načrtujte dejavnosti, da boste imeli pregled nad vsem, kar morate narediti!\n"
-"</i>"
+"Looks like nothing is planned. :(<br><br><i>Tip : Schedule activities to "
+"keep track of everything you have to do!</i>"
 
 #. module: crm
+#. odoo-python
+#: code:addons/crm/models/crm_lead.py:0
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_kanban_forecast
 #: model_terms:ir.ui.view,arch_db:crm.crm_opportunity_report_view_search
 #: model_terms:ir.ui.view,arch_db:crm.view_crm_case_leads_filter
 #: model_terms:ir.ui.view,arch_db:crm.view_crm_case_opportunities_filter
+#, python-format
 msgid "Lost"
 msgstr "Izgubljeno"
 
 #. module: crm
 #. odoo-python
 #: code:addons/crm/wizard/crm_lead_lost.py:0
+#, python-format
 msgid "Lost Comment"
 msgstr "Lost Comment"
 
@@ -2276,13 +2290,10 @@ msgid "Lost Count"
 msgstr "Lost Count"
 
 #. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.crm_lead_lost_view_form
-msgid "Lost Lead"
-msgstr "Izgubljena potencialna stranka"
-
-#. module: crm
+#: model:ir.actions.act_window,name:crm.crm_lead_lost_action
 #: model:ir.model.fields,field_description:crm.field_crm_lead__lost_reason_id
 #: model:ir.model.fields,field_description:crm.field_crm_lead_lost__lost_reason_id
+#: model_terms:ir.ui.view,arch_db:crm.crm_lead_lost_view_form
 #: model_terms:ir.ui.view,arch_db:crm.crm_lost_reason_view_form
 #: model_terms:ir.ui.view,arch_db:crm.crm_opportunity_report_view_search
 #: model_terms:ir.ui.view,arch_db:crm.view_crm_case_opportunities_filter
@@ -2306,19 +2317,14 @@ msgid "Low"
 msgstr "Nizko"
 
 #. module: crm
+#: model:ir.model.fields,field_description:crm.field_crm_lead__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "Glavna priponka"
+
+#. module: crm
 #: model:mail.activity.type,name:crm.mail_activity_demo_make_quote
 msgid "Make Quote"
 msgstr "Pripravi ponudbo"
-
-#. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.res_config_settings_view_form
-msgid ""
-"Make and receive calls from Odoo with Ringover's dialer. Track calls, SMS "
-"messages, and get AI-powered transcripts of your conversations."
-msgstr ""
-"Kličite in prejemajte klice iz Odooja z Ring-overjevim klicalnikom. Sledite "
-"klicem, SMS sporočilom in pridobite prepise pogovorov, ki jih poganja umetna"
-" inteligenca."
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.res_config_settings_view_form
@@ -2342,24 +2348,7 @@ msgid "Manually"
 msgstr "Ročno"
 
 #. module: crm
-#. odoo-python
-#: code:addons/crm/models/crm_lead.py:0
-#: model:ir.actions.act_window,name:crm.crm_lead_lost_action
-msgid "Mark Lost"
-msgstr "Označi za izgubljeno"
-
-#. module: crm
-#. odoo-python
-#: code:addons/crm/models/crm_lead.py:0
-msgid "Mark Won"
-msgstr "Označi za dobljeno"
-
-#. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.crm_lead_lost_view_form
-msgid "Mark as Lost"
-msgstr "Označi kot izgubljeno"
-
-#. module: crm
+#: model:ir.actions.server,name:crm.action_mark_as_lost
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
 msgid "Mark as lost"
 msgstr "Označi za izgubljeno"
@@ -2394,20 +2383,11 @@ msgid "Medium:"
 msgstr "Medium:"
 
 #. module: crm
-#: model:ir.model.fields,field_description:crm.field_crm_lead__meeting_display_date
-msgid "Meeting Display Date"
-msgstr "Datum prikaza sestanka"
-
-#. module: crm
-#: model:ir.model.fields,field_description:crm.field_crm_lead__meeting_display_label
-msgid "Meeting Display Label"
-msgstr "Oznaka prikaza sestanka"
-
-#. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_lead.py:0
-msgid "Meeting scheduled at %s"
-msgstr "Sestanek je predviden ob %s"
+#, python-format
+msgid "Meeting scheduled at '%s'<br> Subject: %s <br> Duration: %s"
+msgstr "Meeting scheduled at '%s'<br> Subject: %s <br> Duration: %s"
 
 #. module: crm
 #: model:ir.actions.act_window,name:crm.act_crm_opportunity_calendar_event_new
@@ -2418,6 +2398,7 @@ msgstr "Sestanki"
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_team_member.py:0
+#, python-format
 msgid ""
 "Member assignment domain for user %(user)s and team %(team)s is incorrectly "
 "formatted"
@@ -2503,7 +2484,7 @@ msgstr "Moje aktivnosti"
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__my_activity_date_deadline
 msgid "My Activity Deadline"
-msgstr "Moj rok dejavnosti"
+msgstr "My Activity Deadline"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_case_tree_view_oppor
@@ -2540,6 +2521,7 @@ msgstr "Novi indici"
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_team.py:0
+#, python-format
 msgid "New Opportunities"
 msgstr "Nove priložnosti"
 
@@ -2551,7 +2533,7 @@ msgstr "Nova priložnost"
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__activity_calendar_event_id
 msgid "Next Activity Calendar Event"
-msgstr "Naslednji dogodek v koledarju"
+msgstr "Next Activity Calendar Event"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__activity_date_deadline
@@ -2569,37 +2551,38 @@ msgid "Next Activity Type"
 msgstr "Tip naslednje aktivnosti"
 
 #. module: crm
-#. odoo-python
-#: code:addons/crm/models/crm_lead.py:0
-msgid "Next Meeting"
-msgstr "Naslednji sestanek"
-
-#. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.res_config_settings_view_form
 msgid "Next Run"
 msgstr "Naslednji zagon"
 
 #. module: crm
+#: model:ir.model.fields.selection,name:crm.selection__crm_lead__kanban_state__green
+msgid "Next activity is planned"
+msgstr "Naslednja aktivnost je planirana"
+
+#. module: crm
+#: model:ir.model.fields.selection,name:crm.selection__crm_lead__kanban_state__red
+msgid "Next activity late"
+msgstr "Naslednja aktivnost zapade"
+
+#. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_lead.py:0
+#, python-format
 msgid "No"
 msgstr "Ne"
 
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_lead.py:0
-msgid "No Meeting"
-msgstr "Ni sestanka"
-
-#. module: crm
-#. odoo-python
-#: code:addons/crm/models/crm_lead.py:0
+#, python-format
 msgid "No Subject"
 msgstr "Ni zadeve"
 
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_team.py:0
+#, python-format
 msgid ""
 "No allocated leads to %(team_name)s team and its salespersons because no "
 "unassigned lead matches its domain."
@@ -2610,6 +2593,7 @@ msgstr ""
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_team.py:0
+#, python-format
 msgid ""
 "No allocated leads to %(team_name)s team because it has no capacity. Add "
 "capacity to its salespersons."
@@ -2620,6 +2604,7 @@ msgstr ""
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_team.py:0
+#, python-format
 msgid ""
 "No allocated leads to any team or salesperson. Check your Sales Teams and "
 "Salespersons configuration as well as unassigned leads."
@@ -2634,8 +2619,15 @@ msgid "No data found!"
 msgstr "No data found!"
 
 #. module: crm
+#: model_terms:ir.actions.act_window,help:crm.crm_activity_report_action
+#: model_terms:ir.actions.act_window,help:crm.crm_activity_report_action_team
+msgid "No data yet!"
+msgstr "Podatkov še ni!"
+
+#. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_team.py:0
+#, python-format
 msgid ""
 "No lead assigned to salespersons because no unassigned lead matches their "
 "domains."
@@ -2646,6 +2638,7 @@ msgstr ""
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_team.py:0
+#, python-format
 msgid ""
 "No new lead allocated to %(team_name)s team because no unassigned lead "
 "matches its domain."
@@ -2656,10 +2649,16 @@ msgstr ""
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_team.py:0
+#, python-format
 msgid ""
 "No new lead allocated to the teams because no lead match their domains."
 msgstr ""
 "No new lead allocated to the teams because no lead match their domains."
+
+#. module: crm
+#: model:ir.model.fields.selection,name:crm.selection__crm_lead__kanban_state__grey
+msgid "No next activity planned"
+msgstr "Ni planirane naslednje aktivnosti"
 
 #. module: crm
 #: model_terms:ir.actions.act_window,help:crm.crm_lead_action_forecast
@@ -2694,6 +2693,7 @@ msgstr "Opomba:"
 #. module: crm
 #. odoo-javascript
 #: code:addons/crm/static/src/js/tours/crm.js:0
+#, python-format
 msgid "Now, <b>add your Opportunity</b> to your Pipeline."
 msgstr "Now, <b>add your Opportunity</b> to your Pipeline."
 
@@ -2724,7 +2724,7 @@ msgstr "Number of leads and opportunities assigned this last month."
 #. module: crm
 #: model:ir.model.fields,help:crm.field_crm_lead__message_needaction_counter
 msgid "Number of messages requiring action"
-msgstr "Število sporočil, ki zahtevajo ukrepanje"
+msgstr "Number of messages requiring action"
 
 #. module: crm
 #: model:ir.model.fields,help:crm.field_crm_lead__message_has_error_counter
@@ -2752,11 +2752,6 @@ msgstr ""
 "opportunity based on your history. You can always update the success rate "
 "manually, but if you let Odoo do the job the score is updated while the "
 "opportunity moves forward in your sales cycle."
-
-#. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.view_crm_case_opportunities_filter
-msgid "Ongoing"
-msgstr "V teku"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_team_view_kanban_dashboard
@@ -2787,7 +2782,6 @@ msgstr "Opp. Lost Reason"
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_graph
 #: model_terms:ir.ui.view,arch_db:crm.crm_opportunity_report_view_search
 #: model_terms:ir.ui.view,arch_db:crm.crm_team_view_kanban_dashboard
-#: model_terms:ir.ui.view,arch_db:crm.utm_campaign_view_kanban
 #: model_terms:ir.ui.view,arch_db:crm.view_crm_lead2opportunity_partner
 #: model_terms:ir.ui.view,arch_db:crm.view_partners_form_crm1
 msgid "Opportunities"
@@ -2838,6 +2832,8 @@ msgstr "Priložnosti dodeljene meni"
 #: model:ir.model.fields,field_description:crm.field_calendar_event__opportunity_id
 #: model:ir.model.fields,field_description:crm.field_crm_activity_report__lead_id
 #: model:ir.model.fields,field_description:crm.field_crm_lead__name
+#: model:ir.model.fields,field_description:crm.field_res_partner__opportunity_count
+#: model:ir.model.fields,field_description:crm.field_res_users__opportunity_count
 #: model:ir.model.fields.selection,name:crm.selection__crm_activity_report__lead_type__opportunity
 #: model:ir.model.fields.selection,name:crm.selection__crm_lead__type__opportunity
 #: model_terms:ir.ui.view,arch_db:crm.crm_activity_report_view_search
@@ -2846,12 +2842,6 @@ msgstr "Priložnosti dodeljene meni"
 #: model_terms:ir.ui.view,arch_db:crm.view_crm_case_opportunities_filter
 msgid "Opportunity"
 msgstr "Priložnost"
-
-#. module: crm
-#: model:ir.model.fields,field_description:crm.field_res_partner__opportunity_count
-#: model:ir.model.fields,field_description:crm.field_res_users__opportunity_count
-msgid "Opportunity Count"
-msgstr "Število priložnosti"
 
 #. module: crm
 #: model:mail.message.subtype,name:crm.mt_lead_create
@@ -2909,6 +2899,11 @@ msgstr ""
 "zapisov onemogočeno."
 
 #. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.quick_create_opportunity_form
+msgid "Organization / Contact"
+msgstr "Organizacija / Kontakt"
+
+#. module: crm
 #: model:crm.recurring.plan,name:crm.crm_recurring_plan_over_3_years
 msgid "Over 3 years"
 msgstr "Over 3 years"
@@ -2934,6 +2929,11 @@ msgstr "Overdue Opportunities Revenues"
 #: model_terms:ir.ui.view,arch_db:crm.crm_team_view_kanban_dashboard
 msgid "Overdue Opportunity"
 msgstr "Overdue Opportunity"
+
+#. module: crm
+#: model:ir.model.fields,field_description:crm.field_crm_team__alias_user_id
+msgid "Owner"
+msgstr "Lastnik"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_team__alias_parent_model_id
@@ -3004,6 +3004,7 @@ msgstr "Telefon:"
 #: model:ir.model.fields,field_description:crm.field_crm_team__use_opportunities
 #: model:ir.ui.menu,name:crm.crm_opportunity_report_menu
 #: model:ir.ui.menu,name:crm.menu_crm_config_lead
+#, python-format
 msgid "Pipeline"
 msgstr "Prodajni tok"
 
@@ -3025,6 +3026,17 @@ msgstr "Analiza prodajnega toka"
 #: model:ir.model.fields,field_description:crm.field_crm_recurring_plan__name
 msgid "Plan Name"
 msgstr "Plan Name"
+
+#. module: crm
+#. odoo-python
+#: code:addons/crm/models/crm_lead.py:0
+#, python-format
+msgid ""
+"Please select more than one element (lead or opportunity) from the list "
+"view."
+msgstr ""
+"Prosimo, izberite enega ali več elementov iz seznama (indici ali "
+"priložnosti)."
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead_pls_update__pls_fields
@@ -3060,17 +3072,13 @@ msgid "Potential Duplicate Lead Count"
 msgstr "Potential Duplicate Lead Count"
 
 #. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.res_config_settings_view_form
-msgid "Predictive Lead Scoring"
-msgstr "Prediktivno točkovanje potencialnih strank"
-
-#. module: crm
 #: model:ir.model.fields,field_description:crm.field_res_config_settings__predictive_lead_scoring_field_labels
 msgid "Predictive Lead Scoring Field Labels"
 msgstr "Predictive Lead Scoring Field Labels"
 
 #. module: crm
 #: model:ir.actions.server,name:crm.website_crm_score_cron_ir_actions_server
+#: model:ir.cron,cron_name:crm.website_crm_score_cron
 msgid "Predictive Lead Scoring: Recompute Automated Probabilities"
 msgstr "Predictive Lead Scoring: Recompute Automated Probabilities"
 
@@ -3103,8 +3111,6 @@ msgstr "Probability:"
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__lead_properties
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_merge_summary
-#: model_terms:ir.ui.view,arch_db:crm.view_crm_case_leads_filter
-#: model_terms:ir.ui.view,arch_db:crm.view_crm_case_opportunities_filter
 msgid "Properties"
 msgstr "Lastnosti"
 
@@ -3117,11 +3123,6 @@ msgstr "Predlog"
 #: model:ir.model.fields,field_description:crm.field_crm_lead__recurring_revenue_monthly_prorated
 msgid "Prorated MRR"
 msgstr "Prorated MRR"
-
-#. module: crm
-#: model:ir.model.fields,field_description:crm.field_crm_lead__recurring_revenue_prorated
-msgid "Prorated Recurring Revenues"
-msgstr "Sorazmerni ponavljajoči se prihodki"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__prorated_revenue
@@ -3139,13 +3140,10 @@ msgid "Qualified"
 msgstr "Kvalificirano"
 
 #. module: crm
-#: model:ir.model.fields,field_description:crm.field_crm_lead__rating_ids
-msgid "Ratings"
-msgstr "Ocene"
-
-#. module: crm
 #. odoo-javascript
 #: code:addons/crm/static/src/js/tours/crm.js:0
+#: code:addons/crm/static/src/js/tours/crm.js:0
+#, python-format
 msgid "Ready to boost your sales? Let's have a look at your <b>Pipeline</b>."
 msgstr "Ready to boost your sales? Let's have a look at your <b>Pipeline</b>."
 
@@ -3201,6 +3199,7 @@ msgstr "Ponovi vsake"
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/res_config_settings.py:0
+#, python-format
 msgid "Repeat frequency should be positive."
 msgstr "Repeat frequency should be positive."
 
@@ -3236,11 +3235,6 @@ msgid "Restore"
 msgstr "Obnovi"
 
 #. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.res_config_settings_view_form
-msgid "Ringover VOIP Phone"
-msgstr "Ringover VOIP Telefon"
-
-#. module: crm
 #: model:ir.model.fields,field_description:crm.field_res_config_settings__crm_use_auto_assignment
 msgid "Rule-Based Assignment"
 msgstr "Rule-Based Assignment"
@@ -3269,6 +3263,8 @@ msgstr "Prodaja"
 #: model:ir.model.fields,field_description:crm.field_crm_lead_scoring_frequency__team_id
 #: model:ir.model.fields,field_description:crm.field_crm_merge_opportunity__team_id
 #: model:ir.model.fields,field_description:crm.field_crm_stage__team_id
+#: model:ir.model.fields,field_description:crm.field_res_partner__team_id
+#: model:ir.model.fields,field_description:crm.field_res_users__team_id
 #: model_terms:ir.ui.view,arch_db:crm.crm_activity_report_view_search
 #: model_terms:ir.ui.view,arch_db:crm.crm_opportunity_report_view_search
 #: model_terms:ir.ui.view,arch_db:crm.view_crm_case_leads_filter
@@ -3280,6 +3276,13 @@ msgstr "Prodajna ekipa"
 #: model:ir.model,name:crm.model_crm_team_member
 msgid "Sales Team Member"
 msgstr "Sales Team Member"
+
+#. module: crm
+#. odoo-python
+#: code:addons/crm/models/crm_lead.py:0
+#, python-format
+msgid "Sales Team Settings"
+msgstr "Nastavitve prodajne ekipe"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_merge_summary
@@ -3336,18 +3339,15 @@ msgid "Search Opportunities"
 msgstr "Iskanje priložnosti"
 
 #. module: crm
-#. odoo-python
-#: code:addons/crm/models/crm_lead.py:0
-msgid "Select at least two Leads/Opportunities from the list to merge them."
-msgstr ""
-"Na seznamu izberite vsaj dve potencialni stranki/priložnosti, da ju "
-"združite."
+#: model_terms:ir.ui.view,arch_db:crm.merge_opportunity_form
+msgid "Select Leads/Opportunities"
+msgstr "Izbira indicev/priložnosti"
 
 #. module: crm
 #: model:ir.actions.act_window,name:crm.action_lead_mail_compose
 #: model:ir.actions.act_window,name:crm.action_lead_mass_mail
 msgid "Send email"
-msgstr "Pošlji e-pošto"
+msgstr "Send email"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_recurring_plan__sequence
@@ -3448,12 +3448,14 @@ msgstr ""
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/res_config_settings.py:0
+#: code:addons/crm/models/res_config_settings.py:0
 #: model:ir.model.fields,field_description:crm.field_crm_activity_report__stage_id
 #: model:ir.model.fields,field_description:crm.field_crm_lead__stage_id
 #: model_terms:ir.ui.view,arch_db:crm.crm_activity_report_view_search
 #: model_terms:ir.ui.view,arch_db:crm.crm_opportunity_report_view_search
 #: model_terms:ir.ui.view,arch_db:crm.crm_stage_form
 #: model_terms:ir.ui.view,arch_db:crm.view_crm_case_opportunities_filter
+#, python-format
 msgid "Stage"
 msgstr "Stopnja"
 
@@ -3499,10 +3501,16 @@ msgstr ""
 "            is positioned in the sales cycle."
 
 #. module: crm
+#: model_terms:ir.actions.act_window,help:crm.crm_activity_report_action
+#: model_terms:ir.actions.act_window,help:crm.crm_activity_report_action_team
+msgid "Start scheduling activities on your opportunities"
+msgstr "Start scheduling activities on your opportunities"
+
+#. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__state_id
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
 msgid "State"
-msgstr "Zvezna država ali regija"
+msgstr "Stanje"
 
 #. module: crm
 #: model:ir.model.fields,help:crm.field_crm_lead__activity_state
@@ -3516,11 +3524,6 @@ msgstr ""
 "Zapadel: Rok je že prekoračen\n"
 "Danes: Datum aktivnosti je danes\n"
 "Planirano: Bodoče aktivnosti."
-
-#. module: crm
-#: model:ir.model.fields,field_description:crm.field_crm_lead__duration_tracking
-msgid "Status time"
-msgstr "Čas stanja"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__street
@@ -3543,10 +3546,9 @@ msgid "Street2"
 msgstr "Ulica 2"
 
 #. module: crm
-#. odoo-python
-#: code:addons/crm/models/crm_lead.py:0
-msgid "Subject: "
-msgstr "Predmet: "
+#: model_terms:ir.ui.view,arch_db:crm.crm_lead_lost_view_form
+msgid "Submit"
+msgstr "Pošlji"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_activity_report__subtype_id
@@ -3565,7 +3567,6 @@ msgid "Tag"
 msgstr "Ključna beseda"
 
 #. module: crm
-#: model:ir.model.fields,field_description:crm.field_crm_activity_report__tag_ids
 #: model:ir.model.fields,field_description:crm.field_crm_lead__tag_ids
 #: model:ir.ui.menu,name:crm.menu_crm_lead_categ
 msgid "Tags"
@@ -3636,6 +3637,19 @@ msgstr ""
 #: model:ir.model.constraint,message:crm.constraint_crm_recurring_plan_check_number_of_months
 msgid "The number of month can't be negative."
 msgstr "The number of month can't be negative."
+
+#. module: crm
+#: model:ir.model.fields,help:crm.field_crm_team__alias_user_id
+msgid ""
+"The owner of records created upon receiving emails on this alias. If this "
+"field is not set the system will attempt to find the right owner based on "
+"the sender (From) address, or will use the Administrator account if no "
+"system user is found for that address."
+msgstr ""
+"Lastnik zapisov ustvarjenih iz prispele pošte na ta vzdevek. Če to polje ni "
+"nastavljeno, sistem poskuša ugotoviti pravega lastnika glede na "
+"pošiljateljev naslov (From). Če ni uporabnika s tem naslovom, bo uporabil "
+"Administratorjev račun."
 
 #. module: crm
 #: model:ir.model.constraint,message:crm.constraint_crm_lead_check_probability
@@ -3765,12 +3779,6 @@ msgid "Tip: Do not waste time recording customers' data"
 msgstr "Tip: Do not waste time recording customers' data"
 
 #. module: crm
-#: model:digest.tip,name:crm.digest_tip_crm_6
-#: model_terms:digest.tip,tip_description:crm.digest_tip_crm_6
-msgid "Tip: Identify Bottlenecks at a glance"
-msgstr "Nasvet: Ozka grla prepoznajte na prvi pogled"
-
-#. module: crm
 #: model:digest.tip,name:crm.digest_tip_crm_3
 #: model_terms:digest.tip,tip_description:crm.digest_tip_crm_3
 msgid "Tip: Manage your pipeline"
@@ -3781,12 +3789,6 @@ msgstr "Tip: Manage your pipeline"
 #: model_terms:digest.tip,tip_description:crm.digest_tip_crm_2
 msgid "Tip: Opportunity win rate is predicted with AI"
 msgstr "Tip: Opportunity win rate is predicted with AI"
-
-#. module: crm
-#: model:digest.tip,name:crm.digest_tip_crm_7
-#: model_terms:digest.tip,tip_description:crm.digest_tip_crm_7
-msgid "Tip: Turn Sales Forecasting into Child's Play"
-msgstr "Nasvet: Spremenite napovedovanje prodaje v otroško igro"
 
 #. module: crm
 #: model:digest.tip,name:crm.digest_tip_crm_5
@@ -3803,6 +3805,7 @@ msgstr "Naslov"
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_lead.py:0
+#, python-format
 msgid ""
 "To prevent data loss, Leads and Opportunities can only be merged by groups "
 "of %(max_length)s."
@@ -3831,15 +3834,6 @@ msgstr "Sledenje"
 #: model_terms:ir.ui.view,arch_db:crm.crm_activity_report_view_search
 msgid "Trailing 12 months"
 msgstr "Trailing 12 months"
-
-#. module: crm
-#: model:ir.model.fields,help:crm.field_crm_team__lead_all_assigned_month_exceeded
-msgid ""
-"True if the monthly lead assignment count is greater than the maximum "
-"assignment limit, false otherwise."
-msgstr ""
-"Resnica je, če je mesečno število dodelitev potencialnih strank večje od "
-"največje omejitve dodelitev, sicer gre za napako."
 
 #. module: crm
 #: model_terms:digest.tip,tip_description:crm.digest_tip_crm_0
@@ -3903,11 +3897,6 @@ msgstr "Neprebrana sporočila"
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_search_forecast
 msgid "Upcoming Closings"
 msgstr "Upcoming Closings"
-
-#. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.crm_lead_pls_update_view_form
-msgid "Update"
-msgstr "Posodobi"
 
 #. module: crm
 #: model:ir.actions.act_window,name:crm.crm_lead_pls_update_action
@@ -3975,21 +3964,11 @@ msgstr "Use the <i>New</i> button, or send an email to"
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_lead.py:0
+#, python-format
 msgid ""
-"Use the <i>New</i> button, or send an email to %(email_link)s to test the "
-"email gateway."
+"Use the <i>New</i> button, or send an email to %s to test the email gateway."
 msgstr ""
-"Use the <i>New</i> button, or send an email to %(email_link)s to test the "
-"email gateway."
-
-#. module: crm
-#: model_terms:digest.tip,tip_description:crm.digest_tip_crm_7
-msgid ""
-"Use the CRM Forecast Kanban to easily define when Opportunities are expected"
-" to be won."
-msgstr ""
-"Z uporabo CRM Forecast Kanban preprosto določite, kdaj se pričakuje "
-"pridobitev priložnosti."
+"Use the <i>New</i> button, or send an email to %s to test the email gateway."
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_action_helper
@@ -4080,16 +4059,18 @@ msgstr "Welcome Demo"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_lost_view_form
-msgid "What went wrong?"
-msgstr "Kaj je šlo narobe?"
+msgid "What went wrong ?"
+msgstr "What went wrong ?"
 
 #. module: crm
-#: model:crm.stage,name:crm.stage_lead4
+#. odoo-python
+#: code:addons/crm/models/crm_lead.py:0 model:crm.stage,name:crm.stage_lead4
 #: model_terms:ir.ui.view,arch_db:crm.crm_activity_report_view_search
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_kanban_forecast
 #: model_terms:ir.ui.view,arch_db:crm.crm_opportunity_report_view_search
 #: model_terms:ir.ui.view,arch_db:crm.view_crm_case_opportunities_filter
+#, python-format
 msgid "Won"
 msgstr "Dobljeno"
 
@@ -4106,6 +4087,7 @@ msgstr "Zmaga v ciljnih priložnostih"
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_lead.py:0
+#, python-format
 msgid "Yeah! Deal of the last 7 days for the team."
 msgstr "Ja! Delo zadnjih 7 dni za ekipo."
 
@@ -4117,12 +4099,14 @@ msgstr "Letno"
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_lead.py:0
+#, python-format
 msgid "Yes"
 msgstr "Da"
 
 #. module: crm
 #. odoo-javascript
 #: code:addons/crm/static/src/js/tours/crm.js:0
+#, python-format
 msgid "You can make your opportunity advance through your pipeline from here."
 msgstr ""
 "You can make your opportunity advance through your pipeline from here."
@@ -4130,18 +4114,21 @@ msgstr ""
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_lead.py:0
+#, python-format
 msgid "You don't have the access needed to run this cron."
 msgstr "You don't have the access needed to run this cron."
 
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_lead.py:0
+#, python-format
 msgid "You just beat your personal record for the past 30 days."
 msgstr "You just beat your personal record for the past 30 days."
 
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_lead.py:0
+#, python-format
 msgid "You just beat your personal record for the past 7 days."
 msgstr "Pravkar ste premagati svoj osebni rekord v zadnjih 7 dneh."
 
@@ -4167,27 +4154,6 @@ msgid "Zip"
 msgstr "Poštna št."
 
 #. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.sales_team_form_view_in_crm
-msgid "alias"
-msgstr "vzdevek"
-
-#. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.quick_create_opportunity_form
-msgid "e.g. \"0123456789\""
-msgstr "npr. \"0123456789\""
-
-#. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
-#: model_terms:ir.ui.view,arch_db:crm.quick_create_opportunity_form
-msgid "e.g. \"Monthly\""
-msgstr "npr. \"Mesečno\""
-
-#. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.quick_create_opportunity_form
-msgid "e.g. \"email@address.com\""
-msgstr "npr. \"email@naslov.si\""
-
-#. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_stage_form
 msgid "e.g. Negotiation"
 msgstr "e.g. Negotiation"
@@ -4209,11 +4175,6 @@ msgid "e.g. https://www.odoo.com"
 msgstr "npr. https://www.odoo.com"
 
 #. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.sales_team_form_view_in_crm
-msgid "e.g. mycompany.com"
-msgstr "npr. mycompany.si"
-
-#. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.res_config_settings_view_form
 msgid "for the leads created as of the"
 msgstr "for the leads created as of the"
@@ -4222,11 +4183,6 @@ msgstr "for the leads created as of the"
 #: model_terms:digest.tip,tip_description:crm.digest_tip_crm_0
 msgid "generate opportunities in your pipeline?<br>"
 msgstr "generate opportunities in your pipeline?<br>"
-
-#. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.crm_case_kanban_view_leads
-msgid "lost"
-msgstr ""
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_stage__team_count
@@ -4247,5 +4203,6 @@ msgstr ""
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_lead.py:0
+#, python-format
 msgid "unknown"
 msgstr "neznano"

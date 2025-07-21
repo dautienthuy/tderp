@@ -3,22 +3,20 @@
 # 	* website_event_exhibitor
 # 
 # Translators:
-# Lars Petter Lilleng, 2024
-# Thor Arne Hvidsten <thor.arne.hvidsten@gmail.com>, 2024
-# Lars Aam <lars.aam@vikenfiber.no>, 2024
-# Henning Fyllingsnes, 2024
+# Martin Trigaux, 2022
+# Marius Stedjan <marius@stedjan.com>, 2022
+# Jorunn D. Newth, 2022
+# Lars Aam <lars.aam@vikenfiber.no>, 2022
+# Henning Fyllingsnes, 2023
 # Rune Restad, 2024
-# Jorunn D. Newth, 2024
-# Martin Trigaux, 2024
-# Marius Stedjan <marius@stedjan.com>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-27 13:05+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: Marius Stedjan <marius@stedjan.com>, 2024\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:56+0000\n"
+"Last-Translator: Rune Restad, 2024\n"
 "Language-Team: Norwegian Bokmål (https://app.transifex.com/odoo/teams/41243/nb/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -28,16 +26,38 @@ msgstr ""
 
 #. module: website_event_exhibitor
 #. odoo-javascript
-#: code:addons/website_event_exhibitor/static/src/components/exhibitor_connect_closed_dialog/exhibitor_connect_closed_dialog.xml:0
+#: code:addons/website_event_exhibitor/static/src/xml/event_exhibitor_connect.xml:0
 #: model_terms:ir.ui.view,arch_db:website_event_exhibitor.exhibitor_main
+#, python-format
 msgid ""
 ")\n"
-"                    to meet them!"
+"                    to meet them !"
 msgstr ""
 
 #. module: website_event_exhibitor
 #: model_terms:ir.ui.view,arch_db:website_event_exhibitor.exhibitor_card
 msgid "<i class=\"fa fa-ban me-2\"/>Unpublished"
+msgstr ""
+
+#. module: website_event_exhibitor
+#: model_terms:ir.ui.view,arch_db:website_event_exhibitor.exhibitors_topbar_country
+msgid ""
+"<i class=\"fa fa-folder-open\"/>\n"
+"                By Country"
+msgstr ""
+
+#. module: website_event_exhibitor
+#: model_terms:ir.ui.view,arch_db:website_event_exhibitor.exhibitors_topbar_sponsorship
+msgid ""
+"<i class=\"fa fa-folder-open\"/>\n"
+"                By Level"
+msgstr ""
+
+#. module: website_event_exhibitor
+#: model_terms:ir.ui.view,arch_db:website_event_exhibitor.exhibitor_main
+msgid ""
+"<i class=\"fa fa-fw fa-arrow-right\"/>\n"
+"                    Write one."
 msgstr ""
 
 #. module: website_event_exhibitor
@@ -53,8 +73,8 @@ msgid "<small class=\"badge text-bg-danger\">Unpublished</small>"
 msgstr ""
 
 #. module: website_event_exhibitor
-#: model_terms:ir.ui.view,arch_db:website_event_exhibitor.exhibitors_main
-msgid "<span class=\"fa fa-plus me-1\"/> Add Exhibitors"
+#: model_terms:ir.ui.view,arch_db:website_event_exhibitor.exhibitors_search_tag
+msgid "<span class=\"btn border-0 py-1\">×</span>"
 msgstr ""
 
 #. module: website_event_exhibitor
@@ -94,7 +114,7 @@ msgstr "Om"
 #. module: website_event_exhibitor
 #: model:ir.model.fields,field_description:website_event_exhibitor.field_event_sponsor__message_needaction
 msgid "Action Needed"
-msgstr "Handling påkrevet"
+msgstr "Handling påkrevd"
 
 #. module: website_event_exhibitor
 #: model:ir.model.fields,field_description:website_event_exhibitor.field_event_sponsor__active
@@ -122,14 +142,14 @@ msgid "Activity Type Icon"
 msgstr "Ikon type Aktivitet"
 
 #. module: website_event_exhibitor
+#: model_terms:ir.ui.view,arch_db:website_event_exhibitor.exhibitors_main
+msgid "Add some exhibitors to get started !"
+msgstr ""
+
+#. module: website_event_exhibitor
 #: model_terms:ir.ui.view,arch_db:website_event_exhibitor.exhibitors_topbar_country
 msgid "All Countries"
 msgstr "Alle land"
-
-#. module: website_event_exhibitor
-#: model_terms:ir.ui.view,arch_db:website_event_exhibitor.event_exhibitor_main
-msgid "All Exhibitors"
-msgstr ""
 
 #. module: website_event_exhibitor
 #: model_terms:ir.ui.view,arch_db:website_event_exhibitor.exhibitors_topbar_sponsorship
@@ -170,25 +190,10 @@ msgid "Available from"
 msgstr ""
 
 #. module: website_event_exhibitor
-#: model_terms:ir.ui.view,arch_db:website_event_exhibitor.event_exhibitor_main
-msgid "Back to all Exhibitors"
-msgstr ""
-
-#. module: website_event_exhibitor
 #: model:event.sponsor.type,name:website_event_exhibitor.event_sponsor_type1
 #: model:ir.model.fields.selection,name:website_event_exhibitor.selection__event_sponsor_type__display_ribbon_style__bronze
 msgid "Bronze"
 msgstr "Bronse"
-
-#. module: website_event_exhibitor
-#: model_terms:ir.ui.view,arch_db:website_event_exhibitor.exhibitors_topbar_country
-msgid "By Country"
-msgstr "Etter land"
-
-#. module: website_event_exhibitor
-#: model_terms:ir.ui.view,arch_db:website_event_exhibitor.exhibitors_topbar_sponsorship
-msgid "By Level"
-msgstr ""
 
 #. module: website_event_exhibitor
 #: model:ir.model.fields,field_description:website_event_exhibitor.field_event_sponsor__can_publish
@@ -201,13 +206,9 @@ msgid "Chat Room"
 msgstr ""
 
 #. module: website_event_exhibitor
-#: model_terms:ir.ui.view,arch_db:website_event_exhibitor.exhibitors_topbar
-msgid "Close"
-msgstr "Lukk"
-
-#. module: website_event_exhibitor
 #. odoo-javascript
-#: code:addons/website_event_exhibitor/static/src/components/exhibitor_connect_closed_dialog/exhibitor_connect_closed_dialog.xml:0
+#: code:addons/website_event_exhibitor/static/src/xml/event_exhibitor_connect.xml:0
+#, python-format
 msgid "Come back between"
 msgstr ""
 
@@ -220,7 +221,7 @@ msgstr ""
 #: model_terms:event.sponsor,website_description:website_event_exhibitor.event_7_sponsor_8
 #: model_terms:event.sponsor,website_description:website_event_exhibitor.event_7_sponsor_9
 #: model_terms:event.sponsor,website_description:website_event_exhibitor.event_sponsor_1
-msgid "Come see us live, we hope to meet you!"
+msgid "Come see us live, we hope to meet you !"
 msgstr ""
 
 #. module: website_event_exhibitor
@@ -264,7 +265,7 @@ msgstr "Opprettet av"
 #: model:ir.model.fields,field_description:website_event_exhibitor.field_event_sponsor__create_date
 #: model:ir.model.fields,field_description:website_event_exhibitor.field_event_sponsor_type__create_date
 msgid "Created on"
-msgstr "Opprettet den"
+msgstr "Opprettet"
 
 #. module: website_event_exhibitor
 #: model_terms:event.sponsor,website_description:website_event_exhibitor.event_7_sponsor_1
@@ -344,11 +345,13 @@ msgstr ""
 
 #. module: website_event_exhibitor
 #. odoo-javascript
-#: code:addons/website_event_exhibitor/static/src/components/exhibitor_connect_closed_dialog/exhibitor_connect_closed_dialog.xml:0
+#: code:addons/website_event_exhibitor/static/src/xml/event_exhibitor_connect.xml:0
+#: code:addons/website_event_exhibitor/static/src/xml/event_exhibitor_connect.xml:0
 #: model:ir.model,name:website_event_exhibitor.model_event_event
 #: model:ir.model.fields,field_description:website_event_exhibitor.field_event_sponsor__event_id
 #: model_terms:ir.ui.view,arch_db:website_event_exhibitor.event_sponsor_view_search
 #: model_terms:ir.ui.view,arch_db:website_event_exhibitor.exhibitor_main
+#, python-format
 msgid "Event"
 msgstr "Arrangement"
 
@@ -394,7 +397,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/website_event_exhibitor/models/event_event.py:0
 #: model_terms:ir.ui.view,arch_db:website_event_exhibitor.event_sponsor_view_search
-#: model_terms:ir.ui.view,arch_db:website_event_exhibitor.exhibitors_topbar
+#, python-format
 msgid "Exhibitors"
 msgstr ""
 
@@ -408,11 +411,6 @@ msgstr ""
 #: model:ir.model.fields.selection,name:website_event_exhibitor.selection__website_event_menu__menu_type__exhibitor
 msgid "Exhibitors Menus"
 msgstr ""
-
-#. module: website_event_exhibitor
-#: model_terms:ir.ui.view,arch_db:website_event_exhibitor.exhibitors_topbar
-msgid "Filters"
-msgstr "Filtre"
 
 #. module: website_event_exhibitor
 #: model:ir.model.fields,field_description:website_event_exhibitor.field_event_sponsor__message_follower_ids
@@ -505,13 +503,6 @@ msgid "Image URL"
 msgstr "Bilde-URL"
 
 #. module: website_event_exhibitor
-#: model:ir.model.fields,help:website_event_exhibitor.field_event_sponsor__event_date_tz
-msgid ""
-"Indicates the timezone in which the event dates/times will be displayed on "
-"the website."
-msgstr ""
-
-#. module: website_event_exhibitor
 #: model_terms:event.sponsor,website_description:website_event_exhibitor.event_7_sponsor_1
 #: model_terms:event.sponsor,website_description:website_event_exhibitor.event_7_sponsor_3
 #: model_terms:event.sponsor,website_description:website_event_exhibitor.event_sponsor_0
@@ -562,8 +553,9 @@ msgstr ""
 
 #. module: website_event_exhibitor
 #. odoo-javascript
-#: code:addons/website_event_exhibitor/static/src/components/exhibitor_connect_closed_dialog/exhibitor_connect_closed_dialog.xml:0
+#: code:addons/website_event_exhibitor/static/src/xml/event_exhibitor_connect.xml:0
 #: model_terms:ir.ui.view,arch_db:website_event_exhibitor.exhibitor_main
+#, python-format
 msgid "Join us next time to meet"
 msgstr ""
 
@@ -576,6 +568,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:website_event_exhibitor.field_event_sponsor__room_lang_id
 msgid "Language"
 msgstr "Språk"
+
+#. module: website_event_exhibitor
+#: model:ir.model.fields,field_description:website_event_exhibitor.field_event_sponsor____last_update
+#: model:ir.model.fields,field_description:website_event_exhibitor.field_event_sponsor_type____last_update
+msgid "Last Modified on"
+msgstr "Sist endret"
 
 #. module: website_event_exhibitor
 #: model:ir.model.fields,field_description:website_event_exhibitor.field_event_sponsor__write_uid
@@ -613,6 +611,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:website_event_exhibitor.field_event_sponsor__image_512
 msgid "Logo"
 msgstr "Logo"
+
+#. module: website_event_exhibitor
+#: model:ir.model.fields,field_description:website_event_exhibitor.field_event_sponsor__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "Hovedvedlegg"
 
 #. module: website_event_exhibitor
 #: model_terms:event.sponsor,website_description:website_event_exhibitor.event_7_sponsor_1
@@ -783,7 +786,6 @@ msgid "Phone"
 msgstr "Telefon"
 
 #. module: website_event_exhibitor
-#: model_terms:ir.ui.view,arch_db:website_event_exhibitor.event_sponsor_view_kanban
 #: model_terms:ir.ui.view,arch_db:website_event_exhibitor.event_sponsor_view_search
 msgid "Published"
 msgstr "Publisert"
@@ -796,9 +798,9 @@ msgid ""
 msgstr ""
 
 #. module: website_event_exhibitor
-#: model:ir.model.fields,field_description:website_event_exhibitor.field_event_sponsor__rating_ids
-msgid "Ratings"
-msgstr "Vurderinger"
+#: model_terms:ir.ui.view,arch_db:website_event_exhibitor.exhibitor_card
+msgid "Register"
+msgstr "Registrer"
 
 #. module: website_event_exhibitor
 #: model_terms:event.sponsor,website_description:website_event_exhibitor.event_7_sponsor_1
@@ -842,11 +844,6 @@ msgid "Sales and Distribution"
 msgstr ""
 
 #. module: website_event_exhibitor
-#: model_terms:ir.ui.view,arch_db:website_event_exhibitor.exhibitors_topbar
-msgid "Search an exhibitor ..."
-msgstr ""
-
-#. module: website_event_exhibitor
 #: model:ir.model.fields,field_description:website_event_exhibitor.field_event_sponsor__sequence
 #: model:ir.model.fields,field_description:website_event_exhibitor.field_event_sponsor_type__sequence
 msgid "Sequence"
@@ -872,6 +869,7 @@ msgstr ""
 #. module: website_event_exhibitor
 #. odoo-python
 #: code:addons/website_event_exhibitor/models/event_sponsor.py:0
+#, python-format
 msgid "Sponsor"
 msgstr ""
 
@@ -974,6 +972,15 @@ msgid "Talent Management"
 msgstr ""
 
 #. module: website_event_exhibitor
+#. odoo-python
+#: code:addons/website_event_exhibitor/controllers/website_event_main.py:0
+#, python-format
+msgid ""
+"The event %s starts on %s (%s). \n"
+"Join us there to meet %s !"
+msgstr ""
+
+#. module: website_event_exhibitor
 #: model:ir.model.fields,help:website_event_exhibitor.field_event_sponsor__website_url
 msgid "The full URL to access the document through the website."
 msgstr "Fullstendig link for å nå dokumentet via nettstedet."
@@ -1010,12 +1017,7 @@ msgstr "Synlig på nåværende nettsted"
 
 #. module: website_event_exhibitor
 #: model_terms:ir.ui.view,arch_db:website_event_exhibitor.exhibitors_main
-msgid "We could not find any exhibitor at this moment."
-msgstr ""
-
-#. module: website_event_exhibitor
-#: model_terms:ir.ui.view,arch_db:website_event_exhibitor.exhibitors_main
-msgid "We could not find any exhibitor matching your search for:"
+msgid "We did not find any exhibitor matching your"
 msgstr ""
 
 #. module: website_event_exhibitor
@@ -1051,8 +1053,9 @@ msgstr ""
 
 #. module: website_event_exhibitor
 #. odoo-javascript
-#: code:addons/website_event_exhibitor/static/src/components/exhibitor_connect_closed_dialog/exhibitor_connect_closed_dialog.xml:0
+#: code:addons/website_event_exhibitor/static/src/xml/event_exhibitor_connect.xml:0
 #: model_terms:ir.ui.view,arch_db:website_event_exhibitor.exhibitor_main
+#, python-format
 msgid "a few seconds"
 msgstr ""
 
@@ -1084,13 +1087,16 @@ msgstr ""
 
 #. module: website_event_exhibitor
 #. odoo-javascript
-#: code:addons/website_event_exhibitor/static/src/components/exhibitor_connect_closed_dialog/exhibitor_connect_closed_dialog.xml:0
+#: code:addons/website_event_exhibitor/static/src/xml/event_exhibitor_connect.xml:0
+#: code:addons/website_event_exhibitor/static/src/xml/event_exhibitor_connect.xml:0
+#, python-format
 msgid "is not available right now."
 msgstr ""
 
 #. module: website_event_exhibitor
 #. odoo-javascript
-#: code:addons/website_event_exhibitor/static/src/components/exhibitor_connect_closed_dialog/exhibitor_connect_closed_dialog.xml:0
+#: code:addons/website_event_exhibitor/static/src/xml/event_exhibitor_connect.xml:0
+#, python-format
 msgid "is over."
 msgstr ""
 
@@ -1102,15 +1108,22 @@ msgid ""
 msgstr ""
 
 #. module: website_event_exhibitor
+#: model_terms:ir.ui.view,arch_db:website_event_exhibitor.exhibitors_main
+msgid "search."
+msgstr ""
+
+#. module: website_event_exhibitor
 #. odoo-javascript
-#: code:addons/website_event_exhibitor/static/src/components/exhibitor_connect_closed_dialog/exhibitor_connect_closed_dialog.xml:0
+#: code:addons/website_event_exhibitor/static/src/xml/event_exhibitor_connect.xml:0
 #: model_terms:ir.ui.view,arch_db:website_event_exhibitor.exhibitor_main
+#, python-format
 msgid "starts in"
 msgstr ""
 
 #. module: website_event_exhibitor
 #. odoo-javascript
-#: code:addons/website_event_exhibitor/static/src/components/exhibitor_connect_closed_dialog/exhibitor_connect_closed_dialog.xml:0
+#: code:addons/website_event_exhibitor/static/src/xml/event_exhibitor_connect.xml:0
 #: model_terms:ir.ui.view,arch_db:website_event_exhibitor.exhibitor_main
+#, python-format
 msgid "starts on"
 msgstr ""

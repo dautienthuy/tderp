@@ -33,33 +33,27 @@ If you need to manage your meetings, you should install the CRM module.
         'views/mail_activity_views.xml',
         'views/calendar_templates.xml',
         'views/calendar_views.xml',
-        'views/res_config_settings_views.xml',
         'views/res_partner_views.xml',
-        'views/res_users_views.xml',
-        'wizard/calendar_provider_config.xml',
-        'wizard/calendar_popover_delete_wizard.xml',
-        'wizard/mail_activity_schedule_views.xml',
+        'wizard/calendar_provider_config.xml'
     ],
     'installable': True,
     'application': True,
     'assets': {
-        'web.assets_backend': [
-            'calendar/static/src/**/*',
+        'mail.assets_messaging': [
+            'calendar/static/src/models/*.js',
         ],
-        # Unit test files
-        'web.assets_unit_tests': [
-            'calendar/static/tests/**/*.js',
-            ('remove', 'calendar/static/tests/legacy/**/*'),  # to remove when all legacy tests are ported
-            ('remove', 'calendar/static/tests/helpers/**/*'),
-            ('remove', 'calendar/static/tests/tours/**/*'),
+        'web.assets_backend': [
+            'calendar/static/src/scss/calendar.scss',
+            'calendar/static/src/js/base_calendar.js',
+            'calendar/static/src/js/services/calendar_notification_service.js',
+            'calendar/static/src/views/**/*',
+            'calendar/static/src/components/*/*.xml',
         ],
         'web.qunit_suite_tests': [
-            'calendar/static/tests/legacy/**/*',
-            'calendar/static/tests/helpers/**/*',
-            'calendar/static/tests/tours/**/*',
+            'calendar/static/tests/**/*',
         ],
         'web.assets_tests': [
-            'calendar/static/tests/tours/**/*',
+            'calendar/static/tests/tours/calendar_tour.js',
         ],
     },
     'license': 'LGPL-3',

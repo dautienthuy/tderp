@@ -1,7 +1,6 @@
 /** @odoo-module **/
 
-import { clickOnEditAndWaitEditMode, registerWebsitePreviewTour } from '@website/js/tours/tour_utils';
-import { stepUtils } from "@web_tour/tour_service/tour_utils";
+import wTourUtils from 'website.tour_utils';
 
 /**
  * Global use case:
@@ -13,24 +12,21 @@ import { stepUtils } from "@web_tour/tour_service/tour_utils";
  * See "Fullscreen#_onWebEditorClick" for more information.
  *
  */
-registerWebsitePreviewTour('full_screen_web_editor', {
+ wTourUtils.registerWebsitePreviewTour('full_screen_web_editor', {
     url: '/slides',
-}, () => [
-    stepUtils.waitIframeIsReady(),
-    {
+    test: true,
+}, [{
     // open to the course
-    trigger: ':iframe a:contains("Basics of Gardening")',
-    run: "click",
+    trigger: 'iframe a:contains("Basics of Gardening")'
 }, {
     // click on a slide to open the fullscreen view
-    trigger: ':iframe a.o_wslides_js_slides_list_slide_link:contains("Home Gardening")[href*="fullscreen=1"]',
-    run: "click",
+    trigger: 'iframe a.o_wslides_js_slides_list_slide_link:contains("Home Gardening")'
 }, {
-    // check we land on the fullscreen view
-    trigger: ':iframe .o_wslides_fs_main',
+    trigger: 'iframe .o_wslides_fs_main',
+    run: function () {} // check we land on the fullscreen view
 },
-...clickOnEditAndWaitEditMode()
+...wTourUtils.clickOnEditAndWaitEditMode()
 , {
-    // check we are redirected on the detailed view
-    trigger: ':iframe .o_wslides_lesson_main',
+    trigger: 'iframe .o_wslides_lesson_main',
+    run: function () {} // check we are redirected on the detailed view
 }]);

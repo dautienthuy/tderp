@@ -1,8 +1,7 @@
 // ------------------------------------------------------------------
 // Base layout rules, use the 'webclient.scss' file for styling
 // ------------------------------------------------------------------
-
-%o-html-layout-fill {
+html {
   height: 100%;
 
   .o_web_client {
@@ -36,6 +35,9 @@
           flex: 0 0 auto;
         }
         .o_content {
+          flex: 1 1 auto;
+          position: relative; // Allow to redistribute the 100% height to its child
+          overflow: auto;
           height: 100%;
         }
 
@@ -65,7 +67,6 @@
       direction: ltr; //Define direction attribute here so when rtlcss preprocessor run, it converts it to rtl
       flex: 1 1 auto;
       position: relative; // Allow to redistribute the 100% height to its child
-      overflow: auto;
 
       > .o_view_controller {
         position: absolute; // Get the 100% height of its flex parent
@@ -85,23 +86,15 @@
   }
 }
 
-@include media-only(screen) {
-    html {
-        @extend %o-html-layout-fill;
+@media print {
+  html .o_web_client {
+    .o_main_navbar {
+      display: none;
     }
-}
-
-//------------------------------------------------------------------------------
-// Print Layout
-//------------------------------------------------------------------------------
-
-@include media-only(print) {
-    .o_web_client {
-        max-width: 100%;
+    .o_content {
+      position: static;
+      overflow: visible;
+      height: auto;
     }
-
-    @page {
-        margin: 0.5cm;
-        size: a4 auto;
-    }
+  }
 }

@@ -1,8 +1,8 @@
-/** @odoo-module **/
+odoo.define('survey.session_leaderboard', function (require) {
+'use strict';
 
-import { rpc } from "@web/core/network/rpc";
-import publicWidget from "@web/legacy/js/public/public_widget";
-import SESSION_CHART_COLORS from "@survey/js/survey_session_colors";
+var publicWidget = require('web.public.widget');
+var SESSION_CHART_COLORS = require('survey.session_colors');
 
 publicWidget.registry.SurveySessionLeaderboard = publicWidget.Widget.extend({
     init: function (parent, options) {
@@ -44,7 +44,9 @@ publicWidget.registry.SurveySessionLeaderboard = publicWidget.Widget.extend({
             self.$('.o_survey_session_leaderboard_container').empty();
         }
 
-        var leaderboardPromise = rpc(`/survey/session/leaderboard/${this.surveyAccessToken}`);
+        var leaderboardPromise = this._rpc({
+            route: _.str.sprintf('/survey/session/leaderboard/%s', this.surveyAccessToken)
+        });
 
         Promise.all([fadeOutPromise, leaderboardPromise]).then(function (results) {
             var leaderboardResults = results[1];
@@ -300,7 +302,7 @@ publicWidget.registry.SurveySessionLeaderboard = publicWidget.Widget.extend({
                     false);
 
                 var maxUpdatedScore = parseInt($(this).data('maxUpdatedScore'));
-                var baseRatio = maxUpdatedScore ? updatedScore / maxUpdatedScore : 1;
+                var baseRatio = updatedScore / maxUpdatedScore;
                 var questionScore = parseInt($(this).data('questionScore'));
                 var questionRatio = questionScore /
                     (updatedScore && updatedScore !== 0 ? updatedScore : 1);
@@ -328,4 +330,6 @@ publicWidget.registry.SurveySessionLeaderboard = publicWidget.Widget.extend({
     }
 });
 
-export default publicWidget.registry.SurveySessionLeaderboard;
+return publicWidget.registry.SurveySessionLeaderboard;
+
+});

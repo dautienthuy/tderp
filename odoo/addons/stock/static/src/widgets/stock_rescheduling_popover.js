@@ -1,13 +1,9 @@
 /** @odoo-module */
 import { useService } from "@web/core/utils/hooks";
 import { registry } from "@web/core/registry";
-import {
-    PopoverComponent,
-    PopoverWidgetField,
-    popoverWidgetField,
-} from "@stock/widgets/popover_widget";
+import { PopoverComponent, PopoverWidgetField } from '@stock/widgets/popover_widget';
 
-export class StockRescheculingPopoverComponent extends PopoverComponent {
+export class  StockRescheculingPopoverComponent extends PopoverComponent {
     setup(){
         this.action = useService("action");
     }
@@ -24,9 +20,6 @@ export class StockRescheculingPopoverComponent extends PopoverComponent {
 }
 
 export class StockRescheculingPopover extends PopoverWidgetField {
-    static components = {
-        Popover: StockRescheculingPopoverComponent
-    };
     setup(){
         super.setup();
         this.color = this.jsonValue.color || 'text-danger';
@@ -40,8 +33,8 @@ export class StockRescheculingPopover extends PopoverWidgetField {
         super.showPopup(ev);
     }
 }
+StockRescheculingPopover.components = {
+    Popover: StockRescheculingPopoverComponent
+}
 
-registry.category("fields").add("stock_rescheduling_popover", {
-    ...popoverWidgetField,
-    component: StockRescheculingPopover,
-});
+registry.category("fields").add("stock_rescheduling_popover", StockRescheculingPopover);

@@ -3,16 +3,16 @@
 # 	* partner_autocomplete
 # 
 # Translators:
-# Wil Odoo, 2024
-# Abe Manyo, 2025
+# Martin Trigaux, 2022
+# Abe Manyo, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-07 20:37+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Abe Manyo, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:53+0000\n"
+"Last-Translator: Abe Manyo, 2023\n"
 "Language-Team: Indonesian (https://app.transifex.com/odoo/teams/41243/id/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -27,13 +27,9 @@ msgid "Additional info"
 msgstr "Informasi tambahan"
 
 #. module: partner_autocomplete
-#: model:iap.service,description:partner_autocomplete.iap_service_partner_autocomplete
-msgid "Automatically enrich your contact base with corporate data."
-msgstr "Secara otomatis perkaya basis kontak Anda dengan data korporasi."
-
-#. module: partner_autocomplete
 #. odoo-javascript
 #: code:addons/partner_autocomplete/static/src/xml/partner_autocomplete.xml:0
+#, python-format
 msgid "Buy more credits"
 msgstr "Beli lebih banyak kredit"
 
@@ -41,6 +37,13 @@ msgstr "Beli lebih banyak kredit"
 #: model:ir.model,name:partner_autocomplete.model_res_company
 msgid "Companies"
 msgstr "Perusahaan"
+
+#. module: partner_autocomplete
+#. odoo-python
+#: code:addons/partner_autocomplete/models/res_company.py:0
+#, python-format
+msgid "Company auto-completed by Odoo Partner Autocomplete Service"
+msgstr "Perusahaan diisi otomatis oleh Layanan Autocomplete Odoo Partner"
 
 #. module: partner_autocomplete
 #: model:ir.model.fields,field_description:partner_autocomplete.field_res_company__partner_gid
@@ -80,11 +83,6 @@ msgid "Enrich Done"
 msgstr "Pemerkayaan Selesai"
 
 #. module: partner_autocomplete
-#: model:iap.service,unit_name:partner_autocomplete.iap_service_partner_autocomplete
-msgid "Enrichments"
-msgstr "Pemerkayaan"
-
-#. module: partner_autocomplete
 #: model:ir.model,name:partner_autocomplete.model_ir_http
 msgid "HTTP Routing"
 msgstr "HTTP routing"
@@ -92,8 +90,9 @@ msgstr "HTTP routing"
 #. module: partner_autocomplete
 #. odoo-javascript
 #: code:addons/partner_autocomplete/static/src/js/partner_autocomplete_core.js:0
+#, python-format
 msgid "IAP Account Token missing"
-msgstr "Kurang Token Akun IAP"
+msgstr "Token Akun IAP hilang"
 
 #. module: partner_autocomplete
 #: model:ir.model,name:partner_autocomplete.model_iap_autocomplete_api
@@ -116,26 +115,33 @@ msgid "Is synched"
 msgstr "Apakah disinkronisasi"
 
 #. module: partner_autocomplete
+#: model:ir.model.fields,field_description:partner_autocomplete.field_res_partner_autocomplete_sync____last_update
+msgid "Last Modified on"
+msgstr "Terakhir diubah pada"
+
+#. module: partner_autocomplete
 #: model:ir.model.fields,field_description:partner_autocomplete.field_res_partner_autocomplete_sync__write_uid
 msgid "Last Updated by"
-msgstr "Terakhir Diperbarui oleh"
+msgstr "Terakhir diperbarui oleh"
 
 #. module: partner_autocomplete
 #: model:ir.model.fields,field_description:partner_autocomplete.field_res_partner_autocomplete_sync__write_date
 msgid "Last Updated on"
-msgstr "Terakhir Diperbarui pada"
+msgstr "Terakhir diperbarui pada"
 
 #. module: partner_autocomplete
 #. odoo-python
 #: code:addons/partner_autocomplete/models/iap_autocomplete_api.py:0
+#, python-format
 msgid "No account token"
 msgstr "Tidak ada token akun"
 
 #. module: partner_autocomplete
 #. odoo-javascript
 #: code:addons/partner_autocomplete/static/src/js/partner_autocomplete_core.js:0
+#, python-format
 msgid "Not enough credits for Partner Autocomplete"
-msgstr "Kredit tidak mencukupi untuk Partner Autocomplete"
+msgstr "Kredit tidak mencukupi untuk Autocomplete Partner"
 
 #. module: partner_autocomplete
 #: model:ir.model.fields,field_description:partner_autocomplete.field_res_partner_autocomplete_sync__partner_id
@@ -143,42 +149,49 @@ msgid "Partner"
 msgstr "Rekanan"
 
 #. module: partner_autocomplete
-#: model:ir.model,name:partner_autocomplete.model_res_partner_autocomplete_sync
-msgid "Partner Autocomplete Sync"
-msgstr "Sinkronisasi Partner Autocomplete"
+#: model:ir.actions.server,name:partner_autocomplete.ir_cron_partner_autocomplete_ir_actions_server
+#: model:ir.cron,cron_name:partner_autocomplete.ir_cron_partner_autocomplete
+msgid "Partner Autocomplete : Sync with remote DB"
+msgstr ""
 
 #. module: partner_autocomplete
-#: model:ir.actions.server,name:partner_autocomplete.ir_cron_partner_autocomplete_ir_actions_server
-msgid "Partner Autocomplete: Sync with remote DB"
-msgstr "Partner Autocomplete: Sinkronisasi dengan DB remote"
+#: model:ir.model,name:partner_autocomplete.model_res_partner_autocomplete_sync
+msgid "Partner Autocomplete Sync"
+msgstr "Sinkronisasi Autocomplete Partner"
+
+#. module: partner_autocomplete
+#. odoo-python
+#: code:addons/partner_autocomplete/models/res_partner.py:0
+#, python-format
+msgid "Partner created by Odoo Partner Autocomplete Service"
+msgstr "Partner dibuat oleh Layanan Odoo Partner Autocomplete"
 
 #. module: partner_autocomplete
 #. odoo-javascript
 #: code:addons/partner_autocomplete/static/src/xml/partner_autocomplete.xml:0
-msgid "Search Worldwide 🌎"
-msgstr "Cari di Seluruh Dunia 🌎"
+#: code:addons/partner_autocomplete/static/src/xml/partner_autocomplete.xml:0
+#, python-format
+msgid "Placeholder"
+msgstr "Placeholder"
 
 #. module: partner_autocomplete
 #. odoo-javascript
 #: code:addons/partner_autocomplete/static/src/js/partner_autocomplete_fieldchar.js:0
 #: code:addons/partner_autocomplete/static/src/js/partner_autocomplete_many2one.js:0
+#, python-format
 msgid "Searching Autocomplete..."
 msgstr "Mencari Autocomplete..."
 
 #. module: partner_autocomplete
 #. odoo-javascript
 #: code:addons/partner_autocomplete/static/src/xml/partner_autocomplete.xml:0
+#, python-format
 msgid "Set Your Account Token"
 msgstr "Tetapkan Token Akun Anda"
 
 #. module: partner_autocomplete
 #. odoo-python
 #: code:addons/partner_autocomplete/models/iap_autocomplete_api.py:0
+#, python-format
 msgid "Test mode"
 msgstr "Mode testing"
-
-#. module: partner_autocomplete
-#. odoo-python
-#: code:addons/partner_autocomplete/models/res_partner.py:0
-msgid "Unable to enrich company (no credit was consumed)."
-msgstr "Tidak dapat memperkaya perusahaan (tidak ada kredit yang dikonsumsi)."

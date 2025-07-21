@@ -3,15 +3,27 @@
 # 	* website_event_track_quiz
 # 
 # Translators:
-# Wil Odoo, 2024
+# Karol Rybak <karolrybak85@gmail.com>, 2022
+# Piotr Cierkosz <piotr.w.cierkosz@gmail.com>, 2022
+# Dariusz Żbikowski <darek@krokus.com.pl>, 2022
+# Marcin Młynarczyk <mlynarczyk@gmail.com>, 2022
+# Andrzej Wiśniewski <a.wisniewski@hadron.eu.com>, 2022
+# Judyta Kaźmierczak <judyta.kazmierczak@openglobe.pl>, 2022
+# Piotr Szlązak <szlazakpiotr@gmail.com>, 2022
+# Wojciech Warczakowski <w.warczakowski@gmail.com>, 2022
+# Paweł Wodyński <pw@myodoo.pl>, 2022
+# Maksym <ms@myodoo.pl>, 2022
+# Dawid Prus, 2022
+# Martin Trigaux, 2022
+# Tadeusz Karpiński <tadeuszkarpinski@gmail.com>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:57+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: Wil Odoo, 2024\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:56+0000\n"
+"Last-Translator: Tadeusz Karpiński <tadeuszkarpinski@gmail.com>, 2023\n"
 "Language-Team: Polish (https://app.transifex.com/odoo/teams/41243/pl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -47,7 +59,8 @@ msgstr "Dodaj quiz"
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/js/event_quiz.js:0
-msgid "All questions must be answered!"
+#, python-format
+msgid "All questions must be answered !"
 msgstr "Należy odpowiedzieć na wszystkie pytania!"
 
 #. module: website_event_track_quiz
@@ -64,12 +77,15 @@ msgstr "Odpowiedź"
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "Check answers"
 msgstr "Sprawdź odpowiedzi"
 
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "Check your answers"
 msgstr "Sprawdź swoje odpowiedzi"
 
@@ -86,6 +102,7 @@ msgstr "Ściana z bloczków betonowych"
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "Congratulations, you scored a total of"
 msgstr "Gratulacje, uzyskałeś łącznie"
 
@@ -107,6 +124,7 @@ msgstr "Prawidłowa odpowiedź"
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "Correct."
 msgstr "Prawidłowo."
 
@@ -228,6 +246,7 @@ msgstr ""
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "Incorrect."
 msgstr "Nieprawidłowo."
 
@@ -235,6 +254,13 @@ msgstr "Nieprawidłowo."
 #: model:ir.model.fields,field_description:website_event_track_quiz.field_event_track__is_quiz_completed
 msgid "Is Quiz Done"
 msgstr "Czy quiz jest skończony"
+
+#. module: website_event_track_quiz
+#: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz____last_update
+#: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz_answer____last_update
+#: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz_question____last_update
+msgid "Last Modified on"
+msgstr "Data ostatniej modyfikacji"
 
 #. module: website_event_track_quiz
 #: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz__write_uid
@@ -308,6 +334,7 @@ msgstr "Liczba punków "
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "Oopsie, you did not score any point on this quiz."
 msgstr "Ups, nie zdobyłeś żadnego punktu w tym quizie."
 
@@ -324,6 +351,7 @@ msgstr "OpenWood nie jest kongresem Open Source poświęconym aplikacjom."
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "Point"
 msgstr "Punkt"
 
@@ -331,6 +359,7 @@ msgstr "Punkt"
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
 #: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz_answer__awarded_points
+#, python-format
 msgid "Points"
 msgstr "Punkty"
 
@@ -348,6 +377,7 @@ msgstr "Pytanie"
 #. module: website_event_track_quiz
 #. odoo-python
 #: code:addons/website_event_track_quiz/models/event_quiz.py:0
+#, python-format
 msgid ""
 "Question \"%s\" must have 1 correct answer and at least 1 incorrect answer "
 "to be valid."
@@ -358,6 +388,7 @@ msgstr ""
 #. module: website_event_track_quiz
 #. odoo-python
 #: code:addons/website_event_track_quiz/models/event_quiz.py:0
+#, python-format
 msgid "Question \"%s\" must have 1 correct answer to be valid."
 msgstr "Pytanie \"%s\" musi mieć 1 poprawną odpowiedź, aby było ważne."
 
@@ -402,6 +433,7 @@ msgstr "Pytania quizu"
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/js/event_quiz.js:0
+#, python-format
 msgid "Quiz validation error"
 msgstr "Błąd weryfikacji quizu"
 
@@ -416,6 +448,7 @@ msgstr "Quizy"
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "Reset"
 msgstr "Zresetuj"
 
@@ -457,8 +490,8 @@ msgstr "Stalowa ściana"
 
 #. module: website_event_track_quiz
 #: model:event.quiz.answer,text_value:website_event_track_quiz.event_7_track_1_question_1_1
-msgid "Stores!"
-msgstr ""
+msgid "Stores !"
+msgstr "Sklepy!"
 
 #. module: website_event_track_quiz
 #: model_terms:ir.ui.view,arch_db:website_event_track_quiz.event_track_content
@@ -468,6 +501,7 @@ msgstr "Weź udział w quizie"
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "The correct answer was:"
 msgstr "Prawidłowa odpowiedź brzmiała:"
 
@@ -479,6 +513,7 @@ msgstr "Obecnie nie ma dostępnej tabeli wyników"
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/js/event_quiz.js:0
+#, python-format
 msgid "There was an error validating this quiz."
 msgstr "Wystąpił błąd podczas ratyfikowania tego quizu"
 
@@ -494,6 +529,7 @@ msgstr ""
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/js/event_quiz.js:0
+#, python-format
 msgid "This quiz is already done. Retaking it is not possible."
 msgstr "Ten quiz został już ukończony. Ponowne ukończenie jest niemożliwe"
 
@@ -519,8 +555,8 @@ msgstr "Transport drewna ze sklepów do domu jest bezpieczny."
 
 #. module: website_event_track_quiz
 #: model:event.quiz.answer,text_value:website_event_track_quiz.event_7_track_1_question_1_0
-msgid "Trees!"
-msgstr ""
+msgid "Trees !"
+msgstr "Drzewa!"
 
 #. module: website_event_track_quiz
 #: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz__repeatable
@@ -544,23 +580,23 @@ msgstr "O czym jest to wydarzenie"
 
 #. module: website_event_track_quiz
 #: model:event.quiz.question,name:website_event_track_quiz.event_7_track_5_question_1
-msgid "What kind of tool are needed to secure your lumber?"
-msgstr ""
+msgid "What kind of tool are needed to secure your lumber ?"
+msgstr "Jakie narzędzia są potrzebne do zabezpieczenia tarcicy?"
 
 #. module: website_event_track_quiz
 #: model:event.quiz.question,name:website_event_track_quiz.event_7_track_13_question_0
-msgid "What kind of wall is transformed here?"
-msgstr ""
+msgid "What kind of wall is transformed here ?"
+msgstr "Jaki rodzaj ściany jest tutaj przekształcany?"
 
 #. module: website_event_track_quiz
 #: model:event.quiz.question,name:website_event_track_quiz.event_7_track_1_question_0
-msgid "What will we talk about during this event?"
-msgstr ""
+msgid "What will we talk about during this event ?"
+msgstr "O czym będziemy rozmawiać podczas tego wydarzenia?"
 
 #. module: website_event_track_quiz
 #: model:event.quiz.question,name:website_event_track_quiz.event_7_track_1_question_1
-msgid "Where does lumber comes from?"
-msgstr ""
+msgid "Where does lumber comes from ?"
+msgstr "Skąd pochodzi drewno?"
 
 #. module: website_event_track_quiz
 #: model:event.quiz.answer,text_value:website_event_track_quiz.event_7_track_1_question_0_0
@@ -580,8 +616,8 @@ msgstr "Ty"
 
 #. module: website_event_track_quiz
 #: model:event.quiz.answer,comment:website_event_track_quiz.event_7_track_1_question_0_0
-msgid "You're really smart!"
-msgstr ""
+msgid "You're really smart !"
+msgstr "Jesteś naprawdę bystry!"
 
 #. module: website_event_track_quiz
 #: model_terms:ir.ui.view,arch_db:website_event_track_quiz.event_quiz_view_form
@@ -596,11 +632,13 @@ msgstr "np. Jakie jest ulubione motto Joe?"
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "point!"
 msgstr "punkt!"
 
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "points!"
 msgstr "punkty!"

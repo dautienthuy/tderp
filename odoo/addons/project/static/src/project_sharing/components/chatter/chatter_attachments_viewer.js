@@ -1,15 +1,15 @@
 /** @odoo-module */
 
-import { Component } from "@odoo/owl";
+const { Component } = owl;
 
-export class ChatterAttachmentsViewer extends Component {
-    static template = "project.ChatterAttachmentsViewer";
-    static props = {
-        attachments: Array,
-        canDelete: { type: Boolean, optional: true },
-        delete: { type: Function, optional: true },
-    };
-    static defaultProps = {
-        delete: async () => {},
-    };
-}
+export class ChatterAttachmentsViewer extends Component {}
+
+ChatterAttachmentsViewer.template = 'project.ChatterAttachmentsViewer';
+ChatterAttachmentsViewer.props = {
+    attachments: Array,
+    canDelete: { type: Boolean, optional: true },
+    delete: { type: Function, optional: true },
+};
+ChatterAttachmentsViewer.defaultProps = {
+    delete: async () => {},
+};

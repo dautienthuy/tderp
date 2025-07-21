@@ -1,8 +1,9 @@
-import { browser } from "@web/core/browser/browser";
+/** @odoo-module **/
+
 import { evaluateExpr } from "@web/core/py_js/py";
-import { exprToBoolean } from "@web/core/utils/strings";
-import { visitXML } from "@web/core/utils/xml";
+import { XMLParser } from "@web/core/utils/xml";
 import { Field } from "@web/views/fields/field";
+import { archParseBoolean } from "@web/views/utils";
 
 const FIELD_ATTRIBUTE_NAMES = [
     "date_start",
@@ -17,30 +18,27 @@ const SCALES = ["day", "week", "month", "year"];
 
 export class CalendarParseArchError extends Error {}
 
-export class CalendarArchParser {
+export class CalendarArchParser extends XMLParser {
     parse(arch, models, modelName) {
-        const fields = models[modelName].fields;
+        const fields = models[modelName];
         const fieldNames = new Set(fields.display_name ? ["display_name"] : []);
         const fieldMapping = { date_start: "date_start" };
         let jsClass = null;
         let eventLimit = 5;
         let scales = [...SCALES];
-        const sessionScale = browser.sessionStorage.getItem("calendar-scale");
-        let scale = sessionScale || "week";
+        let scale = "week";
         let canCreate = true;
         let canDelete = true;
-        let canEdit = true;
-        let quickCreate = true;
-        let quickCreateViewId = null;
+        let hasQuickCreate = true;
         let hasEditDialog = false;
         let showUnusualDays = false;
         let isDateHidden = false;
         let isTimeHidden = false;
         let formViewId = false;
-        const popoverFieldNodes = {};
+        const popoverFields = {};
         const filtersInfo = {};
 
-        visitXML(arch, (node) => {
+        this.visitXML(arch, (node) => {
             switch (node.tagName) {
                 case "calendar": {
                     if (!node.hasAttribute("date_start")) {
@@ -80,34 +78,26 @@ export class CalendarArchParser {
                         }
                     }
                     if (node.hasAttribute("create")) {
-                        canCreate = exprToBoolean(node.getAttribute("create"), true);
+                        canCreate = archParseBoolean(node.getAttribute("create"), true);
                     }
                     if (node.hasAttribute("delete")) {
-                        canDelete = exprToBoolean(node.getAttribute("delete"), true);
+                        canDelete = archParseBoolean(node.getAttribute("delete"), true);
                     }
-                    if (node.hasAttribute("edit")) {
-                        canEdit = exprToBoolean(node.getAttribute("edit"), true);
-                    }
-                    if (node.hasAttribute("quick_create")) {
-                        quickCreate = exprToBoolean(node.getAttribute("quick_create"), true);
-                        if (quickCreate && node.hasAttribute("quick_create_view_id")) {
-                            quickCreateViewId = parseInt(
-                                node.getAttribute("quick_create_view_id"),
-                                10
-                            );
-                        }
+                    if (node.hasAttribute("quick_add")) {
+                        // Don't use archParseBoolean from `utils.js` because it does not interpret integers
+                        hasQuickCreate =  !/^(false|0)$/i.test(node.getAttribute("quick_add"));
                     }
                     if (node.hasAttribute("event_open_popup")) {
-                        hasEditDialog = exprToBoolean(node.getAttribute("event_open_popup"));
+                        hasEditDialog = archParseBoolean(node.getAttribute("event_open_popup"));
                     }
                     if (node.hasAttribute("show_unusual_days")) {
-                        showUnusualDays = exprToBoolean(node.getAttribute("show_unusual_days"));
+                        showUnusualDays = archParseBoolean(node.getAttribute("show_unusual_days"));
                     }
                     if (node.hasAttribute("hide_date")) {
-                        isDateHidden = exprToBoolean(node.getAttribute("hide_date"));
+                        isDateHidden = archParseBoolean(node.getAttribute("hide_date"));
                     }
                     if (node.hasAttribute("hide_time")) {
-                        isTimeHidden = exprToBoolean(node.getAttribute("hide_time"));
+                        isTimeHidden = archParseBoolean(node.getAttribute("hide_time"));
                     }
                     if (node.hasAttribute("form_view_id")) {
                         formViewId = parseInt(node.getAttribute("form_view_id"), 10);
@@ -126,7 +116,7 @@ export class CalendarArchParser {
                         "calendar",
                         jsClass
                     );
-                    popoverFieldNodes[fieldName] = fieldInfo;
+                    popoverFields[fieldName] = fieldInfo;
 
                     const field = fields[fieldName];
                     if (!node.hasAttribute("invisible") || node.hasAttribute("filters")) {
@@ -188,18 +178,16 @@ export class CalendarArchParser {
         return {
             canCreate,
             canDelete,
-            canEdit,
             eventLimit,
             fieldMapping,
             fieldNames: [...fieldNames],
             filtersInfo,
             formViewId,
             hasEditDialog,
-            quickCreate,
-            quickCreateViewId,
+            hasQuickCreate,
             isDateHidden,
             isTimeHidden,
-            popoverFieldNodes,
+            popoverFields,
             scale,
             scales,
             showUnusualDays,

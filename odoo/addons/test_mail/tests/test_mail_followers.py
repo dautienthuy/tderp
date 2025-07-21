@@ -1,24 +1,14 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-import copy
-import re
-from unittest.mock import patch
-from urllib.parse import urlparse, urlencode, parse_qsl
 
-from markupsafe import Markup
-
-from odoo import fields
-from odoo.addons.mail.models.mail_mail import _UNFOLLOW_REGEX
-from odoo.addons.mail.tests.common import MailCommon
+from odoo.addons.test_mail.tests.common import TestMailCommon
 from odoo.exceptions import AccessError
-from odoo.tools.misc import limited_field_access_token
 from odoo.tests import tagged, users
-from odoo.tests.common import HttpCase
-from odoo.tools import email_normalize, mail, mute_logger, parse_contact_from_email
+from odoo.tools import mute_logger
 
 
 @tagged('mail_followers')
-class BaseFollowersTest(MailCommon):
+class BaseFollowersTest(TestMailCommon):
 
     @classmethod
     def setUpClass(cls):
@@ -62,8 +52,6 @@ class BaseFollowersTest(MailCommon):
         followed_after = self.env['mail.test.simple'].search([('message_partner_ids', 'in', partner.ids)])
         self.assertTrue(partner in test_record.message_partner_ids)
         self.assertEqual(followed_before + test_record, followed_after)
-        with self.assertRaisesRegex(AccessError, 'Portal users can only filter threads'):
-            self.env['mail.test.simple'].with_user(self.user_portal).search([('message_partner_ids', 'in', partner.ids)])
 
     def test_field_followers(self):
         test_record = self.test_record.with_user(self.user_employee)
@@ -230,16 +218,14 @@ class BaseFollowersTest(MailCommon):
 
     @users('employee')
     def test_followers_private_address(self):
-        """ Test standard API does subscribe IDs the user can't read """
-        other_company = self.env['res.company'].sudo().create({'name': 'Other Company'})
-        private_address = self.env['res.partner'].create({
+        """ Test standard API does not subscribe private addresses """
+        private_address = self.env['res.partner'].sudo().create({
             'name': 'Private Address',
-            'company_id': other_company.id,
+            'type': 'private',
         })
-        self.env.user.write({'company_ids': [(3, other_company.id)]})
         document = self.env['mail.test.simple'].browse(self.test_record.id)
         document.message_subscribe(partner_ids=(self.partner_portal | private_address).ids)
-        self.assertEqual(document.message_follower_ids.partner_id, self.partner_portal | private_address)
+        self.assertEqual(document.message_follower_ids.partner_id, self.partner_portal)
 
         # works through low-level API
         document._message_subscribe(partner_ids=(self.partner_portal | private_address).ids)
@@ -269,7 +255,7 @@ class BaseFollowersTest(MailCommon):
 
 
 @tagged('mail_followers')
-class AdvancedFollowersTest(MailCommon):
+class AdvancedFollowersTest(TestMailCommon):
 
     @classmethod
     def setUpClass(cls):
@@ -375,7 +361,7 @@ class AdvancedFollowersTest(MailCommon):
 
     def test_auto_subscribe_post_email(self):
         """ People posting an email are automatically added as followers """
-        self.test_track.with_user(self.user_admin).message_post(body='Coucou hibou', message_type='email_outgoing')
+        self.test_track.with_user(self.user_admin).message_post(body='Coucou hibou', message_type='email')
         self.assertEqual(self.test_track.message_partner_ids, self.user_employee.partner_id | self.user_admin.partner_id)
 
     def test_auto_subscribe_not_on_notification(self):
@@ -480,9 +466,7 @@ class AdvancedFollowersTest(MailCommon):
         )
 
 
-@tagged('mail_followers')
-class AdvancedResponsibleNotifiedTest(MailCommon):
-
+class AdvancedResponsibleNotifiedTest(TestMailCommon):
     def setUp(self):
         super(AdvancedResponsibleNotifiedTest, self).setUp()
 
@@ -494,7 +478,7 @@ class AdvancedResponsibleNotifiedTest(MailCommon):
 
     def test_auto_subscribe_notify_email(self):
         """ Responsible is notified when assigned """
-        partner = self.env['res.partner'].create({"name": "demo1", "email": "demo1@test.mycompany.com"})
+        partner = self.env['res.partner'].create({"name": "demo1", "email": "demo1@test.com"})
         notified_user = self.env['res.users'].create({
             'login': 'demo1',
             'partner_id': partner.id,
@@ -528,7 +512,7 @@ class AdvancedResponsibleNotifiedTest(MailCommon):
 
 
 @tagged('mail_followers', 'post_install', '-at_install')
-class RecipientsNotificationTest(MailCommon):
+class RecipientsNotificationTest(TestMailCommon):
     """ Test advanced and complex recipients computation / notification, such
     as multiple users, batch computation, ... Post install because we need the
     registry to be ready to send notifications."""
@@ -700,7 +684,7 @@ class RecipientsNotificationTest(MailCommon):
                   'status': 'sent', 'type': 'inbox'}],
                 message_info={'content': 'User Choice Notification'}):
             test.message_post(
-                body=Markup('<p>User Choice Notification</p>'),
+                body='<p>User Choice Notification</p>',
                 message_type='comment',
                 partner_ids=shared_partner.ids,
                 subtype_xmlid='mail.mt_comment',
@@ -804,382 +788,3 @@ class RecipientsNotificationTest(MailCommon):
             pids=test_partners.ids
         )
         self.assertRecipientsData(recipients_data, False, test_partners)
-
-
-@tagged('mail_followers', 'post_install', '-at_install')
-class UnfollowUnreadableRecordTest(MailCommon):
-    """ Test message_unsubscribe on unreadable record. """
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.test_record = cls.env['mail.test.simple'].with_context(cls._test_context).create({'name': 'Test'})
-        cls.user_portal = cls._create_portal_user()
-
-    def _message_unsubscribe_unreadable_record(self, user):
-        def raise_access_error(*args, **kwargs):
-            raise AccessError('Unreadable')
-
-        with patch.object(self.test_record.__class__, 'check_access', side_effect=raise_access_error):
-            self.test_record.with_user(user).message_unsubscribe(user.partner_id.ids)
-
-    def test_initial_data(self):
-        """ Test some initial value. """
-        self.assertTrue(self.user_employee._is_internal())
-        self.assertFalse(self.user_portal._is_internal())
-        record_employee = self.test_record.with_user(self.user_employee)
-        record_employee.check_access('read')
-        record_portal = self.test_record.with_user(self.user_portal)
-        with self.assertRaises(AccessError):
-            record_portal.check_access('write')
-
-    def test_internal_user_can_unsubscribe_from_unreadable_record(self):
-        self.test_record._message_subscribe(partner_ids=self.partner_employee.ids)
-
-        self.assertIn(self.partner_employee, self.test_record.message_follower_ids.mapped('partner_id'))
-        self._message_unsubscribe_unreadable_record(self.user_employee)
-        self.assertNotIn(self.partner_employee, self.test_record.message_follower_ids.mapped('partner_id'))
-
-    def test_portal_user_cannot_unsubscribe_from_unreadable_record(self):
-        self.test_record._message_subscribe(partner_ids=self.partner_portal.ids)
-
-        self.assertIn(self.partner_portal, self.test_record.message_follower_ids.mapped('partner_id'))
-        with self.assertRaises(AccessError):
-            self._message_unsubscribe_unreadable_record(self.user_portal)
-
-
-@tagged('mail_followers', 'post_install', '-at_install')
-class UnfollowFromInboxTest(MailCommon, HttpCase):
-    """ Test unfollow mechanism from inbox (server part). """
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.test_record = cls.env['mail.test.simple'].with_context(cls._test_context).create({'name': 'Test'})
-        cls.user_employee.write({'notification_type': 'inbox'})
-
-    @users('employee')
-    @mute_logger('odoo.models')
-    def test_inbox_notification_follower(self):
-        """ Check follow-up information for displaying inbox messages used to
-        implement "unfollow" in the inbox.
-
-        Note that the actual mechanism to unfollow a record from a message is
-        tested in the client part.
-        """
-        self.maxDiff = None
-        test_record = self.env['mail.test.simple'].browse(self.test_record.ids)
-        message = test_record.with_user(self.user_admin).message_post(
-            body="test message",
-            subtype_id=self.env.ref("mail.mt_comment").id,
-            partner_ids=self.partner_employee.ids,
-        )
-        notif = message.notification_ids.filtered(
-            lambda n: n.res_partner_id == self.env.user.partner_id
-        )
-        # The user doesn't follow the record
-        self.authenticate(self.env.user.login, self.env.user.login)
-        data = self.make_jsonrpc_request("/mail/inbox/messages")["data"]
-        expected = {
-            "mail.message": self._filter_messages_fields(
-                {
-                    "attachment_ids": [],
-                    "author": {"id": self.user_admin.partner_id.id, "type": "partner"},
-                    "body": "<p>test message</p>",
-                    "create_date": fields.Datetime.to_string(message.create_date),
-                    "date": fields.Datetime.to_string(message.date),
-                    "default_subject": "Test",
-                    "email_from": '"Mitchell Admin" <test.admin@test.example.com>',
-                    "id": message.id,
-                    "is_discussion": True,
-                    "is_note": False,
-                    "linkPreviews": [],
-                    "message_type": "notification",
-                    "model": "mail.test.simple",
-                    "needaction": True,
-                    "notifications": [notif.id],
-                    "pinned_at": False,
-                    "rating_id": False,
-                    "reactions": [],
-                    "recipients": [{"id": self.env.user.partner_id.id, "type": "partner"}],
-                    "record_name": "Test",
-                    "res_id": test_record.id,
-                    "scheduledDatetime": False,
-                    "starred": False,
-                    "subject": False,
-                    "subtype_description": False,
-                    "thread": {"id": test_record.id, "model": "mail.test.simple"},
-                    "trackingValues": [],
-                    "write_date": fields.Datetime.to_string(message.write_date),
-                },
-            ),
-            "mail.notification": [
-                {
-                    "failure_type": False,
-                    "id": notif.id,
-                    "message": message.id,
-                    "notification_status": "sent",
-                    "notification_type": "inbox",
-                    "persona": {"id": self.env.user.partner_id.id, "type": "partner"},
-                },
-            ],
-            "mail.thread": self._filter_threads_fields(
-                {
-                    "id": test_record.id,
-                    "model": "mail.test.simple",
-                    "module_icon": "/base/static/description/icon.png",
-                    "name": "Test",
-                    "selfFollower": False,
-                },
-            ),
-            "res.partner": self._filter_partners_fields(
-                {
-                    "avatar_128_access_token": limited_field_access_token(
-                        self.env.user.partner_id, "avatar_128"
-                    ),
-                    "id": self.env.user.partner_id.id,
-                    "name": "Ernest Employee",
-                    "write_date": fields.Datetime.to_string(self.env.user.write_date),
-                },
-                {
-                    "avatar_128_access_token": limited_field_access_token(
-                        self.partner_admin, "avatar_128"
-                    ),
-                    "id": self.user_admin.partner_id.id,
-                    "isInternalUser": True,
-                    "is_company": False,
-                    "name": "Mitchell Admin",
-                    "userId": self.user_admin.id,
-                    "write_date": fields.Datetime.to_string(self.user_admin.write_date),
-                },
-            ),
-        }
-        self.assertEqual(data, expected)
-
-        # The user follows the record
-        test_record._message_subscribe(partner_ids=self.env.user.partner_id.ids)
-        follower = test_record.message_follower_ids.filtered(
-            lambda follower: follower.partner_id == self.env.user.partner_id
-        )
-        data = self.make_jsonrpc_request("/mail/inbox/messages")["data"]
-        expected_with_follower = copy.deepcopy(expected)
-        expected_with_follower["mail.followers"] = [
-            {
-                "id": follower.id,
-                "is_active": True,
-                "partner": {"id": self.env.user.partner_id.id, "type": "partner"},
-            },
-        ]
-        expected_with_follower["mail.thread"][0]["selfFollower"] = follower.id
-        self.assertEqual(data, expected_with_follower)
-
-        # The user doesn't follow the record anymore
-        test_record.message_unsubscribe(partner_ids=self.partner_employee.ids)
-        data = self.make_jsonrpc_request("/mail/inbox/messages")["data"]
-        self.assertEqual(data, expected)
-
-
-@tagged('mail_followers', 'post_install', '-at_install')
-class UnfollowFromEmailTest(MailCommon, HttpCase):
-    """ Test unfollow mechanism from email. """
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.user_portal = cls._create_portal_user()
-        cls.partner_portal = cls.user_portal.partner_id
-        cls.test_record = cls.env['mail.test.simple'].with_context(cls._test_context).create({'name': 'Test'})
-        cls.test_record_unfollow = cls.env['mail.test.simple.unfollow'].with_context(cls._test_context).create(
-            {'name': 'unfollow'})
-        cls.partner_without_user = cls.env['res.partner'].create({
-            'name': 'Dave',
-            'email': 'dave@odoo.com',
-        })
-        cls.user_employee.write({'notification_type': 'email'})
-
-    def _post_message_and_get_unfollow_urls(self, record, partner_ids):
-        """ Post a message on the record for the partners and extract the unfollow URLs. """
-        with self.mock_mail_gateway():
-            record.with_user(self.user_admin).with_context(
-                email_notification_force_header=True,
-                email_notification_force_footer=True
-            ).message_post(
-                body='test message',
-                subtype_id=self.env.ref('mail.mt_comment').id,
-                partner_ids=partner_ids.ids)
-        self.assertEqual(len(self._mails), len(partner_ids))
-        mail_by_email = {parse_contact_from_email(email_to)[1]: mail
-                         for mail in self._mails
-                         for email_to in mail['email_to']}
-
-        # Extract unfollow URL for each partner from the body of the emails
-        results = []
-        for partner in partner_ids:
-            mail_body = mail_by_email[email_normalize(partner.email)]['body']
-
-            urls = list({link_url for _, link_url, _, _ in re.findall(mail.HTML_TAG_URL_REGEX, mail_body)
-                         if '/mail/unfollow' in link_url})
-            n_url = len(urls)
-            self.assertLessEqual(n_url, 1)
-            results.append(urls[0] if urls else False)
-        self.assertEqual(len(results), len(partner_ids))
-        return results
-
-    def _url_with_query_parameters_overridden(self, url, **kwargs):
-        """ Return the url with overridden query parameters by the additional
-        parameters.
-        """
-        parsed_url = urlparse(url)
-        return parsed_url._replace(query=urlencode(dict(parse_qsl(parsed_url.query), **kwargs))).geturl()
-
-    def _test_tampered_unfollow_url(self, record, unfollow_url, partner):
-        """ Test that tampered urls doesn't work.
-
-        Test that:
-        - when the following parameters are altered, the browsing the URL returns
-        a 403 and doesn't unsubscribe the partner.
-        - when trying to use the same URL with another partner, it also returns a
-        403 and doesn't unsubscribe the other partner.
-        """
-        for param, value in (('token', '0000000000000000000000000000000000000000'),
-                             ('model', 'mail.test.gateway'),
-                             ('res_id', record.copy().id)):
-            with self.subTest(f'Tampered {param}'):
-                tampered_unfollow_url = self._url_with_query_parameters_overridden(unfollow_url, **{param: value})
-                response = self.url_open(tampered_unfollow_url)
-                self.assertEqual(response.status_code, 403)
-                self.assertIn(partner, record.message_partner_ids)
-
-        with self.subTest('Tampered partner id'):
-            record._message_subscribe(partner_ids=self.partner_admin.ids)
-            tampered_unfollow_url = self._url_with_query_parameters_overridden(unfollow_url, pid=self.partner_admin.id)
-            response = self.url_open(tampered_unfollow_url)
-            self.assertEqual(response.status_code, 403)
-            self.assertIn(partner, record.message_partner_ids)
-            self.assertIn(self.partner_admin, record.message_partner_ids)
-            record.message_unsubscribe(partner_ids=self.partner_admin.ids)
-
-    def _test_unfollow_url(self, record, unfollow_url, partner):
-        """ Test that the unfollow url works.
-
-        Test that: that browsing the unfollow URL unsubscribe the user from the record
-        """
-        with self.subTest('Legitimate unfollow'):
-            # We test that the URL still work a second time if the user has been re-added
-            for _ in range(2):
-                try:
-                    self.assertIn(partner, record.message_partner_ids)
-                    response = self.url_open(unfollow_url)
-                    self.assertEqual(response.status_code, 200)
-                    self.assertNotIn(partner, record.message_partner_ids)
-                    self.assertEqual(urlparse(response.url).path, '/mail/unfollow')
-                    self.assertIn("You are no longer following the document", response.text)
-                    self.assertIn('o_access_record_link', response.text)
-                finally:
-                    record._message_subscribe(partner_ids=partner.ids)
-
-    def test_initial_data(self):
-        """ Test some initial value. """
-        self.assertTrue(self.user_employee._is_internal())
-        self.assertFalse(self.user_portal._is_internal())
-        record_employee = self.test_record.with_user(self.user_employee)
-        record_employee.check_access('read')
-        record_portal = self.test_record.with_user(self.user_portal)
-        with self.assertRaises(AccessError):
-            record_portal.check_access('write')
-        for template_ref in ('mail.mail_notification_layout', 'mail.mail_notification_light'):
-            with self.subTest(f'Unfollow link in {template_ref}'):
-                mail_template_arch = self.env.ref(template_ref).arch
-                self.assertIn('/mail/unfollow', mail_template_arch)
-                self.assertNotIn('/mail/unfollow', re.sub(_UNFOLLOW_REGEX, '', mail_template_arch))
-
-    @mute_logger('odoo.addons.base.models', 'odoo.addons.mail.controllers.mail', 'odoo.http', 'odoo.models')
-    def test_unfollow_internal_user(self):
-        """ Internal user must receive an unfollow URL, that cannot be tampered
-        and redirects to the correct page.
-        """
-        test_partner = self.partner_employee
-        test_record = self.test_record
-
-        # Test that the user receives an unfollow URL when following the record
-        test_record._message_subscribe(partner_ids=test_partner.ids)
-        with self.subTest('Internal user receives unfollow URL'):
-            unfollow_url = self._post_message_and_get_unfollow_urls(test_record, test_partner)[0]
-            self.assertTrue(unfollow_url)
-
-        # Test unfollowing URL when user is not logged
-        self._test_unfollow_url(test_record, unfollow_url, test_partner)
-        self._test_tampered_unfollow_url(test_record, unfollow_url, test_partner)
-
-        # Test unfollowing URL when user is logged
-        self.authenticate(self.user_employee.login, self.user_employee.login)
-        self._test_unfollow_url(test_record, unfollow_url, test_partner)
-
-        # Test that the user doesn't receive the unfollow URL when not following the record
-        test_record.message_unsubscribe(partner_ids=test_partner.ids)
-        with self.subTest('Internal user simple notification (without unfollow URL)'):
-            unfollow_url = self._post_message_and_get_unfollow_urls(test_record, test_partner)[0]
-            self.assertFalse(unfollow_url)
-
-    @mute_logger('odoo.models')
-    def test_unfollow_partner_with_no_user(self):
-        """ External partner must not receive an unfollow URL. """
-        test_partner = self.partner_without_user
-        test_record = self.test_record
-
-        test_record._message_subscribe(partner_ids=test_partner.ids)
-        with self.subTest('External partner must not receive an unfollow URL'):
-            unfollow_url = self._post_message_and_get_unfollow_urls(test_record, test_partner)[0]
-            self.assertFalse(unfollow_url)
-
-    @mute_logger('odoo.addons.mail.controllers.mail', 'odoo.models', 'odoo.http')
-    def test_unfollow_partner_without_access_on_record_unfollow_enabled(self):
-        """ Partner without access must receive an unfollow URL for message
-        related to record with unfollow enabled.
-        """
-        test_record = self.test_record_unfollow
-        for descr, test_partner in (('Partner without user', self.partner_without_user),
-                                    ('Portal partner without access', self.partner_portal)):
-            with self.subTest(descr):
-                # Test that the user receives an unfollow URL when following the record
-                test_record._message_subscribe(partner_ids=test_partner.ids)
-                with self.subTest('External partner receives an unfollow URL'):
-                    unfollow_url = self._post_message_and_get_unfollow_urls(test_record, test_partner)[0]
-                    self.assertTrue(unfollow_url)
-
-                # Test unfollowing URL when user is not logged
-                self._test_unfollow_url(test_record, unfollow_url, test_partner)
-                self._test_tampered_unfollow_url(test_record, unfollow_url, test_partner)
-
-                # Test that the user doesn't receive the unfollow URL when not following the record
-                test_record.message_unsubscribe(partner_ids=test_partner.ids)
-                with self.subTest('External partner not following must not receive unfollow URL'):
-                    unfollow_url = self._post_message_and_get_unfollow_urls(test_record, test_partner)[0]
-                    self.assertFalse(unfollow_url)
-
-    def test_unfollow_partner_multi_recipients_multi_messages(self):
-        """ Test most of the cases above but with multiple recipients and messages. """
-        # On a record with unfollow attribute disabled.
-        test_record = self.test_record
-        partners = self.partner_without_user + self.partner_portal + self.partner_employee
-        test_record._message_subscribe(partner_ids=partners.ids)
-        urls = self._post_message_and_get_unfollow_urls(test_record, partners)
-        url_partner_without_user, url_partner_portal, url_employee = urls[0], urls[1], urls[2]
-
-        self.assertFalse(url_partner_without_user)
-        self.assertFalse(url_partner_portal)
-        self.assertTrue(url_employee)
-        self._test_unfollow_url(test_record, url_employee, self.partner_employee)
-
-        # On a record with unfollow attribute enabled.
-        test_record = self.test_record_unfollow
-        test_record._message_subscribe(partner_ids=partners.ids)
-        urls = self._post_message_and_get_unfollow_urls(test_record, partners)
-        url_partner_without_user, url_partner_portal, url_employee = urls[0], urls[1], urls[2]
-
-        self.assertTrue(url_partner_without_user)
-        self.assertTrue(url_partner_portal)
-        self.assertTrue(url_employee)
-        self._test_unfollow_url(test_record, url_partner_without_user, self.partner_without_user)
-        self._test_unfollow_url(test_record, url_partner_portal, self.partner_portal)
-        self._test_unfollow_url(test_record, url_employee, self.partner_employee)

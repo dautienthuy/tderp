@@ -10,8 +10,7 @@ from PIL import Image
 import odoo
 from odoo.exceptions import AccessError
 from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
-from odoo.tools import mute_logger
-from odoo.tools.image import image_to_base64
+from odoo.tools import image_to_base64
 
 HASH_SPLIT = 2      # FIXME: testing implementations detail is not a good idea
 
@@ -247,23 +246,21 @@ class TestIrAttachment(TransactionCaseWithUserDemo):
         self.assertFalse(os.path.isfile(store_path), 'file removed')
 
     def test_13_rollback(self):
-        savepoint = self.cr.savepoint()
+        self.registry.enter_test_mode(self.cr)
+        self.addCleanup(self.registry.leave_test_mode)
+        self.cr = self.registry.cursor()
+        self.addCleanup(self.cr.close)
+        self.env = odoo.api.Environment(self.cr, odoo.SUPERUSER_ID, {})
+
         # the data needs to be unique so that no other attachment link
         # the file so that the gc removes it
         unique_blob = os.urandom(16)
-        a1 = self.env['ir.attachment'].create({'name': 'a1', 'raw': unique_blob})
+        a1 = self.Attachment.create({'name': 'a1', 'raw': unique_blob})
         store_path = os.path.join(self.filestore, a1.store_fname)
         self.assertTrue(os.path.isfile(store_path), 'file exists')
-        savepoint.rollback()
-        self.env['ir.attachment']._gc_file_store_unsafe()
+        self.env.cr.rollback()
+        self.Attachment._gc_file_store_unsafe()
         self.assertFalse(os.path.isfile(store_path), 'file removed')
-
-    def test_14_invalid_mimetype_with_correct_file_extension_no_post_processing(self):
-        # test with fake svg with png mimetype
-        unique_blob = b'<svg xmlns="http://www.w3.org/2000/svg"></svg>'
-        a1 = self.Attachment.create({'name': 'a1', 'raw': unique_blob, 'mimetype': 'image/png'})
-        self.assertEqual(a1.raw, unique_blob)
-        self.assertEqual(a1.mimetype, 'image/png')
 
 
 class TestPermissions(TransactionCaseWithUserDemo):
@@ -289,10 +286,8 @@ class TestPermissions(TransactionCaseWithUserDemo):
         self.env.flush_all()
         a.invalidate_recordset()
 
-    def test_read_permission(self):
+    def test_no_read_permission(self):
         """If the record can't be read, the attachment can't be read either
-        If the attachment is public, the attachment can be read even if the record can't be read
-        If the attachment has no res_model/res_id, it can be read by its author and admins only
         """
         # check that the information can be read out of the box
         self.attachment.datas
@@ -301,57 +296,6 @@ class TestPermissions(TransactionCaseWithUserDemo):
         self.attachment.invalidate_recordset()
         with self.assertRaises(AccessError):
             self.attachment.datas
-
-        # Make the attachment public
-        self.attachment.sudo().public = True
-        # Check the information can be read again
-        self.attachment.datas
-        # Remove the public access
-        self.attachment.sudo().public = False
-        # Check the record can no longer be accessed
-        with self.assertRaises(AccessError):
-            self.attachment.datas
-
-        # Create an attachment as user without res_model/res_id
-        attachment_user = self.Attachments.create({'name': 'foo'})
-        # Check the user can access his own attachment
-        attachment_user.datas
-        # Create an attachment as superuser without res_model/res_id
-        attachment_admin = self.Attachments.with_user(odoo.SUPERUSER_ID).create({'name': 'foo'})
-        # Check the record cannot be accessed by a regular user
-        with self.assertRaises(AccessError):
-            attachment_admin.with_user(self.env.user).datas
-        # Check the record can be accessed by an admin (other than superuser)
-        admin_user = self.env.ref('base.user_admin')
-        # Safety assert that base.user_admin is not the superuser, otherwise the test is useless
-        self.assertNotEqual(odoo.SUPERUSER_ID, admin_user.id)
-        attachment_admin.with_user(admin_user).datas
-
-    @mute_logger("odoo.addons.base.models.ir_rule", "odoo.models")
-    def test_field_read_permission(self):
-        """If the record field can't be read,
-        e.g. `groups="base.group_system"` on the field,
-        the attachment can't be read either.
-        """
-        # check that the information can be read out of the box
-        main_partner = self.env.ref('base.main_partner')
-        self.assertTrue(main_partner.image_128)
-        attachment = self.env['ir.attachment'].search([
-            ('res_model', '=', 'res.partner'),
-            ('res_id', '=', main_partner.id),
-            ('res_field', '=', 'image_128')
-        ])
-        self.assertTrue(attachment.datas)
-
-        # Patch the field `res.partner.image_128` to make it unreadable by the demo user
-        self.patch(self.env.registry['res.partner']._fields['image_128'], 'groups', 'base.group_system')
-
-        # Assert the field can't be read
-        with self.assertRaises(AccessError):
-            main_partner.image_128
-        # Assert the attachment related to the field can't be read
-        with self.assertRaises(AccessError):
-            attachment.datas
 
     def test_with_write_permissions(self):
         """With write permissions to the linked record, attachment can be
@@ -382,7 +326,7 @@ class TestPermissions(TransactionCaseWithUserDemo):
         wrinkles as the ACLs may diverge a lot more
         """
         # create an other unwritable record in a different model
-        unwritable = self.env['res.users.apikeys.description'].create({'name': 'Unwritable'})
+        unwritable = self.env['res.users.log'].create({})
         with self.assertRaises(AccessError):
             unwritable.write({})  # checks unwritability
         # create a writable record in the same model

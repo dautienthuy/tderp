@@ -10,8 +10,8 @@
                     <group>
                         <label for="mode" string="Add to"/>
                         <field name="mode" widget="radio" nolabel="1"/>
-                        <field name="wave_id" options="{'no_create': True, 'no_open': True}" invisible="mode == 'new'" context="{'add_to_existing_batch': True}" required="mode == 'existing'"/>
-                        <field name="user_id" options="{'no_create': True}" invisible="mode == 'existing'"/>
+                        <field name="wave_id" options="{'no_create': True, 'no_open': True}" attrs="{'invisible': [('mode', '=', 'new')], 'required': [('mode', '=', 'existing')]}"/>
+                        <field name="user_id" options="{'no_create': True}" attrs="{'invisible': [('mode', '=', 'existing')]}"/>
                     </group>
                 </group>
 
@@ -27,6 +27,7 @@
         <field name="res_model">stock.add.to.wave</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
+        <field name="groups_id" eval="[(4, ref('stock.group_stock_picking_wave'))]"/>
         <field name="binding_model_id" ref="stock.model_stock_picking"/>
         <field name="binding_view_types">list</field>
     </record>

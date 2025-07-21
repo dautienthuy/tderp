@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-14 20:47+0000\n"
-"PO-Revision-Date: 2025-05-14 20:47+0000\n"
+"POT-Creation-Date: 2025-02-10 08:26+0000\n"
+"PO-Revision-Date: 2025-02-10 08:26+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -18,19 +18,22 @@ msgstr ""
 #. module: mass_mailing_sms
 #. odoo-javascript
 #: code:addons/mass_mailing_sms/static/src/components/sms_widget/fields_sms_widget.js:0
-msgid " (including link trackers and opt-out link)"
+#, python-format
+msgid " (including link trackers and opt-out link) "
 msgstr ""
 
 #. module: mass_mailing_sms
 #. odoo-javascript
 #: code:addons/mass_mailing_sms/static/src/components/sms_widget/fields_sms_widget.js:0
-msgid " (including link trackers)"
+#, python-format
+msgid " (including link trackers) "
 msgstr ""
 
 #. module: mass_mailing_sms
 #. odoo-javascript
 #: code:addons/mass_mailing_sms/static/src/components/sms_widget/fields_sms_widget.js:0
-msgid " (including opt-out link)"
+#, python-format
+msgid " (including opt-out link) "
 msgstr ""
 
 #. module: mass_mailing_sms
@@ -43,6 +46,7 @@ msgstr ""
 #. module: mass_mailing_sms
 #. odoo-python
 #: code:addons/mass_mailing_sms/models/mailing_mailing.py:0
+#, python-format
 msgid "24H Stats of %(mailing_type)s \"%(mailing_name)s\""
 msgstr ""
 
@@ -50,7 +54,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_list_view_kanban
 msgid ""
 "<br/>\n"
-"                    <span class=\"text-muted\">\n"
+"                    <span class=\"text-secondary\">\n"
 "                        <i class=\"fa fa-phone\"/> Contacts\n"
 "                    </span>"
 msgstr ""
@@ -58,43 +62,37 @@ msgstr ""
 #. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_form_sms
 msgid ""
-"<span name=\"canceled_text_sms\" invisible=\"mailing_type != 'sms'\">SMS "
-"Text Message have been cancelled and will not be sent.</span>"
+"<span name=\"canceled_text_sms\" attrs=\"{'invisible': [('mailing_type', "
+"'!=', 'sms')]}\">SMS Text Message have been canceled and will not be "
+"sent.</span>"
 msgstr ""
 
 #. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_form_sms
 msgid ""
-"<span name=\"failed_text_sms\" invisible=\"mailing_type != 'sms'\">SMS Text "
-"Messages could not be delivered.</span>"
+"<span name=\"failed_text_sms\" attrs=\"{'invisible': [('mailing_type', '!=',"
+" 'sms')]}\">SMS Text Message could not be sent.</span>"
 msgstr ""
 
 #. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_form_sms
 msgid ""
-"<span name=\"next_departure_text\" invisible=\"mailing_type != 'sms'\">This "
-"SMS marketing is scheduled for </span>"
+"<span name=\"next_departure_text\" attrs=\"{'invisible': [('mailing_type', "
+"'!=', 'sms')]}\">This SMS marketing is scheduled for </span>"
 msgstr ""
 
 #. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_form_sms
 msgid ""
-"<span name=\"process_text_sms\" invisible=\"mailing_type != 'sms'\">SMS Text"
-" Messages are being processed.</span>"
+"<span name=\"scheduled_text_sms\" attrs=\"{'invisible': [('mailing_type', "
+"'!=', 'sms')]}\">SMS Text Message are in queue and will be sent soon.</span>"
 msgstr ""
 
 #. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_form_sms
 msgid ""
-"<span name=\"scheduled_text_sms\" invisible=\"mailing_type != 'sms'\">SMS "
-"Text Messages are in queue and will be sent soon.</span>"
-msgstr ""
-
-#. module: mass_mailing_sms
-#: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_form_sms
-msgid ""
-"<span name=\"sent_sms\" invisible=\"mailing_type != 'sms'\">SMS Text "
-"Messages have been sent.</span>"
+"<span name=\"sent_sms\" attrs=\"{'invisible': [('mailing_type', '!=', "
+"'sms')]}\">SMS Text Message have been sent.</span>"
 msgstr ""
 
 #. module: mass_mailing_sms
@@ -125,11 +123,6 @@ msgstr ""
 
 #. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_trace_view_form_sms
-msgid "<strong>This SMS could not be delivered.</strong>"
-msgstr ""
-
-#. module: mass_mailing_sms
-#: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_trace_view_form_sms
 msgid "<strong>This SMS could not be sent.</strong>"
 msgstr ""
 
@@ -145,7 +138,6 @@ msgid "A/B Test"
 msgstr ""
 
 #. module: mass_mailing_sms
-#: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_mailing__ab_testing_mailings_sms_count
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_utm_campaign__ab_testing_mailings_sms_count
 msgid "A/B Test Mailings SMS #"
 msgstr ""
@@ -153,6 +145,7 @@ msgstr ""
 #. module: mass_mailing_sms
 #. odoo-python
 #: code:addons/mass_mailing_sms/models/mailing_mailing.py:0
+#, python-format
 msgid "A/B Test: %s"
 msgstr ""
 
@@ -181,15 +174,21 @@ msgstr ""
 #. module: mass_mailing_sms
 #. odoo-python
 #: code:addons/mass_mailing_sms/models/mailing_mailing.py:0
+#, python-format
 msgid "BOUNCED (%i)"
+msgstr ""
+
+#. module: mass_mailing_sms
+#: model:utm.tag,name:mass_mailing_sms.mailing_tag_0
+msgid "Bioutifoul SMS"
 msgstr ""
 
 #. module: mass_mailing_sms
 #. odoo-python
 #: code:addons/mass_mailing_sms/controllers/main.py:0
+#, python-format
 msgid ""
-"Blacklist through SMS Marketing unsubscribe (mailing ID: %(mailing_id)s - "
-"model: %(model)s)"
+"Blacklist through SMS Marketing unsubscribe (mailing ID: %s - model: %s)"
 msgstr ""
 
 #. module: mass_mailing_sms
@@ -221,6 +220,7 @@ msgstr ""
 #. module: mass_mailing_sms
 #. odoo-python
 #: code:addons/mass_mailing_sms/models/mailing_mailing.py:0
+#, python-format
 msgid "CLICKED (%i)"
 msgstr ""
 
@@ -234,6 +234,11 @@ msgstr ""
 #. module: mass_mailing_sms
 #: model:ir.ui.menu,name:mass_mailing_sms.menu_email_campaigns
 msgid "Campaigns"
+msgstr ""
+
+#. module: mass_mailing_sms
+#: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_sms_test_view_form
+msgid "Cancel"
 msgstr ""
 
 #. module: mass_mailing_sms
@@ -261,16 +266,6 @@ msgstr ""
 #. module: mass_mailing_sms
 #: model:ir.ui.menu,name:mass_mailing_sms.mass_mailing_sms_menu_configuration
 msgid "Configuration"
-msgstr ""
-
-#. module: mass_mailing_sms
-#: model:ir.model.fields.selection,name:mass_mailing_sms.selection__mailing_trace__failure_type__sms_country_not_supported
-msgid "Country Not Supported"
-msgstr ""
-
-#. module: mass_mailing_sms
-#: model:ir.model.fields.selection,name:mass_mailing_sms.selection__mailing_trace__failure_type__sms_registration_needed
-msgid "Country-specific Registration Required"
 msgstr ""
 
 #. module: mass_mailing_sms
@@ -305,11 +300,6 @@ msgid "Date"
 msgstr ""
 
 #. module: mass_mailing_sms
-#: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_sms_test_view_form
-msgid "Discard"
-msgstr ""
-
-#. module: mass_mailing_sms
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_sms_test__display_name
 msgid "Display Name"
 msgstr ""
@@ -323,17 +313,13 @@ msgstr ""
 #. module: mass_mailing_sms
 #. odoo-python
 #: code:addons/mass_mailing_sms/models/res_users.py:0
+#, python-format
 msgid "Email Marketing"
 msgstr ""
 
 #. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_contact_view_search
 msgid "Exclude Blacklisted Phone"
-msgstr ""
-
-#. module: mass_mailing_sms
-#: model:ir.model.fields.selection,name:mass_mailing_sms.selection__mailing_trace__failure_type__sms_expired
-msgid "Expired"
 msgstr ""
 
 #. module: mass_mailing_sms
@@ -450,19 +436,13 @@ msgid "Insufficient credits"
 msgstr ""
 
 #. module: mass_mailing_sms
-#: model:ir.model.fields.selection,name:mass_mailing_sms.selection__mailing_trace__failure_type__sms_invalid_destination
-msgid "Invalid Destination"
-msgstr ""
-
-#. module: mass_mailing_sms
-#. odoo-python
-#: code:addons/mass_mailing_sms/controllers/main.py:0
-msgid "Invalid number %s"
-msgstr ""
-
-#. module: mass_mailing_sms
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_contact__message_is_follower
 msgid "Is Follower"
+msgstr ""
+
+#. module: mass_mailing_sms
+#: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_sms_test____last_update
+msgid "Last Modified on"
 msgstr ""
 
 #. module: mass_mailing_sms
@@ -473,11 +453,6 @@ msgstr ""
 #. module: mass_mailing_sms
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_sms_test__write_date
 msgid "Last Updated on"
-msgstr ""
-
-#. module: mass_mailing_sms
-#: model:ir.model,name:mass_mailing_sms.model_sms_tracker
-msgid "Link SMS to mailing/sms tracking models"
 msgstr ""
 
 #. module: mass_mailing_sms
@@ -521,11 +496,6 @@ msgid "Mailing Statistics"
 msgstr ""
 
 #. module: mass_mailing_sms
-#: model:ir.model.fields,field_description:mass_mailing_sms.field_sms_tracker__mailing_trace_id
-msgid "Mailing Trace"
-msgstr ""
-
-#. module: mass_mailing_sms
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_mailing__mailing_type
 msgid "Mailing Type"
 msgstr ""
@@ -535,6 +505,11 @@ msgstr ""
 msgid ""
 "Mailing contacts allow you to separate your marketing audience from your "
 "contact directory."
+msgstr ""
+
+#. module: mass_mailing_sms
+#: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_contact__message_main_attachment_id
+msgid "Main Attachment"
 msgstr ""
 
 #. module: mass_mailing_sms
@@ -591,18 +566,8 @@ msgstr ""
 #. module: mass_mailing_sms
 #: model_terms:ir.actions.act_window,help:mass_mailing_sms.mailing_list_action_sms
 msgid ""
-"No need to import mailing lists, you can send SMS to contacts saved in other"
-" Odoo apps."
-msgstr ""
-
-#. module: mass_mailing_sms
-#: model:ir.model.fields.selection,name:mass_mailing_sms.selection__mailing_trace__failure_type__sms_not_allowed
-msgid "Not Allowed"
-msgstr ""
-
-#. module: mass_mailing_sms
-#: model:ir.model.fields.selection,name:mass_mailing_sms.selection__mailing_trace__failure_type__sms_not_delivered
-msgid "Not Delivered"
+"No need to import mailing lists, you can send SMS Text Messages to contacts "
+"saved in other Odoo apps."
 msgstr ""
 
 #. module: mass_mailing_sms
@@ -614,6 +579,7 @@ msgstr ""
 #. module: mass_mailing_sms
 #. odoo-python
 #: code:addons/mass_mailing_sms/controllers/main.py:0
+#, python-format
 msgid "Number %s not found"
 msgstr ""
 
@@ -645,13 +611,6 @@ msgstr ""
 #. module: mass_mailing_sms
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_sms_test__numbers
 msgid "Number(s)"
-msgstr ""
-
-#. module: mass_mailing_sms
-#: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_form_sms
-msgid ""
-"Once you send these text messages, they'll be making a grand entrance in all"
-" pockets, creating quite the bzzzzz!"
 msgstr ""
 
 #. module: mass_mailing_sms
@@ -692,12 +651,8 @@ msgstr ""
 #. module: mass_mailing_sms
 #. odoo-python
 #: code:addons/mass_mailing_sms/models/mailing_mailing.py:0
+#, python-format
 msgid "RECEIVED (%i)"
-msgstr ""
-
-#. module: mass_mailing_sms
-#: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_contact__rating_ids
-msgid "Ratings"
 msgstr ""
 
 #. module: mass_mailing_sms
@@ -707,13 +662,9 @@ msgid "Recipients"
 msgstr ""
 
 #. module: mass_mailing_sms
-#: model:ir.model.fields.selection,name:mass_mailing_sms.selection__mailing_trace__failure_type__sms_rejected
-msgid "Rejected"
-msgstr ""
-
-#. module: mass_mailing_sms
 #. odoo-python
 #: code:addons/mass_mailing_sms/models/mailing_mailing.py:0
+#, python-format
 msgid "Report for %(expected)i %(mailing_type)s Sent"
 msgstr ""
 
@@ -723,7 +674,7 @@ msgid "Reporting"
 msgstr ""
 
 #. module: mass_mailing_sms
-#: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_trace__sms_id
+#: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_trace__sms_sms_id
 #: model:ir.model.fields.selection,name:mass_mailing_sms.selection__mailing_mailing__mailing_type__sms
 #: model:ir.model.fields.selection,name:mass_mailing_sms.selection__mailing_trace__trace_type__sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.utm_campaign_view_form
@@ -752,10 +703,14 @@ msgid "SMS Delivery error"
 msgstr ""
 
 #. module: mass_mailing_sms
-#: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_trace__sms_id_int
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_trace_view_form
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_trace_view_form_sms
 msgid "SMS ID"
+msgstr ""
+
+#. module: mass_mailing_sms
+#: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_trace__sms_sms_id_int
+msgid "SMS ID (tech)"
 msgstr ""
 
 #. module: mass_mailing_sms
@@ -765,6 +720,7 @@ msgstr ""
 #: model:ir.ui.menu,name:mass_mailing_sms.mass_mailing_sms_menu_mass_sms
 #: model:ir.ui.menu,name:mass_mailing_sms.mass_mailing_sms_menu_root
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_tree_sms
+#, python-format
 msgid "SMS Marketing"
 msgstr ""
 
@@ -787,6 +743,7 @@ msgstr ""
 #. module: mass_mailing_sms
 #. odoo-python
 #: code:addons/mass_mailing_sms/models/mailing_mailing.py:0
+#, python-format
 msgid "SMS Text Message"
 msgstr ""
 
@@ -801,11 +758,6 @@ msgid "SMS Traces"
 msgstr ""
 
 #. module: mass_mailing_sms
-#: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_trace__sms_tracker_ids
-msgid "SMS Trackers"
-msgstr ""
-
-#. module: mass_mailing_sms
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_mailing__ab_testing_sms_winner_selection
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_utm_campaign__ab_testing_sms_winner_selection
 msgid "SMS Winner Selection"
@@ -814,7 +766,8 @@ msgstr ""
 #. module: mass_mailing_sms
 #. odoo-python
 #: code:addons/mass_mailing_sms/wizard/sms_composer.py:0
-msgid "STOP SMS: %(unsubscribe_url)s"
+#, python-format
+msgid "STOP SMS : %(unsubscribe_url)s"
 msgstr ""
 
 #. module: mass_mailing_sms
@@ -824,6 +777,7 @@ msgstr ""
 
 #. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_form_sms
+#: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_sms_test_view_form
 msgid "Send"
 msgstr ""
 
@@ -838,7 +792,6 @@ msgid "Send Now"
 msgstr ""
 
 #. module: mass_mailing_sms
-#: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_list_view_form
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.utm_campaign_view_form
 msgid "Send SMS"
 msgstr ""
@@ -850,22 +803,14 @@ msgstr ""
 
 #. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_sms_test_view_form
-msgid "Send Test"
-msgstr ""
-
-#. module: mass_mailing_sms
-#: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_sms_test_view_form
 msgid "Send a Sample SMS"
 msgstr ""
 
 #. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_sms_test_view_form
-msgid "Send a sample SMS for testing purpose to the numbers below."
-msgstr ""
-
-#. module: mass_mailing_sms
-#: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_form_sms
-msgid "Send to all"
+msgid ""
+"Send a sample SMS for testing purpose to the numbers below (carriage-return-"
+"separated list)."
 msgstr ""
 
 #. module: mass_mailing_sms
@@ -884,32 +829,40 @@ msgid "Status"
 msgstr ""
 
 #. module: mass_mailing_sms
-#. odoo-python
-#: code:addons/mass_mailing_sms/models/mailing_mailing.py:0
-#: model:ir.actions.act_window,name:mass_mailing_sms.mailing_sms_test_action
-msgid "Test Mailing"
-msgstr ""
-
-#. module: mass_mailing_sms
 #: model:ir.model,name:mass_mailing_sms.model_mailing_sms_test
 msgid "Test SMS Mailing"
 msgstr ""
 
 #. module: mass_mailing_sms
-#. odoo-python
-#: code:addons/mass_mailing_sms/wizard/mailing_sms_test.py:0
-msgid "Test SMS could not be sent to %(destination)s: %(state)s"
+#: model:ir.actions.act_window,name:mass_mailing_sms.mailing_sms_test_action
+msgid "Test SMS Marketing"
 msgstr ""
 
 #. module: mass_mailing_sms
 #. odoo-python
 #: code:addons/mass_mailing_sms/wizard/mailing_sms_test.py:0
+#, python-format
+msgid "Test SMS could not be sent to %s:<br>%s"
+msgstr ""
+
+#. module: mass_mailing_sms
+#. odoo-python
+#: code:addons/mass_mailing_sms/models/mailing_mailing.py:0
+#, python-format
+msgid "Test SMS marketing"
+msgstr ""
+
+#. module: mass_mailing_sms
+#. odoo-python
+#: code:addons/mass_mailing_sms/wizard/mailing_sms_test.py:0
+#, python-format
 msgid "Test SMS successfully sent to %s"
 msgstr ""
 
 #. module: mass_mailing_sms
 #. odoo-python
 #: code:addons/mass_mailing_sms/models/utm.py:0
+#, python-format
 msgid ""
 "The UTM medium '%s' cannot be deleted as it is used in some main functional "
 "flows, such as the SMS Marketing."
@@ -918,6 +871,7 @@ msgstr ""
 #. module: mass_mailing_sms
 #. odoo-python
 #: code:addons/mass_mailing_sms/wizard/mailing_sms_test.py:0
+#, python-format
 msgid "The following numbers are not correctly encoded: %s"
 msgstr ""
 
@@ -930,6 +884,17 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_contact_view_form
 msgid ""
 "This phone number is blacklisted for SMS Marketing. Click to unblacklist."
+msgstr ""
+
+#. module: mass_mailing_sms
+#: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_form_sms
+msgid ""
+"This will send SMS to all recipients now. Do you still want to proceed ?"
+msgstr ""
+
+#. module: mass_mailing_sms
+#: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_form_sms
+msgid "This will send SMS to all recipients. Do you still want to proceed ?"
 msgstr ""
 
 #. module: mass_mailing_sms
@@ -984,6 +949,7 @@ msgstr ""
 #. module: mass_mailing_sms
 #. odoo-python
 #: code:addons/mass_mailing_sms/models/mailing_mailing.py:0
+#, python-format
 msgid "Unsupported %s for mass SMS"
 msgstr ""
 
@@ -1022,6 +988,11 @@ msgstr ""
 #. module: mass_mailing_sms
 #: model:ir.model.fields.selection,name:mass_mailing_sms.selection__mailing_trace__failure_type__sms_number_format
 msgid "Wrong Number Format"
+msgstr ""
+
+#. module: mass_mailing_sms
+#: model:utm.campaign,title:mass_mailing_sms.utm_campaign_0
+msgid "XMas Promo"
 msgstr ""
 
 #. module: mass_mailing_sms

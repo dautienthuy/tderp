@@ -21,7 +21,7 @@ class TestStockLandedCosts(TestStockLandedCostsCommon):
             'weight': 10,
             'volume': 1,
             'categ_id': self.stock_account_product_categ.id,
-            'is_storable': True,
+            'type': 'product',
         })
 
         product_landed_cost_2 = self.env['product.product'].create({
@@ -29,7 +29,7 @@ class TestStockLandedCosts(TestStockLandedCostsCommon):
             'weight': 20,
             'volume': 1.5,
             'categ_id': self.stock_account_product_categ.id,
-            'is_storable': True,
+            'type': 'product',
         })
 
         self.assertEqual(product_landed_cost_1.value_svl, 0)
@@ -45,7 +45,7 @@ class TestStockLandedCosts(TestStockLandedCostsCommon):
             'picking_type_id': self.warehouse.out_type_id.id,
             'move_ids': [(0, 0, {
                 'product_id': product_landed_cost_1.id,
-                'product_uom_qty': 15,
+                'product_uom_qty': 5,
                 'product_uom': self.ref('uom.product_uom_unit'),
                 'location_id': self.warehouse.lot_stock_id.id,
                 'location_dest_id': self.ref('stock.stock_location_customers'),
@@ -59,11 +59,10 @@ class TestStockLandedCosts(TestStockLandedCostsCommon):
         picking_landed_cost_1 = self.env['stock.picking'].create(vals)
 
         # Confirm and assign picking
-        picking_landed_cost_1.picking_type_id.create_backorder = 'never'
         self.env.company.anglo_saxon_accounting = True
         picking_landed_cost_1.action_confirm()
         picking_landed_cost_1.action_assign()
-        picking_landed_cost_1.move_ids.quantity = 5
+        picking_landed_cost_1.move_ids.quantity_done = 5
         picking_landed_cost_1.button_validate()
 
         vals = dict(picking_default_vals, **{
@@ -87,7 +86,7 @@ class TestStockLandedCosts(TestStockLandedCostsCommon):
         # Confirm and assign picking
         picking_landed_cost_2.action_confirm()
         picking_landed_cost_2.action_assign()
-        picking_landed_cost_2.move_ids.quantity = 10
+        picking_landed_cost_2.move_ids.quantity_done = 10
         picking_landed_cost_2.button_validate()
 
         self.assertEqual(product_landed_cost_1.value_svl, 0)
@@ -171,10 +170,11 @@ class TestStockLandedCosts(TestStockLandedCostsCommon):
         """
         self.landed_cost.landed_cost_ok = True
 
-        for valuation in ['manual_periodic', 'real_time']:
+        for valuation, account in [
+            ('manual_periodic', self.company_data['default_account_expense']),
+            ('real_time', self.env.company.property_stock_account_input_categ_id),
+        ]:
             self.landed_cost.categ_id.property_valuation = valuation
-            account_name = 'stock_input' if valuation == 'real_time' else 'expense'
-            account = self.landed_cost.product_tmpl_id.get_product_accounts()[account_name]
             po = self.env['purchase.order'].create({
                 'partner_id': self.partner_a.id,
                 'currency_id': self.company_data['currency'].id,
@@ -198,7 +198,7 @@ class TestStockLandedCosts(TestStockLandedCostsCommon):
             po.button_confirm()
 
             receipt = po.picking_ids
-            receipt.move_ids.quantity = 1
+            receipt.move_ids.quantity_done = 1
             receipt.button_validate()
             po.order_line[1].qty_received = 1
 
@@ -217,24 +217,3 @@ class TestStockLandedCosts(TestStockLandedCostsCommon):
             landed_cost_aml = bill.invoice_line_ids.filtered(lambda l: l.product_id == self.landed_cost)
             self.assertEqual(bill.state, 'posted', 'Incorrect value with valuation %s' % valuation)
             self.assertEqual(landed_cost_aml.account_id, account, 'Incorrect value with valuation %s' % valuation)
-
-    def test_landed_cost_in_move_line(self):
-        """
-        Tests that a move line created through the catalog gives the right landed cost
-        """
-        self.landed_cost.landed_cost_ok = True
-        account_move = self.env['account.move'].create({
-            'move_type': 'in_invoice',
-            'partner_id': self.partner_a.id
-        })
-        account_move._update_order_line_info(
-            product_id=self.landed_cost.id,
-            quantity=1
-        )
-        self.assertTrue(account_move.invoice_line_ids.is_landed_costs_line, "The landed cost should appear in the move line.")
-        account_move._update_order_line_info(
-            product_id=self.product.id,
-            quantity=1
-        )
-        move_line_no_landed = account_move.line_ids.filtered(lambda line: line.product_id == self.product)
-        self.assertFalse(move_line_no_landed.is_landed_costs_line, "The landed cost should not be set to True.")

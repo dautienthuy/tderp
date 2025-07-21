@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-23 18:38+0000\n"
-"PO-Revision-Date: 2025-05-23 18:38+0000\n"
+"POT-Creation-Date: 2025-02-10 08:26+0000\n"
+"PO-Revision-Date: 2025-02-10 08:26+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -24,7 +24,8 @@ msgid ""
 msgstr ""
 
 #. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_order__partner_bill_count
+#: model:ir.model.fields,field_description:purchase.field_res_partner__supplier_invoice_count
+#: model:ir.model.fields,field_description:purchase.field_res_users__supplier_invoice_count
 msgid "# Vendor Bills"
 msgstr ""
 
@@ -35,19 +36,30 @@ msgstr ""
 
 #. module: purchase
 #. odoo-python
-#: code:addons/purchase/models/purchase_order.py:0
+#: code:addons/purchase/models/purchase.py:0
+#, python-format
+msgid "%(amount)s due %(date)s"
+msgstr ""
+
+#. module: purchase
+#. odoo-python
+#: code:addons/purchase/models/purchase.py:0
+#: code:addons/purchase/models/purchase.py:0
+#, python-format
 msgid "%(product)s from %(original_receipt_date)s to %(new_receipt_date)s"
 msgstr ""
 
 #. module: purchase
 #. odoo-python
-#: code:addons/purchase/models/purchase_order.py:0
-msgid "%(vendor)s confirmed the receipt will take place on %(date)s."
+#: code:addons/purchase/models/purchase.py:0
+#, python-format
+msgid "%s confirmed the receipt will take place on %s."
 msgstr ""
 
 #. module: purchase
 #. odoo-python
-#: code:addons/purchase/models/purchase_order.py:0
+#: code:addons/purchase/models/purchase.py:0
+#, python-format
 msgid "%s modified receipt dates for the following products:"
 msgstr ""
 
@@ -60,13 +72,6 @@ msgstr ""
 #. module: purchase
 #: model:ir.actions.report,print_report_name:purchase.report_purchase_quotation
 msgid "'Request for Quotation - %s' % (object.name)"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
-msgid ""
-", it's 100% free! You'll save time creating beautiful quotations and track "
-"sales."
 msgstr ""
 
 #. module: purchase
@@ -94,24 +99,24 @@ msgid ""
 "        <t t-if=\"object.partner_id.parent_id\">\n"
 "            (<t t-out=\"object.partner_id.parent_id.name or ''\">Azure Interior</t>)\n"
 "        </t>\n"
-"        <br/><br/>\n"
+"        <br><br>\n"
 "        Here is a reminder that the delivery of the purchase order <span style=\"font-weight:bold;\" t-out=\"object.name or ''\">P00015</span>\n"
 "        <t t-if=\"object.partner_ref\">\n"
 "            <span style=\"font-weight:bold;\">(<t t-out=\"object.partner_ref or ''\">REF_XXX</t>)</span>\n"
 "        </t>\n"
 "        is expected for \n"
 "        <t t-if=\"object.date_planned\">\n"
-"            <span style=\"font-weight:bold;\" t-out=\"format_date(object.date_planned) or ''\">05/05/2021</span>.\n"
+"            <span style=\"font-weight:bold;\" t-out=\"format_date(object.get_localized_date_planned()) or ''\">05/05/2021</span>.\n"
 "        </t>\n"
 "         <t t-else=\"\">\n"
 "            <span style=\"font-weight:bold;\">undefined</span>.\n"
 "        </t>\n"
 "        Could you please confirm it will be delivered on time?\n"
-"        <t t-if=\"not is_html_empty(object.user_id.signature)\" data-o-mail-quote-container=\"1\">\n"
-"            <br/><br/>\n"
-"            <t t-out=\"object.user_id.signature or ''\" data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/>Mitchell Admin</t>\n"
+"        <t t-if=\"not is_html_empty(object.user_id.signature)\">\n"
+"            <br><br>\n"
+"            <t t-out=\"object.user_id.signature or ''\">--<br>Mitchell Admin</t>\n"
 "        </t>\n"
-"        <br/><br/>\n"
+"        <br><br>\n"
 "    </p>\n"
 "</div>"
 msgstr ""
@@ -125,24 +130,24 @@ msgid ""
 "        <t t-if=\"object.partner_id.parent_id\">\n"
 "            (<t t-out=\"object.partner_id.parent_id.name or ''\">Azure Interior</t>)\n"
 "        </t>\n"
-"        <br/><br/>\n"
+"        <br><br>\n"
 "        Here is in attachment a purchase order <span style=\"font-weight:bold;\" t-out=\"object.name or ''\">P00015</span>\n"
 "        <t t-if=\"object.partner_ref\">\n"
 "            with reference: <t t-out=\"object.partner_ref or ''\">REF_XXX</t>\n"
 "        </t>\n"
 "        amounting in <span style=\"font-weight:bold;\" t-out=\"format_amount(object.amount_total, object.currency_id) or ''\">$ 10.00</span>\n"
 "        from <t t-out=\"object.company_id.name or ''\">YourCompany</t>. \n"
-"        <br/><br/>\n"
+"        <br><br>\n"
 "        <t t-if=\"object.date_planned\">\n"
-"            The receipt is expected for <span style=\"font-weight:bold;\" t-out=\"format_date(object.date_planned) or ''\">05/05/2021</span>.\n"
-"            <br/><br/>\n"
+"            The receipt is expected for <span style=\"font-weight:bold;\" t-out=\"format_date(object.get_localized_date_planned()) or ''\">05/05/2021</span>.\n"
+"            <br><br>\n"
 "            Could you please acknowledge the receipt of this order?\n"
 "        </t>\n"
-"        <t t-if=\"not is_html_empty(object.user_id.signature)\" data-o-mail-quote-container=\"1\">\n"
-"            <br/><br/>\n"
-"            <t t-out=\"object.user_id.signature or ''\" data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/>Mitchell Admin</t>\n"
+"        <t t-if=\"not is_html_empty(object.user_id.signature)\">\n"
+"            <br><br>\n"
+"            <t t-out=\"object.user_id.signature or ''\">--<br>Mitchell Admin</t>\n"
 "        </t>\n"
-"        <br/><br/>\n"
+"        <br><br>\n"
 "    </p>\n"
 "</div>"
 msgstr ""
@@ -156,35 +161,32 @@ msgid ""
 "        <t t-if=\"object.partner_id.parent_id\">\n"
 "            (<t t-out=\"object.partner_id.parent_id.name or ''\">Azure Interior</t>)\n"
 "        </t>\n"
-"        <br/><br/>\n"
+"        <br><br>\n"
 "        Here is in attachment a request for quotation <span style=\"font-weight:bold;\" t-out=\"object.name or ''\">P00015</span>\n"
 "        <t t-if=\"object.partner_ref\">\n"
 "            with reference: <t t-out=\"object.partner_ref or ''\">REF_XXX</t>\n"
 "        </t>\n"
 "        from <t t-out=\"object.company_id.name or ''\">YourCompany</t>.\n"
-"        <br/><br/>\n"
+"        <br><br>\n"
 "        If you have any questions, please do not hesitate to contact us.\n"
-"        <br/><br/>\n"
-"            <a t-att-href=\"object.get_confirm_url(confirm_type='reception')\" target=\"_blank\" style=\"padding: 5px 10px; color: #FFFFFF; text-decoration: none; background-color: #875A7B; border: 1px solid #875A7B; border-radius: 3px\">\n"
-"                Accept</a>\n"
-"\n"
-"            <a t-att-href=\"object.get_confirm_url(confirm_type='decline')\" target=\"_blank\" style=\"padding: 5px 10px; color: #FFFFFF; text-decoration: none; background-color: #875A7B; border: 1px solid #875A7B; border-radius: 3px\">\n"
-"                Decline</a>\n"
-"        <br/><br/>\n"
+"        <br><br>\n"
 "        Best regards,\n"
-"        <t t-if=\"not is_html_empty(object.user_id.signature)\" data-o-mail-quote-container=\"1\">\n"
-"            <br/><br/>\n"
-"            <t t-out=\"object.user_id.signature or ''\" data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/>Mitchell Admin</t>\n"
+"        <t t-if=\"not is_html_empty(object.user_id.signature)\">\n"
+"            <br><br>\n"
+"            <t t-out=\"object.user_id.signature or ''\">--<br>Mitchell Admin</t>\n"
 "        </t>\n"
 "    </p>\n"
 "</div>"
 msgstr ""
 
 #. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_partner_kanban_view
-msgid ""
-"<i class=\"fa fa-credit-card me-1\" aria-label=\"Purchases\" role=\"img\" "
-"title=\"Purchases\"/>"
+#: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
+msgid "<i class=\"fa fa-comment\"/> Send message"
+msgstr ""
+
+#. module: purchase
+#: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
+msgid "<i class=\"fa fa-download\"/> Download"
 msgstr ""
 
 #. module: purchase
@@ -196,17 +198,24 @@ msgstr ""
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
-msgid "<i class=\"fa fa-fw fa-check\"/>Paid"
+msgid "<i class=\"fa fa-fw fa-check\"/> <b>Paid</b>"
 msgstr ""
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
-msgid "<i class=\"fa fa-fw fa-check\"/>Reversed"
+msgid "<i class=\"fa fa-fw fa-check\"/> <b>Reversed</b>"
 msgstr ""
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
-msgid "<i class=\"fa fa-fw fa-clock-o\"/>Waiting Payment"
+msgid "<i class=\"fa fa-fw fa-clock-o\"/> <b>Waiting Payment</b>"
+msgstr ""
+
+#. module: purchase
+#: model_terms:ir.ui.view,arch_db:purchase.purchase_partner_kanban_view
+msgid ""
+"<i class=\"fa fa-fw fa-credit-card\" role=\"img\" aria-label=\"Purchases\" "
+"title=\"Purchases\"/>"
 msgstr ""
 
 #. module: purchase
@@ -226,7 +235,7 @@ msgstr ""
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
-msgid "<i class=\"fa fa-print me-1\"/>Download / Print"
+msgid "<i class=\"fa fa-print\"/> Print"
 msgstr ""
 
 #. module: purchase
@@ -251,20 +260,18 @@ msgid ""
 msgstr ""
 
 #. module: purchase
+#: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
+msgid ""
+"<span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-"
+"specific.\" aria-label=\"Values set here are company-specific.\" "
+"groups=\"base.group_multi_company\" role=\"img\"/>"
+msgstr ""
+
+#. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid ""
-"<span class=\"o_form_label\" invisible=\"state not in ('draft', 'sent')\">Request for Quotation </span>\n"
-"                        <span class=\"o_form_label\" invisible=\"state in ('draft', 'sent')\">Purchase Order </span>"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
-msgid "<span class=\"o_stat_text\">Bill Matching</span>"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.view_move_form_inherit_purchase
-msgid "<span class=\"o_stat_text\">Purchase Matching</span>"
+"<span class=\"o_form_label\" attrs=\"{'invisible': [('state','not in',('draft','sent'))]}\">Request for Quotation </span>\n"
+"                        <span class=\"o_form_label\" attrs=\"{'invisible': [('state','in',('draft','sent'))]}\">Purchase Order </span>"
 msgstr ""
 
 #. module: purchase
@@ -276,23 +283,27 @@ msgstr ""
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid ""
-"<span class=\"text-muted\" invisible=\"not "
-"mail_reminder_confirmed\">(confirmed by vendor)</span>"
+"<span class=\"text-muted\" attrs=\"{'invisible': "
+"[('mail_reception_confirmed','=', False)]}\">(confirmed by vendor)</span>"
+msgstr ""
+
+#. module: purchase
+#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
+msgid ""
+"<span class=\"text-muted\" attrs=\"{'invisible': "
+"[('mail_reminder_confirmed', '=', False)]}\">(confirmed by vendor)</span>"
+msgstr ""
+
+#. module: purchase
+#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
+msgid ""
+"<span groups=\"account.group_show_line_subtotals_tax_excluded\">Amount</span>\n"
+"                                <span groups=\"account.group_show_line_subtotals_tax_included\">Total Price</span>"
 msgstr ""
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.view_partner_property_form
 msgid "<span> day(s) before</span>"
-msgstr ""
-
-#. module: purchase
-#: model_terms:web_tour.tour,rainbow_man_message:purchase.purchase_tour
-msgid "<span><b>Good job!</b> You went through all steps of this tour.</span>"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
-msgid "<span>Amount</span>"
 msgstr ""
 
 #. module: purchase
@@ -316,29 +327,19 @@ msgid "<strong class=\"d-block mb-1\">Invoices</strong>"
 msgstr ""
 
 #. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.report_purchasequotation_document
-msgid "<strong class=\"d-block mt-3\">Shipping address:</strong>"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
-msgid "<strong class=\"d-block mt-3\">Shipping address</strong>"
-msgstr ""
-
-#. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
 #: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
 msgid "<strong class=\"mr16\">Subtotal</strong>"
 msgstr ""
 
 #. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
-msgid "<strong>Amount</strong>"
+#: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
+msgid "<strong class=\"text-muted\">Purchase Representative</strong>"
 msgstr ""
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
-msgid "<strong>Buyer</strong>"
+msgid "<strong>Amount</strong>"
 msgstr ""
 
 #. module: purchase
@@ -348,18 +349,13 @@ msgstr ""
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
+msgid "<strong>Date Req.</strong>"
+msgstr ""
+
+#. module: purchase
+#: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
 #: model_terms:ir.ui.view,arch_db:purchase.report_purchasequotation_document
 msgid "<strong>Description</strong>"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
-msgid "<strong>Disc.</strong>"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
-msgid "<strong>Expected Arrival:</strong>"
 msgstr ""
 
 #. module: purchase
@@ -380,7 +376,7 @@ msgstr ""
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
-msgid "<strong>Payment Terms: </strong>"
+msgid "<strong>Purchase Representative:</strong>"
 msgstr ""
 
 #. module: purchase
@@ -401,6 +397,12 @@ msgstr ""
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
+#: model_terms:ir.ui.view,arch_db:purchase.report_purchasequotation_document
+msgid "<strong>Shipping address:</strong>"
+msgstr ""
+
+#. module: purchase
+#: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
 msgid "<strong>Taxes</strong>"
 msgstr ""
 
@@ -416,17 +418,7 @@ msgstr ""
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
-msgid "<strong>This purchase has been cancelled.</strong>"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
-msgid "<strong>This quotation has been accepted.</strong>"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
-msgid "<strong>This quotation has been declined.</strong>"
+msgid "<strong>This purchase has been canceled.</strong>"
 msgstr ""
 
 #. module: purchase
@@ -435,22 +427,28 @@ msgid "<strong>Unit Price</strong>"
 msgstr ""
 
 #. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
-msgid "<strong>Your Order Reference</strong>"
+#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
+msgid "<strong>Update Here</strong>"
 msgstr ""
 
 #. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
-msgid ""
-"A blanket purchase order is a purchase agreement between a buyer and a "
-"supplier to deliver goods or services to the buyer at a preset price for a "
-"period of time."
+#: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
+msgid "<strong>Your Order Reference:</strong>"
 msgstr ""
 
 #. module: purchase
 #. odoo-python
-#: code:addons/purchase/models/purchase_order.py:0
+#: code:addons/purchase/models/purchase.py:0
+#, python-format
 msgid "A sample email has been sent to %s."
+msgstr ""
+
+#. module: purchase
+#: model:ir.model.fields,help:purchase.field_purchase_order_line__product_type
+msgid ""
+"A storable product is a product for which you manage stock. The Inventory app has to be installed.\n"
+"A consumable product is a product for which stock is not managed.\n"
+"A service is a non-material product you provide."
 msgstr ""
 
 #. module: purchase
@@ -467,8 +465,8 @@ msgstr ""
 
 #. module: purchase
 #. odoo-python
-#: code:addons/purchase/models/purchase_order.py:0
-#: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
+#: code:addons/purchase/models/purchase.py:0
+#, python-format
 msgid "Accept"
 msgstr ""
 
@@ -480,14 +478,9 @@ msgstr ""
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order_line__qty_received_method
 msgid ""
-"According to product configuration, the received quantity can be automatically computed by mechanism:\n"
+"According to product configuration, the received quantity can be automatically computed by mechanism :\n"
 "  - Manual: the quantity is set manually on the line\n"
 "  - Stock Moves: the quantity comes from confirmed pickings\n"
-msgstr ""
-
-#. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_bill_line_match__account_move_id
-msgid "Account Move"
 msgstr ""
 
 #. module: purchase
@@ -521,16 +514,6 @@ msgid "Activity Type Icon"
 msgstr ""
 
 #. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.bill_to_po_wizard_form
-msgid "Add Down Payment"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.bill_to_po_wizard_form
-msgid "Add Products"
-msgstr ""
-
-#. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "Add a note"
 msgstr ""
@@ -553,19 +536,8 @@ msgstr ""
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/js/tours/purchase.js:0
+#, python-format
 msgid "Add some products or services to your quotation."
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.bill_to_po_wizard_form
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_bill_line_match_tree
-msgid "Add to PO"
-msgstr ""
-
-#. module: purchase
-#. odoo-python
-#: code:addons/purchase/models/purchase_bill_line_match.py:0
-msgid "Add to Purchase Order"
 msgstr ""
 
 #. module: purchase
@@ -576,30 +548,35 @@ msgstr ""
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/controllers/portal.py:0
+#, python-format
 msgid "All"
 msgstr ""
 
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
+#, python-format
 msgid "All Draft RFQs"
 msgstr ""
 
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
+#, python-format
 msgid "All Late RFQs"
 msgstr ""
 
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
+#, python-format
 msgid "All RFQs"
 msgstr ""
 
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
+#, python-format
 msgid "All Waiting RFQs"
 msgstr ""
 
@@ -614,13 +591,7 @@ msgid "Allow to edit purchase orders"
 msgstr ""
 
 #. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_bill_line_match__aml_id
-msgid "Aml"
-msgstr ""
-
-#. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_bill_union__amount
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "Amount"
 msgstr ""
 
@@ -632,8 +603,22 @@ msgid ""
 msgstr ""
 
 #. module: purchase
+#: model:ir.model.fields,help:purchase.field_purchase_report__avg_days_to_purchase
+msgid ""
+"Amount of time between purchase approval and document creation date. Due to "
+"a hack needed to calculate this,               every record will show the "
+"same average value, therefore only use this as an aggregated value with "
+"group_operator=avg"
+msgstr ""
+
+#. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_report__delay
 msgid "Amount of time between purchase approval and order by date."
+msgstr ""
+
+#. module: purchase
+#: model:ir.model.fields,field_description:purchase.field_purchase_order_line__analytic_distribution
+msgid "Analytic"
 msgstr ""
 
 #. module: purchase
@@ -642,8 +627,8 @@ msgid "Analytic Account"
 msgstr ""
 
 #. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_order_line__analytic_distribution
-msgid "Analytic Distribution"
+#: model:ir.model.fields,field_description:purchase.field_purchase_order_line__analytic_distribution_search
+msgid "Analytic Distribution Search"
 msgstr ""
 
 #. module: purchase
@@ -662,23 +647,11 @@ msgid "Approve Order"
 msgstr ""
 
 #. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_kpis_tree
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_tree
-msgid "Are you sure you want to cancel the selected RFQs/Orders?"
-msgstr ""
-
-#. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__message_attachment_count
 msgid "Attachment Count"
 msgstr ""
 
 #. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_order_line__product_template_attribute_value_ids
-msgid "Attribute Values"
-msgstr ""
-
-#. module: purchase
-#: model:ir.ui.menu,name:purchase.menu_product_attribute_action
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
 msgid "Attributes"
 msgstr ""
@@ -691,18 +664,21 @@ msgstr ""
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_account_bank_statement_line__purchase_vendor_bill_id
 #: model:ir.model.fields,field_description:purchase.field_account_move__purchase_vendor_bill_id
+#: model:ir.model.fields,field_description:purchase.field_account_payment__purchase_vendor_bill_id
 msgid "Auto-complete"
 msgstr ""
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_account_bank_statement_line__purchase_vendor_bill_id
 #: model:ir.model.fields,help:purchase.field_account_move__purchase_vendor_bill_id
+#: model:ir.model.fields,help:purchase.field_account_payment__purchase_vendor_bill_id
 msgid "Auto-complete from a past bill / purchase order."
 msgstr ""
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_account_bank_statement_line__purchase_id
 #: model:ir.model.fields,help:purchase.field_account_move__purchase_id
+#: model:ir.model.fields,help:purchase.field_account_payment__purchase_id
 msgid "Auto-complete from a past purchase order."
 msgstr ""
 
@@ -731,8 +707,14 @@ msgid "Average Cost"
 msgstr ""
 
 #. module: purchase
+#: model:ir.model.fields,field_description:purchase.field_purchase_report__avg_days_to_purchase
+msgid "Average Days to Purchase"
+msgstr ""
+
+#. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
+#, python-format
 msgid "Avg Order Value"
 msgstr ""
 
@@ -752,25 +734,8 @@ msgid "Bill Lines"
 msgstr ""
 
 #. module: purchase
-#. odoo-python
-#: code:addons/purchase/models/purchase_order.py:0
-msgid "Bill Matching"
-msgstr ""
-
-#. module: purchase
-#: model:ir.model,name:purchase.model_bill_to_po_wizard
-msgid "Bill to Purchase Order"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_bill_line_match_tree
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "Billed"
-msgstr ""
-
-#. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_bill_line_match__billed_amount_untaxed
-msgid "Billed Amount Untaxed"
 msgstr ""
 
 #. module: purchase
@@ -811,13 +776,6 @@ msgstr ""
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__user_id
-#: model:ir.model.fields,field_description:purchase.field_purchase_report__user_id
-#: model:ir.model.fields,field_description:purchase.field_res_partner__buyer_id
-#: model:ir.model.fields,field_description:purchase.field_res_users__buyer_id
-#: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_search
-#: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_filter
-#: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_search
 msgid "Buyer"
 msgstr ""
 
@@ -827,9 +785,14 @@ msgid "Calendar View"
 msgstr ""
 
 #. module: purchase
+#: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
+msgid ""
+"Calls for tenders are when you want to generate requests for quotations with"
+" several vendors for a given set of products to compare offers."
+msgstr ""
+
+#. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_kpis_tree
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_tree
 msgid "Cancel"
 msgstr ""
 
@@ -838,6 +801,7 @@ msgstr ""
 #: code:addons/purchase/controllers/portal.py:0
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_order__state__cancel
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_report__state__cancel
+#, python-format
 msgid "Cancelled"
 msgstr ""
 
@@ -848,13 +812,9 @@ msgstr ""
 
 #. module: purchase
 #. odoo-python
-#: code:addons/purchase/models/purchase_order_line.py:0
-msgid "Cannot delete a purchase order line which is in state “%s”."
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
-msgid "Catalog"
+#: code:addons/purchase/models/purchase.py:0
+#, python-format
+msgid "Cannot delete a purchase order line which is in state '%s'."
 msgstr ""
 
 #. module: purchase
@@ -863,18 +823,8 @@ msgid "Category"
 msgstr ""
 
 #. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
-msgid "Close"
-msgstr ""
-
-#. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__commercial_partner_id
 msgid "Commercial Entity"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
-msgid "Communication history"
 msgstr ""
 
 #. module: purchase
@@ -883,7 +833,6 @@ msgid "Companies"
 msgstr ""
 
 #. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_bill_line_match__company_id
 #: model:ir.model.fields,field_description:purchase.field_purchase_bill_union__company_id
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__company_id
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__company_id
@@ -893,19 +842,15 @@ msgid "Company"
 msgstr ""
 
 #. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_order__company_currency_id
 #: model:ir.model.fields,field_description:purchase.field_res_config_settings__company_currency_id
 msgid "Company Currency"
 msgstr ""
 
 #. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_order__amount_total_cc
-msgid "Company Total"
-msgstr ""
-
-#. module: purchase
 #. odoo-python
-#: code:addons/purchase/models/purchase_order.py:0
+#: code:addons/purchase/models/purchase.py:0
+#: code:addons/purchase/models/purchase.py:0
+#, python-format
 msgid "Compose Email"
 msgstr ""
 
@@ -920,13 +865,15 @@ msgid "Configuration"
 msgstr ""
 
 #. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
-msgid "Confirm Order"
+#. odoo-python
+#: code:addons/purchase/models/purchase.py:0
+#, python-format
+msgid "Confirm"
 msgstr ""
 
 #. module: purchase
-#: model:ir.actions.server,name:purchase.action_confirm_rfqs
-msgid "Confirm RFQ"
+#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
+msgid "Confirm Order"
 msgstr ""
 
 #. module: purchase
@@ -942,6 +889,7 @@ msgstr ""
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/js/tours/purchase.js:0
+#, python-format
 msgid "Confirm your purchase."
 msgstr ""
 
@@ -964,18 +912,8 @@ msgid "Confirmed purchase orders are not editable"
 msgstr ""
 
 #. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
-msgid "Connect with your software!"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
-#: model_terms:ir.ui.view,arch_db:purchase.report_purchasequotation_document
-msgid "Connect your software"
-msgstr ""
-
-#. module: purchase
 #: model:ir.model,name:purchase.model_res_partner
+#: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
 msgid "Contact"
 msgstr ""
 
@@ -990,11 +928,6 @@ msgstr ""
 msgid ""
 "Conversion between Units of Measure can only occur if they belong to the "
 "same category. The conversion will be made based on the ratios."
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
-msgid "Copy"
 msgstr ""
 
 #. module: purchase
@@ -1024,21 +957,18 @@ msgid "Create a new product variant"
 msgstr ""
 
 #. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_bill_to_po_wizard__create_uid
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__create_uid
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__create_uid
 msgid "Created by"
 msgstr ""
 
 #. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_bill_to_po_wizard__create_date
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__create_date
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__create_date
 msgid "Created on"
 msgstr ""
 
 #. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_bill_line_match__currency_id
 #: model:ir.model.fields,field_description:purchase.field_purchase_bill_union__currency_id
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__currency_id
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__currency_id
@@ -1068,7 +998,9 @@ msgstr ""
 
 #. module: purchase
 #. odoo-python
-#: code:addons/purchase/models/purchase_order.py:0
+#: code:addons/purchase/models/purchase.py:0
+#: code:addons/purchase/models/purchase.py:0
+#, python-format
 msgid "Date Updated"
 msgstr ""
 
@@ -1080,6 +1012,7 @@ msgstr ""
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
+#, python-format
 msgid "Days"
 msgstr ""
 
@@ -1098,28 +1031,6 @@ msgstr ""
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__delay_pass
 msgid "Days to Receive"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
-msgid "Decline"
-msgstr ""
-
-#. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_order__company_price_include
-msgid "Default Sales Price Include"
-msgstr ""
-
-#. module: purchase
-#: model:ir.model.fields,help:purchase.field_purchase_order__company_price_include
-msgid ""
-"Default on whether the sales price used on the product and invoices with "
-"this Company includes its taxes."
-msgstr ""
-
-#. module: purchase
-#: model:ir.model.fields,help:purchase.field_purchase_bill_line_match__product_uom_id
-msgid "Default unit of measure used for all stock operations."
 msgstr ""
 
 #. module: purchase
@@ -1155,24 +1066,6 @@ msgid "Description"
 msgstr ""
 
 #. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
-msgid "Disc.%"
-msgstr ""
-
-#. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_order_line__discount
-msgid "Discount (%)"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
-msgid "Discount:"
-msgstr ""
-
-#. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_bill_to_po_wizard__display_name
-#: model:ir.model.fields,field_description:purchase.field_purchase_bill_line_match__display_name
 #: model:ir.model.fields,field_description:purchase.field_purchase_bill_union__display_name
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__display_name
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__display_name
@@ -1186,8 +1079,8 @@ msgid "Display Type"
 msgstr ""
 
 #. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_order_line__distribution_analytic_account_ids
-msgid "Distribution Analytic Account"
+#: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
+msgid "Documentation"
 msgstr ""
 
 #. module: purchase
@@ -1206,15 +1099,8 @@ msgid "Double validation amount"
 msgstr ""
 
 #. module: purchase
-#. odoo-python
-#: code:addons/purchase/wizard/bill_to_po_wizard.py:0
-msgid "Down Payment (ref: %(ref)s)"
-msgstr ""
-
-#. module: purchase
-#. odoo-python
-#: code:addons/purchase/models/purchase_order.py:0
-msgid "Down Payments"
+#: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
+msgid "Download"
 msgstr ""
 
 #. module: purchase
@@ -1228,15 +1114,13 @@ msgid "Draft RFQs"
 msgstr ""
 
 #. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
-msgid ""
-"Drag and drop the request for quotation PDF file into your list of "
-"quotations in Odoo. Enjoy the automation!"
+#: model:ir.model.fields,field_description:purchase.field_purchase_order__dest_address_id
+msgid "Dropship Address"
 msgstr ""
 
 #. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_order__dest_address_id
-msgid "Dropship Address"
+#: model:ir.model,name:purchase.model_mail_compose_message
+msgid "Email composition wizard"
 msgstr ""
 
 #. module: purchase
@@ -1252,7 +1136,8 @@ msgstr ""
 
 #. module: purchase
 #. odoo-python
-#: code:addons/purchase/models/purchase_order_line.py:0
+#: code:addons/purchase/models/purchase.py:0
+#, python-format
 msgid "Extra line with %s "
 msgstr ""
 
@@ -1260,16 +1145,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__fiscal_position_id
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__fiscal_position_id
 msgid "Fiscal Position"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.portal_my_home_purchase
-msgid "Follow orders you have to fulfill"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.portal_my_home_purchase
-msgid "Follow your Requests for Quotation"
 msgstr ""
 
 #. module: purchase
@@ -1295,13 +1170,8 @@ msgstr ""
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/account_invoice.py:0
-msgid "From %s"
-msgstr ""
-
-#. module: purchase
-#. odoo-python
-#: code:addons/purchase/models/account_invoice.py:0
-msgid "From Electronic Document"
+#, python-format
+msgid "From %s document"
 msgstr ""
 
 #. module: purchase
@@ -1323,13 +1193,6 @@ msgstr ""
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
 msgid "Get warnings in orders for products or vendors"
-msgstr ""
-
-#. module: purchase
-#: model:ir.model.fields,help:purchase.field_purchase_order_line__product_type
-msgid ""
-"Goods are tangible materials and merchandise you provide.\n"
-"A service is a non-material product you provide."
 msgstr ""
 
 #. module: purchase
@@ -1356,8 +1219,11 @@ msgid "Hide cancelled lines"
 msgstr ""
 
 #. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_bill_to_po_wizard__id
-#: model:ir.model.fields,field_description:purchase.field_purchase_bill_line_match__id
+#: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
+msgid "History"
+msgstr ""
+
+#. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_bill_union__id
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__id
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__id
@@ -1408,26 +1274,15 @@ msgstr ""
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/product.py:0
+#, python-format
 msgid "Import Template for Products"
 msgstr ""
 
 #. module: purchase
 #. odoo-python
-#: code:addons/purchase/models/purchase_order.py:0
+#: code:addons/purchase/models/purchase.py:0
+#, python-format
 msgid "In order to delete a purchase order, you must cancel it first."
-msgstr ""
-
-#. module: purchase
-#. odoo-python
-#: code:addons/purchase/models/purchase_order.py:0
-msgid ""
-"In selected purchase order to merge these details must be same\n"
-"Vendor, currency, destination, dropship address and agreement"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.product_view_search_catalog
-msgid "In the Order"
 msgstr ""
 
 #. module: purchase
@@ -1438,6 +1293,7 @@ msgstr ""
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/js/tours/purchase.js:0
+#, python-format
 msgid "Indicate the product quantity you want to order."
 msgstr ""
 
@@ -1459,25 +1315,8 @@ msgid "Invoicing"
 msgstr ""
 
 #. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_account_move_line__is_downpayment
-#: model:ir.model.fields,field_description:purchase.field_purchase_order_line__is_downpayment
-msgid "Is Downpayment"
-msgstr ""
-
-#. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__message_is_follower
 msgid "Is Follower"
-msgstr ""
-
-#. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_product_product__is_in_purchase_order
-msgid "Is In Purchase Order"
-msgstr ""
-
-#. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_account_bank_statement_line__is_purchase_matched
-#: model:ir.model.fields,field_description:purchase.field_account_move__is_purchase_matched
-msgid "Is Purchase Matched"
 msgstr ""
 
 #. module: purchase
@@ -1491,14 +1330,20 @@ msgid "Journal Item"
 msgstr ""
 
 #. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_bill_to_po_wizard__write_uid
+#: model:ir.model.fields,field_description:purchase.field_purchase_bill_union____last_update
+#: model:ir.model.fields,field_description:purchase.field_purchase_order____last_update
+#: model:ir.model.fields,field_description:purchase.field_purchase_order_line____last_update
+#: model:ir.model.fields,field_description:purchase.field_purchase_report____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__write_uid
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__write_uid
 msgid "Last Updated by"
 msgstr ""
 
 #. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_bill_to_po_wizard__write_date
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__write_date
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__write_date
 msgid "Last Updated on"
@@ -1507,6 +1352,7 @@ msgstr ""
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
+#, python-format
 msgid "Late"
 msgstr ""
 
@@ -1524,18 +1370,22 @@ msgstr ""
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
+#, python-format
 msgid "Lead Time to Purchase"
 msgstr ""
 
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/js/tours/purchase.js:0
+#, python-format
 msgid "Let's create your first request for quotation."
 msgstr ""
 
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/js/tours/purchase.js:0
+#: code:addons/purchase/static/src/js/tours/purchase.js:0
+#, python-format
 msgid ""
 "Let's try the Purchase app to manage the flow from purchase to reception and"
 " invoice control."
@@ -1552,21 +1402,6 @@ msgid "Levels of Approvals *"
 msgstr ""
 
 #. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_bill_line_match__line_amount_untaxed
-msgid "Line Amount Untaxed"
-msgstr ""
-
-#. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_bill_line_match__line_qty
-msgid "Line Qty"
-msgstr ""
-
-#. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_bill_line_match__line_uom_id
-msgid "Line Uom"
-msgstr ""
-
-#. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "Lock"
 msgstr ""
@@ -1580,7 +1415,13 @@ msgstr ""
 #. odoo-python
 #: code:addons/purchase/controllers/portal.py:0
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_order__state__done
+#, python-format
 msgid "Locked"
+msgstr ""
+
+#. module: purchase
+#: model:ir.model.fields,field_description:purchase.field_purchase_order__message_main_attachment_id
+msgid "Main Attachment"
 msgstr ""
 
 #. module: purchase
@@ -1591,7 +1432,7 @@ msgstr ""
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
-msgid "Manage blanket orders and purchase templates"
+msgid "Manage your purchase agreements (call for tenders, blanket orders)"
 msgstr ""
 
 #. module: purchase
@@ -1624,16 +1465,6 @@ msgid ""
 "Margin of error for vendor lead times. When the system generates Purchase "
 "Orders for reordering products,they will be scheduled that many days earlier"
 " to cope with unexpected vendor delays."
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_bill_line_match_tree
-msgid "Match"
-msgstr ""
-
-#. module: purchase
-#: model:ir.actions.server,name:purchase.action_merger
-msgid "Merge"
 msgstr ""
 
 #. module: purchase
@@ -1682,12 +1513,14 @@ msgstr ""
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
+#, python-format
 msgid "My Draft RFQs"
 msgstr ""
 
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
+#, python-format
 msgid "My Late RFQs"
 msgstr ""
 
@@ -1704,18 +1537,21 @@ msgstr ""
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
+#, python-format
 msgid "My RFQs"
 msgstr ""
 
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
+#, python-format
 msgid "My Waiting RFQs"
 msgstr ""
 
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/controllers/portal.py:0
+#, python-format
 msgid "Name"
 msgstr ""
 
@@ -1727,6 +1563,7 @@ msgstr ""
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/controllers/portal.py:0
+#, python-format
 msgid "Newest"
 msgstr ""
 
@@ -1787,13 +1624,8 @@ msgid "Normal"
 msgstr ""
 
 #. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_filter
+#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_search
 msgid "Not Acknowledged"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
-msgid "Not using Odoo?"
 msgstr ""
 
 #. module: purchase
@@ -1839,11 +1671,6 @@ msgid "Number of messages with delivery error"
 msgstr ""
 
 #. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
-msgid "Odoo"
-msgstr ""
-
-#. module: purchase
 #: model:ir.model.fields.selection,name:purchase.selection__product_template__purchase_method__purchase
 msgid "On ordered quantities"
 msgstr ""
@@ -1864,6 +1691,7 @@ msgstr ""
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/js/tours/purchase.js:0
+#, python-format
 msgid ""
 "Once you get the price from the vendor, you can complete the purchase order "
 "with the right price."
@@ -1877,12 +1705,6 @@ msgid ""
 msgstr ""
 
 #. module: purchase
-#. odoo-python
-#: code:addons/purchase/models/product.py:0
-msgid "Operation not supported"
-msgstr ""
-
-#. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__order_id
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_search
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_filter
@@ -1892,16 +1714,10 @@ msgstr ""
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__date_order
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__date_order
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_line_search
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_search
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_filter
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_search
 msgid "Order Date"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_line_search
-msgid "Order Date: Last 365 Days"
 msgstr ""
 
 #. module: purchase
@@ -1939,19 +1755,14 @@ msgid "Orders"
 msgstr ""
 
 #. module: purchase
-#. odoo-python
-#: code:addons/purchase/models/purchase_order.py:0
-msgid "Order due %(date)s"
-msgstr ""
-
-#. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "Other Information"
 msgstr ""
 
 #. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.portal_my_home_purchase
-msgid "Our Orders"
+#: model:mail.template,report_name:purchase.email_template_edi_purchase_done
+#: model:mail.template,report_name:purchase.email_template_edi_purchase_reminder
+msgid "PO_{{ (object.name or '').replace('/','_') }}"
 msgstr ""
 
 #. module: purchase
@@ -1965,8 +1776,6 @@ msgid "Packaging Quantity"
 msgstr ""
 
 #. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_bill_to_po_wizard__partner_id
-#: model:ir.model.fields,field_description:purchase.field_purchase_bill_line_match__partner_id
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__partner_id
 msgid "Partner"
 msgstr ""
@@ -1987,19 +1796,6 @@ msgid "Payment terms"
 msgstr ""
 
 #. module: purchase
-#. odoo-python
-#: code:addons/purchase/models/purchase_order.py:0
-msgid ""
-"Please select at least two purchase orders with state RFQ and RFQ sent to "
-"merge."
-msgstr ""
-
-#. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_bill_line_match__pol_id
-msgid "Pol"
-msgstr ""
-
-#. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__access_url
 msgid "Portal Access URL"
 msgstr ""
@@ -2010,19 +1806,13 @@ msgid "Preview the reminder email by sending it to yourself."
 msgstr ""
 
 #. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_bill_line_match_tree
-msgid "Price"
-msgstr ""
-
-#. module: purchase
-#. odoo-javascript
-#: code:addons/purchase/static/src/product_catalog/purchase_order_line/purchase_order_line.xml:0
-msgid "Price:"
-msgstr ""
-
-#. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
 msgid "Pricing"
+msgstr ""
+
+#. module: purchase
+#: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
+msgid "Print"
 msgstr ""
 
 #. module: purchase
@@ -2037,7 +1827,6 @@ msgstr ""
 
 #. module: purchase
 #: model:ir.model,name:purchase.model_product_template
-#: model:ir.model.fields,field_description:purchase.field_purchase_bill_line_match__product_id
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__product_id
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__product_id
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__product_id
@@ -2045,6 +1834,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_search
 msgid "Product"
+msgstr ""
+
+#. module: purchase
+#: model:ir.ui.menu,name:purchase.menu_product_attribute_action
+msgid "Product Attributes"
 msgstr ""
 
 #. module: purchase
@@ -2056,11 +1850,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__category_id
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_search
 msgid "Product Category"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_bill_line_match_tree
-msgid "Product Description"
 msgstr ""
 
 #. module: purchase
@@ -2079,16 +1868,6 @@ msgid "Product Type"
 msgstr ""
 
 #. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_bill_line_match__product_uom_price
-msgid "Product Uom Price"
-msgstr ""
-
-#. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_bill_line_match__product_uom_qty
-msgid "Product Uom Qty"
-msgstr ""
-
-#. module: purchase
 #: model:ir.model,name:purchase.model_product_product
 msgid "Product Variant"
 msgstr ""
@@ -2097,11 +1876,6 @@ msgstr ""
 #: model:ir.actions.act_window,name:purchase.product_product_action
 #: model:ir.ui.menu,name:purchase.product_product_menu
 msgid "Product Variants"
-msgstr ""
-
-#. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_order_line__product_no_variant_attribute_value_ids
-msgid "Product attribute values that do not create variants"
 msgstr ""
 
 #. module: purchase
@@ -2135,21 +1909,11 @@ msgid "Purchase Agreements"
 msgstr ""
 
 #. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_bill_line_match__purchase_amount_untaxed
-msgid "Purchase Amount Untaxed"
-msgstr ""
-
-#. module: purchase
 #: model:ir.actions.act_window,name:purchase.action_purchase_order_report_all
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_report_view_tree
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_graph
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_pivot
 msgid "Purchase Analysis"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_bill_line_match_tree
-msgid "Purchase Bill Lines"
 msgstr ""
 
 #. module: purchase
@@ -2170,7 +1934,9 @@ msgstr ""
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/product.py:0
-#: code:addons/purchase/models/purchase_order_line.py:0
+#: code:addons/purchase/models/product.py:0
+#: code:addons/purchase/models/purchase.py:0
+#, python-format
 msgid "Purchase History for %s"
 msgstr ""
 
@@ -2181,27 +1947,16 @@ msgid "Purchase Lead Time"
 msgstr ""
 
 #. module: purchase
-#: model:ir.model,name:purchase.model_purchase_bill_line_match
-msgid "Purchase Line and Vendor Bill line matching view"
-msgstr ""
-
-#. module: purchase
-#. odoo-python
-#: code:addons/purchase/models/account_invoice.py:0
-msgid "Purchase Matching"
-msgstr ""
-
-#. module: purchase
 #. odoo-python
 #: code:addons/purchase/controllers/portal.py:0
-#: code:addons/purchase/models/purchase_order.py:0
+#: code:addons/purchase/models/purchase.py:0
+#: code:addons/purchase/models/purchase.py:0
 #: model:ir.actions.report,name:purchase.action_report_purchase_order
 #: model:ir.model,name:purchase.model_purchase_order
 #: model:ir.model.fields,field_description:purchase.field_account_bank_statement_line__purchase_id
 #: model:ir.model.fields,field_description:purchase.field_account_move__purchase_id
 #: model:ir.model.fields,field_description:purchase.field_account_move_line__purchase_order_id
-#: model:ir.model.fields,field_description:purchase.field_bill_to_po_wizard__purchase_order_id
-#: model:ir.model.fields,field_description:purchase.field_purchase_bill_line_match__purchase_order_id
+#: model:ir.model.fields,field_description:purchase.field_account_payment__purchase_id
 #: model:ir.model.fields,field_description:purchase.field_purchase_bill_union__purchase_order_id
 #: model:ir.model.fields.selection,name:purchase.selection__account_analytic_applicability__business_domain__purchase_order
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_order__state__purchase
@@ -2214,6 +1969,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_tree
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_activity
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_tree
+#, python-format
 msgid "Purchase Order"
 msgstr ""
 
@@ -2231,6 +1987,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase.field_account_analytic_account__purchase_order_count
 #: model:ir.model.fields,field_description:purchase.field_account_bank_statement_line__purchase_order_count
 #: model:ir.model.fields,field_description:purchase.field_account_move__purchase_order_count
+#: model:ir.model.fields,field_description:purchase.field_account_payment__purchase_order_count
 #: model:ir.model.fields,field_description:purchase.field_res_partner__purchase_order_count
 #: model:ir.model.fields,field_description:purchase.field_res_users__purchase_order_count
 msgid "Purchase Order Count"
@@ -2276,12 +2033,6 @@ msgid ""
 msgstr ""
 
 #. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_account_bank_statement_line__purchase_order_name
-#: model:ir.model.fields,field_description:purchase.field_account_move__purchase_order_name
-msgid "Purchase Order Name"
-msgstr ""
-
-#. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_res_partner__purchase_warn
 #: model:ir.model.fields,field_description:purchase.field_res_users__purchase_warn
 msgid "Purchase Order Warning"
@@ -2294,16 +2045,26 @@ msgstr ""
 #: model:ir.ui.menu,name:purchase.menu_purchase_form_action
 #: model_terms:ir.ui.view,arch_db:purchase.account_analytic_account_view_form_purchase
 #: model_terms:ir.ui.view,arch_db:purchase.portal_my_home_menu_purchase
+#: model_terms:ir.ui.view,arch_db:purchase.portal_my_home_purchase
 #: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_orders
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_bill_union_filter
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_filter
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_search
+#, python-format
 msgid "Purchase Orders"
 msgstr ""
 
 #. module: purchase
 #: model:ir.model,name:purchase.model_purchase_report
 msgid "Purchase Report"
+msgstr ""
+
+#. module: purchase
+#: model:ir.model.fields,field_description:purchase.field_purchase_report__user_id
+#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_search
+#: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_filter
+#: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_search
+msgid "Purchase Representative"
 msgstr ""
 
 #. module: purchase
@@ -2328,6 +2089,7 @@ msgstr ""
 
 #. module: purchase
 #: model:ir.actions.server,name:purchase.purchase_send_reminder_mail_ir_actions_server
+#: model:ir.cron,cron_name:purchase.purchase_send_reminder_mail
 msgid "Purchase reminder"
 msgstr ""
 
@@ -2354,13 +2116,13 @@ msgstr ""
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_product_product__purchased_product_qty
 #: model:ir.model.fields,field_description:purchase.field_product_template__purchased_product_qty
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_bill_line_match_tree
 msgid "Purchased"
 msgstr ""
 
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
+#, python-format
 msgid "Purchased Last 7 Days"
 msgstr ""
 
@@ -2389,18 +2151,8 @@ msgid ""
 msgstr ""
 
 #. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_bill_line_match_tree
-msgid "Qty"
-msgstr ""
-
-#. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__qty_billed
 msgid "Qty Billed"
-msgstr ""
-
-#. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_bill_line_match__qty_invoiced
-msgid "Qty Invoiced"
 msgstr ""
 
 #. module: purchase
@@ -2425,7 +2177,6 @@ msgstr ""
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__product_qty
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_history_tree
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
 msgid "Quantity"
 msgstr ""
@@ -2463,15 +2214,8 @@ msgid "RFQ Sent"
 msgstr ""
 
 #. module: purchase
-#. odoo-python
-#: code:addons/purchase/models/purchase_order.py:0
-msgid "RFQ merged with %(oldest_rfq_name)s and %(cancelled_rfq)s"
-msgstr ""
-
-#. module: purchase
-#. odoo-python
-#: code:addons/purchase/models/purchase_order.py:0
-msgid "RFQ merged with %s"
+#: model:mail.template,report_name:purchase.email_template_edi_purchase
+msgid "RFQ_{{ (object.name or '').replace('/','_') }}"
 msgstr ""
 
 #. module: purchase
@@ -2482,6 +2226,7 @@ msgstr ""
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
+#, python-format
 msgid "RFQs Sent Last 7 Days"
 msgstr ""
 
@@ -2491,18 +2236,13 @@ msgid "RFQs and Purchases"
 msgstr ""
 
 #. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_order__rating_ids
-msgid "Ratings"
+#: model:ir.model.fields,help:purchase.field_purchase_order__currency_rate
+msgid "Ratio between the purchase order currency and the company currency"
 msgstr ""
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "Re-Send by Email"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
-msgid "Read the documentation"
 msgstr ""
 
 #. module: purchase
@@ -2554,17 +2294,11 @@ msgid "Reception Confirmed"
 msgstr ""
 
 #. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_order__mail_reception_declined
-msgid "Reception Declined"
-msgstr ""
-
-#. module: purchase
 #: model_terms:ir.actions.act_window,help:purchase.act_res_partner_2_supplier_invoices
 msgid "Record a new vendor bill"
 msgstr ""
 
 #. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_bill_line_match__reference
 #: model:ir.model.fields,field_description:purchase.field_purchase_bill_union__name
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_kpis_tree
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_tree
@@ -2604,21 +2338,17 @@ msgid "Reminder Confirmed"
 msgstr ""
 
 #. module: purchase
-#: model:ir.model,name:purchase.model_ir_actions_report
-msgid "Report Action"
-msgstr ""
-
-#. module: purchase
 #: model:ir.ui.menu,name:purchase.purchase_report_main
 msgid "Reporting"
 msgstr ""
 
 #. module: purchase
 #. odoo-python
-#: code:addons/purchase/models/purchase_order.py:0
+#: code:addons/purchase/models/purchase.py:0
 #: model:ir.actions.report,name:purchase.report_purchase_quotation
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
 #: model_terms:ir.ui.view,arch_db:purchase.report_purchasequotation_document
+#, python-format
 msgid "Request for Quotation"
 msgstr ""
 
@@ -2684,6 +2414,7 @@ msgstr ""
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/js/tours/purchase.js:0
+#, python-format
 msgid "Search a vendor name, or create one on the fly."
 msgstr ""
 
@@ -2708,14 +2439,9 @@ msgid "Security Token"
 msgstr ""
 
 #. module: purchase
-#. odoo-python
-#: code:addons/purchase/models/purchase_bill_line_match.py:0
-msgid "Select Vendor Bill lines to add to a Purchase Order"
-msgstr ""
-
-#. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/js/tours/purchase.js:0
+#, python-format
 msgid "Select a product, or create a new one on the fly."
 msgstr ""
 
@@ -2733,11 +2459,6 @@ msgid ""
 "Selecting the \"Warning\" option will notify user with the message, "
 "Selecting \"Blocking Message\" will throw an exception with the message and "
 "block the flow. The Message has to be written in the next field."
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
-msgid "Sell and purchase products in different units of measure"
 msgstr ""
 
 #. module: purchase
@@ -2763,6 +2484,8 @@ msgstr ""
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/js/tours/purchase.js:0
+#: code:addons/purchase/static/src/js/tours/purchase.js:0
+#, python-format
 msgid "Send the request for quotation to your vendor."
 msgstr ""
 
@@ -2826,16 +2549,6 @@ msgid "Starred"
 msgstr ""
 
 #. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
-msgid "Start on Odoo"
-msgstr ""
-
-#. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_bill_line_match__state
-msgid "State"
-msgstr ""
-
-#. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__state
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__state
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__state
@@ -2895,9 +2608,13 @@ msgid "Supplier Pricelist"
 msgstr ""
 
 #. module: purchase
-#: model:ir.model,name:purchase.model_account_tax
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__price_tax
 msgid "Tax"
+msgstr ""
+
+#. module: purchase
+#: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
+msgid "Tax 15%"
 msgstr ""
 
 #. module: purchase
@@ -2908,22 +2625,6 @@ msgstr ""
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__tax_totals
 msgid "Tax Totals"
-msgstr ""
-
-#. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_order__tax_calculation_rounding_method
-#: model:ir.model.fields,field_description:purchase.field_purchase_order_line__tax_calculation_rounding_method
-msgid "Tax calculation rounding method"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
-msgid "Tax excl.:"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
-msgid "Tax incl.:"
 msgstr ""
 
 #. module: purchase
@@ -2963,26 +2664,9 @@ msgstr ""
 
 #. module: purchase
 #. odoo-python
-#: code:addons/purchase/models/purchase_order.py:0
-msgid "The RFQ has been acknowledged by %s."
-msgstr ""
-
-#. module: purchase
-#. odoo-python
-#: code:addons/purchase/models/purchase_order.py:0
-msgid "The RFQ has been declined by %s."
-msgstr ""
-
-#. module: purchase
-#. odoo-python
-#: code:addons/purchase/models/purchase_order.py:0
+#: code:addons/purchase/models/purchase.py:0
+#, python-format
 msgid "The order receipt has been acknowledged by %s."
-msgstr ""
-
-#. module: purchase
-#. odoo-python
-#: code:addons/purchase/models/purchase_order.py:0
-msgid "The order receipt has been declined by %s."
 msgstr ""
 
 #. module: purchase
@@ -2991,14 +2675,6 @@ msgid ""
 "The request for quotation is the first step of the purchases flow. Once\n"
 "                    converted into a purchase order, you will be able to control the receipt\n"
 "                    of the products and the vendor bill."
-msgstr ""
-
-#. module: purchase
-#. odoo-python
-#: code:addons/purchase/models/purchase_order.py:0
-msgid ""
-"The vendor asked to decline this confirmed RfQ, if you agree on that, cancel"
-" this PO"
 msgstr ""
 
 #. module: purchase
@@ -3013,14 +2689,8 @@ msgstr ""
 
 #. module: purchase
 #. odoo-python
-#: code:addons/purchase/wizard/bill_to_po_wizard.py:0
-msgid ""
-"There are no products to add to the Purchase Order. Are these Down Payments?"
-msgstr ""
-
-#. module: purchase
-#. odoo-python
-#: code:addons/purchase/models/purchase_order.py:0
+#: code:addons/purchase/models/purchase.py:0
+#, python-format
 msgid ""
 "There is no invoiceable line. If a product has a control policy based on "
 "received quantity, please make sure that a quantity has been received."
@@ -3056,7 +2726,8 @@ msgstr ""
 
 #. module: purchase
 #. odoo-python
-#: code:addons/purchase/models/purchase_order_line.py:0
+#: code:addons/purchase/models/purchase.py:0
+#, python-format
 msgid ""
 "This product is packaged by %(pack_size).2f %(pack_name)s. You should "
 "purchase %(quantity).2f %(unit)s."
@@ -3065,13 +2736,15 @@ msgstr ""
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/account_invoice.py:0
-msgid "This vendor bill has been created from: "
+#, python-format
+msgid "This vendor bill has been created from: %s"
 msgstr ""
 
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/account_invoice.py:0
-msgid "This vendor bill has been modified from: "
+#, python-format
+msgid "This vendor bill has been modified from: %s"
 msgstr ""
 
 #. module: purchase
@@ -3106,6 +2779,7 @@ msgstr ""
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
+#, python-format
 msgid "To Send"
 msgstr ""
 
@@ -3123,32 +2797,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__price_total
 #: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_orders
 #: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_rfqs
+#, python-format
 msgid "Total"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_bill_line_match_tree
-msgid "Total Billed"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_bill_line_match_tree
-msgid "Total Purchased"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_history_pivot
-msgid "Total Qty purchased"
 msgstr ""
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__product_uom_qty
 msgid "Total Quantity"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_history_tree
-msgid "Total Untaxed"
 msgstr ""
 
 #. module: purchase
@@ -3166,18 +2821,8 @@ msgid "Total amount"
 msgstr ""
 
 #. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_history_pivot
-msgid "Total purchased amount"
-msgstr ""
-
-#. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order__mail_reception_confirmed
 msgid "True if PO reception is confirmed by the vendor."
-msgstr ""
-
-#. module: purchase
-#: model:ir.model.fields,help:purchase.field_purchase_order__mail_reception_declined
-msgid "True if PO reception is declined by the vendor."
 msgstr ""
 
 #. module: purchase
@@ -3198,15 +2843,11 @@ msgstr ""
 
 #. module: purchase
 #. odoo-python
-#: code:addons/purchase/models/purchase_order.py:0
+#: code:addons/purchase/models/purchase.py:0
+#, python-format
 msgid ""
-"Unable to cancel purchase order(s): %s. You must first cancel their related "
+"Unable to cancel this purchase order. You must first cancel the related "
 "vendor bills."
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_bill_line_match_tree
-msgid "Unit"
 msgstr ""
 
 #. module: purchase
@@ -3216,24 +2857,13 @@ msgid "Unit Price"
 msgstr ""
 
 #. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_order_line__price_unit_discounted
-msgid "Unit Price (Discounted)"
-msgstr ""
-
-#. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "Unit Price:"
 msgstr ""
 
 #. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_bill_line_match__product_uom_id
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__product_uom
 msgid "Unit of Measure"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
-msgid "Units Of Measure"
 msgstr ""
 
 #. module: purchase
@@ -3280,7 +2910,8 @@ msgstr ""
 
 #. module: purchase
 #. odoo-python
-#: code:addons/purchase/models/purchase_order.py:0
+#: code:addons/purchase/models/purchase.py:0
+#, python-format
 msgid "Update Dates"
 msgstr ""
 
@@ -3290,15 +2921,17 @@ msgid "Urgent"
 msgstr ""
 
 #. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
-msgid ""
-"Use the above REST URL to get structured data of the purchase order in UBL "
-"format."
+#: model:res.groups,name:purchase.group_purchase_user
+msgid "User"
 msgstr ""
 
 #. module: purchase
-#: model:res.groups,name:purchase.group_purchase_user
-msgid "User"
+#. odoo-python
+#: code:addons/purchase/report/purchase_report.py:0
+#, python-format
+msgid ""
+"Value: 'avg_days_to_purchase' should only be used to show an average. If you"
+" are seeing this message then it is being accessed incorrectly."
 msgstr ""
 
 #. module: purchase
@@ -3310,10 +2943,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase.field_purchase_bill_union__partner_id
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__partner_id
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__partner_id
-#: model_terms:ir.ui.view,arch_db:purchase.product_template_search_view_purchase
-#: model_terms:ir.ui.view,arch_db:purchase.product_view_search_catalog
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_bill_line_match_tree
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_history_tree
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_line_search
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_line_tree
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_search
@@ -3328,14 +2957,9 @@ msgid "Vendor Bill"
 msgstr ""
 
 #. module: purchase
-#. odoo-python
-#: code:addons/purchase/models/purchase_bill_line_match.py:0
-msgid "Vendor Bill lines can only be added to one Purchase Order."
-msgstr ""
-
-#. module: purchase
 #: model:ir.actions.act_window,name:purchase.act_res_partner_2_supplier_invoices
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
+#: model_terms:ir.ui.view,arch_db:purchase.res_partner_view_purchase_account_buttons
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_bill_union_filter
 msgid "Vendor Bills"
 msgstr ""
@@ -3371,25 +2995,9 @@ msgstr ""
 
 #. module: purchase
 #. odoo-python
-#: code:addons/purchase/models/purchase_order.py:0
+#: code:addons/purchase/models/purchase.py:0
+#, python-format
 msgid "View"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
-msgid "View Details"
-msgstr ""
-
-#. module: purchase
-#. odoo-python
-#: code:addons/purchase/models/purchase_order.py:0
-msgid "View Order"
-msgstr ""
-
-#. module: purchase
-#. odoo-python
-#: code:addons/purchase/models/purchase_order.py:0
-msgid "View Quotation"
 msgstr ""
 
 #. module: purchase
@@ -3400,6 +3008,7 @@ msgstr ""
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
+#, python-format
 msgid "Waiting"
 msgstr ""
 
@@ -3415,22 +3024,19 @@ msgid "Waiting RFQs"
 msgstr ""
 
 #. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
-msgid "Want to import this document in Odoo?"
-msgstr ""
-
-#. module: purchase
 #. odoo-python
-#: code:addons/purchase/models/purchase_order_line.py:0
+#: code:addons/purchase/models/purchase.py:0
 #: model:ir.model.fields.selection,name:purchase.selection__product_template__purchase_line_warn__warning
 #: model:ir.model.fields.selection,name:purchase.selection__res_partner__purchase_warn__warning
+#, python-format
 msgid "Warning"
 msgstr ""
 
 #. module: purchase
 #. odoo-python
-#: code:addons/purchase/models/purchase_order.py:0
-#: code:addons/purchase/models/purchase_order_line.py:0
+#: code:addons/purchase/models/purchase.py:0
+#: code:addons/purchase/models/purchase.py:0
+#, python-format
 msgid "Warning for %s"
 msgstr ""
 
@@ -3489,21 +3095,11 @@ msgstr ""
 
 #. module: purchase
 #. odoo-python
-#: code:addons/purchase/models/purchase_bill_line_match.py:0
-msgid "You can't select lines from multiple Vendor Bill to do the matching."
-msgstr ""
-
-#. module: purchase
-#. odoo-python
-#: code:addons/purchase/models/purchase_order_line.py:0
+#: code:addons/purchase/models/purchase.py:0
+#, python-format
 msgid ""
 "You cannot change the type of a purchase order line. Instead you should "
 "delete the current line and create a new line of the proper type."
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
-msgid "You don't use a good CRM software?"
 msgstr ""
 
 #. module: purchase
@@ -3522,14 +3118,8 @@ msgstr ""
 
 #. module: purchase
 #. odoo-python
-#: code:addons/purchase/models/purchase_bill_line_match.py:0
-msgid ""
-"You must select at least one Purchase Order line to match or create bill."
-msgstr ""
-
-#. module: purchase
-#. odoo-python
-#: code:addons/purchase/models/purchase_order.py:0
+#: code:addons/purchase/models/purchase.py:0
+#, python-format
 msgid ""
 "Your quotation contains products from company %(product_company)s whereas your quotation belongs to company %(quote_company)s. \n"
 " Please change the company of your quotation or remove the products from other companies (%(bad_products)s)."
@@ -3543,34 +3133,6 @@ msgstr ""
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "day(s) before"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.bill_to_po_wizard_form
-msgid "or create new"
-msgstr ""
-
-#. module: purchase
-#. odoo-python
-#: code:addons/purchase/models/purchase_order.py:0
-msgid "purchase orders merged"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
-#: model_terms:ir.ui.view,arch_db:purchase.report_purchasequotation_document
-msgid "to create quotes automatically."
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
-msgid "to learn all the ways to connect your software with"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
-#: model_terms:ir.ui.view,arch_db:purchase.report_purchasequotation_document
-msgid "with"
 msgstr ""
 
 #. module: purchase

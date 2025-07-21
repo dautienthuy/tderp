@@ -295,14 +295,11 @@ class DockerTgz(Docker):
         logging.info('Start testing python tgz package')
         cmds = [
             'service postgresql start',
+            'pip3 install /data/src/odoo_%s.%s.tar.gz' % (VERSION, TSTAMP),
             'su postgres -s /bin/bash -c "createuser -s odoo"',
-            'su odoo -s /bin/bash -c "python3 -m venv /var/lib/odoo/odoovenv"',
-            'su odoo -s /bin/bash -c "/var/lib/odoo/odoovenv/bin/python3 -m pip install --upgrade pip"',
-            'su odoo -s /bin/bash -c "/var/lib/odoo/odoovenv/bin/python3 -m pip install -r /opt/release/requirements.txt"',
-            f'su odoo -s /bin/bash -c "/var/lib/odoo/odoovenv/bin/python3 -m pip install /data/src/odoo_{VERSION}.{TSTAMP}.tar.gz"',
-            'su odoo -s /bin/bash -c "createdb mycompany"',
-            'su odoo -s /bin/bash -c "/var/lib/odoo/odoovenv/bin/odoo -d mycompany -i base --stop-after-init"',
-            'su odoo -s /bin/bash -c "/var/lib/odoo/odoovenv/bin/odoo -d mycompany --pidfile=/data/src/odoo.pid"',
+            'su postgres -s /bin/bash -c "createdb mycompany"',
+            'su odoo -s /bin/bash -c "odoo -d mycompany -i base --stop-after-init"',
+            'su odoo -s /bin/bash -c "odoo -d mycompany --pidfile=/data/src/odoo.pid"',
         ]
         self.run(' && '.join(cmds), self.args.build_dir, 'odoo-src-test-%s' % TSTAMP, user='root', detach=True, exposed_port=8069, timeout=300)
         self.test_odoo()
@@ -330,9 +327,11 @@ class DockerDeb(Docker):
         logging.info('Start testing debian package')
         cmds = [
             'service postgresql start',
+            'su postgres -s /bin/bash -c "createdb mycompany"',
             '/usr/bin/apt-get update -y',
-            f'/usr/bin/apt-get install -y /data/src/odoo_{VERSION}.{TSTAMP}_all.deb',
-            'su odoo -s /bin/bash -c "odoo -d mycompany -i base --pidfile=/data/src/odoo.pid"',
+            '/usr/bin/dpkg -i /data/src/odoo_%s.%s_all.deb ; /usr/bin/apt-get install -f -y' % (VERSION, TSTAMP),
+            'su odoo -s /bin/bash -c "odoo -d mycompany -i base --stop-after-init"',
+            'su odoo -s /bin/bash -c "odoo -d mycompany --pidfile=/data/src/odoo.pid"',
         ]
         self.run(' && '.join(cmds), self.args.build_dir, 'odoo-deb-test-%s' % TSTAMP, user='root', detach=True, exposed_port=8069, timeout=300)
         self.test_odoo()
@@ -367,8 +366,7 @@ class DockerRpm(Docker):
         cmds = [
             'su postgres -c "/usr/bin/pg_ctl -D /var/lib/postgres/data start"',
             'sleep 5',
-            'su postgres -c "createuser -s odoo"',
-            'su odoo -c "createdb mycompany"',
+            'su postgres -c "createdb mycompany"',
             'dnf install -d 0 -e 0 /data/src/odoo_%s.%s.rpm -y' % (VERSION, TSTAMP),
             'su odoo -s /bin/bash -c "odoo -c /etc/odoo/odoo.conf -d mycompany -i base --stop-after-init"',
             'su odoo -s /bin/bash -c "odoo -c /etc/odoo/odoo.conf -d mycompany --pidfile=/data/src/odoo.pid"',
@@ -413,7 +411,7 @@ class DockerWine(Docker):
         cmds = [
             rf'wine {container_python} -m pip install --upgrade pip',
             rf'cat /data/src/requirements*.txt  | while read PACKAGE; do wine {container_python} -m pip install "${{PACKAGE%%#*}}" ; done',
-            rf'wine "c:\nsis-3.11\makensis.exe" {nsis_args} "c:\odoobuild\server\setup\win32\setup.nsi"',
+            rf'wine "c:\nsis-3.10\makensis.exe" {nsis_args} "c:\odoobuild\server\setup\win32\setup.nsi"',
             rf'wine {container_python} -m pip list'
         ]
         self.run(' && '.join(cmds), self.args.build_dir, 'odoo-win-build-%s' % TSTAMP)

@@ -1,3 +1,5 @@
+/** @odoo-module **/
+
 /**
  * Traverses the given menu tree, executes the given callback for each node with
  * the node itself and the list of its ancestors as arguments.
@@ -34,7 +36,6 @@ export function computeAppsAndMenuItems(menuTree) {
             id: menuItem.id,
             xmlid: menuItem.xmlid,
             actionID: menuItem.actionID,
-            href: `/odoo/${menuItem.actionPath || "action-" + menuItem.actionID}`,
             appID: menuItem.appID,
         };
         if (isApp) {
@@ -46,7 +47,7 @@ export function computeAppsAndMenuItems(menuTree) {
                     // Could split in three parts?
                     item.webIcon = { iconClass, color, backgroundColor };
                 } else {
-                    item.webIconData = "/web/static/img/default_icon_app.png";
+                    item.webIconData = "/web_enterprise/static/img/default_icon_app.png";
                 }
             }
         } else {
@@ -59,27 +60,4 @@ export function computeAppsAndMenuItems(menuTree) {
         }
     });
     return { apps, menuItems };
-}
-
-/**
- * @param {Array} order
- * Sorts the apps in the homescreen menu according to the given order as an array of xmlid strings
- */
-export function reorderApps(apps, order) {
-    apps.sort((a, b) => {
-        const aIndex = order.indexOf(a.xmlid);
-        const bIndex = order.indexOf(b.xmlid);
-        if (aIndex === -1 && bIndex === -1) {
-            // if both items are not present, sort by original order
-            return apps.indexOf(a) - apps.indexOf(b);
-        }
-        // not found items always before found ones
-        if (aIndex === -1) {
-            return -1;
-        }
-        if (bIndex === -1) {
-            return 1;
-        }
-        return aIndex - bIndex; // sort by order array
-    });
 }

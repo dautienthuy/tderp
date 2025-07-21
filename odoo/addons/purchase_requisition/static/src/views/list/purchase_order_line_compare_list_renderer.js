@@ -1,7 +1,8 @@
 /** @odoo-module */
 
 import { ListRenderer } from "@web/views/list/list_renderer";
-import { onWillStart, useState, useSubEnv } from "@odoo/owl";
+
+const { onWillStart, useState, useSubEnv } = owl;
 
 export class PurchaseOrderLineCompareListRenderer extends ListRenderer {
     setup() {
@@ -36,16 +37,16 @@ export class PurchaseOrderLineCompareListRenderer extends ListRenderer {
 
     getCellClass(column, record) {
         let classNames = super.getCellClass(...arguments);
-        const { resId } = record;
-        const isBestPrice = this.bestFields.best_price_ids.includes(resId);
-        if (
-            (column.name === "price_subtotal" && isBestPrice) ||
-            (column.name === "price_total_cc" && isBestPrice) ||
-            (column.name === "date_planned" && this.bestFields.best_date_ids.includes(resId)) ||
-            (column.name === "price_unit" && this.bestFields.best_price_unit_ids.includes(resId))
-        ) {
-            classNames += " text-success";
+        const customClassNames = [];
+        if (column.name === "price_subtotal" && this.bestFields.best_price_ids.includes(record.resId)) {
+        customClassNames.push("text-success");
         }
-        return classNames;
+        if (column.name === "date_planned" && this.bestFields.best_date_ids.includes(record.resId)) {
+        customClassNames.push("text-success");
+        }
+        if (column.name === "price_unit" && this.bestFields.best_price_unit_ids.includes(record.resId)) {
+        customClassNames.push("text-success");
+        }
+        return classNames.concat(" ", customClassNames.join(" "));
     }
 }

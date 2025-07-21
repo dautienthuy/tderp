@@ -8,6 +8,7 @@ import urllib3.exceptions
 
 from odoo.addons.hw_drivers.tools import helpers
 from odoo.netsvc import DBFormatter
+from odoo.tools import config
 
 _logger = logging.getLogger(__name__)
 
@@ -127,7 +128,7 @@ def close_server_log_sender_handler():
 
 
 def get_odoo_config_log_to_server_option():
-    return helpers.get_conf(IOT_LOG_TO_SERVER_CONFIG_NAME, section='options') or True  # Enabled by default
+    return config.get(IOT_LOG_TO_SERVER_CONFIG_NAME, True)  # Enabled by default
 
 
 def check_and_update_odoo_config_log_to_server_option(new_state):
@@ -135,7 +136,7 @@ def check_and_update_odoo_config_log_to_server_option(new_state):
     :return: wherever the config file need to be updated or not
     """
     if get_odoo_config_log_to_server_option() != new_state:
-        helpers.update_conf({IOT_LOG_TO_SERVER_CONFIG_NAME, new_state}, section='options')
+        config[IOT_LOG_TO_SERVER_CONFIG_NAME] = new_state
         _server_log_sender_handler.toggle_active(new_state)
         return True
     return False

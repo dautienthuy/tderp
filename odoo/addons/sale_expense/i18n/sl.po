@@ -3,16 +3,18 @@
 # 	* sale_expense
 # 
 # Translators:
-# Wil Odoo, 2024
-# Aleš Pipan, 2025
+# Jasmina Macur <jasmina@hbs.si>, 2022
+# Tadej Lupšina <tadej@hbs.si>, 2022
+# Matjaz Mozetic <m.mozetic@matmoz.si>, 2022
+# Martin Trigaux, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 17.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-05 12:32+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Aleš Pipan, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:54+0000\n"
+"Last-Translator: Martin Trigaux, 2024\n"
 "Language-Team: Slovenian (https://app.transifex.com/odoo/teams/41243/sl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -54,9 +56,16 @@ msgid "Expense Report"
 msgstr "Poročilo o stroških"
 
 #. module: sale_expense
+#: model:ir.model.fields,field_description:sale_expense.field_account_bank_statement_line__expense_sheet_id
+#: model:ir.model.fields,field_description:sale_expense.field_account_move__expense_sheet_id
+#: model:ir.model.fields,field_description:sale_expense.field_account_payment__expense_sheet_id
+msgid "Expense Sheet"
+msgstr ""
+
+#. module: sale_expense
 #: model:ir.model,name:sale_expense.model_hr_expense_split
 msgid "Expense Split"
-msgstr "Razdelitev stroškov"
+msgstr ""
 
 #. module: sale_expense
 #: model:ir.actions.act_window,name:sale_expense.hr_expense_action_from_sale_order
@@ -68,12 +77,14 @@ msgstr "Stroški"
 #. module: sale_expense
 #. odoo-python
 #: code:addons/sale_expense/models/product_template.py:0
+#, python-format
 msgid "Expenses of this category may not be added to a Sales Order."
 msgstr ""
 
 #. module: sale_expense
 #. odoo-python
 #: code:addons/sale_expense/models/product_template.py:0
+#, python-format
 msgid ""
 "Expenses will be added to the Sales Order at their actual cost when posted."
 msgstr ""
@@ -81,6 +92,7 @@ msgstr ""
 #. module: sale_expense
 #. odoo-python
 #: code:addons/sale_expense/models/product_template.py:0
+#, python-format
 msgid ""
 "Expenses will be added to the Sales Order at their sales price (product "
 "price, pricelist, etc.) when posted."
@@ -111,11 +123,12 @@ msgstr "Postavka"
 #. module: sale_expense
 #: model:ir.model,name:sale_expense.model_product_template
 msgid "Product"
-msgstr "Izdelek"
+msgstr "Proizvod"
 
 #. module: sale_expense
 #. odoo-python
 #: code:addons/sale_expense/models/hr_expense_sheet.py:0
+#, python-format
 msgid "Reinvoiced Sales Orders"
 msgstr ""
 

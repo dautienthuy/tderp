@@ -1,28 +1,15 @@
+/** @odoo-module **/
+
+import { formatDate } from "@web/core/l10n/dates";
 import { localization } from "@web/core/l10n/localization";
 import { useDebounced } from "@web/core/utils/timing";
 import { getColor } from "../colors";
 import { useCalendarPopover, useFullCalendar } from "../hooks";
 import { CalendarYearPopover } from "./calendar_year_popover";
-import { makeWeekColumn } from "@web/views/calendar/calendar_common/calendar_common_week_column";
-import { getLocalWeekNumber } from "@web/core/l10n/dates";
 
-import { Component, useEffect, useRef } from "@odoo/owl";
+import { Component, useEffect, useRef, onRendered } from "@odoo/owl";
 
 export class CalendarYearRenderer extends Component {
-    static components = {
-        Popover: CalendarYearPopover,
-    };
-    static template = "web.CalendarYearRenderer";
-    static props = {
-        model: Object,
-        displayName: { type: String, optional: true },
-        isWeekendVisible: { type: Boolean, optional: true },
-        createRecord: Function,
-        editRecord: Function,
-        deleteRecord: Function,
-        setDate: { type: Function, optional: true },
-    };
-
     setup() {
         this.months = luxon.Info.months();
         this.fcs = {};
@@ -39,61 +26,48 @@ export class CalendarYearRenderer extends Component {
         useEffect(() => {
             this.updateSize();
         });
+
+        onRendered(() => {
+            const year = formatDate(this.props.model.date, { format: "yyyy" });
+            this.env.config.setDisplayName(`${this.props.displayName} (${year})`);
+        });
     }
 
     get options() {
         return {
-            dayHeaderFormat: "EEEEE",
+            columnHeaderFormat: "EEEEE",
+            contentHeight: 0,
             dateClick: this.onDateClick,
-            dayCellClassNames: this.getDayCellClassNames,
-            initialDate: this.props.model.date.toISO(),
-            initialView: "dayGridMonth",
-            direction: localization.direction,
+            dayRender: this.onDayRender,
+            defaultDate: this.props.model.date.toISO(),
+            defaultView: "dayGridMonth",
+            dir: localization.direction,
             droppable: true,
             editable: this.props.model.canEdit,
-            dayMaxEventRows: this.props.model.eventLimit,
-            eventClassNames: this.eventClassNames,
-            eventDidMount: this.onEventDidMount,
+            eventLimit: this.props.model.eventLimit,
+            eventRender: this.onEventRender,
             eventResizableFromStart: true,
             events: (_, successCb) => successCb(this.mapRecordsToEvents()),
             firstDay: this.props.model.firstDayOfWeek,
-            headerToolbar: { start: false, center: "title", end: false },
-            height: "auto",
+            header: { left: false, center: "title", right: false },
+            height: 0,
             locale: luxon.Settings.defaultLocale,
             longPressDelay: 500,
             navLinks: false,
             nowIndicator: true,
+            plugins: ["dayGrid", "interaction", "luxon"],
             select: this.onSelect,
             selectMinDistance: 5, // needed to not trigger select when click
             selectMirror: true,
             selectable: this.props.model.canCreate,
             showNonCurrentDates: false,
             timeZone: luxon.Settings.defaultZone.name,
-            titleFormat: { month: "long", year: "numeric" },
+            titleFormat: { month: "short", year: "numeric" },
             unselectAuto: false,
-            weekNumberCalculation: (date) => getLocalWeekNumber(date),
+            weekNumberCalculation: "ISO",
             weekNumbers: false,
-            weekNumberFormat: { week: "numeric" },
             windowResize: this.onWindowResizeDebounced,
-            eventContent: this.onEventContent,
-            viewDidMount: this.viewDidMount,
-            weekends: this.props.isWeekendVisible,
         };
-    }
-
-    get customOptions() {
-        return {
-            weekNumbersWithinDays: true,
-        };
-    }
-
-    viewDidMount({ el, view }) {
-        const showWeek = view.calendar.currentData.options.weekNumbers;
-        const weekText = view.calendar.currentData.options.weekText;
-        const weekColumn = !this.customOptions.weekNumbersWithinDays;
-        if (showWeek && weekColumn) {
-            makeWeekColumn({ el, weekText });
-        }
     }
 
     mapRecordsToEvents() {
@@ -106,7 +80,7 @@ export class CalendarYearRenderer extends Component {
             start: record.start.toISO(),
             end: record.end.plus({ day: 1 }).toISO(),
             allDay: true,
-            display: "background",
+            rendering: "background",
         };
     }
     getDateWithMonth(month) {
@@ -115,7 +89,7 @@ export class CalendarYearRenderer extends Component {
     getOptionsForMonth(month) {
         return {
             ...this.options,
-            initialDate: this.getDateWithMonth(month),
+            defaultDate: this.getDateWithMonth(month),
         };
     }
     getPopoverProps(date, records) {
@@ -168,42 +142,32 @@ export class CalendarYearRenderer extends Component {
             });
         }
     }
-    getDayCellClassNames(info) {
+    onDayRender(info) {
         const date = luxon.DateTime.fromJSDate(info.date).toISODate();
         if (this.props.model.unusualDays.includes(date)) {
-            return ["o_calendar_disabled"];
+            info.el.classList.add("o_calendar_disabled");
         }
-        return [];
     }
-    eventClassNames({ event }) {
-        const classesToAdd = [];
-        classesToAdd.push("o_event");
-        const record = this.props.model.records[event.id];
-        if (record) {
-            const color = getColor(record.colorIndex);
-            if (typeof color === "number") {
-                classesToAdd.push(`o_calendar_color_${color}`);
-            } else if (typeof color !== "string") {
-                classesToAdd.push("o_calendar_color_0");
-            }
-
-            if (record.isHatched) {
-                classesToAdd.push("o_event_hatched");
-            }
-            if (record.isStriked) {
-                classesToAdd.push("o_event_striked");
-            }
-        }
-        return classesToAdd;
-    }
-    onEventDidMount(info) {
+    onEventRender(info) {
         const { el, event } = info;
         el.dataset.eventId = event.id;
+        el.classList.add("o_event");
         const record = this.props.model.records[event.id];
         if (record) {
             const color = getColor(record.colorIndex);
             if (typeof color === "string") {
                 el.style.backgroundColor = color;
+            } else if (typeof color === "number") {
+                el.classList.add(`o_calendar_color_${color}`);
+            } else {
+                el.classList.add("o_calendar_color_0");
+            }
+
+            if (record.isHatched) {
+                el.classList.add("o_event_hatched");
+            }
+            if (record.isStriked) {
+                el.classList.add("o_event_striked");
             }
         }
     }
@@ -220,11 +184,8 @@ export class CalendarYearRenderer extends Component {
     onWindowResize() {
         this.updateSize();
     }
-
-    onEventContent(info) {
-        // Remove the title on the background event like in FCv4
-        if (info.event.display?.includes("background")) {
-            return null;
-        }
-    }
 }
+CalendarYearRenderer.components = {
+    Popover: CalendarYearPopover,
+};
+CalendarYearRenderer.template = "web.CalendarYearRenderer";

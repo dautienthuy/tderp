@@ -1,31 +1,19 @@
-/** @odoo-module **/
+/** @odoo-module */
 
-import { _t } from "@web/core/l10n/translation";
 import { Attachment, FileSelector, IMAGE_MIMETYPES } from './file_selector';
 
-export class DocumentAttachment extends Attachment {
-    static template = "web_editor.DocumentAttachment";
-}
+export class DocumentAttachment extends Attachment {}
+DocumentAttachment.template = 'web_editor.DocumentAttachment';
 
 export class DocumentSelector extends FileSelector {
-    static mediaSpecificClasses = ["o_image"];
-    static mediaSpecificStyles = [];
-    static mediaExtraClasses = [];
-    static tagNames = ["A"];
-    static attachmentsListTemplate = "web_editor.DocumentsListTemplate";
-    static components = {
-        ...FileSelector.components,
-        DocumentAttachment,
-    };
-
     setup() {
         super.setup();
 
-        this.uploadText = _t("Upload a document");
+        this.uploadText = this.env._t("Upload a document");
         this.urlPlaceholder = "https://www.odoo.com/mydocument";
-        this.addText = _t("Add URL");
-        this.searchPlaceholder = _t("Search a document");
-        this.allLoadedText = _t("All documents have been loaded");
+        this.addText = this.env._t("Add URL");
+        this.searchPlaceholder = this.env._t("Search a document");
+        this.allLoadedText = this.env._t("All documents have been loaded");
     }
 
     get attachmentsDomain() {
@@ -80,3 +68,12 @@ export class DocumentSelector extends FileSelector {
         }));
     }
 }
+DocumentSelector.mediaSpecificClasses = ['o_image'];
+DocumentSelector.mediaSpecificStyles = [];
+DocumentSelector.mediaExtraClasses = [];
+DocumentSelector.tagNames = ['A'];
+DocumentSelector.attachmentsListTemplate = 'web_editor.DocumentsListTemplate';
+DocumentSelector.components = {
+    ...FileSelector.components,
+    DocumentAttachment,
+};

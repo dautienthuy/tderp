@@ -1,23 +1,16 @@
-/** @odoo-module **/
+odoo.define('website.s_image_gallery', function (require) {
+'use strict';
 
-import { uniqueId } from "@web/core/utils/functions";
-import publicWidget from "@web/legacy/js/public/public_widget";
-import { renderToElement } from "@web/core/utils/render";
+var core = require('web.core');
+var publicWidget = require('web.public.widget');
 
+var qweb = core.qweb;
 
 const GalleryWidget = publicWidget.Widget.extend({
 
     selector: '.s_image_gallery:not(.o_slideshow)',
     events: {
         'click img': '_onClickImg',
-    },
-
-    /**
-     * @override
-     */
-    start() {
-        this._super(...arguments);
-        this.originalSources = [...this.el.querySelectorAll("img")].map(img => img.getAttribute("src"));
     },
 
     //--------------------------------------------------------------------------
@@ -32,23 +25,13 @@ const GalleryWidget = publicWidget.Widget.extend({
      * @param {Event} ev
      */
     _onClickImg: function (ev) {
-        const clickedEl = ev.currentTarget;
-        if (this.$modal || clickedEl.matches("a > img")) {
+        if (this.$modal || ev.currentTarget.matches("a > img")) {
             return;
         }
         var self = this;
+        var $cur = $(ev.currentTarget);
 
-        let imageEls = this.el.querySelectorAll("img");
-        const currentImageEl = clickedEl.closest("img");
-        const currentImageIndex = [...imageEls].indexOf(currentImageEl);
-        // We need to reset the images to their original source because it might
-        // have been changed by a mouse event (e.g. "hover effect" animation).
-        imageEls = [...imageEls].map((el, i) => {
-            const cloneEl = el.cloneNode(true);
-            cloneEl.src = this.originalSources[i];
-            return cloneEl;
-        });
-
+        var $images = $cur.closest('.s_image_gallery').find('img');
         var size = 0.8;
         var dimensions = {
             min_width: Math.round(window.innerWidth * size * 0.9),
@@ -59,17 +42,15 @@ const GalleryWidget = publicWidget.Widget.extend({
             height: Math.round(window.innerHeight * size)
         };
 
-        const milliseconds = this.el.dataset.interval || false;
-        const lightboxTemplate = this.$target[0].dataset.vcss === "002" ?
-            "website.gallery.s_image_gallery_mirror.lightbox" :
-            "website.gallery.slideshow.lightbox";
-        this.$modal = $(renderToElement(lightboxTemplate, {
-            images: imageEls,
-            index: currentImageIndex,
+        var $img = ($cur.is('img') === true) ? $cur : $cur.closest('img');
+
+        const milliseconds = $cur.closest('.s_image_gallery').data('interval') || false;
+        this.$modal = $(qweb.render('website.gallery.slideshow.lightbox', {
+            images: $images.get(),
+            index: $images.index($img),
             dim: dimensions,
             interval: milliseconds || 0,
-            ride: !milliseconds ? "false" : "carousel",
-            id: uniqueId("slideshow_"),
+            id: _.uniqueId('slideshow_'),
         }));
         this.__onModalKeydown = this._onModalKeydown.bind(this);
         this.$modal.on('hidden.bs.modal', function () {
@@ -112,7 +93,7 @@ const GallerySliderWidget = publicWidget.Widget.extend({
      */
     start: function () {
         var self = this;
-        this.$carousel = this.$el.is('.carousel') ? this.$el : this.$('.carousel');
+        this.$carousel = this.$target.is('.carousel') ? this.$target : this.$target.find('.carousel');
         this.$indicator = this.$carousel.find('.carousel-indicators');
         this.$prev = this.$indicator.find('li.o_indicators_left').css('visibility', ''); // force visibility as some databases have it hidden
         this.$next = this.$indicator.find('li.o_indicators_right').css('visibility', '');
@@ -164,9 +145,6 @@ const GallerySliderWidget = publicWidget.Widget.extend({
         this.$carousel.on('slide.bs.carousel.gallery_slider', function () {
             setTimeout(function () {
                 var $item = self.$carousel.find('.carousel-inner .carousel-item-prev, .carousel-inner .carousel-item-next');
-                if (!$item.length) {
-                    return;
-                }
                 var index = $item.index();
                 $lis.removeClass('active')
                     .filter('[data-bs-slide-to="' + index + '"]')
@@ -207,7 +185,8 @@ const GallerySliderWidget = publicWidget.Widget.extend({
 publicWidget.registry.gallery = GalleryWidget;
 publicWidget.registry.gallerySlider = GallerySliderWidget;
 
-export default {
+return {
     GalleryWidget: GalleryWidget,
     GallerySliderWidget: GallerySliderWidget,
 };
+});

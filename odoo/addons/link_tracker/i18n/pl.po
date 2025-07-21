@@ -3,15 +3,26 @@
 # 	* link_tracker
 # 
 # Translators:
-# Wil Odoo, 2024
+# Marcin Młynarczyk <mlynarczyk@gmail.com>, 2022
+# Andrzej Wiśniewski <a.wisniewski@hadron.eu.com>, 2022
+# Grzegorz Grzelak <grzegorz.grzelak@openglobe.pl>, 2022
+# Paweł Wodyński <pw@myodoo.pl>, 2022
+# Piotr Strębski <strebski@gmail.com>, 2022
+# Martin Trigaux, 2022
+# Dariusz Żbikowski <darek@krokus.com.pl>, 2022
+# Maja Stawicka <mjstwck@wp.pl>, 2022
+# Maksym <ms@myodoo.pl>, 2022
+# Piotr Szlązak <szlazakpiotr@gmail.com>, 2022
+# Wojciech Warczakowski <w.warczakowski@gmail.com>, 2022
+# Tadeusz Karpiński <tadeuszkarpinski@gmail.com>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server saas~14.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:55+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Wil Odoo, 2024\n"
+"POT-Creation-Date: 2021-07-12 07:50+0000\n"
+"PO-Revision-Date: 2022-09-22 05:53+0000\n"
+"Last-Translator: Tadeusz Karpiński <tadeuszkarpinski@gmail.com>, 2023\n"
 "Language-Team: Polish (https://app.transifex.com/odoo/teams/41243/pl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -20,13 +31,10 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
 
 #. module: link_tracker
-#: model_terms:ir.ui.view,arch_db:link_tracker.utm_campaign_view_kanban
-msgid "<i class=\"fa fa-fw fa-mouse-pointer\" aria-label=\"Clicks\" role=\"img\"/>"
-msgstr ""
-
-#. module: link_tracker
-#: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_view_form
-msgid "<span class=\"o_stat_text\">Visit Page</span>"
+#: code:addons/link_tracker/models/link_tracker.py:0
+#: code:addons/link_tracker/models/link_tracker.py:0
+#, python-format
+msgid "%r is not a valid link, links cannot redirect to the current page."
 msgstr ""
 
 #. module: link_tracker
@@ -70,15 +78,6 @@ msgid "Codes"
 msgstr "Kody"
 
 #. module: link_tracker
-#. odoo-python
-#: code:addons/link_tracker/models/link_tracker.py:0
-msgid ""
-"Combinations of Link Tracker values (URL, campaign, medium, source, and label) must be unique.\n"
-"The following combinations are already used: \n"
-"- %(error_lines)s"
-msgstr ""
-
-#. module: link_tracker
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker_click__country_id
 #: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_click_view_search
 msgid "Country"
@@ -105,8 +104,9 @@ msgid "Created on"
 msgstr "Data utworzenia"
 
 #. module: link_tracker
-#. odoo-python
 #: code:addons/link_tracker/models/link_tracker.py:0
+#: code:addons/link_tracker/models/link_tracker.py:0
+#, python-format
 msgid "Creating a Link Tracker without URL is not possible"
 msgstr "Utworzenie trakera linków bez URLa jest niemożliwe"
 
@@ -141,6 +141,13 @@ msgid "Internet Protocol"
 msgstr "Protokół internetowy"
 
 #. module: link_tracker
+#: model:ir.model.fields,field_description:link_tracker.field_link_tracker____last_update
+#: model:ir.model.fields,field_description:link_tracker.field_link_tracker_click____last_update
+#: model:ir.model.fields,field_description:link_tracker.field_link_tracker_code____last_update
+msgid "Last Modified on"
+msgstr "Data ostatniej modyfikacji"
+
+#. module: link_tracker
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker__write_uid
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker_click__write_uid
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker_code__write_uid
@@ -159,7 +166,7 @@ msgstr "Data ostatniej aktualizacji"
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker_code__link_id
 #: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_click_view_search
 msgid "Link"
-msgstr "Odnośnik"
+msgstr "Link"
 
 #. module: link_tracker
 #: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_click_view_form
@@ -187,6 +194,16 @@ msgstr "Kliknięcie trakera linku"
 #: model:ir.model,name:link_tracker.model_link_tracker_code
 msgid "Link Tracker Code"
 msgstr "Kod trakera linku"
+
+#. module: link_tracker
+#: code:addons/link_tracker/models/link_tracker.py:0
+#, python-format
+msgid ""
+"Link Tracker values (URL, campaign, medium and source) must be unique (%s, "
+"%s, %s, %s)."
+msgstr ""
+"Wartości trakera linku (URL, kampania, medium i źródło) muszą być unikalne "
+"(%s,%s,%s,%s)"
 
 #. module: link_tracker
 #: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_view_graph
@@ -291,7 +308,6 @@ msgstr "Tytuł i URL"
 
 #. module: link_tracker
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker__short_url
-#: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_view_form
 msgid "Tracked URL"
 msgstr "Śledzony adres URL"
 
@@ -328,8 +344,8 @@ msgid "Visit Page"
 msgstr "Odwiedź stronę"
 
 #. module: link_tracker
-#. odoo-python
 #: code:addons/link_tracker/models/link_tracker.py:0
+#, python-format
 msgid "Visit Webpage"
 msgstr "Odwiedź stronę"
 
@@ -337,9 +353,3 @@ msgstr "Odwiedź stronę"
 #: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_view_form
 msgid "Website Link"
 msgstr "Link do strony WWW"
-
-#. module: link_tracker
-#. odoo-python
-#: code:addons/link_tracker/models/link_tracker.py:0
-msgid "“%s” is not a valid link, links cannot redirect to the current page."
-msgstr ""

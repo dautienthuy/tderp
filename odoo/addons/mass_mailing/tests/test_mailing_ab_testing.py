@@ -4,13 +4,14 @@
 from datetime import datetime, timedelta
 
 from odoo.addons.mass_mailing.tests.common import MassMailCommon
-from odoo.tests import Form, users, tagged
+from odoo.tests import users, tagged
 from odoo.tools import mute_logger
+from odoo.tests.common import Form
 from odoo import fields
 
 
 @tagged('post_install', '-at_install')
-class TestMailingABTestingCommon(MassMailCommon):
+class TestMailingABTesting(MassMailCommon):
 
     def setUp(self):
         super().setUp()
@@ -30,8 +31,6 @@ class TestMailingABTestingCommon(MassMailCommon):
         self.ab_testing_mailing_ids = self.ab_testing_mailing_1 + self.ab_testing_mailing_2
         self.env.flush_all()
         self.env.invalidate_all()
-
-class TestMailingABTesting(TestMailingABTestingCommon):
 
     @mute_logger('odoo.addons.mail.models.mail_mail')
     @users('user_marketing')
@@ -53,7 +52,7 @@ class TestMailingABTesting(TestMailingABTestingCommon):
         self.ab_testing_mailing_2.mailing_trace_ids[:15].set_opened()
         self.ab_testing_mailing_ids.invalidate_recordset()
 
-        self.assertEqual(self.ab_testing_mailing_1.opened_ratio, 66.67)
+        self.assertEqual(self.ab_testing_mailing_1.opened_ratio, 66)
         self.assertEqual(self.ab_testing_mailing_2.opened_ratio, 50)
 
         with self.mock_mail_gateway():
@@ -85,7 +84,7 @@ class TestMailingABTesting(TestMailingABTestingCommon):
         self.ab_testing_mailing_2.mailing_trace_ids[:15].set_opened()
         self.ab_testing_mailing_ids.invalidate_recordset()
 
-        self.assertEqual(self.ab_testing_mailing_1.opened_ratio, 66.67)
+        self.assertEqual(self.ab_testing_mailing_1.opened_ratio, 66)
         self.assertEqual(self.ab_testing_mailing_2.opened_ratio, 50)
 
         with self.mock_mail_gateway():
@@ -168,7 +167,7 @@ class TestMailingABTesting(TestMailingABTestingCommon):
         self.ab_testing_mailing_2.mailing_trace_ids[:15].set_opened()
         self.ab_testing_mailing_ids.invalidate_recordset()
 
-        self.assertEqual(self.ab_testing_mailing_1.opened_ratio, 66.67)
+        self.assertEqual(self.ab_testing_mailing_1.opened_ratio, 66)
         self.assertEqual(self.ab_testing_mailing_2.opened_ratio, 50)
 
         with self.mock_mail_gateway():

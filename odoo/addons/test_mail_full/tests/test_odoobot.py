@@ -3,14 +3,13 @@
 
 from unittest.mock import patch
 
-from odoo.addons.mail.tests.common import MailCommon
-from odoo.addons.test_mail.tests.common import TestRecipients
+from odoo.addons.test_mail.tests.common import TestMailCommon, TestRecipients
 from odoo.tests import tagged
 from odoo.tools import mute_logger
 
 
 @tagged("odoobot")
-class TestOdoobot(MailCommon, TestRecipients):
+class TestOdoobot(TestMailCommon, TestRecipients):
 
     @classmethod
     def setUpClass(cls):
@@ -25,14 +24,14 @@ class TestOdoobot(MailCommon, TestRecipients):
             'partner_ids': [],
             'subtype_xmlid': 'mail.mt_comment'
         }
-        cls.odoobot_ping_body = f'<a href="http://odoo.com/odoo/res.partner/{cls.odoobot.id}" class="o_mail_redirect" data-oe-id="{cls.odoobot.id}" data-oe-model="res.partner" target="_blank">@OdooBot</a>'
+        cls.odoobot_ping_body = '<a href="http://odoo.com/web#model=res.partner&amp;id=%s" class="o_mail_redirect" data-oe-id="%s" data-oe-model="res.partner" target="_blank">@OdooBot</a>' % (cls.odoobot.id, cls.odoobot.id)
         cls.test_record_employe = cls.test_record.with_user(cls.user_employee)
 
     @mute_logger('odoo.addons.mail.models.mail_mail')
     def test_fetch_listener(self):
         channel = self.user_employee.with_user(self.user_employee)._init_odoobot()
         odoobot = self.env.ref("base.partner_root")
-        odoobot_in_fetch_listeners = self.env['discuss.channel.member'].search([('channel_id', '=', channel.id), ('partner_id', '=', odoobot.id)])
+        odoobot_in_fetch_listeners = self.env['mail.channel.member'].search([('channel_id', '=', channel.id), ('partner_id', '=', odoobot.id)])
         self.assertEqual(len(odoobot_in_fetch_listeners), 1, 'odoobot should appear only once in channel_fetch_listeners')
 
     @mute_logger('odoo.addons.mail.models.mail_mail')

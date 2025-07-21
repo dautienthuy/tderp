@@ -31,12 +31,12 @@ class TestMrpSerialMassProducePerformance(common.TransactionCase):
         for i in range(raw_materials_count):
             raw_materials.append(self.env['product.product'].create({
                 'name': '@raw_material#' + str(i + 1),
-                'is_storable': True,
+                'type': 'product',
                 'tracking': trackings[i % len(trackings)]
             }))
         finished = self.env['product.product'].create({
             'name': '@finished',
-            'is_storable': True,
+            'type': 'product',
             'tracking': 'serial',
         })
         bom = self.env['mrp.bom'].create({
@@ -70,6 +70,7 @@ class TestMrpSerialMassProducePerformance(common.TransactionCase):
                 while qty > 0:
                     lot = self.env['stock.lot'].create({
                         'product_id': raw_materials[i].id,
+                        'company_id': self.env.company.id,
                     })
                     self.env['stock.quant'].with_context(inventory_mode=True).create({
                         'product_id': raw_materials[i].id,
@@ -82,6 +83,7 @@ class TestMrpSerialMassProducePerformance(common.TransactionCase):
                 for _ in range(total_quantity):
                     lot = self.env['stock.lot'].create({
                         'product_id': raw_materials[i].id,
+                        'company_id': self.env.company.id,
                     })
                     self.env['stock.quant'].with_context(inventory_mode=True).create({
                         'product_id': raw_materials[i].id,
@@ -92,7 +94,7 @@ class TestMrpSerialMassProducePerformance(common.TransactionCase):
 
         mo.action_assign()
 
-        action = mo.action_mass_produce()
+        action = mo.action_serial_mass_produce_wizard()
         wizard = Form(self.env['stock.assign.serial'].with_context(**action['context']))
         wizard.next_serial_number = "sn#1"
         wizard.next_serial_count = quantity

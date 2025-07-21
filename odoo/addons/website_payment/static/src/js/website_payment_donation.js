@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import publicWidget from '@web/legacy/js/public/public_widget';
+import publicWidget from 'web.public.widget';
 
 publicWidget.registry.WebsitePaymentDonation = publicWidget.Widget.extend({
     selector: '.o_donation_payment_form',
@@ -18,21 +18,18 @@ publicWidget.registry.WebsitePaymentDonation = publicWidget.Widget.extend({
      * @param {Event} ev
      */
     _onFocusAmountInput(ev) {
-        const otherAmountEl = this.el.querySelector("#other_amount");
-        if (otherAmountEl) {
-            otherAmountEl.checked = true;
-        }
+        this.$target.find('#other_amount').prop("checked", true);
     },
     /**
      * @private
      * @param {Event} ev
      */
     _onChangeDonationComment(ev) {
-        const donationCommentEl = this.el.querySelector('#donation_comment');
-        const checked = ev.currentTarget.checked;
-        donationCommentEl.classList.toggle('d-none', !checked);
+        const $donationComment = this.$target.find('#donation_comment');
+        const checked = $(ev.currentTarget).is(':checked');
+        $donationComment.toggleClass('d-none', !checked);
         if (!checked) {
-            donationCommentEl.value = "";
+            $donationComment.val('');
         }
     },
 });

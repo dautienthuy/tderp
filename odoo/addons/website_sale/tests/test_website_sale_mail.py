@@ -1,10 +1,12 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from unittest.mock import patch
 
 import odoo
 from odoo import fields
-from odoo.tests import HttpCase, tagged
+from odoo.tests import tagged
+from odoo.tests.common import HttpCase
 
 
 @tagged('post_install', '-at_install')
@@ -15,7 +17,6 @@ class TestWebsiteSaleMail(HttpCase):
         self.env['product.product'].create({
             'name': 'Acoustic Bloc Screens',
             'list_price': 2950.0,
-            'sale_ok': True,
             'website_published': True,
         })
         self.env['res.partner'].create({
@@ -44,4 +45,4 @@ class TestWebsiteSaleMail(HttpCase):
                                                     order='create_date DESC', limit=1)
             self.assertTrue(new_mail)
             self.assertIn('Your', new_mail.body_html)
-            self.assertIn('order', new_mail.body_html)
+            self.assertIn('Order', new_mail.body_html)

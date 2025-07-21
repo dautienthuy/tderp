@@ -1,29 +1,26 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-import itertools
-from collections.abc import Iterable, Iterator
 
-from .sql import SQL, make_identifier
+import re
+import warnings
+from zlib import crc32
 
+from .func import lazy_property
 
-def _sql_from_table(alias: str, table: SQL) -> SQL:
-    """ Return a FROM clause element from ``alias`` and ``table``. """
-    if (alias_identifier := SQL.identifier(alias)) == table:
-        return table
-    return SQL("%s AS %s", table, alias_identifier)
+IDENT_RE = re.compile(r'^[a-z_][a-z0-9_$]*$', re.I)
 
 
-def _sql_from_join(kind: SQL, alias: str, table: SQL, condition: SQL) -> SQL:
-    """ Return a FROM clause element for a JOIN. """
-    return SQL("%s %s ON (%s)", kind, _sql_from_table(alias, table), condition)
+def _from_table(table, alias):
+    """ Return a FROM clause element from ``table`` and ``alias``. """
+    if alias == table:
+        return f'"{alias}"'
+    elif IDENT_RE.match(table):
+        return f'"{table}" AS "{alias}"'
+    else:
+        return f'({table}) AS "{alias}"'
 
 
-_SQL_JOINS = {
-    "JOIN": SQL("JOIN"),
-    "LEFT JOIN": SQL("LEFT JOIN"),
-}
-
-
-def _generate_table_alias(src_table_alias: str, link: str) -> str:
+def _generate_table_alias(src_table_alias, link):
     """ Generate a standard table alias name. An alias is generated as following:
 
         - the base is the source table name (that can already be an alias)
@@ -40,79 +37,60 @@ def _generate_table_alias(src_table_alias: str, link: str) -> str:
         :param str link: field name
         :return str: alias
     """
-    return make_identifier(f"{src_table_alias}__{link}")
+    alias = "%s__%s" % (src_table_alias, link)
+    # Use an alternate alias scheme if length exceeds the PostgreSQL limit
+    # of 63 characters.
+    if len(alias) >= 64:
+        # We have to fit a crc32 hash and one underscore into a 63 character
+        # alias. The remaining space we can use to add a human readable prefix.
+        alias = "%s_%08x" % (alias[:54], crc32(alias.encode('utf-8')))
+    return alias
 
 
-class Query:
+class Query(object):
     """ Simple implementation of a query object, managing tables with aliases,
     join clauses (with aliases, condition and parameters), where clauses (with
     parameters), order, limit and offset.
 
-    :param env: model environment (for lazy evaluation)
+    :param cr: database cursor (for lazy evaluation)
     :param alias: name or alias of the table
-    :param table: a table expression (``str`` or ``SQL`` object), optional
+    :param table: if given, a table expression (identifier or query)
     """
 
-    def __init__(self, env, alias: str, table: (SQL | None) = None):
+    def __init__(self, cr, alias, table=None):
         # database cursor
-        self._env = env
+        self._cr = cr
 
-        self._tables: dict[str, SQL] = {
-            alias: table if table is not None else SQL.identifier(alias),
-        }
+        # tables {alias: table}
+        self._tables = {alias: table or alias}
 
-        # joins {alias: (kind(SQL), table(SQL), condition(SQL))}
-        self._joins: dict[str, tuple[SQL, SQL, SQL]] = {}
+        # joins {alias: (kind, table, condition, condition_params)}
+        self._joins = {}
 
-        # holds the list of WHERE conditions (to be joined with 'AND')
-        self._where_clauses: list[SQL] = []
+        # holds the list of WHERE clause elements (to be joined with 'AND'), and
+        # the list of parameters
+        self._where_clauses = []
+        self._where_params = []
 
-        # groupby, having, order, limit, offset
-        self.groupby: SQL | None = None
-        self.having: SQL | None = None
-        self._order: SQL | None = None
-        self.limit: int | None = None
-        self.offset: int | None = None
+        # order, limit, offset
+        self.order = None
+        self.limit = None
+        self.offset = None
 
-        # memoized result
-        self._ids: tuple[int, ...] | None = None
-
-    @staticmethod
-    def make_alias(alias: str, link: str) -> str:
-        """ Return an alias based on ``alias`` and ``link``. """
-        return _generate_table_alias(alias, link)
-
-    def add_table(self, alias: str, table: (SQL | None) = None):
+    def add_table(self, alias, table=None):
         """ Add a table with a given alias to the from clause. """
-        assert alias not in self._tables and alias not in self._joins, f"Alias {alias!r} already in {self}"
-        self._tables[alias] = table if table is not None else SQL.identifier(alias)
-        self._ids = None
+        assert alias not in self._tables and alias not in self._joins, "Alias %r already in %s" % (alias, str(self))
+        self._tables[alias] = table or alias
 
-    def add_join(self, kind: str, alias: str, table: str | SQL | None, condition: SQL):
-        """ Add a join clause with the given alias, table and condition. """
-        sql_kind = _SQL_JOINS.get(kind.upper())
-        assert sql_kind is not None, f"Invalid JOIN type {kind!r}"
-        assert alias not in self._tables, f"Alias {alias!r} already used"
-        table = table or alias
-        if isinstance(table, str):
-            table = SQL.identifier(table)
-
-        if alias in self._joins:
-            assert self._joins[alias] == (sql_kind, table, condition)
-        else:
-            self._joins[alias] = (sql_kind, table, condition)
-            self._ids = None
-
-    def add_where(self, where_clause: str | SQL, where_params=()):
+    def add_where(self, where_clause, where_params=()):
         """ Add a condition to the where clause. """
-        self._where_clauses.append(SQL(where_clause, *where_params)) # pylint: disable = sql-injection
-        self._ids = None
+        self._where_clauses.append(where_clause)
+        self._where_params.extend(where_params)
 
-    def join(self, lhs_alias: str, lhs_column: str, rhs_table: str | SQL, rhs_column: str, link: str) -> str:
+    def join(self, lhs_alias, lhs_column, rhs_table, rhs_column, link, extra=None, extra_params=()):
         """
         Perform a join between a table already present in the current Query object and
-        another table.  This method is essentially a shortcut for methods :meth:`~.make_alias`
-        and :meth:`~.add_join`.
+        another table.
 
         :param str lhs_alias: alias of a table already defined in the current Query object.
         :param str lhs_column: column of `lhs_alias` to be used for the join's ON condition.
@@ -120,156 +98,151 @@ class Query:
         :param str rhs_column: column of `rhs_alias` to be used for the join's ON condition.
         :param str link: used to generate the alias for the joined table, this string should
             represent the relationship (the link) between both tables.
-        """
-        assert lhs_alias in self._tables or lhs_alias in self._joins, "Alias %r not in %s" % (lhs_alias, str(self))
-        rhs_alias = self.make_alias(lhs_alias, link)
-        condition = SQL("%s = %s", SQL.identifier(lhs_alias, lhs_column), SQL.identifier(rhs_alias, rhs_column))
-        self.add_join('JOIN', rhs_alias, rhs_table, condition)
-        return rhs_alias
+        :param str extra: an sql string of a predicate or series of predicates to append to the
+            join's ON condition, `lhs_alias` and `rhs_alias` can be injected if the string uses
+            the `lhs` and `rhs` variables with the `str.format` syntax. e.g.::
 
-    def left_join(self, lhs_alias: str, lhs_column: str, rhs_table: str, rhs_column: str, link: str) -> str:
+                query.join(..., extra="{lhs}.name != {rhs}.name OR ...", ...)
+
+        :param tuple extra_params: a tuple of values to be interpolated into `extra`, this is
+            done by psycopg2.
+
+        Full example:
+
+        >>> rhs_alias = query.join(
+        ...     "res_users",
+        ...     "partner_id",
+        ...     "res_partner",
+        ...     "id",
+        ...     "partner_id",           # partner_id is the "link" from res_users to res_partner
+        ...     "{lhs}.\"name\" != %s",
+        ...     ("Mitchell Admin",),
+        ... )
+        >>> rhs_alias
+        res_users_res_partner__partner_id
+
+        From the example above, the resulting query would be something like::
+
+            SELECT ...
+            FROM "res_users" AS "res_users"
+            JOIN "res_partner" AS "res_users_res_partner__partner_id"
+                ON "res_users"."partner_id" = "res_users_res_partner__partner_id"."id"
+                AND "res_users"."name" != 'Mitchell Admin'
+            WHERE ...
+
+        """
+        return self._join('JOIN', lhs_alias, lhs_column, rhs_table, rhs_column, link, extra, extra_params)
+
+    def left_join(self, lhs_alias, lhs_column, rhs_table, rhs_column, link, extra=None, extra_params=()):
         """ Add a LEFT JOIN to the current table (if necessary), and return the
         alias corresponding to ``rhs_table``.
 
         See the documentation of :meth:`join` for a better overview of the
         arguments and what they do.
         """
+        return self._join('LEFT JOIN', lhs_alias, lhs_column, rhs_table, rhs_column, link, extra, extra_params)
+
+    def _join(self, kind, lhs_alias, lhs_column, rhs_table, rhs_column, link, extra=None, extra_params=()):
         assert lhs_alias in self._tables or lhs_alias in self._joins, "Alias %r not in %s" % (lhs_alias, str(self))
-        rhs_alias = self.make_alias(lhs_alias, link)
-        condition = SQL("%s = %s", SQL.identifier(lhs_alias, lhs_column), SQL.identifier(rhs_alias, rhs_column))
-        self.add_join('LEFT JOIN', rhs_alias, rhs_table, condition)
+
+        rhs_alias = _generate_table_alias(lhs_alias, link)
+        assert rhs_alias not in self._tables, "Alias %r already in %s" % (rhs_alias, str(self))
+
+        if rhs_alias not in self._joins:
+            condition = f'"{lhs_alias}"."{lhs_column}" = "{rhs_alias}"."{rhs_column}"'
+            condition_params = []
+            if extra:
+                condition = condition + " AND " + extra.format(lhs=lhs_alias, rhs=rhs_alias)
+                condition_params = list(extra_params)
+            if kind:
+                self._joins[rhs_alias] = (kind, rhs_table, condition, condition_params)
+            else:
+                self._tables[rhs_alias] = rhs_table
+                self.add_where(condition, condition_params)
+
         return rhs_alias
 
-    @property
-    def order(self) -> SQL | None:
-        return self._order
-
-    @order.setter
-    def order(self, value: SQL | str | None):
-        self._order = SQL(value) if value is not None else None # pylint: disable = sql-injection
-
-    @property
-    def table(self) -> str:
-        """ Return the query's main table, i.e., the first one in the FROM clause. """
-        return next(iter(self._tables))
-
-    @property
-    def from_clause(self) -> SQL:
-        """ Return the FROM clause of ``self``, without the FROM keyword. """
-        tables = SQL(", ").join(itertools.starmap(_sql_from_table, self._tables.items()))
-        if not self._joins:
-            return tables
-        items = (
-            tables,
-            *(
-                _sql_from_join(kind, alias, table, condition)
-                for alias, (kind, table, condition) in self._joins.items()
-            ),
+    def select(self, *args):
+        """ Return the SELECT query as a pair ``(query_string, query_params)``. """
+        from_clause, where_clause, params = self.get_sql()
+        query_str = 'SELECT {} FROM {} WHERE {}{}{}{}'.format(
+            ", ".join(args or [f'"{next(iter(self._tables))}".id']),
+            from_clause,
+            where_clause or "TRUE",
+            (" ORDER BY %s" % self.order) if self.order else "",
+            (" LIMIT %d" % self.limit) if self.limit else "",
+            (" OFFSET %d" % self.offset) if self.offset else "",
         )
-        return SQL(" ").join(items)
+        return query_str, params
 
-    @property
-    def where_clause(self) -> SQL:
-        """ Return the WHERE condition of ``self``, without the WHERE keyword. """
-        return SQL(" AND ").join(self._where_clauses)
-
-    def is_empty(self) -> bool:
-        """ Return whether the query is known to return nothing. """
-        return self._ids == ()
-
-    def select(self, *args: str | SQL) -> SQL:
-        """ Return the SELECT query as an ``SQL`` object. """
-        sql_args = map(SQL, args) if args else [SQL.identifier(self.table, 'id')]
-        return SQL(
-            "%s%s%s%s%s%s%s%s",
-            SQL("SELECT %s", SQL(", ").join(sql_args)),
-            SQL(" FROM %s", self.from_clause),
-            SQL(" WHERE %s", self.where_clause) if self._where_clauses else SQL(),
-            SQL(" GROUP BY %s", self.groupby) if self.groupby else SQL(),
-            SQL(" HAVING %s", self.having) if self.having else SQL(),
-            SQL(" ORDER BY %s", self._order) if self._order else SQL(),
-            SQL(" LIMIT %s", self.limit) if self.limit else SQL(),
-            SQL(" OFFSET %s", self.offset) if self.offset else SQL(),
-        )
-
-    def subselect(self, *args: str | SQL) -> SQL:
+    def subselect(self, *args):
         """ Similar to :meth:`.select`, but for sub-queries.
-            This one avoids the ORDER BY clause when possible,
-            and includes parentheses around the subquery.
+            This one avoids the ORDER BY clause when possible.
         """
-        if self._ids is not None and not args:
-            # inject the known result instead of the subquery
-            if not self._ids:
-                # in case we have nothing, we want to use a sub_query with no records
-                # because an empty tuple leads to a syntax error
-                # and a tuple containing just None creates issues for `NOT IN`
-                return SQL("(SELECT 1 WHERE FALSE)")
-            return SQL("%s", self._ids)
-
         if self.limit or self.offset:
             # in this case, the ORDER BY clause is necessary
-            return SQL("(%s)", self.select(*args))
+            return self.select(*args)
 
-        sql_args = map(SQL, args) if args else [SQL.identifier(self.table, 'id')]
-        return SQL(
-            "(%s%s%s)",
-            SQL("SELECT %s", SQL(", ").join(sql_args)),
-            SQL(" FROM %s", self.from_clause),
-            SQL(" WHERE %s", self.where_clause) if self._where_clauses else SQL(),
+        from_clause, where_clause, params = self.get_sql()
+        query_str = 'SELECT {} FROM {} WHERE {}'.format(
+            ", ".join(args or [f'"{next(iter(self._tables))}".id']),
+            from_clause,
+            where_clause or "TRUE",
         )
+        return query_str, params
 
-    def get_result_ids(self) -> tuple[int, ...]:
-        """ Return the result of ``self.select()`` as a tuple of ids. The result
-        is memoized for future use, which avoids making the same query twice.
-        """
-        if self._ids is None:
-            self._ids = tuple(id_ for id_, in self._env.execute_query(self.select()))
-        return self._ids
+    def get_sql(self):
+        """ Returns (query_from, query_where, query_params). """
+        tables = [_from_table(table, alias) for alias, table in self._tables.items()]
+        joins = []
+        params = []
+        for alias, (kind, table, condition, condition_params) in self._joins.items():
+            joins.append(f'{kind} {_from_table(table, alias)} ON ({condition})')
+            params.extend(condition_params)
 
-    def set_result_ids(self, ids: Iterable[int], ordered: bool = True) -> None:
-        """ Set up the query to return the lines given by ``ids``. The parameter
-        ``ordered`` tells whether the query must be ordered to match exactly the
-        sequence ``ids``.
-        """
-        assert not (self._joins or self._where_clauses or self.limit or self.offset), \
-            "Method set_result_ids() can only be called on a virgin Query"
-        ids = tuple(ids)
-        if not ids:
-            self.add_where("FALSE")
-        elif ordered:
-            # This guarantees that self.select() returns the results in the
-            # expected order of ids:
-            #   SELECT "stuff".id
-            #   FROM "stuff"
-            #   JOIN (SELECT * FROM unnest(%s) WITH ORDINALITY) AS "stuff__ids"
-            #       ON ("stuff"."id" = "stuff__ids"."unnest")
-            #   ORDER BY "stuff__ids"."ordinality"
-            alias = self.join(
-                self.table, 'id',
-                SQL('(SELECT * FROM unnest(%s) WITH ORDINALITY)', list(ids)), 'unnest',
-                'ids',
-            )
-            self.order = SQL.identifier(alias, 'ordinality')
-        else:
-            self.add_where(SQL("%s IN %s", SQL.identifier(self.table, 'id'), ids))
-        self._ids = ids
+        from_clause = " ".join([", ".join(tables)] + joins)
+        where_clause = " AND ".join(self._where_clauses)
+        return from_clause, where_clause, params + self._where_params
 
-    def __str__(self) -> str:
-        sql = self.select()
-        return f"<Query: {sql.code!r} with params: {sql.params!r}>"
+    @lazy_property
+    def _result(self):
+        query_str, params = self.select()
+        self._cr.execute(query_str, params)
+        return [row[0] for row in self._cr.fetchall()]
+
+    def __str__(self):
+        return '<osv.Query: %r with params: %r>' % self.select()
 
     def __bool__(self):
-        return bool(self.get_result_ids())
+        return bool(self._result)
 
-    def __len__(self) -> int:
-        if self._ids is None:
-            if self.limit or self.offset:
-                # optimization: generate a SELECT FROM, and then count the rows
-                sql = SQL("SELECT COUNT(*) FROM (%s) t", self.select(""))
-            else:
-                sql = self.select('COUNT(*)')
-            return self._env.execute_query(sql)[0][0]
-        return len(self.get_result_ids())
+    def __len__(self):
+        return len(self._result)
 
-    def __iter__(self) -> Iterator[int]:
-        return iter(self.get_result_ids())
+    def __iter__(self):
+        return iter(self._result)
+
+    #
+    # deprecated attributes and methods
+    #
+    @property
+    def tables(self):
+        warnings.warn("deprecated Query.tables, use Query.get_sql() instead",
+                      DeprecationWarning)
+        return tuple(_from_table(table, alias) for alias, table in self._tables.items())
+
+    @property
+    def where_clause(self):
+        return tuple(self._where_clauses)
+
+    @property
+    def where_clause_params(self):
+        return tuple(self._where_params)
+
+    def add_join(self, connection, implicit=True, outer=False, extra=None, extra_params=()):
+        warnings.warn("deprecated Query.add_join, use Query.join() or Query.left_join() instead",
+                      DeprecationWarning)
+        lhs_alias, rhs_table, lhs_column, rhs_column, link = connection
+        kind = '' if implicit else ('LEFT JOIN' if outer else 'JOIN')
+        rhs_alias = self._join(kind, lhs_alias, lhs_column, rhs_table, rhs_column, link, extra, extra_params)
+        return rhs_alias, _from_table(rhs_table, rhs_alias)

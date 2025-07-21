@@ -1,16 +1,13 @@
 /** @odoo-module **/
 
-import { _t } from "@web/core/l10n/translation";
 import { registry } from "@web/core/registry";
 import { pick } from "@web/core/utils/objects";
-import { Component } from "@odoo/owl";
-import { standardFieldProps } from "@web/views/fields/standard_field_props";
+
+const { Component } = owl;
 
 class RedirectField extends Component {
-    static template = "website.RedirectField";
-    static props = {...standardFieldProps};
     get info() {
-        return this.props.record.data[this.props.name] ? _t("Published") : _t("Unpublished");
+        return this.props.value ? this.env._t("Published") : this.env._t("Unpublished");
     }
 
     onClick() {
@@ -25,7 +22,5 @@ class RedirectField extends Component {
     }
 }
 
-
-registry.category("fields").add("website_redirect_button", {
-    component: RedirectField,
-});
+RedirectField.template = "website.RedirectField";
+registry.category("fields").add("website_redirect_button", RedirectField);

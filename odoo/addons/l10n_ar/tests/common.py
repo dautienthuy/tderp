@@ -1,6 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from odoo import fields
-from odoo.tests import Form
+from odoo.tests.common import Form, tagged
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 import random
 import logging
@@ -12,12 +12,13 @@ _logger = logging.getLogger(__name__)
 class TestAr(AccountTestInvoicingCommon):
 
     @classmethod
-    @AccountTestInvoicingCommon.setup_chart_template('ar_ri')
-    def setUpClass(cls):
-        super().setUpClass()
+    def setUpClass(cls, chart_template_ref='l10n_ar.l10nar_ri_chart_template'):
+        super(TestAr, cls).setUpClass(chart_template_ref=chart_template_ref)
 
         # ==== Company ====
         cls.company_data['company'].write({
+            'parent_id': cls.env.ref('base.main_company').id,
+            'currency_id': cls.env.ref('base.ARS').id,
             'name': '(AR) Responsable Inscripto (Unit Tests)',
             "l10n_ar_afip_start_date": time.strftime('%Y-01-01'),
             'l10n_ar_gross_income_type': 'local',
@@ -42,12 +43,14 @@ class TestAr(AccountTestInvoicingCommon):
         cls.partner_ri = cls.company_ri.partner_id
 
         # ==== Company MONO ====
-        cls.company_mono = cls._create_company(
-            name='(AR) Monotributista (Unit Tests)',
-            currency_id=cls.env.ref('base.ARS').id,
-            l10n_ar_afip_start_date=time.strftime('%Y-01-01'),
-            l10n_ar_gross_income_type='exempt',
-        )
+        cls.company_mono = cls.setup_company_data('(AR) Monotributista (Unit Tests)', chart_template=cls.env.ref('l10n_ar.l10nar_base_chart_template'))['company']
+        cls.company_mono.write({
+            'parent_id': cls.env.ref('base.main_company').id,
+            'currency_id': cls.env.ref('base.ARS').id,
+            'name': '(AR) Monotributista (Unit Tests)',
+            "l10n_ar_afip_start_date": time.strftime('%Y-01-01'),
+            'l10n_ar_gross_income_type': 'exempt',
+        })
         cls.company_mono.partner_id.write({
             'name': '(AR) Monotributista (Unit Tests)',
             'l10n_ar_afip_responsibility_type_id': cls.env.ref("l10n_ar.res_RM").id,
@@ -177,37 +180,6 @@ class TestAr(AccountTestInvoicingCommon):
         cls.tax_perc_iibb = cls._search_tax(cls, 'percepcion_iibb_ba')
         cls.tax_iva_exento = cls._search_tax(cls, 'iva_exento')
 
-        cls.tax_national = cls.env['account.tax'].create({
-            "name": "National Tax",
-            "description": "National Tax",
-            "amount": "4",
-            "amount_type": "percent",
-            "type_tax_use": "sale",
-            "country_id": cls.env.ref("base.ar").id,
-            "company_id": cls.company_ri.id,
-            "tax_group_id": cls.env.ref(f"account.{cls.company_ri.id}_tax_group_national_taxes").id,
-        })
-        cls.tax_internal = cls.env['account.tax'].create({
-            "name": "Internal Tax",
-            "description": "Internal Tax",
-            "amount": "3",
-            "amount_type": "percent",
-            "type_tax_use": "sale",
-            "country_id": cls.env.ref("base.ar").id,
-            "company_id": cls.company_ri.id,
-            "tax_group_id": cls.env.ref(f"account.{cls.company_ri.id}_tax_impuestos_internos").id,
-        })
-        cls.tax_other = cls.env['account.tax'].create({
-            "name": "Other Tax",
-            "description": "Other Tax",
-            "amount": "100",
-            "amount_type": "fixed",
-            "type_tax_use": "sale",
-            "country_id": cls.env.ref("base.ar").id,
-            "company_id": cls.company_ri.id,
-            "tax_group_id": cls.env.ref(f"account.{cls.company_ri.id}_tax_group_otros_impuestos").id,
-        })
-
         cls.tax_21_purchase = cls._search_tax(cls, 'iva_21', type_tax_use='purchase')
         cls.tax_no_gravado_purchase = cls._search_tax(cls, 'iva_no_gravado', type_tax_use='purchase')
 
@@ -278,14 +250,10 @@ class TestAr(AccountTestInvoicingCommon):
             'default_code': 'NOGRAVADO',
             'taxes_id': [(6, 0, cls.tax_no_gravado.ids)],
         })
-        cls.product_iva_105_perc = cls.env['product.product'].create({
+        cls.product_iva_105_perc = cls.product_iva_105.copy({
             # product.product_product_25
             "name": "Laptop E5023 (VAT 10,5)",
-            'uom_id': uom_unit.id,
-            'uom_po_id': uom_unit.id,
             "standard_price": 3280.0,
-            'type': 'consu',
-            'default_code': '10,5',
             # agregamos percecipn aplicada y sufrida tambien
             'taxes_id': [(6, 0, [cls.tax_10_5.id, cls.tax_perc_iibb.id])],
         })
@@ -625,24 +593,6 @@ class TestAr(AccountTestInvoicingCommon):
             invoice = invoice_form.save()
             self.demo_invoices[key] = invoice
 
-    def _create_invoice_from_dict(self, values, use_current_date=True):
-        if not values.get('invoice_payment_term_id'):
-            values['invoice_payment_term_id'] = self.env.ref("account.account_payment_term_end_following_month")
-        if use_current_date:
-            values.pop('invoice_date', False)
-
-        for key, value in values.items():
-            if key.endswith("_id"):
-                values[key] = value.id
-
-        for line in values['invoice_line_ids']:
-            for key, value in line.items():
-                if key.endswith("_id"):
-                    line[key] = value.id
-
-        values['invoice_line_ids'] = [(0, 0, line_data) for line_data in values['invoice_line_ids']]
-        return self.env['account.move'].with_context(default_move_type=values['move_type']).create(values)
-
     # Helpers
 
     @classmethod
@@ -726,13 +676,14 @@ class TestAr(AccountTestInvoicingCommon):
         data = data or {}
         refund_wizard = self.env['account.move.reversal'].with_context({'active_ids': [invoice.id], 'active_model': 'account.move'}).create({
             'reason': data.get('reason', 'Mercadería defectuosa'),
+            'refund_method': data.get('refund_method', 'refund'),
             'journal_id': invoice.journal_id.id})
 
         forced_document_type = data.get('document_type')
         if forced_document_type:
             refund_wizard.l10n_latam_document_type_id = forced_document_type.id
 
-        res = refund_wizard.refund_moves() if data.get('refund_method', 'refund') == 'refund' else refund_wizard.modify_moves()
+        res = refund_wizard.reverse_moves()
         refund = self.env['account.move'].browse(res['res_id'])
         return refund
 
@@ -749,7 +700,7 @@ class TestAr(AccountTestInvoicingCommon):
         res = self.env['account.tax'].with_context(active_test=False).search([
             ('type_tax_use', '=', type_tax_use),
             ('company_id', '=', self.env.company.id),
-            ('tax_group_id', '=', self.env.ref(f'account.{self.env.company.id}_tax_group_{tax_type}').id)], limit=1)
+            ('tax_group_id', '=', self.env.ref('l10n_ar.tax_group_' + tax_type).id)], limit=1)
         self.assertTrue(res, '%s Tax was not found' % (tax_type))
         return res
 

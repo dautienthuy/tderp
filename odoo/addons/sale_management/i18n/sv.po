@@ -3,25 +3,28 @@
 # 	* sale_management
 # 
 # Translators:
-# Sofia Wallenquist, 2024
-# Martin Wilderoth <martin.wilderoth@linserv.se>, 2024
-# Chrille Hedberg <hedberg.chrille@gmail.com>, 2024
-# Kristoffer Grundström <lovaren@gmail.com>, 2024
-# Daniel Osser <danielosser@gmail.com>, 2024
-# Robin Calvin, 2024
-# Kim Asplund <kim.asplund@gmail.com>, 2024
-# Martin Trigaux, 2024
-# Anders Wallenquist <anders.wallenquist@vertel.se>, 2024
-# Simon S, 2024
-# Lasse L, 2024
+# Daniel Osser <danielosser@gmail.com>, 2022
+# Sofia Wallenquist, 2022
+# Kim Asplund <kim.asplund@gmail.com>, 2022
+# lasch a <bmail440@gmail.com>, 2022
+# Mikael Åkerberg <mikael.akerberg@mariaakerberg.com>, 2022
+# Martin Wilderoth <martin.wilderoth@linserv.se>, 2022
+# Kristoffer Grundström <lovaren@gmail.com>, 2022
+# Chrille Hedberg <hedberg.chrille@gmail.com>, 2022
+# Anders Wallenquist <anders.wallenquist@vertel.se>, 2022
+# Martin Trigaux, 2022
+# Simon S, 2022
+# Robin Calvin, 2022
+# Stephen Schmidt <stephen.schmidt@linserv.se>, 2023
+# Lasse L, 2023
 # Jakob Krabbe <jakob.krabbe@vertel.se>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 08:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2022-10-04 09:23+0000\n"
+"PO-Revision-Date: 2022-09-22 05:54+0000\n"
 "Last-Translator: Jakob Krabbe <jakob.krabbe@vertel.se>, 2024\n"
 "Language-Team: Swedish (https://app.transifex.com/odoo/teams/41243/sv/)\n"
 "MIME-Version: 1.0\n"
@@ -31,24 +34,24 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: sale_management
-#: model_terms:ir.ui.view,arch_db:sale_management.report_saleorder_document_inherit_sale_management
-msgid "1.5"
-msgstr "1.5"
-
-#. module: sale_management
-#: model_terms:ir.ui.view,arch_db:sale_management.sale_order_portal_content_inherit_sale_management
-msgid "<span class=\"btn btn-secondary\">Add to order</span>"
-msgstr "<span class=\"btn btn-secondary\"> Lägga till i beställning </span>"
-
-#. module: sale_management
-#: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
-msgid "<span invisible=\"not require_payment\">of</span>"
-msgstr "<span invisible=\"not require_payment\">av</span>"
+#: model:sale.order.template.line,name:sale_management.sale_order_template_line_1
+msgid "4 Person Desk"
+msgstr "4-personers skrivbord"
 
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.report_saleorder_document_inherit_sale_management
 msgid "<span>Options</span>"
 msgstr "<span>Alternativ</span>"
+
+#. module: sale_management
+#: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
+msgid "<span>Payment</span>"
+msgstr "<span>Betalning</span>"
+
+#. module: sale_management
+#: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
+msgid "<span>Signature</span>"
+msgstr "<span>Signatur</span>"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template__active
@@ -79,7 +82,7 @@ msgstr "Lägg till en"
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_portal_content_inherit_sale_management
 msgid "Add to cart"
-msgstr "Lägg till i varukorgen"
+msgstr "Lägg i varukorgen"
 
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_form_quote
@@ -107,7 +110,7 @@ msgstr "Kategori"
 #. module: sale_management
 #: model:ir.model,name:sale_management.model_res_company
 msgid "Companies"
-msgstr "Företag"
+msgstr "Bolag"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template__company_id
@@ -115,7 +118,7 @@ msgstr "Företag"
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_option__company_id
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_search
 msgid "Company"
-msgstr "Företag"
+msgstr "Bolag"
 
 #. module: sale_management
 #: model:ir.model,name:sale_management.model_res_config_settings
@@ -162,7 +165,7 @@ msgstr "Skapad av"
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_line__create_date
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_option__create_date
 msgid "Created on"
-msgstr "Skapad den"
+msgstr "Skapad"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_res_company__sale_order_template_id
@@ -182,6 +185,15 @@ msgstr "Standardmall"
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
 msgid "Description"
 msgstr "Beskrivning"
+
+#. module: sale_management
+#: model_terms:ir.ui.view,arch_db:sale_management.res_config_settings_view_form
+msgid ""
+"Design your quotation templates using building blocks<br/>\n"
+"                            <em attrs=\"{'invisible': [('module_sale_quotation_builder','=',False)]}\">Warning: this option will install the Website app.</em>"
+msgstr ""
+"Skapa dina offertmallar med hjälp av byggblock<br/>\n"
+"                            <em attrs=\"{'invisible': [('module_sale_quotation_builder','=',False)]}\">Varning: detta val kommer att installera appen Website.</em>"
 
 #. module: sale_management
 #: model:ir.model,name:sale_management.model_digest_digest
@@ -214,17 +226,17 @@ msgid "Display Type"
 msgstr "Visningstyp"
 
 #. module: sale_management
-#. odoo-python
 #: code:addons/sale_management/models/digest.py:0
+#, python-format
 msgid "Do not have access, skip this data for user's digest email"
 msgstr ""
 "Saknar åtkomsträttighet, hoppa över denna data för användarens sammanställda"
 " utskick"
 
 #. module: sale_management
-#: model_terms:ir.ui.view,arch_db:sale_management.report_saleorder_document_inherit_sale_management
-msgid "Extra Chips"
-msgstr "Extra chips"
+#: model_terms:ir.ui.view,arch_db:sale_management.res_config_settings_view_form
+msgid "Documentation"
+msgstr "Dokumentation"
 
 #. module: sale_management
 #: model:ir.model.constraint,message:sale_management.constraint_sale_order_template_line_non_accountable_fields_null
@@ -244,7 +256,7 @@ msgstr "Ger sekvensordningen när en lista över offertrader visas."
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_search
 msgid "Group By"
-msgstr "Grupp Av"
+msgstr "Gruppera efter"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__id
@@ -253,15 +265,6 @@ msgstr "Grupp Av"
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_option__id
 msgid "ID"
 msgstr "ID"
-
-#. module: sale_management
-#: model:ir.model.fields,help:sale_management.field_sale_order_template__journal_id
-msgid ""
-"If set, SO with this template will invoice in this journal; otherwise the "
-"sales journal with the lowest sequence is used."
-msgstr ""
-"Om den är inställd kommer SO med denna mall att fakturera i denna journal, "
-"annars används försäljningsjournalen med den lägsta sekvensen."
 
 #. module: sale_management
 #: model:ir.model.fields,help:sale_management.field_sale_order_template__active
@@ -273,14 +276,17 @@ msgstr ""
 "ta bort den."
 
 #. module: sale_management
-#: model:ir.model.fields,field_description:sale_management.field_sale_order_template__journal_id
-msgid "Invoicing Journal"
-msgstr "Journal för fakturering"
-
-#. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_digest_digest__kpi_all_sale_total_value
 msgid "Kpi All Sale Total Value"
 msgstr "Kpi Alla försäljningar Totalt värde"
+
+#. module: sale_management
+#: model:ir.model.fields,field_description:sale_management.field_sale_order_option____last_update
+#: model:ir.model.fields,field_description:sale_management.field_sale_order_template____last_update
+#: model:ir.model.fields,field_description:sale_management.field_sale_order_template_line____last_update
+#: model:ir.model.fields,field_description:sale_management.field_sale_order_template_option____last_update
+msgid "Last Modified on"
+msgstr "Senast redigerad den"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__write_uid
@@ -296,7 +302,7 @@ msgstr "Senast uppdaterad av"
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_line__write_date
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_option__write_date
 msgid "Last Updated on"
-msgstr "Senast uppdaterad den"
+msgstr "Senast uppdaterad på"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__line_id
@@ -307,7 +313,7 @@ msgstr "Rad"
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template__sale_order_template_line_ids
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
 msgid "Lines"
-msgstr "Linjer"
+msgstr "Rader"
 
 #. module: sale_management
 #: model:ir.model.constraint,message:sale_management.constraint_sale_order_template_line_accountable_product_id_required
@@ -326,6 +332,11 @@ msgid "Number of days for the validity date computation of the quotation"
 msgstr "Antal dagar för beräkning av giltighetsdatum för offerten"
 
 #. module: sale_management
+#: model:sale.order.template.option,name:sale_management.sale_order_template_option_1
+msgid "Office Chair"
+msgstr "Kontorsstol"
+
+#. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template__require_payment
 msgid "Online Payment"
 msgstr "Onlinebetalning"
@@ -334,6 +345,11 @@ msgstr "Onlinebetalning"
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template__require_signature
 msgid "Online Signature"
 msgstr "Elektronisk signatur"
+
+#. module: sale_management
+#: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
+msgid "Online confirmation"
+msgstr "Onlinebekräftelse"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template__sale_order_template_option_ids
@@ -352,17 +368,6 @@ msgstr "Tilläggsproduktsrader"
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_portal_content_inherit_sale_management
 msgid "Options"
 msgstr "Alternativ"
-
-#. module: sale_management
-#: model:ir.model.fields,field_description:sale_management.field_sale_order_template__prepayment_percent
-msgid "Prepayment percentage"
-msgstr "Procentuell förskottsbetalning"
-
-#. module: sale_management
-#. odoo-python
-#: code:addons/sale_management/models/sale_order_template.py:0
-msgid "Prepayment percentage must be a valid percentage."
-msgstr "Förskottsbetalningsprocenten måste vara en giltig procentsats."
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__is_present
@@ -388,6 +393,11 @@ msgstr "Antal"
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_form_quote
 msgid "Quantity:"
 msgstr "Antal:"
+
+#. module: sale_management
+#: model:ir.model.fields,field_description:sale_management.field_res_config_settings__module_sale_quotation_builder
+msgid "Quotation Builder"
+msgstr "Offertbyggare"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template__number_of_days
@@ -435,8 +445,8 @@ msgstr "Offertmallar"
 
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
-msgid "Quotation Validity"
-msgstr "Giltighet för offert"
+msgid "Quotation expires after"
+msgstr "Offert upphör att gälla efter"
 
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_portal_content_inherit_sale_management
@@ -477,12 +487,12 @@ msgstr "Försäljning"
 #. module: sale_management
 #: model:ir.model,name:sale_management.model_sale_order
 msgid "Sales Order"
-msgstr "Försäljningsorder"
+msgstr "Order"
 
 #. module: sale_management
 #: model:ir.model,name:sale_management.model_sale_order_line
 msgid "Sales Order Line"
-msgstr "Försäljningsorderrad"
+msgstr "Orderrad"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__order_id
@@ -518,7 +528,6 @@ msgstr ""
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__sequence
-#: model:ir.model.fields,field_description:sale_management.field_sale_order_template__sequence
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_line__sequence
 msgid "Sequence"
 msgstr "Sekvens"
@@ -543,7 +552,7 @@ msgstr "Allmänna villkor"
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template__note
 msgid "Terms and conditions"
-msgstr "Villkor och bestämmelser"
+msgstr "Allmänna villkor"
 
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
@@ -553,12 +562,6 @@ msgid ""
 msgstr ""
 "Administratören kan sätta standardvillkor i försäljningsinställningarna. "
 "Villkor som sätts här visas istället om du väljer denna offertmall."
-
-#. module: sale_management
-#: model:ir.model.fields,help:sale_management.field_sale_order_template__prepayment_percent
-msgid "The percentage of the amount needed to be paid to confirm quotations."
-msgstr ""
-"Den procentandel av beloppet som måste betalas för att bekräfta offerter."
 
 #. module: sale_management
 #: model:ir.model.fields,help:sale_management.field_sale_order_template__mail_template_id
@@ -626,24 +629,22 @@ msgstr ""
 "Använd korsförsäljning och rabatter för att driva och öka dina försäljningar."
 
 #. module: sale_management
-#. odoo-python
 #: code:addons/sale_management/models/sale_order_option.py:0
+#, python-format
 msgid "You cannot add options to a confirmed order."
 msgstr "Du kan inte utöka en bekräftad order."
 
 #. module: sale_management
-#. odoo-python
 #: code:addons/sale_management/models/sale_order_template_line.py:0
+#, python-format
 msgid ""
 "You cannot change the type of a sale quote line. Instead you should delete "
 "the current line and create a new line of the proper type."
-msgstr ""
-"Du kan inte ändra typen på en rad för en säljoffert. Istället bör du ta bort"
-" den aktuella raden och skapa en ny rad av rätt typ."
+msgstr "Du kan inte ändra typ på en offert rad"
 
 #. module: sale_management
-#. odoo-python
 #: code:addons/sale_management/models/sale_order.py:0
+#, python-format
 msgid ""
 "Your quotation contains products from company %(product_company)s whereas your quotation belongs to company %(quote_company)s. \n"
 " Please change the company of your quotation or remove the products from other companies (%(bad_products)s)."
@@ -652,14 +653,14 @@ msgstr ""
 " Var god ändra företaget för ditt erbjudande eller ta bort produkterna från andra företag (%(bad_products)s)."
 
 #. module: sale_management
-#. odoo-python
 #: code:addons/sale_management/models/sale_order_template.py:0
+#, python-format
 msgid "Your template cannot contain products from multiple companies."
 msgstr "Din mall kan inte innehålla produkter från flera företag."
 
 #. module: sale_management
-#. odoo-python
 #: code:addons/sale_management/models/sale_order_template.py:0
+#, python-format
 msgid ""
 "Your template contains products from company %(product_company)s whereas your template belongs to company %(template_company)s. \n"
 " Please change the company of your template or remove the products from other companies."

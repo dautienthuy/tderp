@@ -16,17 +16,14 @@ discount to a customer.
 """,
     'depends': ['point_of_sale'],
     'data': [
-        'data/pos_discount_data.xml',
         'views/res_config_settings_views.xml',
         'views/pos_config_views.xml',
         ],
     'installable': True,
     'assets': {
-        'point_of_sale._assets_pos': [
-            'pos_discount/static/src/**/*',
-        ],
-        'web.assets_tests': [
-            'pos_discount/static/tests/tours/**/*',
+        'point_of_sale.assets': [
+            'pos_discount/static/src/js/**/*',
+            'pos_discount/static/src/xml/**/*',
         ],
     },
     'license': 'LGPL-3',

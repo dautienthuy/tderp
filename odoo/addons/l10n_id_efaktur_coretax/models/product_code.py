@@ -1,6 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models
+from odoo import fields, models
 
 class EfakturProductCode(models.Model):
     _name = "l10n_id_efaktur_coretax.product.code"
@@ -9,7 +9,8 @@ class EfakturProductCode(models.Model):
     code = fields.Char()
     description = fields.Text()
 
-    @api.depends('code', 'description')
-    def _compute_display_name(self):
+    def name_get(self):
+        result = []
         for record in self:
-            record.display_name = f"{record.code} - {record.description}"
+            result.append((record.id, f"{record.code} - {record.description}"))
+        return result

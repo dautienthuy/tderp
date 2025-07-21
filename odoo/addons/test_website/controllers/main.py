@@ -131,7 +131,7 @@ class WebsiteTest(Home):
         return 'Basic Controller Content'
 
     # Test Redirects
-    @http.route(['/test_website/country/<model("res.country"):country>'], type='http', auth="public", website=True, sitemap=True)
+    @http.route(['/test_website/country/<model("res.country"):country>'], type='http', auth="public", website=True, sitemap=False)
     def test_model_converter_country(self, country, **kw):
         return request.render('test_website.test_redirect_view', {'country': country})
 
@@ -141,16 +141,6 @@ class WebsiteTest(Home):
 
     @http.route(['/test_website/model_item/<int:record_id>'], type='http', methods=['GET'], auth="public", website=True, sitemap=False)
     def test_model_item(self, record_id):
-        record = request.env['test.model'].browse(record_id)
-        values = {
-            'record': record,
-            'main_object': record,
-            'tag': record.tag_id,
-        }
-        return request.render("test_website.model_item", values)
-
-    @http.route(['/test_website/model_item_sudo/<int:record_id>'], type='http', methods=['GET'], auth="public", website=True, sitemap=False)
-    def test_model_item_sudo(self, record_id):
         values = {
             'record': request.env['test.model'].sudo().browse(record_id),
         }

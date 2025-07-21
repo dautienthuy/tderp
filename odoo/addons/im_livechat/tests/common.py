@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tests.common import HttpCase, new_test_user
+from odoo.tests.common import TransactionCase
 
 
-class TestImLivechatCommon(HttpCase):
+class TestImLivechatCommon(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.password = 'Pl1bhD@2!kXZ'
         cls.operators = cls.env['res.users'].create([{
             'name': 'Michel',
             'login': 'michel',
-            'password': cls.password,
             'livechat_username': "Michel Operator",
             'email': 'michel@example.com',
         }, {
@@ -43,28 +41,8 @@ class TestImLivechatCommon(HttpCase):
 
     def setUp(self):
         super().setUp()
-        self.operator_id = 0
 
-        def _compute_available_operator_ids(channel_self):
-            for record in channel_self:
-                record.available_operator_ids = record.user_ids
+        def get_available_users(_):
+            return self.operators
 
-        self.patch(type(self.env['im_livechat.channel']), '_compute_available_operator_ids', _compute_available_operator_ids)
-
-    def _create_operator(self, lang_code=None, country_code=None):
-        self.env["res.lang"].with_context(active_test=False).search(
-            [("code", "=", lang_code)]
-        ).active = True
-        operator = new_test_user(self.env, login=f"operator_{lang_code or country_code}_{self.operator_id}")
-        operator.partner_id = self.env["res.partner"].create(
-            {
-                "name": f"Operator {lang_code or country_code}",
-                "lang": lang_code,
-                "country_id": self.env["res.country"].search([("code", "=", country_code)]).id
-                if country_code
-                else None,
-            }
-        )
-        self.env["bus.presence"].create({"user_id": operator.id, "status": "online"})  # Simulate online status
-        self.operator_id += 1
-        return operator
+        self.patch(type(self.env['im_livechat.channel']), '_get_available_users', get_available_users)

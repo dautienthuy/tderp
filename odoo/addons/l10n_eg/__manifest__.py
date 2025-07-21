@@ -1,9 +1,6 @@
-# Part of Odoo. See LICENSE file for full copyright and licensing details.
 {
     'name': "Egypt - Accounting",
-    'website': 'https://www.odoo.com/documentation/master/applications/finance/fiscal_localizations/egypt.html',
-    'icon': '/account/static/description/l10n.png',
-    'countries': ['eg'],
+    'website': 'https://www.odoo.com/documentation/16.0/applications/finance/fiscal_localizations/egypt.html',
     'description': """
 Egypt Accounting Module
 ==============================================================================
@@ -19,19 +16,25 @@ Activates:
 - Other Taxes Report
 - Fiscal Positions
     """,
+    'author': "Odoo S.A.",
     'category': 'Accounting/Localizations/Account Charts',
     'version': '1.0',
-    'depends': [
-        'account',
-    ],
-    'auto_install': ['account'],
+    'depends': ['account', 'l10n_multilang'],
     'data': [
+        'data/l10n_eg_chart_data.xml',
+        'data/account.account.template.csv',
+        'data/l10n_eg_chart_post_data.xml',
         'data/account_tax_report_data.xml',
-        'views/account_tax.xml',
+        'data/account_tax_group_data.xml',
+        'data/account_tax_template_data.xml',
+        'data/fiscal_templates_data.xml',
+        'data/account_chart_template_data.xml',
+        'views/account_tax.xml'
     ],
     'demo': [
         'demo/demo_company.xml',
-        'demo/demo_partner.xml',
+        'demo/demo_partner.xml'
     ],
+    'post_init_hook': 'load_translations',
     'license': 'LGPL-3',
 }

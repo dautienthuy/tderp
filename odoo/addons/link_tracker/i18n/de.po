@@ -3,15 +3,15 @@
 # 	* link_tracker
 # 
 # Translators:
-# Wil Odoo, 2024
+# Martin Trigaux, 2023
 # Larissa Manderfeld, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server saas~14.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:55+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2021-07-12 07:50+0000\n"
+"PO-Revision-Date: 2022-09-22 05:53+0000\n"
 "Last-Translator: Larissa Manderfeld, 2024\n"
 "Language-Team: German (https://app.transifex.com/odoo/teams/41243/de/)\n"
 "MIME-Version: 1.0\n"
@@ -21,14 +21,12 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: link_tracker
-#: model_terms:ir.ui.view,arch_db:link_tracker.utm_campaign_view_kanban
-msgid "<i class=\"fa fa-fw fa-mouse-pointer\" aria-label=\"Clicks\" role=\"img\"/>"
-msgstr "<i class=\"fa fa-fw fa-mouse-pointer\" aria-label=\"Clicks\" role=\"img\"/>"
-
-#. module: link_tracker
-#: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_view_form
-msgid "<span class=\"o_stat_text\">Visit Page</span>"
-msgstr "<span class=\"o_stat_text\">Seite besuchen</span>"
+#: code:addons/link_tracker/models/link_tracker.py:0
+#: code:addons/link_tracker/models/link_tracker.py:0
+#, python-format
+msgid "%r is not a valid link, links cannot redirect to the current page."
+msgstr ""
+"%r ist kein gültiger Link. Links können nicht zur aktuellen Seite umleiten."
 
 #. module: link_tracker
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker__absolute_url
@@ -71,18 +69,6 @@ msgid "Codes"
 msgstr "Codes"
 
 #. module: link_tracker
-#. odoo-python
-#: code:addons/link_tracker/models/link_tracker.py:0
-msgid ""
-"Combinations of Link Tracker values (URL, campaign, medium, source, and label) must be unique.\n"
-"The following combinations are already used: \n"
-"- %(error_lines)s"
-msgstr ""
-"Kombinationen von Link-Tracker-Werten (URL, Kampagne, Medium, Quelle und Bezeichnung) müssen eindeutig sein.\n"
-"Die folgenden Kombinationen werden bereits verwendet:\n"
-"- %(error_lines)s"
-
-#. module: link_tracker
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker_click__country_id
 #: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_click_view_search
 msgid "Country"
@@ -109,8 +95,9 @@ msgid "Created on"
 msgstr "Erstellt am"
 
 #. module: link_tracker
-#. odoo-python
 #: code:addons/link_tracker/models/link_tracker.py:0
+#: code:addons/link_tracker/models/link_tracker.py:0
+#, python-format
 msgid "Creating a Link Tracker without URL is not possible"
 msgstr "Es ist nicht möglich, einen Link-Tracker ohne URL zu erstellen"
 
@@ -143,6 +130,13 @@ msgstr "ID"
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker_click__ip
 msgid "Internet Protocol"
 msgstr "Internetprotokoll"
+
+#. module: link_tracker
+#: model:ir.model.fields,field_description:link_tracker.field_link_tracker____last_update
+#: model:ir.model.fields,field_description:link_tracker.field_link_tracker_click____last_update
+#: model:ir.model.fields,field_description:link_tracker.field_link_tracker_code____last_update
+msgid "Last Modified on"
+msgstr "Letzte Änderung am"
 
 #. module: link_tracker
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker__write_uid
@@ -191,6 +185,16 @@ msgstr "Link-Tracker-Klick"
 #: model:ir.model,name:link_tracker.model_link_tracker_code
 msgid "Link Tracker Code"
 msgstr "Link-Tracker-Code"
+
+#. module: link_tracker
+#: code:addons/link_tracker/models/link_tracker.py:0
+#, python-format
+msgid ""
+"Link Tracker values (URL, campaign, medium and source) must be unique (%s, "
+"%s, %s, %s)."
+msgstr ""
+"Die Link-Tracker-Werte (URL, Kampagne, Medium und Quelle) müssen eindeutig "
+"sein (%s, %s, %s, %s )."
 
 #. module: link_tracker
 #: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_view_graph
@@ -299,7 +303,6 @@ msgstr "Titel und URL"
 
 #. module: link_tracker
 #: model:ir.model.fields,field_description:link_tracker.field_link_tracker__short_url
-#: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_view_form
 msgid "Tracked URL"
 msgstr "Nachverfolgte URL"
 
@@ -336,8 +339,8 @@ msgid "Visit Page"
 msgstr "Seite besuchen"
 
 #. module: link_tracker
-#. odoo-python
 #: code:addons/link_tracker/models/link_tracker.py:0
+#, python-format
 msgid "Visit Webpage"
 msgstr "Website besuchen"
 
@@ -345,11 +348,3 @@ msgstr "Website besuchen"
 #: model_terms:ir.ui.view,arch_db:link_tracker.link_tracker_view_form
 msgid "Website Link"
 msgstr "Website-Link"
-
-#. module: link_tracker
-#. odoo-python
-#: code:addons/link_tracker/models/link_tracker.py:0
-msgid "“%s” is not a valid link, links cannot redirect to the current page."
-msgstr ""
-"„%s“ ist kein gültiger Link. Links können nicht zur aktuellen Seite "
-"umleiten."

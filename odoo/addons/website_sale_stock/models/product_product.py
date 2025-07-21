@@ -21,32 +21,14 @@ class ProductProduct(models.Model):
             # so we check for it
             cart = website and request and hasattr(request, 'website') and website.sale_get_order() or None
             if cart:
-                return sum(cart._get_common_product_lines(product=self).mapped('product_uom_qty'))
+                return sum(
+                    cart._get_common_product_lines(product=self).mapped('product_uom_qty')
+                )
         return 0
 
-    def _get_max_quantity(self, website, **kwargs):
-        """ The max quantity of a product is the difference between the quantity that's free to use
-        and the quantity that's already been added to the cart.
-
-        Note: self.ensure_one()
-
-        :param website website: The website for which to compute the max quantity.
-        :return: The max quantity of the product.
-        :rtype: float | None
-        """
-        self.ensure_one()
-        if self.is_storable and not self.allow_out_of_stock_order:
-            free_qty = website._get_product_available_qty(self.sudo(), **kwargs)
-            cart_qty = self._get_cart_qty(website)
-            return free_qty - cart_qty
-        return None
-
     def _is_sold_out(self):
-        self.ensure_one()
-        if not self.is_storable:
-            return False
-        free_qty = self.env['website'].get_current_website()._get_product_available_qty(self.sudo())
-        return free_qty <= 0
+        combination_info = self.with_context(website_sale_stock_get_quantity=True).product_tmpl_id._get_combination_info(product_id=self.id)
+        return combination_info['product_type'] == 'product' and combination_info['free_qty'] <= 0
 
     def _website_show_quick_add(self):
         return (self.allow_out_of_stock_order or not self._is_sold_out()) and super()._website_show_quick_add()

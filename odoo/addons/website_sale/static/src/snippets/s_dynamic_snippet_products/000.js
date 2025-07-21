@@ -1,10 +1,9 @@
-/** @odoo-module **/
+odoo.define('website_sale.s_dynamic_snippet_products', function (require) {
+'use strict';
 
-import publicWidget from "@web/legacy/js/public/public_widget";
-import { rpc } from "@web/core/network/rpc";
-import DynamicSnippetCarousel from "@website/snippets/s_dynamic_snippet_carousel/000";
-import wSaleUtils from "@website_sale/js/website_sale_utils";
-import { WebsiteSale } from "../../js/website_sale";
+const publicWidget = require('web.public.widget');
+const DynamicSnippetCarousel = require('website.s_dynamic_snippet_carousel');
+var wSaleUtils = require('website_sale.utils');
 
 const DynamicSnippetProducts = DynamicSnippetCarousel.extend({
     selector: '.s_dynamic_snippet_products',
@@ -95,19 +94,10 @@ const DynamicSnippetProducts = DynamicSnippetCarousel.extend({
             }
             searchDomain.push(...nameDomain);
         }
-        if (!this.el.dataset.showVariants) {
-            searchDomain.push('hide_variants')
-        }
         return searchDomain;
     },
     /**
-     * Add `productTemplateId` for product snippets (Accessories, Alternatives and Recently sold).
-     *
-     * See `dynamic_snippet_accessories_action`, `dynamic_snippet_recently_sold_with_action` and
-     * `dynamic_snippet_alternative_products`.
-     *
      * @override
-     * @private
      */
     _getRpcParameters: function () {
         const productTemplateId = $("#product_details").find(".product_template_id");
@@ -115,16 +105,9 @@ const DynamicSnippetProducts = DynamicSnippetCarousel.extend({
             productTemplateId: productTemplateId && productTemplateId.length ? productTemplateId[0].value : undefined,
         });
     },
-    /**
-     * @override
-     * @private
-     */
-    _getMainPageUrl() {
-        return "/shop";
-    },
 });
 
-const DynamicSnippetProductsCard = WebsiteSale.extend({
+const DynamicSnippetProductsCard = publicWidget.Widget.extend({
     selector: '.o_carousel_product_card',
     read_events: {
         'click .js_add_cart': '_onClickAddToCart',
@@ -146,39 +129,21 @@ const DynamicSnippetProductsCard = WebsiteSale.extend({
 
     /**
      * Event triggered by a click on the Add to cart button
-     *
-     * @param {OdooEvent} ev
+     * 
+     * @param {OdooEvent} ev 
      */
     async _onClickAddToCart(ev) {
-        const button = ev.currentTarget
-        if (!button.dataset.productSelected || button.dataset.isCombo === 'True') {
-            const dummy_form = document.createElement('form');
-            dummy_form.setAttribute('method', 'post');
-            dummy_form.setAttribute('action', '/shop/cart/update');
-
-            const inputPT = document.createElement('input');
-            inputPT.setAttribute('name', 'product_template_id');
-            inputPT.setAttribute('type', 'hidden');
-            inputPT.setAttribute('value', button.dataset.productTemplateId);
-            dummy_form.appendChild(inputPT);
-
-            const inputPP = document.createElement('input');
-            inputPP.setAttribute('name', 'product_id');
-            inputPP.setAttribute('type', 'hidden');
-            inputPP.setAttribute('value', button.dataset.productId);
-            dummy_form.appendChild(inputPP);
-
-            return this._handleAdd($(dummy_form));  // existing logic expects jquery form
-        }
-        else {
-            const data = await rpc("/shop/cart/update_json", {
-                product_id: parseInt(ev.currentTarget.dataset.productId),
-                add_qty: 1,
-                display: false,
-            });
-            wSaleUtils.updateCartNavBar(data);
-            wSaleUtils.showCartNotification(this.call.bind(this), data.notification_info);
-        }
+        const $card = $(ev.currentTarget).closest('.card');
+        const data = await this._rpc({
+            route: "/shop/cart/update_json",
+            params: {
+                product_id: $card.find('input[data-product-id]').data('product-id'),
+                add_qty: 1
+            },
+        });
+        const $navButton = $('header .o_wsale_my_cart').first();
+        await wSaleUtils.animateClone($navButton, $(ev.currentTarget).parents('.card'), 25, 40);
+        wSaleUtils.updateCartNavBar(data);
         if (this.add2cartRerender) {
             this.trigger_up('widgets_start_request', {
                 $target: this.$el.closest('.s_dynamic'),
@@ -192,13 +157,13 @@ const DynamicSnippetProductsCard = WebsiteSale.extend({
      * @param {OdooEvent} ev
      */
     async _onRemoveFromRecentlyViewed(ev) {
-        const rpcParams = {}
-        if (ev.currentTarget.dataset.productSelected) {
-            rpcParams.product_id = ev.currentTarget.dataset.productId;
-        } else {
-            rpcParams.product_template_id = ev.currentTarget.dataset.productTemplateId;
-        }
-        await rpc("/shop/products/recently_viewed_delete", rpcParams);
+        const $card = $(ev.currentTarget).closest('.card');
+        await this._rpc({
+            route: "/shop/products/recently_viewed_delete",
+            params: {
+                product_id: $card.find('input[data-product-id]').data('product-id'),
+            },
+        });
         this.trigger_up('widgets_start_request', {
             $target: this.$el.closest('.s_dynamic'),
         });
@@ -208,4 +173,5 @@ const DynamicSnippetProductsCard = WebsiteSale.extend({
 publicWidget.registry.dynamic_snippet_products_cta = DynamicSnippetProductsCard;
 publicWidget.registry.dynamic_snippet_products = DynamicSnippetProducts;
 
-export default DynamicSnippetProducts;
+return DynamicSnippetProducts;
+});

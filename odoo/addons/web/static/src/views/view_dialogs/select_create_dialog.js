@@ -1,58 +1,24 @@
+/** @odoo-module **/
+
 import { Dialog } from "@web/core/dialog/dialog";
 import { useService } from "@web/core/utils/hooks";
-import { renderToMarkup } from "@web/core/utils/render";
 import { View } from "@web/views/view";
+import { escape } from "@web/core/utils/strings";
 
 import { FormViewDialog } from "./form_view_dialog";
 
-import { Component, useState } from "@odoo/owl";
-import { registry } from "@web/core/registry";
-
-let _defaultNoContentHelp;
-function getDefaultNoContentHelp() {
-    if (!_defaultNoContentHelp) {
-        _defaultNoContentHelp = renderToMarkup("web.SelectCreateDialog.DefaultNoContentHelp");
-    }
-    return _defaultNoContentHelp;
-}
+import { Component, markup, useState } from "@odoo/owl";
 
 export class SelectCreateDialog extends Component {
-    static components = { Dialog, View };
-    static template = "web.SelectCreateDialog";
-    static props = {
-        context: { type: Object, optional: true },
-        domain: { type: Array, optional: true },
-        dynamicFilters: { type: Array, optional: true },
-        resModel: String,
-        searchViewId: { type: [Number, { value: false }], optional: true },
-        multiSelect: { type: Boolean, optional: true },
-        onSelected: { type: Function, optional: true },
-        close: { type: Function, optional: true },
-        onCreateEdit: { type: Function, optional: true },
-        title: { type: String, optional: true },
-        noCreate: { type: Boolean, optional: true },
-        onUnselect: { type: Function, optional: true },
-        noContentHelp: { type: String, optional: true }, // Markup
-    };
-    static defaultProps = {
-        dynamicFilters: [],
-        multiSelect: true,
-        searchViewId: false,
-        domain: [],
-        context: {},
-    };
-
     setup() {
         this.viewService = useService("view");
         this.dialogService = useService("dialog");
         this.state = useState({ resIds: [] });
-        const noContentHelp = this.props.noContentHelp || getDefaultNoContentHelp();
-        this.busy = false; // flag used to ensure we only call once the onSelected/onUnselect props
         this.baseViewProps = {
             display: { searchPanel: false },
             editable: false, // readonly
             noBreadcrumbs: true,
-            noContentHelp,
+            noContentHelp: markup(`<p>${escape(this.env._t("No records found!"))}</p>`),
             showButtons: false,
             selectRecord: (resId) => this.select([resId]),
             onSelectionChanged: (resIds) => {
@@ -77,32 +43,24 @@ export class SelectCreateDialog extends Component {
             props.allowSelectors = this.props.multiSelect;
         } else if (type === "kanban") {
             props.forceGlobalClick = true;
+            if (this.props.kanbanViewId) {
+                props.viewId = this.props.kanbanViewId;
+            }
         }
         return props;
     }
 
-    async executeOnceAndClose(callback) {
-        if (!this.busy) {
-            this.busy = true;
-            try {
-                await callback();
-            } catch (e) {
-                this.busy = false;
-                throw e;
-            }
-            this.props.close();
-        }
-    }
-
     async select(resIds) {
         if (this.props.onSelected) {
-            this.executeOnceAndClose(() => this.props.onSelected(resIds));
+            await this.props.onSelected(resIds);
+            this.props.close();
         }
     }
 
     async unselect() {
         if (this.props.onUnselect) {
-            this.executeOnceAndClose(() => this.props.onUnselect());
+            await this.props.onUnselect();
+            this.props.close();
         }
     }
 
@@ -126,5 +84,23 @@ export class SelectCreateDialog extends Component {
         }
     }
 }
+SelectCreateDialog.components = { Dialog, View };
+SelectCreateDialog.template = "web.SelectCreateDialog";
 
-registry.category("dialogs").add("select_create", SelectCreateDialog);
+SelectCreateDialog.defaultProps = {
+    dynamicFilters: [],
+    multiSelect: true,
+    searchViewId: false,
+    type: "list",
+};
+
+/**
+ * Props: (to complete)
+ *
+ * resModel
+ * domain
+ * context
+ * title
+ * onSelected
+ * type
+ */

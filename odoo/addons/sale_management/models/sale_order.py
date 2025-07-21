@@ -1,11 +1,14 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import timedelta
 from itertools import chain, starmap, zip_longest
 
-from odoo import _, api, fields, models
+from odoo import SUPERUSER_ID, api, fields, models, _
 from odoo.exceptions import ValidationError
 from odoo.tools import is_html_empty
+
+from odoo.addons.sale.models.sale_order import READONLY_FIELD_STATES
 
 
 class SaleOrder(models.Model):
@@ -16,10 +19,12 @@ class SaleOrder(models.Model):
         string="Quotation Template",
         compute='_compute_sale_order_template_id',
         store=True, readonly=False, check_company=True, precompute=True,
+        states=READONLY_FIELD_STATES,
         domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
     sale_order_option_ids = fields.One2many(
         comodel_name='sale.order.option', inverse_name='order_id',
         string="Optional Products Lines",
+        states=READONLY_FIELD_STATES,
         copy=True)
 
     #=== COMPUTE METHODS ===#
@@ -55,25 +60,12 @@ class SaleOrder(models.Model):
             order.require_payment = order.sale_order_template_id.require_payment
 
     @api.depends('sale_order_template_id')
-    def _compute_prepayment_percent(self):
-        super()._compute_prepayment_percent()
-        for order in self.filtered('sale_order_template_id'):
-            if order.require_payment:
-                order.prepayment_percent = order.sale_order_template_id.prepayment_percent
-
-    @api.depends('sale_order_template_id')
     def _compute_validity_date(self):
         super()._compute_validity_date()
         for order in self.filtered('sale_order_template_id'):
             validity_days = order.sale_order_template_id.number_of_days
             if validity_days > 0:
                 order.validity_date = fields.Date.context_today(order) + timedelta(validity_days)
-
-    @api.depends('sale_order_template_id')
-    def _compute_journal_id(self):
-        super()._compute_journal_id()
-        for order in self.filtered('sale_order_template_id'):
-            order.journal_id = order.sale_order_template_id.journal_id
 
     #=== CONSTRAINT METHODS ===#
 
@@ -95,7 +87,6 @@ class SaleOrder(models.Model):
     @api.onchange('company_id')
     def _onchange_company_id(self):
         """Trigger quotation template recomputation on unsaved records company change"""
-        super()._onchange_company_id()
         if self._origin.id:
             return
         self._compute_sale_order_template_id()
@@ -161,33 +152,21 @@ class SaleOrder(models.Model):
 
     #=== ACTION METHODS ===#
 
-    def _get_confirmation_template(self):
-        self.ensure_one()
-        return self.sale_order_template_id.mail_template_id or super()._get_confirmation_template()
-
     def action_confirm(self):
         res = super().action_confirm()
+        if self.env.su:
+            self = self.with_user(SUPERUSER_ID)
 
-        if self.env.context.get('send_email'):
-            # Mail already sent in super method
-            return res
-
-        # When an order is confirmed from backend (send_email=False), if the quotation template has
-        # a specified mail template, send it as it's probably meant to share additional information.
         for order in self:
-            if order.sale_order_template_id.mail_template_id:
-                order._send_order_notification_mail(order.sale_order_template_id.mail_template_id)
+            if order.sale_order_template_id and order.sale_order_template_id.mail_template_id:
+                order.sale_order_template_id.mail_template_id.send_mail(order.id)
         return res
 
     def _recompute_prices(self):
         super()._recompute_prices()
         # Special case: we want to overwrite the existing discount on _recompute_prices call
         # i.e. to make sure the discount is correctly reset
-        # if pricelist rule is different than when the price was first computed.
+        # if pricelist discount_policy is different than when the price was first computed.
         self.sale_order_option_ids.discount = 0.0
         self.sale_order_option_ids._compute_price_unit()
         self.sale_order_option_ids._compute_discount()
-
-    def _can_be_edited_on_portal(self):
-        self.ensure_one()
-        return self.state in ('draft', 'sent')

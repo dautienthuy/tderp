@@ -1,28 +1,17 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import logging
 import random
 import time
 
-from decorator import decorator
-
+from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
 from odoo.fields import Command
+
 from odoo.tests import tagged
 from odoo.tests.common import users, warmup
 
-from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
-
 _logger = logging.getLogger(__name__)
-
-@decorator
-def prepare(func, self):
-    """Prepare data to remove common querries from the count.
-
-    Must be run after `warmup` because of the invalidations"""
-    # prefetch the data linked to the company and its country code to avoid changing
-    # the query count during l10n tests
-    self.env.company.country_id.code
-    func(self)
 
 
 @tagged('so_batch_perf')
@@ -49,9 +38,8 @@ class TestPERF(TransactionCaseWithUserDemo):
 
     @users('admin')
     @warmup
-    @prepare
     def test_empty_sale_order_creation_perf(self):
-        with self.assertQueryCount(admin=33):
+        with self.assertQueryCount(admin=34):
             self.env['sale.order'].create({
                 'partner_id': self.partners[0].id,
                 'user_id': self.salesmans[0].id,
@@ -59,14 +47,13 @@ class TestPERF(TransactionCaseWithUserDemo):
 
     @users('admin')
     @warmup
-    @prepare
     def test_empty_sales_orders_batch_creation_perf(self):
         # + 1 SO insert
         # + 1 SO sequence fetch
         # + 1 warehouse fetch
         # + 1 query to get analytic default account
         # + 1 followers queries ?
-        with self.assertQueryCount(admin=37):
+        with self.assertQueryCount(admin=39):
             self.env['sale.order'].create([{
                 'partner_id': self.partners[0].id,
                 'user_id': self.salesmans[0].id,
@@ -74,11 +61,10 @@ class TestPERF(TransactionCaseWithUserDemo):
 
     @users('admin')
     @warmup
-    @prepare
     def test_dummy_sales_orders_batch_creation_perf(self):
         """ Dummy SOlines (notes/sections) should not add any custom queries other than their insert"""
         # + 2 SOL (batched) insert
-        with self.assertQueryCount(admin=40):
+        with self.assertQueryCount(admin=44):
             self.env['sale.order'].create([{
                 'partner_id': self.partners[0].id,
                 'user_id': self.salesmans[0].id,
@@ -90,14 +76,12 @@ class TestPERF(TransactionCaseWithUserDemo):
 
     @users('admin')
     @warmup
-    @prepare
     def test_light_sales_orders_batch_creation_perf_without_taxes(self):
-        self.env['res.country'].search([]).mapped('code')
         self.products[0].taxes_id = [Command.set([])]
         # + 2 SQL insert
         # + 2 queries to get analytic default tags
         # + 9 follower queries ?
-        with self.assertQueryCount(admin=50):  # com 46
+        with self.assertQueryCount(admin=57):
             self.env['sale.order'].create([{
                 'partner_id': self.partners[0].id,
                 'user_id': self.salesmans[0].id,
@@ -134,6 +118,16 @@ class TestPERF(TransactionCaseWithUserDemo):
         # (Seems to be a time-based problem, everytime happening around 10PM)
         self._test_complex_sales_orders_batch_creation_perf(1504)
 
+    @users('admin')
+    @warmup
+    def ___test_complex_sales_orders_batch_creation_perf_with_discount_computation(self):
+        """Cover the "complex" logic triggered inside the `_compute_discount`"""
+        self.env['product.pricelist'].search([]).discount_policy = 'without_discount'
+        self.env.user.groups_id += self.env.ref('product.group_discount_per_so_line')
+
+        # Verify any modification to this count on nightly runbot builds
+        self._test_complex_sales_orders_batch_creation_perf(1546)
+
     def _test_complex_sales_orders_batch_creation_perf(self, query_count):
         MSG = "Model %s, %i records, %s, time %.2f"
 
@@ -161,6 +155,9 @@ class TestPERF(TransactionCaseWithUserDemo):
         """Make sure the price and discounts computation are complexified
         and do not gain from any prefetch/batch gains during the price computation
         """
+        # Enable discounts
+        self.env['product.pricelist'].search([]).discount_policy = 'without_discount'
+        self.env.user.groups_id += self.env.ref('product.group_discount_per_so_line')
 
         vals_list = [{
             "partner_id": self.partners[i].id,

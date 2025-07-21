@@ -137,9 +137,6 @@ class TestFiscalPosition(common.TransactionCase):
 
     def test_20_fp_one_tax_2m(self):
         self.env.company.country_id = self.env.ref('base.us')
-        self.env['account.tax.group'].create(
-            {'name': 'Test Tax Group', 'company_id': self.env.company.id}
-        )
 
         self.src_tax = self.env['account.tax'].create({'name': "SRC", 'amount': 0.0})
         self.dst1_tax = self.env['account.tax'].create({'name': "DST1", 'amount': 0.0})
@@ -307,12 +304,3 @@ class TestFiscalPosition(common.TransactionCase):
             'zip_from': '123',
             'zip_to': '456',
         }])
-
-    def test_get_first_fiscal_position(self):
-        fiscal_positions = self.fp.create([{
-            'name': f'fiscal_position_{sequence}',
-            'auto_apply': True,
-            'country_id': self.jc.country_id.id,
-            'sequence': sequence
-        } for sequence in range(1, 3)])
-        self.assertEqual(self.fp._get_fiscal_position(self.jc), fiscal_positions[0])

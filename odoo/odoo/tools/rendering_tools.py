@@ -10,7 +10,7 @@ from werkzeug import urls
 
 from odoo.tools import safe_eval
 
-INLINE_TEMPLATE_REGEX = re.compile(r"\{\{(.+?)(\|\|\|\s*(.*?))?\}\}")
+INLINE_TEMPLATE_REGEX = re.compile(r"\{\{(.+?)\}\}")
 
 def relativedelta_proxy(*args, **kwargs):
     # dateutil.relativedelta is an old-style class and cannot be directly
@@ -42,34 +42,33 @@ def parse_inline_template(text):
     for match in INLINE_TEMPLATE_REGEX.finditer(text):
         literal = text[current_literal_index:match.start()]
         expression = match.group(1)
-        default = match.group(3)
-        groups.append((literal, expression.strip(), default or ''))
+        groups.append((literal, expression))
         current_literal_index = match.end()
 
     # string past last regex match
     literal = text[current_literal_index:]
     if literal:
-        groups.append((literal, '', ''))
+        groups.append((literal, ''))
 
     return groups
 
 def convert_inline_template_to_qweb(template):
     template_instructions = parse_inline_template(template or '')
     preview_markup = []
-    for string, expression, default in template_instructions:
+    for string, expression in template_instructions:
         if expression:
-            preview_markup.append(Markup('{}<t t-out="{}">{}</t>').format(string, expression, default))
+            preview_markup.append(Markup('{}<t t-out="{}"/>').format(string, expression))
         else:
             preview_markup.append(string)
     return Markup('').join(preview_markup)
 
 def render_inline_template(template_instructions, variables):
     results = []
-    for string, expression, default in template_instructions:
+    for string, expression in template_instructions:
         results.append(string)
 
         if expression:
-            result = safe_eval.safe_eval(expression, variables) or default
+            result = safe_eval.safe_eval(expression, variables)
             if result:
                 results.append(str(result))
 

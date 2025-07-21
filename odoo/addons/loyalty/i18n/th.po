@@ -3,15 +3,19 @@
 # 	* loyalty
 # 
 # Translators:
+# Seksan Poltree <seksan.poltree@gmail.com>, 2022
+# Khwunchai Jaengsawang <khwunchai.j@ku.th>, 2022
+# Martin Trigaux, 2022
+# Wichanon Jamwutthipreecha, 2023
 # Wil Odoo, 2024
 # Rasareeyar Lappiam, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-30 18:37+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2022-09-22 05:53+0000\n"
 "Last-Translator: Rasareeyar Lappiam, 2025\n"
 "Language-Team: Thai (https://app.transifex.com/odoo/teams/41243/th/)\n"
 "MIME-Version: 1.0\n"
@@ -58,35 +62,42 @@ msgstr ""
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_reward.py:0
+#, python-format
 msgid " (Max %s)"
 msgstr "(สูงสุด %s)"
 
 #. module: loyalty
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_report
-msgid "$100"
-msgstr "$100"
-
-#. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_reward.py:0
+#, python-format
 msgid "%g%% on "
 msgstr "%g%% บน"
 
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_reward.py:0
-msgid "%s on "
-msgstr "%s บน"
+#, python-format
+msgid "%s per order"
+msgstr "%s ต่อคำสั่งซื้อ"
 
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_reward.py:0
+#, python-format
+msgid "%s per order on "
+msgstr "%s ต่อคำสั่งซื้อบน"
+
+#. module: loyalty
+#. odoo-python
+#: code:addons/loyalty/models/loyalty_reward.py:0
+#, python-format
 msgid "%s per point"
 msgstr "%s ต่อจุด"
 
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_reward.py:0
+#, python-format
 msgid "%s per point on "
 msgstr "%s ต่อจุดบน"
 
@@ -106,12 +117,6 @@ msgid "(tax excluded)"
 msgstr "(ไม่รวมภาษี)"
 
 #. module: loyalty
-#. odoo-javascript
-#: code:addons/loyalty/static/src/js/portal/loyalty_card_dialog/loyalty_card_dialog.xml:0
-msgid "-> View History"
-msgstr "-> ดูประวัติ"
-
-#. module: loyalty
 #: model:loyalty.program,name:loyalty.10_percent_coupon
 msgid "10% Discount Coupons"
 msgstr "คูปองส่วนลด 10%"
@@ -123,25 +128,24 @@ msgid "10% on your order"
 msgstr "10% สำหรับการสั่งซื้อของคุณ"
 
 #. module: loyalty
-#: model_terms:ir.ui.view,arch_db:loyalty.gift_card_report
-msgid "1000"
-msgstr "1000"
-
-#. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
+#, python-format
 msgid "2+1 Free"
 msgstr "2+1 ฟรี"
 
 #. module: loyalty
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_report
-msgid "2023-08-20"
-msgstr "2023-08-20"
-
-#. module: loyalty
-#: model_terms:ir.ui.view,arch_db:loyalty.gift_card_report
-msgid "2023-12-31"
-msgstr "2023-12-31"
+#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_reward_view_kanban
+msgid ""
+"<br/>\n"
+"                                        <br/>\n"
+"\n"
+"                                        <span class=\"fw-bold text-decoration-underline\">Applied to:</span>"
+msgstr ""
+"<br/>\n"
+"                                        <br/>\n"
+"\n"
+"                                        <span class=\"fw-bold text-decoration-underline\">นำไปใช้กับ:</span>"
 
 #. module: loyalty
 #: model:mail.template,body_html:loyalty.mail_template_gift_card
@@ -151,7 +155,7 @@ msgid ""
 "                    Here is your gift card!\n"
 "                </div>\n"
 "                <div style=\"padding-top:20px; padding-bottom:20px\">\n"
-"                    <img src=\"/loyalty/static/img/gift_card.png\" style=\"display:block; border:0; outline:none; text-decoration:none; margin:auto;\" width=\"300\"/>\n"
+"                    <img src=\"/loyalty/static/img/gift_card.png\" style=\"display:block; border:0; outline:none; text-decoration:none; margin:auto;\" width=\"300\">\n"
 "                </div>\n"
 "                <div style=\"padding:0; margin:0px; padding-top:35px; padding-bottom:35px; text-align:center;\">\n"
 "                    <h3 style=\"margin:0px; line-height:48px; font-family:arial, 'helvetica neue', helvetica, sans-serif; font-size:40px; font-style:normal; font-weight:normal; color:#333333; text-align:center\">\n"
@@ -239,21 +243,71 @@ msgid "<i class=\"fa fa-tags fa-fw\" title=\"Product Tags\"/>"
 msgstr "<i class=\"fa fa-tags fa-fw\" title=\"แท็กผลิตภัณฑ์\"/>"
 
 #. module: loyalty
+#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_reward_view_form
+msgid ""
+"<span attrs=\"{'invisible': [('clear_wallet', '!=', True)]}\"> (or "
+"more)</span>"
+msgstr ""
+
+#. module: loyalty
+#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_generate_wizard_view_form
+msgid ""
+"<span attrs=\"{'invisible': [('will_send_mail', '=', False)]}\">\n"
+"                            Generate and Send \n"
+"                        </span>\n"
+"                        <span attrs=\"{'invisible': [('will_send_mail', '=', True)]}\">\n"
+"                            Generate \n"
+"                        </span>"
+msgstr ""
+
+#. module: loyalty
+#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_rule_view_kanban
+msgid ""
+"<span class=\"fw-bold text-decoration-underline\">Among:</span>\n"
+"                                    <br/>"
+msgstr ""
+"<span class=\"fw-bold text-decoration-underline\">ในหมู่:</span>\n"
+"                                    <br/>"
+
+#. module: loyalty
+#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_rule_view_kanban
+msgid ""
+"<span class=\"fw-bold text-decoration-underline\">Grant</span>\n"
+"                                    <br/>"
+msgstr ""
+"<span class=\"fw-bold text-decoration-underline\">ยินยอม</span>\n"
+"                                    <br/>"
+
+#. module: loyalty
+#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_rule_view_kanban
+msgid ""
+"<span class=\"fw-bold text-decoration-underline\">Grant</span>\n"
+"                                    <br/>\n"
+"                                    the value of the coupon"
+msgstr ""
+"<span class=\"fw-bold text-decoration-underline\">ยินยอม</span>\n"
+"                                    <br/>\n"
+"                                    มูลค่าของคูปอง"
+
+#. module: loyalty
+#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_reward_view_kanban
+msgid ""
+"<span class=\"fw-bold text-decoration-underline\">In exchange of</span>\n"
+"                                    <br/>"
+msgstr ""
+"<span class=\"fw-bold text-decoration-underline\">เพื่อแลกกับ</span>\n"
+"                                    <br/>"
+
+#. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_program_view_form
 msgid ""
-"<span class=\"o_stat_text\" invisible=\"program_type not in ('coupons', 'next_order_coupons')\">Coupons</span>\n"
-"                                <span class=\"o_stat_text\" invisible=\"program_type != 'loyalty'\">Loyalty Cards</span>\n"
-"                                <span class=\"o_stat_text\" invisible=\"program_type not in ('promotion', 'buy_x_get_y')\">Promos</span>\n"
-"                                <span class=\"o_stat_text\" invisible=\"program_type != 'promo_code'\">Discount</span>\n"
-"                                <span class=\"o_stat_text\" invisible=\"program_type != 'gift_card'\">Gift Cards</span>\n"
-"                                <span class=\"o_stat_text\" invisible=\"program_type != 'ewallet'\">eWallets</span>"
+"<span class=\"o_stat_text\" attrs=\"{'invisible': [('program_type', 'not in', ('coupons', 'next_order_coupons'))]}\">Coupons</span>\n"
+"                                <span class=\"o_stat_text\" attrs=\"{'invisible': [('program_type', '!=', 'loyalty')]}\">Loyalty Cards</span>\n"
+"                                <span class=\"o_stat_text\" attrs=\"{'invisible': [('program_type', 'not in', ('promotion', 'buy_x_get_y'))]}\">Promos</span>\n"
+"                                <span class=\"o_stat_text\" attrs=\"{'invisible': [('program_type', '!=', 'promo_code')]}\">Discount</span>\n"
+"                                <span class=\"o_stat_text\" attrs=\"{'invisible': [('program_type', '!=', 'gift_card')]}\">Gift Cards</span>\n"
+"                                <span class=\"o_stat_text\" attrs=\"{'invisible': [('program_type', '!=', 'ewallet')]}\">eWallets</span>"
 msgstr ""
-"<span class=\"o_stat_text\" invisible=\"program_type not in ('coupons', 'next_order_coupons')\">คูปอง</span>\n"
-"                                <span class=\"o_stat_text\" invisible=\"program_type != 'loyalty'\">บัตรสะสมคะแนน</span>\n"
-"                                <span class=\"o_stat_text\" invisible=\"program_type not in ('promotion', 'buy_x_get_y')\">โปรโมชั่น</span>\n"
-"                                <span class=\"o_stat_text\" invisible=\"program_type != 'promo_code'\">ส่วนลด</span>\n"
-"                                <span class=\"o_stat_text\" invisible=\"program_type != 'gift_card'\">บัตรของขวัญ</span>\n"
-"                                <span class=\"o_stat_text\" invisible=\"program_type != 'ewallet'\">eWallets</span>"
 
 #. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_report
@@ -267,38 +321,15 @@ msgstr ""
 #. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_rule_view_form
 msgid ""
-"<span colspan=\"2\" invisible=\"program_type != 'coupons'\">Grant the amount"
-" of coupon points defined as the coupon value</span>"
+"<span colspan=\"2\" attrs=\"{'invisible': [('program_type', '!=', "
+"'coupons')]}\">Grant the amount of coupon points defined as the coupon "
+"value</span>"
 msgstr ""
-"<span colspan=\"2\" invisible=\"program_type != "
-"'coupons'\">มอบคะแนนคูปองตามมูลค่าคูปอง</span>"
 
 #. module: loyalty
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_reward_view_form
-msgid "<span invisible=\"not clear_wallet\"> (or more)</span>"
-msgstr "<span invisible=\"not clear_wallet\"> (หรือมากกว่า)</span>"
-
-#. module: loyalty
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_generate_wizard_view_form
-msgid ""
-"<span invisible=\"not will_send_mail\">\n"
-"                            Generate and Send \n"
-"                        </span>\n"
-"                        <span invisible=\"will_send_mail\">\n"
-"                            Generate \n"
-"                        </span>"
-msgstr ""
-"<span invisible=\"not will_send_mail\">\n"
-"                            สร้างและส่ง \n"
-"                        </span>\n"
-"                        <span invisible=\"will_send_mail\">\n"
-"                            สร้าง \n"
-"                        </span>"
-
-#. module: loyalty
-#: model_terms:ir.ui.view,arch_db:loyalty.portal_loyalty_history_breadcrumbs
-msgid "<span>History</span>"
-msgstr "<span>ประวัติ</span>"
+#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_reward_view_kanban
+msgid "<span> x </span>"
+msgstr "<span> x </span>"
 
 #. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_report
@@ -321,6 +352,11 @@ msgid "<span>products</span>"
 msgstr "<span>สินค้า</span>"
 
 #. module: loyalty
+#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_rule_view_form
+msgid "<span>tax</span>"
+msgstr "<span>ภาษี</span>"
+
+#. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.gift_card_report
 msgid "<strong>Gift Card Code</strong>"
 msgstr "<strong>โค้ดบัตรของขวัญ</strong>"
@@ -332,15 +368,15 @@ msgid ""
 "<tr>\n"
 "    <td valign=\"top\" style=\"text-align: center; font-size: 14px;\">\n"
 "        <t t-if=\"object._get_mail_partner().name\">\n"
-"            Congratulations <t t-out=\"object._get_mail_partner().name or ''\">Brandon Freeman</t>,<br/>\n"
+"            Congratulations <t t-out=\"object._get_mail_partner().name or ''\">Brandon Freeman</t>,<br>\n"
 "        </t>\n"
 "\n"
-"        Here is your reward from <t t-out=\"object.program_id.company_id.name or ''\">YourCompany</t>.<br/>\n"
+"        Here is your reward from <t t-out=\"object.program_id.company_id.name or ''\">YourCompany</t>.<br>\n"
 "\n"
 "        <t t-foreach=\"object.program_id.reward_ids\" t-as=\"reward\">\n"
 "            <t t-if=\"reward.required_points &lt;= object.points\">\n"
 "                <span style=\"font-size: 50px; color: #875A7B; font-weight: bold;\" t-esc=\"reward.description\">Reward Description</span>\n"
-"                <br/>\n"
+"                <br>\n"
 "            </t>\n"
 "        </t>\n"
 "    </td>\n"
@@ -358,19 +394,19 @@ msgid ""
 "            <t t-if=\"rule.minimum_qty not in [0, 1]\">\n"
 "                <span style=\"font-size: 14px;\">\n"
 "                    Minimum purchase of <t t-out=\"rule.minimum_qty or ''\">10</t> products\n"
-"                </span><br/>\n"
+"                </span><br>\n"
 "            </t>\n"
 "            <t t-if=\"rule.minimum_amount != 0.00\">\n"
 "                <span style=\"font-size: 14px;\">\n"
 "                    Valid for purchase above <t t-out=\"rule.company_id.currency_id.symbol or ''\">$</t><t t-out=\"'%0.2f' % float(rule.minimum_amount) or ''\">10.00</t>\n"
-"                </span><br/>\n"
+"                </span><br>\n"
 "            </t>\n"
 "        </t>\n"
-"        <br/>\n"
+"        <br>\n"
 "        Thank you,\n"
-"        <t t-if=\"object._get_signature()\" data-o-mail-quote-container=\"1\">\n"
-"            <br/>\n"
-"            <t t-out=\"object._get_signature() or ''\" data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/>Mitchell Admin</t>\n"
+"        <t t-if=\"object._get_signature()\">\n"
+"            <br>\n"
+"            <t t-out=\"object._get_signature() or ''\">--<br>Mitchell Admin</t>\n"
 "        </t>\n"
 "    </td>\n"
 "</tr>\n"
@@ -381,15 +417,15 @@ msgstr ""
 "<tr>\n"
 "    <td valign=\"top\" style=\"text-align: center; font-size: 14px;\">\n"
 "        <t t-if=\"object._get_mail_partner().name\">\n"
-"            ขอแสดงความยินดี <t t-out=\"object._get_mail_partner().name or ''\">Brandon Freeman</t>,<br/>\n"
+"            ขอแสดงความยินดี <t t-out=\"object._get_mail_partner().name or ''\">Brandon Freeman</t>,<br>\n"
 "        </t>\n"
 "\n"
-"        นี่คือรางวัลของคุณจาก <t t-out=\"object.program_id.company_id.name or ''\">YourCompany</t><br/>\n"
+"        นี่คือรางวัลของคุณจาก<t t-out=\"object.program_id.company_id.name or ''\">YourCompany</t><br>\n"
 "\n"
 "        <t t-foreach=\"object.program_id.reward_ids\" t-as=\"reward\">\n"
 "            <t t-if=\"reward.required_points &lt;= object.points\">\n"
-"                <span style=\"font-size: 50px; color: #875A7B; font-weight: bold;\" t-esc=\"reward.description\">คำอธิบายของรางวัล</span>\n"
-"                <br/>\n"
+"                <span style=\"font-size: 50px; color: #875A7B; font-weight: bold;\" t-esc=\"reward.description\">รายละเอียดของรางวัล</span>\n"
+"                <br>\n"
 "            </t>\n"
 "        </t>\n"
 "    </td>\n"
@@ -398,7 +434,7 @@ msgstr ""
 "    <td valign=\"top\" style=\"text-align: center; font-size: 14px;\">\n"
 "        ใช้รหัสโปรโมชั่นนี้\n"
 "        <t t-if=\"object.expiration_date\">\n"
-"            ก่อนวันที่ <t t-out=\"object.expiration_date or ''\">16-06-2564</t>\n"
+"            ก่อนวันที่ <t t-out=\"object.expiration_date or ''\">16-06-2021</t>\n"
 "        </t>\n"
 "        <p style=\"margin-top: 16px;\">\n"
 "            <strong style=\"padding: 16px 8px 16px 8px; border-radius: 3px; background-color: #F1F1F1;\" t-out=\"object.code or ''\">15637502648479132902</strong>\n"
@@ -406,20 +442,20 @@ msgstr ""
 "        <t t-foreach=\"object.program_id.rule_ids\" t-as=\"rule\">\n"
 "            <t t-if=\"rule.minimum_qty not in [0, 1]\">\n"
 "                <span style=\"font-size: 14px;\">\n"
-"                    การซื้อขั้นต่ำ <t t-out=\"rule.minimum_qty or ''\">10</t> รายการ\n"
-"                </span><br/>\n"
+"                    ยอดซื้อขั้นต่ำ <t t-out=\"rule.minimum_qty or ''\">10</t> ผลิตภัณฑ์\n"
+"                </span><br>\n"
 "            </t>\n"
 "            <t t-if=\"rule.minimum_amount != 0.00\">\n"
 "                <span style=\"font-size: 14px;\">\n"
-"                    ใช้ได้สำหรับการซื้อที่มีมูลค่ามากกว่า <t t-out=\"rule.company_id.currency_id.symbol or ''\">$</t><t t-out=\"'%0.2f' % float(rule.minimum_amount) or ''\">10.00</t>\n"
-"                </span><br/>\n"
+"                    ใช้ได้สำหรับการซื้อข้างต้นจำนวน <t t-out=\"rule.company_id.currency_id.symbol or ''\">$</t><t t-out=\"'%0.2f' % float(rule.minimum_amount) or ''\">10.00</t>\n"
+"                </span><br>\n"
 "            </t>\n"
 "        </t>\n"
-"        <br/>\n"
+"        <br>\n"
 "        ขอบคุณ\n"
-"        <t t-if=\"object._get_signature()\" data-o-mail-quote-container=\"1\">\n"
-"            <br/>\n"
-"            <t t-out=\"object._get_signature() or ''\" data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/>Mitchell Admin</t>\n"
+"        <t t-if=\"object._get_signature()\">\n"
+"            <br>\n"
+"            <t t-out=\"object._get_signature() or ''\">--<br>แอดมิน Mitchell</t>\n"
 "        </t>\n"
 "    </td>\n"
 "</tr>\n"
@@ -429,6 +465,7 @@ msgstr ""
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_rule.py:0
+#, python-format
 msgid "A coupon with the same code was found."
 msgstr "พบคูปองที่มีรหัสเดียวกัน"
 
@@ -440,31 +477,16 @@ msgstr "คูปอง/บัตรสะสมคะแนนต้องม�
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
+#, python-format
 msgid "A program must have at least one reward."
 msgstr "โปรแกรมจะต้องมีรางวัลอย่างน้อยหนึ่งรายการ"
 
 #. module: loyalty
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_buttons
-msgid "A reward is waiting for you"
-msgstr "รางวัลกำลังรอคุณอยู่"
-
-#. module: loyalty
-#. odoo-python
-#: code:addons/loyalty/models/loyalty_reward.py:0
-msgid "A reward product can't be of type \"combo\"."
-msgstr "สินค้ารางวัลไม่สามารถเป็นประเภท \"คอมโบ\" ได้"
-
-#. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_card.py:0
+#, python-format
 msgid "A trigger with the same code as one of your coupon already exists."
 msgstr "มีทริกเกอร์ที่มีรหัสเดียวกันกับคูปองของคุณอยู่แล้ว"
-
-#. module: loyalty
-#: model_terms:ir.ui.view,arch_db:loyalty.gift_card_report
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_report
-msgid "ABCDE12345"
-msgstr "ABCDE12345"
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card__message_needaction
@@ -472,7 +494,6 @@ msgid "Action Needed"
 msgstr "จำเป็นต้องดำเนินการ"
 
 #. module: loyalty
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_card__active
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_mail__active
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_program__active
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__active
@@ -482,14 +503,9 @@ msgid "Active"
 msgstr "เปิดใช้งาน"
 
 #. module: loyalty
-#: model:ir.model.fields,field_description:loyalty.field_res_partner__loyalty_card_count
-#: model:ir.model.fields,field_description:loyalty.field_res_users__loyalty_card_count
-msgid "Active loyalty cards"
-msgstr "บัตรสะสมคะแนนที่ใช้งานอยู่"
-
-#. module: loyalty
 #. odoo-javascript
 #: code:addons/loyalty/static/src/xml/loyalty_templates.xml:0
+#, python-format
 msgid "Add"
 msgstr "เพิ่ม"
 
@@ -512,12 +528,7 @@ msgstr "สินค้าลดราคาทั้งหมด"
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_reward_view_form
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_rule_view_form
 msgid "Among"
-msgstr "ในหมู่"
-
-#. module: loyalty
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_rule_view_kanban
-msgid "Among:"
-msgstr "อยู่ใน:"
+msgstr ".os,^j"
 
 #. module: loyalty
 #: model:ir.model.fields.selection,name:loyalty.selection__loyalty_generate_wizard__mode__anonymous
@@ -528,11 +539,6 @@ msgstr "ลูกค้าที่ไม่ระบุชื่อ"
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_rule__mode
 msgid "Application"
 msgstr "แอปพลิเคชัน"
-
-#. module: loyalty
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_reward_view_kanban
-msgid "Applied to:"
-msgstr "นำไปใช้กับ:"
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_program__applies_on
@@ -562,12 +568,6 @@ msgid "Automatic"
 msgstr "โดยอัตโนมัติ"
 
 #. module: loyalty
-#. odoo-python
-#: code:addons/loyalty/models/loyalty_program.py:0
-msgid "Automatic promo: 10% off on orders higher than $50"
-msgstr "โปรโมชั่นอัตโนมัติ: ส่วนลด 10% สำหรับการสั่งซื้อที่มากกว่า $50"
-
-#. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_program__available_on
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_program_view_form
 msgid "Available On"
@@ -587,14 +587,9 @@ msgstr "บาร์โค้ด"
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
-msgid "Buy 10 products to get 10$ off on the 11th one"
-msgstr "ซื้อผลิตภัณฑ์ 10 รายการเพื่อรับส่วนลด 10$ ในวันที่ 11"
-
-#. module: loyalty
-#. odoo-python
-#: code:addons/loyalty/models/loyalty_program.py:0
-msgid "Buy 2 products and get a third one for free"
-msgstr "ซื้อผลิตภัณฑ์ 2 รายการและรับผลิตภัณฑ์ที่สามฟรี"
+#, python-format
+msgid "Buy 10 products, and get 10$ discount on the 11th one."
+msgstr ""
 
 #. module: loyalty
 #: model:loyalty.program,name:loyalty.3_cabinets_plus_1_free
@@ -605,26 +600,21 @@ msgstr "ซื้อ 3 ตู้ใหญ่ รับฟรีหนึ่ง"
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
 #: model:ir.model.fields.selection,name:loyalty.selection__loyalty_program__program_type__buy_x_get_y
+#, python-format
 msgid "Buy X Get Y"
 msgstr "ซื้อ X รับ Y"
 
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/wizard/loyalty_generate_wizard.py:0
+#, python-format
 msgid "Can not generate coupon, no program is set."
 msgstr "ไม่สามารถสร้างคูปองได้ เพราะไม่ได้ตั้งค่าโปรแกรมไว้"
 
 #. module: loyalty
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_card_update_balance_form
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_generate_wizard_view_form
 msgid "Cancel"
 msgstr "ยกเลิก"
-
-#. module: loyalty
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_card_update_balance__card_id
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_history__card_id
-msgid "Card"
-msgstr "การ์ด"
 
 #. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.gift_card_report
@@ -673,16 +663,16 @@ msgstr "การติดต่อสื่อสาร"
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card__company_id
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_history__company_id
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_program__company_id
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__company_id
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_rule__company_id
 msgid "Company"
-msgstr "บริษัท"
+msgstr "บริษัทเดียว"
 
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_card.py:0
+#, python-format
 msgid "Compose Email"
 msgstr "เขียนอีเมล"
 
@@ -697,34 +687,18 @@ msgid "Conditions"
 msgstr "เงื่อนไข"
 
 #. module: loyalty
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_card_update_balance_form
-msgid "Confirm"
-msgstr "ยืนยัน"
-
-#. module: loyalty
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_generate_wizard__confirmation_message
-msgid "Confirmation Message"
-msgstr "ข้อความยืนยัน"
-
-#. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_report
 msgid "Congratulations"
 msgstr "ยินดีด้วย"
 
 #. module: loyalty
-#: model:ir.model,name:loyalty.model_res_partner
-msgid "Contact"
-msgstr "ติดต่อ"
-
-#. module: loyalty
 #. odoo-javascript
 #: code:addons/loyalty/static/src/xml/loyalty_templates.xml:0
+#, python-format
 msgid "Control panel buttons"
 msgstr "ปุ่มบนแผงควบคุม"
 
 #. module: loyalty
-#. odoo-python
-#: code:addons/loyalty/models/loyalty_program.py:0
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_program__coupon_ids
 msgid "Coupon"
 msgstr "คูปอง"
@@ -742,6 +716,8 @@ msgstr "จำนวนคูปอง"
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
+#: code:addons/loyalty/models/loyalty_program.py:0
+#, python-format
 msgid "Coupon point(s)"
 msgstr "คะแนนคูปอง"
 
@@ -763,33 +739,32 @@ msgstr "คูปอง: ข้อมูลคูปอง"
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
+#: code:addons/loyalty/models/loyalty_program.py:0
+#: code:addons/loyalty/models/loyalty_program.py:0
+#: code:addons/loyalty/models/loyalty_program.py:0
 #: model:ir.actions.act_window,name:loyalty.loyalty_card_action
 #: model:ir.model.fields.selection,name:loyalty.selection__loyalty_program__program_type__coupons
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_card_view_tree
+#, python-format
 msgid "Coupons"
 msgstr "คูปอง"
 
 #. module: loyalty
+#: model_terms:ir.actions.act_window,help:loyalty.loyalty_program_discount_loyalty_action
 #: model_terms:ir.actions.act_window,help:loyalty.loyalty_program_gift_ewallet_action
 msgid "Create a new one from scratch, or use one of the templates below."
 msgstr "สร้างใหม่ตั้งแต่ต้น หรือใช้เทมเพลตใดเทมเพลตหนึ่งด้านล่าง"
 
 #. module: loyalty
-#: model_terms:ir.actions.act_window,help:loyalty.loyalty_program_discount_loyalty_action
-msgid "Create one from scratch, or use a templates below:"
-msgstr "สร้างใหม่ตั้งแต่ต้น หรือใช้เทมเพลตด้านล่าง:"
-
-#. module: loyalty
 #. odoo-javascript
 #: code:addons/loyalty/static/src/xml/loyalty_templates.xml:0
+#, python-format
 msgid "Create record"
 msgstr "สร้างการบันทึก"
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card__create_uid
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_card_update_balance__create_uid
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_generate_wizard__create_uid
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_history__create_uid
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_mail__create_uid
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_program__create_uid
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__create_uid
@@ -799,9 +774,7 @@ msgstr "สร้างโดย"
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card__create_date
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_card_update_balance__create_date
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_generate_wizard__create_date
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_history__create_date
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_mail__create_date
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_program__create_date
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__create_date
@@ -813,6 +786,7 @@ msgstr "สร้างเมื่อ"
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
 #: model:loyalty.program,portal_point_name:loyalty.3_cabinets_plus_1_free
+#, python-format
 msgid "Credit(s)"
 msgstr "เครดิต"
 
@@ -850,24 +824,6 @@ msgid "Customers"
 msgstr "ลูกค้า"
 
 #. module: loyalty
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_report
-msgid "DEMO_CODE"
-msgstr "DEMO_CODE"
-
-#. module: loyalty
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_report
-msgid "DEMO_TEXT"
-msgstr "DEMO_TEXT"
-
-#. module: loyalty
-#. odoo-python
-#: code:addons/loyalty/controllers/portal.py:0
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_card_history_template
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_card_view_form
-msgid "Date"
-msgstr "วันที่"
-
-#. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_program_view_form
 msgid ""
 "Define Discount codes on conditional rules then share it with your customers"
@@ -877,13 +833,13 @@ msgstr ""
 
 #. module: loyalty
 #. odoo-python
-#: code:addons/loyalty/controllers/portal.py:0
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_card_update_balance__description
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_generate_wizard__description
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_history__description
+#: code:addons/loyalty/models/loyalty_program.py:0
+#, python-format
+msgid "Define promotions to apply automatically on your customers' orders."
+msgstr ""
+
+#. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__description
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_card_history_template
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_generate_wizard_view_form
 msgid "Description"
 msgstr "คำอธิบาย"
 
@@ -911,14 +867,17 @@ msgid "Discount Applicability"
 msgstr "การบังคับใช้ส่วนลด"
 
 #. module: loyalty
+#. odoo-python
+#: code:addons/loyalty/models/loyalty_program.py:0
 #: model:ir.model.fields.selection,name:loyalty.selection__loyalty_program__program_type__promo_code
+#, python-format
 msgid "Discount Code"
 msgstr "รหัสส่วนลด"
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__discount_line_product_id
 msgid "Discount Line Product"
-msgstr "รายการสินค้าลดราคา"
+msgstr "สินค้าลดราคา"
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__discount_mode
@@ -933,13 +892,14 @@ msgstr "สินค้าลดราคา"
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__discount_product_domain
 msgid "Discount Product Domain"
-msgstr "โดเมนสินค้าลดราคา"
+msgstr "โดเมนผลิตภัณฑ์ส่วนลด"
 
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_rule__code
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_rule_view_kanban
+#, python-format
 msgid "Discount code"
 msgstr "รหัสส่วนลด"
 
@@ -947,6 +907,7 @@ msgstr "รหัสส่วนลด"
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
 #: model:loyalty.program,portal_point_name:loyalty.10_percent_with_code
+#, python-format
 msgid "Discount point(s)"
 msgstr "คะแนนส่วนลด"
 
@@ -973,14 +934,13 @@ msgstr "สินค้าลดราคา"
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
+#, python-format
 msgid "Discounts"
 msgstr "ลดราคา"
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card__display_name
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_card_update_balance__display_name
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_generate_wizard__display_name
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_history__display_name
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_mail__display_name
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_program__display_name
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__display_name
@@ -1020,15 +980,9 @@ msgid "Email template"
 msgstr "เทมเพลตอีเมล"
 
 #. module: loyalty
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_program__date_to
-msgid "End date"
-msgstr "วันสิ้นสุด"
-
-#. module: loyalty
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_card_update_balance_form
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_generate_wizard_view_form
-msgid "Example: Gift for customer"
-msgstr "ตัวอย่าง : ของขวัญสำหรับลูกค้า"
+#: model:ir.model.fields.selection,name:loyalty.selection__loyalty_rule__minimum_amount_tax_mode__excl
+msgid "Excluded"
+msgstr "ไม่รวม"
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card__expiration_date
@@ -1038,26 +992,24 @@ msgstr "วันหมดอายุ"
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_card.py:0
+#, python-format
 msgid "Expiration date cannot be set on a loyalty card."
 msgstr "บัตรสะสมแต้มไม่สามารถกำหนดวันหมดอายุได้"
 
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
-msgid "Fidelity Card"
-msgstr "บัตรสมาชิก"
-
-#. module: loyalty
-#. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
+#, python-format
 msgid "Fidelity Cards"
 msgstr "บัตรสมาชิก"
 
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
-msgid "Fill in your eWallet, to pay future orders"
-msgstr "กรอก eWallet ของคุณเพื่อชำระเงินคำสั่งซื้อในอนาคต"
+#, python-format
+msgid "Fill in your eWallet, and use it to pay future orders."
+msgstr ""
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card__message_follower_ids
@@ -1075,20 +1027,17 @@ msgid "For"
 msgstr "สำหรับ"
 
 #. module: loyalty
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_generate_wizard_view_form
-msgid "For all customers"
-msgstr "สำหรับลูกค้าทุกท่าน"
-
-#. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_reward.py:0
 #: model:ir.model.fields.selection,name:loyalty.selection__loyalty_reward__reward_type__product
+#, python-format
 msgid "Free Product"
 msgstr "สินค้าฟรี"
 
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_reward.py:0
+#, python-format
 msgid "Free Product - %s"
 msgstr "สินค้าฟรี - %s"
 
@@ -1100,6 +1049,7 @@ msgstr "สินค้าฟรี - ตู้ขนาดใหญ่"
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_reward.py:0
+#, python-format
 msgid "Free Product - [%s]"
 msgstr "สินค้าฟรี - [%s]"
 
@@ -1118,6 +1068,7 @@ msgstr "คำสั่งซื้อในอนาคต"
 #: code:addons/loyalty/static/src/xml/loyalty_templates.xml:0
 #: model:ir.actions.act_window,name:loyalty.loyalty_generate_wizard_action
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_generate_wizard_view_form
+#, python-format
 msgid "Generate"
 msgstr "สร้าง"
 
@@ -1146,19 +1097,14 @@ msgstr "สร้างบัตรของขวัญ"
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
-msgid "Generate and share unique coupons with your customers"
-msgstr "สร้างและแชร์คูปองที่ไม่ซ้ำใครกับลูกค้าของคุณ"
+#, python-format
+msgid "Generate and share unique coupons with your customers."
+msgstr ""
 
 #. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_program_view_form
 msgid "Generate eWallet"
 msgstr "สร้าง eWallet"
-
-#. module: loyalty
-#. odoo-python
-#: code:addons/loyalty/models/loyalty_program.py:0
-msgid "Get 10% off on some products, with a code"
-msgstr "รับส่วนลด 10% สำหรับสินค้าบางรายการพร้อมรหัส"
 
 #. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_program_gift_ewallet_view_form
@@ -1168,11 +1114,14 @@ msgstr "ของขวัญ &amp; Ewallet"
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
+#: code:addons/loyalty/models/loyalty_program.py:0
+#: code:addons/loyalty/models/loyalty_program.py:0
 #: code:addons/loyalty/models/loyalty_reward.py:0
 #: model:ir.actions.report,name:loyalty.report_gift_card
 #: model:ir.model.fields.selection,name:loyalty.selection__loyalty_program__program_type__gift_card
 #: model:loyalty.reward,description:loyalty.gift_card_program_reward
 #: model:product.template,name:loyalty.gift_card_product_50_product_template
+#, python-format
 msgid "Gift Card"
 msgstr "บัตรของขวัญ"
 
@@ -1195,6 +1144,7 @@ msgstr "บัตรของขวัญ: ข้อมูลบัตรขอ�
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
 #: model:loyalty.program,name:loyalty.gift_card_program
+#, python-format
 msgid "Gift Cards"
 msgstr "บัตรของขวัญ"
 
@@ -1210,26 +1160,13 @@ msgstr ""
 "                                    จากนั้นบัตรของขวัญสามารถใช้เพื่อชำระเงินตามคำสั่งซื้อได้"
 
 #. module: loyalty
-#. odoo-python
-#: code:addons/loyalty/wizard/loyalty_generate_wizard.py:0
-msgid "Gift For Customer"
-msgstr "ของขวัญสำหรับลูกค้า"
-
-#. module: loyalty
 #: model:ir.actions.act_window,name:loyalty.loyalty_program_gift_ewallet_action
 msgid "Gift cards & eWallet"
 msgstr "บัตรของขวัญ & eWallet"
 
 #. module: loyalty
-#. odoo-python
-#: code:addons/loyalty/wizard/loyalty_card_update_balance.py:0
-msgid "Gift for customer"
-msgstr "ของขวัญสำหรับลูกค้า"
-
-#. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_generate_wizard__points_granted
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_rule_view_form
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_rule_view_kanban
 msgid "Grant"
 msgstr "มอบ"
 
@@ -1258,25 +1195,8 @@ msgid "Here is your reward from"
 msgstr "นี้คือรางวัลจาก"
 
 #. module: loyalty
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_card__history_ids
-msgid "History"
-msgstr "ประวัติ"
-
-#. module: loyalty
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_card_view_form
-msgid "History Lines"
-msgstr "บรรทัดประวัติ"
-
-#. module: loyalty
-#: model:ir.model,name:loyalty.model_loyalty_history
-msgid "History for Loyalty cards and Ewallets"
-msgstr "ประวัติบัตรสมาชิกและ Ewallets"
-
-#. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card__id
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_card_update_balance__id
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_generate_wizard__id
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_history__id
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_mail__id
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_program__id
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__id
@@ -1291,7 +1211,6 @@ msgstr "ถ้าเลือก ข้อความใหม่จะต้�
 
 #. module: loyalty
 #: model:ir.model.fields,help:loyalty.field_loyalty_card__message_has_error
-#: model:ir.model.fields,help:loyalty.field_loyalty_card__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
 msgstr "ถ้าเลือก ข้อความบางข้อความมีข้อผิดพลาดในการส่ง"
 
@@ -1302,7 +1221,6 @@ msgstr "หากขั้นต่ำ"
 
 #. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_reward_view_form
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_reward_view_kanban
 msgid "In exchange of"
 msgstr "เพื่อแลกกับ"
 
@@ -1312,8 +1230,14 @@ msgid "Inactive"
 msgstr "ปิดใช้งาน"
 
 #. module: loyalty
+#: model:ir.model.fields.selection,name:loyalty.selection__loyalty_rule__minimum_amount_tax_mode__incl
+msgid "Included"
+msgstr "รวมแล้ว"
+
+#. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/wizard/loyalty_generate_wizard.py:0
+#, python-format
 msgid "Invalid quantity."
 msgstr "ปริมาณไม่ถูกต้อง"
 
@@ -1338,35 +1262,24 @@ msgid "Is Payment Program"
 msgstr "เป็นโปรแกรมการชำระเงิน"
 
 #. module: loyalty
-#. odoo-python
-#: code:addons/loyalty/controllers/portal.py:0
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_history__issued
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_card_history_template
-msgid "Issued"
-msgstr "เผยแพร่แล้ว"
-
-#. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_program__coupon_count_display
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_program_view_tree
 msgid "Items"
 msgstr "รายการ"
 
 #. module: loyalty
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_report
-msgid "John Doe"
-msgstr "John Doe"
-
-#. module: loyalty
-#. odoo-javascript
-#: code:addons/loyalty/static/src/js/portal/loyalty_card_dialog/loyalty_card_dialog.xml:0
-msgid "Last Transactions"
-msgstr "การทำธุรกรรมครั้งล่าสุด"
+#: model:ir.model.fields,field_description:loyalty.field_loyalty_card____last_update
+#: model:ir.model.fields,field_description:loyalty.field_loyalty_generate_wizard____last_update
+#: model:ir.model.fields,field_description:loyalty.field_loyalty_mail____last_update
+#: model:ir.model.fields,field_description:loyalty.field_loyalty_program____last_update
+#: model:ir.model.fields,field_description:loyalty.field_loyalty_reward____last_update
+#: model:ir.model.fields,field_description:loyalty.field_loyalty_rule____last_update
+msgid "Last Modified on"
+msgstr "แก้ไขครั้งล่าสุดเมื่อ"
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card__write_uid
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_card_update_balance__write_uid
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_generate_wizard__write_uid
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_history__write_uid
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_mail__write_uid
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_program__write_uid
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__write_uid
@@ -1376,9 +1289,7 @@ msgstr "อัปเดตครั้งล่าสุดโดย"
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card__write_date
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_card_update_balance__write_date
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_generate_wizard__write_date
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_history__write_date
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_mail__write_date
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_program__write_date
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__write_date
@@ -1404,14 +1315,10 @@ msgstr "โลโก้"
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
-msgid "Loyalty Card"
-msgstr "บัตรสมาชิก"
-
-#. module: loyalty
-#. odoo-python
+#: code:addons/loyalty/models/loyalty_program.py:0
 #: code:addons/loyalty/models/loyalty_program.py:0
 #: model:ir.model.fields.selection,name:loyalty.selection__loyalty_program__program_type__loyalty
-#: model_terms:ir.ui.view,arch_db:loyalty.res_partner_form
+#, python-format
 msgid "Loyalty Cards"
 msgstr "บัตรสมาชิก"
 
@@ -1441,15 +1348,16 @@ msgid "Loyalty Rule"
 msgstr "กฎลูกค้าสมาชิก"
 
 #. module: loyalty
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_card_history_template
-msgid "Loyalty Transaction"
-msgstr "การทำธุรกรรมโปรแกรมสมาชิก"
-
-#. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
+#, python-format
 msgid "Loyalty point(s)"
 msgstr "คะแนนสมาชิก"
+
+#. module: loyalty
+#: model:ir.model.fields,field_description:loyalty.field_loyalty_card__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "เอกสารหลักที่แนบมา"
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__discount_max_amount
@@ -1465,11 +1373,6 @@ msgstr "การใช้งานสูงสุด"
 #: model:ir.model.constraint,message:loyalty.constraint_loyalty_program_check_max_usage
 msgid "Max usage must be strictly positive if a limit is used."
 msgstr "การใช้งานสูงสุดต้องเป็นค่าบวกเท่านั้นหากใช้ขีดจำกัด"
-
-#. module: loyalty
-#: model:ir.model,name:loyalty.model_base_partner_merge_automatic_wizard
-msgid "Merge Partner Wizard"
-msgstr "ตัวช่วยผสานพาร์ทเนอร์"
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card__message_has_error
@@ -1502,26 +1405,11 @@ msgid "Multi Product"
 msgstr "สินค้าหลายรายการ"
 
 #. module: loyalty
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_card_update_balance__new_balance
-msgid "New Balance"
-msgstr "ยอดคงเหลือใหม่"
-
-#. module: loyalty
-#. odoo-python
-#: code:addons/loyalty/wizard/loyalty_card_update_balance.py:0
-msgid "New Balance should be positive and different then old balance."
-msgstr "ยอดคงเหลือใหม่ควรจะเป็นเชิงบวกและแตกต่างจากยอดคงเหลือแบบเดิม"
-
-#. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
-msgid "Next Order Coupon"
-msgstr "คูปองการสั่งซื้อครั้งต่อไป"
-
-#. module: loyalty
-#. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
 #: model:ir.model.fields.selection,name:loyalty.selection__loyalty_program__program_type__next_order_coupons
+#, python-format
 msgid "Next Order Coupons"
 msgstr "คูปองสั่งซื้อถัดไป"
 
@@ -1561,21 +1449,16 @@ msgid "Number of messages with delivery error"
 msgstr "จํานวนข้อความที่มีข้อผิดพลาดในการส่ง"
 
 #. module: loyalty
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_report
-msgid "Odoo"
-msgstr "Odoo"
+#. odoo-python
+#: code:addons/loyalty/models/loyalty_program.py:0
+#, python-format
+msgid "Offer Y to your customers if they are buying X; for example, 2+1 free."
+msgstr ""
 
 #. module: loyalty
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_history__order_id
 #: model:ir.model.fields.selection,name:loyalty.selection__loyalty_reward__discount_applicability__order
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_card_history_template
 msgid "Order"
 msgstr "คำสั่ง"
-
-#. module: loyalty
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_history__order_model
-msgid "Order Model"
-msgstr "รูปแบบการสั่งซื้อ"
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card__partner_id
@@ -1589,7 +1472,6 @@ msgstr "คะแนน"
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card__points
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_card_update_balance__old_balance
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_mail__points
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_reward_view_form
 msgid "Points"
@@ -1623,11 +1505,6 @@ msgstr "ชื่อจุดพอร์ทัล"
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_program__portal_visible
 msgid "Portal Visible"
 msgstr "มองเห็นพอร์ทัลได้"
-
-#. module: loyalty
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_program__pricelist_ids
-msgid "Pricelist"
-msgstr "รายการราคา"
 
 #. module: loyalty
 #: model:ir.model,name:loyalty.model_product_template
@@ -1703,24 +1580,29 @@ msgstr "ทริกเกอร์โปรแกรม"
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
-msgid "Promo Code"
-msgstr "รหัสโปรโมชั่น"
-
-#. module: loyalty
-#. odoo-python
-#: code:addons/loyalty/models/loyalty_program.py:0
+#, python-format
 msgid "Promo point(s)"
-msgstr "คะแนนโปรโมชัน"
+msgstr "คะแนนส่งเสริมการขาย"
 
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
+#: code:addons/loyalty/models/loyalty_program.py:0
+#, python-format
 msgid "Promos"
 msgstr "โปรโมชั่น"
 
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
+#, python-format
+msgid "Promotion Program"
+msgstr "โปรแกรมส่งเสริมการขาย"
+
+#. module: loyalty
+#. odoo-python
+#: code:addons/loyalty/models/loyalty_program.py:0
+#, python-format
 msgid "Promotional Program"
 msgstr "โปรแกรมโปรโมชัน"
 
@@ -1745,11 +1627,6 @@ msgid "Quantity to generate"
 msgstr "ปริมาณที่จะสร้าง"
 
 #. module: loyalty
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_card__rating_ids
-msgid "Ratings"
-msgstr "การให้คะแนน"
-
-#. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_rule__reward_point_amount
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_reward_view_form
 msgid "Reward"
@@ -1763,12 +1640,12 @@ msgstr "โหมดคะแนนสะสม"
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__reward_product_domain
 msgid "Reward Product Domain"
-msgstr "โดเมนรางวัลสินค้า"
+msgstr "โดเมนผลิตภัณฑ์รางวัล"
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__reward_product_qty
 msgid "Reward Product Qty"
-msgstr "จำนวนรางวัลสินค้า"
+msgstr "รางวัลจำนวนผลิตภัณฑ์"
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__reward_product_uom_id
@@ -1786,8 +1663,16 @@ msgid "Reward Type"
 msgstr "ประเภทรางวัล"
 
 #. module: loyalty
+#. odoo-python
+#: code:addons/loyalty/models/loyalty_program.py:0
+#, python-format
+msgid ""
+"Reward your customers for a purchase with a coupon to use on their next "
+"order."
+msgstr ""
+
+#. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_program__reward_ids
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_program_view_form
 msgid "Rewards"
 msgstr "รางวัล"
 
@@ -1802,11 +1687,6 @@ msgid "Rules & Rewards"
 msgstr "กฎและรางวัล"
 
 #. module: loyalty
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_card__message_has_sms_error
-msgid "SMS Delivery error"
-msgstr "ข้อผิดพลาดในการส่ง SMS"
-
-#. module: loyalty
 #: model:ir.model.fields.selection,name:loyalty.selection__loyalty_generate_wizard__mode__selected
 msgid "Selected Customers"
 msgstr "ลูกค้าที่ได้รับการคัดเลือก"
@@ -1814,19 +1694,14 @@ msgstr "ลูกค้าที่ได้รับการคัดเลื
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
-msgid "Sell Gift Cards, that allows to purchase products"
-msgstr "ขายบัตรของขวัญที่ให้คุณซื้อสินค้าได้"
+#, python-format
+msgid "Sell Gift Cards, that can be used to purchase products."
+msgstr ""
 
 #. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_card_view_tree
 msgid "Send"
 msgstr "ส่ง"
-
-#. module: loyalty
-#. odoo-python
-#: code:addons/loyalty/models/loyalty_program.py:0
-msgid "Send a coupon after an order, valid for next purchase"
-msgstr "ส่งคูปองหลังจากสั่งซื้อ ใช้ได้สำหรับการซื้อครั้งต่อไป"
 
 #. module: loyalty
 #: model:mail.template,description:loyalty.mail_template_gift_card
@@ -1852,6 +1727,14 @@ msgstr ""
 "ตั้งค่ากฎแบบมีเงื่อนไขในคำสั่งซื้อที่จะให้สิทธิ์เข้าถึงรางวัลแก่ลูกค้า"
 
 #. module: loyalty
+#. odoo-python
+#: code:addons/loyalty/models/loyalty_program.py:0
+#, python-format
+msgid ""
+"Share a discount code with your customers to create a purchase incentive."
+msgstr ""
+
+#. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_program_view_form
 msgid "Show points Unit"
 msgstr "แสดงหน่วยจุด"
@@ -1869,28 +1752,14 @@ msgstr "แยกต่อหน่วย"
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_rule.py:0
+#, python-format
 msgid "Split per unit is not allowed for Loyalty and eWallet programs."
 msgstr "ไม่อนุญาตให้แบ่งต่อหน่วยสำหรับโปรแกรมสะสมคะแนนและ eWallet"
-
-#. module: loyalty
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_program__date_from
-msgid "Start Date"
-msgstr "วันที่เริ่ม"
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_program__currency_symbol
 msgid "Symbol"
 msgstr "สัญลักษณ์"
-
-#. module: loyalty
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__tax_ids
-msgid "Taxes"
-msgstr "ภาษี"
-
-#. module: loyalty
-#: model:ir.model.fields,help:loyalty.field_loyalty_reward__tax_ids
-msgid "Taxes to add on the discount line."
-msgstr "ภาษีที่ต้องเพิ่มลงในบรรทัดส่วนลด"
 
 #. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_report
@@ -1903,20 +1772,9 @@ msgid "The discount must be strictly positive."
 msgstr "ส่วนลดจะต้องเป็นบวกเท่านั้น"
 
 #. module: loyalty
-#: model:ir.model.fields,help:loyalty.field_loyalty_program__date_to
-msgid "The end date is included in the validity period of this program"
-msgstr "วันที่สิ้นสุดจะรวมอยู่ในระยะเวลาที่มีผลบังคับใช้ของโปรแกรมนี้"
-
-#. module: loyalty
-#. odoo-python
-#: code:addons/loyalty/models/loyalty_program.py:0
-msgid ""
-"The loyalty program's currency must be the same as all it's pricelists ones."
-msgstr "สกุลเงินของโปรแกรมสะสมคะแนนจะต้องเหมือนกับสกุลเงินในรายการราคาทั้งหมด"
-
-#. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_rule.py:0
+#, python-format
 msgid "The promo code must be unique."
 msgstr "รหัสโปรโมชั่นจะต้องไม่ซ้ำกัน"
 
@@ -1929,26 +1787,6 @@ msgstr "คะแนนที่จำเป็นสำหรับรางว
 #: model:ir.model.constraint,message:loyalty.constraint_loyalty_reward_product_qty_positive
 msgid "The reward product quantity must be strictly positive."
 msgstr "จำนวนรางวัลสินค้าต้องเป็นค่าบวกเท่านั้น"
-
-#. module: loyalty
-#: model:ir.model.fields,help:loyalty.field_loyalty_program__date_from
-msgid "The start date is included in the validity period of this program"
-msgstr "วันที่เริ่มต้นจะรวมอยู่ในระยะเวลาที่มีผลบังคับใช้ของโปรแกรมนี้"
-
-#. module: loyalty
-#. odoo-python
-#: code:addons/loyalty/models/loyalty_program.py:0
-msgid ""
-"The validity period's start date must be anterior or equal to its end date."
-msgstr ""
-"วันที่เริ่มต้นของระยะเวลาที่มีผลต้องอยู่ในอนาคตหรือเท่ากับวันที่สิ้นสุด"
-
-#. module: loyalty
-#. odoo-javascript
-#: code:addons/loyalty/static/src/js/portal/loyalty_card_dialog/loyalty_card_dialog.xml:0
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_card_history_template
-msgid "There are currently no transaction lines for this card."
-msgstr "ขณะนี้ไม่มีรายการธุรกรรมสำหรับบัตรนี้"
 
 #. module: loyalty
 #: model_terms:ir.actions.act_window,help:loyalty.loyalty_card_action
@@ -1971,16 +1809,12 @@ msgstr ""
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/product_product.py:0
+#, python-format
 msgid ""
 "This product may not be archived. It is being used for an active promotion "
 "program."
 msgstr ""
 "สินค้านี้อาจไม่ถูกเก็บถาวร มันถูกใช้สำหรับโปรแกรมโปรโมชั่นที่ใช้งานอยู่"
-
-#. module: loyalty
-#: model:ir.model.fields,help:loyalty.field_loyalty_program__pricelist_ids
-msgid "This program is specific to this pricelist set."
-msgstr "โปรแกรมนี้มีไว้สำหรับรายการราคาโดยเฉพาะ"
 
 #. module: loyalty
 #: model:product.template,name:loyalty.ewallet_product_50_product_template
@@ -1996,24 +1830,6 @@ msgstr "จำนวนคำสั่งทั้งหมด"
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_program__trigger
 msgid "Trigger"
 msgstr "เปิดใช้งาน"
-
-#. module: loyalty
-#. odoo-python
-#: code:addons/loyalty/models/loyalty_reward.py:0
-msgid "Unsupported search operator"
-msgstr ""
-
-#. module: loyalty
-#. odoo-python
-#: code:addons/loyalty/models/loyalty_card.py:0
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_card_update_balance_form
-msgid "Update Balance"
-msgstr "อัปเดตยอดคงเหลือ"
-
-#. module: loyalty
-#: model:ir.model,name:loyalty.model_loyalty_card_update_balance
-msgid "Update Loyalty Card Points"
-msgstr "อัปเดตคะแนนบัตรสมาชิก"
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card__use_count
@@ -2036,14 +1852,6 @@ msgid "Use this promo code before"
 msgstr "ใช้โค้ดโปรโมนี้ก่อน"
 
 #. module: loyalty
-#. odoo-python
-#: code:addons/loyalty/controllers/portal.py:0
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_history__used
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_card_history_template
-msgid "Used"
-msgstr "ใช้แล้ว"
-
-#. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__user_has_debug
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_rule__user_has_debug
 msgid "User Has Debug"
@@ -2055,25 +1863,14 @@ msgid "Valid Until"
 msgstr "ใช้ได้จนถึง"
 
 #. module: loyalty
-#. odoo-javascript
-#: code:addons/loyalty/static/src/js/portal/loyalty_card_dialog/loyalty_card_dialog.xml:0
-msgid "Valid until"
-msgstr "ใช้ได้จนถึง"
-
-#. module: loyalty
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_card__website_message_ids
-msgid "Website Messages"
-msgstr "ข้อความเว็บไซต์"
-
-#. module: loyalty
-#: model:ir.model.fields,help:loyalty.field_loyalty_card__website_message_ids
-msgid "Website communication history"
-msgstr "ประวัติการสื่อสารของเว็บไซต์"
+#: model:ir.model.fields,field_description:loyalty.field_loyalty_program__date_to
+msgid "Validity"
+msgstr "อายุการใช้งาน"
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_mail__trigger
 msgid "When"
-msgstr "จาก"
+msgstr "เมื่อ"
 
 #. module: loyalty
 #: model:ir.model.fields.selection,name:loyalty.selection__loyalty_mail__trigger__points_reach
@@ -2115,8 +1912,9 @@ msgstr "จะส่งเมล"
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
-msgid "Win points with each purchase, and claim gifts"
-msgstr "รับคะแนนจากการซื้อแต่ละครั้งและรับของขวัญ"
+#, python-format
+msgid "Win points with each purchase, and use points to get gifts."
+msgstr ""
 
 #. module: loyalty
 #: model:ir.model.fields.selection,name:loyalty.selection__loyalty_rule__mode__with_code
@@ -2124,20 +1922,24 @@ msgid "With a promotion code"
 msgstr "พร้อมรหัสโปรโมชั่น"
 
 #. module: loyalty
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_card_update_balance_form
-msgid "You are about to change the balance of the card"
-msgstr "คุณกำลังจะเปลี่ยนยอดเงินคงเหลือในบัตร"
-
-#. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
+#, python-format
 msgid "You can not delete a program in an active state"
 msgstr "คุณไม่สามารถลบโปรแกรมที่อยู่ในสถานะใช้งานอยู่ได้"
 
 #. module: loyalty
 #. odoo-python
+#: code:addons/loyalty/models/loyalty_reward.py:0
+#, python-format
+msgid "The reward description field cannot be empty."
+msgstr ""
+
+#. module: loyalty
+#. odoo-python
 #: code:addons/loyalty/models/product_product.py:0
 #: code:addons/loyalty/models/product_template.py:0
+#, python-format
 msgid ""
 "You cannot delete %(name)s as it is used in 'Coupons & Loyalty'. Please "
 "archive it instead."
@@ -2146,14 +1948,14 @@ msgstr ""
 "โปรดเก็บถาวรแทน"
 
 #. module: loyalty
-#. odoo-python
-#: code:addons/loyalty/wizard/loyalty_generate_wizard.py:0
-msgid ""
-"You're about to generate %(program_type)s with a value of %(value)s for "
-"%(customer_number)i customers"
-msgstr ""
-"คุณกำลังจะสร้าง %(program_type)s ด้วยค่า %(value)s สำหรับลูกค้า "
-"%(customer_number)i"
+#: model:mail.template,report_name:loyalty.mail_template_loyalty_card
+msgid "Your Coupon Code"
+msgstr "โค้ดคูปองของคุณ"
+
+#. module: loyalty
+#: model:mail.template,report_name:loyalty.mail_template_gift_card
+msgid "Your Gift Card"
+msgstr "บัตรของขวัญของคุณ"
 
 #. module: loyalty
 #: model:mail.template,subject:loyalty.mail_template_gift_card
@@ -2183,15 +1985,18 @@ msgstr "เช่น ส่วนลด 10% สำหรับแล็ปท็
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
+#: code:addons/loyalty/models/loyalty_program.py:0
+#: code:addons/loyalty/models/loyalty_program.py:0
 #: code:addons/loyalty/models/loyalty_reward.py:0
 #: model:ir.model.fields.selection,name:loyalty.selection__loyalty_program__program_type__ewallet
+#, python-format
 msgid "eWallet"
 msgstr "eWallet"
 
 #. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_program_view_form
 msgid "eWallet Products"
-msgstr "ผลิตภัณฑ์  eWallet"
+msgstr "eWallet สินค้า"
 
 #. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_generate_wizard_view_form
@@ -2201,6 +2006,7 @@ msgstr "มูลค่า eWallet"
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
+#, python-format
 msgid "eWallets"
 msgstr "eWallets"
 
@@ -2213,7 +2019,7 @@ msgid ""
 msgstr ""
 "eWallets สร้างขึ้นด้วยตนเองหรือโดยอัตโนมัติเมื่อลูกค้าสั่งซื้อผลิตภัณฑ์ eWallet\n"
 "                                    <br/>\n"
-"                                    จากนั้นจะมีการเสนอ eWallets ในระหว่างการชำระเงินเพื่อชำระเงินตามคำสั่งซื้อ"
+"                                    Then, eWallets are proposed during the checkout, to pay orders."
 
 #. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_rule_view_kanban
@@ -2221,14 +2027,13 @@ msgid "item(s) bought"
 msgstr "สินค้าที่ซื้อแล้ว"
 
 #. module: loyalty
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_report
-msgid "loyalty Reward"
-msgstr "รางวัลสมาชิก"
-
-#. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_reward_view_kanban
-msgid "on the cheapest product"
-msgstr "เกี่ยวกับผลิตภัณฑ์ที่ถูกที่สุด"
+msgid ""
+"on the cheapest product\n"
+"                                        <br/>"
+msgstr ""
+"บนสินค้าราคาถูกที่สุด\n"
+"                                        <br/>"
 
 #. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_report
@@ -2237,30 +2042,38 @@ msgstr "บนคำสั่งครั้งต่อไปของคุณ
 
 #. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_reward_view_kanban
-msgid "on your order"
-msgstr "ตามคำสั่งซื้อของคุณ"
+msgid ""
+"on your order\n"
+"                                        <br/>"
+msgstr ""
+"ในการสั่งซื้อของคุณ\n"
+"                                        <br/>"
 
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_rule.py:0
+#, python-format
 msgid "per %s spent"
-msgstr "ต่อ %s ที่ใช้แล้ว"
+msgstr "ต่อ %s ที่ใช้ไป"
 
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_rule.py:0
+#, python-format
 msgid "per order"
 msgstr "ต่อคำสั่งซื้อ"
 
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_rule.py:0
+#, python-format
 msgid "per unit paid"
 msgstr "ต่อหน่วยที่จ่าย"
 
 #. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_reward.py:0
+#, python-format
 msgid "specific products"
 msgstr "ผลิตภัณฑ์เฉพาะ"
 
@@ -2270,25 +2083,11 @@ msgid "spent"
 msgstr "ใช้แล้ว"
 
 #. module: loyalty
-#: model:ir.model.fields.selection,name:loyalty.selection__loyalty_rule__minimum_amount_tax_mode__excl
-msgid "tax excluded"
-msgstr "ไม่รวมภาษี"
-
-#. module: loyalty
-#: model:ir.model.fields.selection,name:loyalty.selection__loyalty_rule__minimum_amount_tax_mode__incl
-msgid "tax included"
-msgstr "รวมภาษี"
-
-#. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_reward.py:0
+#, python-format
 msgid "the cheapest product"
 msgstr "สินค้าราคาถูกที่สุด"
-
-#. module: loyalty
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_rule_view_kanban
-msgid "the value of the coupon"
-msgstr "มูลค่าของคูปอง"
 
 #. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_program_view_form
@@ -2301,12 +2100,8 @@ msgid "usages"
 msgstr "การใช้งาน"
 
 #. module: loyalty
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_program_view_form
-msgid "used)"
-msgstr ""
-
-#. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_reward.py:0
+#, python-format
 msgid "your order"
-msgstr "คำสั่งซื้อของคุณ"
+msgstr "คำสั่งของคุณ"

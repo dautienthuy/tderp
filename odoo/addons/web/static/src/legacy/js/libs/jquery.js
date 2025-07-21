@@ -1,4 +1,5 @@
-/** @odoo-module **/
+odoo.define('web.jquery.extensions', function () {
+'use strict';
 
 /**
  * The jquery library extensions and fixes should be done here to avoid patching
@@ -7,13 +8,88 @@
 
 // jQuery selectors extensions
 $.extend($.expr[':'], {
+    containsLike: function (element, index, matches){
+        return element.innerHTML.toUpperCase().indexOf(matches[3].toUpperCase()) >= 0;
+    },
+    containsTextLike: function (element, index, matches){
+        return element.innerText.toUpperCase().indexOf(matches[3].toUpperCase()) >= 0;
+    },
+    containsExact: function (element, index, matches){
+        return $.trim(element.innerHTML) === matches[3];
+    },
+    containsExactText: function (element, index, matches) {
+        return element.innerText.trim() === matches[3].trim();
+    },
+    /**
+     * Note all escaped characters need to be double escaped inside of the
+     * expression, so "\(" needs to be "\\("
+     */
+    containsRegex: function (element, index, matches){
+        var regreg =  /^\/((?:\\\/|[^\/])+)\/([mig]{0,3})$/,
+        reg = regreg.exec(matches[3]);
+        return reg ? new RegExp(reg[1], reg[2]).test($.trim(element.innerHTML)) : false;
+    },
+    propChecked: function (element, index, matches) {
+        return $(element).prop("checked") === true;
+    },
+    propSelected: function (element, index, matches) {
+        return $(element).prop("selected") === true;
+    },
+    propValue: function (element, index, matches) {
+        return $(element).prop("value") === matches[3];
+    },
+    propValueContains: function (element, index, matches) {
+        return $(element).prop("value") && $(element).prop("value").indexOf(matches[3]) !== -1;
+    },
+    hasData: function (element) {
+        return !!_.toArray(element.dataset).length;
+    },
     data: function (element, index, matches) {
         return $(element).data(matches[3]);
+    },
+    hasVisibility: function (element, index, matches) {
+        var $element = $(element);
+        if ($(element).css('visibility') === 'hidden') {
+            return false;
+        }
+        var $parent = $element.parent();
+        if (!$parent.length || $element.is('html')) {
+            return true;
+        }
+        return $parent.is(':hasVisibility');
+    },
+    hasOpacity: function (element, index, matches) {
+        var $element = $(element);
+        if (parseFloat($(element).css('opacity')) <= 0.01) {
+            return false;
+        }
+        var $parent = $element.parent();
+        if (!$parent.length || $element.is('html')) {
+            return true;
+        }
+        return $parent.is(':hasOpacity');
     },
 });
 
 // jQuery functions extensions
 $.fn.extend({
+    /**
+     * Returns all the attributes of a DOM element (first one in the jQuery
+     * set).
+     *
+     * @returns {Object} attribute name -> attribute value
+     */
+    getAttributes: function () {
+        var o = {};
+        if (this.length) {
+            var attrs = this[0].attributes;
+            for (var i = 0, l = attrs.length ; i < l ; i++) {
+                var attr = attrs.item(i);
+                o[attr.name] = attr.value;
+            }
+        }
+        return o;
+    },
     /**
      * Makes DOM elements bounce the way Odoo decided it.
      *
@@ -39,7 +115,7 @@ $.fn.extend({
         events = events.split(' ');
         return this.each(function () {
             var el = this;
-            events.forEach((evNameNamespaced) => {
+            _.each(events, function (evNameNamespaced) {
                 var evName = evNameNamespaced.split('.')[0];
                 var handler = $._data(el, 'events')[evName].pop();
                 $._data(el, 'events')[evName].unshift(handler);
@@ -47,8 +123,62 @@ $.fn.extend({
         });
     },
     /**
-     * @deprecated this will soon be removed: just rely on the fact that the
-     * scrollbar is at its natural position.
+     * @todo Should really be converted to no jQuery and probably even removed
+     * from jQuery utilities in master
+     * @return {jQuery}
+     */
+    closestScrollable() {
+        const document = this.length ? this[0].ownerDocument : window.document;
+
+        let $el = this;
+        while ($el[0] !== document.scrollingElement) {
+            if (!$el.length || $el[0] instanceof Document) {
+                // Ensure that $().closestScrollable() -> $() and handle the
+                // case of elements not attached to the DOM.
+                // Also, .parent() used to loop through ancestors can
+                // theoretically reach the document if nothing up to the HTML
+                // included is not scrollable.
+                return $();
+            }
+            if ($el.isScrollable()) {
+                return $el;
+            }
+            $el = $el.parent();
+        }
+        return $el;
+    },
+    /**
+     * Adapt the given css property by adding the size of a scrollbar if any.
+     * Limitation: only works if the given css property is not already used as
+     * inline style for another reason.
+     *
+     * @param {boolean} [add=true]
+     * @param {boolean} [isScrollElement=true]
+     * @param {string} [cssProperty='padding-right']
+     */
+    compensateScrollbar(add = true, isScrollElement = true, cssProperty = 'padding-right') {
+        for (const el of this) {
+            // Compensate scrollbar
+            const scrollableEl = isScrollElement ? el : $(el).parent().closestScrollable()[0];
+            const isRTL = scrollableEl.matches(".o_rtl");
+            if (isRTL) {
+                cssProperty = cssProperty.replace("right", "left");
+            }
+            el.style.removeProperty(cssProperty);
+            if (!add) {
+                return;
+            }
+            const style = window.getComputedStyle(el);
+            // Round up to the nearest integer to be as close as possible to
+            // the correct value in case of browser zoom.
+            const borderLeftWidth = Math.ceil(parseFloat(style.borderLeftWidth.replace('px', '')));
+            const borderRightWidth = Math.ceil(parseFloat(style.borderRightWidth.replace('px', '')));
+            const bordersWidth = borderLeftWidth + borderRightWidth;
+            const newValue = parseInt(style[cssProperty]) + scrollableEl.offsetWidth - scrollableEl.clientWidth - bordersWidth;
+            el.style.setProperty(cssProperty, `${newValue}px`, 'important');
+        }
+    },
+    /**
      * @returns {jQuery}
      */
     getScrollingElement(document = window.document) {
@@ -73,8 +203,6 @@ $.fn.extend({
         return $baseScrollingElement;
     },
     /**
-     * @deprecated this will soon be removed: just rely on the fact that the
-     * scrollbar is at its natural position.
      * @returns {jQuery}
      */
     getScrollingTarget(contextItem = window.document) {
@@ -114,13 +242,8 @@ $.fn.extend({
 
 // jQuery functions monkey-patching
 
-// Some magic to ensure scrollTop and animate on html/body animate the top level
-// scrollable element even if not html or body. Note: we should consider
-// removing this as it was only really needed when the #wrapwrap was the one
-// with the scrollbar. Although the rest of the code still use
-// getScrollingElement to be generic so this is consistent. Maybe all of this
-// can live on as long as we continue using jQuery a lot. We can decide of the
-// fate of getScrollingElement and related code the moment we get rid of jQuery.
+// Some magic to ensure scrolltop and animate on html/body animate the top level
+// scrollable element even if not html or body.
 const originalScrollTop = $.fn.scrollTop;
 $.fn.scrollTop = function (value) {
     if (value !== undefined && this.filter('html, body').length) {
@@ -154,3 +277,4 @@ $.fn.animate = function (properties, ...rest) {
     }
     return originalAnimate.call(this, props, ...rest);
 };
+});

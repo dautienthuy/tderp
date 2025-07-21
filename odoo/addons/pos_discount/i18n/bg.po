@@ -3,16 +3,17 @@
 # 	* pos_discount
 # 
 # Translators:
-# Albena Mincheva <albena_vicheva@abv.bg>, 2024
-# Maria Boyadjieva <marabo2000@gmail.com>, 2024
+# KeyVillage, 2023
+# Albena Mincheva <albena_vicheva@abv.bg>, 2023
+# Maria Boyadjieva <marabo2000@gmail.com>, 2023
 # Petko Karamotchev, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 08:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2022-09-22 05:54+0000\n"
 "Last-Translator: Petko Karamotchev, 2024\n"
 "Language-Team: Bulgarian (https://app.transifex.com/odoo/teams/41243/bg/)\n"
 "MIME-Version: 1.0\n"
@@ -24,6 +25,7 @@ msgstr ""
 #. module: pos_discount
 #. odoo-python
 #: code:addons/pos_discount/models/pos_config.py:0
+#, python-format
 msgid ""
 "A discount product is needed to use the Global Discount feature. Go to Point"
 " of Sale > Configuration > Settings to set it."
@@ -37,12 +39,12 @@ msgstr "Позволете на касиера да прави отстъпка 
 #. module: pos_discount
 #: model:ir.model,name:pos_discount.model_res_config_settings
 msgid "Config Settings"
-msgstr "Конфигурационни настройки"
+msgstr "Настройки"
 
 #. module: pos_discount
 #. odoo-javascript
-#: code:addons/pos_discount/static/src/overrides/components/control_buttons/control_buttons.xml:0
-#: model:product.template,name:pos_discount.product_product_consumable_product_template
+#: code:addons/pos_discount/static/src/xml/DiscountButton.xml:0
+#, python-format
 msgid "Discount"
 msgstr "Отстъпка"
 
@@ -53,9 +55,10 @@ msgstr "Отстъпка %"
 
 #. module: pos_discount
 #. odoo-javascript
-#: code:addons/pos_discount/static/src/overrides/components/control_buttons/control_buttons.js:0
+#: code:addons/pos_discount/static/src/js/DiscountButton.js:0
 #: model:ir.model.fields,field_description:pos_discount.field_pos_config__discount_pc
 #: model:ir.model.fields,field_description:pos_discount.field_res_config_settings__pos_discount_pc
+#, python-format
 msgid "Discount Percentage"
 msgstr "Процент отстъпка"
 
@@ -67,9 +70,17 @@ msgstr "Продукт с отстъпка"
 
 #. module: pos_discount
 #. odoo-javascript
-#: code:addons/pos_discount/static/src/overrides/components/control_buttons/control_buttons.js:0
+#: code:addons/pos_discount/static/src/js/DiscountButton.js:0
+#, python-format
 msgid "No discount product found"
 msgstr "Не е намерен продукт с отстъпка."
+
+#. module: pos_discount
+#. odoo-javascript
+#: code:addons/pos_discount/static/src/js/DiscountButton.js:0
+#, python-format
+msgid "No tax"
+msgstr ""
 
 #. module: pos_discount
 #: model:ir.model.fields,field_description:pos_discount.field_pos_config__iface_discount
@@ -82,14 +93,21 @@ msgid "Point of Sale Configuration"
 msgstr "Конфигурация на център за продажби"
 
 #. module: pos_discount
+#: model:ir.model,name:pos_discount.model_pos_session
+msgid "Point of Sale Session"
+msgstr "Сесия на център за продажби"
+
+#. module: pos_discount
 #: model:ir.model.fields,field_description:pos_discount.field_res_config_settings__pos_discount_product_id
 msgid "Pos Discount Product"
 msgstr "Продукт за отстъпка в ПОС"
 
 #. module: pos_discount
-#: model:ir.model,name:pos_discount.model_product_product
-msgid "Product Variant"
-msgstr "Продуктов вариант"
+#. odoo-javascript
+#: code:addons/pos_discount/static/src/js/DiscountButton.js:0
+#, python-format
+msgid "Tax: %s"
+msgstr ""
 
 #. module: pos_discount
 #: model:ir.model.fields,help:pos_discount.field_pos_config__discount_pc
@@ -100,7 +118,8 @@ msgstr ""
 
 #. module: pos_discount
 #. odoo-javascript
-#: code:addons/pos_discount/static/src/overrides/components/control_buttons/control_buttons.js:0
+#: code:addons/pos_discount/static/src/js/DiscountButton.js:0
+#, python-format
 msgid ""
 "The discount product seems misconfigured. Make sure it is flagged as 'Can be"
 " Sold' and 'Available in Point of Sale'."

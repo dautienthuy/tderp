@@ -1,16 +1,12 @@
-/** @odoo-module **/
+odoo.define('website.s_facebook_page_options', function (require) {
+'use strict';
 
-import { _t } from "@web/core/l10n/translation";
-import { pick } from "@web/core/utils/objects";
-import options from "@web_editor/js/editor/snippets.options";
+const core = require('web.core');
+const options = require('web_editor.snippets.options');
+
+const _t = core._t;
 
 options.registry.facebookPage = options.Class.extend({
-    init() {
-        this._super(...arguments);
-        this.orm = this.bindService("orm");
-        this.notification = this.bindService("notification");
-    },
-
     /**
      * Initializes the required facebook page data to create the iframe.
      *
@@ -26,13 +22,17 @@ options.registry.facebookPage = options.Class.extend({
             width: 350,
             tabs: '',
             small_header: true,
-            hide_cover: "true",
+            hide_cover: true,
         };
-        this.fbData = Object.assign({}, defaults, pick(this.$target[0].dataset, ...Object.keys(defaults)));
+        this.fbData = _.defaults(_.pick(this.$target[0].dataset, _.keys(defaults)), defaults);
+
         if (!this.fbData.href) {
             // Fetches the default url for facebook page from website config
             var self = this;
-            defs.push(this.orm.searchRead("website", [], ["social_facebook"], {
+            defs.push(this._rpc({
+                model: 'website',
+                method: 'search_read',
+                args: [[], ['social_facebook']],
                 limit: 1,
             }).then(function (res) {
                 if (res) {
@@ -42,12 +42,6 @@ options.registry.facebookPage = options.Class.extend({
         }
 
         return Promise.all(defs).then(() => this._markFbElement()).then(() => this._refreshPublicWidgets());
-    },
-    /**
-     * @override
-     */
-    onBuilt() {
-        this.$target[0].querySelector('.o_facebook_page_preview')?.remove();
     },
 
     //--------------------------------------------------------------------------
@@ -78,7 +72,7 @@ options.registry.facebookPage = options.Class.extend({
             }
         } else {
             if (optionName === 'show_cover') {
-                this.fbData.hide_cover = widgetValue ? "false" : "true";
+                this.fbData.hide_cover = !widgetValue;
             } else {
                 this.fbData[optionName] = widgetValue;
             }
@@ -114,9 +108,9 @@ options.registry.facebookPage = options.Class.extend({
             } else {
                 this.fbData.height = 150;
             }
-            for (const [key, value] of Object.entries(this.fbData)) {
+            _.each(this.fbData, (value, key) => {
                 this.$target[0].dataset[key] = value;
-            }
+            });
         });
     },
     /**
@@ -130,7 +124,8 @@ options.registry.facebookPage = options.Class.extend({
                     return this.fbData.tabs.split(',').includes(optionName.replace(/^tab./, ''));
                 } else {
                     if (optionName === 'show_cover') {
-                        return this.fbData.hide_cover === "false";
+                        // Sometimes a string, sometimes a boolean.
+                        return String(this.fbData.hide_cover) === "false";
                     }
                     return this.fbData[optionName];
                 }
@@ -169,7 +164,8 @@ options.registry.facebookPage = options.Class.extend({
                 } else {
                     this.fbData.id = "";
                     this.fbData.href = defaultURL;
-                    this.notification.add(_t("We couldn't find the Facebook page"), {
+                    this.displayNotification({
+                        title: _t("We couldn't find the Facebook page"),
                         type: "warning",
                     });
                 }
@@ -177,9 +173,11 @@ options.registry.facebookPage = options.Class.extend({
         }
         this.fbData.id = "";
         this.fbData.href = defaultURL;
-        this.notification.add(_t("You didn't provide a valid Facebook link"), {
+        this.displayNotification({
+            title: _t("You didn't provide a valid Facebook link"),
             type: "warning",
         });
         return Promise.resolve();
     },
+});
 });

@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.fields import Date, Datetime
-from odoo.tools import float_is_zero, mute_logger
+from odoo.tools import mute_logger
 from odoo.tests import Form, tagged
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.addons.stock_account.tests.test_stockvaluation import _create_accounting_data
@@ -12,8 +12,8 @@ from odoo.addons.stock_account.tests.test_stockvaluation import _create_accounti
 class TestAngloSaxonValuationPurchaseMRP(AccountTestInvoicingCommon):
 
     @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+    def setUpClass(cls, chart_template_ref=None):
+        super().setUpClass(chart_template_ref=chart_template_ref)
         cls.vendor01 = cls.env['res.partner'].create({'name': "Super Vendor"})
 
         cls.stock_input_account, cls.stock_output_account, cls.stock_valuation_account, cls.expense_account, cls.stock_journal = _create_accounting_data(cls.env)
@@ -27,9 +27,6 @@ class TestAngloSaxonValuationPurchaseMRP(AccountTestInvoicingCommon):
             'property_stock_valuation_account_id': cls.stock_valuation_account.id,
         })
 
-        currency_grp = cls.env.ref('base.group_multi_currency')
-        cls.env.user.write({'groups_id': [(4, currency_grp.id)]})
-
         cls.env.company.anglo_saxon_accounting = True
 
     def test_kit_anglo_saxo_price_diff(self):
@@ -41,7 +38,7 @@ class TestAngloSaxonValuationPurchaseMRP(AccountTestInvoicingCommon):
         kit, compo01, compo02 = self.env['product.product'].create([{
             'name': name,
             'standard_price': price,
-            'is_storable': True,
+            'type': 'product',
             'categ_id': self.avco_category.id,
         } for name, price in [('Kit', 0), ('Compo 01', 10), ('Compo 02', 20)]])
 
@@ -63,7 +60,9 @@ class TestAngloSaxonValuationPurchaseMRP(AccountTestInvoicingCommon):
         po = po_form.save()
         po.button_confirm()
 
-        po.picking_ids.button_validate()
+        action = po.picking_ids.button_validate()
+        wizard = Form(self.env[action['res_model']].with_context(action['context'])).save()
+        wizard.process()
 
         action = po.action_create_invoice()
         invoice = self.env['account.move'].browse(action['res_id'])
@@ -102,7 +101,7 @@ class TestAngloSaxonValuationPurchaseMRP(AccountTestInvoicingCommon):
 
         component01, component02 = self.env['product.product'].create([{
             'name': 'Component %s' % name,
-            'is_storable': True,
+            'type': 'product',
             'categ_id': self.avco_category.id,
             'uom_id': uom_litre.id,
             'uom_po_id': uom_litre.id,
@@ -139,7 +138,7 @@ class TestAngloSaxonValuationPurchaseMRP(AccountTestInvoicingCommon):
         po.button_confirm()
 
         receipt = po.picking_ids
-        receipt.move_line_ids.quantity = 1
+        receipt.move_line_ids.qty_done = 1
         receipt.button_validate()
 
         self.assertEqual(receipt.state, 'done')
@@ -162,13 +161,13 @@ class TestAngloSaxonValuationPurchaseMRP(AccountTestInvoicingCommon):
             })],
         })
         delivery.action_confirm()
-        delivery.move_ids.move_line_ids.quantity = 1
+        delivery.move_ids.move_line_ids.qty_done = 1
         delivery.button_validate()
 
         self.assertEqual(component01.stock_valuation_layer_ids.mapped('value'), [25, -25])
         self.assertEqual(component02.stock_valuation_layer_ids.mapped('value'), [75, -75])
 
-        with mute_logger('odoo.tests.form.onchange'):
+        with mute_logger('odoo.tests.common.onchange'):
             with Form(bom_kit) as kit_form:
                 with kit_form.bom_line_ids.edit(0) as line:
                     line.cost_share = 30
@@ -177,10 +176,9 @@ class TestAngloSaxonValuationPurchaseMRP(AccountTestInvoicingCommon):
 
         wizard_form = Form(self.env['stock.return.picking'].with_context(active_id=delivery.id, active_model='stock.picking'))
         wizard = wizard_form.save()
-        wizard.product_return_moves.quantity = 1
-        action = wizard.action_create_returns()
+        action = wizard.create_returns()
         return_picking = self.env["stock.picking"].browse(action["res_id"])
-        return_picking.move_ids.move_line_ids.quantity = 1
+        return_picking.move_ids.move_line_ids.qty_done = 1
         return_picking.button_validate()
 
         self.assertEqual(component01.stock_valuation_layer_ids.mapped('value'), [25, -25, 25])
@@ -194,7 +192,7 @@ class TestAngloSaxonValuationPurchaseMRP(AccountTestInvoicingCommon):
         kit, cmp = self.env['product.product'].create([{
             'name': name,
             'standard_price': 0,
-            'is_storable': True,
+            'type': 'product',
             'categ_id': self.avco_category.id,
         } for name in ['Kit', 'Cmp']])
 
@@ -226,7 +224,9 @@ class TestAngloSaxonValuationPurchaseMRP(AccountTestInvoicingCommon):
         po = po_form.save()
         po.button_confirm()
 
-        po.picking_ids.button_validate()
+        action = po.picking_ids.button_validate()
+        wizard = Form(self.env[action['res_model']].with_context(action['context'])).save()
+        wizard.process()
 
         svl = po.order_line.move_ids.stock_valuation_layer_ids.ensure_one()
         input_aml = self.env['account.move.line'].search([('account_id', '=', self.stock_valuation_account.id)])
@@ -234,116 +234,3 @@ class TestAngloSaxonValuationPurchaseMRP(AccountTestInvoicingCommon):
         self.assertEqual(svl.value, 50)  # USD
         self.assertEqual(input_aml.amount_currency, 100)  # EUR
         self.assertEqual(input_aml.balance, 50)  # USD
-
-    def test_fifo_cost_adjust_mo_quantity(self):
-        """ An MO using a FIFO cost method product as a component should not zero-out the std cost
-        of the product if we unlock it once it is in a validated state and adjust the quantity of
-        component used to be smaller than originally entered.
-        """
-        self.product_a.categ_id = self.env['product.category'].create({
-            'name': 'FIFO',
-            'property_cost_method': 'fifo',
-            'property_valuation': 'real_time'
-        })
-
-        purchase_order = self.env['purchase.order'].create({
-            'partner_id': self.partner_a.id,
-            'order_line': [(0, 0, {
-                'product_id': self.product_a.id,
-                'product_qty': 10,
-                'price_unit': 100,
-            })],
-        })
-        purchase_order.button_confirm()
-        purchase_order.picking_ids[0].button_validate()
-
-        manufacturing_order = self.env['mrp.production'].create({
-            'product_id': self.product_b.id,
-            'product_qty': 1,
-            'move_raw_ids': [(0, 0, {
-                'product_id': self.product_a.id,
-                'product_uom_qty': 100,
-            })],
-        })
-        manufacturing_order.action_confirm()
-        manufacturing_order.move_raw_ids.write({
-            'quantity': 100,
-            'picked': True,
-        })
-        manufacturing_order.button_mark_done()
-        manufacturing_order.action_toggle_is_locked()
-        manufacturing_order.move_raw_ids.quantity = 1
-
-        self.assertEqual(self.product_a.standard_price, 100)
-
-    def test_average_cost_unbuild_valuation(self):
-        """ Ensure that an unbuild for some avg cost product won't leave the `Cost of Production`
-        journal in an imbalanced state if the std price of that product has changed since the MO
-        was completed (i.e., since build time).
-        """
-        def make_purchase_and_production(product_ids, price_units):
-            purchase_orders = self.env['purchase.order'].create([{
-                'partner_id': self.partner_a.id,
-                'order_line': [(0, 0, {
-                    'product_id': prod_id,
-                    'product_qty': 2,
-                    'price_unit': price_unit
-                })],
-            } for prod_id, price_unit in zip(product_ids, price_units)])
-            purchase_orders.button_confirm()
-            purchase_orders.picking_ids.move_ids.quantity = 2
-            purchase_orders.picking_ids.button_validate()
-            production_form = Form(self.env['mrp.production'])
-            production_form.product_id = final_product
-            production_form.bom_id = final_product_bom
-            production_form.product_qty = 1
-            production = production_form.save()
-            production.action_confirm()
-            mo_form = Form(production)
-            mo_form.qty_producing = 1
-            production = mo_form.save()
-            production._post_inventory()
-            production.button_mark_done()
-            return production
-
-        cost_of_production_account = self.env['account.account'].search([
-            ('name', '=', 'Cost of Production'),
-            ('company_ids', 'in', self.env.company.id),
-        ], limit=1)
-        self.avco_category.property_stock_account_production_cost_id = cost_of_production_account.id
-        final_product = self.env['product.product'].create({
-            'name': 'final product',
-            'is_storable': True,
-            'standard_price': 0,
-            'categ_id': self.avco_category.id,
-            'route_ids': [(6, 0, self.env['stock.route'].search([('name', '=', 'Manufacture')], limit=1).ids)],
-        })
-        comp_1, comp_2 = self.env['product.product'].create([{
-            'name': name,
-            'is_storable': True,
-            'standard_price': 0,
-            'categ_id': self.avco_category.id,
-            'route_ids': [(4, self.env['stock.route'].search([('name', '=', 'Buy')], limit=1).id)],
-        } for name in ('comp_1', 'comp_2')])
-        final_product_bom = self.env['mrp.bom'].create({
-            'product_tmpl_id': final_product.product_tmpl_id.id,
-            'type': 'normal',
-            'bom_line_ids': [(0, 0, {
-                'product_id': comp_prod_id,
-                'product_qty': 2,
-            }) for comp_prod_id in (comp_1.id, comp_2.id)],
-        })
-        production_1 = make_purchase_and_production([comp_1.id, comp_2.id], [50, 40])
-        make_purchase_and_production([comp_1.id, comp_2.id], [55, 45])
-        action = production_1.button_unbuild()
-        wizard = Form(self.env[action['res_model']].with_context(action['context']))
-        wizard.product_qty = 1
-        wizard = wizard.save()
-        wizard.action_validate()
-        self.assertTrue(float_is_zero(
-            sum(self.env['account.move.line'].search([
-                ('account_id', '=', cost_of_production_account.id),
-                ('product_id', 'in', (final_product.id, comp_1.id, comp_2.id)),
-            ]).mapped('balance')),
-            precision_rounding=self.env.company.currency_id.rounding
-        ))

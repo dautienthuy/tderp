@@ -1,16 +1,12 @@
 /** @odoo-module **/
 
-import { _t } from "@web/core/l10n/translation";
-import { rpc } from "@web/core/network/rpc";
 import { registry } from '@web/core/registry';
-import { user } from "@web/core/user";
 import { useService } from '@web/core/utils/hooks';
-import { redirect } from "@web/core/utils/urls";
-import { WebsiteDialog } from "@website/components/dialog/dialog";
-import { AddPageDialog } from "@website/components/dialog/add_page_dialog";
+import { WebsiteDialog, AddPageDialog } from "@website/components/dialog/dialog";
 import { useHotkey } from "@web/core/hotkeys/hotkey_hook";
 import { sprintf } from '@web/core/utils/strings';
-import { Component, xml, useState, onWillStart } from "@odoo/owl";
+
+const { Component, xml, useState, onWillStart } = owl;
 
 export const MODULE_STATUS = {
     NOT_INSTALLED: 'NOT_INSTALLED',
@@ -20,19 +16,6 @@ export const MODULE_STATUS = {
 };
 
 class NewContentElement extends Component {
-    static template = "website.NewContentElement";
-    static props = {
-        name: { type: String, optional: true },
-        title: String,
-        onClick: Function,
-        status: { type: String, optional: true },
-        moduleXmlId: { type: String, optional: true },
-        slots: Object,
-    };
-    static defaultProps = {
-        status: MODULE_STATUS.INSTALLED,
-    };
-
     setup() {
         this.MODULE_STATUS = MODULE_STATUS;
     }
@@ -43,19 +26,22 @@ class NewContentElement extends Component {
         this.props.onClick();
     }
 }
+NewContentElement.template = "website.NewContentElement";
+NewContentElement.props = {
+    name: { type: String, optional: true },
+    title: String,
+    onClick: Function,
+    status: { type: String, optional: true },
+    moduleXmlId: { type: String, optional: true },
+    slots: Object,
+};
+NewContentElement.defaultProps = {
+    status: MODULE_STATUS.INSTALLED,
+};
 
 class InstallModuleDialog extends Component {
-    static components = { WebsiteDialog };
-    static template = "website.InstallModuleDialog";
-    static props = {
-        title: String,
-        installationText: String,
-        installModule: Function,
-        close: Function,
-    };
-
     setup() {
-        this.installButton = _t("Install");
+        this.installButton = this.env._t("Install");
     }
 
     onClickInstall() {
@@ -63,24 +49,24 @@ class InstallModuleDialog extends Component {
         this.props.installModule();
     }
 }
+InstallModuleDialog.components = { WebsiteDialog };
+InstallModuleDialog.template = "website.InstallModuleDialog";
 
 export class NewContentModal extends Component {
-    static template = "website.NewContentModal";
-    static components = { NewContentElement };
-    static props = {};
-
     setup() {
+        this.user = useService('user');
         this.orm = useService('orm');
+        this.rpc = useService('rpc');
         this.dialogs = useService('dialog');
         this.website = useService('website');
         this.action = useService('action');
-        this.isSystem = user.isSystem;
+        this.isSystem = this.user.isSystem;
 
         this.newContentText = {
-            failed: _t('Failed to install "%s"'),
-            installInProgress: _t("The installation of an App is already in progress."),
-            installNeeded: _t('Do you want to install the "%s" App?'),
-            installPleaseWait: _t('Installing "%s"'),
+            failed: this.env._t('Failed to install "%s"'),
+            installInProgress: this.env._t("The installation of an App is already in progress."),
+            installNeeded: this.env._t('Do you want to install the "%s" App?'),
+            installPleaseWait: this.env._t('Installing "%s"'),
         };
 
         this.state = useState({
@@ -89,15 +75,15 @@ export class NewContentModal extends Component {
                     moduleName: 'website_blog',
                     moduleXmlId: 'base.module_website_blog',
                     status: MODULE_STATUS.NOT_INSTALLED,
-                    icon: xml`<i class="fa fa-newspaper-o"/>`,
-                    title: _t('Blog Post'),
+                    icon: xml`<i class="fa fa-rss"/>`,
+                    title: this.env._t('Blog Post'),
                 },
                 {
                     moduleName: 'website_event',
                     moduleXmlId: 'base.module_website_event',
                     status: MODULE_STATUS.NOT_INSTALLED,
                     icon: xml`<i class="fa fa-ticket"/>`,
-                    title: _t('Event'),
+                    title: this.env._t('Event'),
                 },
                 {
                     moduleName: 'website_forum',
@@ -105,35 +91,35 @@ export class NewContentModal extends Component {
                     status: MODULE_STATUS.NOT_INSTALLED,
                     icon: xml`<i class="fa fa-comment"/>`,
                     redirectUrl: '/forum',
-                    title: _t('Forum'),
+                    title: this.env._t('Forum'),
                 },
                 {
                     moduleName: 'website_hr_recruitment',
                     moduleXmlId: 'base.module_website_hr_recruitment',
                     status: MODULE_STATUS.NOT_INSTALLED,
                     icon: xml`<i class="fa fa-briefcase"/>`,
-                    title: _t('Job Position'),
+                    title: this.env._t('Job Position'),
                 },
                 {
                     moduleName: 'website_sale',
                     moduleXmlId: 'base.module_website_sale',
                     status: MODULE_STATUS.NOT_INSTALLED,
                     icon: xml`<i class="fa fa-shopping-cart"/>`,
-                    title: _t('Product'),
+                    title: this.env._t('Product'),
                 },
                 {
                     moduleName: 'website_slides',
                     moduleXmlId: 'base.module_website_slides',
                     status: MODULE_STATUS.NOT_INSTALLED,
                     icon: xml`<i class="fa module_icon" style="background-image: url('/website/static/src/img/apps_thumbs/website_slide.svg');background-repeat: no-repeat; background-position: center;"/>`,
-                    title: _t('Course'),
+                    title: this.env._t('Course'),
                 },
                 {
                     moduleName: 'website_livechat',
                     moduleXmlId: 'base.module_website_livechat',
                     status: MODULE_STATUS.NOT_INSTALLED,
                     icon: xml`<i class="fa fa-comments"/>`,
-                    title: _t('Livechat Widget'),
+                    title: this.env._t('Livechat Widget'),
                     redirectUrl: '/livechat'
                 },
             ]
@@ -150,8 +136,8 @@ export class NewContentModal extends Component {
     }
 
     async onWillStart() {
-        this.isDesigner = await user.hasGroup('website.group_website_designer');
-        this.canInstall = await user.isAdmin;
+        this.isDesigner = await this.user.hasGroup('website.group_website_designer');
+        this.canInstall = await this.user.isAdmin;
         if (this.canInstall) {
             const moduleNames = this.state.newContentElements.filter(({status}) => status === MODULE_STATUS.NOT_INSTALLED).map(({moduleName}) => moduleName);
             this.modulesInfo = {};
@@ -171,7 +157,7 @@ export class NewContentModal extends Component {
                 elementsToUpdate[element.model] = element;
             }
         }
-        const accesses = await rpc("/website/check_new_content_access_rights", {
+        const accesses = await this.rpc("/website/check_new_content_access_rights", {
             models: modelsToCheck,
         });
         for (const [model, access] of Object.entries(accesses)) {
@@ -186,7 +172,6 @@ export class NewContentModal extends Component {
     createNewPage() {
         this.dialogs.add(AddPageDialog, {
             onAddPage: () => this.websiteContext.showNewContentModal = false,
-            websiteId: this.website.currentWebsite.id,
         });
     }
 
@@ -197,7 +182,6 @@ export class NewContentModal extends Component {
             [id],
         );
         if (redirectUrl) {
-            this.website.prepareOutLoader();
             window.location.replace(redirectUrl);
         } else {
             const { id, metadata: { path, viewXmlid } } = this.website.currentWebsite;
@@ -207,8 +191,7 @@ export class NewContentModal extends Component {
             }
             // A reload is needed after installing a new module, to instantiate
             // a NewContentModal with patches from the installed module.
-            this.website.prepareOutLoader();
-            redirect(`/odoo/action-website.website_preview?website_id=${id}&path=${encodeURIComponent(url.toString())}&display_new_content=true`);
+            window.location.replace(`/web#action=website.website_preview&website_id=${id}&path=${encodeURIComponent(url.toString())}&display_new_content=true`);
         }
     }
 
@@ -220,18 +203,20 @@ export class NewContentModal extends Component {
         const {id, name} = this.modulesInfo[element.moduleName];
         const dialogProps = {
             title: element.title,
-            installationText: sprintf(this.newContentText.installNeeded, name),
+            installationText: _.str.sprintf(this.newContentText.installNeeded, name),
             installModule: async () => {
                 // Update the NewContentElement with installing icon and text.
                 this.state.newContentElements = this.state.newContentElements.map(el => {
                     if (el.moduleXmlId === element.moduleXmlId) {
                         el.status = MODULE_STATUS.INSTALLING;
                         el.icon = xml`<i class="fa fa-spin fa-circle-o-notch"/>`;
-                        el.title = sprintf(this.newContentText.installPleaseWait, name);
+                        el.title = _.str.sprintf(this.newContentText.installPleaseWait, name);
                     }
                     return el;
                 });
-                this.website.showLoader({ title: _t("Building your %s", name) });
+                this.website.showLoader({
+                    title: sprintf(this.env._t("Building your %s"), name),
+                });
                 try {
                     await this.installModule(id, element.redirectUrl);
                 } catch (error) {
@@ -241,7 +226,7 @@ export class NewContentModal extends Component {
                         if (el.moduleXmlId === element.moduleXmlId) {
                             el.status = MODULE_STATUS.FAILED_TO_INSTALL;
                             el.icon = xml`<i class="fa fa-exclamation-triangle"/>`;
-                            el.title = sprintf(this.newContentText.failed, name);
+                            el.title = _.str.sprintf(this.newContentText.failed, name);
                         }
                         return el;
                     });
@@ -258,9 +243,8 @@ export class NewContentModal extends Component {
      * perform the 'ir.act_window_close' action, which will be used when
      * the dialog is closed to go to the correct website page.
      */
-    async onAddContent(action, edition = false, context = null) {
+    async onAddContent(action, edition = false) {
         this.action.doAction(action, {
-            additionalContext: (context) ? context: {},
             onClose: (infos) => {
                 if (infos) {
                     this.website.goToWebsite({ path: infos.path, edition: edition });
@@ -280,13 +264,12 @@ export class NewContentModal extends Component {
         });
     }
 }
+NewContentModal.template = "website.NewContentModal";
+NewContentModal.components = { NewContentElement };
 
 class NewContentSystray extends Component {
-    static template = "website.NewContentSystray";
-    static components = { NewContentModal };
-    static props = {};
-
     setup() {
+        this.rpc = useService('rpc');
         this.website = useService('website');
         this.websiteContext = useState(this.website.context);
     }
@@ -295,10 +278,12 @@ class NewContentSystray extends Component {
         this.websiteContext.showNewContentModal = !this.websiteContext.showNewContentModal;
     }
 }
+NewContentSystray.template = "website.NewContentSystray";
+NewContentSystray.components = { NewContentModal };
 
 export const systrayItem = {
     Component: NewContentSystray,
     isDisplayed: (env) => env.services.website.isRestrictedEditor,
 };
 
-registry.category("website_systray").add("NewContent", systrayItem, { sequence: 9 });
+registry.category("website_systray").add("NewContent", systrayItem, { sequence: 10 });

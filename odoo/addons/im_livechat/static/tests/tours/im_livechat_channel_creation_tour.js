@@ -1,32 +1,32 @@
-import { registry } from "@web/core/registry";
+/** @odoo-module */
+
+import tour from "web_tour.tour";
 
 const requestChatSteps = [
     {
-        trigger: ".o-livechat-root:shadow .o-livechat-LivechatButton",
+        trigger: ".o_livechat_button",
         run: "click",
     },
     {
-        trigger: ".o-livechat-root:shadow .o-mail-ChatWindow",
+        trigger: ".o_thread_window",
     },
 ];
 
-registry.category("web_tour.tours").add("im_livechat_request_chat", {
-    steps: () => requestChatSteps,
-});
+tour.register("im_livechat_request_chat", { test: true }, requestChatSteps);
 
-registry.category("web_tour.tours").add("im_livechat_request_chat_and_send_message", {
-    steps: () => [
-        ...requestChatSteps,
-        {
-            trigger: ".o-livechat-root:shadow .o-mail-Composer-input",
-            run: "edit Hello, I need help please !",
+tour.register("im_livechat_request_chat_and_send_message", { test: true }, [
+    ...requestChatSteps,
+    {
+        trigger: ".o_composer_text_field",
+        run: "text Hello, I need help please !",
+    },
+    {
+        trigger: '.o_composer_text_field',
+        run() {
+            $(".o_composer_text_field").trigger($.Event("keydown", { which: 13 }));
         },
-        {
-            trigger: ".o-livechat-root:shadow .o-mail-Composer-input",
-            run: "press Enter",
-        },
-        {
-            trigger: ".o-livechat-root:shadow .o-mail-Message:contains('Hello, I need help')",
-        },
-    ],
-});
+    },
+    {
+        trigger: ".o_thread_message:contains('Hello, I need help')",
+    },
+]);

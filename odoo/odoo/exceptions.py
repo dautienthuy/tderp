@@ -12,6 +12,8 @@ treated as a 'Server error'.
     check out the :mod:`odoo.addons.test_exceptions` module.
 """
 
+import warnings
+
 
 class UserError(Exception):
     """Generic error managed by the client.
@@ -25,6 +27,13 @@ class UserError(Exception):
         :param message: exception message and frontend modal content
         """
         super().__init__(message)
+
+    @property
+    def name(self):
+        warnings.warn(
+            "UserError attribute 'name' is a deprecated alias to args[0]",
+            DeprecationWarning)
+        return self.args[0]
 
 
 class RedirectWarning(Exception):
@@ -40,6 +49,14 @@ class RedirectWarning(Exception):
     """
     def __init__(self, message, action, button_text, additional_context=None):
         super().__init__(message, action, button_text, additional_context)
+
+    # using this RedirectWarning won't crash if used as an UserError
+    @property
+    def name(self):
+        warnings.warn(
+            "RedirectWarning attribute 'name' is a deprecated alias to args[0]",
+            DeprecationWarning)
+        return self.args[0]
 
 
 class AccessDenied(UserError):
@@ -98,3 +115,18 @@ class ValidationError(UserError):
 
         When you try to create a new user with a login which already exist in the db.
     """
+
+
+# Deprecated exceptions, only kept for backward compatibility, may be
+# removed in the future *without* any further notice than the Deprecation
+# Warning.
+
+class except_orm(UserError):
+    def __init__(self, name, value=None):
+        warnings.warn("except_orm is a deprecated alias to UserError.", DeprecationWarning)
+        super().__init__(f"{name}: {value}")
+
+class Warning(UserError):
+    def __init__(self, *args, **kwargs):
+        warnings.warn("Warning is a deprecated alias to UserError.", DeprecationWarning)
+        super().__init__(*args, **kwargs)

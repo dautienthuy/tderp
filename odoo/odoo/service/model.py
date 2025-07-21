@@ -6,43 +6,22 @@ import time
 from collections.abc import Mapping, Sequence
 from functools import partial
 
-from psycopg2 import IntegrityError, OperationalError, errorcodes, errors
+from psycopg2 import IntegrityError, OperationalError, errorcodes
 
 import odoo
-from odoo.exceptions import UserError, ValidationError, AccessError
-from odoo.models import BaseModel
+from odoo.exceptions import UserError, ValidationError
 from odoo.http import request
-from odoo.modules.registry import Registry
-from odoo.tools import DotDict, lazy
-from odoo.tools.translate import translate_sql_constraint
-
+from odoo.models import check_method_name
+from odoo.tools import DotDict
+from odoo.tools.translate import _, translate_sql_constraint
 from . import security
+from ..tools import lazy
 
 _logger = logging.getLogger(__name__)
 
 PG_CONCURRENCY_ERRORS_TO_RETRY = (errorcodes.LOCK_NOT_AVAILABLE, errorcodes.SERIALIZATION_FAILURE, errorcodes.DEADLOCK_DETECTED)
-PG_CONCURRENCY_EXCEPTIONS_TO_RETRY = (errors.LockNotAvailable, errors.SerializationFailure, errors.DeadlockDetected)
 MAX_TRIES_ON_CONCURRENCY_FAILURE = 5
 
-
-def get_public_method(model, name):
-    """ Get the public unbound method from a model.
-    When the method does not exist or is inaccessible, raise appropriate errors.
-    Accessible methods are public (in sense that python defined it:
-    not prefixed with "_") and are not decorated with `@api.private`.
-    """
-    assert isinstance(model, BaseModel), f"{model!r} is not a BaseModel for {name}"
-    cls = type(model)
-    method = getattr(cls, name, None)
-    if not callable(method):
-        raise AttributeError(f"The method '{model._name}.{name}' does not exist")  # noqa: TRY004
-    for mro_cls in cls.mro():
-        cla_method = getattr(mro_cls, name, None)
-        if not cla_method:
-            continue
-        if name.startswith('_') or getattr(cla_method, '_api_private', False):
-            raise AccessError(f"Private methods (such as '{model._name}.{name}') cannot be called remotely.")
-    return method
 
 def dispatch(method, params):
     db, uid, passwd = params[0], int(params[1]), params[2]
@@ -50,7 +29,7 @@ def dispatch(method, params):
 
     threading.current_thread().dbname = db
     threading.current_thread().uid = uid
-    registry = Registry(db).check_signaling()
+    registry = odoo.registry(db).check_signaling()
     with registry.manage_changes():
         if method == 'execute':
             res = execute(db, uid, *params[3:])
@@ -67,8 +46,7 @@ def execute_cr(cr, uid, obj, method, *args, **kw):
     env = odoo.api.Environment(cr, uid, {})
     recs = env.get(obj)
     if recs is None:
-        raise UserError(env._("Object %s doesn't exist", obj))
-    get_public_method(recs, method)  # Don't use the result, call_kw will redo the getattr
+        raise UserError(_("Object %s doesn't exist", obj))
     result = retrying(partial(odoo.api.call_kw, recs, method, args, kw), env)
     # force evaluation of lazy values before the cursor is closed, as it would
     # error afterwards if the lazy isn't already evaluated (and cached)
@@ -82,59 +60,58 @@ def execute_kw(db, uid, obj, method, args, kw=None):
 
 
 def execute(db, uid, obj, method, *args, **kw):
-    # TODO could be conditionnaly readonly as in _call_kw_readonly
-    with Registry(db).cursor() as cr:
+    with odoo.registry(db).cursor() as cr:
+        check_method_name(method)
         res = execute_cr(cr, uid, obj, method, *args, **kw)
         if res is None:
-            _logger.info('The method %s of the object %s can not return `None`!', method, obj)
+            _logger.info('The method %s of the object %s can not return `None` !', method, obj)
         return res
 
 
 def _as_validation_error(env, exc):
     """ Return the IntegrityError encapsuled in a nice ValidationError """
 
-    unknown = env._('Unknown')
-    model = DotDict({'_name': 'unknown', '_description': unknown})
-    field = DotDict({'name': 'unknown', 'string': unknown})
+    unknown = _('Unknown')
+    model = DotDict({'_name': unknown.lower(), '_description': unknown})
+    field = DotDict({'name': unknown.lower(), 'string': unknown})
     for _name, rclass in env.registry.items():
         if exc.diag.table_name == rclass._table:
             model = rclass
             field = model._fields.get(exc.diag.column_name) or field
             break
 
-    match exc:
-        case errors.NotNullViolation():
-            return ValidationError(env._(
-                "The operation cannot be completed:\n"
-                "- Create/update: a mandatory field is not set.\n"
-                "- Delete: another model requires the record being deleted."
-                " If possible, archive it instead.\n\n"
-                "Model: %(model_name)s (%(model_tech_name)s)\n"
-                "Field: %(field_name)s (%(field_tech_name)s)\n",
-                model_name=model._description,
-                model_tech_name=model._name,
-                field_name=field.string,
-                field_tech_name=field.name,
-            ))
+    if exc.pgcode == errorcodes.NOT_NULL_VIOLATION:
+        return ValidationError(_(
+            "The operation cannot be completed:\n"
+            "- Create/update: a mandatory field is not set.\n"
+            "- Delete: another model requires the record being deleted."
+            " If possible, archive it instead.\n\n"
+            "Model: %(model_name)s (%(model_tech_name)s)\n"
+            "Field: %(field_name)s (%(field_tech_name)s)\n",
+            model_name=model._description,
+            model_tech_name=model._name,
+            field_name=field.string,
+            field_tech_name=field.name,
+        ))
 
-        case errors.ForeignKeyViolation():
-            return ValidationError(env._(
-                "The operation cannot be completed: another model requires "
-                "the record being deleted. If possible, archive it instead.\n\n"
-                "Model: %(model_name)s (%(model_tech_name)s)\n"
-                "Constraint: %(constraint)s\n",
-                model_name=model._description,
-                model_tech_name=model._name,
-                constraint=exc.diag.constraint_name,
-            ))
+    if exc.pgcode == errorcodes.FOREIGN_KEY_VIOLATION:
+        return ValidationError(_(
+            "The operation cannot be completed: another model requires "
+            "the record being deleted. If possible, archive it instead.\n\n"
+            "Model: %(model_name)s (%(model_tech_name)s)\n"
+            "Constraint: %(constraint)s\n",
+            model_name=model._description,
+            model_tech_name=model._name,
+            constraint=exc.diag.constraint_name,
+        ))
 
     if exc.diag.constraint_name in env.registry._sql_constraints:
-        return ValidationError(env._(
+        return ValidationError(_(
             "The operation cannot be completed: %s",
             translate_sql_constraint(env.cr, exc.diag.constraint_name, env.context.get('lang', 'en_US'))
         ))
 
-    return ValidationError(env._("The operation cannot be completed: %s", exc.args[0]))
+    return ValidationError(_("The operation cannot be completed: %s", exc.args[0]))
 
 
 def retrying(func, env):
@@ -173,7 +150,7 @@ def retrying(func, env):
                             raise RuntimeError(f"Cannot retry request on input file {filename!r} after serialization failure") from exc
                 if isinstance(exc, IntegrityError):
                     raise _as_validation_error(env, exc) from exc
-                if not isinstance(exc, PG_CONCURRENCY_EXCEPTIONS_TO_RETRY):
+                if exc.pgcode not in PG_CONCURRENCY_ERRORS_TO_RETRY:
                     raise
                 if not tryleft:
                     _logger.info("%s, maximum number of tries reached!", errorcodes.lookup(exc.pgcode))

@@ -1,16 +1,15 @@
-# Part of Odoo. See LICENSE file for full copyright and licensing details.
-
+# -*- coding: utf-8 -*-
 from collections import defaultdict
 from datetime import timedelta
 
 from odoo import api, fields, models
 from odoo.exceptions import UserError
-from odoo.http import request
 from odoo.osv import expression
+from odoo.http import request
 
 
 class SaleOrder(models.Model):
-    _inherit = 'sale.order'
+    _inherit = "sale.order"
 
     # List of disabled rewards for automatic claim
     disabled_auto_rewards = fields.Many2many("loyalty.reward", relation="sale_order_disabled_auto_rewards_rel")
@@ -74,15 +73,12 @@ class SaleOrder(models.Model):
         claimed_reward_count = 0
         claimable_rewards = self._get_claimable_rewards()
         for coupon, rewards in claimable_rewards.items():
-            if (
-                len(coupon.program_id.reward_ids) != 1
-                or coupon.program_id.is_nominative
-                or (rewards.reward_type == 'product' and rewards.multi_product)
-                or rewards in self.disabled_auto_rewards
-                or rewards in self.order_line.reward_id
-            ):
+            if len(coupon.program_id.reward_ids) != 1 or\
+                coupon.program_id.is_nominative or\
+                (rewards.reward_type == 'product' and rewards.multi_product) or\
+                rewards in self.disabled_auto_rewards or\
+                rewards in self.order_line.reward_id:
                 continue
-
             try:
                 res = self._apply_program_reward(rewards, coupon)
                 if 'error' not in res:
@@ -160,30 +156,20 @@ class SaleOrder(models.Model):
             request.session.pop('successful_code')
         return code
 
-    def _set_delivery_method(self, *args, **kwargs):
-        super()._set_delivery_method(*args, **kwargs)
-        self._update_programs_and_rewards()
-
-    def _remove_delivery_line(self):
-        super()._remove_delivery_line()
-        self._update_programs_and_rewards()
-
     def _cart_update(self, product_id, line_id=None, add_qty=0, set_qty=0, **kwargs):
+
         line = self.order_line.filtered(lambda sol: sol.product_id.id == product_id)[:1]
         reward_id = line.reward_id
         if set_qty == 0 and line.coupon_id and reward_id and reward_id.reward_type == 'discount':
             # Force the deletion of the line even if it's a temporary record created by new()
             line_id = line.id
+
         res = super()._cart_update(
             product_id, line_id=line_id, add_qty=add_qty, set_qty=set_qty, **kwargs
         )
         self._update_programs_and_rewards()
         self._auto_apply_rewards()
         return res
-
-    def _get_non_delivery_lines(self):
-        """Override of `website_sale` to exclude delivery reward lines."""
-        return super()._get_non_delivery_lines() - self._get_free_shipping_lines()
 
     def _get_free_shipping_lines(self):
         self.ensure_one()
@@ -210,37 +196,14 @@ class SaleOrder(models.Model):
         for so in so_to_reset:
             so._update_programs_and_rewards()
 
-    def _get_claimable_and_showable_rewards(self):
-        self.ensure_one()
-        res = self._get_claimable_rewards()
-        loyality_cards = self.env['loyalty.card'].search([
-            ('partner_id', '=', self.partner_id.id),
-            ('program_id', 'any', self._get_program_domain()),
-            '|',
-                ('program_id.trigger', '=', 'with_code'),
-                '&', ('program_id.trigger', '=', 'auto'), ('program_id.applies_on', '=', 'future'),
-        ])
-        total_is_zero = self.currency_id.is_zero(self.amount_total)
-        global_discount_reward = self._get_applied_global_discount()
-        for coupon in loyality_cards:
-            points = self._get_real_points_for_coupon(coupon)
-            for reward in coupon.program_id.reward_ids - self.order_line.reward_id:
-                if (
-                    reward.is_global_discount
-                    and global_discount_reward
-                    and self._best_global_discount_already_applied(global_discount_reward, reward)
-                ):
-                    continue
-                if reward.reward_type == 'discount' and total_is_zero:
-                    continue
-                if coupon.expiration_date and coupon.expiration_date < fields.Date.today():
-                    continue
-                if points >= reward.required_points:
-                    if coupon in res:
-                        res[coupon] |= reward
-                    else:
-                        res[coupon] = reward
-        return res
+    def _get_website_sale_extra_values(self):
+        promo_code_success = self.get_promo_code_success_message(delete=False)
+        promo_code_error = self.get_promo_code_error(delete=False)
+
+        return {
+            'promo_code_success': promo_code_success,
+            'promo_code_error': promo_code_error,
+        }
 
     def _cart_find_product_line(self, product_id, line_id=None, **kwargs):
         """ Override to filter out reward lines from the cart lines.

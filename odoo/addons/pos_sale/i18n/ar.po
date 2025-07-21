@@ -3,15 +3,18 @@
 # 	* pos_sale
 # 
 # Translators:
+# Farid Fox, 2022
+# Mustafa Rawi <mustafa@cubexco.com>, 2022
+# Martin Trigaux, 2022
 # Wil Odoo, 2024
 # Malaz Abuidris <msea@odoo.com>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 08:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2022-09-22 05:54+0000\n"
 "Last-Translator: Malaz Abuidris <msea@odoo.com>, 2024\n"
 "Language-Team: Arabic (https://app.transifex.com/odoo/teams/41243/ar/)\n"
 "MIME-Version: 1.0\n"
@@ -22,9 +25,27 @@ msgstr ""
 
 #. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/components/orderline/orderline.xml:0
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderRow.xml:0
+#, python-format
+msgid "(left:"
+msgstr "(اليسار: "
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/xml/ProductScreen/Orderline.xml:0
+#, python-format
 msgid "(tax incl.)"
 msgstr "(شامل الضريبة) "
+
+#. module: pos_sale
+#: model_terms:ir.ui.view,arch_db:pos_sale.res_config_settings_view_form
+msgid "<span class=\"o_form_label\">Down Payment Product</span>"
+msgstr "<span class=\"o_form_label\">منتج دفع مقدم</span>"
+
+#. module: pos_sale
+#: model_terms:ir.ui.view,arch_db:pos_sale.res_config_settings_view_form
+msgid "<span class=\"o_form_label\">Sales Team</span>"
+msgstr "<span class=\"o_form_label\">فريق المبيعات</span> "
 
 #. module: pos_sale
 #: model_terms:ir.ui.view,arch_db:pos_sale.report_invoice_document
@@ -33,31 +54,45 @@ msgstr "<span style=\"margin: 0px 5px;\">:</span>"
 
 #. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/models/pos_store.js:0
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
 msgid "A new order has been created."
 msgstr "تم إنشاء طلب جديد. "
 
 #. module: pos_sale
-#: model:ir.model.fields,field_description:pos_sale.field_sale_order__amount_unpaid
-msgid "Amount To Pay In POS"
-msgstr "المبلغ لدفعه في نقطة البيع "
-
-#. module: pos_sale
-#: model:ir.model.fields,help:pos_sale.field_sale_order__amount_unpaid
-msgid "Amount left to pay in POS to avoid double payment or double invoicing."
-msgstr "المبلغ لدفعه في نقطة البيع لتجنب تكرار الدفع أو الفوترة. "
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
+msgid "Apply a down payment"
+msgstr "تطبيق دفعة مقدمة "
 
 #. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/models/pos_store.js:0
-msgid "Apply a down payment (fixed amount)"
-msgstr "تطبيق دفعة مقدّمة (مبلغ ثابت) "
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderManagementControlPanel.xml:0
+#, python-format
+msgid "Back"
+msgstr "العودة"
 
 #. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/models/pos_store.js:0
-msgid "Apply a down payment (percentage)"
-msgstr "تطبيق دفعة مقدّمة (نسبة) "
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/MobileSaleOrderManagementScreen.xml:0
+#, python-format
+msgid "Back to list"
+msgstr "العودة إلى القائمة "
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderRow.js:0
+#, python-format
+msgid "Cancelled"
+msgstr "تم الإلغاء "
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/SetSaleOrderButton.js:0
+#, python-format
+msgid "Cannot access order management screen if offline."
+msgstr "لا يمكنك الوصول إلى شاشة إدارة الطلبات إذا لم تكن متصلاً بالإنترنت. "
 
 #. module: pos_sale
 #: model:ir.model,name:pos_sale.model_res_config_settings
@@ -70,27 +105,40 @@ msgid "Currency Rate"
 msgstr "سعر صرف العملة"
 
 #. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderList.xml:0
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderRow.xml:0
+#, python-format
+msgid "Customer"
+msgstr "العميل"
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
+msgid "Customer loading error"
+msgstr "خطأ عند تحميل العميل "
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderList.xml:0
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderRow.xml:0
+#, python-format
+msgid "Date"
+msgstr "التاريخ"
+
+#. module: pos_sale
 #: model_terms:ir.ui.view,arch_db:pos_sale.message_body
 msgid "Delivered from"
 msgstr "تم التوصيل من "
 
 #. module: pos_sale
-#: model:ir.model.fields,field_description:pos_sale.field_pos_order_line__qty_delivered
-msgid "Delivery Quantity"
-msgstr "كمية التوصيل "
-
-#. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/models/pos_store.js:0
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
 msgid "Do you want to load the SN/Lots linked to the Sales Order?"
 msgstr ""
 "هل ترغب في تحميل الأرقام التسلسلية/أرقام الدفعات المرتبطة بأمر البيع؟ "
-
-#. module: pos_sale
-#. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/models/pos_store.js:0
-msgid "Down Payment"
-msgstr "الدفعة المقدّمة"
 
 #. module: pos_sale
 #: model:product.template,name:pos_sale.default_downpayment_product_product_template
@@ -105,34 +153,28 @@ msgstr "تفاصيل الدفعة المقدمة "
 #. module: pos_sale
 #: model:ir.model.fields,field_description:pos_sale.field_pos_config__down_payment_product_id
 #: model:ir.model.fields,field_description:pos_sale.field_res_config_settings__pos_down_payment_product_id
-#: model_terms:ir.ui.view,arch_db:pos_sale.res_config_settings_view_form
 msgid "Down Payment Product"
 msgstr "منتج الدفعة المقدّمة"
 
 #. module: pos_sale
-#. odoo-python
-#: code:addons/pos_sale/models/pos_order.py:0
-msgid ""
-"Down payment (ref: %(order_reference)s on \n"
-" %(date)s)"
-msgstr ""
-"دفعة مقدمة (المرجع: %(order_reference)s في \n"
-" %(date)s) "
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderManagementControlPanel.xml:0
+#, python-format
+msgid "E.g. customer: Steward, date: 2020-05-09"
+msgstr "على سبيل المثال، العميل: Steward، التاريخ: 2020-05-09 "
 
 #. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/models/pos_store.js:0
-msgid "Due balance: %s"
-msgstr "الرصيد المستحق: %s "
-
-#. module: pos_sale
-#. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/models/pos_store.js:0
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
 msgid "Error amount too high"
 msgstr "خطأ، المبلغ أكبر من المفترض "
 
 #. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/xml/ReceiptScreen/OrderReceipt.xml:0
 #: model_terms:ir.ui.view,arch_db:pos_sale.report_invoice_document
+#, python-format
 msgid "From"
 msgstr "من"
 
@@ -143,17 +185,19 @@ msgstr "مفوتر"
 
 #. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/models/pos_store.js:0
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
 msgid ""
-"It seems that you didn't configure a down payment product in your point of "
-"sale. You can go to your point of sale configuration to choose one."
+"It seems that you didn't configure a down payment product in your point of sale.\n"
+"                        You can go to your point of sale configuration to choose one."
 msgstr ""
-"يبدو أنك لم تقم بتهيئة منتج دفعة مقدمة في نقطة البيع الخاصة بك. يمكنك الذهاب"
-" إلى تهيئة نقطة البيع لاختيار واحد. "
+"يبدو أنك لم تقم بتهيئة منتج دفعة مقدمة في نقطة البيع الخاصة بك.\n"
+"                        يمكنك الذهاب إلى تهيئة نقطة البيع لاختيار واحد. "
 
 #. module: pos_sale
 #. odoo-python
 #: code:addons/pos_sale/models/sale_order.py:0
+#, python-format
 msgid "Linked POS Orders"
 msgstr "طلبات نقطة البيع المرتبطة "
 
@@ -165,12 +209,50 @@ msgstr "أوامر البيع المرتبطة "
 #. module: pos_sale
 #. odoo-python
 #: code:addons/pos_sale/models/pos_order.py:0
+#, python-format
 msgid "Linked Sale Orders"
 msgstr "أوامر البيع المرتبطة "
 
 #. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/models/pos_store.js:0
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderRow.js:0
+#, python-format
+msgid "Locked"
+msgstr "مقفل"
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderFetcher.js:0
+#: code:addons/pos_sale/static/src/js/SetSaleOrderButton.js:0
+#, python-format
+msgid "Network Error"
+msgstr "خطأ في الشبكة"
+
+#. module: pos_sale
+#: model:ir.model.fields.selection,name:pos_sale.selection__sale_report__state__pos_draft
+msgid "New"
+msgstr "جديد"
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderManagementControlPanel.xml:0
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderManagementControlPanel.xml:0
+#, python-format
+msgid "Next Order List"
+msgstr "قائمة الطلبات التالية "
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
+msgid "No"
+msgstr "لا"
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
 msgid "No down payment product"
 msgstr "لا يوجد منتج دفعة مقدمة "
 
@@ -186,12 +268,9 @@ msgstr "الجلسات المفتوحة"
 
 #. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/components/product_info_popup/product_info_popup.xml:0
-msgid "Optional Products:"
-msgstr "المنتجات الاختيارية: "
-
-#. module: pos_sale
-#: model:ir.model.fields,field_description:pos_sale.field_sale_report__order_reference
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderList.xml:0
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderRow.xml:0
+#, python-format
 msgid "Order"
 msgstr "الطلب"
 
@@ -202,14 +281,16 @@ msgid "Order lines Transfered to Point of Sale"
 msgstr "تم تحويل بنود الطلب إلى نقطة البيع "
 
 #. module: pos_sale
-#: model:ir.model.fields.selection,name:pos_sale.selection__sale_report__order_reference__pos_order
-msgid "POS Order"
-msgstr "طلب نقطة البيع"
-
-#. module: pos_sale
 #: model:ir.model.fields.selection,name:pos_sale.selection__sale_report__state__paid
 msgid "Paid"
 msgstr "مدفوع"
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
+msgid "Percentage of %s"
+msgstr "نسبة %s "
 
 #. module: pos_sale
 #: model:ir.model,name:pos_sale.model_pos_config
@@ -242,30 +323,58 @@ msgid "Pos Order Count"
 msgstr "عدد طلبات نقطة البيع "
 
 #. module: pos_sale
-#: model:ir.model.fields.selection,name:pos_sale.selection__sale_report__state__done
+#: model:ir.model.fields.selection,name:pos_sale.selection__sale_report__state__pos_done
 msgid "Posted"
 msgstr "مُرحّل "
 
 #. module: pos_sale
-#: model:ir.model,name:pos_sale.model_product_product
-msgid "Product Variant"
-msgstr "متغير المنتج "
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderManagementControlPanel.xml:0
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderManagementControlPanel.xml:0
+#, python-format
+msgid "Previous Order List"
+msgstr "قائمة الطلبات السابقة "
 
 #. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/components/control_buttons/control_buttons.xml:0
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
+msgid "Products not available in POS"
+msgstr "المنتجات غير متوفرة في نقطة البيع "
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderRow.js:0
+#, python-format
+msgid "Quotation"
+msgstr "عرض سعر"
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderRow.js:0
+#, python-format
+msgid "Quotation Sent"
+msgstr "تم إرسال عرض السعر"
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/xml/SetSaleOrderButton.xml:0
+#, python-format
 msgid "Quotation/Order"
 msgstr "عرض السعر/الطلب "
 
 #. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/models/pos_store.js:0
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
 msgid "SN/Lots Loading"
 msgstr "تحميل الرقم التسلسلي/أرقام الدفعات "
 
 #. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/components/orderline/orderline.xml:0
+#: code:addons/pos_sale/static/src/xml/ProductScreen/Orderline.xml:0
+#: code:addons/pos_sale/static/src/xml/ProductScreen/Orderline.xml:0
+#, python-format
 msgid "SO"
 msgstr "أمر البيع "
 
@@ -285,7 +394,10 @@ msgid "Sales Analysis Report"
 msgstr "تقرير المبيعات التحليلي"
 
 #. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderRow.js:0
 #: model:ir.model,name:pos_sale.model_sale_order
+#, python-format
 msgid "Sales Order"
 msgstr "أمر البيع"
 
@@ -299,7 +411,6 @@ msgstr "بند أمر المبيعات"
 #: model:ir.model.fields,field_description:pos_sale.field_pos_config__crm_team_id
 #: model:ir.model.fields,field_description:pos_sale.field_pos_order__crm_team_id
 #: model:ir.model.fields,field_description:pos_sale.field_pos_session__crm_team_id
-#: model_terms:ir.ui.view,arch_db:pos_sale.res_config_settings_view_form
 msgid "Sales Team"
 msgstr "فريق المبيعات"
 
@@ -312,6 +423,20 @@ msgstr "فريق المبيعات (نقطة البيع) "
 #: model_terms:ir.ui.view,arch_db:pos_sale.res_config_settings_view_form
 msgid "Sales are reported to the following sales team"
 msgstr "لم يتم إعداد تقارير بشأن المبيعات إلى فريق المبيعات التالي "
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderRow.xml:0
+#, python-format
+msgid "Salesman"
+msgstr "مندوب المبيعات"
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderList.xml:0
+#, python-format
+msgid "Salesperson"
+msgstr "مندوب المبيعات "
 
 #. module: pos_sale
 #: model_terms:ir.ui.view,arch_db:pos_sale.crm_team_view_kanban_dashboard
@@ -330,15 +455,29 @@ msgstr "الجلسات الجارية"
 
 #. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/components/control_buttons/control_buttons.xml:0
+#: code:addons/pos_sale/static/src/xml/SetSaleOrderButton.xml:0
+#: code:addons/pos_sale/static/src/xml/SetSaleOrderButton.xml:0
+#, python-format
 msgid "Set Sale Order"
 msgstr "تعيين أمر بيع "
 
 #. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/models/pos_store.js:0
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
 msgid "Settle the order"
 msgstr "تسوية الطلب "
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
+msgid ""
+"Some of the products in your Sale Order are not available in POS, do you "
+"want to import them?"
+msgstr ""
+"بعض المنتجات المدرجة في أمر مبيعاتك غير متوفرة في نقطة البيع. هل ترغب في "
+"استيرادها؟ "
 
 #. module: pos_sale
 #: model:ir.model.fields,field_description:pos_sale.field_pos_order_line__sale_order_line_id
@@ -346,9 +485,22 @@ msgid "Source Sale Order Line"
 msgstr "بند أمر البيع المصدري "
 
 #. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderList.xml:0
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderRow.xml:0
+#, python-format
+msgid "State"
+msgstr "الحالة "
+
+#. module: pos_sale
 #: model:ir.model.fields,field_description:pos_sale.field_sale_report__state
 msgid "Status"
 msgstr "الحالة"
+
+#. module: pos_sale
+#: model:ir.model.fields,help:pos_sale.field_sale_order__amount_unpaid
+msgid "The amount due from the sale order."
+msgstr "المبلغ المستحق من أمر البيع. "
 
 #. module: pos_sale
 #: model:ir.model.fields,help:pos_sale.field_pos_order__currency_rate
@@ -356,6 +508,13 @@ msgid ""
 "The rate of the currency to the currency of rate applicable at the date of "
 "the order"
 msgstr "نسبة العملة مقابل العملة ذات النسبة الممكن تطبيقها في تاريخ الطلب "
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
+msgid "There was a problem in loading the %s customer."
+msgstr "حدث خطأ أثناء تحميل العميل %s. "
 
 #. module: pos_sale
 #: model:ir.model.fields,help:pos_sale.field_pos_config__crm_team_id
@@ -376,6 +535,14 @@ msgid "This product will be used as down payment on a sale order."
 msgstr "سوف يُستخدم هذا المنتج كدفعة مقدمة في أمر البيع. "
 
 #. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderList.xml:0
+#: code:addons/pos_sale/static/src/xml/OrderManagementScreen/SaleOrderRow.xml:0
+#, python-format
+msgid "Total"
+msgstr "الإجمالي"
+
+#. module: pos_sale
 #: model:ir.model,name:pos_sale.model_stock_picking
 msgid "Transfer"
 msgstr "تحويل "
@@ -383,39 +550,55 @@ msgstr "تحويل "
 #. module: pos_sale
 #: model_terms:ir.ui.view,arch_db:pos_sale.view_pos_order_form_inherit_pos_sale
 msgid ""
-"Transferred<br/>\n"
+"Transfered<br/>\n"
 "                                from Sale"
 msgstr ""
-"تم نقلها <br/>\n"
-"                                من المبيعات "
+"تم التحويل<br/>\n"
+"                                من البيع "
 
 #. module: pos_sale
 #: model_terms:ir.ui.view,arch_db:pos_sale.view_order_form_inherit_pos_sale
 msgid ""
-"Transferred<br/>\n"
+"Transfered<br/>\n"
 "                                to POS"
 msgstr ""
-"تم نقلها <br/>\n"
+"تم التحويل<br/>\n"
 "                                إلى نقطة البيع "
 
 #. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/models/pos_store.js:0
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderFetcher.js:0
+#, python-format
+msgid "Unable to fetch orders if offline."
+msgstr "لا يمكن جلب الطلبات إذا لم تكن متصلاً بالإنترنت. "
+
+#. module: pos_sale
+#: model:ir.model.fields,field_description:pos_sale.field_sale_order__amount_unpaid
+msgid "Unpaid Amount"
+msgstr "المبلغ غير المدفوع "
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
 msgid "What do you want to do?"
 msgstr "ما الذي تريد فعله؟"
 
 #. module: pos_sale
 #. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/models/pos_store.js:0
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
+msgid "Yes"
+msgstr "نعم"
+
+#. module: pos_sale
+#. odoo-javascript
+#: code:addons/pos_sale/static/src/js/OrderManagementScreen/SaleOrderManagementScreen.js:0
+#, python-format
 msgid ""
 "You have tried to charge a down payment of %s but only %s remains to be "
 "paid, %s will be applied to the purchase order line."
 msgstr ""
 "لقد حاولت فرض دفعة أولى لـ %s ولكن المبلغ المتبقي هو %s فقط، سيتم تطبيق %s "
 "لبند أمر الشراء. "
-
-#. module: pos_sale
-#. odoo-javascript
-#: code:addons/pos_sale/static/src/overrides/components/product_info_popup/product_info_popup.xml:0
-msgid "from"
-msgstr "من "

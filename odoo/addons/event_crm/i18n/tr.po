@@ -3,25 +3,24 @@
 # 	* event_crm
 # 
 # Translators:
-# emre oktem, 2024
-# Murat Durmuş <muratd@projetgrup.com>, 2024
-# Ediz Duman <neps1192@gmail.com>, 2024
-# Levent Karakaş <levent@mektup.at>, 2024
-# Nadir Gazioglu <nadirgazioglu@gmail.com>, 2024
-# Metin Akın <aknmetin@gmail.com>, 2024
-# Umur Akın <umura@projetgrup.com>, 2024
-# Martin Trigaux, 2024
-# Murat Kaplan <muratk@projetgrup.com>, 2024
-# Halil, 2024
-# Deniz Guvener_Odoo <degu@odoo.com>, 2025
+# Murat Durmuş <muratd@projetgrup.com>, 2022
+# Metin Akın <aknmetin@gmail.com>, 2022
+# Levent Karakaş <levent@mektup.at>, 2022
+# Nadir Gazioglu <nadirgazioglu@gmail.com>, 2022
+# Ertuğrul Güreş <ertugrulg@projetgrup.com>, 2022
+# Umur Akın <umura@projetgrup.com>, 2022
+# Ediz Duman <neps1192@gmail.com>, 2022
+# Murat Kaplan <muratk@projetgrup.com>, 2022
+# Martin Trigaux, 2022
+# Halil, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:55+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Deniz Guvener_Odoo <degu@odoo.com>, 2025\n"
+"POT-Creation-Date: 2022-10-04 09:24+0000\n"
+"PO-Revision-Date: 2022-09-22 05:45+0000\n"
+"Last-Translator: Halil, 2023\n"
 "Language-Team: Turkish (https://app.transifex.com/odoo/teams/41243/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -41,8 +40,8 @@ msgid "# Registrations"
 msgstr "# Kayıtlar"
 
 #. module: event_crm
-#. odoo-python
 #: code:addons/event_crm/models/event_registration.py:0
+#, python-format
 msgid "(updated)"
 msgstr "(güncellendi)"
 
@@ -53,6 +52,7 @@ msgstr "<span class=\"o_stat_text\"> Katılımcılar</span>"
 
 #. module: event_crm
 #: model_terms:ir.ui.view,arch_db:event_crm.event_registration_view_form
+#: model_terms:ir.ui.view,arch_db:event_crm.event_view_form
 msgid "<span class=\"o_stat_text\"> Leads</span>"
 msgstr "<span class=\"o_stat_text\"> Adaylar</span>"
 
@@ -68,14 +68,14 @@ msgid "Archived"
 msgstr "Arşivlendi"
 
 #. module: event_crm
+#: model:ir.model.fields.selection,name:event_crm.selection__event_lead_rule__lead_creation_trigger__confirm
+msgid "Attendees are confirmed"
+msgstr "Katılımcılar onaylandı"
+
+#. module: event_crm
 #: model:ir.model.fields.selection,name:event_crm.selection__event_lead_rule__lead_creation_trigger__create
 msgid "Attendees are created"
 msgstr "Katılımcılar oluşturuldu"
-
-#. module: event_crm
-#: model:ir.model.fields.selection,name:event_crm.selection__event_lead_rule__lead_creation_trigger__confirm
-msgid "Attendees are registered"
-msgstr "Katılımcılar kaydedildi"
 
 #. module: event_crm
 #: model:ir.model.fields.selection,name:event_crm.selection__event_lead_rule__lead_creation_trigger__done
@@ -98,17 +98,9 @@ msgid "Automatically assign the created leads to this Salesperson."
 msgstr "Oluşturulan adayları bu Satış Görevlisine otomatik olarak atayın."
 
 #. module: event_crm
-#. odoo-python
-#: code:addons/event_crm/models/event_event.py:0
-msgid "Aww! No Leads created, check your Lead Generation Rules and try again."
-msgstr ""
-"Üzgünüz! Hiç Müşteri Adayı oluşturulmadı, Aday Oluşturma Kurallarınızı "
-"kontrol edin ve tekrar deneyin."
-
-#. module: event_crm
 #: model:ir.model.fields,field_description:event_crm.field_event_lead_rule__company_id
 msgid "Company"
-msgstr "Firma"
+msgstr "Şirket"
 
 #. module: event_crm
 #: model:ir.model.fields,help:event_crm.field_crm_lead__registration_count
@@ -133,12 +125,12 @@ msgstr "Oluşturulmuş Adaylar"
 #. module: event_crm
 #: model:ir.model.fields,field_description:event_crm.field_event_lead_rule__create_uid
 msgid "Created by"
-msgstr "Tarafından oluşturuldu"
+msgstr "Oluşturan"
 
 #. module: event_crm
 #: model:ir.model.fields,field_description:event_crm.field_event_lead_rule__create_date
 msgid "Created on"
-msgstr "Oluşturuldu"
+msgstr "Oluşturulma"
 
 #. module: event_crm
 #: model_terms:ir.ui.view,arch_db:event_crm.event_lead_rule_view_search
@@ -149,12 +141,12 @@ msgstr "Oluşturma Türü"
 #: model:ir.model.fields,help:event_crm.field_event_lead_rule__lead_creation_trigger
 msgid ""
 "Creation: at attendee creation;\n"
-"Registered: at attendee registration, manually or automatically;\n"
+"Confirmation: when attendee is confirmed, manually or automatically;\n"
 "Attended: when attendance is confirmed and registration set to done;"
 msgstr ""
-"Oluşturulma: katılımcı oluşturulurken;\n"
-"Kayıtlı: katılımcı kaydedildiğinde (manuel veya otomatik);\n"
-"Katıldı: katılım onaylandığında ve kayıt tamamlandığında;"
+"Oluşturma: katılımcı oluşturma sırasında;\n"
+"Onay: Katılımcı onaylandığında, manuel veya otomatik olarak;\n"
+"Katıldı: katılım onaylandığında ve kayıt yapıldıktan sonra;"
 
 #. module: event_crm
 #: model:ir.model.fields,help:event_crm.field_event_lead_rule__lead_type
@@ -162,27 +154,20 @@ msgid "Default lead type when this rule is applied."
 msgstr "Bu kural uygulandığında varsayılan aday türü."
 
 #. module: event_crm
-#: model:ir.model.fields,field_description:event_crm.field_event_lead_request__display_name
 #: model:ir.model.fields,field_description:event_crm.field_event_lead_rule__display_name
 msgid "Display Name"
-msgstr "İsim Göster"
+msgstr "Görünüm Adı"
 
 #. module: event_crm
 #: model:ir.model,name:event_crm.model_event_event
-#: model:ir.model.fields,field_description:event_crm.field_event_lead_request__event_id
 #: model:ir.model.fields,field_description:event_crm.field_event_lead_rule__event_id
 msgid "Event"
 msgstr "Etkinlik"
 
 #. module: event_crm
-#: model:ir.actions.server,name:event_crm.ir_cron_generate_leads_ir_actions_server
-msgid "Event CRM: Generate Leads based on Rules"
-msgstr "Etkinlik CRM: Kurallara göre aday oluşturun"
-
-#. module: event_crm
-#: model:ir.model,name:event_crm.model_event_lead_request
-msgid "Event Lead Request"
-msgstr "Etkinlik Aday Talebi"
+#: model:ir.model.fields,field_description:event_crm.field_event_lead_rule__event_type_ids
+msgid "Event Categories"
+msgstr "Etkinlik Kategorileri"
 
 #. module: event_crm
 #: model:ir.model,name:event_crm.model_event_lead_rule
@@ -193,11 +178,6 @@ msgstr "Etkinlik Aday Kuralları"
 #: model:ir.model,name:event_crm.model_event_registration
 msgid "Event Registration"
 msgstr "Etkinlik Kaydı"
-
-#. module: event_crm
-#: model:ir.model.fields,field_description:event_crm.field_event_lead_rule__event_type_ids
-msgid "Event Templates"
-msgstr "Etkinlik Şablonları"
 
 #. module: event_crm
 #: model:ir.actions.act_window,name:event_crm.event_registration_action_from_lead
@@ -225,9 +205,8 @@ msgid ""
 "Filter the attendees to include those of this specific event category. If "
 "not set, no event category restriction will be applied."
 msgstr ""
-"Katılımcıları bu belirli etkinlik kategorisindekileri içerecek şekilde "
-"filtreleyin. Ayarlanmaması durumunda hiçbir etkinlik kategorisi sınırlaması "
-"uygulanmayacaktır."
+"Bu belirli etkinlik kategorisindekileri dahil etmek için katılımcıları "
+"filtreleyin. Ayarlanmazsa, etkinlik kategorisi kısıtlaması uygulanmaz."
 
 #. module: event_crm
 #: model:ir.model.fields,help:event_crm.field_event_lead_rule__event_id
@@ -235,7 +214,7 @@ msgid ""
 "Filter the attendees to include those of this specific event. If not set, no"
 " event restriction will be applied."
 msgstr ""
-"Katılımcıları yalnızca bu belirli etkinliğe ait olanlarla sınırlamak için "
+"Bu özel etkinliğin katılımcılarını dahil etmek için katılımcıları "
 "filtreleyin. Ayarlanmazsa, herhangi bir etkinlik kısıtlaması uygulanmaz."
 
 #. module: event_crm
@@ -244,19 +223,6 @@ msgid "For any of these Events"
 msgstr "Bu Etkinliklerden herhangi biri için"
 
 #. module: event_crm
-#: model_terms:ir.ui.view,arch_db:event_crm.event_view_form
-msgid "Generate Leads"
-msgstr "Generate Leads"
-
-#. module: event_crm
-#. odoo-python
-#: code:addons/event_crm/models/event_event.py:0
-msgid "Got it! We've noted your request. Your leads will be created soon!"
-msgstr ""
-"Anlaşıldı! Talebinizi not ettik. Müşteri adaylarınız yakında oluşturulacak! "
-
-#. module: event_crm
-#: model:ir.model.fields,field_description:event_crm.field_event_lead_request__id
 #: model:ir.model.fields,field_description:event_crm.field_event_lead_rule__id
 msgid "ID"
 msgstr "ID"
@@ -265,6 +231,11 @@ msgstr "ID"
 #: model_terms:ir.ui.view,arch_db:event_crm.event_lead_rule_view_form
 msgid "If the Attendees meet these Conditions"
 msgstr "Katılımcıların bu Koşulları karşılaması halinde"
+
+#. module: event_crm
+#: model:ir.model.fields,field_description:event_crm.field_event_lead_rule____last_update
+msgid "Last Modified on"
+msgstr "Son Düzenleme"
 
 #. module: event_crm
 #: model:ir.model.fields,field_description:event_crm.field_event_lead_rule__write_uid
@@ -322,7 +293,6 @@ msgstr "Aday/Fırsat"
 #: model:ir.actions.act_window,name:event_crm.crm_lead_action_from_registration
 #: model:ir.model.fields,field_description:event_crm.field_event_event__lead_ids
 #: model:ir.model.fields,field_description:event_crm.field_event_registration__lead_ids
-#: model_terms:ir.ui.view,arch_db:event_crm.event_view_form
 msgid "Leads"
 msgstr "Adaylar"
 
@@ -337,8 +307,8 @@ msgid "Name"
 msgstr "Adı"
 
 #. module: event_crm
-#. odoo-python
 #: code:addons/event_crm/models/event_lead_rule.py:0
+#, python-format
 msgid "New registrations"
 msgstr "Yeni kayıtlar"
 
@@ -354,25 +324,14 @@ msgid "No registration found"
 msgstr "Kayıt bulunamadı"
 
 #. module: event_crm
-#: model:ir.model.fields,field_description:event_crm.field_event_event__has_lead_request
-msgid "Ongoing Generation Request"
-msgstr "Devam Eden Oluşturma Talebi"
-
-#. module: event_crm
-#. odoo-python
-#: code:addons/event_crm/models/event_event.py:0
-msgid "Only Event Managers are allowed to re-generate all leads."
-msgstr ""
-"Tüm adayları yeniden oluşturma yetkisi yalnızca Etkinlik Yöneticilerindedir."
-
-#. module: event_crm
 #: model:ir.model.fields.selection,name:event_crm.selection__event_lead_rule__lead_type__opportunity
 msgid "Opportunity"
 msgstr "Fırsat"
 
 #. module: event_crm
-#. odoo-python
 #: code:addons/event_crm/models/event_registration.py:0
+#: code:addons/event_crm/models/event_registration.py:0
+#, python-format
 msgid "Participants"
 msgstr "Katılımcılar"
 
@@ -384,21 +343,16 @@ msgstr "Katılımcı Başına"
 #. module: event_crm
 #: model:ir.model.fields,help:event_crm.field_event_lead_rule__lead_creation_basis
 msgid ""
-"Per Attendee: A Lead is created for each Attendee (B2C).\n"
-"Per Order: A single Lead is created per Ticket Batch/Sale Order (B2B)"
+"Per Attendee : A Lead is created for each Attendee (B2C).\n"
+"Per Order : A single Lead is created per Ticket Batch/Sale Order (B2B)"
 msgstr ""
-"Katılımcı Başına: Her Katılımcı için bir Müşteri Adayı oluşturulur (B2C).\n"
-"Sipariş Başına: Bilet Grubu/Satış Siparişi başına tek bir Müşteri Adayı oluşturulur (B2B)"
+"Katılımcı Başına : Her Katılımcı (B2C) için bir Aday oluşturulur.\n"
+"Sipariş Başına : Bilet Grubu/Satış Siparişi (B2B) başına tek bir Aday oluşturulur"
 
 #. module: event_crm
 #: model:ir.model.fields.selection,name:event_crm.selection__event_lead_rule__lead_creation_basis__order
 msgid "Per Order"
 msgstr "Sipariş Başına"
-
-#. module: event_crm
-#: model:ir.model.fields,field_description:event_crm.field_event_lead_request__processed_registration_id
-msgid "Processed Registration"
-msgstr "İşlenmiş Kayıt"
 
 #. module: event_crm
 #: model:ir.model.fields,field_description:event_crm.field_crm_lead__event_lead_rule_id
@@ -427,7 +381,7 @@ msgid ""
 "If not set, no company restriction will be applied."
 msgstr ""
 "Bu kuralın tetikleyicisini belirli bir şirkete ait etkinliklerle sınırlayın.\n"
-"Ayarlanmaması durumunda hiçbir şirket sınırlaması uygulanmayacaktır."
+"Ayarlanmazsa, herhangi bir şirket kısıtlaması uygulanmayacaktır."
 
 #. module: event_crm
 #: model:ir.model.fields,field_description:event_crm.field_event_lead_rule__name
@@ -460,11 +414,6 @@ msgid "Search Lead Generation Rules"
 msgstr "Adayları Oluşturma Kurallarını Arayın"
 
 #. module: event_crm
-#: model:ir.model.fields,help:event_crm.field_event_event__has_lead_request
-msgid "Set to True when a Lead Generation Request is currently running."
-msgstr "Bir Aday Oluşturma Talebi çalışırken Doğru olarak ayarlanır."
-
-#. module: event_crm
 #: model:ir.model.fields,field_description:event_crm.field_crm_lead__event_id
 msgid "Source Event"
 msgstr "Etkinlik Kaynağı"
@@ -480,15 +429,6 @@ msgid "Tags"
 msgstr "Etiketler"
 
 #. module: event_crm
-#: model:ir.model.fields,help:event_crm.field_event_lead_request__processed_registration_id
-msgid ""
-"The ID of the last processed event.registration, used to know where to "
-"resume."
-msgstr ""
-"Nereden devam edileceğini belirlemek için kullanılan, en son işlenen "
-"event.registration kimliği. "
-
-#. module: event_crm
 #: model_terms:ir.actions.act_window,help:event_crm.event_lead_rule_action
 msgid "Those automatically create leads when attendees register."
 msgstr ""
@@ -500,8 +440,9 @@ msgid "Trigger Type"
 msgstr "Tetikleyici Türü"
 
 #. module: event_crm
-#. odoo-python
 #: code:addons/event_crm/models/event_registration.py:0
+#: code:addons/event_crm/models/event_registration.py:0
+#, python-format
 msgid "Updated registrations"
 msgstr "Güncellenen kayıtlar"
 
@@ -509,18 +450,6 @@ msgstr "Güncellenen kayıtlar"
 #: model:ir.model.fields,field_description:event_crm.field_event_lead_rule__lead_creation_trigger
 msgid "When"
 msgstr "Ne zaman"
-
-#. module: event_crm
-#. odoo-python
-#: code:addons/event_crm/models/event_event.py:0
-msgid "Yee-ha, %(leads_count)s Leads have been created!"
-msgstr "Yaşasın, %(leads_count)s Müşteri Adayı oluşturuldu!"
-
-#. module: event_crm
-#: model:ir.model.constraint,message:event_crm.constraint_event_lead_request_uniq_event
-msgid "You can only have one generation request per event at a time."
-msgstr ""
-"Her etkinlik için aynı anda yalnızca bir oluşturma talebiniz olabilir. "
 
 #. module: event_crm
 #: model_terms:ir.ui.view,arch_db:event_crm.event_lead_rule_view_form

@@ -4,12 +4,12 @@
         <field name="name">Challenges List</field>
         <field name="model">gamification.challenge</field>
         <field name="arch" type="xml">
-            <list string="Challenges" decoration-info="state == 'draft'" decoration-muted="state == 'done'">
+            <tree string="Challenges" decoration-info="state == 'draft'" decoration-muted="state == 'done'">
                 <field name="name"/>
                 <field name="period"/>
                 <field name="manager_id"/>
                 <field name="state"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -19,9 +19,9 @@
         <field name="arch" type="xml">
             <form string="Challenge">
                 <header>
-                    <button string="Start Challenge" type="object" name="action_start" invisible="state != 'draft'" class="oe_highlight"/>
-                    <button string="Refresh Challenge" type="object" name="action_check" invisible="state != 'inprogress'"/>
-                    <button string="Send Report" type="object" name="action_report_progress" invisible="state not in ('inprogress', 'done')" groups="base.group_no_one"/>
+                    <button string="Start Challenge" type="object" name="action_start" states="draft" class="oe_highlight"/>
+                    <button string="Refresh Challenge" type="object" name="action_check" states="inprogress"/>
+                    <button string="Send Report" type="object" name="action_report_progress" states="inprogress,done" groups="base.group_no_one"/>
                     <field name="state" widget="statusbar" options="{'clickable': '1'}"/>
                 </header>
                 <sheet>
@@ -37,9 +37,10 @@
                                 name="%(goals_from_challenge_act)d"
                                 class="oe_stat_button"
                                 icon="fa-gift"
-                                invisible="state == 'draft'">
+                                attrs="{'invisible': [('state','=','draft')]}">
                             <div class="o_field_widget o_stat_info">
-                                <span class="o_stat_text">Related Goals</span>
+                                <span class="o_stat_text">Related</span>
+                                <span class="o_stat_text">Goals</span>
                             </div>
                         </button>
                     </div>
@@ -55,35 +56,35 @@
                     </div>
                     <group>
                         <group>
-                            <field name="period" readonly="state != 'draft'"/>
+                            <field name="period" attrs="{'readonly':[('state','!=','draft')]}"/>
                             <field name="visibility_mode" widget="radio" colspan="1" />
                         </group>
                         <group>
                             <field name="manager_id"/>
-                            <field name="start_date" readonly="state != 'draft'"/>
-                            <field name="end_date" readonly="state != 'draft'"/>
+                            <field name="start_date" attrs="{'readonly':[('state','!=','draft')]}"/>
+                            <field name="end_date" attrs="{'readonly':[('state','!=','draft')]}"/>
                         </group>
                     </group>
                     <notebook>
                         <page string="Goals" name="goals">
                             <field name="line_ids" nolabel="1" colspan="4">
-                                <list string="Line List" editable="bottom" >
+                                <tree string="Line List" editable="bottom" >
                                     <field name="sequence" widget="handle"/>
                                     <field name="definition_id" />
                                     <field name="condition"/>
                                     <field name="target_goal" string="Target"/>
                                     <field name="definition_full_suffix"/>
-                                </list>
+                                </tree>
                             </field>
                             <field name="description" placeholder="Describe the challenge: what is does, who it targets, why it matters..."/>
                         </page>
                         <page string="Reward" name="reward">
                             <group>
-                                <field name="reward_id" required="reward_realtime" />
+                                <field name="reward_id" attrs="{'required': [('reward_realtime','=', True)]}" />
                                 <field name="reward_first_id" />
-                                <field name="reward_second_id" invisible="not reward_first_id" />
-                                <field name="reward_third_id" invisible="not reward_first_id or not reward_second_id" />
-                                <field name="reward_failure" invisible="not reward_first_id" />
+                                <field name="reward_second_id" attrs="{'invisible': [('reward_first_id','=', False)]}" />
+                                <field name="reward_third_id" attrs="{'invisible': ['|',('reward_first_id','=', False),('reward_second_id','=', False)]}" />
+                                <field name="reward_failure" attrs="{'invisible': [('reward_first_id','=', False)]}" />
                                 <field name="reward_realtime" />
                             </group>
                             <div class="oe_grey">
@@ -100,8 +101,8 @@
                                 </div>
                                 <group colspan="4">
                                     <field name="report_message_frequency"/>
-                                    <field name="report_template_id" invisible="report_message_frequency == 'never'" />
-                                    <field name="report_message_group_id" invisible="report_message_frequency == 'never'" />
+                                    <field name="report_template_id" attrs="{'invisible': [('report_message_frequency','=','never')]}" />
+                                    <field name="report_message_group_id" attrs="{'invisible': [('report_message_frequency','=','never')]}" />
                                 </group>
                             </group>
                             <group string="Reminders for Manual Goals">
@@ -117,7 +118,10 @@
                     </notebook>
 
                 </sheet>
-                <chatter/>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
             </form>
         </field>
     </record>
@@ -126,17 +130,27 @@
         <field name="name">Challenge Kanban</field>
         <field name="model">gamification.challenge</field>
         <field name="arch" type="xml">
-            <kanban string="Challenges">
+            <kanban string="Challenges" class="oe_background_grey">
                 <field name="line_ids"/>
                 <templates>
-                    <t t-name="card" class="fw-bold">
-                        <field class="fs-5" name="name"/>
-                        <a type="action" name="%(goals_from_challenge_act)d" class="me-2" tabindex="-1">
-                            <t t-esc="record.line_ids.raw_value.length"/> Goals
-                        </a>
-                        <a type="object" name="action_view_users" class="me-2" tabindex="-1">
-                            <field name="user_count"/> Participants
-                        </a>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card o_kanban_gamification oe_kanban_global_click">
+                            <div class="o_kanban_content">
+                               <strong>
+                                   <h4 class="o_kanban_record_title"><field name="name"/></h4>
+                                   <div class="o_kanban_record_subtitle">
+                                        <a type="action" name="%(goals_from_challenge_act)d"
+                                           style="margin-right: 10px" tabindex="-1">
+                                            <span><t t-esc="record.line_ids.raw_value.length"/> Goals</span>
+                                        </a><br />
+                                        <a type="object" name="action_view_users"
+                                           style="margin-right: 10px" tabindex="-1">
+                                            <span><field name="user_count"/> Participants</span>
+                                        </a>
+                                   </div>
+                               </strong>
+                            </div>
+                        </div>
                     </t>
                 </templates>
             </kanban>
@@ -146,7 +160,7 @@
     <record id="challenge_list_action" model="ir.actions.act_window">
         <field name="name">Challenges</field>
         <field name="res_model">gamification.challenge</field>
-        <field name="view_mode">kanban,list</field>
+        <field name="view_mode">kanban,tree</field>
         <field name="context">{'search_default_inprogress':True, 'default_inprogress':True}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">

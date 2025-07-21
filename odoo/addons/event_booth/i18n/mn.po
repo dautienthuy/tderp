@@ -3,24 +3,23 @@
 # 	* event_booth
 # 
 # Translators:
-# Bayarkhuu Bataa, 2024
-# Батболд <batbold.ts@gmail.com>, 2024
-# Torbat Jargalsaikhan, 2024
-# Munkhbaatar g <muuguu17@gmail.com>, 2024
-# Гэрэлтцог Цогтбаатар, 2024
-# tserendavaa tsogtoo <tseegii011929@gmail.com>, 2024
-# tumenjargal hadbaatar <tumenjargal7903@gmail.com>, 2024
-# Batmunkh Ganbat <batmunkh2522@gmail.com>, 2024
-# Martin Trigaux, 2024
-# Munkhbilguun Altankhuyag <munkhbilguunaltankhuyag@gmail.com>, 2024
+# Батболд <batbold.ts@gmail.com>, 2022
+# tumenjargal hadbaatar <tumenjargal7903@gmail.com>, 2022
+# Munkhbaatar g <muuguu17@gmail.com>, 2022
+# tserendavaa tsogtoo <tseegii011929@gmail.com>, 2022
+# Munkhbilguun Altankhuyag <munkhbilguunaltankhuyag@gmail.com>, 2022
+# Bayarkhuu Bataa, 2022
+# Batmunkh Ganbat <batmunkh2522@gmail.com>, 2022
+# Martin Trigaux, 2022
+# Torbat Jargalsaikhan, 2023
 # Baskhuu Lodoikhuu <baskhuujacara@gmail.com>, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 17.0\n"
+"Project-Id-Version: Odoo Server 16.0beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-26 21:55+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2022-10-10 10:23+0000\n"
+"PO-Revision-Date: 2022-09-22 05:45+0000\n"
 "Last-Translator: Baskhuu Lodoikhuu <baskhuujacara@gmail.com>, 2025\n"
 "Language-Team: Mongolian (https://app.transifex.com/odoo/teams/41243/mn/)\n"
 "MIME-Version: 1.0\n"
@@ -36,6 +35,11 @@ msgstr ""
 
 #. module: event_booth
 #: model_terms:ir.ui.view,arch_db:event_booth.event_booth_booked_template
+msgid "<b>Renter Mobile</b>:"
+msgstr ""
+
+#. module: event_booth
+#: model_terms:ir.ui.view,arch_db:event_booth.event_booth_booked_template
 msgid "<b>Renter Name</b>:"
 msgstr ""
 
@@ -47,6 +51,17 @@ msgstr ""
 #. module: event_booth
 #: model_terms:ir.ui.view,arch_db:event_booth.event_event_view_form
 msgid "<span class=\"o_stat_text\">Booths</span>"
+msgstr ""
+
+#. module: event_booth
+#: model_terms:event.booth.category,description:event_booth.event_booth_category_premium
+#: model_terms:event.booth.category,description:event_booth.event_booth_category_standard
+msgid "<span class=\"text-white\">4m²</span>"
+msgstr ""
+
+#. module: event_booth
+#: model_terms:event.booth.category,description:event_booth.event_booth_category_vip
+msgid "<span class=\"text-white\">8m²</span>"
 msgstr ""
 
 #. module: event_booth
@@ -95,18 +110,7 @@ msgstr ""
 
 #. module: event_booth
 #: model_terms:event.booth.category,description:event_booth.event_booth_category_premium
-#: model_terms:event.booth.category,description:event_booth.event_booth_category_standard
-msgid "<span>4m²</span>"
-msgstr ""
-
-#. module: event_booth
-#: model_terms:event.booth.category,description:event_booth.event_booth_category_premium
 msgid "<span>50 words description on website</span>"
-msgstr ""
-
-#. module: event_booth
-#: model_terms:event.booth.category,description:event_booth.event_booth_category_vip
-msgid "<span>8m²</span>"
 msgstr ""
 
 #. module: event_booth
@@ -119,7 +123,7 @@ msgstr ""
 #. module: event_booth
 #: model:ir.model.fields,field_description:event_booth.field_event_booth__message_needaction
 msgid "Action Needed"
-msgstr "Үйлдэл шаардлагатай"
+msgstr "Үйлдэл шаардсан"
 
 #. module: event_booth
 #: model:ir.model.fields,field_description:event_booth.field_event_booth_category__active
@@ -453,6 +457,13 @@ msgid "Is Follower"
 msgstr "Дагагч эсэх"
 
 #. module: event_booth
+#: model:ir.model.fields,field_description:event_booth.field_event_booth____last_update
+#: model:ir.model.fields,field_description:event_booth.field_event_booth_category____last_update
+#: model:ir.model.fields,field_description:event_booth.field_event_type_booth____last_update
+msgid "Last Modified on"
+msgstr "Сүүлд зассан огноо"
+
+#. module: event_booth
 #: model:ir.model.fields,field_description:event_booth.field_event_booth__write_uid
 #: model:ir.model.fields,field_description:event_booth.field_event_booth_category__write_uid
 #: model:ir.model.fields,field_description:event_booth.field_event_type_booth__write_uid
@@ -465,6 +476,11 @@ msgstr "Сүүлд зассан этгээд"
 #: model:ir.model.fields,field_description:event_booth.field_event_type_booth__write_date
 msgid "Last Updated on"
 msgstr "Сүүлд зассан огноо"
+
+#. module: event_booth
+#: model:ir.model.fields,field_description:event_booth.field_event_booth__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "Үндсэн хавсралт"
 
 #. module: event_booth
 #: model:ir.model.fields,field_description:event_booth.field_event_booth__message_has_error
@@ -554,8 +570,8 @@ msgid "Pick a Booth Category..."
 msgstr ""
 
 #. module: event_booth
-#: model_terms:ir.ui.view,arch_db:event_booth.event_booth_view_form_from_event
-msgid "Pick a Renter..."
+#: model_terms:event.booth.category,description:event_booth.event_booth_category_premium
+msgid "Premium"
 msgstr ""
 
 #. module: event_booth
@@ -570,22 +586,15 @@ msgstr ""
 
 #. module: event_booth
 #: model:event.booth,name:event_booth.event_booth_2_event_2
-#: model:event.booth,name:event_booth.event_booth_2_event_3
-#: model:event.type.booth,name:event_booth.event_type_booth_demo_exhibition_2
+#: model:event.type.booth,name:event_booth.event_type_booth_demo_conference_2
 msgid "Premium Showbooth 1"
 msgstr ""
 
 #. module: event_booth
 #: model:event.booth,name:event_booth.event_booth_3_event_2
-#: model:event.booth,name:event_booth.event_booth_3_event_3
-#: model:event.type.booth,name:event_booth.event_type_booth_demo_exhibition_3
+#: model:event.type.booth,name:event_booth.event_type_booth_demo_conference_3
 msgid "Premium Showbooth 2"
 msgstr ""
-
-#. module: event_booth
-#: model:ir.model.fields,field_description:event_booth.field_event_booth__rating_ids
-msgid "Ratings"
-msgstr "Үнэлгээнүүд"
 
 #. module: event_booth
 #: model:ir.model.fields,field_description:event_booth.field_event_booth__partner_id
@@ -596,6 +605,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:event_booth.field_event_booth__contact_email
 #: model_terms:ir.ui.view,arch_db:event_booth.event_booth_view_search
 msgid "Renter Email"
+msgstr ""
+
+#. module: event_booth
+#: model:ir.model.fields,field_description:event_booth.field_event_booth__contact_mobile
+msgid "Renter Mobile"
 msgstr ""
 
 #. module: event_booth
@@ -626,17 +640,20 @@ msgstr "Дугаарлалт"
 
 #. module: event_booth
 #: model:event.booth,name:event_booth.event_booth_0_event_2
-#: model:event.booth,name:event_booth.event_booth_0_event_3
-#: model:event.type.booth,name:event_booth.event_type_booth_demo_exhibition_0
+#: model:event.type.booth,name:event_booth.event_type_booth_demo_conference_0
 msgid "Showbooth 1"
 msgstr ""
 
 #. module: event_booth
 #: model:event.booth,name:event_booth.event_booth_1_event_2
-#: model:event.booth,name:event_booth.event_booth_1_event_3
-#: model:event.type.booth,name:event_booth.event_type_booth_demo_exhibition_1
+#: model:event.type.booth,name:event_booth.event_type_booth_demo_conference_1
 msgid "Showbooth 2"
 msgstr ""
+
+#. module: event_booth
+#: model_terms:event.booth.category,description:event_booth.event_booth_category_standard
+msgid "Standard"
+msgstr "Стандарт"
 
 #. module: event_booth
 #: model:event.booth.category,name:event_booth.event_booth_category_standard
@@ -676,6 +693,11 @@ msgstr "Бичлэг дээрх асуудал бүхий ажилбарын т�
 #: model_terms:ir.ui.view,arch_db:event_booth.event_booth_view_search
 msgid "Unavailable"
 msgstr ""
+
+#. module: event_booth
+#: model_terms:event.booth.category,description:event_booth.event_booth_category_vip
+msgid "VIP"
+msgstr "Тусгай үйлчилгээ"
 
 #. module: event_booth
 #: model:event.booth.category,name:event_booth.event_booth_category_vip

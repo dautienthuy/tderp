@@ -1,7 +1,5 @@
-from odoo import api, SUPERUSER_ID
+from odoo.addons.account.models.chart_template import update_taxes_from_templates
 
 
 def migrate(cr, version):
-    env = api.Environment(cr, SUPERUSER_ID, {})
-    for company in env['res.company'].search([('chart_template', '=', 'se')], order="parent_path"):
-        env['account.chart.template'].try_loading('se', company, force_create=False)
+    update_taxes_from_templates(cr, 'l10n_se.l10nse_chart_template')

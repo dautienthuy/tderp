@@ -3,15 +3,17 @@
 # 	* sale_management
 # 
 # Translators:
-# Wil Odoo, 2024
+# Martin Trigaux, 2022
+# 敬雲 林 <chingyun@yuanchih-consult.com>, 2022
+# Benson <Benson.Dr@Gmail.com>, 2023
 # Tony Ng, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 08:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2022-10-04 09:23+0000\n"
+"PO-Revision-Date: 2022-09-22 05:54+0000\n"
 "Last-Translator: Tony Ng, 2024\n"
 "Language-Team: Chinese (Taiwan) (https://app.transifex.com/odoo/teams/41243/zh_TW/)\n"
 "MIME-Version: 1.0\n"
@@ -21,24 +23,24 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: sale_management
-#: model_terms:ir.ui.view,arch_db:sale_management.report_saleorder_document_inherit_sale_management
-msgid "1.5"
-msgstr "1.5"
-
-#. module: sale_management
-#: model_terms:ir.ui.view,arch_db:sale_management.sale_order_portal_content_inherit_sale_management
-msgid "<span class=\"btn btn-secondary\">Add to order</span>"
-msgstr "<span class=\"btn btn-secondary\">加入至訂單</span>"
-
-#. module: sale_management
-#: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
-msgid "<span invisible=\"not require_payment\">of</span>"
-msgstr "<span invisible=\"not require_payment\">之</span>"
+#: model:sale.order.template.line,name:sale_management.sale_order_template_line_1
+msgid "4 Person Desk"
+msgstr "4 人辦公桌"
 
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.report_saleorder_document_inherit_sale_management
 msgid "<span>Options</span>"
 msgstr "<span>選項</span>"
+
+#. module: sale_management
+#: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
+msgid "<span>Payment</span>"
+msgstr "<span>付款</span>"
+
+#. module: sale_management
+#: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
+msgid "<span>Signature</span>"
+msgstr "<span>簽名</span>"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template__active
@@ -54,12 +56,12 @@ msgstr "加入備註"
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_form_quote
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
 msgid "Add a product"
-msgstr "加入產品"
+msgstr "添加產品"
 
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
 msgid "Add a section"
-msgstr "加入分段標題"
+msgstr "添加小節"
 
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_portal_content_inherit_sale_management
@@ -142,7 +144,7 @@ msgstr "建立您的報價單範本"
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_line__create_uid
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_option__create_uid
 msgid "Created by"
-msgstr "建立人員"
+msgstr "創立者"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__create_date
@@ -172,6 +174,15 @@ msgid "Description"
 msgstr "說明"
 
 #. module: sale_management
+#: model_terms:ir.ui.view,arch_db:sale_management.res_config_settings_view_form
+msgid ""
+"Design your quotation templates using building blocks<br/>\n"
+"                            <em attrs=\"{'invisible': [('module_sale_quotation_builder','=',False)]}\">Warning: this option will install the Website app.</em>"
+msgstr ""
+"使用網站設計模組設計報價範本<br/>\n"
+"<em attrs=\"{'invisible': [('module_sale_quotation_builder','=',False)]}\">警告： 此選項將安裝網站應用。</em>"
+
+#. module: sale_management
 #: model:ir.model,name:sale_management.model_digest_digest
 msgid "Digest"
 msgstr "摘要"
@@ -181,7 +192,7 @@ msgstr "摘要"
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_form_quote
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_portal_content_inherit_sale_management
 msgid "Disc.%"
-msgstr "折扣%"
+msgstr "折扣率%"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__discount
@@ -202,15 +213,15 @@ msgid "Display Type"
 msgstr "顯示類型"
 
 #. module: sale_management
-#. odoo-python
 #: code:addons/sale_management/models/digest.py:0
+#, python-format
 msgid "Do not have access, skip this data for user's digest email"
 msgstr "沒有存取權限，使用者摘要電郵將跳過此數據"
 
 #. module: sale_management
-#: model_terms:ir.ui.view,arch_db:sale_management.report_saleorder_document_inherit_sale_management
-msgid "Extra Chips"
-msgstr "Extra Chips"
+#: model_terms:ir.ui.view,arch_db:sale_management.res_config_settings_view_form
+msgid "Documentation"
+msgstr "系統使用說明"
 
 #. module: sale_management
 #: model:ir.model.constraint,message:sale_management.constraint_sale_order_template_line_non_accountable_fields_null
@@ -230,7 +241,7 @@ msgstr "給出顯示銷售報價明細名單時的排列順序。"
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_search
 msgid "Group By"
-msgstr "分組依據"
+msgstr "分組方式"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__id
@@ -238,14 +249,7 @@ msgstr "分組依據"
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_line__id
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_option__id
 msgid "ID"
-msgstr "識別號"
-
-#. module: sale_management
-#: model:ir.model.fields,help:sale_management.field_sale_order_template__journal_id
-msgid ""
-"If set, SO with this template will invoice in this journal; otherwise the "
-"sales journal with the lowest sequence is used."
-msgstr "如果設置, 使用此範本的 銷售訂單將在此日記賬中開票；否則將使用順序最低的銷售日記賬。"
+msgstr "ID"
 
 #. module: sale_management
 #: model:ir.model.fields,help:sale_management.field_sale_order_template__active
@@ -255,14 +259,17 @@ msgid ""
 msgstr "如果取消選中，將允許您隱藏報價單範本而不將其刪除。"
 
 #. module: sale_management
-#: model:ir.model.fields,field_description:sale_management.field_sale_order_template__journal_id
-msgid "Invoicing Journal"
-msgstr "發票日記賬"
-
-#. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_digest_digest__kpi_all_sale_total_value
 msgid "Kpi All Sale Total Value"
 msgstr "所有銷售總價值KPI"
+
+#. module: sale_management
+#: model:ir.model.fields,field_description:sale_management.field_sale_order_option____last_update
+#: model:ir.model.fields,field_description:sale_management.field_sale_order_template____last_update
+#: model:ir.model.fields,field_description:sale_management.field_sale_order_template_line____last_update
+#: model:ir.model.fields,field_description:sale_management.field_sale_order_template_option____last_update
+msgid "Last Modified on"
+msgstr "最後修改於"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__write_uid
@@ -283,13 +290,13 @@ msgstr "最後更新於"
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__line_id
 msgid "Line"
-msgstr "資料行"
+msgstr "明細項目"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template__sale_order_template_line_ids
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
 msgid "Lines"
-msgstr "資料行"
+msgstr "明細列表"
 
 #. module: sale_management
 #: model:ir.model.constraint,message:sale_management.constraint_sale_order_template_line_accountable_product_id_required
@@ -308,6 +315,11 @@ msgid "Number of days for the validity date computation of the quotation"
 msgstr "用於報價單有效日期計算的天數"
 
 #. module: sale_management
+#: model:sale.order.template.option,name:sale_management.sale_order_template_option_1
+msgid "Office Chair"
+msgstr "辦公室椅"
+
+#. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template__require_payment
 msgid "Online Payment"
 msgstr "線上支付"
@@ -316,6 +328,11 @@ msgstr "線上支付"
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template__require_signature
 msgid "Online Signature"
 msgstr "線上簽名"
+
+#. module: sale_management
+#: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
+msgid "Online confirmation"
+msgstr "線上確認"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template__sale_order_template_option_ids
@@ -334,17 +351,6 @@ msgstr "選配產品明細"
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_portal_content_inherit_sale_management
 msgid "Options"
 msgstr "選項"
-
-#. module: sale_management
-#: model:ir.model.fields,field_description:sale_management.field_sale_order_template__prepayment_percent
-msgid "Prepayment percentage"
-msgstr "預付百分比"
-
-#. module: sale_management
-#. odoo-python
-#: code:addons/sale_management/models/sale_order_template.py:0
-msgid "Prepayment percentage must be a valid percentage."
-msgstr "預付百分比必須為有效百分比。"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__is_present
@@ -370,6 +376,11 @@ msgstr "數量"
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_form_quote
 msgid "Quantity:"
 msgstr "數量："
+
+#. module: sale_management
+#: model:ir.model.fields,field_description:sale_management.field_res_config_settings__module_sale_quotation_builder
+msgid "Quotation Builder"
+msgstr "報價單生成器"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template__number_of_days
@@ -417,8 +428,8 @@ msgstr "報價單範本"
 
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
-msgid "Quotation Validity"
-msgstr "報價有效期"
+msgid "Quotation expires after"
+msgstr "報價單到期"
 
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_portal_content_inherit_sale_management
@@ -462,17 +473,17 @@ msgstr "銷售訂單"
 #. module: sale_management
 #: model:ir.model,name:sale_management.model_sale_order_line
 msgid "Sales Order Line"
-msgstr "銷售訂單資料行"
+msgstr "銷售訂單明細"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__order_id
 msgid "Sales Order Reference"
-msgstr "銷售訂單參考編號"
+msgstr "銷售訂單編碼"
 
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_form_quote
 msgid "Sales Quotation Template Lines"
-msgstr "銷售報價單範本資料行"
+msgstr "銷售報價單範本明細"
 
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_search
@@ -483,7 +494,7 @@ msgstr "搜尋報價單範本"
 #: model:ir.model.fields.selection,name:sale_management.selection__sale_order_template_line__display_type__line_section
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
 msgid "Section"
-msgstr "章節"
+msgstr "部分"
 
 #. module: sale_management
 #: model_terms:digest.tip,tip_description:sale_management.digest_tip_sale_management_1
@@ -495,10 +506,9 @@ msgstr "以不同的尺寸或顏色銷售相同的產品？嘗試產品矩陣並
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__sequence
-#: model:ir.model.fields,field_description:sale_management.field_sale_order_template__sequence
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_line__sequence
 msgid "Sequence"
-msgstr "序列號"
+msgstr "序號"
 
 #. module: sale_management
 #: model_terms:digest.tip,tip_description:sale_management.digest_tip_sale1_management_0
@@ -524,11 +534,6 @@ msgid ""
 "The Administrator can set default Terms & Conditions in Sales Settings. "
 "Terms set here will show up instead if you select this quotation template."
 msgstr "管理員可以在「銷售設定」中設定預設條款和條件。如果您選擇此報價單範本，將顯示此處設定的條款。"
-
-#. module: sale_management
-#: model:ir.model.fields,help:sale_management.field_sale_order_template__prepayment_percent
-msgid "The percentage of the amount needed to be paid to confirm quotations."
-msgstr "確認報價所需支付金額的百分比。"
 
 #. module: sale_management
 #: model:ir.model.fields,help:sale_management.field_sale_order_template__mail_template_id
@@ -592,22 +597,22 @@ msgstr ""
 "                利用交叉銷售及優惠折扣功能，催谷及提高你的銷售額。"
 
 #. module: sale_management
-#. odoo-python
 #: code:addons/sale_management/models/sale_order_option.py:0
+#, python-format
 msgid "You cannot add options to a confirmed order."
 msgstr "您不能添加選項到已確認的訂單。"
 
 #. module: sale_management
-#. odoo-python
 #: code:addons/sale_management/models/sale_order_template_line.py:0
+#, python-format
 msgid ""
 "You cannot change the type of a sale quote line. Instead you should delete "
 "the current line and create a new line of the proper type."
 msgstr "您不能更改銷售報價單行的類型。相反，您應該刪除當前行並建立正確類型的新行。"
 
 #. module: sale_management
-#. odoo-python
 #: code:addons/sale_management/models/sale_order.py:0
+#, python-format
 msgid ""
 "Your quotation contains products from company %(product_company)s whereas your quotation belongs to company %(quote_company)s. \n"
 " Please change the company of your quotation or remove the products from other companies (%(bad_products)s)."
@@ -616,14 +621,14 @@ msgstr ""
 "請變更報價單公司或從其他公司移除產品 (%(bad_products)s)."
 
 #. module: sale_management
-#. odoo-python
 #: code:addons/sale_management/models/sale_order_template.py:0
+#, python-format
 msgid "Your template cannot contain products from multiple companies."
 msgstr "您的範本不能包含來自多個公司的產品。"
 
 #. module: sale_management
-#. odoo-python
 #: code:addons/sale_management/models/sale_order_template.py:0
+#, python-format
 msgid ""
 "Your template contains products from company %(product_company)s whereas your template belongs to company %(template_company)s. \n"
 " Please change the company of your template or remove the products from other companies."
@@ -634,7 +639,7 @@ msgstr ""
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
 msgid "days"
-msgstr "天"
+msgstr "天數"
 
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form

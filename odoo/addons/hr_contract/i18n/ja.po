@@ -3,16 +3,19 @@
 # 	* hr_contract
 # 
 # Translators:
-# Wil Odoo, 2024
-# Junko Augias, 2025
+# Martin Trigaux, 2022
+# Andy Yiu, 2023
+# Ryoko Tsuda <ryoko@quartile.co>, 2023
+# Wil Odoo, 2023
+# Junko Augias, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 08:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Junko Augias, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2022-09-22 05:46+0000\n"
+"Last-Translator: Junko Augias, 2024\n"
 "Language-Team: Japanese (https://app.transifex.com/odoo/teams/41243/ja/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -33,6 +36,7 @@ msgstr "# 使用中の契約"
 #. module: hr_contract
 #. odoo-python
 #: code:addons/hr_contract/report/hr_contract_history.py:0
+#, python-format
 msgid "%s's Contracts History"
 msgstr "%sの契約履歴"
 
@@ -42,79 +46,42 @@ msgid "/ month"
 msgstr "/ 月"
 
 #. module: hr_contract
-#: model_terms:ir.ui.view,arch_db:hr_contract.hr_hr_employee_view_form3
+#: model_terms:ir.ui.view,arch_db:hr_contract.hr_hr_employee_view_form2
 msgid ""
-"<span class=\"o_stat_text text-danger\" invisible=\"not contract_warning\" title=\"In Contract Since\">\n"
+"<span attrs=\"{'invisible' : [('contracts_count', '!=', 1)]}\" class=\"o_stat_text text-danger\">\n"
+"                                    Contract\n"
+"                                </span>\n"
+"                                <span attrs=\"{'invisible' : [('contracts_count', '=', 1)]}\" class=\"o_stat_text text-danger\">\n"
+"                                    Contracts\n"
+"                                </span>"
+msgstr ""
+"<span attrs=\"{'invisible' : [('contracts_count', '!=', 1)]}\" class=\"o_stat_text text-danger\">\n"
+"                                    契約書\n"
+"                                </span>\n"
+"                                <span attrs=\"{'invisible' : [('contracts_count', '=', 1)]}\" class=\"o_stat_text text-danger\">\n"
+"                                    契約書\n"
+"                                </span>"
+
+#. module: hr_contract
+#: model_terms:ir.ui.view,arch_db:hr_contract.hr_hr_employee_view_form2
+msgid ""
+"<span class=\"o_stat_text text-danger\" attrs=\"{'invisible' : [('contract_warning', '=', False)]}\" title=\"In Contract Since\">\n"
 "                                    In Contract Since\n"
 "                                </span>"
 msgstr ""
-"<span class=\"o_stat_text text-danger\" invisible=\"not contract_warning\" title=\"In Contract Since\">\n"
+"<span class=\"o_stat_text text-danger\" attrs=\"{'invisible' : [('contract_warning', '=', False)]}\" title=\"In Contract Since\">\n"
 "                                    契約開始\n"
 "                                </span>"
 
 #. module: hr_contract
-#: model_terms:ir.ui.view,arch_db:hr_contract.hr_hr_employee_view_form3
+#: model_terms:ir.ui.view,arch_db:hr_contract.hr_hr_employee_view_form2
 msgid ""
-"<span class=\"o_stat_text text-success\" invisible=\"contract_warning\" "
-"title=\"In Contract Since\"> In Contract Since</span>"
+"<span class=\"o_stat_text text-success\" attrs=\"{'invisible' : "
+"[('contract_warning', '=', True)]}\" title=\"In Contract Since\"> In "
+"Contract Since</span>"
 msgstr ""
-"<span class=\"o_stat_text text-success\" invisible=\"contract_warning\" "
-"title=\"In Contract Since\">契約開始 </span>"
-
-#. module: hr_contract
-#: model_terms:ir.ui.view,arch_db:hr_contract.hr_hr_employee_view_form3
-msgid ""
-"<span invisible=\"contracts_count != 1\" class=\"o_stat_text text-danger\">\n"
-"                                    Contract\n"
-"                                </span>\n"
-"                                <span invisible=\"contracts_count == 1\" class=\"o_stat_text text-danger\">\n"
-"                                    Contracts\n"
-"                                </span>"
-msgstr ""
-"<span invisible=\"contracts_count != 1\" class=\"o_stat_text text-danger\">\n"
-"                                    契約\n"
-"                                </span>\n"
-"                                <span invisible=\"contracts_count == 1\" class=\"o_stat_text text-danger\">\n"
-"                                    契約\n"
-"                                </span>"
-
-#. module: hr_contract
-#: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_form
-msgid ""
-"<span invisible=\"contracts_count == 1\" class=\"o_stat_text\">\n"
-"                                        Contracts\n"
-"                                    </span>\n"
-"                                    <span invisible=\"contracts_count &gt; 1\" class=\"o_stat_text\">\n"
-"                                        Contract\n"
-"                                    </span>"
-msgstr ""
-"<span invisible=\"contracts_count == 1\" class=\"o_stat_text\">\n"
-"                                        契約\n"
-"                                    </span>\n"
-"                                    <span invisible=\"contracts_count &gt; 1\" class=\"o_stat_text\">\n"
-"                                        契約\n"
-"                                    </span>"
-
-#. module: hr_contract
-#: model_terms:ir.ui.view,arch_db:hr_contract.res_config_settings_view_form
-msgid "<span>Days</span>"
-msgstr "<span>日</span>"
-
-#. module: hr_contract
-#. odoo-python
-#: code:addons/hr_contract/models/hr_contract.py:0
-msgid ""
-"According to Employee's Working Permit Expiration Date, this contract has "
-"been put in red on the %s. Please advise and correct."
-msgstr "従業員の労働許可証の有効期限によると、この契約書は%sに赤字で記載されています。 確認と訂正をお願いします。"
-
-#. module: hr_contract
-#. odoo-python
-#: code:addons/hr_contract/models/hr_contract.py:0
-msgid ""
-"According to the contract's end date, this contract has been put in red on "
-"the %s. Please advise and correct."
-msgstr "契約終了日によると、この契約は%sに赤で表示されています。通知と修正をお願いします。"
+"<span class=\"o_stat_text text-success\" attrs=\"{'invisible' : "
+"[('contract_warning', '=', True)]}\" title=\"In Contract Since\">契約開始</span>"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__message_needaction
@@ -124,10 +91,9 @@ msgstr "要アクション"
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__active
 msgid "Active"
-msgstr "アクティブ"
+msgstr "有効"
 
 #. module: hr_contract
-#: model:ir.model.fields,field_description:hr_contract.field_hr_contract__active_employee
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_history__active_employee
 msgid "Active Employee"
 msgstr "有効な従業員"
@@ -145,7 +111,7 @@ msgstr "活動"
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__activity_exception_decoration
 msgid "Activity Exception Decoration"
-msgstr "例外活動文字装飾"
+msgstr "例外の活動を示す文字装飾"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__activity_state
@@ -159,11 +125,6 @@ msgid "Activity Type Icon"
 msgstr "活動種別アイコン"
 
 #. module: hr_contract
-#: model:ir.model,name:hr_contract.model_mail_activity_schedule
-msgid "Activity schedule plan Wizard"
-msgstr "活動スケジュール計画ウィザード"
-
-#. module: hr_contract
 #: model:res.groups,name:hr_contract.group_hr_contract_manager
 msgid "Administrator"
 msgstr "管理者"
@@ -171,6 +132,7 @@ msgstr "管理者"
 #. module: hr_contract
 #. odoo-python
 #: code:addons/hr_contract/models/hr_contract.py:0
+#, python-format
 msgid ""
 "An employee can only have one contract at the same time. (Excluding Draft and Cancelled contracts).\n"
 "\n"
@@ -193,13 +155,8 @@ msgstr "添付数"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_res_users__bank_account_id
-msgid "Bank Account"
-msgstr "銀行口座"
-
-#. module: hr_contract
-#: model:ir.model,name:hr_contract.model_hr_employee_base
-msgid "Basic Employee"
-msgstr "基本社員"
+msgid "Bank Account Number"
+msgstr "銀行口座番号"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__calendar_mismatch
@@ -208,23 +165,10 @@ msgid "Calendar Mismatch"
 msgstr "カレンダ不一致"
 
 #. module: hr_contract
-#. odoo-javascript
-#: code:addons/hr_contract/static/src/widgets/tooltip_warning_widget.js:0
-msgid ""
-"Calendar Mismatch: The employee's calendar does not match this contract's "
-"calendar. This could lead to unexpected behaviors."
-msgstr "カレンダの不一致： 従業員のカレンダがこの契約のカレンダと一致しません。予期せぬ動作につながる可能性があります。"
-
-#. module: hr_contract
 #: model:ir.model.fields.selection,name:hr_contract.selection__hr_contract__state__cancel
 #: model:ir.model.fields.selection,name:hr_contract.selection__hr_contract_history__state__cancel
 msgid "Cancelled"
-msgstr "キャンセル済"
-
-#. module: hr_contract
-#: model:ir.model,name:hr_contract.model_res_company
-msgid "Companies"
-msgstr "会社"
+msgstr "取消済"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__company_id
@@ -245,48 +189,36 @@ msgid "Company country"
 msgstr "コモディティー国"
 
 #. module: hr_contract
-#: model:ir.model,name:hr_contract.model_res_config_settings
-msgid "Config Settings"
-msgstr "コンフィグ設定"
-
-#. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_history__contract_id
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_search
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_departure_wizard_view_form
-#: model_terms:ir.ui.view,arch_db:hr_contract.res_config_settings_view_form
 msgid "Contract"
 msgstr "契約"
 
 #. module: hr_contract
 #. odoo-python
 #: code:addons/hr_contract/models/hr_contract.py:0
+#, python-format
 msgid ""
 "Contract %(contract)s: start date (%(start)s) must be earlier than contract "
 "end date (%(end)s)."
 msgstr "契約 %(contract)s: 開始日 (%(start)s) は契約終了日(%(end)s)より前である必要があります。"
 
 #. module: hr_contract
-#: model:ir.model.fields,field_description:hr_contract.field_hr_contract__contracts_count
 #: model:ir.model.fields,field_description:hr_contract.field_hr_employee__contracts_count
 msgid "Contract Count"
 msgstr "連絡先数"
 
 #. module: hr_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_form
+msgid "Contract Details"
+msgstr "契約詳細"
+
+#. module: hr_contract
+#: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_form
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_departure_wizard_view_form
 msgid "Contract End Date"
 msgstr "契約終了日"
-
-#. module: hr_contract
-#: model_terms:ir.ui.view,arch_db:hr_contract.res_config_settings_view_form
-msgid "Contract Expiration Notice Period"
-msgstr "契約満了通知期間"
-
-#. module: hr_contract
-#: model:ir.model.fields,field_description:hr_contract.field_res_company__contract_expiration_notice_period
-#: model:ir.model.fields,field_description:hr_contract.field_res_config_settings__contract_expiration_notice_period
-msgid "Contract Expiry Notice Period"
-msgstr "契約満了通知期間"
 
 #. module: hr_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_history_view_form
@@ -323,6 +255,7 @@ msgstr "契約賃金"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_employee__contract_warning
+#: model_terms:ir.ui.view,arch_db:hr_contract.hr_employee_view_search
 msgid "Contract Warning"
 msgstr "要注意契約"
 
@@ -351,8 +284,7 @@ msgstr "契約要更新"
 #: model:ir.actions.act_window,name:hr_contract.action_hr_contract
 #: model:ir.actions.act_window,name:hr_contract.hr_contract_history_view_form_action
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_history__contract_ids
-#: model:ir.ui.menu,name:hr_contract.hr_menu_contract
-#: model:ir.ui.menu,name:hr_contract.menu_hr_employee_contracts
+#: model:ir.ui.menu,name:hr_contract.hr_menu_contract_history
 #: model:ir.ui.menu,name:hr_contract.menu_human_resources_configuration_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_history_view_list
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_activity
@@ -368,11 +300,6 @@ msgid "Contracts to Review"
 msgstr "レビュー対象契約"
 
 #. module: hr_contract
-#: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_search
-msgid "Contracts to review"
-msgstr "レビュー対象契約"
-
-#. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_history__under_contract_state
 msgid "Contractual Status"
 msgstr "契約ステータス"
@@ -385,7 +312,6 @@ msgstr "国"
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__country_code
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_history__country_code
-#: model:ir.model.fields,field_description:hr_contract.field_hr_payroll_structure_type__country_code
 msgid "Country Code"
 msgstr "国コード"
 
@@ -451,7 +377,6 @@ msgstr "削除"
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__department_id
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_history__department_id
-#: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_search
 msgid "Department"
 msgstr "部門"
 
@@ -463,14 +388,10 @@ msgstr "退職ウィザード"
 #. module: hr_contract
 #. odoo-python
 #: code:addons/hr_contract/wizard/hr_departure_wizard.py:0
+#, python-format
 msgid ""
 "Departure date can't be earlier than the start date of current contract."
 msgstr "出発日を現在の契約開始日より早めることはできません。"
-
-#. module: hr_contract
-#: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_form
-msgid "Details"
-msgstr "詳細"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__display_name
@@ -481,8 +402,18 @@ msgstr "表示名"
 
 #. module: hr_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_kanban
+msgid "Dropdown menu"
+msgstr "ドロップダウンメニュー"
+
+#. module: hr_contract
+#: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_kanban
 msgid "Edit Contract"
 msgstr "契約書を編集"
+
+#. module: hr_contract
+#: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_search
+msgid "Employed"
+msgstr ""
 
 #. module: hr_contract
 #: model:ir.model,name:hr_contract.model_hr_employee
@@ -531,7 +462,6 @@ msgstr "従業員"
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__date_end
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_history__date_end
-#: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_search
 msgid "End Date"
 msgstr "終了日"
 
@@ -543,7 +473,7 @@ msgstr "契約終了日 (有期労働契約の場合)."
 #. module: hr_contract
 #: model:ir.model.fields,help:hr_contract.field_hr_contract__trial_date_end
 msgid "End date of the trial period (if there is one)."
-msgstr "試用期間の最終日 (あれば)"
+msgstr "試用期間の最終日 (適用の場合)."
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__trial_date_end
@@ -580,20 +510,19 @@ msgid "Font awesome icon e.g. fa-tasks"
 msgstr "Font awesomeのアイコン 例. fa-tasks"
 
 #. module: hr_contract
-#: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_kanban
-msgid "From"
-msgstr "from"
-
-#. module: hr_contract
-#: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_form
-#: model_terms:ir.ui.view,arch_db:hr_contract.hr_hr_employee_view_form2
-msgid "Fully Flexible"
-msgstr "完全フレックス"
-
-#. module: hr_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_search
 msgid "Future Activities"
 msgstr "今後の活動"
+
+#. module: hr_contract
+#: model:ir.model.fields.selection,name:hr_contract.selection__hr_contract__kanban_state__done
+msgid "Green"
+msgstr "緑"
+
+#. module: hr_contract
+#: model:ir.model.fields.selection,name:hr_contract.selection__hr_contract__kanban_state__normal
+msgid "Grey"
+msgstr "グレー"
 
 #. module: hr_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_history_view_search
@@ -603,6 +532,7 @@ msgstr "グループ化"
 
 #. module: hr_contract
 #: model:ir.actions.server,name:hr_contract.ir_cron_data_contract_update_state_ir_actions_server
+#: model:ir.cron,cron_name:hr_contract.ir_cron_data_contract_update_state
 msgid "HR Contract: update state"
 msgstr "人事契約：ステータス更新"
 
@@ -637,30 +567,22 @@ msgstr "アイコン"
 #. module: hr_contract
 #: model:ir.model.fields,help:hr_contract.field_hr_contract__activity_exception_icon
 msgid "Icon to indicate an exception activity."
-msgstr "例外活動を示すアイコン"
+msgstr "例外的なアクティビティを示唆するアイコン"
 
 #. module: hr_contract
 #: model:ir.model.fields,help:hr_contract.field_hr_contract__message_needaction
 msgid "If checked, new messages require your attention."
-msgstr "チェックした場合は、新しいメッセージに注意が必要です。"
+msgstr "チェックされている場合は、新しいメッセージに注意が必要です。"
 
 #. module: hr_contract
 #: model:ir.model.fields,help:hr_contract.field_hr_contract__message_has_error
-#: model:ir.model.fields,help:hr_contract.field_hr_contract__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
-msgstr "チェックした場合は、一部のメッセージに配信エラーが発生されました。"
-
-#. module: hr_contract
-#: model:ir.model.fields,help:hr_contract.field_hr_contract__active_employee
-msgid ""
-"If the active field is set to False, it will allow you to hide the resource "
-"record without removing it."
-msgstr "有効化フィールドをFalseに設定すると、リソースレコードを削除せずに非表示にすることができます。"
+msgstr "チェックした場合、一部のメッセージで配信エラーが発生しています。"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_history__is_under_contract
 msgid "Is Currently Under Contract"
-msgstr "現在契約中"
+msgstr "現在契約中か"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__message_is_follower
@@ -681,6 +603,13 @@ msgid "Kanban State"
 msgstr "かんばん状態"
 
 #. module: hr_contract
+#: model:ir.model.fields,field_description:hr_contract.field_hr_contract____last_update
+#: model:ir.model.fields,field_description:hr_contract.field_hr_contract_history____last_update
+#: model:ir.model.fields,field_description:hr_contract.field_hr_payroll_structure_type____last_update
+msgid "Last Modified on"
+msgstr "最終更新日"
+
+#. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__write_uid
 #: model:ir.model.fields,field_description:hr_contract.field_hr_payroll_structure_type__write_uid
 msgid "Last Updated by"
@@ -698,14 +627,9 @@ msgid "Late Activities"
 msgstr "遅れた活動"
 
 #. module: hr_contract
-#: model:ir.model.fields,field_description:hr_contract.field_hr_employee__legal_name
-msgid "Legal Name"
-msgstr "リーガル名"
-
-#. module: hr_contract
-#: model:ir.model,name:hr_contract.model_ir_ui_menu
-msgid "Menu"
-msgstr "メニュー"
+#: model:ir.model.fields,field_description:hr_contract.field_hr_contract__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "主な添付"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__message_has_error
@@ -725,13 +649,20 @@ msgstr "月額賃金"
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__my_activity_date_deadline
 msgid "My Activity Deadline"
-msgstr "活動期限"
+msgstr "活動の締切"
 
 #. module: hr_contract
 #: model:ir.model.fields.selection,name:hr_contract.selection__hr_contract__state__draft
 #: model:ir.model.fields.selection,name:hr_contract.selection__hr_contract_history__state__draft
 msgid "New"
 msgstr "新規"
+
+#. module: hr_contract
+#. odoo-javascript
+#: code:addons/hr_contract/static/src/js/hr_contract_history_list_controller.js:0
+#, python-format
+msgid "New Employee"
+msgstr ""
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__activity_calendar_event_id
@@ -746,7 +677,7 @@ msgstr "次の活動期限"
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__activity_summary
 msgid "Next Activity Summary"
-msgstr "次の活動概要"
+msgstr "次の活動サマリ"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__activity_type_id
@@ -764,6 +695,11 @@ msgid "No data to display"
 msgstr "表示するデータがありません"
 
 #. module: hr_contract
+#: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_search
+msgid "Not Running"
+msgstr ""
+
+#. module: hr_contract
 #: model:ir.model.fields.selection,name:hr_contract.selection__hr_contract_history__under_contract_state__blocked
 msgid "Not Under Contract"
 msgstr "現在契約中でない"
@@ -777,21 +713,7 @@ msgstr "ノート"
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__message_needaction_counter
 msgid "Number of Actions"
-msgstr "アクション数"
-
-#. module: hr_contract
-#: model_terms:ir.ui.view,arch_db:hr_contract.res_config_settings_view_form
-msgid ""
-"Number of days prior to the contract end date that a contract expiration "
-"warning is triggered."
-msgstr "契約終了日の何日前に契約終了警告が発生するか。"
-
-#. module: hr_contract
-#: model_terms:ir.ui.view,arch_db:hr_contract.res_config_settings_view_form
-msgid ""
-"Number of days prior to the work permit expiration date that a warning is "
-"triggered."
-msgstr "警告が発動される労働許可証の有効期限前の日数。"
+msgstr "アクションの数"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__message_has_error_counter
@@ -806,12 +728,7 @@ msgstr "アクションを必要とするメッセージの数"
 #. module: hr_contract
 #: model:ir.model.fields,help:hr_contract.field_hr_contract__message_has_error_counter
 msgid "Number of messages with delivery error"
-msgstr "配信エラーが発生されたメッセージ数"
-
-#. module: hr_contract
-#: model:ir.model.fields.selection,name:hr_contract.selection__hr_contract__kanban_state__normal
-msgid "Ongoing"
-msgstr "処理中"
+msgstr "配信エラーのメッセージ数"
 
 #. module: hr_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_history_view_form
@@ -829,14 +746,9 @@ msgid "Public Employee"
 msgstr "公務員"
 
 #. module: hr_contract
-#: model:ir.model.fields,field_description:hr_contract.field_hr_contract__rating_ids
-msgid "Ratings"
-msgstr "評価"
-
-#. module: hr_contract
-#: model:ir.model.fields.selection,name:hr_contract.selection__hr_contract__kanban_state__done
-msgid "Ready"
-msgstr "準備完了"
+#: model:ir.model.fields.selection,name:hr_contract.selection__hr_contract__kanban_state__blocked
+msgid "Red"
+msgstr "赤"
 
 #. module: hr_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_history_view_list
@@ -845,9 +757,9 @@ msgid "Reference Working Time"
 msgstr "基準就業時間"
 
 #. module: hr_contract
-#: model:ir.model,name:hr_contract.model_resource_calendar_leaves
-msgid "Resource Time Off Detail"
-msgstr "リソース休暇の詳細"
+#: model_terms:ir.ui.view,arch_db:hr_contract.hr_employee_public_view_form
+msgid "Related User"
+msgstr "関連ユーザ"
 
 #. module: hr_contract
 #: model:ir.model,name:hr_contract.model_resource_calendar
@@ -862,24 +774,19 @@ msgstr "リソース"
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__activity_user_id
 msgid "Responsible User"
-msgstr "担当ユーザ"
+msgstr "担当者"
 
 #. module: hr_contract
 #: model:ir.model.fields.selection,name:hr_contract.selection__hr_contract__state__open
 #: model:ir.model.fields.selection,name:hr_contract.selection__hr_contract_history__state__open
+#: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_search
 msgid "Running"
-msgstr "実行中"
+msgstr "契約実行中"
 
 #. module: hr_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_history_view_search
-#: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_search
 msgid "Running Contracts"
 msgstr "実行中契約"
-
-#. module: hr_contract
-#: model:ir.model.fields,field_description:hr_contract.field_hr_contract__message_has_sms_error
-msgid "SMS Delivery error"
-msgstr "SMS配信エラー"
 
 #. module: hr_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_form
@@ -933,8 +840,9 @@ msgstr "開始日"
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_history__state
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_history_view_search
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_search
+#: model_terms:ir.ui.view,arch_db:hr_contract.hr_employee_public_view_form
 msgid "Status"
-msgstr "状態"
+msgstr "ステータス"
 
 #. module: hr_contract
 #: model:ir.model.fields,help:hr_contract.field_hr_contract__activity_state
@@ -946,9 +854,9 @@ msgid ""
 "Planned: Future activities."
 msgstr ""
 "活動に基づくステータス\n"
-"遅延: 期限が既に過ぎています\n"
+"遅延: 期日が過ぎています\n"
 "今日: 活動日は今日です\n"
-"予定: 将来の活動。"
+"予定: 今後の活動。"
 
 #. module: hr_contract
 #: model:ir.model.fields,help:hr_contract.field_hr_contract__state
@@ -958,7 +866,6 @@ msgstr "契約の状況"
 #. module: hr_contract
 #: model:ir.model.fields,help:hr_contract.field_hr_contract__country_code
 #: model:ir.model.fields,help:hr_contract.field_hr_contract_history__country_code
-#: model:ir.model.fields,help:hr_contract.field_hr_payroll_structure_type__country_code
 msgid ""
 "The ISO country code in two chars. \n"
 "You can use this field for quick search."
@@ -969,24 +876,9 @@ msgstr ""
 #. module: hr_contract
 #. odoo-python
 #: code:addons/hr_contract/models/hr_contract.py:0
+#, python-format
 msgid "The contract of %s is about to expire."
 msgstr "契約 %s がもうすぐ満了になります。"
-
-#. module: hr_contract
-#: model_terms:ir.ui.view,arch_db:hr_contract.hr_hr_employee_view_form2
-msgid "The default working hours are set in configuration."
-msgstr "デフォルト就労時間は設定内で設定されます。"
-
-#. module: hr_contract
-#. odoo-python
-#: code:addons/hr_contract/models/hr_contract.py:0
-msgid "The work permit of %s is about to expire."
-msgstr "労働許可 %sの有効期限がまもなくです。 "
-
-#. module: hr_contract
-#: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_kanban
-msgid "To"
-msgstr "終了日"
 
 #. module: hr_contract
 #: model:mail.message.subtype,name:hr_contract.mt_contract_pending
@@ -1006,7 +898,7 @@ msgstr "この契約に関するメモを入力します..."
 #. module: hr_contract
 #: model:ir.model.fields,help:hr_contract.field_hr_contract__activity_exception_decoration
 msgid "Type of the exception activity on record."
-msgstr "記録上の例外活動の種類。"
+msgstr "記録上の例外アクティビティのタイプ。"
 
 #. module: hr_contract
 #: model:ir.model.fields.selection,name:hr_contract.selection__hr_contract_history__under_contract_state__done
@@ -1017,6 +909,11 @@ msgstr "契約の元"
 #: model:ir.model,name:hr_contract.model_res_users
 msgid "User"
 msgstr "ユーザ"
+
+#. module: hr_contract
+#: model:ir.model.fields,field_description:hr_contract.field_hr_contract__visa_expire
+msgid "Visa Expiration Date"
+msgstr "ビザの有効期限"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__visa_no
@@ -1030,32 +927,6 @@ msgid "Wage"
 msgstr "賃金"
 
 #. module: hr_contract
-#: model:ir.model.fields.selection,name:hr_contract.selection__hr_contract__kanban_state__blocked
-msgid "Warning"
-msgstr "警告"
-
-#. module: hr_contract
-#: model:ir.model.fields,field_description:hr_contract.field_hr_contract__website_message_ids
-msgid "Website Messages"
-msgstr "ウェブサイトメッセージ"
-
-#. module: hr_contract
-#: model:ir.model.fields,help:hr_contract.field_hr_contract__website_message_ids
-msgid "Website communication history"
-msgstr "ウェブサイト通信履歴"
-
-#. module: hr_contract
-#: model_terms:ir.ui.view,arch_db:hr_contract.res_config_settings_view_form
-msgid "Work Permit Expiration Notice Period"
-msgstr "労働許可証期限通知期間"
-
-#. module: hr_contract
-#: model:ir.model.fields,field_description:hr_contract.field_res_company__work_permit_expiration_notice_period
-#: model:ir.model.fields,field_description:hr_contract.field_res_config_settings__work_permit_expiration_notice_period
-msgid "Work Permit Expiry Notice Period"
-msgstr "労働許可証期限通知期間"
-
-#. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__permit_no
 msgid "Work Permit No"
 msgstr "労働許可番号"
@@ -1065,10 +936,10 @@ msgstr "労働許可番号"
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_history__resource_calendar_id
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_search
 msgid "Working Schedule"
-msgstr "勤務スケジュール"
+msgstr "作業予定"
 
 #. module: hr_contract
-#. odoo-python
 #: code:addons/hr_contract/models/hr_employee.py:0
+#, python-format
 msgid "You cannot delete an employee with a running contract."
 msgstr "契約中の従業員を削除することはできません。"

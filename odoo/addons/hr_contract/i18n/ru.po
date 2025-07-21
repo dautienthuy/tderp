@@ -3,15 +3,29 @@
 # 	* hr_contract
 # 
 # Translators:
-# Anastasiia Koroleva, 2025
+# Диляра Дельтаева <dilya.kz93@gmail.com>, 2022
+# Vitalius Sharkhun <al070572sva@gmail.com>, 2022
+# Андрей Гусев <gaussgss@gmail.com>, 2022
+# Vasiliy Korobatov <korobatov@gmail.com>, 2022
+# Irina Fedulova <istartlin@gmail.com>, 2022
+# Ekaterina <nawsikaya@bk.ru>, 2022
+# Ivan Kropotkin <yelizariev@itpp.dev>, 2022
+# Сергей Шебанин <sergey@shebanin.ru>, 2022
+# ILMIR <karamov@it-projects.info>, 2022
+# sergeiruzkiicode <sergei.ruzki@icode.by>, 2022
+# Alena Vlasova, 2022
+# alenafairy, 2023
+# Martin Trigaux, 2023
+# Wil Odoo, 2024
+# Ilya Rozhkov, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 08:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Anastasiia Koroleva, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2022-09-22 05:46+0000\n"
+"Last-Translator: Ilya Rozhkov, 2024\n"
 "Language-Team: Russian (https://app.transifex.com/odoo/teams/41243/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,115 +36,63 @@ msgstr ""
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_history__contract_count
 msgid "# Contracts"
-msgstr "# Договоров"
+msgstr "# Contracts"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_resource_calendar__contracts_count
 msgid "# Contracts using it"
-msgstr "# Договоров, где используется"
+msgstr "# Контракты, использующие его"
 
 #. module: hr_contract
 #. odoo-python
 #: code:addons/hr_contract/report/hr_contract_history.py:0
+#, python-format
 msgid "%s's Contracts History"
-msgstr "История договоров %s"
+msgstr "история контрактов %s"
 
 #. module: hr_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_form
 msgid "/ month"
-msgstr "/ месяц"
+msgstr "/ месяц"
 
 #. module: hr_contract
-#: model_terms:ir.ui.view,arch_db:hr_contract.hr_hr_employee_view_form3
+#: model_terms:ir.ui.view,arch_db:hr_contract.hr_hr_employee_view_form2
 msgid ""
-"<span class=\"o_stat_text text-danger\" invisible=\"not contract_warning\" title=\"In Contract Since\">\n"
-"                                    In Contract Since\n"
-"                                </span>"
-msgstr ""
-"<span class=\"o_stat_text text-danger\" invisible=\"not contract_warning\" title=\"Дата заключения договора\">\n"
-"                                    Дата заключения договора\n"
-"                                </span>"
-
-#. module: hr_contract
-#: model_terms:ir.ui.view,arch_db:hr_contract.hr_hr_employee_view_form3
-msgid ""
-"<span class=\"o_stat_text text-success\" invisible=\"contract_warning\" "
-"title=\"In Contract Since\"> In Contract Since</span>"
-msgstr ""
-"<span class=\"o_stat_text text-success\" invisible=\"contract_warning\" "
-"title=\"Дата заключения договора\"> Дата заключения договора</span>"
-
-#. module: hr_contract
-#: model_terms:ir.ui.view,arch_db:hr_contract.hr_hr_employee_view_form3
-msgid ""
-"<span invisible=\"contracts_count != 1\" class=\"o_stat_text text-danger\">\n"
+"<span attrs=\"{'invisible' : [('contracts_count', '!=', 1)]}\" class=\"o_stat_text text-danger\">\n"
 "                                    Contract\n"
 "                                </span>\n"
-"                                <span invisible=\"contracts_count == 1\" class=\"o_stat_text text-danger\">\n"
+"                                <span attrs=\"{'invisible' : [('contracts_count', '=', 1)]}\" class=\"o_stat_text text-danger\">\n"
 "                                    Contracts\n"
 "                                </span>"
 msgstr ""
-"<span invisible=\"contracts_count != 1\" class=\"o_stat_text text-danger\">\n"
-"                                    Договор\n"
-"                                </span>\n"
-"                                <span invisible=\"contracts_count == 1\" class=\"o_stat_text text-danger\">\n"
-"                                    Договоры\n"
+
+#. module: hr_contract
+#: model_terms:ir.ui.view,arch_db:hr_contract.hr_hr_employee_view_form2
+msgid ""
+"<span class=\"o_stat_text text-danger\" attrs=\"{'invisible' : [('contract_warning', '=', False)]}\" title=\"In Contract Since\">\n"
+"                                    In Contract Since\n"
 "                                </span>"
-
-#. module: hr_contract
-#: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_form
-msgid ""
-"<span invisible=\"contracts_count == 1\" class=\"o_stat_text\">\n"
-"                                        Contracts\n"
-"                                    </span>\n"
-"                                    <span invisible=\"contracts_count &gt; 1\" class=\"o_stat_text\">\n"
-"                                        Contract\n"
-"                                    </span>"
 msgstr ""
-"<span invisible=\"contracts_count == 1\" class=\"o_stat_text\">\n"
-"                                        Договоры\n"
-"                                    </span>\n"
-"                                    <span invisible=\"contracts_count &gt; 1\" class=\"o_stat_text\">\n"
-"                                        Договор\n"
-"                                    </span>"
 
 #. module: hr_contract
-#: model_terms:ir.ui.view,arch_db:hr_contract.res_config_settings_view_form
-msgid "<span>Days</span>"
-msgstr "<span>Дней</span>"
-
-#. module: hr_contract
-#. odoo-python
-#: code:addons/hr_contract/models/hr_contract.py:0
+#: model_terms:ir.ui.view,arch_db:hr_contract.hr_hr_employee_view_form2
 msgid ""
-"According to Employee's Working Permit Expiration Date, this contract has "
-"been put in red on the %s. Please advise and correct."
+"<span class=\"o_stat_text text-success\" attrs=\"{'invisible' : "
+"[('contract_warning', '=', True)]}\" title=\"In Contract Since\"> In "
+"Contract Since</span>"
 msgstr ""
-"Согласно дате окончания разрешения на работу сотрудника, этот договор "
-"подсвечен красным c %s. Пожалуйста, проверьте и исправьте."
-
-#. module: hr_contract
-#. odoo-python
-#: code:addons/hr_contract/models/hr_contract.py:0
-msgid ""
-"According to the contract's end date, this contract has been put in red on "
-"the %s. Please advise and correct."
-msgstr ""
-"Согласно дате окончания договора, этот договор подсвечен красным с %s. "
-"Пожалуйста, проверьте и исправьте."
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__message_needaction
 msgid "Action Needed"
-msgstr "Требуется действие"
+msgstr "Требует внимания"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__active
 msgid "Active"
-msgstr "Активный"
+msgstr "Активно"
 
 #. module: hr_contract
-#: model:ir.model.fields,field_description:hr_contract.field_hr_contract__active_employee
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_history__active_employee
 msgid "Active Employee"
 msgstr "Активный сотрудник"
@@ -143,28 +105,23 @@ msgstr "Активные сотрудники"
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__activity_ids
 msgid "Activities"
-msgstr "Дела"
+msgstr "Действия"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__activity_exception_decoration
 msgid "Activity Exception Decoration"
-msgstr ""
+msgstr "Оформление исключения активности"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__activity_state
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_history__activity_state
 msgid "Activity State"
-msgstr "Статус дела"
+msgstr "Статус действия"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__activity_type_icon
 msgid "Activity Type Icon"
-msgstr "Иконка категории дела"
-
-#. module: hr_contract
-#: model:ir.model,name:hr_contract.model_mail_activity_schedule
-msgid "Activity schedule plan Wizard"
-msgstr "Инструмент для создания плана дел"
+msgstr "Иконка типа действия"
 
 #. module: hr_contract
 #: model:res.groups,name:hr_contract.group_hr_contract_manager
@@ -174,12 +131,13 @@ msgstr "Администратор"
 #. module: hr_contract
 #. odoo-python
 #: code:addons/hr_contract/models/hr_contract.py:0
+#, python-format
 msgid ""
 "An employee can only have one contract at the same time. (Excluding Draft and Cancelled contracts).\n"
 "\n"
 "Employee: %(employee_name)s"
 msgstr ""
-"У сотрудника может быть только один действующий договор. (Не считая черновики и отмененные договоры).\n"
+"Одновременно сотрудник может иметь только один контракт. (За исключением черновых и отмененных контрактов).\n"
 "\n"
 "Сотрудник: %(employee_name)s"
 
@@ -196,13 +154,8 @@ msgstr "Количество вложений"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_res_users__bank_account_id
-msgid "Bank Account"
-msgstr "Банковский счет"
-
-#. module: hr_contract
-#: model:ir.model,name:hr_contract.model_hr_employee_base
-msgid "Basic Employee"
-msgstr "Основной сотрудник"
+msgid "Bank Account Number"
+msgstr "Номер банковского счёта"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__calendar_mismatch
@@ -211,25 +164,10 @@ msgid "Calendar Mismatch"
 msgstr "Несоответствие календаря"
 
 #. module: hr_contract
-#. odoo-javascript
-#: code:addons/hr_contract/static/src/widgets/tooltip_warning_widget.js:0
-msgid ""
-"Calendar Mismatch: The employee's calendar does not match this contract's "
-"calendar. This could lead to unexpected behaviors."
-msgstr ""
-"Несоответствие календаря: Календарь сотрудника не совпадает с календарем "
-"данного договора; это может привести к некорректной работе."
-
-#. module: hr_contract
 #: model:ir.model.fields.selection,name:hr_contract.selection__hr_contract__state__cancel
 #: model:ir.model.fields.selection,name:hr_contract.selection__hr_contract_history__state__cancel
 msgid "Cancelled"
-msgstr "Отменен"
-
-#. module: hr_contract
-#: model:ir.model,name:hr_contract.model_res_company
-msgid "Companies"
-msgstr "Компании"
+msgstr "Отменено"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__company_id
@@ -241,7 +179,7 @@ msgstr "Компания"
 #: model:ir.model.fields,field_description:hr_contract.field_hr_employee__vehicle
 #: model:ir.model.fields,field_description:hr_contract.field_res_users__vehicle
 msgid "Company Vehicle"
-msgstr "Служебный автомобиль"
+msgstr "Служебный транспорт"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__company_country_id
@@ -250,61 +188,49 @@ msgid "Company country"
 msgstr "Страна компании"
 
 #. module: hr_contract
-#: model:ir.model,name:hr_contract.model_res_config_settings
-msgid "Config Settings"
-msgstr "Параметры конфигурации"
-
-#. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_history__contract_id
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_search
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_departure_wizard_view_form
-#: model_terms:ir.ui.view,arch_db:hr_contract.res_config_settings_view_form
 msgid "Contract"
 msgstr "Договор"
 
 #. module: hr_contract
 #. odoo-python
 #: code:addons/hr_contract/models/hr_contract.py:0
+#, python-format
 msgid ""
 "Contract %(contract)s: start date (%(start)s) must be earlier than contract "
 "end date (%(end)s)."
 msgstr ""
-"Договор %(contract)s: дата начала (%(start)s) должна предшествовать дате "
-"окончания (%(end)s)."
+"Контракт %(contract)s: дата начала (%(start)s) должна быть раньше даты "
+"окончания контракта (%(end)s)."
 
 #. module: hr_contract
-#: model:ir.model.fields,field_description:hr_contract.field_hr_contract__contracts_count
 #: model:ir.model.fields,field_description:hr_contract.field_hr_employee__contracts_count
 msgid "Contract Count"
-msgstr "Количество договоров"
+msgstr "подсчет контракта"
+
+#. module: hr_contract
+#: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_form
+msgid "Contract Details"
+msgstr "Детали Договора"
 
 #. module: hr_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_form
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_departure_wizard_view_form
 msgid "Contract End Date"
-msgstr "Дата окончания договора"
-
-#. module: hr_contract
-#: model_terms:ir.ui.view,arch_db:hr_contract.res_config_settings_view_form
-msgid "Contract Expiration Notice Period"
-msgstr "Период уведомления об истечении срока действия договора"
-
-#. module: hr_contract
-#: model:ir.model.fields,field_description:hr_contract.field_res_company__contract_expiration_notice_period
-#: model:ir.model.fields,field_description:hr_contract.field_res_config_settings__contract_expiration_notice_period
-msgid "Contract Expiry Notice Period"
-msgstr "Период уведомления об истечении срока действия договора"
+msgstr "Дата окончания контракта"
 
 #. module: hr_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_history_view_form
 msgid "Contract History"
-msgstr "История договоров"
+msgstr "История контрактов"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_history__name
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_history_view_form
 msgid "Contract Name"
-msgstr "Название договора"
+msgstr "Название контракта"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__name
@@ -315,7 +241,7 @@ msgstr "Ссылка на договор"
 #. module: hr_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_form
 msgid "Contract Start Date"
-msgstr "Дата начала договора"
+msgstr "Дата начала срока действия договора"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__contract_type_id
@@ -326,28 +252,29 @@ msgstr "Тип договора"
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__contract_wage
 msgid "Contract Wage"
-msgstr "Оклад по договору"
+msgstr "Заработная плата по контракту"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_employee__contract_warning
+#: model_terms:ir.ui.view,arch_db:hr_contract.hr_employee_view_search
 msgid "Contract Warning"
-msgstr "Предупреждение о договоре"
+msgstr "Предупреждение о контракте"
 
 #. module: hr_contract
 #: model:mail.message.subtype,description:hr_contract.mt_contract_pending
 #: model:mail.message.subtype,description:hr_contract.mt_department_contract_pending
 msgid "Contract about to expire"
-msgstr "Договор скоро истекает"
+msgstr "Договор заканчивается в ближайшее время"
 
 #. module: hr_contract
 #: model:mail.message.subtype,description:hr_contract.mt_contract_close
 msgid "Contract expired"
-msgstr "Договор истек"
+msgstr "Договор закончился"
 
 #. module: hr_contract
 #: model:ir.model,name:hr_contract.model_hr_contract_history
 msgid "Contract history"
-msgstr "История договоров"
+msgstr "История контрактов"
 
 #. module: hr_contract
 #: model:mail.message.subtype,name:hr_contract.mt_department_contract_pending
@@ -358,8 +285,7 @@ msgstr "Договор к продлению"
 #: model:ir.actions.act_window,name:hr_contract.action_hr_contract
 #: model:ir.actions.act_window,name:hr_contract.hr_contract_history_view_form_action
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_history__contract_ids
-#: model:ir.ui.menu,name:hr_contract.hr_menu_contract
-#: model:ir.ui.menu,name:hr_contract.menu_hr_employee_contracts
+#: model:ir.ui.menu,name:hr_contract.hr_menu_contract_history
 #: model:ir.ui.menu,name:hr_contract.menu_human_resources_configuration_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_history_view_list
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_activity
@@ -372,17 +298,12 @@ msgstr "Договоры"
 #: model:ir.actions.act_window,name:hr_contract.hr_contract_history_to_review_view_list_action
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_history_view_search
 msgid "Contracts to Review"
-msgstr "Договоры к проверке"
-
-#. module: hr_contract
-#: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_search
-msgid "Contracts to review"
-msgstr "Договоры к проверке"
+msgstr "Контракты для проверки"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_history__under_contract_state
 msgid "Contractual Status"
-msgstr "Статус договора"
+msgstr "Договорной статус"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_payroll_structure_type__country_id
@@ -392,7 +313,6 @@ msgstr "Страна"
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__country_code
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_history__country_code
-#: model:ir.model.fields,field_description:hr_contract.field_hr_payroll_structure_type__country_code
 msgid "Country Code"
 msgstr "Код страны"
 
@@ -404,19 +324,19 @@ msgstr "Создать"
 #. module: hr_contract
 #: model_terms:ir.actions.act_window,help:hr_contract.action_hr_contract
 msgid "Create a new contract"
-msgstr "Создать новый договор"
+msgstr "Создать новый контракт"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__create_uid
 #: model:ir.model.fields,field_description:hr_contract.field_hr_payroll_structure_type__create_uid
 msgid "Created by"
-msgstr "Создано:"
+msgstr "Создал"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__create_date
 #: model:ir.model.fields,field_description:hr_contract.field_hr_payroll_structure_type__create_date
 msgid "Created on"
-msgstr "Дата создания:"
+msgstr "Дата создания"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__currency_id
@@ -433,17 +353,17 @@ msgstr "Текущий договор"
 #. module: hr_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_history_view_form
 msgid "Current Contracts"
-msgstr "Текущие договоры"
+msgstr "Текущие контракты"
 
 #. module: hr_contract
 #: model:ir.model.fields,help:hr_contract.field_hr_employee__contract_id
 msgid "Current contract of the employee"
-msgstr "Текущий договор сотрудника"
+msgstr "Текущий контракт сотрудника"
 
 #. module: hr_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_history_view_search
 msgid "Currently Under Contract"
-msgstr "В настоящее время работает по договору"
+msgstr "В настоящее время в стадии заключения"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_payroll_structure_type__default_resource_calendar_id
@@ -458,38 +378,44 @@ msgstr "Удалить"
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__department_id
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_history__department_id
-#: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_search
 msgid "Department"
-msgstr "Отдел"
+msgstr "Подразделение"
 
 #. module: hr_contract
 #: model:ir.model,name:hr_contract.model_hr_departure_wizard
 msgid "Departure Wizard"
-msgstr "Инструмент для оформления увольнения сотрудника"
+msgstr "Мастер увольнения"
 
 #. module: hr_contract
 #. odoo-python
 #: code:addons/hr_contract/wizard/hr_departure_wizard.py:0
+#, python-format
 msgid ""
 "Departure date can't be earlier than the start date of current contract."
-msgstr "Дата увольнения не может быть раньше даты начала текущего договора."
-
-#. module: hr_contract
-#: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_form
-msgid "Details"
-msgstr "Детали"
+msgstr ""
+"Дата отъезда не может быть раньше даты начала действия текущего контракта."
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__display_name
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_history__display_name
 #: model:ir.model.fields,field_description:hr_contract.field_hr_payroll_structure_type__display_name
 msgid "Display Name"
-msgstr "Отображаемое название"
+msgstr "Отображаемое имя"
+
+#. module: hr_contract
+#: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_kanban
+msgid "Dropdown menu"
+msgstr "Выпадающее меню"
 
 #. module: hr_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_kanban
 msgid "Edit Contract"
 msgstr "Редактировать договор"
+
+#. module: hr_contract
+#: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_search
+msgid "Employed"
+msgstr ""
 
 #. module: hr_contract
 #: model:ir.model,name:hr_contract.model_hr_employee
@@ -502,22 +428,22 @@ msgstr "Сотрудник"
 #. module: hr_contract
 #: model:ir.model,name:hr_contract.model_hr_contract
 msgid "Employee Contract"
-msgstr "Договор сотрудника"
+msgstr "Договор с сотрудником"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_employee__contract_ids
 msgid "Employee Contracts"
-msgstr "Договоры сотрудника"
+msgstr "Контракты Сотрудников"
 
 #. module: hr_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_history_view_form
 msgid "Employee Information"
-msgstr "Информация о сотруднике"
+msgstr "Информация о сотрудниках"
 
 #. module: hr_contract
 #: model:res.groups,name:hr_contract.group_hr_contract_employee_manager
 msgid "Employee Manager"
-msgstr "Менеджер сотрудника"
+msgstr "Менеджер по персоналу"
 
 #. module: hr_contract
 #: model:ir.model.fields,help:hr_contract.field_res_users__bank_account_id
@@ -528,7 +454,7 @@ msgstr "Банковский счет сотрудника для выплаты
 #: model:ir.model.fields,help:hr_contract.field_hr_contract__wage
 #: model:ir.model.fields,help:hr_contract.field_hr_contract_history__wage
 msgid "Employee's monthly gross wage."
-msgstr "Ежемесячная брутто-зарплата сотрудника"
+msgstr "Месячная зарплата сотрудника брутто."
 
 #. module: hr_contract
 #: model:ir.actions.act_window,name:hr_contract.hr_contract_history_view_list_action
@@ -538,86 +464,85 @@ msgstr "Сотрудники"
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__date_end
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_history__date_end
-#: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_search
 msgid "End Date"
 msgstr "Дата окончания"
 
 #. module: hr_contract
 #: model:ir.model.fields,help:hr_contract.field_hr_contract__date_end
 msgid "End date of the contract (if it's a fixed-term contract)."
-msgstr "Дата окончания договора (для срочного договора)"
+msgstr "Дата окончания контракта(контракт с фиксированным сроком)"
 
 #. module: hr_contract
 #: model:ir.model.fields,help:hr_contract.field_hr_contract__trial_date_end
 msgid "End date of the trial period (if there is one)."
-msgstr "Конец испытательного срока (если есть)"
+msgstr "Дата окончания испытательного срока(если таковой имеется)"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__trial_date_end
 msgid "End of Trial Period"
-msgstr "Окончание испытательного срока"
+msgstr "Конец испытательного срока"
 
 #. module: hr_contract
 #: model:ir.model.fields.selection,name:hr_contract.selection__hr_contract__state__close
 #: model:ir.model.fields.selection,name:hr_contract.selection__hr_contract_history__state__close
 #: model:mail.message.subtype,name:hr_contract.mt_contract_close
 msgid "Expired"
-msgstr "Истек"
+msgstr "Истёк"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__first_contract_date
 #: model:ir.model.fields,field_description:hr_contract.field_hr_employee__first_contract_date
 #: model:ir.model.fields,field_description:hr_contract.field_hr_employee_public__first_contract_date
 msgid "First Contract Date"
-msgstr "Дата заключения первого договора"
+msgstr "Первая контракта"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__message_follower_ids
 msgid "Followers"
-msgstr "Наблюдатели"
+msgstr "Подписчики"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__message_partner_ids
 msgid "Followers (Partners)"
-msgstr "Наблюдатели (партнеры)"
+msgstr "Подписчики (Партнеры)"
 
 #. module: hr_contract
 #: model:ir.model.fields,help:hr_contract.field_hr_contract__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
-msgstr "Иконка Font awesome, например, fa-tasks"
-
-#. module: hr_contract
-#: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_kanban
-msgid "From"
-msgstr "От"
-
-#. module: hr_contract
-#: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_form
-#: model_terms:ir.ui.view,arch_db:hr_contract.hr_hr_employee_view_form2
-msgid "Fully Flexible"
-msgstr "Полностью гибкий"
+msgstr "Иконка со шрифтом Font awesome, например. fa-tasks"
 
 #. module: hr_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_search
 msgid "Future Activities"
-msgstr "Будущие дела"
+msgstr "Будущие действия"
+
+#. module: hr_contract
+#: model:ir.model.fields.selection,name:hr_contract.selection__hr_contract__kanban_state__done
+msgid "Green"
+msgstr "Зеленый"
+
+#. module: hr_contract
+#: model:ir.model.fields.selection,name:hr_contract.selection__hr_contract__kanban_state__normal
+msgid "Grey"
+msgstr "Серый"
 
 #. module: hr_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_history_view_search
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_search
 msgid "Group By"
-msgstr "Группировать по"
+msgstr "Группировка"
 
 #. module: hr_contract
 #: model:ir.actions.server,name:hr_contract.ir_cron_data_contract_update_state_ir_actions_server
+#: model:ir.cron,cron_name:hr_contract.ir_cron_data_contract_update_state
 msgid "HR Contract: update state"
-msgstr "HR договор: обновить состояние"
+msgstr "HR контракт: обновить состояние"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__hr_responsible_id
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_history__hr_responsible_id
 msgid "HR Responsible"
-msgstr "Ответственный отдела кадров"
+msgstr "Ответственный отдел кадров"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__has_message
@@ -627,14 +552,14 @@ msgstr "Есть сообщение"
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_history__date_hired
 msgid "Hire Date"
-msgstr "Дата найма"
+msgstr "Дата приема на работу"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__id
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_history__id
 #: model:ir.model.fields,field_description:hr_contract.field_hr_payroll_structure_type__id
 msgid "ID"
-msgstr "ID"
+msgstr "Идентификатор"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__activity_exception_icon
@@ -644,37 +569,27 @@ msgstr "Иконка"
 #. module: hr_contract
 #: model:ir.model.fields,help:hr_contract.field_hr_contract__activity_exception_icon
 msgid "Icon to indicate an exception activity."
-msgstr ""
+msgstr "Значок, обозначающий действие исключения."
 
 #. module: hr_contract
 #: model:ir.model.fields,help:hr_contract.field_hr_contract__message_needaction
 msgid "If checked, new messages require your attention."
-msgstr "Если флажок установлен, новые сообщения требуют вашего внимания."
+msgstr "Если отмечено, новые сообщения будут требовать вашего внимания."
 
 #. module: hr_contract
 #: model:ir.model.fields,help:hr_contract.field_hr_contract__message_has_error
-#: model:ir.model.fields,help:hr_contract.field_hr_contract__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
-msgstr "Если флажок установлен, некоторые сообщения не были доставлены."
-
-#. module: hr_contract
-#: model:ir.model.fields,help:hr_contract.field_hr_contract__active_employee
-msgid ""
-"If the active field is set to False, it will allow you to hide the resource "
-"record without removing it."
-msgstr ""
-"Если для поля «Активен» установлено значение False, запись скрывается без "
-"удаления."
+msgstr "Если отмечено - некоторые сообщения имеют ошибку доставки."
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_history__is_under_contract
 msgid "Is Currently Under Contract"
-msgstr "В настоящее время работает по договору"
+msgstr "В настоящее время находится на стадии заключения контракта"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__message_is_follower
 msgid "Is Follower"
-msgstr "Наблюдатель"
+msgstr "Подписчик"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__job_id
@@ -690,31 +605,33 @@ msgid "Kanban State"
 msgstr "Статус Канбан"
 
 #. module: hr_contract
+#: model:ir.model.fields,field_description:hr_contract.field_hr_contract____last_update
+#: model:ir.model.fields,field_description:hr_contract.field_hr_contract_history____last_update
+#: model:ir.model.fields,field_description:hr_contract.field_hr_payroll_structure_type____last_update
+msgid "Last Modified on"
+msgstr "Последнее изменение"
+
+#. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__write_uid
 #: model:ir.model.fields,field_description:hr_contract.field_hr_payroll_structure_type__write_uid
 msgid "Last Updated by"
-msgstr "Последнее обновление:"
+msgstr "Последний раз обновил"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__write_date
 #: model:ir.model.fields,field_description:hr_contract.field_hr_payroll_structure_type__write_date
 msgid "Last Updated on"
-msgstr "Дата последнего обновления:"
+msgstr "Последнее обновление"
 
 #. module: hr_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_search
 msgid "Late Activities"
-msgstr "Просроченные дела"
+msgstr "Просроченные действия"
 
 #. module: hr_contract
-#: model:ir.model.fields,field_description:hr_contract.field_hr_employee__legal_name
-msgid "Legal Name"
-msgstr "Полное имя (по паспорту)"
-
-#. module: hr_contract
-#: model:ir.model,name:hr_contract.model_ir_ui_menu
-msgid "Menu"
-msgstr "Меню"
+#: model:ir.model.fields,field_description:hr_contract.field_hr_contract__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "Основное вложение"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__message_has_error
@@ -729,43 +646,50 @@ msgstr "Сообщения"
 #. module: hr_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_history_view_form
 msgid "Monthly Wage"
-msgstr "Месячная зарплата"
+msgstr "Месячная заработная плата"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__my_activity_date_deadline
 msgid "My Activity Deadline"
-msgstr "Срок выполнения дела"
+msgstr "Крайний срок моего действия"
 
 #. module: hr_contract
 #: model:ir.model.fields.selection,name:hr_contract.selection__hr_contract__state__draft
 #: model:ir.model.fields.selection,name:hr_contract.selection__hr_contract_history__state__draft
 msgid "New"
-msgstr "Новый"
+msgstr "Новое"
+
+#. module: hr_contract
+#. odoo-javascript
+#: code:addons/hr_contract/static/src/js/hr_contract_history_list_controller.js:0
+#, python-format
+msgid "New Employee"
+msgstr ""
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__activity_calendar_event_id
 msgid "Next Activity Calendar Event"
-msgstr "Следующее дело Календарь"
+msgstr "Встреча в календаре для следующего действия"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__activity_date_deadline
 msgid "Next Activity Deadline"
-msgstr "Срок выполнения следующего дела"
+msgstr "Крайний срок следующего действия"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__activity_summary
 msgid "Next Activity Summary"
-msgstr "Краткое описание следующего дела"
+msgstr "Краткое описание следующего действия"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__activity_type_id
 msgid "Next Activity Type"
-msgstr "Категория следующего дела"
+msgstr "Тип следующего действия"
 
 #. module: hr_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_history_view_search
 msgid "No Contracts"
-msgstr "Нет договоров"
+msgstr "Без контрактов"
 
 #. module: hr_contract
 #: model_terms:ir.actions.act_window,help:hr_contract.hr_contract_history_view_list_action
@@ -773,9 +697,14 @@ msgid "No data to display"
 msgstr "Нет данных для отображения"
 
 #. module: hr_contract
+#: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_search
+msgid "Not Running"
+msgstr ""
+
+#. module: hr_contract
 #: model:ir.model.fields.selection,name:hr_contract.selection__hr_contract_history__under_contract_state__blocked
 msgid "Not Under Contract"
-msgstr "Без договора"
+msgstr "Не по контракту"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__notes
@@ -787,24 +716,6 @@ msgstr "Заметки"
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__message_needaction_counter
 msgid "Number of Actions"
 msgstr "Количество действий"
-
-#. module: hr_contract
-#: model_terms:ir.ui.view,arch_db:hr_contract.res_config_settings_view_form
-msgid ""
-"Number of days prior to the contract end date that a contract expiration "
-"warning is triggered."
-msgstr ""
-"Количество дней до даты окончания действия договора, за которые срабатывает "
-"предупреждение об истечении срока действия договора."
-
-#. module: hr_contract
-#: model_terms:ir.ui.view,arch_db:hr_contract.res_config_settings_view_form
-msgid ""
-"Number of days prior to the work permit expiration date that a warning is "
-"triggered."
-msgstr ""
-"Количество дней до даты истечения срока действия разрешения на работу, за "
-"которые срабатывает предупреждение."
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__message_has_error_counter
@@ -819,48 +730,38 @@ msgstr "Количество сообщений, требующих действ
 #. module: hr_contract
 #: model:ir.model.fields,help:hr_contract.field_hr_contract__message_has_error_counter
 msgid "Number of messages with delivery error"
-msgstr "Количество недоставленных сообщений"
-
-#. module: hr_contract
-#: model:ir.model.fields.selection,name:hr_contract.selection__hr_contract__kanban_state__normal
-msgid "Ongoing"
-msgstr "Текущий"
+msgstr "Количество сообщений с ошибкой отправки"
 
 #. module: hr_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_history_view_form
 msgid "Open Contract"
-msgstr "Открытый договор"
+msgstr "Открытый контракт"
 
 #. module: hr_contract
 #: model:ir.model.fields,help:hr_contract.field_hr_contract__hr_responsible_id
 msgid "Person responsible for validating the employee's contracts."
-msgstr "Лицо, ответственное за проверку договоров работника."
+msgstr "Лицо, ответственное за подтверждение контрактов сотрудников."
 
 #. module: hr_contract
 #: model:ir.model,name:hr_contract.model_hr_employee_public
 msgid "Public Employee"
-msgstr "Публичный сотрудник"
+msgstr "Государственный служащий"
 
 #. module: hr_contract
-#: model:ir.model.fields,field_description:hr_contract.field_hr_contract__rating_ids
-msgid "Ratings"
-msgstr "Оценки"
-
-#. module: hr_contract
-#: model:ir.model.fields.selection,name:hr_contract.selection__hr_contract__kanban_state__done
-msgid "Ready"
-msgstr "Готово"
+#: model:ir.model.fields.selection,name:hr_contract.selection__hr_contract__kanban_state__blocked
+msgid "Red"
+msgstr "Красный"
 
 #. module: hr_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_history_view_list
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_history_view_search
 msgid "Reference Working Time"
-msgstr "Референтное рабочее время"
+msgstr "Контрольное время работы"
 
 #. module: hr_contract
-#: model:ir.model,name:hr_contract.model_resource_calendar_leaves
-msgid "Resource Time Off Detail"
-msgstr "Подробности по времени отсутствия ресурса"
+#: model_terms:ir.ui.view,arch_db:hr_contract.hr_employee_public_view_form
+msgid "Related User"
+msgstr "Относится к пользователю"
 
 #. module: hr_contract
 #: model:ir.model,name:hr_contract.model_resource_calendar
@@ -875,29 +776,24 @@ msgstr "Ресурсы"
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__activity_user_id
 msgid "Responsible User"
-msgstr "Ответственный пользователь"
+msgstr "Ответственный"
 
 #. module: hr_contract
 #: model:ir.model.fields.selection,name:hr_contract.selection__hr_contract__state__open
 #: model:ir.model.fields.selection,name:hr_contract.selection__hr_contract_history__state__open
+#: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_search
 msgid "Running"
-msgstr "В процессе"
+msgstr "Выполняется"
 
 #. module: hr_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_history_view_search
-#: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_search
 msgid "Running Contracts"
-msgstr "Действующие договоры"
-
-#. module: hr_contract
-#: model:ir.model.fields,field_description:hr_contract.field_hr_contract__message_has_sms_error
-msgid "SMS Delivery error"
-msgstr "Ошибка доставки СМС"
+msgstr "Выполнение контрактов"
 
 #. module: hr_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_form
 msgid "Salary Information"
-msgstr "Информация о зарплате"
+msgstr "Информация по заработной плате"
 
 #. module: hr_contract
 #: model:ir.model,name:hr_contract.model_hr_payroll_structure_type
@@ -922,18 +818,17 @@ msgstr "Поиск справочных контрактов"
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_departure_wizard__set_date_end
 msgid "Set Contract End Date"
-msgstr "Установить дату окончания договора"
+msgstr "Установите дату окончания контракта"
 
 #. module: hr_contract
 #: model:ir.model.fields,help:hr_contract.field_hr_departure_wizard__set_date_end
 msgid "Set the end date on the current contract."
-msgstr "Установить дату окончания для текущего договора."
+msgstr "Установите дату окончания текущего контракта."
 
 #. module: hr_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_search
 msgid "Show all records which have a next action date before today"
-msgstr ""
-"Показать записи, у которых дата следующего действия раньше сегодняшней"
+msgstr "Показать все записи с датой следующего действия до сегодняшнего дня"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__date_start
@@ -947,6 +842,7 @@ msgstr "Дата начала"
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_history__state
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_history_view_search
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_search
+#: model_terms:ir.ui.view,arch_db:hr_contract.hr_employee_public_view_form
 msgid "Status"
 msgstr "Статус"
 
@@ -959,48 +855,32 @@ msgid ""
 "Today: Activity date is today\n"
 "Planned: Future activities."
 msgstr ""
-"Статус дел\n"
-"Просроченные: Срок выполнения уже прошел\n"
-"Сегодня: Срок выполнения сегодня\n"
-"Запланированные: Будущие дела."
+"Статус основан на плановых действиях\n"
+"Просрочено: срок исполнения истек\n"
+"Сегодня: выполнить сегодня\n"
+"Запланировано: срок в будущем."
 
 #. module: hr_contract
 #: model:ir.model.fields,help:hr_contract.field_hr_contract__state
 msgid "Status of the contract"
-msgstr "Статус договора"
+msgstr "Статус Договора"
 
 #. module: hr_contract
 #: model:ir.model.fields,help:hr_contract.field_hr_contract__country_code
 #: model:ir.model.fields,help:hr_contract.field_hr_contract_history__country_code
-#: model:ir.model.fields,help:hr_contract.field_hr_payroll_structure_type__country_code
 msgid ""
 "The ISO country code in two chars. \n"
 "You can use this field for quick search."
 msgstr ""
-"ISO‑код страны (2 символа). \n"
-"Используется для быстрого поиска."
+"Код страны ISO в двух символах.\n"
+"Вы можете использовать это поле для быстрого поиска."
 
 #. module: hr_contract
 #. odoo-python
 #: code:addons/hr_contract/models/hr_contract.py:0
+#, python-format
 msgid "The contract of %s is about to expire."
-msgstr "Скоро истекает срок действия договора сотрудника: %s ."
-
-#. module: hr_contract
-#: model_terms:ir.ui.view,arch_db:hr_contract.hr_hr_employee_view_form2
-msgid "The default working hours are set in configuration."
-msgstr "Стандартные часы работы задаются в настройках."
-
-#. module: hr_contract
-#. odoo-python
-#: code:addons/hr_contract/models/hr_contract.py:0
-msgid "The work permit of %s is about to expire."
-msgstr "Скоро истекает срок действия разрешения на работу сотрудника: %s "
-
-#. module: hr_contract
-#: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_kanban
-msgid "To"
-msgstr "Кому"
+msgstr "Срок действия контракта %s истекает."
 
 #. module: hr_contract
 #: model:mail.message.subtype,name:hr_contract.mt_contract_pending
@@ -1010,27 +890,32 @@ msgstr "К продлению"
 #. module: hr_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_search
 msgid "Today Activities"
-msgstr "Дела на сегодня"
+msgstr "Действия на сегодня"
 
 #. module: hr_contract
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_form
 msgid "Type in notes about this contract..."
-msgstr "Добавьте примечания по этому договору…"
+msgstr "Введите заметки об этом контракте..."
 
 #. module: hr_contract
 #: model:ir.model.fields,help:hr_contract.field_hr_contract__activity_exception_decoration
 msgid "Type of the exception activity on record."
-msgstr ""
+msgstr "Тип активности исключения в записи."
 
 #. module: hr_contract
 #: model:ir.model.fields.selection,name:hr_contract.selection__hr_contract_history__under_contract_state__done
 msgid "Under Contract"
-msgstr "Работает по договору"
+msgstr "По контракту"
 
 #. module: hr_contract
 #: model:ir.model,name:hr_contract.model_res_users
 msgid "User"
 msgstr "Пользователь"
+
+#. module: hr_contract
+#: model:ir.model.fields,field_description:hr_contract.field_hr_contract__visa_expire
+msgid "Visa Expiration Date"
+msgstr "Дата окончания срока действия визы"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__visa_no
@@ -1041,33 +926,7 @@ msgstr "Номер визы"
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__wage
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_history__wage
 msgid "Wage"
-msgstr "Оклад"
-
-#. module: hr_contract
-#: model:ir.model.fields.selection,name:hr_contract.selection__hr_contract__kanban_state__blocked
-msgid "Warning"
-msgstr "Предупреждение"
-
-#. module: hr_contract
-#: model:ir.model.fields,field_description:hr_contract.field_hr_contract__website_message_ids
-msgid "Website Messages"
-msgstr "Сообщения на сайте"
-
-#. module: hr_contract
-#: model:ir.model.fields,help:hr_contract.field_hr_contract__website_message_ids
-msgid "Website communication history"
-msgstr "История коммуникаций с сайта"
-
-#. module: hr_contract
-#: model_terms:ir.ui.view,arch_db:hr_contract.res_config_settings_view_form
-msgid "Work Permit Expiration Notice Period"
-msgstr "Период уведомления об истечении срока действия разрешения на работу"
-
-#. module: hr_contract
-#: model:ir.model.fields,field_description:hr_contract.field_res_company__work_permit_expiration_notice_period
-#: model:ir.model.fields,field_description:hr_contract.field_res_config_settings__work_permit_expiration_notice_period
-msgid "Work Permit Expiry Notice Period"
-msgstr "Период уведомления об истечении срока действия разрешения на работу"
+msgstr "Зарплата"
 
 #. module: hr_contract
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract__permit_no
@@ -1079,10 +938,10 @@ msgstr "Номер разрешения на работу"
 #: model:ir.model.fields,field_description:hr_contract.field_hr_contract_history__resource_calendar_id
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_search
 msgid "Working Schedule"
-msgstr "Рабочий график"
+msgstr "График работы"
 
 #. module: hr_contract
-#. odoo-python
 #: code:addons/hr_contract/models/hr_employee.py:0
+#, python-format
 msgid "You cannot delete an employee with a running contract."
-msgstr "Вы не можете  удалить сотрудника с действующим договором."
+msgstr "Удаление сотрудника с активным контрактом невозможно."

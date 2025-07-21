@@ -12,9 +12,9 @@
                     <field name="email" position="before">
                         <field name="notification_type" widget="radio" readonly="0"/>
                     </field>
-                    <field name="signature" position="attributes">
-                        <attribute name="widget">html_mail</attribute>
-                    </field>
+                    <xpath expr="//field[@name='image_1920']" position="before">
+                        <widget name="notification_alert"/>
+                    </xpath>
                 </data>
             </field>
         </record>
@@ -28,10 +28,7 @@
                 <data>
                     <field name="signature" position="before">
                         <field name="notification_type" widget="radio"
-                            invisible="share"/>
-                    </field>
-                    <field name="signature" position="attributes">
-                        <attribute name="widget">html_mail</attribute>
+                            attrs="{'invisible': [('share', '=', True)]}"/>
                     </field>
                 </data>
             </field>

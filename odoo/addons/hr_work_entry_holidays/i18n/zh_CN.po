@@ -3,21 +3,52 @@
 # 	* hr_work_entry_holidays
 # 
 # Translators:
-# Wil Odoo, 2024
+# Martin Trigaux, 2022
+# Jeffery CHEN <jeffery9@gmail.com>, 2022
+# Raymond Yu <cl_yu@hotmail.com>, 2022
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 08:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Wil Odoo, 2024\n"
+"POT-Creation-Date: 2022-09-20 09:01+0000\n"
+"PO-Revision-Date: 2022-09-22 05:52+0000\n"
+"Last-Translator: Raymond Yu <cl_yu@hotmail.com>, 2022\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/odoo/teams/41243/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: zh_CN\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: hr_work_entry_holidays
+#: code:addons/hr_work_entry_holidays/models/hr_leave.py:0
+#, python-format
+msgid "%s: Time Off"
+msgstr "%s:休息时间"
+
+#. module: hr_work_entry_holidays
+#: code:addons/hr_work_entry_holidays/models/hr_leave.py:0
+#, python-format
+msgid ""
+"A leave cannot be set across multiple contracts with different working schedules.\n"
+"\n"
+"Please create one time off for each contract.\n"
+"\n"
+"Time off:\n"
+"%s\n"
+"\n"
+"Contracts:\n"
+"%s"
+msgstr ""
+"不能在具有不同工作时间表的多个合同中设置休假。\n"
+"\n"
+"请为每份合同创建一个假期。\n"
+"\n"
+"休假时间：\n"
+"%s\n"
+"合同：\n"
+"%s"
 
 #. module: hr_work_entry_holidays
 #: model:ir.model,name:hr_work_entry_holidays.model_hr_contract
@@ -58,6 +89,14 @@ msgstr ""
 "当经理批准休假时，状态为“已批准”。"
 
 #. module: hr_work_entry_holidays
+#: code:addons/hr_work_entry_holidays/models/hr_leave.py:0
+#, python-format
+msgid ""
+"There is no employee set on the time off. Please make sure you're logged in "
+"the correct company."
+msgstr "休假时间上没有员工设置。请确保您登录在正确的公司。"
+
+#. module: hr_work_entry_holidays
 #: model:ir.model,name:hr_work_entry_holidays.model_hr_leave
 #: model:ir.model.fields,field_description:hr_work_entry_holidays.field_hr_work_entry__leave_id
 msgid "Time Off"
@@ -77,4 +116,4 @@ msgstr "工作条目类型"
 #. module: hr_work_entry_holidays
 #: model:ir.model.fields,help:hr_work_entry_holidays.field_hr_work_entry_type__leave_type_ids
 msgid "Work entry used in the payslip."
-msgstr "工资单中使用的工作条目。"
+msgstr "工资单中使用的工作条目"

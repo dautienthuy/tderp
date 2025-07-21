@@ -5,7 +5,7 @@
     'name': 'Online Jobs',
     'category': 'Website/Website',
     'sequence': 310,
-    'version': '1.1',
+    'version': '1.0',
     'summary': 'Manage your online hiring process',
     'description': "This module allows to publish your available job positions on your website and keep track of application submissions easily. It comes as an add-on of *Recruitment* app.",
     'depends': ['hr_recruitment', 'website_mail'],
@@ -28,18 +28,10 @@
     'assets': {
         'web.assets_frontend': [
             'website_hr_recruitment/static/src/scss/**/*',
-            'website_hr_recruitment/static/src/js/website_hr_applicant_form.js',
-        ],
-        'web.assets_backend': [
-            'website_hr_recruitment/static/src/js/widgets/copy_link_menuitem.js',
-            'website_hr_recruitment/static/src/js/widgets/copy_link_menuitem.xml',
-            'website_hr_recruitment/static/src/fields/**/*',
-        ],
-        'website.assets_wysiwyg': [
-            'website_hr_recruitment/static/src/js/website_hr_recruitment_editor.js',
         ],
         'website.assets_editor': [
             'website_hr_recruitment/static/src/js/systray_items/new_content.js',
+            'website_hr_recruitment/static/src/js/website_hr_recruitment_editor.js',
         ],
         'web.assets_tests': [
             'website_hr_recruitment/static/tests/**/*',

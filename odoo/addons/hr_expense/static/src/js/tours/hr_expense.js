@@ -1,120 +1,82 @@
-/** @odoo-module **/
+odoo.define('hr_expense.tour', function(require) {
+"use strict";
 
-import { _t } from "@web/core/l10n/translation";
-import { registry } from "@web/core/registry";
-import { stepUtils } from "@web_tour/tour_service/tour_utils";
+const {_t} = require('web.core');
+const {Markup} = require('web.utils');
+var tour = require('web_tour.tour');
 
-import { markup } from "@odoo/owl";
-
-registry.category("web_tour.tours").add('hr_expense_tour' , {
-    url: "/odoo",
-    steps: () => [stepUtils.showAppsMenuItem(), {
-    isActive: ["community"],
+tour.register('hr_expense_tour' , {
+    url: "/web",
+    rainbowManMessage: _t("There you go - expense management in a nutshell!"),
+}, [tour.stepUtils.showAppsMenuItem(), {
     trigger: '.o_app[data-menu-xmlid="hr_expense.menu_hr_expense_root"]',
-    content: markup(_t("<b>Wasting time recording your receipts?</b> Let’s try a better way.")),
-    tooltipPosition: 'right',
-    run: "click",
+    content: _t("Wasting time recording your receipts? Let’s try a better way."),
+    position: 'right',
+    edition: 'community'
 }, {
-    isActive: ["enterprise"],
     trigger: '.o_app[data-menu-xmlid="hr_expense.menu_hr_expense_root"]',
-    content: markup(_t("<b>Wasting time recording your receipts?</b> Let’s try a better way.")),
-    tooltipPosition: 'bottom',
-    run: "click",
-},
-{
-    isActive: ["desktop"],
-    trigger: ".o_button_upload_expense",
-},
-{
-    isActive: ["desktop"],
+    content: _t("Wasting time recording your receipts? Let’s try a better way."),
+    position: 'bottom',
+    edition: 'enterprise'
+}, {
     trigger: '.o_list_button_add',
+    extra_trigger: '.o_button_upload_expense',
     content: _t("It all begins here - let's go!"),
-    tooltipPosition: 'bottom',
-    run: "click",
-},
-{
-    isActive: ["mobile"],
-    trigger: ".o_button_upload_expense",
-},
-{
-    isActive: ["mobile"],
-    trigger: '.o-kanban-button-new',
-    content: _t("It all begins here - let's go!"),
-    tooltipPosition: 'bottom',
-    run: "click",
-},
-{
-    trigger: ".o_hr_expense_form_view_view",
-},
-{
-    trigger: '.o_field_widget[name="product_id"] .o_input_dropdown',
-    content: _t("Enter a name then choose a category and configure the amount of your expense."),
-    tooltipPosition: 'bottom',
-    run: "click",
-},
-{
-    trigger: ".o_hr_expense_form_view_view",
-},
-{
-    trigger: '.o_form_status_indicator_dirty .o_form_button_save',
-    content: markup(_t("Ready? You can save it manually or discard modifications from here. You don't <em>need to save</em> - Odoo will save eveyrthing for you when you navigate.")),
-    tooltipPosition: 'bottom',
-    run: "click",
-}, ...stepUtils.statusbarButtonsSteps(_t("Attach Receipt"), _t("Attach a receipt - usually an image or a PDF file.")),
-...stepUtils.statusbarButtonsSteps(_t("Create Report"), _t("Create a report to submit one or more expenses to your manager.")),
-...stepUtils.statusbarButtonsSteps(_t("Submit to Manager"), markup(_t('Once your <b>Expense Report</b> is ready, you can submit it to your manager and wait for approval.'))),
-{
-    isActive: ["mobile"],
-    trigger: ".o_hr_expense_form_view_view",
-},
-{
-    isActive: ["mobile"],
-    trigger: ".o_back_button",
-    content:  _t("Use the breadcrumbs to go back to the list of expenses."),
-    tooltipPosition: "bottom",
-    run: "click",
-},
-{
-    trigger: ".o_hr_expense_form_view_view",
+    position: 'bottom',
+    mobile: false,
 }, {
-    isActive: ["desktop"],
+    trigger: '.o-kanban-button-new',
+    extra_trigger: '.o_button_upload_expense',
+    content: _t("It all begins here - let's go!"),
+    position: 'bottom',
+    mobile: true,
+}, {
+    trigger: '.o_field_widget[name="product_id"] .o_input_dropdown',
+    extra_trigger: '.o_expense_form',
+    content: _t("Enter a name then choose a category and configure the amount of your expense."),
+    position: 'bottom',
+}, {
+    trigger: '.o_form_status_indicator_dirty .o_form_button_save',
+    extra_trigger: '.o_expense_form',
+    content: Markup(_t("Ready? You can save it manually or discard modifications from here. You don't <em>need to save</em> - Odoo will save eveyrthing for you when you navigate.")),
+    position: 'bottom',
+}, ...tour.stepUtils.statusbarButtonsSteps(_t("Attach Receipt"), _t("Attach a receipt - usually an image or a PDF file.")),
+...tour.stepUtils.statusbarButtonsSteps(_t("Create Report"), _t("Create a report to submit one or more expenses to your manager.")),
+...tour.stepUtils.statusbarButtonsSteps(_t("Submit to Manager"), Markup(_t('Once your <b>Expense Report</b> is ready, you can submit it to your manager and wait for approval.'))),
+...tour.stepUtils.goBackBreadcrumbsMobile(
+    _t("Use the breadcrumbs to go back to the list of expenses."),
+    undefined,
+    ".o_expense_form",
+),
+{
     trigger: '.breadcrumb > li.breadcrumb-item:first',
+    extra_trigger: ".o_expense_form",
     content: _t("Let's go back to your expenses."),
-    tooltipPosition: 'bottom',
-    run: "click",
+    position: 'bottom',
+    mobile: false,
 }, {
     trigger: '.o_expense_container',
     content: _t("The status of all your current expenses is visible from here."),
-    tooltipPosition: 'bottom',
-    run: "click",
+    position: 'bottom',
 },
-{
-    isActive: ["mobile"],
-    trigger: ".o_mobile_menu_toggle",
-    content: _t("Open bugger menu."),
-    tooltipPosition: "bottom",
-    run: "click",
-},
-{
-    trigger: ".o_main_navbar",
-},
+tour.stepUtils.openBuggerMenu(),
 {
     trigger: "[data-menu-xmlid='hr_expense.menu_hr_expense_report']",
+    extra_trigger: '.o_main_navbar',
     content: _t("Let's check out where you can manage all your employees expenses"),
-    tooltipPosition: "bottom",
-    run: "click",
+    position: "bottom"
 }, {
-    isActive: ["desktop"],
     trigger: '.o_list_renderer tbody tr[data-id]',
     content: _t('Managers can inspect all expenses from here.'),
-    tooltipPosition: 'bottom',
-    run: "click",
+    position: 'bottom',
+    mobile: false,
 }, {
-    isActive: ["mobile"],
     trigger: '.o_kanban_renderer .oe_kanban_card',
     content: _t('Managers can inspect all expenses from here.'),
-    tooltipPosition: 'bottom',
-    run: "click",
+    position: 'bottom',
+    mobile: true,
 },
-...stepUtils.statusbarButtonsSteps(_t("Approve"), _t("Managers can approve the report here, then an accountant can post the accounting entries.")),
-]});
+...tour.stepUtils.statusbarButtonsSteps(_t("Approve"), _t("Managers can approve the report here, then an accountant can post the accounting entries.")),
+]);
+
+});

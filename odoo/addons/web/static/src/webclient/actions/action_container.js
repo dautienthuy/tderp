@@ -1,3 +1,5 @@
+/** @odoo-module **/
+
 import { ActionDialog } from "./action_dialog";
 
 import { Component, xml, onWillDestroy } from "@odoo/owl";
@@ -6,15 +8,6 @@ import { Component, xml, onWillDestroy } from "@odoo/owl";
 // ActionContainer (Component)
 // -----------------------------------------------------------------------------
 export class ActionContainer extends Component {
-    static components = { ActionDialog };
-    static props = {};
-    static template = xml`
-        <t t-name="web.ActionContainer">
-          <div class="o_action_manager">
-            <t t-if="info.Component" t-component="info.Component" className="'o_action'" t-props="info.componentProps" t-key="info.id"/>
-          </div>
-        </t>`;
-
     setup() {
         this.info = {};
         this.onActionManagerUpdate = ({ detail: info }) => {
@@ -27,3 +20,10 @@ export class ActionContainer extends Component {
         });
     }
 }
+ActionContainer.components = { ActionDialog };
+ActionContainer.template = xml`
+    <t t-name="web.ActionContainer">
+      <div class="o_action_manager">
+        <t t-if="info.Component" t-component="info.Component" className="'o_action'" t-props="info.componentProps" t-key="info.id"/>
+      </div>
+    </t>`;

@@ -3,18 +3,16 @@
 # 	* analytic
 # 
 # Translators:
-# Nurlan Farajov, 2024
-# Jumshud Sultanov <cumshud@gmail.com>, 2024
-# erpgo translator <jumshud@erpgo.az>, 2024
-# Nurlan Farajov <coolinuxoid@gmail.com>, 2025
+# Jumshud Sultanov <cumshud@gmail.com>, 2023
+# erpgo translator <jumshud@erpgo.az>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-07 20:36+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Nurlan Farajov <coolinuxoid@gmail.com>, 2025\n"
+"POT-Creation-Date: 2023-05-23 08:23+0000\n"
+"PO-Revision-Date: 2022-09-22 05:45+0000\n"
+"Last-Translator: erpgo translator <jumshud@erpgo.az>, 2023\n"
 "Language-Team: Azerbaijani (https://app.transifex.com/odoo/teams/41243/az/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -25,8 +23,16 @@ msgstr ""
 #. module: analytic
 #. odoo-python
 #: code:addons/analytic/models/analytic_account.py:0
+#, python-format
 msgid "%s (copy)"
-msgstr "%s (surət)"
+msgstr "%s (Copy)"
+
+#. module: analytic
+#. odoo-javascript
+#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.xml:0
+#, python-format
+msgid "(no accounts)"
+msgstr "(hesab mövcud deyil)"
 
 #. module: analytic
 #: model_terms:ir.ui.view,arch_db:analytic.account_analytic_plan_form_view
@@ -39,20 +45,6 @@ msgid "<span class=\"o_stat_text\">Gross Margin</span>"
 msgstr "<span class=\"o_stat_text\">Ümumi Mənfəət</span>"
 
 #. module: analytic
-#. odoo-python
-#: code:addons/analytic/models/analytic_plan.py:0
-msgid ""
-"A 'Project' plan needs to exist and its id needs to be set as "
-"`analytic.project_plan` in the system variables"
-msgstr ""
-
-#. module: analytic
-#. odoo-javascript
-#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
-msgid "Account field"
-msgstr ""
-
-#. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_plan__account_ids
 msgid "Accounts"
 msgstr "Hesablar"
@@ -60,23 +52,12 @@ msgstr "Hesablar"
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__message_needaction
 msgid "Action Needed"
-msgstr "Gərəkli Əməliyyat"
+msgstr "Lazımi Hərəkət"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__active
 msgid "Active"
 msgstr "Aktiv"
-
-#. module: analytic
-#: model:account.analytic.account,name:analytic.analytic_active_account
-msgid "Active account"
-msgstr ""
-
-#. module: analytic
-#. odoo-javascript
-#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.xml:0
-msgid "Add a Line"
-msgstr "Sətir əlavə edin"
 
 #. module: analytic
 #: model_terms:ir.actions.act_window,help:analytic.action_account_analytic_account_form
@@ -102,23 +83,20 @@ msgstr "Məbləğ"
 
 #. module: analytic
 #. odoo-javascript
-#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
-msgid "Amount field"
-msgstr ""
-
-#. module: analytic
-#. odoo-javascript
 #: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.xml:0
+#: model:ir.model.fields,field_description:analytic.field_account_analytic_distribution_model__analytic_distribution
+#: model:ir.model.fields,field_description:analytic.field_analytic_mixin__analytic_distribution
+#, python-format
 msgid "Analytic"
 msgstr "Analitik"
 
 #. module: analytic
 #: model:ir.model,name:analytic.model_account_analytic_account
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__name
-#: model:ir.model.fields,field_description:analytic.field_account_analytic_line__auto_account_id
-#: model:ir.model.fields,field_description:analytic.field_analytic_plan_fields_mixin__auto_account_id
+#: model:ir.model.fields,field_description:analytic.field_account_analytic_line__account_id
 #: model_terms:ir.ui.view,arch_db:analytic.view_account_analytic_account_form
 #: model_terms:ir.ui.view,arch_db:analytic.view_account_analytic_account_search
+#: model_terms:ir.ui.view,arch_db:analytic.view_account_analytic_line_filter
 msgid "Analytic Account"
 msgstr "Analitik Hesab"
 
@@ -140,14 +118,6 @@ msgid "Analytic Accounts Count"
 msgstr "Analitik Hesabların Sayı"
 
 #. module: analytic
-#: model:ir.model.fields,field_description:analytic.field_account_analytic_distribution_model__analytic_distribution
-#: model:ir.model.fields,field_description:analytic.field_analytic_mixin__analytic_distribution
-msgid "Analytic Distribution"
-msgstr "Analitik bölüşdürmə"
-
-#. module: analytic
-#. odoo-javascript
-#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
 #: model:ir.model,name:analytic.model_account_analytic_distribution_model
 #: model_terms:ir.ui.view,arch_db:analytic.account_analytic_distribution_model_form_view
 #: model_terms:ir.ui.view,arch_db:analytic.account_analytic_distribution_model_tree_view
@@ -158,6 +128,19 @@ msgstr "Analitik Paylama Modeli"
 #: model:ir.actions.act_window,name:analytic.action_analytic_distribution_model
 msgid "Analytic Distribution Models"
 msgstr "Analitik Paylama Modelləri"
+
+#. module: analytic
+#: model:ir.model.fields,field_description:analytic.field_account_analytic_distribution_model__analytic_distribution_search
+#: model:ir.model.fields,field_description:analytic.field_analytic_mixin__analytic_distribution_search
+msgid "Analytic Distribution Search"
+msgstr "Analitik Dağıtım Axtarışı"
+
+#. module: analytic
+#. odoo-javascript
+#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
+#, python-format
+msgid "Analytic Distribution Template"
+msgstr "Analitik Paylama Şablonu"
 
 #. module: analytic
 #: model_terms:ir.ui.view,arch_db:analytic.view_account_analytic_line_form
@@ -189,13 +172,9 @@ msgstr "Analitik mikslər"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_applicability__analytic_plan_id
+#: model_terms:ir.ui.view,arch_db:analytic.view_account_analytic_line_filter
 msgid "Analytic Plan"
 msgstr "Analitik Plan"
-
-#. module: analytic
-#: model:ir.model,name:analytic.model_analytic_plan_fields_mixin
-msgid "Analytic Plan Fields"
-msgstr ""
 
 #. module: analytic
 #: model:ir.model,name:analytic.model_account_analytic_applicability
@@ -217,14 +196,21 @@ msgid "Analytic Precision"
 msgstr "Analitik Dəqiqlik"
 
 #. module: analytic
+#: model_terms:ir.ui.view,arch_db:analytic.account_analytic_distribution_model_form_view
+msgid "Analytic distribution to apply"
+msgstr "Tətbiq ediləcək analitik paylama"
+
+#. module: analytic
 #. odoo-python
 #: code:addons/analytic/models/analytic_plan.py:0
+#, python-format
 msgid "Analytical Accounts"
 msgstr "Analitik Hesablar"
 
 #. module: analytic
 #. odoo-python
 #: code:addons/analytic/models/analytic_plan.py:0
+#, python-format
 msgid "Analytical Plans"
 msgstr "Analitik Planlar"
 
@@ -252,12 +238,6 @@ msgid "Asustek"
 msgstr "Asustek"
 
 #. module: analytic
-#. odoo-python
-#: code:addons/analytic/models/analytic_line.py:0
-msgid "At least one analytic account must be set"
-msgstr ""
-
-#. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__message_attachment_count
 msgid "Attachment Count"
 msgstr "Qoşma Sayı"
@@ -272,12 +252,6 @@ msgstr "Balans"
 #: model_terms:ir.ui.view,arch_db:analytic.view_account_analytic_account_kanban
 msgid "Balance:"
 msgstr "Balans:"
-
-#. module: analytic
-#. odoo-javascript
-#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
-msgid "Business domain"
-msgstr ""
 
 #. module: analytic
 #: model:account.analytic.account,name:analytic.analytic_partners_camp_to_camp
@@ -315,12 +289,6 @@ msgid "Click to add a new analytic account plan."
 msgstr "Yeni analitik hesab planı əlavə etmək üçün klikləyin."
 
 #. module: analytic
-#. odoo-javascript
-#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.xml:0
-msgid "Close"
-msgstr "Bağlayın"
-
-#. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_plan__color
 msgid "Color"
 msgstr "Rəng"
@@ -337,9 +305,9 @@ msgstr "Ticarət və Marketinq"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__company_id
-#: model:ir.model.fields,field_description:analytic.field_account_analytic_applicability__company_id
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_distribution_model__company_id
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line__company_id
+#: model:ir.model.fields,field_description:analytic.field_account_analytic_plan__company_id
 msgid "Company"
 msgstr "Şirkət"
 
@@ -347,11 +315,6 @@ msgstr "Şirkət"
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_plan__complete_name
 msgid "Complete Name"
 msgstr "Tam Adı"
-
-#. module: analytic
-#: model_terms:ir.ui.view,arch_db:analytic.account_analytic_distribution_model_form_view
-msgid "Conditions to meet"
-msgstr ""
 
 #. module: analytic
 #: model:ir.model,name:analytic.model_res_config_settings
@@ -445,11 +408,6 @@ msgid "Delta PC"
 msgstr "Delta PC"
 
 #. module: analytic
-#: model:account.analytic.plan,name:analytic.analytic_plan_departments
-msgid "Departments"
-msgstr "Şöbələr"
-
-#. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line__name
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_plan__description
 msgid "Description"
@@ -461,40 +419,18 @@ msgid "Desertic - Hispafuentes"
 msgstr "Desertic - Hispafuentes"
 
 #. module: analytic
-#. odoo-javascript
-#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
-msgid "Disable save"
-msgstr ""
-
-#. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__display_name
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_applicability__display_name
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_distribution_model__display_name
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line__display_name
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_plan__display_name
 msgid "Display Name"
-msgstr "Göstəriləcək Ad"
-
-#. module: analytic
-#: model:ir.model.fields,field_description:analytic.field_account_analytic_distribution_model__distribution_analytic_account_ids
-#: model:ir.model.fields,field_description:analytic.field_analytic_mixin__distribution_analytic_account_ids
-msgid "Distribution Analytic Account"
-msgstr "Dağıtım Analitik Hesabı"
-
-#. module: analytic
-#: model_terms:ir.ui.view,arch_db:analytic.account_analytic_distribution_model_form_view
-msgid "Distribution to apply"
-msgstr ""
+msgstr "Ekran Adı"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_applicability__business_domain
 msgid "Domain"
 msgstr "Domen"
-
-#. module: analytic
-#: model:account.analytic.account,name:analytic.analytic_rd_finance
-msgid "Finance"
-msgstr "Maliyyə"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__message_follower_ids
@@ -505,12 +441,6 @@ msgstr "İzləyicilər"
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__message_partner_ids
 msgid "Followers (Partners)"
 msgstr "İzləyicilər (Tərəfdaşlar)"
-
-#. module: analytic
-#. odoo-javascript
-#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
-msgid "Force applicability"
-msgstr ""
 
 #. module: analytic
 #: model:ir.actions.act_window,name:analytic.account_analytic_line_action
@@ -529,11 +459,6 @@ msgid "Has Message"
 msgstr "Mesajı Var"
 
 #. module: analytic
-#: model:account.analytic.account,name:analytic.analytic_rd_hr
-msgid "Human Resources"
-msgstr "İnsan Resursları"
-
-#. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__id
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_applicability__id
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_distribution_model__id
@@ -550,7 +475,7 @@ msgstr "İşarələnibsə, yeni mesajlara baxmalısınız."
 #. module: analytic
 #: model:ir.model.fields,help:analytic.field_account_analytic_account__message_has_error
 msgid "If checked, some messages have a delivery error."
-msgstr "İşarələnibsə, bəzi mesajların çatdırılmasında xəta var."
+msgstr "Yoxlanılıbsa, bəzi mesajların çatdırılmasında xəta var."
 
 #. module: analytic
 #: model_terms:ir.actions.act_window,help:analytic.account_analytic_line_action
@@ -565,14 +490,25 @@ msgstr ""
 "                analiz etmək üçün siz xərcləri və gəlirləri izləyə bilərsiniz."
 
 #. module: analytic
-#: model:account.analytic.plan,name:analytic.analytic_plan_internal
-msgid "Internal"
-msgstr "Daxili"
+#. odoo-javascript
+#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
+#, python-format
+msgid "Invalid"
+msgstr "Yalnış"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__message_is_follower
 msgid "Is Follower"
 msgstr "İzləyicidir"
+
+#. module: analytic
+#: model:ir.model.fields,field_description:analytic.field_account_analytic_account____last_update
+#: model:ir.model.fields,field_description:analytic.field_account_analytic_applicability____last_update
+#: model:ir.model.fields,field_description:analytic.field_account_analytic_distribution_model____last_update
+#: model:ir.model.fields,field_description:analytic.field_account_analytic_line____last_update
+#: model:ir.model.fields,field_description:analytic.field_account_analytic_plan____last_update
+msgid "Last Modified on"
+msgstr "Son Dəyişdirilmə tarixi"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__write_uid
@@ -593,9 +529,11 @@ msgid "Last Updated on"
 msgstr "Son Yenilənmə tarixi"
 
 #. module: analytic
-#: model:account.analytic.account,name:analytic.analytic_rd_legal
-msgid "Legal"
-msgstr ""
+#. odoo-javascript
+#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
+#, python-format
+msgid "Loading..."
+msgstr "Yüklənir..."
 
 #. module: analytic
 #: model:account.analytic.account,name:analytic.analytic_think_big_systems
@@ -608,8 +546,16 @@ msgid "Luminous Technologies"
 msgstr "Luminous Technologies"
 
 #. module: analytic
+#: model:ir.model.fields,field_description:analytic.field_account_analytic_account__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "Əsas Əlavə"
+
+#. module: analytic
+#. odoo-javascript
+#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
 #: model:ir.model.fields.selection,name:analytic.selection__account_analytic_applicability__applicability__mandatory
 #: model:ir.model.fields.selection,name:analytic.selection__account_analytic_plan__default_applicability__mandatory
+#, python-format
 msgid "Mandatory"
 msgstr "Tələb olunur"
 
@@ -646,9 +592,10 @@ msgstr "Duman"
 
 #. module: analytic
 #. odoo-javascript
-#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.xml:0
-msgid "New Model"
-msgstr ""
+#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
+#, python-format
+msgid "No Analytic Accounts for this plan"
+msgstr "Bu plan üçün analitik hesab yoxdur"
 
 #. module: analytic
 #: model_terms:ir.actions.act_window,help:analytic.account_analytic_line_action_entries
@@ -663,8 +610,9 @@ msgstr "Bu hesabda hələ heç bir fəaliyyət yoxdur"
 #. module: analytic
 #. odoo-javascript
 #: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.xml:0
-msgid "No analytic plans found"
-msgstr ""
+#, python-format
+msgid "No plans available"
+msgstr "Plan mövcud deyil"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__message_needaction_counter
@@ -687,8 +635,16 @@ msgid "Number of messages with delivery error"
 msgstr "Çatdırılma xətası olan mesajların sayı"
 
 #. module: analytic
+#. odoo-javascript
+#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
+#, python-format
+msgid "OK"
+msgstr "OK"
+
+#. module: analytic
 #. odoo-python
 #: code:addons/analytic/models/analytic_mixin.py:0
+#, python-format
 msgid "One or more lines require a 100% analytic distribution."
 msgstr "Bir və ya bir neçə sıra 100% analitik paylanma tələb edir."
 
@@ -700,14 +656,18 @@ msgstr "Əməliyyat Xərcləri"
 #. module: analytic
 #. odoo-python
 #: code:addons/analytic/models/analytic_mixin.py:0
+#, python-format
 msgid "Operation not supported"
 msgstr "Əməliyyat dəstəklənmir"
 
 #. module: analytic
+#. odoo-javascript
+#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
 #: model:ir.model.fields.selection,name:analytic.selection__account_analytic_applicability__applicability__optional
 #: model:ir.model.fields.selection,name:analytic.selection__account_analytic_plan__default_applicability__optional
+#, python-format
 msgid "Optional"
-msgstr "Seçimli"
+msgstr "Əlavə"
 
 #. module: analytic
 #: model:ir.model.fields.selection,name:analytic.selection__account_analytic_line__category__other
@@ -741,43 +701,23 @@ msgid "Partner Category"
 msgstr "Partnyor Kateqoriyası"
 
 #. module: analytic
-#. odoo-javascript
-#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
-msgid "Percentage"
-msgstr "Faiz"
-
-#. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__plan_id
+#: model:ir.model.fields,field_description:analytic.field_account_analytic_line__plan_id
 msgid "Plan"
 msgstr "Plan"
-
-#. module: analytic
-#. odoo-javascript
-#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
-msgid "Product field"
-msgstr ""
-
-#. module: analytic
-#: model:account.analytic.account,name:analytic.analytic_rd_production
-msgid "Production"
-msgstr "Məhsul"
-
-#. module: analytic
-#: model:account.analytic.plan,name:analytic.analytic_plan_projects
-msgid "Project"
-msgstr "Layihə"
-
-#. module: analytic
-#: model:ir.model.fields,field_description:analytic.field_account_analytic_line__account_id
-#: model:ir.model.fields,field_description:analytic.field_analytic_plan_fields_mixin__account_id
-msgid "Project Account"
-msgstr ""
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line__unit_amount
 #: model_terms:ir.ui.view,arch_db:analytic.view_account_analytic_line_tree
 msgid "Quantity"
 msgstr "Miqdar"
+
+#. module: analytic
+#. odoo-javascript
+#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
+#, python-format
+msgid "Quick search: %s"
+msgstr "Cəld axtarış: %s"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__code
@@ -804,20 +744,9 @@ msgstr ""
 "                bilər.\""
 
 #. module: analytic
-#: model:ir.model.fields,field_description:analytic.field_account_analytic_plan__root_id
-msgid "Root"
-msgstr "Kök"
-
-#. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__root_plan_id
 msgid "Root Plan"
 msgstr "Əsas Plan"
-
-#. module: analytic
-#. odoo-javascript
-#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.xml:0
-msgid "Save as new analytic distribution model"
-msgstr ""
 
 #. module: analytic
 #: model:account.analytic.account,name:analytic.analytic_seagate_p2
@@ -830,10 +759,18 @@ msgid "Search Analytic Lines"
 msgstr "Analitik Sətirləri Axtarın"
 
 #. module: analytic
-#. odoo-python
-#: code:addons/analytic/models/analytic_account.py:0
-msgid "See them"
-msgstr ""
+#. odoo-javascript
+#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
+#, python-format
+msgid "Search More..."
+msgstr "Ətraflı Axtarış...."
+
+#. module: analytic
+#. odoo-javascript
+#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
+#, python-format
+msgid "Search: Analytic Account"
+msgstr "Axtar: Analitik Hesab"
 
 #. module: analytic
 #: model:ir.model.fields,help:analytic.field_account_analytic_distribution_model__company_id
@@ -870,10 +807,9 @@ msgstr ""
 "seçsək, o, avtomatik olaraq analitik faktura kimi qəbul edəcək)."
 
 #. module: analytic
-#: model:ir.model.fields,field_description:analytic.field_account_analytic_distribution_model__sequence
-#: model:ir.model.fields,field_description:analytic.field_account_analytic_plan__sequence
-msgid "Sequence"
-msgstr "Ardıcıllıq"
+#: model_terms:ir.ui.view,arch_db:analytic.account_analytic_distribution_model_form_view
+msgid "Simultaneous conditions to meet"
+msgstr "Qarşılanmalı olan paralel şərtlər"
 
 #. module: analytic
 #: model:account.analytic.account,name:analytic.analytic_spark
@@ -884,6 +820,17 @@ msgstr "Spark Systems"
 #: model_terms:ir.ui.view,arch_db:analytic.account_analytic_plan_form_view
 msgid "Subplans"
 msgstr "Alt planlar"
+
+#. module: analytic
+#. odoo-python
+#: code:addons/analytic/models/analytic_line.py:0
+#, python-format
+msgid ""
+"The selected account belongs to another company than the one you're trying "
+"to create an analytic item for"
+msgstr ""
+"Seçilmiş hesab analitik element yaratmağa çalışdığınızdan fərqli şirkətə "
+"məxsusdur."
 
 #. module: analytic
 #: model:account.analytic.account,name:analytic.analytic_absences
@@ -917,16 +864,14 @@ msgid "User"
 msgstr "İstifadəçi"
 
 #. module: analytic
-#. odoo-python
-#: code:addons/analytic/models/analytic_account.py:0
-msgid ""
-"Whoa there! Making this change would wipe out your current data. Let's avoid"
-" that, shall we?"
-msgstr ""
+#: model_terms:ir.ui.view,arch_db:analytic.account_analytic_distribution_model_tree_view
+msgid "View"
+msgstr "Baxın"
 
 #. module: analytic
 #. odoo-python
 #: code:addons/analytic/models/analytic_account.py:0
+#, python-format
 msgid ""
 "You can't set a different company on your analytic account since there are "
 "some analytic items linked to it."
@@ -936,13 +881,8 @@ msgstr ""
 
 #. module: analytic
 #. odoo-python
-#: code:addons/analytic/models/analytic_plan.py:0
-msgid "You cannot add a parent to the base plan '%s'"
-msgstr ""
-
-#. module: analytic
-#. odoo-python
 #: code:addons/analytic/models/analytic_distribution_model.py:0
+#, python-format
 msgid ""
 "You defined a distribution with analytic account(s) belonging to a specific "
 "company but a model shared between companies or with a different company"

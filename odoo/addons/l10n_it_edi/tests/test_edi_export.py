@@ -1,8 +1,12 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command
-from odoo.tests import freeze_time, tagged
+import datetime
+from lxml import etree
+
+from odoo.tests import tagged
 from odoo.addons.l10n_it_edi.tests.common import TestItEdi
+from odoo.exceptions import UserError
 
 
 @tagged('post_install_l10n', 'post_install', '-at_install')
@@ -11,6 +15,52 @@ class TestItEdiExport(TestItEdi):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+
+        cls.price_included_tax = cls.env['account.tax'].create({
+            'name': '22% price included tax',
+            'amount': 22.0,
+            'amount_type': 'percent',
+            'price_include': True,
+            'include_base_amount': True,
+            'company_id': cls.company.id,
+        })
+
+        cls.tax_10 = cls.env['account.tax'].create({
+            'name': '10% tax',
+            'amount': 10.0,
+            'amount_type': 'percent',
+            'company_id': cls.company.id,
+        })
+
+        cls.tax_zero_percent_hundred_percent_repartition = cls.env['account.tax'].create({
+            'name': 'all of nothing',
+            'amount': 0,
+            'amount_type': 'percent',
+            'company_id': cls.company.id,
+            'invoice_repartition_line_ids': [
+                (0, 0, {'factor_percent': 100, 'repartition_type': 'base'}),
+                (0, 0, {'factor_percent': 100, 'repartition_type': 'tax'}),
+            ],
+            'refund_repartition_line_ids': [
+                (0, 0, {'factor_percent': 100, 'repartition_type': 'base'}),
+                (0, 0, {'factor_percent': 100, 'repartition_type': 'tax'}),
+            ],
+        })
+
+        cls.tax_zero_percent_zero_percent_repartition = cls.env['account.tax'].create({
+            'name': 'none of nothing',
+            'amount': 0,
+            'amount_type': 'percent',
+            'company_id': cls.company.id,
+            'invoice_repartition_line_ids': [
+                (0, 0, {'factor_percent': 100, 'repartition_type': 'base'}),
+                (0, 0, {'factor_percent': 0, 'repartition_type': 'tax'}),
+            ],
+            'refund_repartition_line_ids': [
+                (0, 0, {'factor_percent': 100, 'repartition_type': 'base'}),
+                (0, 0, {'factor_percent': 0, 'repartition_type': 'tax'}),
+            ],
+        })
 
         cls.italian_partner_b = cls.env['res.partner'].create({
             'name': 'pa partner',
@@ -43,595 +93,667 @@ class TestItEdiExport(TestItEdi):
             'is_company': True,
         })
 
-    def test_vat_not_equals_codice(self):
-        self.company.partner_id.vat = '01698911003'
-        self.company.l10n_it_codice_fiscale = '07149930583'
+        cls.standard_line_below_400 = {
+            'name': 'cheap_line',
+            'quantity': 1,
+            'price_unit': 100.00,
+            'tax_ids': [(6, 0, [cls.company.account_sale_tax_id.id])]
+        }
 
-        invoice = self.env['account.move'].with_company(self.company).create({
+        cls.standard_line_400 = {
+            'name': '400_line',
+            'quantity': 1,
+            'price_unit': 327.87,
+            'tax_ids': [(6, 0, [cls.company.account_sale_tax_id.id])]
+        }
+
+        cls.price_included_invoice = cls.env['account.move'].with_company(cls.company).create({
             'move_type': 'out_invoice',
-            'invoice_date': '2022-03-24',
-            'invoice_date_due': '2022-03-24',
-            'partner_id': self.italian_partner_a.id,
+            'invoice_date': datetime.date(2022, 3, 24),
+            'invoice_date_due': datetime.date(2022, 3, 24),
+            'partner_id': cls.italian_partner_a.id,
+            'partner_bank_id': cls.test_bank.id,
             'invoice_line_ids': [
-                Command.create({
-                    'name': 'line1',
-                    'price_unit': 800.40,
-                    'tax_ids': [Command.set(self.default_tax.ids)],
+                (0, 0, {
+                    **cls.standard_line,
+                    'name': 'something price included',
+                    'tax_ids': [(6, 0, [cls.price_included_tax.id])]
+                }),
+                (0, 0, {
+                    **cls.standard_line,
+                    'name': 'something else price included',
+                    'tax_ids': [(6, 0, [cls.price_included_tax.id])]
+                }),
+                (0, 0, {
+                    **cls.standard_line,
+                    'name': 'something not price included',
                 }),
             ],
         })
-        invoice.action_post()
-        self._assert_export_invoice(invoice, 'invoice_vat_not_equals_codice.xml')
 
-    def test_export_invoice_price_included_taxes(self):
-        """ When the tax is price included, there should be a rounding value added to the xml, if the
-        sum(subtotals) * tax_rate is not equal to taxable base * tax rate (there is a constraint in the edi where
-        taxable base * tax rate = tax amount, but also taxable base = sum(subtotals) + rounding amount).
-        """
-        tax_included = self.env['account.tax'].with_company(self.company).create({
-            'name': "22% price included tax",
-            'amount': 22.0,
-            'amount_type': 'percent',
-            'price_include_override': 'tax_included',
-        })
-
-        invoice = self.env['account.move'].with_company(self.company).create({
+        cls.partial_discount_invoice = cls.env['account.move'].with_company(cls.company).create({
             'move_type': 'out_invoice',
-            'invoice_date': '2022-03-24',
-            'invoice_date_due': '2022-03-24',
-            'partner_id': self.italian_partner_a.id,
+            'invoice_date': datetime.date(2022, 3, 24),
+            'invoice_date_due': datetime.date(2022, 3, 24),
+            'partner_id': cls.italian_partner_a.id,
+            'partner_bank_id': cls.test_bank.id,
             'invoice_line_ids': [
-                Command.create({
-                    'name': "something price included",
-                    'price_unit': 800.40,
-                    'tax_ids': [Command.set(tax_included.ids)],
-                }),
-                Command.create({
-                    'name': "something else price included",
-                    'price_unit': 800.40,
-                    'tax_ids': [Command.set(tax_included.ids)],
-                }),
-                Command.create({
-                    'name': "something not price included",
-                    'price_unit': 800.40,
-                    'tax_ids': [Command.set(self.default_tax.ids)],
-                }),
-            ],
-        })
-        invoice.action_post()
-        self._assert_export_invoice(invoice, 'invoice_price_included_taxes.xml')
-
-    def test_export_invoice_partially_discounted(self):
-        invoice = self.env['account.move'].with_company(self.company).create({
-            'move_type': 'out_invoice',
-            'invoice_date': '2022-03-24',
-            'invoice_date_due': '2022-03-24',
-            'partner_id': self.italian_partner_a.id,
-            'invoice_line_ids': [
-                Command.create({
+                (0, 0, {
+                    **cls.standard_line,
                     'name': 'no discount',
-                    'price_unit': 800.40,
-                    'tax_ids': [Command.set(self.default_tax.ids)],
                 }),
-                Command.create({
+                (0, 0, {
+                    **cls.standard_line,
                     'name': 'special discount',
-                    'price_unit': 800.40,
                     'discount': 50,
-                    'tax_ids': [Command.set(self.default_tax.ids)],
                 }),
-                Command.create({
+                (0, 0, {
+                    **cls.standard_line,
                     'name': "an offer you can't refuse",
-                    'price_unit': 800.40,
                     'discount': 100,
-                    'tax_ids': [Command.set(self.default_tax.ids)],
                 }),
             ],
         })
-        invoice.action_post()
-        self._assert_export_invoice(invoice, 'invoice_partially_discounted.xml')
 
-    def test_invoice_fully_discounted(self):
-        invoice = self.env['account.move'].with_company(self.company).create({
+        cls.full_discount_invoice = cls.env['account.move'].with_company(cls.company).create({
             'move_type': 'out_invoice',
-            'invoice_date': '2022-03-24',
-            'invoice_date_due': '2022-03-24',
-            'partner_id': self.italian_partner_a.id,
+            'invoice_date': datetime.date(2022, 3, 24),
+            'invoice_date_due': datetime.date(2022, 3, 24),
+            'partner_id': cls.italian_partner_a.id,
+            'partner_bank_id': cls.test_bank.id,
             'invoice_line_ids': [
-                Command.create({
+                (0, 0, {
+                    **cls.standard_line,
                     'name': 'nothing shady just a gift for my friend',
-                    'price_unit': 800.40,
                     'discount': 100,
-                    'tax_ids': [Command.set(self.default_tax.ids)],
                 }),
             ],
         })
-        invoice.action_post()
-        self._assert_export_invoice(invoice, 'invoice_fully_discounted.xml')
 
-    def test_invoice_non_latin_and_latin(self):
-        invoice = self.env['account.move'].with_company(self.company).create({
+        cls.non_latin_and_latin_invoice = cls.env['account.move'].with_company(cls.company).create({
             'move_type': 'out_invoice',
-            'invoice_date': '2022-03-24',
-            'invoice_date_due': '2022-03-24',
-            'partner_id': self.italian_partner_a.id,
+            'invoice_date': datetime.date(2022, 3, 24),
+            'invoice_date_due': datetime.date(2022, 3, 24),
+            'partner_id': cls.italian_partner_a.id,
+            'partner_bank_id': cls.test_bank.id,
             'invoice_line_ids': [
-                Command.create({
+                (0, 0, {
+                    **cls.standard_line,
                     'name': 'ʢ◉ᴥ◉ʡ',
-                    'price_unit': 800.40,
-                    'tax_ids': [Command.set(self.default_tax.ids)],
-                }),
-                Command.create({
-                    'name': '--',
-                    'price_unit': 800.40,
-                    'tax_ids': [Command.set(self.default_tax.ids)],
-                }),
-                Command.create({
+                    }),
+                (0, 0, {
+                    **cls.standard_line,
+                    'name': '–-',
+                    }),
+                (0, 0, {
+                    **cls.standard_line,
                     'name': 'this should be the same as it was',
-                    'price_unit': 800.40,
-                    'tax_ids': [Command.set(self.default_tax.ids)],
-                }),
-            ],
-        })
-        invoice.action_post()
-        self._assert_export_invoice(invoice, 'invoice_non_latin_and_latin.xml')
+                    }),
+                ],
+            })
 
-    def test_invoice_below_400_codice_simplified(self):
-        invoice = self.env['account.move'].with_company(self.company).create({
+        cls.below_400_codice_simplified_invoice = cls.env['account.move'].with_company(cls.company).create({
             'move_type': 'out_invoice',
-            'invoice_date': '2022-03-24',
-            'invoice_date_due': '2022-03-24',
-            'partner_id': self.italian_partner_no_address_codice.id,
+            'invoice_date': datetime.date(2022, 3, 24),
+            'invoice_date_due': datetime.date(2022, 3, 24),
+            'partner_id': cls.italian_partner_no_address_codice.id,
             'invoice_line_ids': [
-                Command.create({
-                    'name': 'cheap_line',
-                    'price_unit': 100.00,
-                    'tax_ids': [Command.set(self.default_tax.ids)],
-                }),
-                Command.create({
+                (0, 0, {
+                    **cls.standard_line_below_400,
+                    }),
+                (0, 0, {
+                    **cls.standard_line_below_400,
                     'name': 'cheap_line_2',
                     'quantity': 2,
                     'price_unit': 10.0,
-                    'tax_ids': [Command.set(self.default_tax.ids)],
+                    }),
+                ],
+            })
+
+        cls.total_400_VAT_simplified_invoice = cls.env['account.move'].with_company(cls.company).create({
+            'move_type': 'out_invoice',
+            'invoice_date': datetime.date(2022, 3, 24),
+            'invoice_date_due': datetime.date(2022, 3, 24),
+            'partner_id': cls.italian_partner_no_address_VAT.id,
+            'invoice_line_ids': [
+                (0, 0, {
+                    **cls.standard_line_400,
+                    }),
+                ],
+            })
+
+        cls.more_400_simplified_invoice = cls.env['account.move'].with_company(cls.company).create({
+            'move_type': 'out_invoice',
+            'invoice_date': datetime.date(2022, 3, 24),
+            'invoice_date_due': datetime.date(2022, 3, 24),
+            'partner_id': cls.italian_partner_no_address_codice.id,
+            'invoice_line_ids': [
+                (0, 0, {
+                    **cls.standard_line,
+                    }),
+                ],
+            })
+
+        cls.non_domestic_simplified_invoice = cls.env['account.move'].with_company(cls.company).create({
+            'move_type': 'out_invoice',
+            'invoice_date': datetime.date(2022, 3, 24),
+            'invoice_date_due': datetime.date(2022, 3, 24),
+            'partner_id': cls.american_partner.id,
+            'invoice_line_ids': [
+                (0, 0, {
+                    **cls.standard_line_below_400,
+                    }),
+                ],
+            })
+
+        cls.zero_tax_invoice = cls.env['account.move'].with_company(cls.company).create({
+            'move_type': 'out_invoice',
+            'invoice_date': datetime.date(2022, 3, 24),
+            'invoice_date_due': datetime.date(2022, 3, 24),
+            'partner_id': cls.italian_partner_a.id,
+            'partner_bank_id': cls.test_bank.id,
+            'invoice_line_ids': [
+                (0, 0, {
+                    **cls.standard_line,
+                    'name': 'line with tax of 0% with repartition line of 100% ',
+                    'tax_ids': [(6, 0, [cls.tax_zero_percent_hundred_percent_repartition.id])],
+                }),
+                (0, 0, {
+                    **cls.standard_line,
+                    'name': 'line with tax of 0% with repartition line of 0% ',
+                    'tax_ids': [(6, 0, [cls.tax_zero_percent_zero_percent_repartition.id])],
                 }),
             ],
         })
-        invoice.action_post()
-        self._assert_export_invoice(invoice, 'invoice_below_400_codice_simplified.xml')
 
-    def test_invoice_total_400_VAT_simplified(self):
-        self.company.l10n_it_codice_fiscale = '07149930583'
-        invoice = self.env['account.move'].with_company(self.company).create({
+        cls.negative_price_invoice = cls.env['account.move'].with_company(cls.company).create({
             'move_type': 'out_invoice',
-            'invoice_date': '2022-03-24',
-            'invoice_date_due': '2022-03-24',
-            'partner_id': self.italian_partner_no_address_VAT.id,
+            'invoice_date': datetime.date(2022, 3, 24),
+            'invoice_date_due': datetime.date(2022, 3, 24),
+            'partner_id': cls.italian_partner_a.id,
+            'partner_bank_id': cls.test_bank.id,
             'invoice_line_ids': [
-                Command.create({
-                    'name': '400_line',
-                    'price_unit': 327.87,
-                    'tax_ids': [Command.set(self.default_tax.ids)],
-                }),
-            ],
-        })
-        invoice.action_post()
-        self._assert_export_invoice(invoice, 'invoice_total_400_VAT_simplified.xml')
-
-    def test_invoice_more_400_simplified(self):
-        invoice = self.env['account.move'].with_company(self.company).create({
-            'move_type': 'out_invoice',
-            'invoice_date': '2022-03-24',
-            'invoice_date_due': '2022-03-24',
-            'partner_id': self.italian_partner_no_address_codice.id,
-            'invoice_line_ids': [
-                Command.create({
-                    'name': 'standard_line',
-                    'price_unit': 800.40,
-                    'tax_ids': [Command.set(self.default_tax.ids)],
-                }),
-            ],
-        })
-        self.assertEqual(['l10n_it_edi_partner_address_missing'], list(invoice._l10n_it_edi_export_data_check().keys()))
-
-    def test_invoice_non_domestic_simplified(self):
-        invoice = self.env['account.move'].with_company(self.company).create({
-            'move_type': 'out_invoice',
-            'invoice_date': '2022-03-24',
-            'invoice_date_due': '2022-03-24',
-            'partner_id': self.american_partner.id,
-            'invoice_line_ids': [
-                Command.create({
-                    'name': 'cheap_line',
-                    'price_unit': 100.00,
-                    'tax_ids': [Command.set(self.default_tax.ids)],
-                }),
-            ],
-        })
-        self.assertEqual(['l10n_it_edi_partner_address_missing'], list(invoice._l10n_it_edi_export_data_check().keys()))
-
-    def test_bill_refund_no_reconcile(self):
-        Move = self.env['account.move'].with_company(self.company)
-        purchase_tax = self.env['account.tax'].with_company(self.company).create({
-            'name': 'Tax 4%',
-            'amount': 4.0,
-            'amount_type': 'percent',
-            'type_tax_use': 'purchase',
-            'invoice_repartition_line_ids': self.repartition_lines(
-                self.RepartitionLine(100, 'base', ('+03', )),
-                self.RepartitionLine(100, 'tax', ('+5v', ))),
-            'refund_repartition_line_ids': self.repartition_lines(
-                self.RepartitionLine(100, 'base', ('-03', )),
-                self.RepartitionLine(100, 'tax', False))
-        })
-        values = {
-            'invoice_date': '2022-03-24',
-            'invoice_date_due': '2022-03-24',
-            'partner_id': self.italian_partner_a.id,
-            'partner_bank_id': self.test_bank.id,
-            'invoice_line_ids': [
-                Command.create({
-                    'name': "Product A",
-                    'price_unit': 800.40,
-                    'tax_ids': [Command.set(purchase_tax.ids)],
-                })
-            ]
-        }
-
-        bill = Move.create({'move_type': 'in_invoice', **values})
-        credit_note = Move.create({'move_type': 'in_refund', **values})
-        (bill + credit_note).action_post()
-        credit_note.reversed_entry_id = bill
-        self._assert_export_invoice(credit_note, 'credit_note_refund_no_reconcile.xml')
-
-    def test_invoice_negative_price(self):
-        tax_10 = self.env['account.tax'].create({
-            'name': '10% tax',
-            'amount': 10.0,
-            'amount_type': 'percent',
-            'company_id': self.company.id,
-        })
-
-        invoice = self.env['account.move'].with_company(self.company).create({
-            'move_type': 'out_invoice',
-            'invoice_date': '2022-03-24',
-            'invoice_date_due': '2022-03-24',
-            'partner_id': self.italian_partner_a.id,
-            'partner_bank_id': self.test_bank.id,
-            'invoice_line_ids': [
-                Command.create({
-                    'name': 'standard_line',
-                    'quantity': 2,
-                    'price_unit': 800.40,
-                    'tax_ids': [Command.set(self.default_tax.ids)],
-                }),
-                Command.create({
+                (0, 0, {
+                    **cls.standard_line,
+                    }),
+                (0, 0, {
+                    **cls.standard_line,
                     'name': 'negative_line',
                     'price_unit': -100.0,
-                    'tax_ids': [Command.set(self.default_tax.ids)],
-                }),
-            ],
-        })
-        invoice.action_post()
+                    }),
+                (0, 0, {
+                    **cls.standard_line,
+                    'name': 'negative_line_different_tax',
+                    'price_unit': -50.0,
+                    'tax_ids': [(6, 0, [cls.tax_10.id])]
+                    }),
+                ],
+            })
 
-        with self.subTest('invoice'):
-            self._assert_export_invoice(invoice, 'invoice_negative_price.xml')
-
-        credit_note = invoice._reverse_moves([{
-            'invoice_date': '2022-03-24',
+        cls.negative_price_credit_note = cls.negative_price_invoice.with_company(cls.company)._reverse_moves([{
+            'invoice_date': datetime.date(2022, 3, 24),
         }])
-        credit_note.action_post()
 
-        with self.subTest('credit note'):
-            self._assert_export_invoice(credit_note, 'credit_note_negative_price.xml')
+        # post the invoices
+        cls.price_included_invoice._post()
+        cls.partial_discount_invoice._post()
+        cls.full_discount_invoice._post()
+        cls.non_latin_and_latin_invoice._post()
+        cls.below_400_codice_simplified_invoice._post()
+        cls.total_400_VAT_simplified_invoice._post()
+        cls.zero_tax_invoice._post()
+        cls.negative_price_invoice._post()
+        cls.negative_price_credit_note._post()
 
-    def test_invoice_more_decimal_price_unit(self):
-        decimal_precision_name = self.env['account.move.line']._fields['price_unit']._digits
-        decimal_precision = self.env['decimal.precision'].search([('name', '=', decimal_precision_name)])
-        decimal_precision.digits = 4
-        invoice = self.env['account.move'].with_company(self.company).create({
-            'move_type': 'out_invoice',
-            'invoice_date': '2022-03-24',
-            'invoice_date_due': '2022-03-24',
-            'partner_id': self.italian_partner_a.id,
-            'partner_bank_id': self.test_bank.id,
-            'invoice_line_ids': [
-                Command.create({
-                    'name': 'standard_line',
-                    'price_unit': 3.156,
-                    'quantity': 10,
-                    'tax_ids': [Command.set(self.default_tax.ids)],
-                }),
-            ],
-        })
-        invoice.action_post()
-
-        self._assert_export_invoice(invoice, 'invoice_decimal_precision_product.xml')
-
-    def test_send_and_print_invoice_with_fallback_pdf(self):
-        self.italian_partner_a.zip = False  # invalid configuration for partner -> proforma pdf
-        invoice = self.env['account.move'].with_company(self.company).create({
-            'partner_id': self.italian_partner_a.id,
-            'invoice_date': '2024-03-24',
-            'move_type': 'out_invoice',
-            'invoice_line_ids': [
-                Command.create({
-                    'name': 'Example Product',
-                    'price_unit': 500,
-                    'tax_ids': [Command.set(self.default_tax.ids)],
-                }),
-            ],
-        })
-        invoice.action_post()
-        invoice._generate_and_send()
-        self.assertIn(
-            'INV_2024_00001_proforma.pdf',
-            invoice.attachment_ids.mapped('name'),
-            "The proforma PDF should have been generated.",
-        )
-
-    def test_export_foreign_currency(self):
-
-        tax_zero_percent_us = self.env['account.tax'].with_company(self.company).create({
-            'name': '0 % US',
-            'amount': 0.0,
-            'amount_type': 'percent',
-            'l10n_it_exempt_reason': 'N3.1',
-            'l10n_it_law_reference': 'Art. 8, c.1, lett.a - D.P.R. 633/1972',
-        })
-
-        american_partner_b = self.env['res.partner'].create({
-            'name': 'US Partner',
-            'city': 'Test city',
-            'country_id': self.env.ref('base.us').id,
-            'zip': '12345',
-            'street': '123 Rainbow Road',
-            'is_company': True,
-        })
-
-        # =============== create invoices ===============
-        usd = self.env.ref('base.USD')
-
-        self.env['res.currency.rate'].create({
-            'name': '2024-08-06',
-            'rate': 1.0789,
-            'currency_id': usd.id,
-            'company_id': self.company.id,
-        })
-
-        # usd simple discount % on the product
-        invoice = self.env['account.move'].with_company(self.company).create({
-            'move_type': 'out_invoice',
-            'invoice_date': '2024-08-07',
-            'invoice_date_due': '2024-08-07',
-            'partner_id': american_partner_b.id,
-            'currency_id': usd.id,
-            'invoice_line_ids': [
-                Command.create({
-                    'name': 'A productive product',
-                    'price_unit': 1068.11,
-                    'quantity': 1,
-                    'tax_ids': [Command.set(tax_zero_percent_us.ids)],
-                    'discount': 15,
-                }),
-            ],
-        })
-        invoice.action_post()
-        self._assert_export_invoice(invoice, 'export_foreign_currency_simple_discount.xml')
-
-        # usd discount both on product in % + a global one (negative aml)
-        invoice = self.env['account.move'].with_company(self.company).create({
-            'move_type': 'out_invoice',
-            'invoice_date': '2024-08-06',
-            'invoice_date_due': '2024-08-06',
-            'partner_id': american_partner_b.id,
-            'currency_id': usd.id,
-            'invoice_line_ids': [
-                Command.create({
-                    'name': 'A productive product',
-                    'price_unit': 712.07,
-                    'quantity': 1,
-                    'tax_ids': [Command.set(tax_zero_percent_us.ids)],
-                    'discount': 15,
-                }),
-                Command.create({
-                    'name': 'A global discount',
-                    'price_unit': -100,
-                    'quantity': 1,
-                    'tax_ids': [Command.set(tax_zero_percent_us.ids)],
-                }),
-            ],
-        })
-        invoice.action_post()
-        self._assert_export_invoice(invoice, 'export_foreign_currency_global_simple_discount.xml')
-
-        # usd discount global (negative aml)
-        invoice = self.env['account.move'].with_company(self.company).create({
-            'move_type': 'out_invoice',
-            'invoice_date': '2024-08-07',
-            'invoice_date_due': '2024-08-07',
-            'partner_id': american_partner_b.id,
-            'currency_id': usd.id,
-            'invoice_line_ids': [
-                Command.create({
-                    'name': 'A productive product',
-                    'price_unit': 712.07,
-                    'quantity': 1,
-                    'tax_ids': [Command.set(tax_zero_percent_us.ids)],
-                }),
-                Command.create({
-                    'name': 'A global discount',
-                    'price_unit': -200,
-                    'quantity': 1,
-                    'tax_ids': [Command.set(tax_zero_percent_us.ids)],
-                }),
-            ],
-        })
-        invoice.action_post()
-        self._assert_export_invoice(invoice, 'export_foreign_currency_global_discount.xml')
-
-    @freeze_time("2025-02-03")
-    def test_export_invoice_with_two_downpayments(self):
-        if self.env['ir.module.module']._get('sale').state != 'installed':
-            self.skipTest("sale module is not installed")
-
-        sale_order = self.env['sale.order'].with_company(self.company).create({
-            'partner_id': self.italian_partner_a.id,
-            'order_line': [
-                Command.create({'product_id': self.service_product.id, 'price_unit': 200.00}),
-            ],
-        })
-        sale_order.action_confirm()
-
-        for amount in (50, 100):
-            self.env['account.move'].with_company(self.company).browse(
-                self.env['sale.advance.payment.inv'].create([{
-                    'advance_payment_method': 'fixed',
-                    'fixed_amount': amount,
-                    'sale_order_ids': [Command.link(sale_order.id)],
-                }]).create_invoices()['res_id']
-            ).action_post()
-
-        invoice = self.env['account.move'].with_company(self.company).browse(
-            self.env['sale.advance.payment.inv'].create([{
-                'advance_payment_method': 'delivered',
-                'sale_order_ids': [Command.link(sale_order.id)],
-            }]).create_invoices()['res_id']
-        )
-        invoice.action_post()
-        self._assert_export_invoice(invoice, 'test_export_invoice_with_two_downpayments.xml')
-
-    @freeze_time('2025-03-07')
-    def test_send_prezzo_unitario_converted_to_company_currency(self):
+    def test_price_included_taxes(self):
+        """ When the tax is price included, there should be a rounding value added to the xml, if the sum(subtotals) * tax_rate is not
+            equal to taxable base * tax rate (there is a constraint in the edi where taxable base * tax rate = tax amount, but also
+            taxable base = sum(subtotals) + rounding amount)
         """
-        Test that the prezzo unitario is converted to the company currency when the invoice is in a foreign currency
-        """
-        usd = self.env.ref('base.USD')
-        self.env['res.currency.rate'].create({
-            'name': '2025-01-01',
-            'rate': 1.54639273,
-            'currency_id': usd.id,
-            'company_id': self.company.id,
-        })
+        # In this case, the first two lines use a price_include tax the
+        # subtotals should be 800.40 / (100 + 22.0) * 100 = 656.065564..,
+        # where 22.0 is the tax rate.
+        #
+        # Since the subtotals are rounded we actually have 656.07
+        lines = self.price_included_invoice.line_ids
+        price_included_lines = lines.filtered(lambda line: line.tax_ids == self.price_included_tax)
+        self.assertEqual([line.price_subtotal for line in price_included_lines], [656.07, 656.07])
+        # So the taxable a base the edi expects (for this tax) is actually 1312.14
+        price_included_tax_line = lines.filtered(lambda line: line.tax_line_id == self.price_included_tax)
+        self.assertEqual(price_included_tax_line.tax_base_amount, 1312.14)
 
-        invoice = self.init_invoice(
-            move_type='out_invoice',
-            partner=self.italian_partner_a,
-            invoice_date='2025-02-24',
-            post=True,
-            amounts=[100],
-            taxes=[self.default_tax],
-            company=self.company,
-            currency=usd,
+        # The tax amount of the price included tax should be:
+        #   per line: 800.40 - (800.40 / (100 + 22) * 100) = 144.33
+        #   tax amount: 144.33 * 2 = 288.66
+        self.assertEqual(price_included_tax_line.amount_currency, -288.66)
+
+        expected_etree = self.with_applied_xpath(
+            etree.fromstring(self.edi_basis_xml),
+            '''
+                <xpath expr="//FatturaElettronicaBody//DatiBeniServizi" position="replace">
+                    <DatiBeniServizi>
+                        <DettaglioLinee>
+                          <NumeroLinea>1</NumeroLinea>
+                          <Descrizione>something price included</Descrizione>
+                          <Quantita>1.00</Quantita>
+                          <PrezzoUnitario>656.070000</PrezzoUnitario>
+                          <PrezzoTotale>656.07</PrezzoTotale>
+                          <AliquotaIVA>22.00</AliquotaIVA>
+                        </DettaglioLinee>
+                        <DettaglioLinee>
+                          <NumeroLinea>2</NumeroLinea>
+                          <Descrizione>something else price included</Descrizione>
+                          <Quantita>1.00</Quantita>
+                          <PrezzoUnitario>656.070000</PrezzoUnitario>
+                          <PrezzoTotale>656.07</PrezzoTotale>
+                          <AliquotaIVA>22.00</AliquotaIVA>
+                        </DettaglioLinee>
+                        <DettaglioLinee>
+                          <NumeroLinea>3</NumeroLinea>
+                          <Descrizione>something not price included</Descrizione>
+                          <Quantita>1.00</Quantita>
+                          <PrezzoUnitario>800.400000</PrezzoUnitario>
+                          <PrezzoTotale>800.40</PrezzoTotale>
+                          <AliquotaIVA>22.00</AliquotaIVA>
+                        </DettaglioLinee>
+                        <DatiRiepilogo>
+                          <AliquotaIVA>22.00</AliquotaIVA>
+                          <Arrotondamento>-0.04909091</Arrotondamento>
+                          <ImponibileImporto>1312.09</ImponibileImporto>
+                          <Imposta>288.66</Imposta>
+                          <EsigibilitaIVA>I</EsigibilitaIVA>
+                        </DatiRiepilogo>
+                        <DatiRiepilogo>
+                          <AliquotaIVA>22.00</AliquotaIVA>
+                          <ImponibileImporto>800.40</ImponibileImporto>
+                          <Imposta>176.09</Imposta>
+                          <EsigibilitaIVA>I</EsigibilitaIVA>
+                        </DatiRiepilogo>
+                    </DatiBeniServizi>
+                </xpath>
+                <xpath expr="//DettaglioPagamento//ImportoPagamento" position="inside">
+                    2577.29
+                </xpath>
+                <xpath expr="//DatiGeneraliDocumento//ImportoTotaleDocumento" position="inside">
+                    2577.29
+                </xpath>
+            ''')
+        invoice_etree = etree.fromstring(self.edi_format._l10n_it_edi_export_invoice_as_xml(self.price_included_invoice))
+        # Remove the attachment and its details
+        invoice_etree = self.with_applied_xpath(invoice_etree, "<xpath expr='.//Allegati' position='replace'/>")
+        self.assertXmlTreeEqual(invoice_etree, expected_etree)
+
+    def test_partially_discounted_invoice(self):
+        # The EDI can account for discounts, but a line with, for example, a 100% discount should still have
+        # a corresponding tax with a base amount of 0
+
+        invoice_etree = etree.fromstring(self.edi_format._l10n_it_edi_export_invoice_as_xml(self.partial_discount_invoice))
+        expected_etree = self.with_applied_xpath(
+            etree.fromstring(self.edi_basis_xml),
+            '''
+                <xpath expr="//FatturaElettronicaBody//DatiBeniServizi" position="replace">
+                    <DatiBeniServizi>
+                      <DettaglioLinee>
+                        <NumeroLinea>1</NumeroLinea>
+                        <Descrizione>no discount</Descrizione>
+                        <Quantita>1.00</Quantita>
+                        <PrezzoUnitario>800.400000</PrezzoUnitario>
+                        <PrezzoTotale>800.40</PrezzoTotale>
+                        <AliquotaIVA>22.00</AliquotaIVA>
+                      </DettaglioLinee>
+                      <DettaglioLinee>
+                        <NumeroLinea>2</NumeroLinea>
+                        <Descrizione>special discount</Descrizione>
+                        <Quantita>1.00</Quantita>
+                        <PrezzoUnitario>800.400000</PrezzoUnitario>
+                        <ScontoMaggiorazione>
+                          <Tipo>SC</Tipo>
+                          <Percentuale>50.00</Percentuale>
+                        </ScontoMaggiorazione>
+                        <PrezzoTotale>400.20</PrezzoTotale>
+                        <AliquotaIVA>22.00</AliquotaIVA>
+                      </DettaglioLinee>
+                      <DettaglioLinee>
+                        <NumeroLinea>3</NumeroLinea>
+                        <Descrizione>an offer you can't refuse</Descrizione>
+                        <Quantita>1.00</Quantita>
+                        <PrezzoUnitario>800.400000</PrezzoUnitario>
+                        <ScontoMaggiorazione>
+                          <Tipo>SC</Tipo>
+                          <Percentuale>100.00</Percentuale>
+                        </ScontoMaggiorazione>
+                        <PrezzoTotale>0.00</PrezzoTotale>
+                        <AliquotaIVA>22.00</AliquotaIVA>
+                      </DettaglioLinee>
+                      <DatiRiepilogo>
+                        <AliquotaIVA>22.00</AliquotaIVA>
+                        <ImponibileImporto>1200.60</ImponibileImporto>
+                        <Imposta>264.13</Imposta>
+                        <EsigibilitaIVA>I</EsigibilitaIVA>
+                      </DatiRiepilogo>
+                    </DatiBeniServizi>
+                </xpath>
+                <xpath expr="//DettaglioPagamento//ImportoPagamento" position="inside">
+                    1464.73
+                </xpath>
+                <xpath expr="//DatiGeneraliDocumento//ImportoTotaleDocumento" position="inside">
+                    1464.73
+                </xpath>
+            ''')
+        invoice_etree = self.with_applied_xpath(invoice_etree, "<xpath expr='.//Allegati' position='replace'/>")
+        self.assertXmlTreeEqual(invoice_etree, expected_etree)
+
+    def test_fully_discounted_inovice(self):
+        invoice_etree = etree.fromstring(self.edi_format._l10n_it_edi_export_invoice_as_xml(self.full_discount_invoice))
+        expected_etree = self.with_applied_xpath(
+            etree.fromstring(self.edi_basis_xml),
+            '''
+            <xpath expr="//FatturaElettronicaBody//DatiBeniServizi" position="replace">
+            <DatiBeniServizi>
+              <DettaglioLinee>
+                <NumeroLinea>1</NumeroLinea>
+                <Descrizione>nothing shady just a gift for my friend</Descrizione>
+                <Quantita>1.00</Quantita>
+                <PrezzoUnitario>800.400000</PrezzoUnitario>
+                <ScontoMaggiorazione>
+                  <Tipo>SC</Tipo>
+                  <Percentuale>100.00</Percentuale>
+                </ScontoMaggiorazione>
+                <PrezzoTotale>0.00</PrezzoTotale>
+                <AliquotaIVA>22.00</AliquotaIVA>
+              </DettaglioLinee>
+              <DatiRiepilogo>
+                <AliquotaIVA>22.00</AliquotaIVA>
+                <ImponibileImporto>0.00</ImponibileImporto>
+                <Imposta>0.00</Imposta>
+                <EsigibilitaIVA>I</EsigibilitaIVA>
+              </DatiRiepilogo>
+            </DatiBeniServizi>
+            </xpath>
+            <xpath expr="//DettaglioPagamento//ImportoPagamento" position="inside">
+                0.00
+            </xpath>
+            <xpath expr="//DatiGeneraliDocumento//ImportoTotaleDocumento" position="inside">
+                0.00
+            </xpath>
+            ''')
+        invoice_etree = self.with_applied_xpath(invoice_etree, "<xpath expr='.//Allegati' position='replace'/>")
+        self.assertXmlTreeEqual(invoice_etree, expected_etree)
+
+    def test_non_latin_and_latin_invoice(self):
+        invoice_etree = etree.fromstring(self.edi_format._l10n_it_edi_export_invoice_as_xml(self.non_latin_and_latin_invoice))
+        expected_etree = self.with_applied_xpath(
+            etree.fromstring(self.edi_basis_xml),
+            '''
+            <xpath expr="//FatturaElettronicaBody//DatiBeniServizi" position="replace">
+            <DatiBeniServizi>
+              <DettaglioLinee>
+                <NumeroLinea>1</NumeroLinea>
+                <Descrizione>?????</Descrizione>
+                <Quantita>1.00</Quantita>
+                <PrezzoUnitario>800.400000</PrezzoUnitario>
+                <PrezzoTotale>800.40</PrezzoTotale>
+                <AliquotaIVA>22.00</AliquotaIVA>
+              </DettaglioLinee>
+              <DettaglioLinee>
+                <NumeroLinea>2</NumeroLinea>
+                <Descrizione>?-</Descrizione>
+                <Quantita>1.00</Quantita>
+                <PrezzoUnitario>800.400000</PrezzoUnitario>
+                <PrezzoTotale>800.40</PrezzoTotale>
+                <AliquotaIVA>22.00</AliquotaIVA>
+              </DettaglioLinee>
+              <DettaglioLinee>
+                <NumeroLinea>3</NumeroLinea>
+                <Descrizione>this should be the same as it was</Descrizione>
+                <Quantita>1.00</Quantita>
+                <PrezzoUnitario>800.400000</PrezzoUnitario>
+                <PrezzoTotale>800.40</PrezzoTotale>
+                <AliquotaIVA>22.00</AliquotaIVA>
+              </DettaglioLinee>
+              <DatiRiepilogo>
+                <AliquotaIVA>22.00</AliquotaIVA>
+                <ImponibileImporto>2401.20</ImponibileImporto>
+                <Imposta>528.26</Imposta>
+                <EsigibilitaIVA>I</EsigibilitaIVA>
+              </DatiRiepilogo>
+            </DatiBeniServizi>
+            </xpath>
+            <xpath expr="//DettaglioPagamento//ImportoPagamento" position="inside">
+              2929.46
+            </xpath>
+            <xpath expr="//DatiGeneraliDocumento//ImportoTotaleDocumento" position="inside">
+              2929.46
+            </xpath>
+            ''')
+        invoice_etree = self.with_applied_xpath(invoice_etree, "<xpath expr='.//Allegati' position='replace'/>")
+        self.assertXmlTreeEqual(invoice_etree, expected_etree)
+
+    def test_below_400_codice_simplified_invoice(self):
+        invoice_etree = etree.fromstring(self.edi_format._l10n_it_edi_export_invoice_as_xml(self.below_400_codice_simplified_invoice))
+        expected_etree = self.with_applied_xpath(
+            etree.fromstring(self.edi_simplified_basis_xml),
+            '''
+            <xpath expr="//FatturaElettronicaHeader//CessionarioCommittente" position="inside">
+            <IdentificativiFiscali>
+                <CodiceFiscale>00465840031</CodiceFiscale>
+            </IdentificativiFiscali>
+            </xpath>
+            <xpath expr="//FatturaElettronicaBody//DatiBeniServizi" position="replace">
+            <DatiBeniServizi>
+              <Descrizione>cheap_line</Descrizione>
+              <Importo>122.00</Importo>
+              <DatiIVA>
+                <Imposta>22.00</Imposta>
+              </DatiIVA>
+            </DatiBeniServizi>
+            <DatiBeniServizi>
+              <Descrizione>cheap_line_2</Descrizione>
+              <Importo>24.40</Importo>
+              <DatiIVA>
+                <Imposta>4.40</Imposta>
+              </DatiIVA>
+            </DatiBeniServizi>
+            </xpath>
+            ''')
+        invoice_etree = self.with_applied_xpath(invoice_etree, "<xpath expr='.//Allegati' position='replace'/>")
+        self.assertXmlTreeEqual(invoice_etree, expected_etree)
+
+    def test_total_400_VAT_simplified_invoice(self):
+        invoice_etree = etree.fromstring(self.edi_format._l10n_it_edi_export_invoice_as_xml(self.total_400_VAT_simplified_invoice))
+        expected_etree = self.with_applied_xpath(
+            etree.fromstring(self.edi_simplified_basis_xml),
+            '''
+            <xpath expr="//FatturaElettronicaHeader//CessionarioCommittente" position="inside">
+            <IdentificativiFiscali>
+                <IdFiscaleIVA>
+                    <IdPaese>IT</IdPaese>
+                    <IdCodice>00465840031</IdCodice>
+                </IdFiscaleIVA>
+            </IdentificativiFiscali>
+            </xpath>
+            <xpath expr="//FatturaElettronicaBody//DatiBeniServizi" position="replace">
+            <DatiBeniServizi>
+              <Descrizione>400_line</Descrizione>
+              <Importo>400.00</Importo>
+              <DatiIVA>
+                <Imposta>72.13</Imposta>
+              </DatiIVA>
+            </DatiBeniServizi>
+            </xpath>
+            ''')
+        invoice_etree = self.with_applied_xpath(invoice_etree, "<xpath expr='.//Allegati' position='replace'/>")
+        self.assertXmlTreeEqual(invoice_etree, expected_etree)
+
+    def test_more_400_simplified_invoice(self):
+        with self.assertRaises(UserError):
+            self.more_400_simplified_invoice._post()
+
+    def test_non_domestic_simplified_invoice(self):
+        with self.assertRaises(UserError):
+            self.non_domestic_simplified_invoice._post()
+
+    def test_zero_percent_taxes(self):
+        invoice_etree = etree.fromstring(self.edi_format._l10n_it_edi_export_invoice_as_xml(self.zero_tax_invoice))
+        expected_etree = self.with_applied_xpath(
+            etree.fromstring(self.edi_basis_xml),
+            '''
+            <xpath expr="//FatturaElettronicaBody//DatiBeniServizi" position="replace">
+                <DatiBeniServizi>
+                  <DettaglioLinee>
+                    <NumeroLinea>1</NumeroLinea>
+                    <Descrizione>line with tax of 0% with repartition line of 100%</Descrizione>
+                    <Quantita>1.00</Quantita>
+                    <PrezzoUnitario>800.400000</PrezzoUnitario>
+                    <PrezzoTotale>800.40</PrezzoTotale>
+                    <AliquotaIVA>0.00</AliquotaIVA>
+                  </DettaglioLinee>
+                  <DettaglioLinee>
+                    <NumeroLinea>2</NumeroLinea>
+                    <Descrizione>line with tax of 0% with repartition line of 0%</Descrizione>
+                    <Quantita>1.00</Quantita>
+                    <PrezzoUnitario>800.400000</PrezzoUnitario>
+                    <PrezzoTotale>800.40</PrezzoTotale>
+                    <AliquotaIVA>0.00</AliquotaIVA>
+                  </DettaglioLinee>
+                  <DatiRiepilogo>
+                    <AliquotaIVA>0.00</AliquotaIVA>
+                    <ImponibileImporto>800.40</ImponibileImporto>
+                    <Imposta>0.00</Imposta>
+                    <EsigibilitaIVA>I</EsigibilitaIVA>
+                  </DatiRiepilogo>
+                  <DatiRiepilogo>
+                    <AliquotaIVA>0.00</AliquotaIVA>
+                    <ImponibileImporto>800.40</ImponibileImporto>
+                    <Imposta>0.00</Imposta>
+                    <EsigibilitaIVA>I</EsigibilitaIVA>
+                  </DatiRiepilogo>
+                </DatiBeniServizi>
+            </xpath>
+            <xpath expr="//DettaglioPagamento//ImportoPagamento" position="inside">
+                1600.80
+            </xpath>
+            <xpath expr="//DatiGeneraliDocumento//ImportoTotaleDocumento" position="inside">
+                1600.80
+            </xpath>
+            '''
         )
+        invoice_etree = self.with_applied_xpath(invoice_etree, "<xpath expr='.//Allegati' position='replace'/>")
+        self.assertXmlTreeEqual(invoice_etree, expected_etree)
 
-        self._assert_export_invoice(invoice, 'prezzio_unitario_converted_company_currency.xml')
+    def test_negative_price_invoice(self):
+        invoice_etree = etree.fromstring(self.edi_format._l10n_it_edi_export_invoice_as_xml(self.negative_price_invoice))
+        expected_etree = self.with_applied_xpath(
+            etree.fromstring(self.edi_basis_xml),
+            '''
+                <xpath expr="//FatturaElettronicaBody//DatiBeniServizi" position="replace">
+                    <DatiBeniServizi>
+                      <DettaglioLinee>
+                        <NumeroLinea>1</NumeroLinea>
+                        <Descrizione>standard_line</Descrizione>
+                        <Quantita>1.00</Quantita>
+                        <PrezzoUnitario>800.400000</PrezzoUnitario>
+                        <PrezzoTotale>800.40</PrezzoTotale>
+                        <AliquotaIVA>22.00</AliquotaIVA>
+                      </DettaglioLinee>
+                      <DettaglioLinee>
+                        <NumeroLinea>2</NumeroLinea>
+                        <Descrizione>negative_line</Descrizione>
+                        <Quantita>1.00</Quantita>
+                        <PrezzoUnitario>-100.000000</PrezzoUnitario>
+                        <PrezzoTotale>-100.00</PrezzoTotale>
+                        <AliquotaIVA>22.00</AliquotaIVA>
+                      </DettaglioLinee>
+                      <DettaglioLinee>
+                        <NumeroLinea>3</NumeroLinea>
+                        <Descrizione>negative_line_different_tax</Descrizione>
+                        <Quantita>1.00</Quantita>
+                        <PrezzoUnitario>-50.000000</PrezzoUnitario>
+                        <PrezzoTotale>-50.00</PrezzoTotale>
+                        <AliquotaIVA>10.00</AliquotaIVA>
+                      </DettaglioLinee>
+                      <DatiRiepilogo>
+                        <AliquotaIVA>22.00</AliquotaIVA>
+                        <ImponibileImporto>700.40</ImponibileImporto>
+                        <Imposta>154.09</Imposta>
+                        <EsigibilitaIVA>I</EsigibilitaIVA>
+                      </DatiRiepilogo>
+                      <DatiRiepilogo>
+                        <AliquotaIVA>10.00</AliquotaIVA>
+                        <ImponibileImporto>-50.00</ImponibileImporto>
+                        <Imposta>-5.00</Imposta>
+                        <EsigibilitaIVA>I</EsigibilitaIVA>
+                      </DatiRiepilogo>
+                    </DatiBeniServizi>
+                </xpath>
+                <xpath expr="//DettaglioPagamento//ImportoPagamento" position="inside">
+                    799.49
+                </xpath>
+                <xpath expr="//DatiGeneraliDocumento//ImportoTotaleDocumento" position="inside">
+                    799.49
+                </xpath>
+            ''')
+        invoice_etree = self.with_applied_xpath(invoice_etree, "<xpath expr='.//Allegati' position='replace'/>")
+        self.assertXmlTreeEqual(invoice_etree, expected_etree)
 
-    def test_export_XML_lowercase_fields(self):
-        partner = self.env['res.partner'].create({
-            'name': 'Alessi',
-            'l10n_it_codice_fiscale': 'Mrtmtt91d08f205j',
-            'l10n_it_pa_index': 'N8mimm9',
-            'is_company': False,
-        })
-
-        invoice = self.env['account.move'].with_company(self.company).create({
-            'move_type': 'out_invoice',
-            'invoice_date': '2022-03-24',
-            'invoice_date_due': '2022-03-24',
-            'partner_id': partner.id,
-            'invoice_line_ids': [
-                Command.create({
-                    'name': 'line1',
-                    'price_unit': 800.40,
-                    'tax_ids': [Command.set(self.default_tax.ids)],
-                }),
-            ],
-        })
-        invoice.action_post()
-        self._assert_export_invoice(invoice, 'invoice_lowercase_fields.xml')
-
-    def test_export_invoice_with_rounding_lines_value(self):
-        """Test that invoices with rounding lines are correctly exported with exempt tax 'N2.2'."""
-        self.env['res.config.settings'].create({
-            'company_id': self.company.id,
-            'group_cash_rounding': True
-        })
-
-        cash_rounding_add_invoice_line = self.env['account.cash.rounding'].with_company(self.company).create({
-            'name': 'Rounding to 0.05',
-            'rounding': 0.05,
-            'strategy': 'add_invoice_line',
-            'profit_account_id': self.company_data_2['default_account_revenue'].id,
-            'loss_account_id': self.company_data_2['default_account_expense'].id,
-            'rounding_method': 'HALF-UP',
-        })
-
-        invoice = self.env['account.move'].with_company(self.company).create({
-            'move_type': 'out_invoice',
-            'partner_id': self.italian_partner_a.id,
-            'invoice_date': '2022-03-24',
-            'invoice_date_due': '2022-03-24',
-            'invoice_cash_rounding_id': cash_rounding_add_invoice_line.id,
-            'invoice_line_ids': [
-                Command.create({
-                    'name': 'standard_line',
-                    'price_unit': 100.02,
-                    'tax_ids': [Command.set(self.default_tax.ids)],
-                }),
-            ]
-        })
-        invoice.action_post()
-
-        self._assert_export_invoice(invoice, 'invoice_with_rounding_line.xml')
-
-    def test_export_invoice_exclude_postdated_moves(self):
-        """Test that in case of Credit note A, originated from Invoice A but reconciled
-           with Invoice B, we consider for DatiFattureCollegate xml element only
-           documents dated not after credit note A
-        """
-        invoice_a = self.env['account.move'].with_company(self.company).create({
-            'move_type': 'out_invoice',
-            'invoice_date': '2022-03-24',
-            'invoice_date_due': '2022-03-24',
-            'partner_id': self.italian_partner_a.id,
-            'invoice_line_ids': [
-                Command.create({
-                    'name': "Product A",
-                    'price_unit': 800.40,
-                    'tax_ids': [Command.set(self.default_tax.ids)],
-                })
-            ]
-        })
-        invoice_a.action_post()
-
-        credit_note = invoice_a._reverse_moves([{
-            'invoice_date': '2022-03-24',
-        }])
-        credit_note.write({
-            'invoice_line_ids': [
-                Command.clear(),
-                Command.create({
-                    'name': "Product A",
-                    'price_unit': 500.0,
-                    'tax_ids': [Command.set(self.default_tax.ids)],
-                })
-            ]
-        })
-        credit_note.action_post()
-        credit_note.line_ids.filtered(lambda l: l.account_type == 'asset_receivable').remove_move_reconcile()
-
-        invoice_b = self.env['account.move'].with_company(self.company).create({
-            'move_type': 'out_invoice',
-            'invoice_date': '2022-03-25',
-            'invoice_date_due': '2022-03-25',
-            'partner_id': self.italian_partner_a.id,
-            'invoice_line_ids': [
-                Command.create({
-                    'name': "Product A",
-                    'price_unit': 600,
-                    'tax_ids': [Command.set(self.default_tax.ids)],
-                })
-            ]
-        })
-        invoice_b.action_post()
-        (invoice_b.line_ids + credit_note.line_ids).filtered(lambda line: line.account_type in ('asset_receivable')).reconcile()
-        self._assert_export_invoice(credit_note, 'invoice_exclude_postdated_moves.xml')
+    def test_negative_price_credit_note(self):
+        invoice_etree = etree.fromstring(self.edi_format._l10n_it_edi_export_invoice_as_xml(self.negative_price_credit_note))
+        expected_etree = self.with_applied_xpath(
+            etree.fromstring(self.edi_basis_xml),
+            f'''
+                <xpath expr="//DatiGeneraliDocumento/TipoDocumento" position="replace">
+                    <TipoDocumento>TD04</TipoDocumento>
+                </xpath>
+                <xpath expr="//DatiGeneraliDocumento//ImportoTotaleDocumento" position="inside">
+                    799.49
+                </xpath>
+                <xpath expr="//DatiGeneraliDocumento" position="after">
+                    <DatiFattureCollegate>
+                        <IdDocumento>{self.negative_price_invoice.name}</IdDocumento>
+                        <Data>{self.negative_price_credit_note.invoice_date}</Data>
+                    </DatiFattureCollegate>
+                </xpath>
+                <xpath expr="//DatiBeniServizi" position="replace">
+                    <DatiBeniServizi>
+                      <DettaglioLinee>
+                        <NumeroLinea>1</NumeroLinea>
+                        <Descrizione>standard_line</Descrizione>
+                        <Quantita>1.00</Quantita>
+                        <PrezzoUnitario>800.400000</PrezzoUnitario>
+                        <PrezzoTotale>800.40</PrezzoTotale>
+                        <AliquotaIVA>22.00</AliquotaIVA>
+                      </DettaglioLinee>
+                      <DettaglioLinee>
+                        <NumeroLinea>2</NumeroLinea>
+                        <Descrizione>negative_line</Descrizione>
+                        <Quantita>1.00</Quantita>
+                        <PrezzoUnitario>-100.000000</PrezzoUnitario>
+                        <PrezzoTotale>-100.00</PrezzoTotale>
+                        <AliquotaIVA>22.00</AliquotaIVA>
+                      </DettaglioLinee>
+                      <DettaglioLinee>
+                        <NumeroLinea>3</NumeroLinea>
+                        <Descrizione>negative_line_different_tax</Descrizione>
+                        <Quantita>1.00</Quantita>
+                        <PrezzoUnitario>-50.000000</PrezzoUnitario>
+                        <PrezzoTotale>-50.00</PrezzoTotale>
+                        <AliquotaIVA>10.00</AliquotaIVA>
+                      </DettaglioLinee>
+                      <DatiRiepilogo>
+                        <AliquotaIVA>22.00</AliquotaIVA>
+                        <ImponibileImporto>700.40</ImponibileImporto>
+                        <Imposta>154.09</Imposta>
+                        <EsigibilitaIVA>I</EsigibilitaIVA>
+                      </DatiRiepilogo>
+                      <DatiRiepilogo>
+                        <AliquotaIVA>10.00</AliquotaIVA>
+                        <ImponibileImporto>-50.00</ImponibileImporto>
+                        <Imposta>-5.00</Imposta>
+                        <EsigibilitaIVA>I</EsigibilitaIVA>
+                      </DatiRiepilogo>
+                    </DatiBeniServizi>
+                </xpath>
+                <xpath expr="//DatiPagamento" position="replace"/>
+            ''')
+        invoice_etree = self.with_applied_xpath(invoice_etree, "<xpath expr='.//Allegati' position='replace'/>")
+        self.assertXmlTreeEqual(invoice_etree, expected_etree)

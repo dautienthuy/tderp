@@ -1,8 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo import api, SUPERUSER_ID
+
+from odoo.addons.account.models.chart_template import update_taxes_from_templates
 
 
 def migrate(cr, version):
-    env = api.Environment(cr, SUPERUSER_ID, {})
-    for company in env['res.company'].search([('chart_template', '=', 'fi')], order="parent_path"):
-        env['account.chart.template'].try_loading('fi', company, force_create=False)
+    update_taxes_from_templates(cr, 'l10n_fi.fi_chart_template')

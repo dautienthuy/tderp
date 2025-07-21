@@ -3,15 +3,17 @@
 # 	* sales_team
 # 
 # Translators:
-# Wil Odoo, 2024
+# Friederike Fasterling-Nesselbosch, 2022
+# Martin Trigaux, 2022
+# Sergio Zanchetta <primes2h@gmail.com>, 2024
 # Marianna Ciofani, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-16 13:40+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2022-10-04 09:25+0000\n"
+"PO-Revision-Date: 2022-09-22 05:55+0000\n"
 "Last-Translator: Marianna Ciofani, 2024\n"
 "Language-Team: Italian (https://app.transifex.com/odoo/teams/41243/it/)\n"
 "MIME-Version: 1.0\n"
@@ -21,20 +23,34 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 #. module: sales_team
+#: model_terms:ir.ui.view,arch_db:sales_team.crm_team_view_kanban_dashboard
+msgid "<i class=\"fa fa-ellipsis-v\" role=\"img\" aria-label=\"Manage\" title=\"Manage\"/>"
+msgstr ""
+"<i class=\"fa fa-ellipsis-v\" role=\"img\" aria-label=\"Gestisci\" "
+"title=\"Gestisci\"/>"
+
+#. module: sales_team
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_member_view_kanban
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_view_form
 msgid "<i class=\"fa fa-envelope me-1\" role=\"img\" aria-label=\"Email\" title=\"Email\"/>"
-msgstr "<i class=\"fa fa-envelope me-1\" role=\"img\" aria-label=\"Email\" title=\"Email\"/>"
+msgstr ""
+"<i class=\"fa fa-envelope me-1\" role=\"img\" aria-label=\"E-mail\" "
+"title=\"E-mail\"/>"
+
+#. module: sales_team
+#: model_terms:ir.ui.view,arch_db:sales_team.crm_team_member_view_kanban
+msgid "<span class=\"bg-odoo\">Archived</span>"
+msgstr "<span class=\"bg-odoo\">In archivio</span>"
 
 #. module: sales_team
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_view_kanban_dashboard
 msgid "<span>New</span>"
-msgstr "<span>Nuovo</span>"
+msgstr "<span>Nuova</span>"
 
 #. module: sales_team
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_view_kanban_dashboard
 msgid "<span>Reporting</span>"
-msgstr "<span>Rendiconto</span>"
+msgstr "<span>Rendicontazione</span>"
 
 #. module: sales_team
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_view_kanban_dashboard
@@ -72,24 +88,34 @@ msgstr ""
 " di vendita."
 
 #. module: sales_team
-#. odoo-python
-#: code:addons/sales_team/models/crm_team_member.py:0
+#: code:addons/sales_team/models/crm_team.py:0
+#, python-format
 msgid ""
-"Adding %(user_name)s in this team will remove them from %(team_names)s. "
-"Working in multiple teams? Activate the option under Configuration>Settings."
+"Adding %(user_name)s in this team would remove him/her from its current team"
+" %(team_name)s."
 msgstr ""
-"Se aggiungi %(user_name)s al team, gli stessi verranno rimossi dal/i team "
-"%(team_names)s. L'utente lavora per più team? Attiva l'opzione in "
-"Configurazione > Impostazioni."
+"L'aggiunta di %(user_name)s in questa squadra lo rimuoverà dalla sua attuale"
+" squadra %(team_name)s."
 
 #. module: sales_team
-#. odoo-python
-#: code:addons/sales_team/models/crm_team.py:0
+#: code:addons/sales_team/models/crm_team_member.py:0
+#, python-format
 msgid ""
-"Adding %(user_names)s in this team will remove them from %(team_names)s."
+"Adding %(user_name)s in this team would remove him/her from its current "
+"teams %(team_names)s."
 msgstr ""
-"Se aggiungi %(user_names)s al team, gli stessi verranno rimossi dal/i team "
-"%(team_names)s."
+"L'aggiunta di %(user_name)s in questa squadra lo rimuoverà dalla sua attuale"
+" squadra %(team_names)s."
+
+#. module: sales_team
+#: code:addons/sales_team/models/crm_team.py:0
+#, python-format
+msgid ""
+"Adding %(user_names)s in this team would remove them from their current "
+"teams (%(team_names)s)."
+msgstr ""
+"L'aggiunta di %(user_names)s in questa squadra lo rimuoverà dalla sua "
+"attuale squadra (%(team_names)s)."
 
 #. module: sales_team
 #: model:res.groups,name:sales_team.group_sale_manager
@@ -98,7 +124,6 @@ msgstr "Amministratore"
 
 #. module: sales_team
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_member_view_form
-#: model_terms:ir.ui.view,arch_db:sales_team.crm_team_member_view_kanban
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_member_view_search
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_view_form
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_view_search
@@ -118,8 +143,8 @@ msgid "Avatar"
 msgstr "Avatar"
 
 #. module: sales_team
-#. odoo-python
 #: code:addons/sales_team/models/crm_team.py:0
+#, python-format
 msgid "Big Pretty Button :)"
 msgstr "Grande pulsante carino :)"
 
@@ -129,8 +154,8 @@ msgid "CRM Tag"
 msgstr "Etichetta CRM"
 
 #. module: sales_team
-#. odoo-python
 #: code:addons/sales_team/models/crm_team.py:0
+#, python-format
 msgid "Cannot delete default team \"%s\""
 msgstr "Impossibile eliminare il team predefinito \"%s\""
 
@@ -147,11 +172,11 @@ msgstr "Indice colore"
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team__company_id
 #: model:ir.model.fields,field_description:sales_team.field_crm_team_member__company_id
-#: model_terms:ir.ui.view,arch_db:sales_team.crm_team_view_search
 msgid "Company"
 msgstr "Azienda"
 
 #. module: sales_team
+#: model:ir.ui.menu,name:sales_team.menu_sale_config
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_view_kanban_dashboard
 msgid "Configuration"
 msgstr "Configurazione"
@@ -160,6 +185,11 @@ msgstr "Configurazione"
 #: model:crm.tag,name:sales_team.categ_oppor7
 msgid "Consulting"
 msgstr "Consulenza"
+
+#. module: sales_team
+#: model:ir.model,name:sales_team.model_res_partner
+msgid "Contact"
+msgstr "Contatto"
 
 #. module: sales_team
 #: model_terms:ir.actions.act_window,help:sales_team.sales_team_crm_tag_action
@@ -198,12 +228,12 @@ msgstr "Valuta"
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team__dashboard_button_name
 msgid "Dashboard Button"
-msgstr "Pulsante bacheca"
+msgstr "Pulsante dashboard"
 
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team__dashboard_graph_data
 msgid "Dashboard Graph Data"
-msgstr "Dati grafico bacheca"
+msgstr "Dati grafico dashboard"
 
 #. module: sales_team
 #: model_terms:ir.actions.act_window,help:sales_team.crm_team_action_pipeline
@@ -238,6 +268,15 @@ msgstr "Iscritti preferiti"
 msgid ""
 "Favorite teams to display them in the dashboard and access them easily."
 msgstr "Team preferiti per visualizzazione in bacheca e accesso facilitato."
+
+#. module: sales_team
+#: model_terms:ir.ui.view,arch_db:sales_team.crm_team_view_form
+msgid ""
+"Follow this salesteam to automatically track the events associated to users "
+"of this team."
+msgstr ""
+"Seguire questo team di vendita per tenere traccia in modo automatico degli "
+"eventi associati agli utenti del team."
 
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team__message_follower_ids
@@ -297,6 +336,16 @@ msgid "If checked, some messages have a delivery error."
 msgstr "Se selezionata, alcuni messaggi presentano un errore di consegna."
 
 #. module: sales_team
+#: model:ir.model.fields,help:sales_team.field_res_partner__team_id
+#: model:ir.model.fields,help:sales_team.field_res_users__team_id
+msgid ""
+"If set, this Sales Team will be used for sales and assignments related to "
+"this partner"
+msgstr ""
+"Se impostato, il team di vendita viene utilizzato per vendite e assegnazioni"
+" correlate al partner"
+
+#. module: sales_team
 #: model:ir.model.fields,help:sales_team.field_crm_team__active
 msgid ""
 "If the active field is set to false, it will allow you to hide the Sales "
@@ -327,6 +376,13 @@ msgid "Is Follower"
 msgstr "Sta seguendo"
 
 #. module: sales_team
+#: model:ir.model.fields,field_description:sales_team.field_crm_tag____last_update
+#: model:ir.model.fields,field_description:sales_team.field_crm_team____last_update
+#: model:ir.model.fields,field_description:sales_team.field_crm_team_member____last_update
+msgid "Last Modified on"
+msgstr "Ultima modifica il"
+
+#. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_tag__write_uid
 #: model:ir.model.fields,field_description:sales_team.field_crm_team__write_uid
 #: model:ir.model.fields,field_description:sales_team.field_crm_team_member__write_uid
@@ -339,6 +395,12 @@ msgstr "Ultimo aggiornamento di"
 #: model:ir.model.fields,field_description:sales_team.field_crm_team_member__write_date
 msgid "Last Updated on"
 msgstr "Ultimo aggiornamento il"
+
+#. module: sales_team
+#: model:ir.model.fields,field_description:sales_team.field_crm_team__message_main_attachment_id
+#: model:ir.model.fields,field_description:sales_team.field_crm_team_member__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "Allegato principale"
 
 #. module: sales_team
 #: model:ir.model.fields,help:sales_team.field_res_users__sale_team_id
@@ -448,12 +510,6 @@ msgid "Product"
 msgstr "Prodotto"
 
 #. module: sales_team
-#: model:ir.model.fields,field_description:sales_team.field_crm_team__rating_ids
-#: model:ir.model.fields,field_description:sales_team.field_crm_team_member__rating_ids
-msgid "Ratings"
-msgstr "Valutazioni"
-
-#. module: sales_team
 #: model:crm.team,name:sales_team.team_sales_department
 msgid "Sales"
 msgstr "Vendite"
@@ -473,6 +529,8 @@ msgstr "Addetto vendite"
 #: model:ir.model,name:sales_team.model_crm_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team__name
 #: model:ir.model.fields,field_description:sales_team.field_crm_team_member__crm_team_id
+#: model:ir.model.fields,field_description:sales_team.field_res_partner__team_id
+#: model:ir.model.fields,field_description:sales_team.field_res_users__team_id
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_member_view_search
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_view_form
 #: model_terms:ir.ui.view,arch_db:sales_team.crm_team_view_tree
@@ -518,10 +576,10 @@ msgid "Salesteams Search"
 msgstr "Ricerca team di vendita"
 
 #. module: sales_team
-#. odoo-python
 #: code:addons/sales_team/models/crm_team.py:0
+#, python-format
 msgid "Sample data"
-msgstr "Dati d'esempio"
+msgstr "Dati campione"
 
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team__sequence
@@ -536,7 +594,7 @@ msgstr "Servizi"
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_crm_team__is_favorite
 msgid "Show on dashboard"
-msgstr "Mostrare nella bacheca"
+msgstr "Mostrare nella dashboard"
 
 #. module: sales_team
 #: model:crm.tag,name:sales_team.categ_oppor2
@@ -550,7 +608,7 @@ msgstr "Nome etichetta"
 
 #. module: sales_team
 #: model:ir.model.constraint,message:sales_team.constraint_crm_tag_name_uniq
-msgid "Tag name already exists!"
+msgid "Tag name already exists !"
 msgstr "Nome etichetta già esistente."
 
 #. module: sales_team
@@ -607,6 +665,16 @@ msgstr ""
 "\"Chiamata\" o \" Preparazione Meeting\")."
 
 #. module: sales_team
+#: code:addons/sales_team/models/crm_team.py:0
+#, python-format
+msgid ""
+"To add a Salesperson into multiple Teams, activate the Multi-Team option in "
+"settings."
+msgstr ""
+"Per aggiungere un addetto vendite in più squadre, attiva l'opzione Multi-"
+"Team nelle impostazioni."
+
+#. module: sales_team
 #: model:crm.tag,name:sales_team.categ_oppor6
 msgid "Training"
 msgstr "Formazione"
@@ -628,8 +696,9 @@ msgstr ""
 "definita un'azienda"
 
 #. module: sales_team
-#. odoo-python
 #: code:addons/sales_team/models/crm_team.py:0
+#: code:addons/sales_team/models/crm_team.py:0
+#, python-format
 msgid "Undefined graph model for Sales Team: %s"
 msgstr "Modello grafico non definito per il team di vendita: %s"
 
@@ -678,7 +747,7 @@ msgstr "Utente in Squadre"
 #. module: sales_team
 #: model:ir.model.fields,field_description:sales_team.field_res_users__sale_team_id
 msgid "User Sales Team"
-msgstr "Utente del Team di vendita"
+msgstr "Team di vendita utente"
 
 #. module: sales_team
 #: model:res.groups,name:sales_team.group_sale_salesman_all_leads
@@ -701,17 +770,8 @@ msgid "Website"
 msgstr "Sito web"
 
 #. module: sales_team
-#. odoo-python
-#: code:addons/sales_team/models/crm_team.py:0
-msgid ""
-"Working in multiple teams? Activate the option under Configuration>Settings."
-msgstr ""
-"L'utente lavora per più team? Attiva l'opzione Configurazione  > "
-"Impostazioni."
-
-#. module: sales_team
-#. odoo-python
 #: code:addons/sales_team/models/crm_team_member.py:0
+#, python-format
 msgid ""
 "You are trying to create duplicate membership(s). We found that "
 "%(duplicates)s already exist(s)."
@@ -728,6 +788,11 @@ msgstr "es. America del Nord"
 #: model_terms:ir.ui.view,arch_db:sales_team.sales_team_crm_tag_view_form
 msgid "e.g. Services"
 msgstr "es. Servizi"
+
+#. module: sales_team
+#: model:crm.team,name:sales_team.ebay_sales_team
+msgid "eBay"
+msgstr "eBay"
 
 #. module: sales_team
 #: model:res.groups,comment:sales_team.group_sale_salesman_all_leads

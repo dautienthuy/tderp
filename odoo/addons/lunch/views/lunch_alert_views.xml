@@ -15,16 +15,16 @@
     </record>
 
     <record id="lunch_alert_view_tree" model="ir.ui.view">
-        <field name="name">lunch.alert.list</field>
+        <field name="name">lunch.alert.tree</field>
         <field name="model">lunch.alert</field>
         <field name="arch" type="xml">
-            <list>
+            <tree>
                 <field name="name"/>
                 <field name="mode"/>
-                <field name="message" column_invisible="True"/>
+                <field name="message" invisible="1"/>
                 <field name="available_today"/>
                 <field name="active" widget="boolean_toggle"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -43,19 +43,19 @@
                     <group>
                         <group>
                             <field name="mode" widget="radio"/>
-                            <field name="recipients" invisible="mode != 'chat'" widget="radio"/>
+                            <field name="recipients" attrs="{'invisible': [['mode', '!=', 'chat']]}" widget="radio"/>
                             <field name="location_ids" widget="many2many_tags" required="1"/>
                             <field name="until"/>
                             <field name="active" widget="boolean_toggle"/>
                         </group>
                         <group>
                             <div class="o_td_label">
-                                <label for="notification_time" invisible="mode != 'chat'"/>
+                                <label for="notification_time" attrs="{'invisible': [['mode', '!=', 'chat']]}"/>
                             </div>
                             <div class="o_col">
                                 <widget name="week_days"/>
-                                <div class="o_row" invisible="mode != 'chat'">
-                                    <field name="notification_time" required="mode == 'chat'" widget="float_time"/>
+                                <div class="o_row" attrs="{'invisible': [['mode', '!=', 'chat']]}">
+                                    <field name="notification_time" attrs="{'required': [('mode', '=', 'chat')]}" widget="float_time"/>
                                     <field name="notification_moment"/>
                                 </div>
                             </div>
@@ -76,17 +76,25 @@
         <field name="arch" type="xml">
             <kanban class="o_kanban_mobile">
                 <templates>
-                    <t t-name="card">
-                        <field class="fw-bold fs-5" name="name"/>
-                        <div>
-                            <field name="mode"/>
-                            <span invisible="mode != 'chat'">
-                                to <field name="recipients"/>
-                                on <field name="notification_time"/>
-                                <field name="notification_moment"/>
-                            </span>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="oe_kanban_content">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title"><field name="name"/></strong>
+                                        <span><br/><field name="mode"/></span>
+                                        <span attrs="{'invisible':[['mode', '!=', 'chat']]}">
+                                            to <field name="recipients"/>
+                                            on <field name="notification_time"/>
+                                            <field name="notification_moment"/>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <field name="location_ids" widget="many2many_tags"/>
+                                </div>
+                            </div>
                         </div>
-                        <field name="location_ids" widget="many2many_tags"/>
                     </t>
                 </templates>
             </kanban>
@@ -97,7 +105,7 @@
         <field name="name">Lunch Alerts</field>
         <field name="res_model">lunch.alert</field>
         <field name="search_view_id" ref="lunch_alert_view_search"/>
-        <field name="view_mode">list,form,kanban</field>
+        <field name="view_mode">tree,form,kanban</field>
         <field name="domain">['|', ('active', '=', True), ('active', '=', False)]</field>
         <field name="context">{}</field>
         <field name="view_id" ref="lunch_alert_view_tree"/>

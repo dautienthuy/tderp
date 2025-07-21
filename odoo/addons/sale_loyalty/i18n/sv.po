@@ -3,22 +3,23 @@
 # 	* sale_loyalty
 # 
 # Translators:
-# Chrille Hedberg <hedberg.chrille@gmail.com>, 2024
-# Simon S, 2024
-# Kim Asplund <kim.asplund@gmail.com>, 2024
-# Robert Frykelius <robert.frykelius@linserv.se>, 2024
-# Anders Wallenquist <anders.wallenquist@vertel.se>, 2024
-# Robin Calvin, 2024
-# Martin Trigaux, 2024
-# Lasse L, 2024
+# Anders Wallenquist <anders.wallenquist@vertel.se>, 2022
+# Simon S, 2022
+# Mikael Åkerberg <mikael.akerberg@mariaakerberg.com>, 2022
+# Robert Frykelius <robert.frykelius@linserv.se>, 2022
+# Martin Wilderoth <martin.wilderoth@linserv.se>, 2022
+# Chrille Hedberg <hedberg.chrille@gmail.com>, 2022
+# Martin Trigaux, 2022
+# Kim Asplund <kim.asplund@gmail.com>, 2022
+# Lasse L, 2023
 # Jakob Krabbe <jakob.krabbe@vertel.se>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-19 20:37+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2023-02-02 10:34+0000\n"
+"PO-Revision-Date: 2022-09-22 05:54+0000\n"
 "Last-Translator: Jakob Krabbe <jakob.krabbe@vertel.se>, 2024\n"
 "Language-Team: Swedish (https://app.transifex.com/odoo/teams/41243/sv/)\n"
 "MIME-Version: 1.0\n"
@@ -28,10 +29,21 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: sale_loyalty
+#: model:ir.model.fields,help:sale_loyalty.field_sale_order_line__reward_identifier_code
+msgid ""
+"\n"
+"        Technical field used to link multiple reward lines from the same reward together.\n"
+"    "
+msgstr ""
+"\n"
+" Tekniskt fält som används för att länka flera belöningslinjer från samma belöning tillsammans.\n"
+
+#. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
-msgid " - On products with the following taxes: %(taxes)s"
-msgstr " - På produkter med följande skatter: %(taxes)s"
+#, python-format
+msgid " - On product with the following taxes: %(taxes)s"
+msgstr " - På produkt med följande skatter: %(taxes)s"
 
 #. module: sale_loyalty
 #: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_purchased_gift_card
@@ -39,19 +51,16 @@ msgid "<span class=\"fa fa-clipboard\"/> Copy"
 msgstr "<span class=\"fa fa-clipboard\"/> Kopiera"
 
 #. module: sale_loyalty
-#: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_order_portal_loyalty_content
-msgid "<strong>Loyalty Card</strong>"
-msgstr "<strong>Loyalty Card</strong>"
-
-#. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "A better global discount is already applied."
 msgstr "En bättre global rabatt är redan tillämpad."
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid ""
 "A minimum of %(amount)s %(currency)s should be purchased to get the reward"
 msgstr ""
@@ -103,6 +112,7 @@ msgstr "Kupongpunkt"
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/wizard/sale_loyalty_reward_wizard.py:0
+#, python-format
 msgid "Coupon not found while trying to add the following reward: %s"
 msgstr "Kupong hittades inte när du försökte lägga till följande belöning: %s"
 
@@ -123,7 +133,7 @@ msgstr "Skapad av"
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_reward_wizard__create_date
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_order_coupon_points__create_date
 msgid "Created on"
-msgstr "Skapad den"
+msgstr "Skapad"
 
 #. module: sale_loyalty
 #: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_loyalty_coupon_wizard_view_form
@@ -132,15 +142,16 @@ msgid "Discard"
 msgstr "Avbryt"
 
 #. module: sale_loyalty
-#. odoo-python
-#: code:addons/sale_loyalty/models/sale_order.py:0
-msgid "Discount %(desc)s%(tax_str)s"
-msgstr "Rabatt %(desc)s%(tax_str)s"
-
-#. module: sale_loyalty
 #: model:ir.ui.menu,name:sale_loyalty.menu_discount_loyalty_type_config
 msgid "Discount & Loyalty"
 msgstr "Rabatt & Lojalitet"
+
+#. module: sale_loyalty
+#. odoo-python
+#: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
+msgid "Discount: %(desc)s%(tax_str)s"
+msgstr "Rabatt: %(desc)s%(tax_str)s"
 
 #. module: sale_loyalty
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_coupon_wizard__display_name
@@ -162,6 +173,7 @@ msgstr "Förfallo Datum:"
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "Free Product - %(product)s"
 msgstr "Gratis Produkt - %(product)s"
 
@@ -181,14 +193,9 @@ msgid "Gift cards & eWallet"
 msgstr "Presentkort & eWallet"
 
 #. module: sale_loyalty
-#: model:ir.model,name:sale_loyalty.model_loyalty_history
-msgid "History for Loyalty cards and Ewallets"
-msgstr "Historik för lojalitetskort och e-plånböcker"
-
-#. module: sale_loyalty
 #: model:ir.model.fields,help:sale_loyalty.field_sale_order_line__points_cost
-msgid "How much point this reward costs on the loyalty card."
-msgstr "Hur många poäng denna belöning kostar på lojalitetskortet."
+msgid "How much point this reward cost on the loyalty card."
+msgstr "Hur mycket poäng denna belöning kostar på lojalitetskortet."
 
 #. module: sale_loyalty
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_coupon_wizard__id
@@ -200,12 +207,14 @@ msgstr "ID"
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "Invalid product to claim."
 msgstr "Ogiltig produkt att göra anspråk på."
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/wizard/sale_loyalty_coupon_wizard.py:0
+#, python-format
 msgid "Invalid sales order."
 msgstr "Ogiltig försäljningsorder."
 
@@ -215,15 +224,11 @@ msgid "Is a program reward line"
 msgstr "Är ett program en belöningslinje"
 
 #. module: sale_loyalty
-#: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_order_portal_loyalty_content
-msgid "Issued"
-msgstr "Utfärdad"
-
-#. module: sale_loyalty
-#. odoo-javascript
-#: code:addons/sale_loyalty/static/src/views/fields/loyalty_total/loyalty_data_field.xml:0
-msgid "Issued :"
-msgstr "Utfärdat :"
+#: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_coupon_wizard____last_update
+#: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_reward_wizard____last_update
+#: model:ir.model.fields,field_description:sale_loyalty.field_sale_order_coupon_points____last_update
+msgid "Last Modified on"
+msgstr "Senast redigerad den"
 
 #. module: sale_loyalty
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_coupon_wizard__write_uid
@@ -237,23 +242,12 @@ msgstr "Senast uppdaterad av"
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_reward_wizard__write_date
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_order_coupon_points__write_date
 msgid "Last Updated on"
-msgstr "Senast uppdaterad den"
-
-#. module: sale_loyalty
-#. odoo-javascript
-#: code:addons/sale_loyalty/static/src/views/fields/loyalty_total/loyalty_data_field.xml:0
-msgid "Loyalty Card :"
-msgstr "Loyalty Card :"
+msgstr "Senast uppdaterad på"
 
 #. module: sale_loyalty
 #: model:ir.model,name:sale_loyalty.model_loyalty_card
 msgid "Loyalty Coupon"
 msgstr "Lojalitetskupong"
-
-#. module: sale_loyalty
-#: model:ir.model.fields,field_description:sale_loyalty.field_sale_order__loyalty_data
-msgid "Loyalty Data"
-msgstr "Loyalty Data"
 
 #. module: sale_loyalty
 #: model:ir.model,name:sale_loyalty.model_loyalty_program
@@ -283,6 +277,7 @@ msgstr "Flera produkter"
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid ""
 "No card found for this loyalty program and no points will be given with this"
 " order."
@@ -293,6 +288,7 @@ msgstr ""
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/wizard/sale_loyalty_reward_wizard.py:0
+#, python-format
 msgid "No reward selected."
 msgstr "Ingen belöning vald."
 
@@ -304,6 +300,7 @@ msgstr "Inga belöningar tillgängliga för denna kund!"
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "One or more rewards on the sale order is invalid. Please check them."
 msgstr ""
 "En eller flera belöningar på försäljningsordern är ogiltiga. Kontrollera "
@@ -317,12 +314,6 @@ msgid "Order"
 msgstr "Order"
 
 #. module: sale_loyalty
-#. odoo-python
-#: code:addons/sale_loyalty/models/sale_order.py:0
-msgid "Order %s"
-msgstr "Order %s"
-
-#. module: sale_loyalty
 #: model:ir.model.fields,field_description:sale_loyalty.field_loyalty_program__order_count
 msgid "Order Count"
 msgstr "Order Antal"
@@ -333,8 +324,6 @@ msgid "Order Reference"
 msgstr "Orderreferens"
 
 #. module: sale_loyalty
-#. odoo-python
-#: code:addons/sale_loyalty/models/sale_order.py:0
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_order_coupon_points__points
 msgid "Points"
 msgstr "Poäng"
@@ -345,9 +334,13 @@ msgid "Points Cost"
 msgstr "Poängkostnad"
 
 #. module: sale_loyalty
+#: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_order_view_form_inherit_sale_loyalty
+msgid "Promotions"
+msgstr "Kampanjer"
+
+#. module: sale_loyalty
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_reward_wizard__reward_ids
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_order_line__reward_id
-#: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_order_view_form_inherit_sale_loyalty
 msgid "Reward"
 msgstr "Belöning"
 
@@ -392,12 +385,12 @@ msgstr "Försäljning"
 #. module: sale_loyalty
 #: model:ir.model,name:sale_loyalty.model_sale_order
 msgid "Sales Order"
-msgstr "Försäljningsorder"
+msgstr "Order"
 
 #. module: sale_loyalty
 #: model:ir.model,name:sale_loyalty.model_sale_order_line
 msgid "Sales Order Line"
-msgstr "Försäljningsorderrad"
+msgstr "Orderrad"
 
 #. module: sale_loyalty
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_reward_wizard__selected_product_id
@@ -412,27 +405,21 @@ msgstr "Vald belöning"
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "TEMPORARY DISCOUNT LINE"
 msgstr "TEMPORÄR RABATTLINJE"
 
 #. module: sale_loyalty
-#: model:ir.model.fields,help:sale_loyalty.field_sale_order_line__reward_identifier_code
-msgid ""
-"Technical field used to link multiple reward lines from the same reward "
-"together."
-msgstr ""
-"Tekniskt fält som används för att länka samman flera belöningslinjer från "
-"samma belöning."
-
-#. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "The coupon can only be claimed on future orders."
 msgstr "Kupongen kan bara hämtas på framtida ordrar."
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "The coupon does not have enough points for the selected reward."
 msgstr "Kupongen har inte tillräckligt med poäng för den valda belöningen."
 
@@ -444,6 +431,7 @@ msgstr "Posten för kupongpoäng finns redan."
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "The program is not available for this order."
 msgstr "Programmet är inte tillgängligt för denna order."
 
@@ -455,6 +443,7 @@ msgstr "Försäljningsordern från vilken kupongen genereras"
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "There is nothing to discount"
 msgstr "Det finns inget att ge rabatt på"
 
@@ -466,64 +455,57 @@ msgstr "Dessa är produkterna som kan hämtas med denna regel."
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "This code is expired (%s)."
 msgstr "Denna kod är utgången (%s)."
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "This code is invalid (%s)."
 msgstr "Denna kod är ogiltig (%s)."
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "This coupon has already been used."
 msgstr "Denna kupong har redan använts."
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "This coupon is expired."
 msgstr "Denna kupong har gått ut."
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
-msgid ""
-"This discount (%(discount)s) is not compatible with \"%(other_discount)s\". "
-"Please remove it in order to apply this one."
-msgstr ""
-"Denna rabatten (%(discount)s) är inte kompatibel med \"%(other_discount)s\"."
-" Vänligen ta bort den för att tillämpa den här."
-
-#. module: sale_loyalty
-#. odoo-python
-#: code:addons/sale_loyalty/models/sale_order.py:0
-msgid "This program cannot be applied with code."
-msgstr "Detta program kan inte appliceras med kod."
-
-#. module: sale_loyalty
-#. odoo-python
-#: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "This program is already applied to this order."
 msgstr "Detta program är redan tillämpat på denna order."
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "This program is not available for public users."
 msgstr "Detta program är inte tillgängligt för offentliga användare."
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "This program requires a code to be applied."
 msgstr "Detta program kräver att en kod ska tillämpas."
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "This promo code is already applied."
 msgstr "Denna kampanjkod är redan tillämpad."
 
@@ -534,19 +516,9 @@ msgstr ""
 "Uppdatera nuvarande kampanjrader och välj nya belöningar om tillämpligt."
 
 #. module: sale_loyalty
-#: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_order_portal_loyalty_content
-msgid "Used"
-msgstr "Använda"
-
-#. module: sale_loyalty
-#. odoo-javascript
-#: code:addons/sale_loyalty/static/src/views/fields/loyalty_total/loyalty_data_field.xml:0
-msgid "Used :"
-msgstr "Använd :"
-
-#. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "You don't have the required product quantities on your sales order."
 msgstr "Du har inte den nödvändiga produktmängden på din försäljningsorder."
 

@@ -9,7 +9,7 @@ from odoo import _, models
 from odoo.exceptions import ValidationError
 
 from odoo.addons.payment.const import CURRENCY_MINOR_UNITS
-from odoo.addons.payment_mollie import const
+from odoo.addons.payment_mollie.const import SUPPORTED_LOCALES
 from odoo.addons.payment_mollie.controllers.main import MollieController
 
 _logger = logging.getLogger(__name__)
@@ -67,10 +67,8 @@ class PaymentTransaction(models.Model):
                 'currency': self.currency_id.name,
                 'value': f"{self.amount:.{decimal_places}f}",
             },
-            'locale': user_lang if user_lang in const.SUPPORTED_LOCALES else 'en_US',
-            'method': [const.PAYMENT_METHODS_MAPPING.get(
-                self.payment_method_code, self.payment_method_code
-            )],
+            'locale': user_lang if user_lang in SUPPORTED_LOCALES else 'en_US',
+
             # Since Mollie does not provide the transaction reference when returning from
             # redirection, we include it in the redirect URL to be able to match the transaction.
             'redirectUrl': f'{redirect_url}?ref={self.reference}',
@@ -114,18 +112,8 @@ class PaymentTransaction(models.Model):
         payment_data = self.provider_id._mollie_make_request(
             f'/payments/{self.provider_reference}', method="GET"
         )
-
-        # Update the payment method.
-        payment_method_type = payment_data.get('method', '')
-        if payment_method_type == 'creditcard':
-            payment_method_type = payment_data.get('details', {}).get('cardLabel', '').lower()
-        payment_method = self.env['payment.method']._get_from_code(
-            payment_method_type, mapping=const.PAYMENT_METHODS_MAPPING
-        )
-        self.payment_method_id = payment_method or self.payment_method_id
-
-        # Update the payment state.
         payment_status = payment_data.get('status')
+
         if payment_status == 'pending':
             self._set_pending()
         elif payment_status == 'authorized':
@@ -133,7 +121,7 @@ class PaymentTransaction(models.Model):
         elif payment_status == 'paid':
             self._set_done()
         elif payment_status in ['expired', 'canceled', 'failed']:
-            self._set_canceled("Mollie: " + _("Cancelled payment with status: %s", payment_status))
+            self._set_canceled("Mollie: " + _("Canceled payment with status: %s", payment_status))
         else:
             _logger.info(
                 "received data with invalid payment status (%s) for transaction with reference %s",

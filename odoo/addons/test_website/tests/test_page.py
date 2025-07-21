@@ -1,7 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.tests import HttpCase, tagged
-from odoo.tools import mute_logger
+from odoo.tests.common import HOST
+from odoo.tools import config, mute_logger
 
 
 @tagged('-at_install', 'post_install')
@@ -11,7 +12,7 @@ class WithContext(HttpCase):
         website = self.env['website'].browse([1])
         website.write({
             'name': 'Test Website',
-            'domain': self.base_url(),
+            'domain': f'http://{HOST}:{config["http_port"]}',
             'homepage_url': '/unexisting',
         })
         home_url = '/'

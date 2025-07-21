@@ -3,8 +3,6 @@
 import sys
 import time
 
-from unittest.mock import patch
-
 from odoo.exceptions import AccessError
 from odoo.tests.common import BaseCase, TransactionCase, tagged, new_test_user
 from odoo.tools import profiler
@@ -530,18 +528,6 @@ class TestProfiling(TransactionCase):
         self.assertEqual(first_query['stack'][-1][2], 'execute')
         self.assertEqual(first_query['stack'][-1][0].split('/')[-1], 'sql_db.py')
 
-    def test_profiler_return(self):
-        # Enter test mode to avoid the profiler to commit the result
-        self.registry.enter_test_mode(self.cr)
-        self.addCleanup(self.registry.leave_test_mode)
-        # Trick: patch db_connect() to make it return the registry with the current test cursor
-        # See `ProfilingHttpCase`
-        self.startClassPatcher(patch('odoo.sql_db.db_connect', return_value=self.registry))
-        with self.profile(collectors=["sql"]) as p:
-            self.env.cr.execute("SELECT 1")
-        p.json()  # check we can call it
-        self.assertEqual(p.collectors[0].entries[0]['query'], 'SELECT 1')
-
 
 def deep_call(func, depth):
     """ Call the given function at the given call depth. """
@@ -646,7 +632,7 @@ class TestSyncRecorder(BaseCase):
 
         # map stack frames to their function name, and check
         stacks_methods = [[frame[2] for frame in stack] for stack in stacks]
-        self.assertEqual(stacks_methods[:-2], [
+        self.assertEqual(stacks_methods, [
             ['a'],
             ['a', 'b'],
             ['a'],
@@ -657,6 +643,8 @@ class TestSyncRecorder(BaseCase):
             ['a', 'c'],
             ['a'],
             [],
+            ['__exit__'],
+            ['__exit__', 'stop']  # could be removed by cleaning two last frames, or removing last frames only contained in profiler.py
         ])
 
         # map stack frames to their line number, and check

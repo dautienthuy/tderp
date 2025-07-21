@@ -10,26 +10,16 @@
                             name="test_smtp_connection" class="btn-primary"/>
                     </header>
                     <sheet>
-                        <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger"
-                            invisible="active"/>
+                        <widget name="web_ribbon" title="Archived" bg_color="bg-danger"
+                            attrs="{'invisible': [('active', '=', True)]}"/>
                         <group>
                             <group>
                                 <field name="name" placeholder="e.g. My Outgoing Server"/>
-                                <field name="from_filter" placeholder="e.g. email@domain.com, domain.com"/>
+                                <field name="from_filter"/>
                             </group>
                             <group>
                                 <field name="sequence"/>
-                                <div colspan="2" class="d-flex justify-content-between">
-                                    <div>
-                                        <label for="max_email_size"
-                                               string="Convert attachments to links for emails over"/>
-                                        <field name="max_email_size" class="oe_inline mx-1"/>
-                                        <span class="o_form_label">MB</span>
-                                    </div>
-                                    <button class="btn btn-link pt-0" type="object" name="action_retrieve_max_email_size">
-                                        <i class="fa fa-gear"/> Detect Max Limit
-                                    </button>
-                                </div>
+                                <field name="active" invisible="1"/>
                             </group>
                         </group>
                         <group>
@@ -38,28 +28,25 @@
                             </group>
                             <group>
                                 <div class="text-muted fst-italic" role="alert" colspan="2"
-                                    invisible="not smtp_authentication_info">
+                                    attrs="{'invisible': [('smtp_authentication_info', '=', False)]}">
                                     <field name="smtp_authentication_info"/>
                                 </div>
                             </group>
                         </group>
-                        <notebook colspan="4"
-                            invisible="smtp_authentication == 'cli'">
+                        <notebook colspan="4">
                             <page name="connection" string="Connection">
                                 <group>
                                     <group>
                                         <field name="smtp_encryption" widget="radio"/>
+                                        <field name="smtp_host"/>
+                                        <field name="smtp_port" options="{'format': false}"/>
                                         <field name="smtp_debug" groups="base.group_no_one"/>
-                                        <field name="smtp_host"
-                                            required="smtp_authentication != 'cli'"/>
-                                        <field name="smtp_port" options="{'format': false}"
-                                            required="smtp_authentication != 'cli'"/>
                                     </group>
                                     <group>
-                                        <field name="smtp_user" invisible="smtp_authentication == 'certificate'" force_save="1"/>
-                                        <field name="smtp_pass" invisible="smtp_authentication != 'login'" password="True" force_save="1"/>
-                                        <field name="smtp_ssl_certificate" invisible="smtp_authentication != 'certificate'" force_save="1"/>
-                                        <field name="smtp_ssl_private_key" invisible="smtp_authentication != 'certificate'" force_save="1"/>
+                                        <field name="smtp_user" attrs="{'invisible': [('smtp_authentication', '=', 'certificate')]}" force_save="1"/>
+                                        <field name="smtp_pass" attrs="{'invisible': [('smtp_authentication', '!=', 'login')]}" password="True" force_save="1"/>
+                                        <field name="smtp_ssl_certificate" attrs="{'invisible': [('smtp_authentication', '!=', 'certificate')]}" force_save="1"/>
+                                        <field name="smtp_ssl_private_key" attrs="{'invisible': [('smtp_authentication', '!=', 'certificate')]}" force_save="1"/>
                                     </group>
                                 </group>
                             </page>
@@ -72,14 +59,14 @@
         <record model="ir.ui.view" id="ir_mail_server_list">
             <field name="model">ir.mail_server</field>
             <field name="arch" type="xml">
-                <list string="Outgoing Mail Servers">
-                    <field name="sequence" widget="handle"/>
+                <tree string="Outgoing Mail Servers">
+                    <field name="sequence"/>
                     <field name="name"/>
                     <field name="smtp_host"/>
                     <field name="smtp_user"/>
                     <field name="smtp_encryption"/>
                     <field name="from_filter" optional="hide"/>
-                </list>
+                </tree>
             </field>
         </record>
 
@@ -104,7 +91,7 @@
         <record model="ir.actions.act_window" id="action_ir_mail_server_list">
             <field name="name">Outgoing Mail Servers</field>
             <field name="res_model">ir.mail_server</field>
-            <field name="view_mode">list,form</field>
+            <field name="view_mode">tree,form</field>
             <field name="view_id" ref="ir_mail_server_list" />
             <field name="search_view_id" ref="view_ir_mail_server_search"/>
         </record>

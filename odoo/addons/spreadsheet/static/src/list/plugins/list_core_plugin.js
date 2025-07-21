@@ -1,16 +1,15 @@
 /** @odoo-module */
 
-import { CommandResult } from "../../o_spreadsheet/cancelled_reason";
-import { helpers } from "@odoo/o-spreadsheet";
+import spreadsheet from "../../o_spreadsheet/o_spreadsheet_extended";
+import CommandResult from "../../o_spreadsheet/cancelled_reason";
+import { getMaxObjectId } from "../../helpers/helpers";
+import ListDataSource from "../list_data_source";
+import { TOP_LEVEL_STYLE } from "../../helpers/constants";
 import { _t } from "@web/core/l10n/translation";
 import { globalFiltersFieldMatchers } from "@spreadsheet/global_filters/plugins/global_filters_core_plugin";
 import { sprintf } from "@web/core/utils/strings";
 import { checkFilterFieldMatching } from "@spreadsheet/global_filters/helpers";
-import { Domain } from "@web/core/domain";
-import { deepCopy } from "@web/core/utils/objects";
-import { OdooCorePlugin } from "@spreadsheet/plugins";
-
-const { getMaxObjectId } = helpers;
+import { getFirstListFunction, getNumberOfListFormulas } from "../list_helpers";
 
 /**
  * @typedef {Object} ListDefinition
@@ -21,7 +20,6 @@ const { getMaxObjectId } = helpers;
  * @property {string} model The technical name of the model we are listing
  * @property {string} name Name of the list
  * @property {Array<string>} orderBy
- * @property {string} actionXmlId
  *
  * @typedef {Object} List
  * @property {string} id
@@ -29,34 +27,28 @@ const { getMaxObjectId } = helpers;
  * @property {ListDefinition} definition
  * @property {Object} fieldMatching
  *
- * @typedef {import("@spreadsheet").FieldMatching} FieldMatching
+ * @typedef {import("@spreadsheet/global_filters/plugins/global_filters_core_plugin").FieldMatching} FieldMatching
  */
 
-export class ListCorePlugin extends OdooCorePlugin {
-    static getters = /** @type {const} */ ([
-        "getListDisplayName",
-        "getListDefinition",
-        "getListModelDefinition",
-        "getListIds",
-        "getListName",
-        "getNextListId",
-        "isExistingList",
-        "getListFieldMatch",
-        "getListFieldMatching",
-    ]);
-    constructor(config) {
-        super(config);
+const { CorePlugin } = spreadsheet;
+
+export default class ListCorePlugin extends CorePlugin {
+    constructor(getters, history, range, dispatch, config, uuidGenerator) {
+        super(getters, history, range, dispatch, config, uuidGenerator);
+        this.dataSources = config.dataSources;
 
         this.nextId = 1;
         /** @type {Object.<string, List>} */
         this.lists = {};
 
         globalFiltersFieldMatchers["list"] = {
-            getIds: () => this.getters.getListIds(),
+            geIds: () => this.getters.getListIds(),
             getDisplayName: (listId) => this.getters.getListName(listId),
             getTag: (listId) => sprintf(_t("List #%s"), listId),
             getFieldMatching: (listId, filterId) => this.getListFieldMatching(listId, filterId),
+            waitForReady: () => this.getListsWaitForReady(),
             getModel: (listId) => this.getListDefinition(listId).model,
+            getFields: (listId) => this.getListDataSource(listId).getFields(),
         };
     }
 
@@ -70,14 +62,6 @@ export class ListCorePlugin extends OdooCorePlugin {
                     return CommandResult.ListIdDuplicated;
                 }
                 break;
-            case "DUPLICATE_ODOO_LIST":
-                if (!this.lists[cmd.listId]) {
-                    return CommandResult.ListIdNotFound;
-                }
-                if (cmd.newListId !== this.nextId.toString()) {
-                    return CommandResult.InvalidNextId;
-                }
-                break;
             case "RENAME_ODOO_LIST":
                 if (!(cmd.listId in this.lists)) {
                     return CommandResult.ListIdNotFound;
@@ -86,7 +70,6 @@ export class ListCorePlugin extends OdooCorePlugin {
                     return CommandResult.EmptyName;
                 }
                 break;
-            case "UPDATE_ODOO_LIST":
             case "UPDATE_ODOO_LIST_DOMAIN":
                 if (!(cmd.listId in this.lists)) {
                     return CommandResult.ListIdNotFound;
@@ -109,17 +92,20 @@ export class ListCorePlugin extends OdooCorePlugin {
     handle(cmd) {
         switch (cmd.type) {
             case "INSERT_ODOO_LIST": {
-                const { sheetId, col, row, id, definition, linesNumber, columns } = cmd;
+                const {
+                    sheetId,
+                    col,
+                    row,
+                    id,
+                    definition,
+                    dataSourceId,
+                    linesNumber,
+                    columns,
+                } = cmd;
                 const anchor = [col, row];
-                this._addList(id, definition);
+                this._addList(id, definition, dataSourceId, linesNumber);
                 this._insertList(sheetId, anchor, id, linesNumber, columns);
                 this.history.update("nextId", parseInt(id, 10) + 1);
-                break;
-            }
-            case "DUPLICATE_ODOO_LIST": {
-                const { listId, newListId } = cmd;
-                this._addList(newListId, deepCopy(this.lists[listId].definition));
-                this.history.update("nextId", parseInt(newListId, 10) + 1);
                 break;
             }
             case "RE_INSERT_ODOO_LIST": {
@@ -147,10 +133,19 @@ export class ListCorePlugin extends OdooCorePlugin {
                     "domain",
                     cmd.domain
                 );
+                const list = this.lists[cmd.listId];
+                this.dataSources.add(list.dataSourceId, ListDataSource, list.definition);
                 break;
             }
-            case "UPDATE_ODOO_LIST": {
-                this.history.update("lists", cmd.listId, "definition", cmd.list);
+            case "UNDO":
+            case "REDO": {
+                const domainEditionCommands = cmd.commands.filter(
+                    (cmd) => cmd.type === "UPDATE_ODOO_LIST_DOMAIN"
+                );
+                for (const cmd of domainEditionCommands) {
+                    const list = this.lists[cmd.listId];
+                    this.dataSources.add(list.dataSourceId, ListDataSource, list.definition);
+                }
                 break;
             }
             case "ADD_GLOBAL_FILTER":
@@ -162,12 +157,63 @@ export class ListCorePlugin extends OdooCorePlugin {
             case "REMOVE_GLOBAL_FILTER":
                 this._onFilterDeletion(cmd.id);
                 break;
+
+            case "START":
+                for (const sheetId of this.getters.getSheetIds()) {
+                    const cells = this.getters.getCells(sheetId);
+                    for (const cell of Object.values(cells)) {
+                        if (cell.isFormula()) {
+                            this._addListPositionToDataSource(cell.content);
+                        }
+                    }
+                }
+                break;
+            case "UPDATE_CELL":
+                if (cmd.content) {
+                    this._addListPositionToDataSource(cmd.content);
+                }
+                break;
         }
+    }
+
+    /**
+     * Extract the position of the records asked in the given formula and
+     * increase the max position of the corresponding data source.
+     *
+     * @param {string} content Odoo list formula
+     */
+    _addListPositionToDataSource(content) {
+        if (getNumberOfListFormulas(content) !== 1) {
+            return;
+        }
+        const { functionName, args } = getFirstListFunction(content);
+        if (functionName !== "ODOO.LIST") {
+            return;
+        }
+        const [listId, positionArg] = args.map((arg) => arg.value.toString());
+        if (!(listId in this.lists)) {
+            return;
+        }
+        const position = parseInt(positionArg, 10);
+        if (isNaN(position)) {
+            return;
+        }
+        const dataSourceId = this.lists[listId].dataSourceId;
+        this.dataSources.get(dataSourceId).increaseMaxPosition(position);
     }
 
     // -------------------------------------------------------------------------
     // Getters
     // -------------------------------------------------------------------------
+
+    /**
+     * @param {string} id
+     * @returns {import("@spreadsheet/list/list_data_source").default|undefined}
+     */
+    getListDataSource(id) {
+        const dataSourceId = this.lists[id].dataSourceId;
+        return this.dataSources.get(dataSourceId);
+    }
 
     /**
      * @param {string} id
@@ -182,7 +228,7 @@ export class ListCorePlugin extends OdooCorePlugin {
      * @returns {string}
      */
     getListName(id) {
-        return this.lists[id].definition.name;
+        return _t(this.lists[id].definition.name);
     }
 
     /**
@@ -191,6 +237,16 @@ export class ListCorePlugin extends OdooCorePlugin {
      */
     getListFieldMatch(id) {
         return this.lists[id].fieldMatching;
+    }
+
+    /**
+     * @param {string} id
+     * @returns {Promise<import("@spreadsheet/list/list_data_source").default>}
+     */
+    async getAsyncListDataSource(id) {
+        const dataSourceId = this.lists[id].dataSourceId;
+        await this.dataSources.load(dataSourceId);
+        return this.getListDataSource(id);
     }
 
     /**
@@ -219,18 +275,13 @@ export class ListCorePlugin extends OdooCorePlugin {
         const def = this.lists[id].definition;
         return {
             columns: [...def.metaData.columns],
-            domain: def.searchParams.domain,
+            domain: [...def.searchParams.domain],
             model: def.metaData.resModel,
             context: { ...def.searchParams.context },
             orderBy: [...def.searchParams.orderBy],
             id,
             name: def.name,
-            actionXmlId: def.actionXmlId,
         };
-    }
-
-    getListModelDefinition(id) {
-        return this.lists[id].definition;
     }
 
     /**
@@ -247,6 +298,14 @@ export class ListCorePlugin extends OdooCorePlugin {
     // ---------------------------------------------------------------------
     // Private
     // ---------------------------------------------------------------------
+
+    /**
+     *
+     * @return {Promise[]}
+     */
+    getListsWaitForReady() {
+        return this.getListIds().map((ListId) => this.getListDataSource(ListId).loadMetadata());
+    }
 
     /**
      * Get the current FieldMatching on a list
@@ -279,18 +338,21 @@ export class ListCorePlugin extends OdooCorePlugin {
         }
     }
 
-    _addList(id, definition, fieldMatching = undefined) {
+    _addList(id, definition, dataSourceId, limit, fieldMatching = {}) {
         const lists = { ...this.lists };
-        if (!fieldMatching) {
-            const model = definition.metaData.resModel;
-            fieldMatching = this.getters.getFieldMatchingForModel(model);
-        }
         lists[id] = {
             id,
             definition,
+            dataSourceId,
             fieldMatching,
         };
 
+        if (!this.dataSources.contains(dataSourceId)) {
+            this.dataSources.add(dataSourceId, ListDataSource, {
+                ...definition,
+                limit,
+            });
+        }
         this.history.update("lists", lists);
     }
 
@@ -319,6 +381,18 @@ export class ListCorePlugin extends OdooCorePlugin {
             });
             col++;
         }
+        this.dispatch("SET_FORMATTING", {
+            sheetId,
+            style: TOP_LEVEL_STYLE,
+            target: [
+                {
+                    top: anchor[1],
+                    bottom: anchor[1],
+                    left: anchor[0],
+                    right: anchor[0] + columns.length - 1,
+                },
+            ],
+        });
     }
 
     _insertValues(sheetId, anchor, id, columns, linesNumber) {
@@ -395,10 +469,9 @@ export class ListCorePlugin extends OdooCorePlugin {
                         context: list.context,
                         orderBy: list.orderBy,
                     },
-                    actionXmlId: list.actionXmlId,
                     name: list.name,
                 };
-                this._addList(id, definition, list.fieldMatching);
+                this._addList(id, definition, this.uuidGenerator.uuidv4(), 0, list.fieldMatching);
             }
         }
         this.nextId = data.listNextId || getMaxObjectId(this.lists) + 1;
@@ -412,9 +485,21 @@ export class ListCorePlugin extends OdooCorePlugin {
         data.lists = {};
         for (const id in this.lists) {
             data.lists[id] = JSON.parse(JSON.stringify(this.getListDefinition(id)));
-            data.lists[id].domain = new Domain(data.lists[id].domain).toJson();
             data.lists[id].fieldMatching = this.lists[id].fieldMatching;
         }
         data.listNextId = this.nextId;
     }
 }
+
+ListCorePlugin.getters = [
+    "getListDataSource",
+    "getListDisplayName",
+    "getAsyncListDataSource",
+    "getListDefinition",
+    "getListIds",
+    "getListName",
+    "getNextListId",
+    "isExistingList",
+    "getListFieldMatch",
+    "getListFieldMatching",
+];

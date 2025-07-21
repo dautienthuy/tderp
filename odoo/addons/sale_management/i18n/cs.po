@@ -3,17 +3,24 @@
 # 	* sale_management
 # 
 # Translators:
-# Wil Odoo, 2024
-# Denis Gobin, 2025
-# Marta Wacławek, 2025
+# Damian Brencic <brencicdamian12313@gmail.com>, 2022
+# Jan Horzinka <jan.horzinka@centrum.cz>, 2022
+# Michal Veselý <michal@veselyberanek.net>, 2022
+# Martin Trigaux, 2022
+# Jiří Podhorecký, 2022
+# Rastislav Brencic <rastislav.brencic@azet.sk>, 2023
+# Jakub Smolka, 2023
+# Aleš Fiala <f.ales1@seznam.cz>, 2023
+# Katerina Horylova, 2024
+# Vojtech Smolka, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 08:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Marta Wacławek, 2025\n"
+"POT-Creation-Date: 2022-10-04 09:23+0000\n"
+"PO-Revision-Date: 2022-09-22 05:54+0000\n"
+"Last-Translator: Vojtech Smolka, 2024\n"
 "Language-Team: Czech (https://app.transifex.com/odoo/teams/41243/cs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,24 +29,24 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n <= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
 
 #. module: sale_management
-#: model_terms:ir.ui.view,arch_db:sale_management.report_saleorder_document_inherit_sale_management
-msgid "1.5"
-msgstr "1.5"
-
-#. module: sale_management
-#: model_terms:ir.ui.view,arch_db:sale_management.sale_order_portal_content_inherit_sale_management
-msgid "<span class=\"btn btn-secondary\">Add to order</span>"
-msgstr "<span class=\"btn btn-secondary\">Přidat k objednávce</span>"
-
-#. module: sale_management
-#: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
-msgid "<span invisible=\"not require_payment\">of</span>"
+#: model:sale.order.template.line,name:sale_management.sale_order_template_line_1
+msgid "4 Person Desk"
 msgstr ""
 
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.report_saleorder_document_inherit_sale_management
 msgid "<span>Options</span>"
 msgstr "<span>Možnosti</span>"
+
+#. module: sale_management
+#: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
+msgid "<span>Payment</span>"
+msgstr "<span>Platba</span>"
+
+#. module: sale_management
+#: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
+msgid "<span>Signature</span>"
+msgstr "<span>Podpis</span>"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template__active
@@ -106,12 +113,12 @@ msgstr "Společnosti"
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_option__company_id
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_search
 msgid "Company"
-msgstr "Společnost"
+msgstr "Firma"
 
 #. module: sale_management
 #: model:ir.model,name:sale_management.model_res_config_settings
 msgid "Config Settings"
-msgstr "Konfigurační nastavení"
+msgstr "Nastavení konfigurace"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template__mail_template_id
@@ -126,13 +133,13 @@ msgid ""
 "Conversion between Units of Measure can only occur if they belong to the "
 "same category. The conversion will be made based on the ratios."
 msgstr ""
-"Převod mezi měrnými jednotkami lze uskutečnit pouze pokud patří do stejné "
+"Převod mezi měrnými jednotkami lze uskutečnit jen když patří do stejné "
 "kategorie. Převod bude proveden na základě vzájemných poměrů."
 
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.res_config_settings_view_form
 msgid "Create standardized offers with default products"
-msgstr "Vytvářejte standardizované nabídky s výchozími produkty"
+msgstr "Vytvářejte standardizované nabídky s výchozími produkty."
 
 #. module: sale_management
 #: model_terms:ir.actions.act_window,help:sale_management.sale_order_template_action
@@ -145,7 +152,7 @@ msgstr "Vytvořit vlastní šablonu nabídky"
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_line__create_uid
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_option__create_uid
 msgid "Created by"
-msgstr "Vytvořeno uživatelem"
+msgstr "Vytvořeno od"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__create_date
@@ -153,7 +160,7 @@ msgstr "Vytvořeno uživatelem"
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_line__create_date
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_option__create_date
 msgid "Created on"
-msgstr "Vytvořeno dne"
+msgstr "Vytvořeno"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_res_company__sale_order_template_id
@@ -175,6 +182,15 @@ msgid "Description"
 msgstr "Popis"
 
 #. module: sale_management
+#: model_terms:ir.ui.view,arch_db:sale_management.res_config_settings_view_form
+msgid ""
+"Design your quotation templates using building blocks<br/>\n"
+"                            <em attrs=\"{'invisible': [('module_sale_quotation_builder','=',False)]}\">Warning: this option will install the Website app.</em>"
+msgstr ""
+"Navrhněte své šablony nabídek pomocí stavebních bloků<br/>\n"
+"                            <em attrs=\"{'invisible': [('module_sale_quotation_builder','=',False)]}\">Varování: Tato možnost nainstaluje aplikaci webstránka.</em>"
+
+#. module: sale_management
 #: model:ir.model,name:sale_management.model_digest_digest
 msgid "Digest"
 msgstr "Přehled"
@@ -184,7 +200,7 @@ msgstr "Přehled"
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_form_quote
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_portal_content_inherit_sale_management
 msgid "Disc.%"
-msgstr "Sleva v %"
+msgstr "Sleva %"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__discount
@@ -197,7 +213,7 @@ msgstr "Sleva (%)"
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_line__display_name
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_option__display_name
 msgid "Display Name"
-msgstr "Zobrazovací název"
+msgstr "Zobrazované jméno"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_line__display_type
@@ -205,15 +221,15 @@ msgid "Display Type"
 msgstr "Typ zobrazení"
 
 #. module: sale_management
-#. odoo-python
 #: code:addons/sale_management/models/digest.py:0
+#, python-format
 msgid "Do not have access, skip this data for user's digest email"
-msgstr "Není přístup, přeskočit tato data pro uživatelský emailový přehled"
+msgstr "Nemáte přístup, přeskočte tato data pro e-mail uživatele"
 
 #. module: sale_management
-#: model_terms:ir.ui.view,arch_db:sale_management.report_saleorder_document_inherit_sale_management
-msgid "Extra Chips"
-msgstr ""
+#: model_terms:ir.ui.view,arch_db:sale_management.res_config_settings_view_form
+msgid "Documentation"
+msgstr "Dokumentace"
 
 #. module: sale_management
 #: model:ir.model.constraint,message:sale_management.constraint_sale_order_template_line_non_accountable_fields_null
@@ -244,13 +260,6 @@ msgid "ID"
 msgstr "ID"
 
 #. module: sale_management
-#: model:ir.model.fields,help:sale_management.field_sale_order_template__journal_id
-msgid ""
-"If set, SO with this template will invoice in this journal; otherwise the "
-"sales journal with the lowest sequence is used."
-msgstr ""
-
-#. module: sale_management
 #: model:ir.model.fields,help:sale_management.field_sale_order_template__active
 msgid ""
 "If unchecked, it will allow you to hide the quotation template without "
@@ -258,14 +267,17 @@ msgid ""
 msgstr ""
 
 #. module: sale_management
-#: model:ir.model.fields,field_description:sale_management.field_sale_order_template__journal_id
-msgid "Invoicing Journal"
-msgstr "Fakturační deník"
-
-#. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_digest_digest__kpi_all_sale_total_value
 msgid "Kpi All Sale Total Value"
 msgstr ""
+
+#. module: sale_management
+#: model:ir.model.fields,field_description:sale_management.field_sale_order_option____last_update
+#: model:ir.model.fields,field_description:sale_management.field_sale_order_template____last_update
+#: model:ir.model.fields,field_description:sale_management.field_sale_order_template_line____last_update
+#: model:ir.model.fields,field_description:sale_management.field_sale_order_template_option____last_update
+msgid "Last Modified on"
+msgstr "Naposled změněno"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__write_uid
@@ -273,7 +285,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_line__write_uid
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_option__write_uid
 msgid "Last Updated by"
-msgstr "Naposledy upraveno uživatelem"
+msgstr "Naposledy upraveno od"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__write_date
@@ -281,7 +293,7 @@ msgstr "Naposledy upraveno uživatelem"
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_line__write_date
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_option__write_date
 msgid "Last Updated on"
-msgstr "Naposledy upraveno dne"
+msgstr "Naposled upraveno"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__line_id
@@ -311,6 +323,11 @@ msgid "Number of days for the validity date computation of the quotation"
 msgstr ""
 
 #. module: sale_management
+#: model:sale.order.template.option,name:sale_management.sale_order_template_option_1
+msgid "Office Chair"
+msgstr "Kancelářská židle"
+
+#. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template__require_payment
 msgid "Online Payment"
 msgstr "Platba přes internet"
@@ -319,6 +336,11 @@ msgstr "Platba přes internet"
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template__require_signature
 msgid "Online Signature"
 msgstr "Online podpis"
+
+#. module: sale_management
+#: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
+msgid "Online confirmation"
+msgstr "Potvrzení online"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template__sale_order_template_option_ids
@@ -337,17 +359,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_portal_content_inherit_sale_management
 msgid "Options"
 msgstr "Možnosti"
-
-#. module: sale_management
-#: model:ir.model.fields,field_description:sale_management.field_sale_order_template__prepayment_percent
-msgid "Prepayment percentage"
-msgstr "Procento předčasného splacení"
-
-#. module: sale_management
-#. odoo-python
-#: code:addons/sale_management/models/sale_order_template.py:0
-msgid "Prepayment percentage must be a valid percentage."
-msgstr "Procento zálohy musí být platné procento."
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__is_present
@@ -373,6 +384,11 @@ msgstr "Množství"
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_form_quote
 msgid "Quantity:"
 msgstr "Množství:"
+
+#. module: sale_management
+#: model:ir.model.fields,field_description:sale_management.field_res_config_settings__module_sale_quotation_builder
+msgid "Quotation Builder"
+msgstr "Tvůrce nabídek"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template__number_of_days
@@ -401,7 +417,7 @@ msgstr "Řádky šablony cenové nabídky"
 #. module: sale_management
 #: model:ir.model,name:sale_management.model_sale_order_template_option
 msgid "Quotation Template Option"
-msgstr "Možnost šablony nabídky"
+msgstr "Možnosti šablony nabídky"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_line__sale_order_template_id
@@ -420,8 +436,8 @@ msgstr "Šablony nabídek"
 
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
-msgid "Quotation Validity"
-msgstr "Platnost cenové nabídky"
+msgid "Quotation expires after"
+msgstr "Nabídka vyprší po"
 
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_portal_content_inherit_sale_management
@@ -468,7 +484,7 @@ msgstr "Prodejní objednávka"
 #. module: sale_management
 #: model:ir.model,name:sale_management.model_sale_order_line
 msgid "Sales Order Line"
-msgstr "Položka prodejní objednávky"
+msgstr "Řádek zakázky"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__order_id
@@ -504,10 +520,9 @@ msgstr ""
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__sequence
-#: model:ir.model.fields,field_description:sale_management.field_sale_order_template__sequence
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_line__sequence
 msgid "Sequence"
-msgstr "Sekvence"
+msgstr "Číselná řada"
 
 #. module: sale_management
 #: model_terms:digest.tip,tip_description:sale_management.digest_tip_sale1_management_0
@@ -539,12 +554,6 @@ msgid ""
 msgstr ""
 "Správce může nastavit výchozí smluvní podmínky v Nastavení prodeje. Pokud "
 "vyberete tuto šablonu nabídky, místo toho se zde zobrazí podmínky."
-
-#. module: sale_management
-#: model:ir.model.fields,help:sale_management.field_sale_order_template__prepayment_percent
-msgid "The percentage of the amount needed to be paid to confirm quotations."
-msgstr ""
-"Procento částky, které je třeba zaplatit k potvrzení cenových nabídek."
 
 #. module: sale_management
 #: model:ir.model.fields,help:sale_management.field_sale_order_template__mail_template_id
@@ -596,7 +605,7 @@ msgstr "Měrná jednotka"
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_form_quote
 msgid "UoM"
-msgstr "MJ"
+msgstr "UoM"
 
 #. module: sale_management
 #: model_terms:ir.actions.act_window,help:sale_management.sale_order_template_action
@@ -607,22 +616,22 @@ msgid ""
 msgstr ""
 
 #. module: sale_management
-#. odoo-python
 #: code:addons/sale_management/models/sale_order_option.py:0
+#, python-format
 msgid "You cannot add options to a confirmed order."
 msgstr ""
 
 #. module: sale_management
-#. odoo-python
 #: code:addons/sale_management/models/sale_order_template_line.py:0
+#, python-format
 msgid ""
 "You cannot change the type of a sale quote line. Instead you should delete "
 "the current line and create a new line of the proper type."
 msgstr ""
 
 #. module: sale_management
-#. odoo-python
 #: code:addons/sale_management/models/sale_order.py:0
+#, python-format
 msgid ""
 "Your quotation contains products from company %(product_company)s whereas your quotation belongs to company %(quote_company)s. \n"
 " Please change the company of your quotation or remove the products from other companies (%(bad_products)s)."
@@ -631,14 +640,14 @@ msgstr ""
 "Změňte společnost své nabídky nebo odeberte produkty od jiných společností (%(bad_products)s)."
 
 #. module: sale_management
-#. odoo-python
 #: code:addons/sale_management/models/sale_order_template.py:0
+#, python-format
 msgid "Your template cannot contain products from multiple companies."
 msgstr "Vaše šablona nemůže obsahovat produkty od více společností."
 
 #. module: sale_management
-#. odoo-python
 #: code:addons/sale_management/models/sale_order_template.py:0
+#, python-format
 msgid ""
 "Your template contains products from company %(product_company)s whereas your template belongs to company %(template_company)s. \n"
 " Please change the company of your template or remove the products from other companies."
@@ -649,7 +658,7 @@ msgstr ""
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
 msgid "days"
-msgstr "dny"
+msgstr "dnů"
 
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form

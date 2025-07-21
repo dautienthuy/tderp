@@ -1,13 +1,7 @@
-import { Component } from "@odoo/owl";
+/** @odoo-module */
 import { sortBy } from "@web/core/utils/arrays";
 
-class Group extends Component {
-    static template = "";
-    static props = ["class?", "slots?", "maxCols?", "style?"];
-    static defaultProps = {
-        maxCols: 2,
-    };
-
+class Group extends owl.Component {
     _getItems() {
         const items = Object.entries(this.props.slots || {}).filter(([k, v]) => v.type === "item");
         return sortBy(items, (i) => i[1].sequence);
@@ -21,15 +15,12 @@ class Group extends Component {
         return this.props.class;
     }
 }
+Group.props = ["class?", "slots?", "maxCols?", "style?"];
+Group.defaultProps = {
+    maxCols: 2,
+};
 
 export class OuterGroup extends Group {
-    static template = "web.Form.OuterGroup";
-    static defaultProps = {
-        ...Group.defaultProps,
-        slots: [],
-        hasOuterTemplate: true,
-    };
-
     getItems() {
         const nbCols = this.props.maxCols;
         const colSize = Math.max(1, Math.round(12 / nbCols));
@@ -48,9 +39,14 @@ export class OuterGroup extends Group {
         });
     }
 }
+OuterGroup.template = "web.Form.OuterGroup";
+OuterGroup.defaultProps = {
+    ...Group.defaultProps,
+    slots: [],
+    hasOuterTemplate: true,
+};
 
 export class InnerGroup extends Group {
-    static template = "web.Form.InnerGroup";
     getTemplate(subType) {
         return this.constructor.templates[subType] || this.constructor.templates.default;
     }
@@ -93,6 +89,29 @@ export class InnerGroup extends Group {
         }
         rows.push(currentRow);
 
+        // Compute the relative size of non-label cells
+        // The aim is for cells containing business data to occupy as much space as possible
+        rows.forEach((row) => {
+            let labelCount = 0;
+            const dataCells = [];
+            for (const c of row) {
+                if (c.subType === "label") {
+                    labelCount++;
+                } else if (c.subType === "item_component") {
+                    labelCount++;
+                    dataCells.push(c);
+                } else {
+                    dataCells.push(c);
+                }
+            }
+
+            const sizeOfDataCell = 100 / (maxCols - labelCount);
+            dataCells.forEach((c) => {
+                const itemSpan = c.subType === "item_component" ? c.itemSpan - 1 : c.itemSpan;
+                c.width = (itemSpan || 1) * sizeOfDataCell;
+            });
+        });
         return rows;
     }
 }
+InnerGroup.template = "web.Form.InnerGroup";

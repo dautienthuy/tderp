@@ -9,17 +9,14 @@ from collections import defaultdict
 class EmployeeSkill(models.Model):
     _name = 'hr.employee.skill'
     _description = "Skill level for an employee"
+    _rec_name = 'skill_id'
     _order = "skill_type_id, skill_level_id"
-    _rec_name = "skill_id"
 
     employee_id = fields.Many2one('hr.employee', required=True, ondelete='cascade')
     skill_id = fields.Many2one('hr.skill', compute='_compute_skill_id', store=True, domain="[('skill_type_id', '=', skill_type_id)]", readonly=False, required=True, ondelete='cascade')
     skill_level_id = fields.Many2one('hr.skill.level', compute='_compute_skill_level_id', domain="[('skill_type_id', '=', skill_type_id)]", store=True, readonly=False, required=True, ondelete='cascade')
-    skill_type_id = fields.Many2one('hr.skill.type',
-                                    default=lambda self: self.env['hr.skill.type'].search([], limit=1),
-                                    required=True, ondelete='cascade')
+    skill_type_id = fields.Many2one('hr.skill.type', required=True, ondelete='cascade')
     level_progress = fields.Integer(related='skill_level_id.level_progress')
-    color = fields.Integer(related="skill_type_id.color")
 
     _sql_constraints = [
         ('_unique_skill', 'unique (employee_id, skill_id)', "Two levels for the same skill is not allowed"),
@@ -40,9 +37,7 @@ class EmployeeSkill(models.Model):
     @api.depends('skill_type_id')
     def _compute_skill_id(self):
         for record in self:
-            if record.skill_type_id:
-                record.skill_id = record.skill_type_id.skill_ids[0] if record.skill_type_id.skill_ids else False
-            else:
+            if record.skill_id.skill_type_id != record.skill_type_id:
                 record.skill_id = False
 
     @api.depends('skill_id')
@@ -53,11 +48,6 @@ class EmployeeSkill(models.Model):
             else:
                 skill_levels = record.skill_type_id.skill_level_ids
                 record.skill_level_id = skill_levels.filtered('default_level') or skill_levels[0] if skill_levels else False
-
-    @api.depends('skill_id', 'skill_level_id')
-    def _compute_display_name(self):
-        for employee_skill in self:
-            employee_skill.display_name = f"{employee_skill.skill_id.name}: {employee_skill.skill_level_id.name}"
 
     def _create_logs(self):
         today = fields.Date.context_today(self)

@@ -64,10 +64,10 @@
     </record>
 
     <record id="event_sale_report_view_tree" model="ir.ui.view">
-        <field name="name">event.sale.report.view.list</field>
+        <field name="name">event.sale.report.view.tree</field>
         <field name="model">event.sale.report</field>
         <field name="arch" type="xml">
-            <list string="Revenues" edit="false" create="false">
+            <tree string="Revenues" edit="false" create="false">
                 <field name="event_id"/>
                 <field name="event_ticket_id"/>
                 <field name="product_id" optional="hide"/>
@@ -79,9 +79,9 @@
                 <field name="invoice_partner_id" optional="hide"/>
                 <field name="event_registration_name" optional="hide"/>
                 <field name="sale_order_state" widget="badge"
-                       decoration-success="sale_order_state == 'sale'"
+                       decoration-success="sale_order_state == 'sale' or sale_order_state == 'done'"
                        decoration-info="sale_order_state == 'draft' or sale_order_state == 'sent'"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -96,17 +96,17 @@
                 <field name="company_id"/>
                 <filter string="Non-free tickets" name="priced_tickets" domain="[('event_ticket_price', '!=', 0)]"/>
                 <separator/>
-                <filter string="Free" name="free" domain="[('sale_status', '=', 'free')]"/>
-                <filter string="Pending payment" name="payment_pending" domain="[('sale_status', '=', 'to_pay')]"/>
-                <filter string="Sold" name="is_sold" domain="[('sale_status', '=', 'sold')]"/>
+                <filter string="Free" name="free" domain="[('payment_status', '=', 'free')]"/>
+                <filter string="Pending payment" name="payment_pending" domain="[('payment_status', '=', 'to_pay')]"/>
+                <filter string="Paid" name="is_paid" domain="[('payment_status', '=', 'paid')]"/>
                 <separator/>
-                <filter string="Registration Date" name="event_registration_create_date" date="event_registration_create_date" default_period="year"/>
+                <filter string="Registration Date" name="event_registration_create_date" date="event_registration_create_date" default_period="this_year"/>
                 <separator/>
                 <filter string="Upcoming/Running" name="upcoming" help="Upcoming events from today"
                         domain="[('event_date_end', '&gt;=', datetime.datetime.combine(context_today(), datetime.time(0,0,0)))]"/>
                 <filter string="Past Events" name="past" help="Events that have ended"
                         domain="[('event_date_end', '&lt;', datetime.datetime.combine(context_today(), datetime.time(0,0,0)))]"/>
-                <filter string="Event Start Date" name="event_date_start" date="event_date_begin" default_period="year"/>
+                <filter string="Event Start Date" name="event_date_start" date="event_date_begin" default_period="this_year"/>
                 <filter string="Event End Date" name="event_date_end" date="event_date_end"/>
                 <group expand="0" string="Group By">
                     <filter string="Event Type" name="group_by_event_type_id" context="{'group_by': 'event_type_id' }"/>

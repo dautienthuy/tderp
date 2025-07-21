@@ -2,13 +2,10 @@
 
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
-import { standardFieldProps } from "@web/views/fields/standard_field_props";
-import { Component } from "@odoo/owl";
+
+const { Component } = owl;
 
 class OpenMoveWidget extends Component {
-    static template = "account.OpenMoveWidget";
-    static props = { ...standardFieldProps };
-
     setup() {
         super.setup();
         this.action = useService("action");
@@ -19,11 +16,10 @@ class OpenMoveWidget extends Component {
             type: "object",
             resId: this.props.record.resId,
             name: "action_open_business_doc",
-            resModel: this.props.record.resModel,
+            resModel: "account.move.line",
         });
     }
 }
 
-registry.category("fields").add("open_move_widget", {
-    component: OpenMoveWidget,
-});
+OpenMoveWidget.template = "account.OpenMoveWidget";
+registry.category("fields").add("open_move_widget", OpenMoveWidget);

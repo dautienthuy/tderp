@@ -1,74 +1,146 @@
 /** @odoo-module **/
 
-import { registry } from "@web/core/registry";
-import { stepUtils } from "@web_tour/tour_service/tour_utils";
-import configuratorTourUtils from "@sale/js/tours/product_configurator_tour_utils";
-import tourUtils from "@sale/js/tours/tour_utils";
+import tour from 'web_tour.tour';
 
-registry.category("web_tour.tours").add('sale_product_configurator_edition_tour', {
-    url: '/odoo',
-    steps: () => [
-        ...stepUtils.goToAppSteps("sale.sale_menu_root", "Go to the Sales App"),
-        ...tourUtils.createNewSalesOrder(),
-        ...tourUtils.selectCustomer("Tajine Saucisse"),
-        ...tourUtils.addProduct("Customizable Desk (TEST)"),
-        {
-            trigger: 'tr:has(div[name="o_sale_product_configurator_name"]:contains("Customizable Desk")) label:contains("Aluminium")',
-            run: "click",
-        },
-        {
-            trigger: 'tr:has(div[name="o_sale_product_configurator_name"]:contains("Customizable Desk (TEST) (Aluminium, White)"))',
-        },
-        ...configuratorTourUtils.saveConfigurator(),
-        tourUtils.editLineMatching("Customizable Desk (TEST) (Aluminium, White)", ""),
-        tourUtils.editConfiguration(),
-        {
-            // check updated legs
-            trigger: 'table.o_sale_product_configurator_table tr:has(td>div[name="o_sale_product_configurator_name"] span:contains("Customizable Desk")) td>div[name="ptal"]:has(div>label:contains("Legs")) label:has(span:contains("Aluminium")) ~ input:checked',
-        },
-        {
-            // check updated price
-            trigger: 'table.o_sale_product_configurator_table tr:has(td>div[name="o_sale_product_configurator_name"] span:contains("Customizable Desk")) td[name="price"] span:contains("800.40")',
-        },
-        {
-            trigger: 'table.o_sale_product_configurator_table tr:has(td>div[name="o_sale_product_configurator_name"] span:contains("Customizable Desk")) td>div[name="ptal"]:has(div>label:contains("Legs")) label:has(span:contains("Custom")) ~ input',
-            run: "click",
-        },
-        {
-            trigger: 'table.o_sale_product_configurator_table tr:has(td>div[name="o_sale_product_configurator_name"] span:contains("Customizable Desk")) td>div[name="ptal"]:has(div>label:contains("Legs")) input[type="text"]',
-            run: "edit nice custom value && click .modal-body",
-        },
-        {
-            trigger:
-                'tr:has(div[name="o_sale_product_configurator_name"]:contains("Customizable Desk")) label[style="background-color:#000000"] input:not(:visible)',
-            run: "click",
-        },
-        {
-            // used to sync with server
-            trigger: 'div[name="o_sale_product_configurator_name"]:contains("Customizable Desk (TEST) (Custom, Black)")',
-        },
-        ...configuratorTourUtils.saveConfigurator(),
-        tourUtils.editLineMatching("Customizable Desk (TEST) (Custom, Black)", "Custom: nice custom value"),
-        tourUtils.editConfiguration(),
-        configuratorTourUtils.setCustomAttribute("Customizable Desk", "Legs", "another nice custom value"),
-        ...configuratorTourUtils.saveConfigurator(),
-        tourUtils.editLineMatching("Customizable Desk (TEST) (Custom, Black)", "Custom: another nice custom value"),
-        tourUtils.editConfiguration(),
-        {
-            trigger: 'table.o_sale_product_configurator_table tr:has(td>div[name="o_sale_product_configurator_name"] span:contains("Customizable Desk")) td>div[name="ptal"]:has(div>label:contains("Legs")) label:has(span:contains("Steel")) ~ input',
-            run: "click",
-        },
-        configuratorTourUtils.assertProductNameContains("Customizable Desk (TEST) (Steel, Black)"),
-        configuratorTourUtils.increaseProductQuantity("Customizable Desk"),
-        // Mr Tajine Saucisse uses the pricelist that has a rule when 2 or more products. Price is 600
-        configuratorTourUtils.assertPriceTotal("1,200.00"),
-        ...configuratorTourUtils.saveConfigurator(),
-        {
-            // check quantity
-            trigger: 'td.o_data_cell:contains("2.00")',
-        },
-        // make sure the custom value was removed on product change
-        tourUtils.checkSOLDescriptionContains("Customizable Desk (TEST) (Steel, Black)", ""),
-        ...stepUtils.saveForm(),
-    ],
-});
+tour.register('sale_product_configurator_edition_tour', {
+    url: '/web',
+    test: true,
+}, [tour.stepUtils.showAppsMenuItem(), {
+    trigger: '.o_app[data-menu-xmlid="sale.sale_menu_root"]',
+}, {
+    trigger: '.o_list_button_add',
+    extra_trigger: '.o_sale_order',
+}, {
+    trigger: 'a:contains("Add a product")',
+}, {
+    trigger: 'div[name="product_template_id"] input',
+    run: 'text Custo',
+}, {
+    trigger: 'ul.ui-autocomplete a:contains("Customizable Desk (TEST)")',
+}, {
+    trigger: '.main_product span:contains("Steel")',
+    run: function () {
+        $('input.product_id').change(function () {
+            $('.show .modal-footer .btn-primary').attr('request_count', 1);
+        });
+    }
+}, {
+    trigger: '.main_product span:contains("Aluminium")'
+}, {
+    trigger: '.btn-primary[request_count="1"]',
+    extra_trigger: '.show .modal-footer',
+    run: function (){} // used to sync with "get_combination_info" completion
+}, {
+    trigger: '.btn-primary:not(.disabled)',
+    extra_trigger: '.show .modal-footer',
+}, {
+    trigger: 'button span:contains(Confirm)',
+}, {
+    trigger: 'td.o_data_cell:contains("Customizable Desk (TEST) (Aluminium, White)")',
+    extra_trigger: 'div[name="order_line"]',
+    run: function (){} // check added product
+}, {
+    trigger: 'div[name="product_template_id"]',
+}, {
+    trigger: '.fa-pencil',
+}, {
+    trigger: '.main_product li.js_attribute_value:contains("Aluminium") input:checked',
+    run: function (){} // check updated legs
+}, {
+    trigger: 'span.oe_currency_value:contains("800")',
+    run: function (){} // check updated price
+}, {
+    trigger: '.main_product span:contains("Steel")',
+    run: function () {
+        $('input.product_id').change(function () {
+            if ($('.o_sale_product_configurator_edit').attr('request_count')) {
+                $('.o_sale_product_configurator_edit').attr('request_count',
+                    parseInt($('.o_sale_product_configurator_edit').attr('request_count')) + 1);
+            } else {
+                $('.o_sale_product_configurator_edit').attr('request_count', 1);
+            }
+        });
+    }
+}, {
+    trigger: '.main_product span:contains("Custom")',
+    run: function () {
+        // FIXME awa: since jquery3 update it doesn't "click"
+        // on the element without this run (and 'run: "click"'
+        // doesn't work either)
+        $('.main_product span:contains("Custom")').click();
+    }
+}, {
+    trigger: '.main_product .variant_custom_value',
+    run: 'text nice custom value'
+}, {
+    trigger: 'input[data-value_name="Black"]',
+}, {
+    trigger: '.product_display_name:contains("Customizable Desk (TEST) (Custom, Black)")',
+    run: function (){} // used to sync with "get_combination_info" completion
+}, {
+    trigger: '.o_sale_product_configurator_edit',
+}, {
+    trigger: 'td.o_data_cell:contains("Customizable Desk (TEST) (Custom, Black)")',
+    extra_trigger: 'div[name="order_line"]',
+    run: function (){} // check updated product
+}, {
+    trigger: 'td.o_data_cell:contains("Custom: nice custom value")',
+    extra_trigger: 'div[name="order_line"]',
+    run: function (){} // check custom value
+}, {
+    trigger: 'div[name="product_template_id"]',
+}, {
+    trigger: '.fa-pencil',
+}, {
+    trigger: '.main_product .variant_custom_value',
+    run: 'text another nice custom value'
+}, {
+    trigger: '.o_sale_product_configurator_edit',
+}, {
+    trigger: 'td.o_data_cell:contains("Custom: another nice custom value")',
+    extra_trigger: 'div[name="order_line"]',
+    run: function (){} // check custom value
+}, {
+    trigger: 'div[name="product_template_id"]',
+}, {
+    trigger: '.fa-pencil',
+}, {
+    trigger: '.main_product span:contains("Steel")',
+    run: function () {
+        $('input.product_id').change(function () {
+            $('.o_sale_product_configurator_edit').attr('request_count', 1);
+        });
+    }
+}, {
+    trigger: '.main_product span:contains("Steel")',
+    run: function () {
+        // FIXME awa: since jquery3 update it doesn't "click"
+        // on the element without this run (and 'run: "click"'
+        // doesn't work either)
+        $('.main_product span:contains("Steel")').click();
+    }
+}, {
+    trigger: '.o_sale_product_configurator_edit[request_count="1"]',
+    run: function (){} // used to sync with "get_combination_info" completion
+}, {
+    trigger: '.main_product button.js_add_cart_json:has(.fa-plus)',
+}, {
+    trigger: '.o_sale_product_configurator_edit',
+}, {
+    trigger: 'td.o_data_cell:contains("2.00")',
+    run: function (){} // check quantity
+}, {
+    trigger: 'div[name="product_template_id"]',
+    run: function () {
+        // used to check that the description does not contain a custom value anymore
+        if ($('td.o_data_cell:contains("Custom: another nice custom value")').length === 0){
+            $('td.o_data_cell:contains("Customizable Desk (TEST) (Steel, Black)")').html('tour success');
+        }
+    }
+}, {
+    trigger: 'td.o_data_cell:contains("tour success")',
+    extra_trigger: 'div[name="order_line"]',
+    run: function() {},
+},
+    ...tour.stepUtils.discardForm(),
+]);

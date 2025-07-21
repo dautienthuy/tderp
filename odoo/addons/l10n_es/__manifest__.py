@@ -1,13 +1,22 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+
+# List of contributors:
+# Jordi Esteve <jesteve@zikzakmedia.com>
+# Ignacio Ibeas <ignacio@acysos.com>
+# Dpto. Consultoría Grupo Opentia <consultoria@opentia.es>
+# Pedro M. Baeza <pedro.baeza@tecnativa.com>
+# Carlos Liébana <carlos.liebana@factorlibre.com>
+# Hugo Santos <hugo.santos@factorlibre.com>
+# Albert Cabedo <albert@gafic.com>
+# Olivier Colson <oco@odoo.com>
+# Roberto Lizana <robertolizana@trey.es>
+
 {
-    'name': 'Spain - Accounting (PGCE 2008)',
-    'website': 'https://www.odoo.com/documentation/18.0/applications/finance/fiscal_localizations/spain.html',
-    'version': '5.4',
-    'icon': '/account/static/description/l10n.png',
-    'countries': ['es'],
-    'author': 'Spanish Localization Team',
+    "name": "Spain - Accounting (PGCE 2008)",
+    "version": "5.3",
+    "author": "Spanish Localization Team",
     'category': 'Accounting/Localizations/Account Charts',
-    'description': """
+    "description": """
 Spanish charts of accounts (PGCE 2008).
 ========================================
 
@@ -22,36 +31,27 @@ Spanish charts of accounts (PGCE 2008).
 
 5.3: Update taxes starting Q4 2024 according to BOE-A-2024-12944 (Royal Decree 4/2024) https://www.boe.es/buscar/act.php?id=BOE-A-2024-12944
 """,
-    'depends': [
-        'account',
-        'base_iban',
-        'base_vat',
+    "depends": [
+        "account",
+        "base_iban",
+        "base_vat",
     ],
-    'auto_install': ['account'],
-    'data': [
-        'data/account.account.tag.csv',
-        'data/res_partner_data.xml',
-        'views/account_move_views.xml',
-        'views/account_tax_views.xml',
-        'data/product_data.xml',
+    "data": [
+        'data/account_chart_template_data.xml',
+        'data/account_group.xml',
+        'data/account.account.template-common.csv',
+        'data/account.account.template-pymes.csv',
+        'data/account.account.template-assoc.csv',
+        'data/account.account.template-full.csv',
+        'data/account_chart_template_account_account_link.xml',
+        'data/account_tax_group_data.xml',
+        'data/account_tax_data.xml',
+        'data/account_fiscal_position_template_data.xml',
+        'data/account_chart_template_configure_data.xml',
         'views/report_invoice.xml',
-        'views/res_config_settings_views.xml',
-        'data/mod111.xml',
-        'data/mod115.xml',
-        'data/mod303.xml',
-        'data/mod390/mod390_section1.xml',
-        'data/mod390/mod390_section2.xml',
-        'data/mod390/mod390_section3.xml',
-        'data/mod390/mod390_section4.xml',
-        'data/mod390/mod390_section5.xml',
-        'data/mod390/mod390_section6.xml',
-        'data/mod390/mod390_section7.xml',
-        'data/mod390/mod390.xml',
-        'data/mod420.xml',
     ],
     'demo': [
         'demo/demo_company.xml',
-        'demo/demo_partner.xml',
     ],
     'license': 'LGPL-3',
 }

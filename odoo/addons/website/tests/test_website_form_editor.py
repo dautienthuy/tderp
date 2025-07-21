@@ -1,6 +1,5 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-
-from unittest.mock import patch
+# -*- coding: utf-8 -*-
 
 from odoo.http import request
 from odoo.addons.base.tests.common import HttpCaseWithUserPortal
@@ -21,12 +20,12 @@ class TestWebsiteFormEditor(HttpCaseWithUserPortal):
         })
 
     def test_tour(self):
-        self.start_tour(self.env['website'].get_client_action_url('/'), 'website_form_editor_tour', login='admin', timeout=240)
+        self.start_tour(self.env['website'].get_client_action_url('/'), 'website_form_editor_tour', login='admin', timeout=120)
         self.start_tour('/', 'website_form_editor_tour_submit')
         self.start_tour('/', 'website_form_editor_tour_results', login="admin")
 
     def test_website_form_contact_us_edition_with_email(self):
-        self.start_tour('/odoo', 'website_form_contactus_edition_with_email', login="admin")
+        self.start_tour('/web', 'website_form_contactus_edition_with_email', login="admin")
         self.start_tour('/contactus', 'website_form_contactus_submit', login="portal")
         mail = self.env['mail.mail'].search([], order='id desc', limit=1)
         self.assertEqual(
@@ -36,7 +35,7 @@ class TestWebsiteFormEditor(HttpCaseWithUserPortal):
 
     def test_website_form_contact_us_edition_no_email(self):
         self.env.company.email = 'website_form_contactus_edition_no_email@mail.com'
-        self.start_tour('/odoo', 'website_form_contactus_edition_no_email', login="admin")
+        self.start_tour('/web', 'website_form_contactus_edition_no_email', login="admin")
         self.start_tour('/contactus', 'website_form_contactus_submit', login="portal")
         mail = self.env['mail.mail'].search([], order='id desc', limit=1)
         self.assertEqual(
@@ -64,8 +63,6 @@ class TestWebsiteFormEditor(HttpCaseWithUserPortal):
         self.assertIn('Test1&#34;&#39;', mail.body_html, 'The single quotes and double quotes characters should be visible on the received mail')
         self.assertIn('Test2`\\', mail.body_html, 'The backtick and backslash characters should be visible on the received mail')
 
-    def test_website_form_nested_forms(self):
-        self.start_tour('/my/account', 'website_form_nested_forms', login='admin')
 
 @tagged('post_install', '-at_install')
 class TestWebsiteForm(TransactionCase):
@@ -83,26 +80,3 @@ class TestWebsiteForm(TransactionCase):
             mail = self.env['mail.mail'].search([], order='id desc', limit=1)
             self.assertNotIn('<b>', mail.body_html, "HTML should be escaped in website form")
             self.assertIn('&lt;b&gt;', mail.body_html, "HTML should be escaped in website form (2)")
-
-    def test_website_form_commit_when_creating(self):
-        self.env.ref('base.model_res_partner').website_form_access = True
-        self.env['ir.model.fields'].formbuilder_whitelist('res.partner', ['name'])
-        WebsiteFormController = WebsiteForm()
-        original_insert_record = WebsiteFormController.insert_record
-        def dummy_insert_record(*args, **kwargs):
-            res = original_insert_record(*args, **kwargs)
-            # delete website_form savepoint by rollbacking to test savepoint
-            self.env.cr.execute('ROLLBACK TO SAVEPOINT test_%d' % self._savepoint_id)
-            return res
-        WebsiteFormController.insert_record = dummy_insert_record
-        with MockRequest(self.env):
-            request.params = {
-                'model_name': 'res.partner',
-                'name': 'test partner',
-            }
-            with self.assertLogs(level='ERROR'):
-                response = WebsiteFormController.website_form(
-                    **request.params,
-                )
-            self.assertEqual(response.status_code, 200)
-            self.assertTrue(response.data.startswith(b'{"id":'))

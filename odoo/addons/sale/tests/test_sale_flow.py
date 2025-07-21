@@ -33,6 +33,7 @@ class TestSaleFlow(TestSaleCommonBase):
 
         cls.analytic_plan = cls.env['account.analytic.plan'].create({
             'name': 'Plan',
+            'company_id': cls.company.id,
         })
 
         cls.analytic_account = cls.env['account.analytic.account'].create({
@@ -53,6 +54,7 @@ class TestSaleFlow(TestSaleCommonBase):
             'partner_id': self.partner_a.id,
             'partner_invoice_id': self.partner_a.id,
             'partner_shipping_id': self.partner_a.id,
+            'analytic_account_id': self.analytic_account.id,
             'pricelist_id': self.company_data['default_pricelist'].id,
             'order_line': [
                 (0, 0, {

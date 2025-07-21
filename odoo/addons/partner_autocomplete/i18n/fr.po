@@ -3,16 +3,16 @@
 # 	* partner_autocomplete
 # 
 # Translators:
-# Wil Odoo, 2024
-# Manon Rondou, 2025
+# Martin Trigaux, 2022
+# Jolien De Paepe, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-07 20:37+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Manon Rondou, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:53+0000\n"
+"Last-Translator: Jolien De Paepe, 2023\n"
 "Language-Team: French (https://app.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -27,15 +27,9 @@ msgid "Additional info"
 msgstr "Informations additionnelles"
 
 #. module: partner_autocomplete
-#: model:iap.service,description:partner_autocomplete.iap_service_partner_autocomplete
-msgid "Automatically enrich your contact base with corporate data."
-msgstr ""
-"Enrichissez automatiquement votre base de contacts avec les données de "
-"l'entreprise."
-
-#. module: partner_autocomplete
 #. odoo-javascript
 #: code:addons/partner_autocomplete/static/src/xml/partner_autocomplete.xml:0
+#, python-format
 msgid "Buy more credits"
 msgstr "Acheter plus de crédits"
 
@@ -43,6 +37,15 @@ msgstr "Acheter plus de crédits"
 #: model:ir.model,name:partner_autocomplete.model_res_company
 msgid "Companies"
 msgstr "Sociétés"
+
+#. module: partner_autocomplete
+#. odoo-python
+#: code:addons/partner_autocomplete/models/res_company.py:0
+#, python-format
+msgid "Company auto-completed by Odoo Partner Autocomplete Service"
+msgstr ""
+"Autocomplétion de l'entreprise par le service d'autocomplétion de partenaire"
+" d'Odoo"
 
 #. module: partner_autocomplete
 #: model:ir.model.fields,field_description:partner_autocomplete.field_res_company__partner_gid
@@ -82,11 +85,6 @@ msgid "Enrich Done"
 msgstr "Enrichissement effectué"
 
 #. module: partner_autocomplete
-#: model:iap.service,unit_name:partner_autocomplete.iap_service_partner_autocomplete
-msgid "Enrichments"
-msgstr "Enrichissements"
-
-#. module: partner_autocomplete
 #: model:ir.model,name:partner_autocomplete.model_ir_http
 msgid "HTTP Routing"
 msgstr "Routage HTTP"
@@ -94,6 +92,7 @@ msgstr "Routage HTTP"
 #. module: partner_autocomplete
 #. odoo-javascript
 #: code:addons/partner_autocomplete/static/src/js/partner_autocomplete_core.js:0
+#, python-format
 msgid "IAP Account Token missing"
 msgstr "Jeton du compte IAP manquant"
 
@@ -118,24 +117,31 @@ msgid "Is synched"
 msgstr "Est synchronisé"
 
 #. module: partner_autocomplete
+#: model:ir.model.fields,field_description:partner_autocomplete.field_res_partner_autocomplete_sync____last_update
+msgid "Last Modified on"
+msgstr "Dernière modification le"
+
+#. module: partner_autocomplete
 #: model:ir.model.fields,field_description:partner_autocomplete.field_res_partner_autocomplete_sync__write_uid
 msgid "Last Updated by"
-msgstr "Mis à jour par"
+msgstr "Dernière mise à jour par"
 
 #. module: partner_autocomplete
 #: model:ir.model.fields,field_description:partner_autocomplete.field_res_partner_autocomplete_sync__write_date
 msgid "Last Updated on"
-msgstr "Mis à jour le"
+msgstr "Dernière mise à jour le"
 
 #. module: partner_autocomplete
 #. odoo-python
 #: code:addons/partner_autocomplete/models/iap_autocomplete_api.py:0
+#, python-format
 msgid "No account token"
 msgstr "Pas de jeton de compte"
 
 #. module: partner_autocomplete
 #. odoo-javascript
 #: code:addons/partner_autocomplete/static/src/js/partner_autocomplete_core.js:0
+#, python-format
 msgid "Not enough credits for Partner Autocomplete"
 msgstr "Pas assez de crédits pour l'autocomplétion de partenaires"
 
@@ -145,44 +151,49 @@ msgid "Partner"
 msgstr "Partenaire"
 
 #. module: partner_autocomplete
+#: model:ir.actions.server,name:partner_autocomplete.ir_cron_partner_autocomplete_ir_actions_server
+#: model:ir.cron,cron_name:partner_autocomplete.ir_cron_partner_autocomplete
+msgid "Partner Autocomplete : Sync with remote DB"
+msgstr "Autocomplétion de partenaires : Synchroniser avec DB à distance"
+
+#. module: partner_autocomplete
 #: model:ir.model,name:partner_autocomplete.model_res_partner_autocomplete_sync
 msgid "Partner Autocomplete Sync"
 msgstr "Synchronisation de l'autocomplétion de partenaires"
 
 #. module: partner_autocomplete
-#: model:ir.actions.server,name:partner_autocomplete.ir_cron_partner_autocomplete_ir_actions_server
-msgid "Partner Autocomplete: Sync with remote DB"
-msgstr ""
-"Autocomplétion de partenaires : Synchroniser avec une base de données à "
-"distance"
+#. odoo-python
+#: code:addons/partner_autocomplete/models/res_partner.py:0
+#, python-format
+msgid "Partner created by Odoo Partner Autocomplete Service"
+msgstr "Partenaire créé par le service d'autocomplétion de partenaires d'Odoo"
 
 #. module: partner_autocomplete
 #. odoo-javascript
 #: code:addons/partner_autocomplete/static/src/xml/partner_autocomplete.xml:0
-msgid "Search Worldwide 🌎"
-msgstr "Recherche mondiale 🌎"
+#: code:addons/partner_autocomplete/static/src/xml/partner_autocomplete.xml:0
+#, python-format
+msgid "Placeholder"
+msgstr "Placeholder"
 
 #. module: partner_autocomplete
 #. odoo-javascript
 #: code:addons/partner_autocomplete/static/src/js/partner_autocomplete_fieldchar.js:0
 #: code:addons/partner_autocomplete/static/src/js/partner_autocomplete_many2one.js:0
+#, python-format
 msgid "Searching Autocomplete..."
 msgstr "Recherche de l'autocomplétion..."
 
 #. module: partner_autocomplete
 #. odoo-javascript
 #: code:addons/partner_autocomplete/static/src/xml/partner_autocomplete.xml:0
+#, python-format
 msgid "Set Your Account Token"
 msgstr "Définir votre jeton de compte"
 
 #. module: partner_autocomplete
 #. odoo-python
 #: code:addons/partner_autocomplete/models/iap_autocomplete_api.py:0
+#, python-format
 msgid "Test mode"
 msgstr "Mode test"
-
-#. module: partner_autocomplete
-#. odoo-python
-#: code:addons/partner_autocomplete/models/res_partner.py:0
-msgid "Unable to enrich company (no credit was consumed)."
-msgstr "Impossible d’enrichir l’entreprise (aucun crédit n’a été consommé)."

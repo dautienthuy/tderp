@@ -2,30 +2,28 @@
 
 /* global YT, Vimeo */
 
-    import publicWidget from '@web/legacy/js/public/public_widget';
-    import { renderToElement } from "@web/core/utils/render";
-    import { session } from "@web/session";
+    import publicWidget from 'web.public.widget';
+    import  { qweb as QWeb, _t } from 'web.core';
+    import { Markup } from 'web.utils';
+    import config from 'web.config';
+
+    import session from 'web.session';
     import { Quiz } from '@website_slides/js/slides_course_quiz';
     import { SlideCoursePage } from '@website_slides/js/slides_course_page';
     import { unhideConditionalElements } from '@website/js/content/inject_dom';
-    import { SlideShareDialog } from './public/components/slide_share_dialog/slide_share_dialog';
+    import Dialog from 'web.Dialog';
     import '@website_slides/js/slides_course_join';
-    import { SIZES, utils as uiUtils } from "@web/core/ui/ui_service";
-    import { rpc } from "@web/core/network/rpc";
-
-    import { markup } from "@odoo/owl";
 
     /**
      * Helper: Get the slide dict matching the given criteria
      *
      * @private
      * @param {Array<Object>} slideList List of dict reprensenting a slide
-     * @param {[string] : any} matcher
+     * @param {Object} matcher (see https://underscorejs.org/#matcher)
      */
     var findSlide = function (slideList, matcher) {
-        return slideList.find((slide) => {
-            return Object.keys(matcher).every((key) => matcher[key] === slide[key]);
-        });
+        var slideMatch = _.matcher(matcher);
+        return _.find(slideList, slideMatch);
     };
 
     /**
@@ -243,12 +241,13 @@
         init: function (parent, slideList, defaultSlide) {
             var result = this._super.apply(this, arguments);
             this.slideEntries = slideList;
-            this._slideEntry = defaultSlide;
+            this.set('slideEntry', defaultSlide);
             return result;
         },
-        start: function () {
+        start: function (){
             var self = this;
-            return this._super.apply(this, arguments).then(function () {
+            this.on('change:slideEntry', this, this._onChangeCurrentSlide);
+            return this._super.apply(this, arguments).then(function (){
                 $(document).keydown(self._onKeyDown.bind(self));
             });
         },
@@ -267,7 +266,7 @@
         goNext: function () {
             var currentIndex = this._getCurrentIndex();
             if (currentIndex < this.slideEntries.length-1) {
-                this._updateSlideEntry(this.slideEntries[currentIndex + 1]);
+                this.set('slideEntry', this.slideEntries[currentIndex+1]);
             }
         },
         /**
@@ -278,7 +277,7 @@
         goPrevious: function () {
             var currentIndex = this._getCurrentIndex();
             if (currentIndex >= 1) {
-                this._updateSlideEntry(this.slideEntries[currentIndex - 1]);
+                this.set('slideEntry', this.slideEntries[currentIndex-1]);
             }
         },
 
@@ -289,8 +288,8 @@
          * Get the index of the current slide entry (slide and/or quiz)
          */
         _getCurrentIndex: function () {
-            const slide = this._slideEntry;
-            var currentIndex = this.slideEntries.findIndex(entry =>{
+            var slide = this.get('slideEntry');
+            var currentIndex = _.findIndex(this.slideEntries, function (entry) {
                 return entry.id === slide.id && entry.isQuiz === slide.isQuiz;
             });
             return currentIndex;
@@ -307,13 +306,13 @@
          * @private
          * @param {*} ev
          */
-        _onClickMiniQuiz: function (ev) {
+        _onClickMiniQuiz: function (ev){
             var slideID = parseInt($(ev.currentTarget).data().slide_id);
-            this._updateSlideEntry({
+            this.set('slideEntry',{
                 slideID: slideID,
                 isMiniQuiz: true
             });
-            this.trigger_up('change_slide', this._slideEntry);
+            this.trigger_up('change_slide', this.get('slideEntry'));
         },
         /**
          * Handler called when the user clicks on a normal slide tab
@@ -328,7 +327,7 @@
                 var isQuiz = $elem.data('isQuiz');
                 var slideID = parseInt($elem.data('id'));
                 var slide = findSlide(this.slideEntries, {id: slideID, isQuiz: isQuiz});
-                this._updateSlideEntry(slide);
+                this.set('slideEntry', slide);
             }
         },
         /**
@@ -336,18 +335,14 @@
          * the slide currently displayed
          *
          * @private
-         * @param {Object} slide
          */
-        _updateSlideEntry: function (slide) {
-            if (this._slideEntry === slide) {
-                return;
-            }
-            this._slideEntry = slide;
+        _onChangeCurrentSlide: function () {
+            var slide = this.get('slideEntry');
             this.$('.o_wslides_fs_sidebar_list_item.active').removeClass('active');
             var selector = '.o_wslides_fs_sidebar_list_item[data-id='+slide.id+'][data-is-quiz!="1"]';
 
             this.$(selector).addClass('active');
-            this.trigger_up('change_slide', this._slideEntry);
+            this.trigger_up('change_slide', this.get('slideEntry'));
         },
 
         /**
@@ -368,6 +363,131 @@
         },
     });
 
+    var ShareDialog = Dialog.extend({
+        template: 'website.slide.share.modal',
+        events: {
+            'click .o_wslides_js_share_email button': '_onShareByEmailClick',
+            'click a.o_wslides_js_social_share': '_onSlidesSocialShare',
+            'click .o_clipboard_button': '_onShareLinkCopy',
+            'keypress .o_wslides_js_share_email input': '_onKeypress',
+        },
+
+        init: function (parent, options, slide) {
+            options = _.defaults(options || {}, {
+                title: _t("Share This Content"),
+                buttons: [{text: "Close", close: true}],
+                size: 'medium',
+            });
+            this._super(parent, options);
+            this.slide = slide;
+            this.session = session;
+        },
+
+        //--------------------------------------------------------------------------
+        // Handlers
+        //--------------------------------------------------------------------------
+
+        /**
+         * Send the email(s) on 'Enter' key
+         *
+         * @private
+         * @param {Event} ev
+         */
+        _onKeypress: function (ev) {
+            if (ev.keyCode === $.ui.keyCode.ENTER) {
+                ev.preventDefault();
+                this._onShareByEmailClick();
+            }
+        },
+
+        _onShareByEmailClick: function () {
+            var form = this.$('.o_wslides_js_share_email');
+            var input = form.find('input');
+            if (input.val()) {
+                form.removeClass('o_has_error').find('.form-control, .form-select').removeClass('is-invalid');
+                var slideID = form.find('button').data('slide-id');
+                this._rpc({
+                    route: '/slides/slide/send_share_email',
+                    params: {
+                        slide_id: slideID,
+                        emails: input.val(),
+                        fullscreen: true
+                    },
+                }).then((action) => {
+                    if (action) {
+                        form.find('.alert-info').removeClass('d-none');
+                        form.find('.input-group').addClass('d-none');
+                    } else {
+                        this.displayNotification({ message: _t('Please enter valid email(s)'), type: 'danger' });
+                        form.addClass('o_has_error').find('.form-control, .form-select').addClass('is-invalid');
+                        input.focus();
+                    }
+                });
+            } else {
+                this.displayNotification({ message: _t('Please enter valid email(s)'), type: 'danger' });
+                form.addClass('o_has_error').find('.form-control, .form-select').addClass('is-invalid');
+                input.focus();
+            }
+        },
+
+        _onSlidesSocialShare: function (ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+            var popUpURL = $(ev.currentTarget).attr('href');
+            window.open(popUpURL, 'Share Dialog', 'width=626,height=436');
+        },
+
+        _onShareLinkCopy: function (ev) {
+            ev.preventDefault();
+            var $clipboardBtn = this.$('.o_clipboard_button');
+            $clipboardBtn.tooltip({title: "Copied !", trigger: "manual", placement: "bottom"});
+            var self = this;
+            var clipboard = new ClipboardJS('.o_clipboard_button', {
+                target: function () {
+                    return self.$('.o_wslides_js_share_link')[0];
+                },
+                container: this.el
+            });
+            clipboard.on('success', function () {
+                clipboard.destroy();
+                $clipboardBtn.tooltip('show');
+                _.delay(function () {
+                    $clipboardBtn.tooltip("hide");
+                }, 800);
+            });
+            clipboard.on('error', function (e) {
+                clipboard.destroy();
+            })
+        },
+
+    });
+
+    var ShareButton = publicWidget.Widget.extend({
+        events: {
+            "click .o_wslides_fs_share": '_onClickShareSlide'
+        },
+
+        init: function (el, slide) {
+            var result = this._super.apply(this, arguments);
+            this.slide = slide;
+            return result;
+        },
+
+        _openDialog: function() {
+            return new ShareDialog(this, {}, this.slide).open();
+        },
+
+        _onClickShareSlide: function (ev) {
+            ev.preventDefault();
+            this._openDialog();
+        },
+
+        _onChangeSlide: function (currentSlide) {
+            this.slide = currentSlide;
+        }
+
+    });
+
     /**
      * This widget's purpose is to show content of a course, naviguating through contents
      * and correclty display it. It also handle slide completion, course progress, ...
@@ -375,11 +495,10 @@
      * This widget is rendered sever side, and attached to the existing DOM.
      */
     var Fullscreen = SlideCoursePage.extend({
-        events: Object.assign({}, SlideCoursePage.prototype.events, {
+        events: _.extend({}, SlideCoursePage.prototype.events, {
             'click .o_wslides_fs_toggle_sidebar': '_onClickToggleSidebar',
-            'click .o_wslides_fs_share': '_onClickShareSlide',
         }),
-        custom_events: Object.assign({}, SlideCoursePage.prototype.custom_events, {
+        custom_events: _.extend({}, SlideCoursePage.prototype.custom_events, {
             'change_slide': '_onChangeSlideRequest',
             'slide_go_next': '_onSlideGoToNext',
         }),
@@ -389,29 +508,31 @@
         * @param {Object} slides Contains the list of all slides of the course
         * @param {integer} defaultSlideId Contains the ID of the slide requested by the user
         */
-        init: function (parent, slides, defaultSlideId, channelData) {
+        init: function (parent, slides, defaultSlideId, channelData){
             var result = this._super.apply(this,arguments);
             this.initialSlideID = defaultSlideId;
             this.slides = this._preprocessSlideData(slides);
             this.channel = channelData;
             var slide;
-            const urlParams = new URL(window.location).searchParams;
+            var urlParams = $.deparam.querystring();
             if (defaultSlideId) {
-                slide = findSlide(this.slides, {id: defaultSlideId, isQuiz: String(urlParams.get("quiz")) === "1" });
+                slide = findSlide(this.slides, {id: defaultSlideId, isQuiz: urlParams.quiz === "1" });
             } else {
                 slide = this.slides[0];
             }
 
-            this._slideValue = slide;
+            this.set('slide', slide);
 
             this.sidebar = new Sidebar(this, this.slides, slide);
+            this.shareButton = new ShareButton(this, slide);
             return result;
         },
         /**
          * @override
          */
-        start: function () {
+        start: function (){
             var self = this;
+            this.on('change:slide', this, this._onChangeSlide);
             this._toggleSidebar();
             const backendNavEl = document.querySelector('.o_frontend_to_backend_nav');
             if (backendNavEl) {
@@ -430,6 +551,7 @@
         attachTo: function (){
             var defs = [this._super.apply(this, arguments)];
             defs.push(this.sidebar.attachTo(this.$('.o_wslides_fs_sidebar')));
+            defs.push(this.shareButton.attachTo(this.$('.o_wslides_slide_fs_header')));
             return $.when.apply($, defs);
         },
         //--------------------------------------------------------------------------
@@ -440,10 +562,14 @@
          *
          * @private
          */
-        _fetchHtmlContent: function () {
-            const currentSlide = this._slideValue;
-            return rpc("/slides/slide/get_html_content", {
-                'slide_id': currentSlide.id
+        _fetchHtmlContent: function (){
+            var self = this;
+            var currentSlide = this.get('slide');
+            return self._rpc({
+                route:"/slides/slide/get_html_content",
+                params: {
+                    'slide_id': currentSlide.id
+                }
             }).then(function (data){
                 if (data.html_content) {
                     currentSlide.htmlContent = data.html_content;
@@ -456,17 +582,12 @@
         *
         * @private
         */
-        _fetchSlideContent: function () {
-            const slide = this._slideValue;
+        _fetchSlideContent: function (){
+            var slide = this.get('slide');
             if (slide.category === 'article' && !slide.isQuiz) {
                 return this._fetchHtmlContent();
             }
             return Promise.resolve();
-        },
-        getDocumentMaxPage() {
-            const iframe = document.querySelector("iframe.o_wslides_iframe_viewer");
-            const iframeDocument = iframe.contentWindow.document;
-            return parseInt(iframeDocument.querySelector("#page_count").innerText);
         },
         /**
          * Extend the slide data list to add informations about rendering method, and other
@@ -487,19 +608,19 @@
                     }
                     slideData.embedUrl = slideData.embedCode ? scheme + slideData.embedCode + separator + $.param(params) : "";
                 } else if (slideData.category === 'video' && slideData.videoSourceType === 'vimeo') {
-                    slideData.embedCode = markup(slideData.embedCode);
+                    slideData.embedCode = Markup(slideData.embedCode);
                 } else if (slideData.category === 'infographic') {
-                    slideData.embedUrl = `/web/image/slide.slide/${encodeURIComponent(slideData.id)}/image_1024`;
+                    slideData.embedUrl = _.str.sprintf('/web/image/slide.slide/%s/image_1024', slideData.id);
                 } else if (slideData.category === 'document') {
                     slideData.embedUrl = $(slideData.embedCode).attr('src');
                 }
-                // fill empty property to allow searching on it with list.filter(matcher)
+                // fill empty property to allow searching on it with _.filter(list, matcher)
                 slideData.isQuiz = !!slideData.isQuiz;
                 slideData.hasQuestion = !!slideData.hasQuestion;
                 // technical settings for the Fullscreen to work
                 var autoSetDone = false;
                 if (!slideData.hasQuestion) {
-                    if (['infographic', 'document', 'article'].includes(slideData.category)) {
+                    if (_.contains(['infographic', 'document', 'article'], slideData.category)) {
                         autoSetDone = true;  // images, documents (local + external) and articles are marked as completed when opened
                     } else if (slideData.category === 'video' && slideData.videoSourceType === 'google_drive') {
                         autoSetDone = true;  // google drive videos do not benefit from the YouTube integration and are marked as completed when opened
@@ -515,16 +636,16 @@
          *
          * @private
          */
-        _pushUrlState: function () {
+        _pushUrlState: function (){
             var urlParts = window.location.pathname.split('/');
-            urlParts[urlParts.length - 1] = this._slideValue.slug;
+            urlParts[urlParts.length-1] = this.get('slide').slug;
             var url =  urlParts.join('/');
             this.$('.o_wslides_fs_exit_fullscreen').attr('href', url);
             var params = {'fullscreen': 1 };
-            if (this._slideValue.isQuiz) {
+            if (this.get('slide').isQuiz){
                 params.quiz = 1;
             }
-            var fullscreenUrl = `${url}?${$.param(params)}`;
+            var fullscreenUrl = _.str.sprintf('%s?%s', url, $.param(params));
             history.pushState(null, '', fullscreenUrl);
         },
         /**
@@ -541,7 +662,7 @@
             if (this._renderSlideRunning) { return; }
             this._renderSlideRunning = true;
             try {
-                const slide = this._slideValue;
+                var slide = this.get('slide');
                 var $content = this.$('.o_wslides_fs_content');
                 $content.empty();
                 if (this.websiteAnimateWidget) {
@@ -557,8 +678,8 @@
                 }
 
                 // render slide content
-                if (['document', 'infographic'].includes(slide.category)) {
-                    $content.empty().append(renderToElement('website.slides.fullscreen.content', {widget: this}));
+                if (_.contains(['document', 'infographic'], slide.category)) {
+                    $content.html(QWeb.render('website.slides.fullscreen.content', {widget: this}));
                 } else if (slide.category === 'video' && slide.videoSourceType === 'youtube') {
                     this.videoPlayer = new VideoPlayerYouTube(this, slide);
                     return await this.videoPlayer.appendTo($content);
@@ -566,7 +687,7 @@
                     this.videoPlayer = new VideoPlayerVimeo(this, slide);
                     return await this.videoPlayer.appendTo($content);
                 } else if (slide.category === 'video' && slide.videoSourceType === 'google_drive') {
-                    $content.empty().append(renderToElement('website.slides.fullscreen.video.google_drive', {widget: this}));
+                    $content.html(QWeb.render('website.slides.fullscreen.video.google_drive', {widget: this}));
                 } else if (slide.category === 'article'){
                     this.websiteAnimateWidget = new publicWidget.registry.WebsiteAnimate();
                     var $wpContainer = $('<div>').addClass('o_wslide_fs_article_content bg-white block w-100 overflow-auto p-3');
@@ -582,17 +703,6 @@
                 this._renderSlideRunning = false;
             }
         },
-        /**
-         * @private
-         */
-        _updateSlideValue: function (slide) {
-            if (this._slideValue === slide) {
-                return;
-            }
-            this._slideValue = slide;
-            this._onChangeSlide();
-        },
-
         //--------------------------------------------------------------------------
         // Handlers
         //--------------------------------------------------------------------------
@@ -601,19 +711,19 @@
          * When the current slide is changed, widget will be automatically updated
          * and allowed to: fetch the content if needed, render it, update the url,
          * and set slide as "completed" according to its category requirements. In
-         * mobile case (i.e. limited screensize), sidebar will be toggled since
+         * mobile case (i.e. limited screensize), sidebar will be toggled since 
          * sidebar will block most or all of new slide visibility.
          *
          * @private
          */
         _onChangeSlide: function () {
             var self = this;
-            const slide = this._slideValue;
+            var slide = this.get('slide');
             self._pushUrlState();
             return this._fetchSlideContent().then(function() { // render content
                 var websiteName = document.title.split(" | ")[1]; // get the website name from title
                 document.title =  (websiteName) ? slide.name + ' | ' + websiteName : slide.name;
-                if  (uiUtils.getSize() < SIZES.MD) {
+                if  (config.device.size_class < config.device.SIZES.MD) {
                     self._toggleSidebar(); // hide sidebar when small device screen
                 }
                 return self._renderSlide();
@@ -634,13 +744,14 @@
          *
          * @private
          */
-        _onChangeSlideRequest: function (ev) {
+        _onChangeSlideRequest: function (ev){
             var slideData = ev.data;
             var newSlide = findSlide(this.slides, {
                 id: slideData.id,
                 isQuiz: slideData.isQuiz || false,
             });
-            this._updateSlideValue(newSlide);
+            this.set('slide', newSlide);
+            this.shareButton._onChangeSlide(newSlide);
         },
         /**
          * After a slide has been marked as completed / uncompleted, update the state
@@ -658,14 +769,15 @@
         _toggleSlideCompleted: async function (slide, completed = true) {
             await this._super(...arguments);
 
-            const fsSlides = this.slides.filter(_slide => _slide.id === slide.id);
+            const slideMatch = _.matcher({id: slide.id});
+            const fsSlides = _.filter(this.slides, slideMatch);
 
             fsSlides.forEach(slide => slide.completed = completed);
 
-            const currentSlide = this._slideValue;
+            const currentSlide = this.get('slide');
             if (currentSlide.id === slide.id) {
                 currentSlide.completed = completed;
-                this._updateSlideValue(currentSlide);
+                this.set('slide', currentSlide);
 
                 if ((currentSlide.hasQuestion || currentSlide.type === 'quiz') && !completed) {
                     // Reload the quiz
@@ -690,21 +802,6 @@
             ev.preventDefault();
             this._toggleSidebar();
         },
-
-        _onClickShareSlide: function (ev) {
-            const slide = this._slideValue;
-            this.call("dialog", "add", SlideShareDialog, {
-                category: slide.category,
-                documentMaxPage: slide.category == 'document' && this.getDocumentMaxPage(),
-                emailSharing: slide.emailSharing === 'True',
-                embedCode: slide.embedCode || '',
-                id: slide.id,
-                isFullscreen: true,
-                name: slide.name,
-                url: slide.websiteShareUrl,
-            });
-        },
-
         /**
          * Toggles sidebar visibility.
          *
@@ -722,8 +819,6 @@
             var proms = [this._super.apply(this, arguments)];
             var fullscreen = new Fullscreen(this, this._getSlides(), this._getCurrentSlideID(), this._extractChannelData());
             proms.push(fullscreen.attachTo(".o_wslides_fs_main"));
-            // To prevent double scrollbar due to footer overflow
-            document.querySelector('.o_footer')?.classList.add('d-none');
             return proms;
         },
         _extractChannelData: function (){

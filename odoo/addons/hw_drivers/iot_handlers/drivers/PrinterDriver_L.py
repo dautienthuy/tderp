@@ -7,9 +7,12 @@ import dbus
 import io
 import logging
 import netifaces as ni
+import os
 from PIL import Image, ImageOps
 import re
 import subprocess
+import tempfile
+from uuid import getnode as get_mac
 
 from odoo import http
 from odoo.addons.hw_drivers.connection_manager import connection_manager
@@ -19,7 +22,6 @@ from odoo.addons.hw_drivers.event_manager import event_manager
 from odoo.addons.hw_drivers.iot_handlers.interfaces.PrinterInterface_L import PPDs, conn, cups_lock
 from odoo.addons.hw_drivers.main import iot_devices
 from odoo.addons.hw_drivers.tools import helpers
-from odoo.addons.hw_drivers.websocket_client import send_to_controller
 
 _logger = logging.getLogger(__name__)
 
@@ -47,7 +49,6 @@ def cups_notification_handler(message, uri, device_identifier, state, reason, ac
             IPP_PRINTER_STOPPED: 'stopped'
         }
         iot_devices[device_identifier].update_status(state_value[state], message, reason)
-
 
 # Create a Cups subscription if it doesn't exist yet
 try:
@@ -86,13 +87,6 @@ class PrinterDriver(Driver):
         })
 
         self.receipt_protocol = 'star' if 'STR_T' in device['device-id'] else 'escpos'
-
-        if any(cmd in device['device-id'] for cmd in ['CMD:STAR;', 'CMD:ESC/POS;']):
-            self.device_subtype = "receipt_printer"
-        elif any(cmd in device['device-id'] for cmd in ['COMMAND SET:ZPL;', 'CMD:ESCLABEL;']):
-            self.device_subtype = "label_printer"
-        else:
-            self.device_subtype = "office_printer"
         if 'direct' in self.device_connection and any(cmd in device['device-id'] for cmd in ['CMD:STAR;', 'CMD:ESC/POS;']):
             self.print_status()
 
@@ -101,23 +95,18 @@ class PrinterDriver(Driver):
         if device.get('supported', False):
             return True
         protocol = ['dnssd', 'lpd', 'socket']
-        if (
-                any(x in device['url'] for x in protocol)
-                and device['device-make-and-model'] != 'Unknown'
-                or 'direct' in device['device-class']
-        ):
+        if any(x in device['url'] for x in protocol) and device['device-make-and-model'] != 'Unknown' or 'direct' in device['device-class']:
             model = cls.get_device_model(device)
-            ppd_file = ''
+            ppdFile = ''
             for ppd in PPDs:
                 if model and model in PPDs[ppd]['ppd-product']:
-                    ppd_file = ppd
+                    ppdFile = ppd
                     break
             with cups_lock:
-                if ppd_file:
-                    conn.addPrinter(name=device['identifier'], ppdname=ppd_file, device=device['url'])
+                if ppdFile:
+                    conn.addPrinter(name=device['identifier'], ppdname=ppdFile, device=device['url'])
                 else:
                     conn.addPrinter(name=device['identifier'], device=device['url'])
-
                 conn.setPrinterInfo(device['identifier'], device['device-make-and-model'])
                 conn.enablePrinter(device['identifier'])
                 conn.acceptJobs(device['identifier'])
@@ -141,11 +130,7 @@ class PrinterDriver(Driver):
 
     @classmethod
     def get_status(cls):
-        status = 'connected' if any(
-            iot_devices[d].device_type == "printer"
-            and iot_devices[d].device_connection == 'direct'
-            for d in iot_devices
-        ) else 'disconnected'
+        status = 'connected' if any(iot_devices[d].device_type == "printer" and iot_devices[d].device_connection == 'direct' for d in iot_devices) else 'disconnected'
         return {'status': status, 'messages': ''}
 
     def disconnect(self):
@@ -177,31 +162,15 @@ class PrinterDriver(Driver):
         }
         event_manager.device_changed(self)
 
-    def print_raw(self, data, landscape=False, duplex=True):
-        """
-        Print raw data to the printer
-        :param data: The data to print
-        :param landscape: Print in landscape mode (Default: False)
-        :param duplex: Print in duplex mode (recto-verso) (Default: True)
-        """
-        options = []
-        if landscape:
-            options.extend(['-o', 'orientation-requested=4'])
-        if not duplex:
-            options.extend(['-o', 'sides=one-sided'])
-        cmd = ["lp", "-d", self.device_identifier, *options]
-
-        _logger.debug("Printing using command: %s", cmd)
-        process = subprocess.Popen(cmd, stdin=subprocess.PIPE)
+    def print_raw(self, data):
+        process = subprocess.Popen(["lp", "-d", self.device_identifier], stdin=subprocess.PIPE)
         process.communicate(data)
         if process.returncode != 0:
-            # The stderr isn't meaningful, so we don't log it ('No such file or directory')
+            # The stderr isn't meaningful so we don't log it ('No such file or directory')
             _logger.error('Printing failed: printer with the identifier "%s" could not be found',
                           self.device_identifier)
 
     def print_receipt(self, data):
-        _logger.debug("print_receipt called for printer %s", self.device_name)
-
         receipt = b64decode(data['receipt'])
         im = Image.open(io.BytesIO(receipt))
 
@@ -392,16 +361,12 @@ class PrinterDriver(Driver):
 
     def open_cashbox(self, data):
         """Sends a signal to the current printer to open the connected cashbox."""
-        _logger.debug("open_cashbox called for printer %s", self.device_name)
-
         commands = RECEIPT_PRINTER_COMMANDS[self.receipt_protocol]
         for drawer in commands['drawers']:
             self.print_raw(drawer)
 
     def _action_default(self, data):
-        _logger.debug("_action_default called for printer %s", self.device_name)
         self.print_raw(b64decode(data['document']))
-        send_to_controller(self.connection_type, {'print_id': data['print_id'], 'device_identifier': self.device_identifier})
 
 
 class PrinterController(http.Controller):
@@ -413,6 +378,5 @@ class PrinterController(http.Controller):
             iot_devices[printer].action(data)
             return True
         return False
-
 
 proxy_drivers['printer'] = PrinterDriver

@@ -10,7 +10,6 @@ from odoo.addons.web.controllers.home import ensure_db, Home, SIGN_UP_REQUEST_PA
 from odoo.addons.base_setup.controllers.main import BaseSetup
 from odoo.exceptions import UserError
 from odoo.http import request
-from markupsafe import Markup
 
 _logger = logging.getLogger(__name__)
 
@@ -42,17 +41,7 @@ class AuthSignupHome(Home):
 
         if 'error' not in qcontext and request.httprequest.method == 'POST':
             try:
-                if not request.env['ir.http']._verify_request_recaptcha_token('signup'):
-                    raise UserError(_("Suspicious activity detected by Google reCaptcha."))
-
                 self.do_signup(qcontext)
-
-                # Set user to public if they were not signed in by do_signup
-                # (mfa enabled)
-                if request.session.uid is None:
-                    public_user = request.env.ref('base.public_user')
-                    request.update_env(user=public_user)
-
                 # Send an account creation confirmation email
                 User = request.env['res.users']
                 user_sudo = User.sudo().search(
@@ -65,11 +54,11 @@ class AuthSignupHome(Home):
             except UserError as e:
                 qcontext['error'] = e.args[0]
             except (SignupError, AssertionError) as e:
-                if request.env["res.users"].sudo().search_count([("login", "=", qcontext.get("login"))], limit=1):
+                if request.env["res.users"].sudo().search([("login", "=", qcontext.get("login"))]):
                     qcontext["error"] = _("Another user is already registered using this email address.")
                 else:
-                    _logger.warning("%s", e)
-                    qcontext['error'] = _("Could not create a new account.") + Markup('<br/>') + str(e)
+                    _logger.error("%s", e)
+                    qcontext['error'] = _("Could not create a new account.")
 
         elif 'signup_email' in qcontext:
             user = request.env['res.users'].sudo().search([('email', '=', qcontext.get('signup_email')), ('state', '!=', 'new')], limit=1)
@@ -90,8 +79,6 @@ class AuthSignupHome(Home):
 
         if 'error' not in qcontext and request.httprequest.method == 'POST':
             try:
-                if not request.env['ir.http']._verify_request_recaptcha_token('password_reset'):
-                    raise UserError(_("Suspicious activity detected by Google reCaptcha."))
                 if qcontext.get('token'):
                     self.do_signup(qcontext)
                     return self.web_login(*args, **kw)
@@ -140,7 +127,7 @@ class AuthSignupHome(Home):
         if qcontext.get('token'):
             try:
                 # retrieve the user info (name, login or email) corresponding to a signup token
-                token_infos = request.env['res.partner'].sudo()._signup_retrieve_info(qcontext.get('token'))
+                token_infos = request.env['res.partner'].sudo().signup_retrieve_info(qcontext.get('token'))
                 for k, v in token_infos.items():
                     qcontext.setdefault(k, v)
             except:
@@ -169,11 +156,12 @@ class AuthSignupHome(Home):
     def _signup_with_values(self, token, values):
         login, password = request.env['res.users'].sudo().signup(values, token)
         request.env.cr.commit()     # as authenticate will use its own cursor we need to commit the current transaction
-        credential = {'login': login, 'password': password, 'type': 'password'}
-        request.session.authenticate(request.db, credential)
+        pre_uid = request.session.authenticate(request.db, login, password)
+        if not pre_uid:
+            raise SignupError(_('Authentication Failed.'))
 
 class AuthBaseSetup(BaseSetup):
-    @http.route()
+    @http.route('/base_setup/data', type='json', auth='user')
     def base_setup_data(self, **kwargs):
         res = super().base_setup_data(**kwargs)
         res.update({'resend_invitation': True})

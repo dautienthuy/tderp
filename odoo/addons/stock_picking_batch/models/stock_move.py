@@ -26,17 +26,3 @@ class StockMove(models.Model):
         super()._assign_picking_post_process(new=new)
         for picking in self.picking_id:
             picking._find_auto_batch()
-
-    def write(self, vals):
-        res = super().write(vals)
-        if 'state' in vals and vals['state'] == 'assigned':
-            for picking in self.picking_id:
-                if picking.state != 'assigned':
-                    continue
-                picking._find_auto_batch()
-
-        return res
-
-    def _action_assign(self, force_qty=False):
-        super()._action_assign(force_qty=force_qty)
-        self.move_line_ids._auto_wave()

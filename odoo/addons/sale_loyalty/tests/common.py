@@ -1,75 +1,86 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from collections import defaultdict
 
+from odoo import Command
 from odoo.exceptions import ValidationError
-from odoo.fields import Command
 
-from odoo.addons.sale.tests.common import SaleCommon
+from odoo.addons.sale.tests.test_sale_product_attribute_value_config import TestSaleProductAttributeValueCommon
 
 
-class TestSaleCouponCommon(SaleCommon):
+class TestSaleCouponCommon(TestSaleProductAttributeValueCommon):
 
     @classmethod
     def setUpClass(cls):
-        super().setUpClass()
-
+        super(TestSaleCouponCommon, cls).setUpClass()
         # set currency to not rely on demo data and avoid possible race condition
         cls.currency_ratio = 1.0
+        pricelist = cls.env.ref('product.list0')
+        pricelist.currency_id = cls._setup_currency(cls.currency_ratio)
+
+        # Disable noisy pricelist (aka demo data Benelux)
+        cls.env.user.partner_id.write({
+            'property_product_pricelist': pricelist.id,
+        })
+        (cls.env['product.pricelist'].search([]) - pricelist).write({'active': False})
 
         # Set all the existing programs to active=False to avoid interference
         cls.env['loyalty.program'].search([]).sudo().write({'active': False})
 
-        # Taxes
-        tax_group_group = cls.env['account.tax.group'].create({
-            'name': 'Test Account Tax Group'
+        # create partner for sale order.
+        cls.steve = cls.env['res.partner'].create({
+            'name': 'Steve Bucknor',
+            'email': 'steve.bucknor@example.com',
         })
+
+        cls.empty_order = cls.env['sale.order'].create({
+            'partner_id': cls.steve.id
+        })
+
+        cls.uom_unit = cls.env.ref('uom.product_uom_unit')
+
+        # Taxes
         cls.tax_15pc_excl = cls.env['account.tax'].create({
             'name': "Tax 15%",
             'amount_type': 'percent',
             'amount': 15,
             'type_tax_use': 'sale',
-            'tax_group_id': tax_group_group.id,
         })
 
         cls.tax_10pc_incl = cls.env['account.tax'].create({
             'name': "10% Tax incl",
             'amount_type': 'percent',
             'amount': 10,
-            'price_include_override': 'tax_included',
-            'tax_group_id': tax_group_group.id,
+            'price_include': True,
         })
 
         cls.tax_10pc_base_incl = cls.env['account.tax'].create({
             'name': "10% Tax incl base amount",
             'amount_type': 'percent',
             'amount': 10,
-            'price_include_override': 'tax_included',
+            'price_include': True,
             'include_base_amount': True,
-            'tax_group_id': tax_group_group.id,
         })
 
         cls.tax_10pc_excl = cls.env['account.tax'].create({
             'name': "10% Tax excl",
             'amount_type': 'percent',
             'amount': 10,
-            'price_include_override': 'tax_excluded',
-            'tax_group_id': tax_group_group.id,
+            'price_include': False,
         })
 
         cls.tax_20pc_excl = cls.env['account.tax'].create({
             'name': "20% Tax excl",
             'amount_type': 'percent',
             'amount': 20,
-            'price_include_override': 'tax_excluded',
-            'tax_group_id': tax_group_group.id,
+            'price_include': False,
         })
 
         cls.tax_group = cls.env['account.tax'].create({
             'name': "tax_group",
             'amount_type': 'group',
             'children_tax_ids': [Command.set((cls.tax_10pc_incl + cls.tax_10pc_base_incl).ids)],
-            'tax_group_id': tax_group_group.id,
         })
 
         #products
@@ -103,7 +114,7 @@ class TestSaleCouponCommon(SaleCommon):
 
         cls.product_gift_card = cls.env['product.product'].create({
             'name': 'Gift Card 50',
-            'type': 'service',
+            'detailed_type': 'service',
             'list_price': 50,
             'sale_ok': True,
             'taxes_id': False,
@@ -212,8 +223,6 @@ class TestSaleCouponCommon(SaleCommon):
             status = order._apply_program_reward(rewards, coupons)
             if 'error' in status:
                 raise ValidationError(status['error'])
-        elif len(coupons) == 1 and len(rewards) > 1:
-            return rewards
 
     def _claim_reward(self, order, program, coupon=False):
         if len(program.reward_ids) != 1:
@@ -233,12 +242,6 @@ class TestSaleCouponCommon(SaleCommon):
             if len(program.reward_ids) > 1 or len(coupons_per_program[program]) != 1 or not program.active:
                 continue
             self._claim_reward(order, program, coupons_per_program[program])
-
-    def _generate_coupons(self, loyality_program, coupon_qty=1):
-        self.env['loyalty.generate.wizard'].with_context(active_id=loyality_program.id).create({
-            'coupon_qty': coupon_qty,
-        }).generate_coupons()
-        return loyality_program.coupon_ids
 
 class TestSaleCouponNumbersCommon(TestSaleCouponCommon):
     @classmethod
@@ -269,6 +272,14 @@ class TestSaleCouponNumbersCommon(TestSaleCouponCommon):
             'name': 'Large Meeting Table',
             'list_price': 40000.0,
             'taxes_id': False,
+        })
+
+        cls.steve = cls.env['res.partner'].create({
+            'name': 'Steve Bucknor',
+            'email': 'steve.bucknor@example.com',
+        })
+        cls.empty_order = cls.env['sale.order'].create({
+            'partner_id': cls.steve.id
         })
 
         cls.p1 = cls.env['loyalty.program'].create({

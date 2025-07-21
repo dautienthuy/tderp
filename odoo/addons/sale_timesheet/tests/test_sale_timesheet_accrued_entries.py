@@ -9,8 +9,8 @@ from odoo.exceptions import UserError
 class TestAccruedTimeSheetSaleOrders(TestCommonSaleTimesheet):
 
     @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+    def setUpClass(cls, chart_template_ref=None):
+        super().setUpClass(chart_template_ref=chart_template_ref)
 
         cls.sale_order = cls.env['sale.order'].create({
             'partner_id': cls.partner_a.id,

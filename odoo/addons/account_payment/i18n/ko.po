@@ -3,39 +3,25 @@
 # 	* account_payment
 # 
 # Translators:
+# Martin Trigaux, 2022
+# Linkup <link-up@naver.com>, 2022
+# JH CHOI <hwangtog@gmail.com>, 2022
+# Sarah Park, 2023
 # Wil Odoo, 2024
-# Daye Jeong, 2024
-# Sarah Park, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-25 07:48+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Sarah Park, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2022-09-22 05:44+0000\n"
+"Last-Translator: Wil Odoo, 2024\n"
 "Language-Team: Korean (https://app.transifex.com/odoo/teams/41243/ko/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: ko\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-
-#. module: account_payment
-#. odoo-python
-#: code:addons/account_payment/wizards/payment_link_wizard.py:0
-msgid ""
-"#%(number)s - Installment of <strong>%(amount)s</strong> due on <strong "
-"class=\"text-primary\">%(date)s</strong>"
-msgstr ""
-"#%(number)s - <strong>%(amount)s</strong>의 할부금 납부일 <strong class=\"text-"
-"primary\">%(date)s</strong>"
-
-#. module: account_payment
-#. odoo-javascript
-#: code:addons/account_payment/static/src/js/portal_my_invoices_payment.js:0
-msgid "%s day(s) overdue"
-msgstr "%s일 기한 초과 "
 
 #. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_success
@@ -57,24 +43,6 @@ msgid "<i class=\"fa fa-fw fa-arrow-circle-right\"/> Pay Now"
 msgstr "<i class=\"fa fa-fw fa-arrow-circle-right\"/> 지불하기"
 
 #. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_my_invoices_payment
-msgid ""
-"<i class=\"fa fa-fw fa-check\"/>\n"
-"                <span class=\"d-none d-md-inline\"> Authorized</span>"
-msgstr ""
-"<i class=\"fa fa-fw fa-check\"/>\n"
-"                <span class=\"d-none d-md-inline\"> 승인 완료</span>"
-
-#. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_my_invoices_payment
-msgid ""
-"<i class=\"fa fa-fw fa-check\"/>\n"
-"                <span class=\"d-none d-md-inline\"> Paid</span>"
-msgstr ""
-"<i class=\"fa fa-fw fa-check\"/>\n"
-"                <span class=\"d-none d-md-inline\"> 결제 완료</span>"
-
-#. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_page_inherit_payment
 msgid "<i class=\"fa fa-fw fa-check-circle\"/> Paid"
 msgstr "<i class=\"fa fa-fw fa-check-circle\"/> 지불 완료"
@@ -86,27 +54,74 @@ msgstr "<i class=\"fa fa-fw fa-check-circle\"/> 보류"
 
 #. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_page_inherit_payment
-msgid "<i class=\"fa fa-fw fa-check-circle\"/> Processing Payment"
-msgstr "<i class=\"fa fa-fw fa-check-circle\"/> 결제 처리 중"
+msgid ""
+"<i class=\"fa fa-info\"/> You have credits card registered, you can log-in "
+"to be able to use them."
+msgstr "<i class=\"fa fa-info\"/> 신용 카드가 등록되었습니다. 로그인하여 사용할 수 있습니다."
 
 #. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.portal_my_invoices_payment
-msgid "<span class=\"d-none d-md-inline\"> Pending</span>"
-msgstr "<span class=\"d-none d-md-inline\"> 보류 중</span>"
+msgid ""
+"<span class=\"badge rounded-pill text-bg-danger\"><i class=\"fa fa-fw fa-"
+"remove\"/><span class=\"d-none d-md-inline\"> Cancelled</span></span>"
+msgstr ""
+"<span class=\"badge rounded-pill text-bg-danger\"><i class=\"fa fa-fw fa-"
+"remove\"/><span class=\"d-none d-md-inline\"> 취소됨</span></span>"
 
 #. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_payment
-msgid "<strong>Full Amount</strong><br/>"
-msgstr "<strong>전액</strong><br/>"
+#: model_terms:ir.ui.view,arch_db:account_payment.portal_my_invoices_payment
+msgid ""
+"<span class=\"badge rounded-pill text-bg-info\"><i class=\"fa fa-fw fa-"
+"clock-o\"/><span class=\"d-none d-md-inline\"> Waiting for "
+"Payment</span></span>"
+msgstr ""
+"<span class=\"badge rounded-pill text-bg-info\"><i class=\"fa fa-fw fa-"
+"clock-o\"/><span class=\"d-none d-md-inline\"> 결제 대기 중</span></span>"
+
+#. module: account_payment
+#: model_terms:ir.ui.view,arch_db:account_payment.portal_my_invoices_payment
+msgid ""
+"<span class=\"badge rounded-pill text-bg-primary\"><i class=\"fa fa-fw fa-"
+"check\"/><span class=\"d-none d-md-inline\"> Authorized</span></span>"
+msgstr ""
+"<span class=\"badge rounded-pill text-bg-primary\"><i class=\"fa fa-fw fa-"
+"check\"/><span class=\"d-none d-md-inline\"> 인증됨</span></span>"
+
+#. module: account_payment
+#: model_terms:ir.ui.view,arch_db:account_payment.portal_my_invoices_payment
+msgid ""
+"<span class=\"badge rounded-pill text-bg-success\"><i class=\"fa fa-fw fa-"
+"check\"/><span class=\"d-none d-md-inline\"> Paid</span></span>"
+msgstr ""
+"<span class=\"badge rounded-pill text-bg-success\"><i class=\"fa fa-fw fa-"
+"check\"/><span class=\"d-none d-md-inline\"> 결제 완료</span></span>"
+
+#. module: account_payment
+#: model_terms:ir.ui.view,arch_db:account_payment.portal_my_invoices_payment
+msgid ""
+"<span class=\"badge rounded-pill text-bg-success\"><i class=\"fa fa-fw fa-"
+"check\"/><span class=\"d-none d-md-inline\"> Reversed</span></span>"
+msgstr ""
+"<span class=\"badge rounded-pill text-bg-success\"><i class=\"fa fa-fw fa-"
+"check\"/><span class=\"d-none d-md-inline\"> 변경 완료</span></span>"
+
+#. module: account_payment
+#: model_terms:ir.ui.view,arch_db:account_payment.portal_my_invoices_payment
+msgid ""
+"<span class=\"badge rounded-pill text-bg-warning\"><span class=\"d-none "
+"d-md-inline\"> Pending</span></span>"
+msgstr ""
+"<span class=\"badge rounded-pill text-bg-warning\"><span class=\"d-none "
+"d-md-inline\"> 보류 중</span></span>"
 
 #. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_payment
 msgid ""
-"<strong>Installment</strong>\n"
-"                                        <br/>"
+"<strong>No suitable payment option could be found.</strong><br/>\n"
+"                                If you believe that it is an error, please contact the website administrator."
 msgstr ""
-"<strong>할부</strong>\n"
-"                                        <br/>"
+"<strong>해당되는 결제 옵션을 찾을 수 없습니다.</strong><br/>\n"
+"                               오류가 발생한 경우, 웹사이트 관리자에게 문의하시기 바랍니다."
 
 #. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.payment_refund_wizard_view_form
@@ -115,45 +130,23 @@ msgid ""
 "                        Wait a moment for it to be processed. If the refund is still pending in a\n"
 "                        few minutes, please check your payment provider configuration."
 msgstr ""
-"<strong>주의!</strong> 해당 결제에 대한 환불이 보류 중입니다.\n"
-"                        처리될 때까지 잠시만 기다리세요. 이후에도 환불이\n"
-"                        계속 보류 중인 경우에는 결제대행업체 환경 설정을 확인하시기 바랍니다."
-
-#. module: account_payment
-#. odoo-python
-#: code:addons/account_payment/wizards/payment_link_wizard.py:0
-msgid "A discount will be applied if the customer pays before %s included."
-msgstr "%s일까지 결제가 접수되면 할인이 적용됩니다."
-
-#. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_payment
-msgid ""
-"A payment has already been made on this invoice, please make sure to not pay"
-" twice."
-msgstr "이 청구서는 이미 결제가 완료되었습니다. 중복 결제가 되지 않도록 주의하세요. "
+"<strong>주의!</strong> 해당 결제 항목에 대해 보류 중인 환불 건이 있습니다.\n"
+"                        처리기 완료될 때까지 잠시만 기다리십시오. 이후에도 환불이\n"
+"                        계속 보류 상태인 경우에는 결제대행업체 구성 내용을 확인하시기 바랍니다."
 
 #. module: account_payment
 #. odoo-python
 #: code:addons/account_payment/models/account_payment.py:0
+#, python-format
 msgid "A payment transaction with reference %s already exists."
 msgstr "%s를  참조로 하는 결제 거래가 이미 존재합니다."
 
 #. module: account_payment
 #. odoo-python
 #: code:addons/account_payment/models/account_payment.py:0
+#, python-format
 msgid "A token is required to create a new payment transaction."
 msgstr "새 결제 거래를 생성하려면 토큰이 필요합니다."
-
-#. module: account_payment
-#: model:onboarding.onboarding.step,button_text:account_payment.onboarding_onboarding_step_payment_provider
-msgid "Activate Stripe"
-msgstr "Stripe 활성화"
-
-#. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_overdue_invoices_page
-msgid "Amount"
-msgstr "금액"
 
 #. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_account_payment__amount_available_for_refund
@@ -161,13 +154,9 @@ msgid "Amount Available For Refund"
 msgstr "환불 가능 금액"
 
 #. module: account_payment
-#: model:ir.model.fields,field_description:account_payment.field_payment_link_wizard__invoice_amount_due
-msgid "Amount Due"
-msgstr "지불해야 할 금액"
-
-#. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_account_bank_statement_line__amount_paid
 #: model:ir.model.fields,field_description:account_payment.field_account_move__amount_paid
+#: model:ir.model.fields,field_description:account_payment.field_account_payment__amount_paid
 msgid "Amount paid"
 msgstr "결제 금액"
 
@@ -181,6 +170,7 @@ msgstr "승인된 거래를 취소 하시겠습니까? 이 작업은 되돌릴 �
 #. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_account_bank_statement_line__authorized_transaction_ids
 #: model:ir.model.fields,field_description:account_payment.field_account_move__authorized_transaction_ids
+#: model:ir.model.fields,field_description:account_payment.field_account_payment__authorized_transaction_ids
 msgid "Authorized Transactions"
 msgstr "승인된 거래"
 
@@ -192,7 +182,6 @@ msgstr "거래 포착"
 #. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.payment_refund_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_payment_paid
 msgid "Close"
 msgstr "닫기"
 
@@ -200,11 +189,6 @@ msgstr "닫기"
 #: model:ir.model.fields,field_description:account_payment.field_account_payment_register__payment_method_code
 msgid "Code"
 msgstr "코드"
-
-#. module: account_payment
-#: model:ir.model,name:account_payment.model_res_config_settings
-msgid "Config Settings"
-msgstr "환경 설정"
 
 #. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_payment_refund_wizard__create_uid
@@ -222,19 +206,9 @@ msgid "Currency"
 msgstr "통화"
 
 #. module: account_payment
-#: model:ir.model.fields,field_description:account_payment.field_payment_link_wizard__discount_date
-msgid "Discount Date"
-msgstr "할인 날짜"
-
-#. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_payment_refund_wizard__display_name
 msgid "Display Name"
 msgstr "표시명"
-
-#. module: account_payment
-#: model:ir.model.fields,field_description:account_payment.field_payment_link_wizard__display_open_installments
-msgid "Display Open Installments"
-msgstr "미결제 할부 표시"
 
 #. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_success
@@ -242,28 +216,6 @@ msgid ""
 "Done, your online payment has been successfully processed. Thank you for "
 "your order."
 msgstr "완료. 귀하의 온라인 결제가 성공적으로 처리되었습니다. 주문해 주셔서 감사합니다."
-
-#. module: account_payment
-#: model:ir.model.fields,field_description:account_payment.field_payment_link_wizard__epd_info
-msgid "Early Payment Discount Information"
-msgstr "선납 할인 정보"
-
-#. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_payment
-msgid "Early Payment Discount of"
-msgstr "선납 할인"
-
-#. module: account_payment
-#: model:onboarding.onboarding.step,description:account_payment.onboarding_onboarding_step_payment_provider
-msgid "Enable credit & debit card payments supported by Stripe."
-msgstr ""
-"Stripe가 지원되는 신용카드 및\n"
-"직불카드 결제를 활성화합니다."
-
-#. module: account_payment
-#: model:ir.model.fields.selection,name:account_payment.selection__payment_refund_wizard__support_refund__full_only
-msgid "Full Only"
-msgstr "전체 적용"
 
 #. module: account_payment
 #: model:ir.model,name:account_payment.model_payment_link_wizard
@@ -276,11 +228,6 @@ msgid "Generate a Payment Link"
 msgstr "결제 링크 생성"
 
 #. module: account_payment
-#: model:ir.model.fields,field_description:account_payment.field_payment_link_wizard__has_eligible_epd
-msgid "Has Eligible Epd"
-msgstr "적격 Epd 보유"
-
-#. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_payment_refund_wizard__has_pending_refund
 msgid "Has a pending refund"
 msgstr "보류 중인 환불 건이 있습니다"
@@ -289,14 +236,6 @@ msgstr "보류 중인 환불 건이 있습니다"
 #: model:ir.model.fields,field_description:account_payment.field_payment_refund_wizard__id
 msgid "ID"
 msgstr "ID"
-
-#. module: account_payment
-#. odoo-python
-#: code:addons/account_payment/controllers/payment.py:0
-msgid ""
-"Impossible to pay all the overdue invoices if they don't share the same "
-"currency."
-msgstr "연체된 청구서가 다른 통화로 되어 있는 경우 모두 결제할 수 없습니다."
 
 #. module: account_payment
 #: model:ir.model.fields,help:account_payment.field_account_payment_method_line__payment_provider_state
@@ -308,46 +247,37 @@ msgstr ""
 "공급업체 설정 시 이 모드를 사용하시는 것이 좋습니다."
 
 #. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.res_config_settings_view_form
-msgid "Invoice Online Payment"
-msgstr "청구 대금 온라인 결제"
-
-#. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.payment_transaction_form
 msgid "Invoice(s)"
-msgstr "청구서"
+msgstr "인보이스"
 
 #. module: account_payment
 #. odoo-python
 #: code:addons/account_payment/models/payment_transaction.py:0
 #: model:ir.model.fields,field_description:account_payment.field_payment_transaction__invoice_ids
+#, python-format
 msgid "Invoices"
-msgstr "청구서"
-
-#. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_my_home_overdue_invoice
-msgid "Invoices &amp; Bills"
-msgstr "청구서 및 공급업체 청구서"
+msgstr "인보이스"
 
 #. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_payment_transaction__invoices_count
 msgid "Invoices Count"
-msgstr "청구서 수"
-
-#. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_my_home_account_payment
-msgid "Invoices to pay"
-msgstr "지불할 청구서"
+msgstr "인보이스 수"
 
 #. module: account_payment
 #: model:ir.model,name:account_payment.model_account_journal
 msgid "Journal"
-msgstr "전표"
+msgstr "분개장"
 
 #. module: account_payment
 #: model:ir.model,name:account_payment.model_account_move
 msgid "Journal Entry"
-msgstr "전표 입력"
+msgstr "분개"
+
+#. module: account_payment
+#: model:ir.model.fields,field_description:account_payment.field_payment_refund_wizard____last_update
+msgid "Last Modified on"
+msgstr "최근 수정일"
 
 #. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_payment_refund_wizard__write_uid
@@ -365,86 +295,20 @@ msgid "Maximum Refund Allowed"
 msgstr "최대 환불 가능"
 
 #. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.payment_link_wizard__form_inherit_account_payment
-msgid "Next Installments"
-msgstr "다음 할부"
-
-#. module: account_payment
 #: model:ir.model.fields,help:account_payment.field_account_payment__payment_token_id
 msgid ""
 "Note that only tokens from providers allowing to capture the amount are "
 "available."
-msgstr "금액을 매입할 수 있는 업체의 토큰만 사용하실 수 있습니다."
+msgstr "금액을 캡쳐할 수 있는 업체의 토큰만 사용하실 수 있습니다."
 
 #. module: account_payment
 #: model:ir.model.fields,help:account_payment.field_account_payment_register__payment_token_id
 msgid ""
 "Note that tokens from providers set to only authorize transactions (instead "
 "of capturing the amount) are not available."
-msgstr "트랜잭션만 (금액 매입 대신) 승인하도록 설정되어 있는 업체의 토큰은 사용하실 수 없습니다."
+msgstr "트랜잭션만 (금액 캡쳐 대신) 승인하도록 설정되어 있는 업체의 토큰은 사용하실 수 없습니다."
 
 #. module: account_payment
-#: model:onboarding.onboarding.step,step_image_alt:account_payment.onboarding_onboarding_step_payment_provider
-msgid "Onboarding Online Payments"
-msgstr "온보딩 온라인 결제"
-
-#. module: account_payment
-#: model:ir.model,name:account_payment.model_onboarding_onboarding_step
-msgid "Onboarding Step"
-msgstr "온보딩 단계"
-
-#. module: account_payment
-#: model:onboarding.onboarding.step,title:account_payment.onboarding_onboarding_step_payment_provider
-msgid "Online Payments"
-msgstr "온라인 결제"
-
-#. module: account_payment
-#. odoo-python
-#: code:addons/account_payment/wizards/payment_link_wizard.py:0
-msgid "Online payment option is not enabled in Configuration."
-msgstr "환경설정에서 온라인 결제 옵션이 활성화되어 있지 않습니다."
-
-#. module: account_payment
-#. odoo-python
-#: code:addons/account_payment/controllers/portal.py:0
-msgid "Overdue invoices should share the same company."
-msgstr "연체된 청구서는 동일한 회사에서 공유되어야 합니다."
-
-#. module: account_payment
-#. odoo-python
-#: code:addons/account_payment/controllers/portal.py:0
-msgid "Overdue invoices should share the same currency."
-msgstr "연체된 청구서는 동일한 통화로 공유되어야 합니다."
-
-#. module: account_payment
-#. odoo-python
-#: code:addons/account_payment/controllers/portal.py:0
-msgid "Overdue invoices should share the same partner."
-msgstr "연체된 청구서는 동일한 파트너와 공유되어야 합니다."
-
-#. module: account_payment
-#: model:ir.model.fields.selection,name:account_payment.selection__payment_refund_wizard__support_refund__partial
-msgid "Partial"
-msgstr "부분"
-
-#. module: account_payment
-#: model:ir.model,name:account_payment.model_account_payment_register
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_payment
-msgid "Pay"
-msgstr "지불"
-
-#. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_payment_paid
-msgid "Pay Invoice"
-msgstr "청구서 결제"
-
-#. module: account_payment
-#: model:ir.model.fields,field_description:account_payment.field_res_config_settings__pay_invoices_online
-msgid "Pay Invoices Online"
-msgstr "온라인 청구서 결제하기"
-
-#. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_docs_entry
 #: model_terms:ir.ui.view,arch_db:account_payment.portal_my_invoices_payment
 msgid "Pay Now"
 msgstr "지금 결제"
@@ -455,9 +319,9 @@ msgid "Pay now"
 msgstr "지불하기"
 
 #. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_my_home_overdue_invoice
-msgid "Pay overdue"
-msgstr "연체된 결제"
+#: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_payment
+msgid "Pay with"
+msgstr "결제 방법"
 
 #. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_payment_refund_wizard__payment_id
@@ -471,14 +335,18 @@ msgid "Payment Amount"
 msgstr "결제 금액"
 
 #. module: account_payment
+#: model:ir.ui.menu,name:account_payment.payment_icon_menu
+msgid "Payment Icons"
+msgstr "결제 아이콘"
+
+#. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_payment_provider__journal_id
 msgid "Payment Journal"
-msgstr "결제 전표"
+msgstr "걸제 분개장"
 
 #. module: account_payment
 #: model:ir.model,name:account_payment.model_account_payment_method
 #: model:ir.model,name:account_payment.model_account_payment_method_line
-#: model:ir.ui.menu,name:account_payment.payment_method_menu
 msgid "Payment Methods"
 msgstr "지급 방법"
 
@@ -523,28 +391,18 @@ msgstr "결제"
 
 #. module: account_payment
 #. odoo-python
-#: code:addons/account_payment/controllers/payment.py:0
-msgid "Please log in to pay your overdue invoices"
-msgstr "연체된 청구서에 대한 금액을 지불하려면 로그인하세요"
-
-#. module: account_payment
-#. odoo-python
 #: code:addons/account_payment/models/account_payment_method_line.py:0
+#, python-format
 msgid "Provider"
 msgstr "공급업체"
 
 #. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_overdue_invoices_page
-msgid "Reference"
-msgstr "참조"
-
-#. module: account_payment
 #. odoo-python
 #: code:addons/account_payment/models/account_payment.py:0
-#: model:ir.model.fields,field_description:account_payment.field_payment_refund_wizard__support_refund
+#: code:addons/account_payment/models/account_payment.py:0
 #: model_terms:ir.ui.view,arch_db:account_payment.payment_refund_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:account_payment.view_account_payment_form_inherit_payment
+#, python-format
 msgid "Refund"
 msgstr "환불"
 
@@ -567,6 +425,11 @@ msgstr "환불"
 #: model:ir.model.fields,field_description:account_payment.field_account_payment__refunds_count
 msgid "Refunds Count"
 msgstr "환불 수"
+
+#. module: account_payment
+#: model:ir.model,name:account_payment.model_account_payment_register
+msgid "Register Payment"
+msgstr "결제 등록"
 
 #. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.view_account_journal_form
@@ -594,11 +457,6 @@ msgid "State"
 msgstr "시/도"
 
 #. module: account_payment
-#: model:onboarding.onboarding.step,done_text:account_payment.onboarding_onboarding_step_payment_provider
-msgid "Step Completed!"
-msgstr "설정 완료!"
-
-#. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_account_payment__suitable_payment_token_ids
 #: model:ir.model.fields,field_description:account_payment.field_account_payment_register__suitable_payment_token_ids
 msgid "Suitable Payment Token"
@@ -607,12 +465,14 @@ msgstr "적합한 결제 토큰"
 #. module: account_payment
 #. odoo-python
 #: code:addons/account_payment/controllers/payment.py:0
+#, python-format
 msgid "The access token is invalid."
 msgstr "유효하지 않은 액세스 토큰입니다."
 
 #. module: account_payment
 #. odoo-python
 #: code:addons/account_payment/wizards/payment_refund_wizard.py:0
+#, python-format
 msgid ""
 "The amount to be refunded must be positive and cannot be superior to %s."
 msgstr "환불 금액은 양수여야 하며 %s보다 클 수 없습니다."
@@ -625,6 +485,7 @@ msgstr "전표에 트랜잭션을 성공적으로 반영하여 발행하였습�
 #. module: account_payment
 #. odoo-python
 #: code:addons/account_payment/models/payment_transaction.py:0
+#, python-format
 msgid ""
 "The payment related to the transaction with reference %(ref)s has been "
 "posted: %(link)s"
@@ -633,6 +494,8 @@ msgstr "참조 내역 %(ref)s인 트랜잭션에 대한 결제 항목이 발행�
 #. module: account_payment
 #. odoo-python
 #: code:addons/account_payment/controllers/payment.py:0
+#: code:addons/account_payment/controllers/payment.py:0
+#, python-format
 msgid "The provided parameters are invalid."
 msgstr "유효하지 않은 매개변수입니다."
 
@@ -642,21 +505,9 @@ msgid "The source payment of related refund payments"
 msgstr "환불 금액에 대한 원래 금액"
 
 #. module: account_payment
-#. odoo-python
-#: code:addons/account_payment/models/account_move.py:0
-msgid "There are pending transactions for this invoice."
-msgstr "이 청구서에 대해 보류 중인 항목이 있습니다."
-
-#. module: account_payment
-#. odoo-python
-#: code:addons/account_payment/models/account_move.py:0
-msgid "There is no amount to be paid."
-msgstr "결제할 금액이 없습니다."
-
-#. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_error
 msgid "There was an error processing your payment: invalid invoice."
-msgstr "결제 처리 중 오류가 발생했습니다: 유효하지 않은 청구서입니다."
+msgstr "결제 처리 중 오류가 발생했습니다: 유효하지 않은 인보이스입니다."
 
 #. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_error
@@ -677,44 +528,24 @@ msgstr "지불 처리 중 오류 발생: 신용 카드 ID가 잘못되었습니�
 
 #. module: account_payment
 #. odoo-python
-#: code:addons/account_payment/models/account_move.py:0
-msgid "This invoice cannot be paid online."
-msgstr "이 청구서는 온라인으로 결제할 수 없습니다."
-
-#. module: account_payment
-#. odoo-python
-#: code:addons/account_payment/models/account_move.py:0
-msgid "This invoice has already been paid."
-msgstr "이 청구서는 이미 결제가 완료되었습니다."
-
-#. module: account_payment
-#. odoo-python
-#: code:addons/account_payment/models/account_move.py:0
-msgid "This invoice isn't posted."
-msgstr "이 청구서는 게시되지 않았습니다."
-
-#. module: account_payment
-#. odoo-python
-#: code:addons/account_payment/models/account_move.py:0
-msgid "This is not an outgoing invoice."
-msgstr "출금용 청구서가 아닙니다."
-
-#. module: account_payment
-#: model:ir.model.fields,field_description:account_payment.field_account_bank_statement_line__transaction_count
-#: model:ir.model.fields,field_description:account_payment.field_account_move__transaction_count
-msgid "Transaction Count"
-msgstr "거래 수"
+#: code:addons/account_payment/models/payment_provider.py:0
+#, python-format
+msgid ""
+"To uninstall this module, please remove first the corresponding payment "
+"method line in the incoming payments tab defined on the bank journal."
+msgstr ""
 
 #. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_account_bank_statement_line__transaction_ids
 #: model:ir.model.fields,field_description:account_payment.field_account_move__transaction_ids
+#: model:ir.model.fields,field_description:account_payment.field_account_payment__transaction_ids
 msgid "Transactions"
 msgstr "거래"
 
 #. module: account_payment
-#: model:ir.model.fields.selection,name:account_payment.selection__payment_refund_wizard__support_refund__none
-msgid "Unsupported"
-msgstr "지원되지 않음"
+#: model:ir.model.fields,field_description:account_payment.field_payment_refund_wizard__support_refund
+msgid "Type of Refund Supported"
+msgstr "지원되는 환불 유형"
 
 #. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_account_payment__use_electronic_payment_method
@@ -730,6 +561,7 @@ msgstr "금지된 거래"
 #. module: account_payment
 #. odoo-python
 #: code:addons/account_payment/models/account_payment_method_line.py:0
+#, python-format
 msgid ""
 "You can't delete a payment method that is linked to a provider in the enabled or test state.\n"
 "Linked providers(s): %s"
@@ -739,40 +571,11 @@ msgstr ""
 
 #. module: account_payment
 #. odoo-python
-#: code:addons/account_payment/models/payment_provider.py:0
-msgid ""
-"You cannot uninstall this module as payments using this payment method "
-"already exist."
-msgstr "이 모듈은 삭제할 수 없습니다. 이미 해당 결제 방법을 사용하여 진행한 결제 내역이 있습니다."
-
-#. module: account_payment
-#. odoo-python
 #: code:addons/account_payment/models/account_journal.py:0
+#, python-format
 msgid ""
 "You must first deactivate a payment provider before deleting its journal.\n"
 "Linked providers: %s"
 msgstr ""
 "전표 삭제 전에 먼저 결제대행업체를 비활성화해야 합니다.\n"
 "연결되어 있는 업체: %s"
-
-#. module: account_payment
-#. odoo-javascript
-#: code:addons/account_payment/static/src/js/portal_my_invoices_payment.js:0
-msgid "due in %s day(s)"
-msgstr "%s 일 후 만기"
-
-#. module: account_payment
-#. odoo-javascript
-#: code:addons/account_payment/static/src/js/portal_my_invoices_payment.js:0
-msgid "due today"
-msgstr "오늘 만기"
-
-#. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_payment
-msgid "has been applied."
-msgstr "적용되었습니다."
-
-#. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_my_invoices_payment
-msgid "overdue"
-msgstr "기한 초과"

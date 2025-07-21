@@ -3,16 +3,18 @@
 # 	* website_event
 # 
 # Translators:
+# Martin Trigaux, 2022
+# Nancy Momoland <thanh.np2502@gmail.com>, 2022
+# Thi Huong Nguyen, 2024
 # Wil Odoo, 2024
-# Thi Huong Nguyen, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-23 18:38+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: Thi Huong Nguyen, 2025\n"
+"POT-Creation-Date: 2023-02-07 08:56+0000\n"
+"PO-Revision-Date: 2022-09-22 05:56+0000\n"
+"Last-Translator: Wil Odoo, 2024\n"
 "Language-Team: Vietnamese (https://app.transifex.com/odoo/teams/41243/vi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -23,7 +25,7 @@ msgstr ""
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_website_visitor__event_registration_count
 msgid "# Registrations"
-msgstr "# Đăng ký"
+msgstr "# Registrations"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.events_list
@@ -31,14 +33,28 @@ msgid "'. Showing results for '"
 msgstr "'. Đang hiện kết quả cho '"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.modal_ticket_registration
+#: model_terms:ir.ui.view,arch_db:website_event.registration_complete
+msgid "(Ref:"
+msgstr "(Số tham chiếu: "
+
+#. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
 msgid "(only"
 msgstr "(chỉ còn"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.registration_template
-msgid ", at"
-msgstr ", vào"
+#: model_terms:ir.ui.view,arch_db:website_event.event_description_full
+msgid ""
+")\n"
+"                                <i class=\"fa fa-long-arrow-down d-block text-muted mx-3 my-2\" style=\"font-size: 1.5rem\"/>"
+msgstr ""
+
+#. module: website_event
+#. odoo-javascript
+#: code:addons/website_event/static/src/js/tours/event_tour.js:0
+#, python-format
+msgid "<b>Drag and Drop</b> this snippet below the event title."
+msgstr "<b>Kéo và thả</b>snippet xuống dưới tiêu đề sự kiện. "
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.registration_complete
@@ -46,24 +62,9 @@ msgid "<b>End</b>"
 msgstr "<b>Bắt đầu</b>"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.registration_template
-msgid "<b>Sold Out</b>"
-msgstr "<b>Hết vé</b>"
-
-#. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.registration_complete
 msgid "<b>Start</b>"
 msgstr "<b>Kết thúc</b>"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_full
-msgid "<em>Hidden for visitors</em>"
-msgstr "<em>Ẩn với khách truy cập</em>"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.registration_template
-msgid "<em>Registrations <b>Closed</b></em>"
-msgstr "<em>Đăng ký đã <b>đóng</b></em>"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.index_sidebar_quotes
@@ -75,7 +76,16 @@ msgstr ""
 "của bạn.</em>"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.modal_ticket_registration
+#: model_terms:ir.ui.view,arch_db:website_event.template_intro
+msgid ""
+"<font style=\"font-size: 62px;\" "
+"class=\"o_default_snippet_text\">Introduction</font>"
+msgstr ""
+"<font style=\"font-size: 62px;\" class=\"o_default_snippet_text\">Giới "
+"thiệu</font>"
+
+#. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
 msgid "<i class=\"fa fa-ban me-2\"/>Sold Out"
 msgstr "<i class=\"fa fa-ban me-2\"/>Hết vé"
 
@@ -85,11 +95,7 @@ msgid "<i class=\"fa fa-ban me-2\"/>Unpublished"
 msgstr "<i class=\"fa fa-ban me-2\"/>Đã huỷ đăng"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_full
-msgid "<i class=\"fa fa-check me-2\" role=\"img\"/>Registered"
-msgstr "<i class=\"fa fa-check me-2\" role=\"img\"/>Đã đăng ký"
-
-#. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.event_details
 #: model_terms:ir.ui.view,arch_db:website_event.events_list
 msgid "<i class=\"fa fa-check me-2\"/>Registered"
 msgstr "<i class=\"fa fa-check me-2\"/>Đã đăng ký"
@@ -102,6 +108,16 @@ msgid ""
 msgstr ""
 "<i class=\"fa fa-facebook text-facebook\" aria-label=\"Facebook\" "
 "title=\"Facebook\"/>"
+
+#. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.registration_complete
+msgid "<i class=\"fa fa-fw fa-calendar\"/> Add to Google Calendar"
+msgstr "<i class=\"fa fa-fw fa-calendar\"/>Thêm vào Google Calendar"
+
+#. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.registration_complete
+msgid "<i class=\"fa fa-fw fa-calendar\"/> Add to iCal/Outlook"
+msgstr "<i class=\"fa fa-fw fa-calendar\"/>Thêm vào iCal/Outlook"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.registration_configure_tickets_button
@@ -120,7 +136,7 @@ msgstr "<i class=\"fa fa-github text-github\" aria-label=\"Github\" title=\"Gith
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.event_pages_kanban_view
 msgid "<i class=\"fa fa-globe me-1\" title=\"Website\"/>"
-msgstr "<i class=\"fa fa-globe me-1\" title=\"Trang web\"/>"
+msgstr "<i class=\"fa fa-globe me-1\" title=\"Website\"/>"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.index_sidebar_follow_us
@@ -141,24 +157,27 @@ msgstr ""
 "title=\"LinkedIn\"/>"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.events_list
-msgid "<i class=\"fa fa-map-marker me-2\" title=\"Location\"/>"
-msgstr "<i class=\"fa fa-map-marker me-2\" title=\"Vị trí\"/>"
+#: model_terms:ir.ui.view,arch_db:website_event.layout
+msgid ""
+"<i class=\"fa fa-long-arrow-left me-2\"/>\n"
+"                            <span>All Events</span>"
+msgstr ""
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_full
-msgid "<i class=\"fa fa-map-marker\" title=\"Location\"/> Online event"
-msgstr "<i class=\"fa fa-map-marker\" title=\"Vị trí\"/> Sự kiện online"
+#: model_terms:ir.ui.view,arch_db:website_event.event_event_view_form_add
+msgid ""
+"<i class=\"fa fa-long-arrow-right mx-2\" aria-label=\"Arrow icon\" "
+"title=\"Arrow\"/>"
+msgstr ""
+"<i class=\"fa fa-long-arrow-right mx-2\" aria-label=\"Hình mũi tên\" "
+"title=\"Mũi tên\"/>"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.index_sidebar_follow_us
-msgid "<i class=\"fa fa-tiktok text-tiktok\" aria-label=\"TikTok\" title=\"TikTok\"/>"
-msgstr "<i class=\"fa fa-tiktok text-tiktok\" aria-label=\"TikTok\" title=\"TikTok\"/>"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.index_sidebar_follow_us
-msgid "<i class=\"fa fa-twitter text-twitter\" aria-label=\"X\" title=\"X\"/>"
-msgstr "<i class=\"fa fa-twitter text-twitter\" aria-label=\"X\" title=\"X\"/>"
+msgid "<i class=\"fa fa-twitter text-twitter\" aria-label=\"Twitter\" title=\"Twitter\"/>"
+msgstr ""
+"<i class=\"fa fa-twitter text-twitter\" aria-label=\"Twitter\" "
+"title=\"Twitter\"/>"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.index_sidebar_follow_us
@@ -168,35 +187,6 @@ msgid ""
 msgstr ""
 "<i class=\"fa fa-youtube-play text-youtube\" aria-label=\"Youtube\" "
 "title=\"Youtube\"/>"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.navbar
-msgid ""
-"<i class=\"oi oi-chevron-left\"/>\n"
-"                <span>All Events</span>"
-msgstr ""
-"<i class=\"oi oi-chevron-left\"/>\n"
-"                <span>Tất cả sự kiện</span>"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_dates
-msgid "<small class=\"fw-bold\">Ends</small>"
-msgstr "<small class=\"fw-bold\">Ngày kết thúc</small>"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_dates
-msgid "<small class=\"fw-bold\">Starts</small>"
-msgstr "<small class=\"fw-bold\">Ngày bắt đầu</small>"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_dates
-msgid "<small class=\"text-muted\">Add to calendar:</small>"
-msgstr "<small class=\"text-muted\">Thêm vào lịch:</small>"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.registration_complete
-msgid "<small>Add this event to your calendar</small>"
-msgstr "<small>Thêm sự kiện này vào lịch của bạn</small>"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.s_speaker_bio
@@ -208,9 +198,9 @@ msgstr ""
 "giả</span>"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.events_list
-msgid "<span class=\"fa fa-plus me-1\"/> Create an Event"
-msgstr "<span class=\"fa fa-plus me-1\"/> Tạo một sự kiện"
+#: model_terms:ir.ui.view,arch_db:website_event.index_topbar
+msgid "<span class=\"navbar-brand h4 my-0 me-auto\">Events</span>"
+msgstr ""
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.display_timer_widget
@@ -249,87 +239,41 @@ msgstr ""
 "class=\"o_countdown_metric\"/>"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.modal_ticket_registration
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
+msgid "<span class=\"py-2 o_wevent_registration_title text-start\">Tickets</span>"
+msgstr ""
+
+#. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
+msgid "<span class=\"text-dark fw-bold align-middle px-2\">Qty</span>"
+msgstr ""
+
+#. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
 msgid ""
 "<span itemprop=\"availability\" content=\"http://schema.org/SoldOut\" class=\"text-danger\">\n"
-"                                        <i class=\"fa fa-ban me-2\"/>Sold Out\n"
-"                                    </span>"
+"                                    <i class=\"fa fa-ban me-2\"/>Sold Out\n"
+"                                </span>"
 msgstr ""
-"<span itemprop=\"availability\" content=\"http://schema.org/SoldOut\" class=\"text-danger\">\n"
-"                                        <i class=\"fa fa-ban me-2\"/>Hết vé\n"
-"                                    </span>"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.event_location
 msgid "<span>Online Events</span>"
-msgstr "<span>Sự kiện Online</span>"
+msgstr "<span>Sự kiện Trực tuyến</span>"
+
+#. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
+msgid ""
+"<span>Tickets</span>\n"
+"                        <span class=\"btn p-0 close d-none\">×</span>"
+msgstr ""
+"<span>Vé</span>\n"
+"                        <span class=\"btn p-0 close d-none\">×</span>"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.registration_attendee_details
 msgid "<strong> You ordered more tickets than available seats</strong>"
 msgstr "<strong>Bạn đã đặt nhiều vé hơn số lượng chỗ hiện có</strong>"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.s_event_upcoming_snippet_preview_data
-msgid ""
-"<time class=\"text-white\" datetime=\"2024-08-05 07:00:00\">\n"
-"                                <span>July 26, 2024</span>\n"
-"                                <span class=\"s_events_event_time\">\n"
-"                                    - <span>9:00 AM</span>\n"
-"                                    (Europe/Brussels)\n"
-"                                </span>\n"
-"                            </time>"
-msgstr ""
-"<time class=\"text-white\" datetime=\"2024-08-05 07:00:00\">\n"
-"                                <span>Ngày 26/7/2024</span>\n"
-"                                <span class=\"s_events_event_time\">\n"
-"                                    - <span>9:00 sáng</span>\n"
-"                                    (Châu Âu/Brussels)\n"
-"                                </span>\n"
-"                            </time>"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.s_event_upcoming_snippet_preview_data
-msgid ""
-"<time class=\"text-white\" datetime=\"2024-08-10 08:00:00\">\n"
-"                                <span>October 24, 2024</span>\n"
-"                                <span class=\"s_events_event_time\">\n"
-"                                    - <span>1:15 AM</span>\n"
-"                                    (Europe/Brussels)\n"
-"                                </span>\n"
-"                            </time>"
-msgstr ""
-"<time class=\"text-white\" datetime=\"2024-08-10 08:00:00\">\n"
-"                                <span>Ngày 24/10/2024</span>\n"
-"                                <span class=\"s_events_event_time\">\n"
-"                                    - <span>1:15 sáng</span>\n"
-"                                    (Châu Âu/Brussels)\n"
-"                                </span>\n"
-"                            </time>"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.s_event_upcoming_snippet_preview_data
-msgid ""
-"<time class=\"text-white\" datetime=\"2024-11-08 20:15:00\">\n"
-"                                <span>November 23, 2024</span>\n"
-"                                <span class=\"s_events_event_time\">\n"
-"                                    - <span>8:15 PM</span>\n"
-"                                    (Europe/Brussels)\n"
-"                                </span>\n"
-"                            </time>"
-msgstr ""
-"<time class=\"text-white\" datetime=\"2024-11-08 20:15:00\">\n"
-"                                <span>Ngày 23/11/2024</span>\n"
-"                                <span class=\"s_events_event_time\">\n"
-"                                    - <span>8:15 chiều</span>\n"
-"                                    (Châu Âu/Brussels)\n"
-"                                </span>\n"
-"                            </time>"
-
-#. module: website_event
-#: model:event.question.answer,name:website_event.event_0_question_2_answer_2
-msgid "A friend"
-msgstr "Một người bạn"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.index_sidebar_photos
@@ -344,48 +288,24 @@ msgstr "Giới thiệu"
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.index_sidebar_about_us
 msgid "About us"
-msgstr "Về chúng tôi"
+msgstr "Về Chúng tôi"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_dates
-msgid "Add to Google"
-msgstr "Thêm vào Google"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.registration_complete
-msgid "Add to Google Agenda"
-msgstr "Thêm vào chương trình làm việc Google"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_dates
-msgid "Add to Outlook"
-msgstr "Thêm vào Outlook"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_dates
-msgid "Add to iCal"
-msgstr "Thêm vào iCal"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.registration_complete
-msgid "Add to iCal/Outlook"
-msgstr "Thêm vào iCal/Outlook"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.index_topbar
-msgid "All"
-msgstr "Tất cả"
+#: model_terms:ir.ui.view,arch_db:website_event.event_description_full
+msgid "Add to Calendar"
+msgstr "Thêm vào lịch"
 
 #. module: website_event
 #. odoo-python
 #: code:addons/website_event/controllers/main.py:0
+#, python-format
 msgid "All Countries"
 msgstr "Tất cả quốc gia"
 
 #. module: website_event
 #. odoo-python
 #: code:addons/website_event/models/event_event.py:0
-#: model_terms:ir.ui.view,arch_db:website_event.navbar
+#, python-format
 msgid "All Events"
 msgstr "Tất cả các Sự kiện"
 
@@ -395,14 +315,14 @@ msgid "All countries"
 msgstr "Tất cả quốc gia"
 
 #. module: website_event
-#: model:event.question,title:website_event.event_0_question_1
-msgid "Allergies"
-msgstr "Dị ứng"
-
-#. module: website_event
 #: model:ir.model.fields,help:website_event.field_event_event__website_menu
 msgid "Allows to display and manage event-specific menus on website."
 msgstr "Cho phép hiển thị và quản lý menu sự kiện cụ thể trên website. "
+
+#. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.res_config_settings_view_form
+msgid "Ask questions to attendees when registering online"
+msgstr "Đặt câu hỏi cho người tham dự khi đăng ký trực tuyến"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.s_speaker_bio
@@ -428,31 +348,14 @@ msgid "Author"
 msgstr "Tác giả"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.navbar
-msgid "Back to All Events"
-msgstr "Quay lại Tất cả sự kiện"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.navbar
-msgid "Back to {{event.name}}"
-msgstr "Quay lại {{event.name}}"
-
-#. module: website_event
-#: model:event.question.answer,name:website_event.event_1_question_0_answer_1
-#: model:event.question.answer,name:website_event.event_5_question_0_answer_1
-#: model:event.question.answer,name:website_event.event_type_data_sports_question_0_answer_1
-msgid "Blog Post"
-msgstr "Bài Blog"
-
-#. module: website_event
 #. odoo-python
 #: code:addons/website_event/models/website_snippet_filter.py:0
+#, python-format
 msgid "Business Workshops"
-msgstr "Workshop kinh doanh"
+msgstr "Hội thảo doanh nghiệp"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event__can_publish
-#: model:ir.model.fields,field_description:website_event.field_event_tag__can_publish
 #: model:ir.model.fields,field_description:website_event.field_event_tag_category__can_publish
 msgid "Can Publish"
 msgstr "Có thể đăng"
@@ -464,27 +367,21 @@ msgstr "Hủy"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.snippet_options
-msgid "Card design"
-msgstr "Thiết kế thẻ"
+msgid "Cards"
+msgstr "Thẻ"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.display_timer_alert_widget
-#: model_terms:ir.ui.view,arch_db:website_event.index_topbar
-#: model_terms:ir.ui.view,arch_db:website_event.modal_ticket_registration
 #: model_terms:ir.ui.view,arch_db:website_event.registration_attendee_details
 msgid "Close"
 msgstr "Đóng"
-
-#. module: website_event
-#: model:event.question.answer,name:website_event.event_0_question_2_answer_1
-msgid "Commercials"
-msgstr "Quảng cáo"
 
 #. module: website_event
 #. odoo-python
 #: code:addons/website_event/models/event_event.py:0
 #: model_terms:ir.ui.view,arch_db:website_event.event_event_view_form
 #: model_terms:ir.ui.view,arch_db:website_event.event_type_view_form
+#, python-format
 msgid "Community"
 msgstr "Cộng đồng"
 
@@ -503,34 +400,19 @@ msgstr "Công ty"
 #. module: website_event
 #. odoo-python
 #: code:addons/website_event/models/website_snippet_filter.py:0
+#, python-format
 msgid "Conference For Architects"
 msgstr "Hội thảo cho kiến trúc sư"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.registration_configure_tickets_button
-msgid "Configure event tickets"
-msgstr "Cấu hình vé sự kiện"
-
-#. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.registration_attendee_details
-msgid "Confirm Registration"
-msgstr "Xác nhận Đăng ký"
+msgid "Continue"
+msgstr "Tiếp tục"
 
 #. module: website_event
-#: model:event.question.answer,name:website_event.event_7_question_0_answer_0
-msgid "Consumers"
-msgstr "Người tiêu dùng"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_location
 #: model_terms:ir.ui.view,arch_db:website_event.snippet_options
 msgid "Countries"
 msgstr "Quốc gia"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.snippet_options
-msgid "Cover Position"
-msgstr "Vị trí ảnh bìa"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event__cover_properties
@@ -548,10 +430,14 @@ msgid "Created on"
 msgstr "Được tạo vào"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_time
 #: model_terms:ir.ui.view,arch_db:website_event.snippet_options
 msgid "Date"
 msgstr "Ngày"
+
+#. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.event_description_full
+msgid "Date &amp; Time"
+msgstr "Ngày &amp; Giờ"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.event_searchbar_input_snippet_options
@@ -562,17 +448,6 @@ msgstr "Ngày (mới đến cũ)"
 #: model_terms:ir.ui.view,arch_db:website_event.event_searchbar_input_snippet_options
 msgid "Date (old to new)"
 msgstr "Ngày (cũ đến mới)"
-
-#. module: website_event
-#: model:ir.model.fields,help:website_event.field_event_event__website_visibility
-msgid ""
-"Defines the Visibility of the Event on the Website and searches.\n"
-"\n"
-"            Note that the Event is however always available via its link."
-msgstr ""
-"Xác định chế độ hiển thị của Sự kiện trên Trang web và tìm kiếm.\n"
-"\n"
-"Tuy nhiên, xin lưu ý rằng Sự kiện luôn hiển thị thông qua liên kết sự kiện."
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.event_searchbar_input_snippet_options
@@ -598,27 +473,24 @@ msgstr "Hiển thị tab cộng đồng trên website"
 #. module: website_event
 #. odoo-javascript
 #: code:addons/website_event/static/src/js/tours/event_tour.js:0
+#, python-format
 msgid "Don't forget to click <b>save</b> when you're done."
 msgstr "Đừng quên bấm <b>lưu</b> khi bạn đã xong. "
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.registration_complete
-msgid "Don't miss out!"
-msgstr "Đừng bỏ lỡ!"
+#: model_terms:ir.ui.view,arch_db:website_event.registration_attendee_details
+msgid "Email *"
+msgstr ""
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.registration_ticket_access
-msgid "Download All Tickets"
-msgstr "Tải tất cả vé"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.registration_ticket_access
-msgid "Download Tickets <i class=\"ms-1 fa fa-download\"/>"
-msgstr "Tải vé <i class=\"ms-1 fa fa-download\"/>"
+#: model_terms:ir.ui.view,arch_db:website_event.event_description_full
+msgid "End -"
+msgstr "Kết thúc -"
 
 #. module: website_event
 #. odoo-javascript
 #: code:addons/website_event/static/src/js/website_event.js:0
+#, python-format
 msgid "Error"
 msgstr "Lỗi"
 
@@ -634,29 +506,14 @@ msgid "Event Community Menus"
 msgstr "Menu cộng đồng sự kiện"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.snippet_options
-msgid "Event Cover Position"
-msgstr "Vị trí ảnh bìa sự kiện"
-
-#. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.event_searchbar_input_snippet_options
 msgid "Event Date"
 msgstr "Ngày sự kiện"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.registration_complete
-msgid "Event Details"
-msgstr "Thông tin sự kiện"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_full
-msgid "Event Info"
-msgstr "Thông tin sự kiện"
-
-#. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.template_location
 msgid "Event Location"
-msgstr "Vị trí Sự kiện"
+msgstr "Địa điểm Sự kiện"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event__menu_id
@@ -681,12 +538,7 @@ msgstr "Trang sự kiện"
 #. module: website_event
 #: model:ir.model,name:website_event.model_event_registration
 msgid "Event Registration"
-msgstr "Đăng ký sự kiện"
-
-#. module: website_event
-#: model:ir.model.fields,field_description:website_event.field_event_event__event_register_url
-msgid "Event Registration Link"
-msgstr "Liên kết đăng ký sự kiện"
+msgstr "Đăng ký Sự kiện"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_website_visitor__event_registration_ids
@@ -695,19 +547,14 @@ msgstr "Đăng ký Sự kiện"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event__subtitle
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_full
+#: model_terms:ir.ui.view,arch_db:website_event.event_details
 msgid "Event Subtitle"
 msgstr "Tiêu dề phụ sự kiện "
 
 #. module: website_event
-#: model:ir.model,name:website_event.model_event_tag
-msgid "Event Tag"
-msgstr "Thẻ sự kiện"
-
-#. module: website_event
 #: model:ir.model,name:website_event.model_event_tag_category
 msgid "Event Tag Category"
-msgstr "Danh mục thẻ sự kiện"
+msgstr "Event Tag Category"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.s_dynamic_snippet_options_template
@@ -717,10 +564,10 @@ msgstr "Thẻ sự kiện"
 #. module: website_event
 #: model:ir.model,name:website_event.model_event_type
 msgid "Event Template"
-msgstr "Mẫu sự kiện"
+msgstr "Event Template"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_full
+#: model_terms:ir.ui.view,arch_db:website_event.event_details
 msgid "Event Title"
 msgstr "Tiêu đề sự kiện"
 
@@ -747,8 +594,8 @@ msgstr "Sự kiện chưa xuất bản"
 #: model:ir.ui.menu,name:website_event.menu_event_pages
 #: model:website.menu,name:website_event.menu_events
 #: model_terms:ir.ui.view,arch_db:website_event.event_searchbar_input_snippet_options
-#: model_terms:ir.ui.view,arch_db:website_event.index_topbar
 #: model_terms:ir.ui.view,arch_db:website_event.snippets
+#, python-format
 msgid "Events"
 msgstr "Sự kiện"
 
@@ -758,29 +605,16 @@ msgid "Events Page"
 msgstr "Trang sự kiện"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.s_event_upcoming_snippet_preview_data
-msgid "Excellence in Achievement Awards"
-msgstr "Giải thưởng Thành tựu Xuất sắc"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.modal_ticket_registration
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
 msgid "Expired"
 msgstr "Đã hết hạn"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_location
-msgid "Filter by Country"
-msgstr "Lọc theo Quốc gia"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_time
-msgid "Filter by Date"
-msgstr "Lọc theo ngày"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.index_topbar
-msgid "Filters"
-msgstr "Bộ lọc"
+#: model:ir.model.fields,field_description:website_event.field_event_event__menu_register_cta
+#: model:ir.model.fields,field_description:website_event.field_event_type__menu_register_cta
+#: model_terms:ir.ui.view,arch_db:website_event.event_event_view_form
+msgid "Extra Register Button"
+msgstr "Nút đăng ký thêm "
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.event_description_full
@@ -790,6 +624,11 @@ msgid ""
 msgstr ""
 "Tìm hiểu mọi người thấy và nói gì về sự kiện này, và tham gia vào các cuộc "
 "thảo luận. "
+
+#. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.snippet_options
+msgid "Fold Tickets Details"
+msgstr "Ẩn thông tin vé"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.index_sidebar_follow_us
@@ -804,18 +643,18 @@ msgstr "Nội dung sau sẽ xuất hiện ở tất cả sự kiện. "
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.event_description_full
-msgid "Get directions"
+msgid "Get the direction"
 msgstr "Xem chỉ đường"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_dates
-#: model_terms:ir.ui.view,arch_db:website_event.registration_complete
-msgid "Google Agenda"
-msgstr "Chương trình làm việc Google"
+#: model_terms:ir.ui.view,arch_db:website_event.event_description_full
+msgid "Google"
+msgstr "Google"
 
 #. module: website_event
 #. odoo-python
 #: code:addons/website_event/models/website_snippet_filter.py:0
+#, python-format
 msgid "Great Reno Ballon Race"
 msgstr "Cuộc đua khinh khí cầu Great Reno"
 
@@ -825,33 +664,11 @@ msgid "Grid"
 msgstr "Lưới"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.s_event_upcoming_snippet_preview_data
-msgid "Harmony Under the Stars"
-msgstr "Hòa hợp dưới những vì sao"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.snippet_options
-msgid "Hidden (visitor only)"
-msgstr "Bị ẩn (chỉ khách truy cập)"
-
-#. module: website_event
 #. odoo-python
 #: code:addons/website_event/models/website_snippet_filter.py:0
+#, python-format
 msgid "Hockey Tournament"
 msgstr "Giải khúc côn cầu"
-
-#. module: website_event
-#: model:event.question,title:website_event.event_7_question_1
-msgid "How did you hear about us?"
-msgstr "Bạn biết tới chúng tôi bằng cách nào? "
-
-#. module: website_event
-#: model:event.question,title:website_event.event_0_question_2
-#: model:event.question,title:website_event.event_1_question_0
-#: model:event.question,title:website_event.event_5_question_0
-#: model:event.question,title:website_event.event_type_data_sports_question_0
-msgid "How did you learn about this event?"
-msgstr "Bạn biết tới sự kiện này bằng cách nào? "
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_website_event_menu__id
@@ -861,25 +678,8 @@ msgstr "ID"
 #. module: website_event
 #. odoo-python
 #: code:addons/website_event/models/event_event.py:0
-#: model:ir.model.fields.selection,name:website_event.selection__website_event_menu__menu_type__register
-msgid "Info"
-msgstr "Thông tin"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.s_event_upcoming_snippet_preview_data
-msgid "Innovations in Technology and Society"
-msgstr "Đổi mới trong công nghệ và xã hội"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.snippet_options
-msgid "Inside content"
-msgstr "Nội dung bên trong"
-
-#. module: website_event
-#. odoo-python
-#: code:addons/website_event/models/event_event.py:0
 #: model:ir.model.fields.selection,name:website_event.selection__website_event_menu__menu_type__introduction
-#: model_terms:ir.ui.view,arch_db:website_event.template_intro
+#, python-format
 msgid "Introduction"
 msgstr "Đầu trang"
 
@@ -901,7 +701,7 @@ msgstr "Đã xong"
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event__is_ongoing
 msgid "Is Ongoing"
-msgstr "Là đang diễn ra"
+msgstr "Is Ongoing"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event__is_participating
@@ -910,7 +710,6 @@ msgstr "Đang tham gia"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event__is_published
-#: model:ir.model.fields,field_description:website_event.field_event_tag__is_published
 #: model:ir.model.fields,field_description:website_event.field_event_tag_category__is_published
 msgid "Is Published"
 msgstr "Được đăng"
@@ -921,9 +720,14 @@ msgid "John DOE"
 msgstr "John DOE"
 
 #. module: website_event
+#: model:ir.model.fields,field_description:website_event.field_website_event_menu____last_update
+msgid "Last Modified on"
+msgstr "Sửa lần cuối vào"
+
+#. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_website_event_menu__write_uid
 msgid "Last Updated by"
-msgstr "Cập nhật lần cuối bởi"
+msgstr "Last Updated by"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_website_event_menu__write_date
@@ -943,6 +747,7 @@ msgstr "Danh sách"
 #. module: website_event
 #. odoo-python
 #: code:addons/website_event/models/website_snippet_filter.py:0
+#, python-format
 msgid "Live Music Festival"
 msgstr "Lễ hội âm nhạc trực tiếp"
 
@@ -951,8 +756,9 @@ msgstr "Lễ hội âm nhạc trực tiếp"
 #: code:addons/website_event/models/event_event.py:0
 #: model:ir.model.fields.selection,name:website_event.selection__website_event_menu__menu_type__location
 #: model_terms:ir.ui.view,arch_db:website_event.event_description_full
+#, python-format
 msgid "Location"
-msgstr "Vị trí"
+msgstr "Địa điểm"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event__location_menu
@@ -965,13 +771,9 @@ msgid "Location Menus"
 msgstr "Menu vị trí"
 
 #. module: website_event
-#: model:ir.model.fields.selection,name:website_event.selection__event_event__website_visibility__logged_users
-msgid "Logged Users"
-msgstr "Người dùng đã đăng nhập"
-
-#. module: website_event
 #. odoo-javascript
 #: code:addons/website_event/static/src/js/tours/event_tour.js:0
+#, python-format
 msgid ""
 "Looking great! Let's now <b>publish</b> this page so that it becomes "
 "<b>visible</b> on your website!"
@@ -980,14 +782,9 @@ msgstr ""
 "website!"
 
 #. module: website_event
-#: model:event.question,title:website_event.event_0_question_0
-msgid "Meal Type"
-msgstr "Kiểu đồ ăn"
-
-#. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_website_event_menu__menu_id
 msgid "Menu"
-msgstr "Menu"
+msgstr "Trình đơn"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_website_event_menu__menu_type
@@ -997,17 +794,17 @@ msgstr "Loại menu"
 #. module: website_event
 #: model:ir.actions.act_window,name:website_event.website_event_menu_action
 msgid "Menus"
-msgstr "Menu"
+msgstr "Trình đơn"
 
 #. module: website_event
-#: model:event.question.answer,name:website_event.event_0_question_0_answer_0
-msgid "Mixed"
-msgstr "Hỗn hợp"
+#: model_terms:ir.ui.view,arch_db:website_event.registration_complete
+msgid "N/A"
+msgstr "N/A"
 
 #. module: website_event
-#: model:ir.model.fields,field_description:website_event.field_event_event__address_name
-msgid "Name"
-msgstr "Tên"
+#: model_terms:ir.ui.view,arch_db:website_event.registration_attendee_details
+msgid "Name *"
+msgstr ""
 
 #. module: website_event
 #: model:ir.actions.act_window,name:website_event.event_event_action_add
@@ -1017,6 +814,7 @@ msgstr "Sự kiện Mới"
 #. module: website_event
 #. odoo-python
 #: code:addons/website_event/models/website.py:0
+#, python-format
 msgid "Next Events"
 msgstr "Sự kiện tiếp theo"
 
@@ -1027,13 +825,8 @@ msgstr "Chưa có mục menu website!"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.events_list
-msgid "No event matching your search criteria could be found."
-msgstr "Không tìm thấy sự kiện nào phù hợp với tiêu chí tìm kiếm của bạn."
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.events_list
-msgid "No events scheduled yet"
-msgstr "Chưa có sự kiện nào được lên lịch"
+msgid "No events found."
+msgstr "Không tìm thấy sự kiện. "
 
 #. module: website_event
 #: model_terms:ir.actions.act_window,help:website_event.event_registration_action_from_visitor
@@ -1051,20 +844,16 @@ msgid "Not Published"
 msgstr "Chưa được đăng"
 
 #. module: website_event
+#. odoo-python
+#: code:addons/website_event/models/website_snippet_filter.py:0
+#, python-format
+msgid "OpenWood Collection Online Reveal"
+msgstr "Ra mắt trực tuyến bộ sưu tập OpenWood"
+
+#. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.event_location
 msgid "Online Events"
 msgstr "Sự kiện online"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.events_list
-msgid "Online event"
-msgstr "Sự kiện online"
-
-#. module: website_event
-#. odoo-python
-#: code:addons/website_event/models/website_snippet_filter.py:0
-msgid "OpenWood Collection Online Reveal"
-msgstr "Ra mắt online bộ sưu tập OpenWood"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.event_description_full
@@ -1077,26 +866,16 @@ msgid "Our Trainings"
 msgstr "Đào tạo của Chúng tôi"
 
 #. module: website_event
-#: model:event.question.answer,name:website_event.event_0_question_2_answer_0
-msgid "Our website"
-msgstr "Website"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_dates
-#: model_terms:ir.ui.view,arch_db:website_event.registration_complete
-msgid "Outlook"
-msgstr "Outlook"
-
-#. module: website_event
 #. odoo-python
 #: code:addons/website_event/models/event_event.py:0
+#, python-format
 msgid "Past Events"
 msgstr "Sự kiện đã qua"
 
 #. module: website_event
-#: model:event.question.answer,name:website_event.event_0_question_0_answer_2
-msgid "Pastafarian"
-msgstr "Mì pasta"
+#: model_terms:ir.ui.view,arch_db:website_event.registration_attendee_details
+msgid "Phone <small>(Optional)</small>"
+msgstr "Điện thoại <small>(Tùy chọn)</small>"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.index_sidebar_photos
@@ -1105,14 +884,11 @@ msgid "Photos"
 msgstr "Ảnh"
 
 #. module: website_event
-#: model:ir.model.fields.selection,name:website_event.selection__event_event__website_visibility__public
-msgid "Public"
-msgstr "Công khai"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_event_view_form
-msgid "Publish"
-msgstr "Công khai"
+#. odoo-javascript
+#: code:addons/website_event/static/src/js/website_event.js:0
+#, python-format
+msgid "Please select at least one ticket."
+msgstr "Vui lòng chọn ít nhất một vé. "
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.event_event_view_search
@@ -1121,24 +897,36 @@ msgid "Published"
 msgstr "Đã đăng"
 
 #. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.res_config_settings_view_form
+msgid "Questions"
+msgstr "Câu hỏi"
+
+#. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.snippet_options
 msgid "Quotes"
 msgstr "Trích dẫn"
 
 #. module: website_event
-#: model:event.question.answer,name:website_event.event_1_question_0_answer_2
-#: model:event.question.answer,name:website_event.event_5_question_0_answer_2
-#: model:event.question.answer,name:website_event.event_type_data_sports_question_0_answer_2
-msgid "Radio Ad"
-msgstr "Quảng cáo trên đài"
+#: model_terms:ir.ui.view,arch_db:website_event.registration_complete
+msgid "Ref:"
+msgstr "Tham chiếu: "
 
 #. module: website_event
+#. odoo-python
 #. odoo-javascript
+#: code:addons/website_event/models/event_event.py:0
 #: code:addons/website_event/static/src/js/register_toaster_widget.js:0
-#: model_terms:ir.ui.view,arch_db:website_event.modal_ticket_registration
+#: model:ir.model.fields.selection,name:website_event.selection__website_event_menu__menu_type__register
+#: model_terms:ir.ui.view,arch_db:website_event.layout
 #: model_terms:ir.ui.view,arch_db:website_event.registration_template
+#, python-format
 msgid "Register"
 msgstr "Đăng ký"
+
+#. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.event_type_view_form
+msgid "Register Button"
+msgstr "Nút đăng ký"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event__register_menu
@@ -1158,8 +946,8 @@ msgstr "Sự kiện đã đăng ký"
 #. module: website_event
 #. odoo-python
 #: code:addons/website_event/controllers/main.py:0
-#: model_terms:ir.ui.view,arch_db:website_event.modal_ticket_registration
-#: model_terms:ir.ui.view,arch_db:website_event.navbar
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
+#, python-format
 msgid "Registration"
 msgstr "Đăng ký"
 
@@ -1169,12 +957,6 @@ msgid "Registration confirmed!"
 msgstr "Đã xác nhận đăng ký!"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.modal_ticket_registration
-#: model_terms:ir.ui.view,arch_db:website_event.registration_template
-msgid "Registration failed! These tickets are not available anymore."
-msgstr "Đăng ký không thành công! Các vé này đã được bán hết."
-
-#. module: website_event
 #: model:ir.actions.act_window,name:website_event.event_registration_action_from_visitor
 #: model_terms:ir.ui.view,arch_db:website_event.website_visitor_view_form
 msgid "Registrations"
@@ -1182,18 +964,20 @@ msgstr "Đăng ký"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.events_list
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
 msgid "Registrations Closed"
 msgstr "Đăng ký đã đóng"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.events_list
-msgid "Registrations not yet open"
-msgstr "Đăng ký chưa mở"
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
+msgid "Registrations are <b>closed</b>"
+msgstr "Đăng ký đã <b>đóng</b>"
 
 #. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.events_list
 #: model_terms:ir.ui.view,arch_db:website_event.registration_template
-msgid "Registrations will open on"
-msgstr "Đăng ký sẽ mở vào"
+msgid "Registrations not yet open"
+msgstr "Đăng ký chưa mở"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event__start_remaining
@@ -1206,16 +990,9 @@ msgid "Remaining time before event starts (minutes)"
 msgstr "Thời gian còn lại trước khi sự kiện bắt đầu (phút)"
 
 #. module: website_event
-#: model:event.question.answer,name:website_event.event_7_question_0_answer_2
-msgid "Research"
-msgstr "Nghiên cứu"
-
-#. module: website_event
 #: model:ir.model.fields,help:website_event.field_event_event__website_id
-#: model:ir.model.fields,help:website_event.field_event_tag__website_id
-#: model:ir.model.fields,help:website_event.field_event_tag_category__website_id
-msgid "Restrict to a specific website."
-msgstr "Giới hạn cho trang web nhất định"
+msgid "Restrict publishing to this website."
+msgstr "Hạn chế phát hành cho website này"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.404
@@ -1228,17 +1005,17 @@ msgid "SEO optimized"
 msgstr "Tối ưu SEO"
 
 #. module: website_event
-#: model:event.question.answer,name:website_event.event_7_question_0_answer_1
-msgid "Sales"
-msgstr "Bán hàng"
+#: model_terms:ir.ui.view,arch_db:website_event.event_description_full
+msgid "SHARE"
+msgstr "CHIA SẺ"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.modal_ticket_registration
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
 msgid "Sales end on"
 msgstr "Bán vé kết thúc vào "
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.modal_ticket_registration
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
 msgid "Sales start on"
 msgstr "Bán vé bắt đầu vào"
 
@@ -1254,20 +1031,9 @@ msgid "Search an event..."
 msgstr "Tìm kiếm một sự kiện..."
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_registration_view_search
-#: model_terms:ir.ui.view,arch_db:website_event.event_registration_view_tree
-msgid "Selected Answers"
-msgstr "Câu trả lời đã chọn"
-
-#. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event__seo_name
 msgid "Seo name"
 msgstr "Tên Seo"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_full
-msgid "Share"
-msgstr "Chia sẻ"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.event_tag_category_view_form
@@ -1276,25 +1042,13 @@ msgid "Show on Website"
 msgstr "Hiện trên website"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.s_dynamic_snippet_options_template
-msgid "Show time"
-msgstr "Hiện thời gian"
-
-#. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.snippet_options
 msgid "Sidebar"
-msgstr "Thanh bên"
-
-#. module: website_event
-#: model:event.question.answer,name:website_event.event_1_question_0_answer_0
-#: model:event.question.answer,name:website_event.event_5_question_0_answer_0
-#: model:event.question.answer,name:website_event.event_type_data_sports_question_0_answer_0
-msgid "Social Media"
-msgstr "Truyền thông xã hội"
+msgstr "Sidebar"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.events_list
-#: model_terms:ir.ui.view,arch_db:website_event.modal_ticket_registration
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
 msgid "Sold Out"
 msgstr "Bán hết"
 
@@ -1302,6 +1056,11 @@ msgstr "Bán hết"
 #: model_terms:ir.ui.view,arch_db:website_event.404
 msgid "Sorry, the requested event is not available anymore."
 msgstr "Rất tiếc, sự kiện được yêu cầu thì không còn khả dụng nữa."
+
+#. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.event_description_full
+msgid "Start -"
+msgstr "Bắt đầu -"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event__start_today
@@ -1326,17 +1085,17 @@ msgstr "Menu phụ (Cụ thể)"
 #. module: website_event
 #. odoo-python
 #: code:addons/website_event/controllers/main.py:0
+#, python-format
 msgid "Suspicious activity detected by Google reCaptcha."
-msgstr "Google reCaptcha phát hiện hoạt động đáng ngờ. "
+msgstr "Hoạt động đáng ngờ được Google reCaptcha phát hiện"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.snippet_options
-msgid "Template badge"
-msgstr "Thẻ mẫu"
+msgid "Templates"
+msgstr "Các mẫu"
 
 #. module: website_event
 #: model:ir.model.fields,help:website_event.field_event_event__website_url
-#: model:ir.model.fields,help:website_event.field_event_tag__website_url
 #: model:ir.model.fields,help:website_event.field_event_tag_category__website_url
 msgid "The full URL to access the document through the website."
 msgstr "URL đầy đủ để truy cập tài liệu thông qua trang web."
@@ -1344,24 +1103,21 @@ msgstr "URL đầy đủ để truy cập tài liệu thông qua trang web."
 #. module: website_event
 #. odoo-python
 #: code:addons/website_event/models/event_event.py:0
+#, python-format
 msgid "The website must be from the same company as the event."
 msgstr "Trang web phải xuất phát từ cùng một công ty với sự kiện."
 
 #. module: website_event
 #. odoo-python
 #: code:addons/website_event/models/event_event.py:0
+#, python-format
 msgid "This month"
 msgstr "Tháng này"
 
 #. module: website_event
-#. odoo-python
-#: code:addons/website_event/models/event_event.py:0
-msgid "This operator is not supported"
-msgstr "Toán tử này không được hỗ trợ"
-
-#. module: website_event
 #. odoo-javascript
 #: code:addons/website_event/static/src/js/tours/event_tour.js:0
+#, python-format
 msgid "This shortcut will bring you right back to the event form."
 msgstr "Lối tắt này sẽ đưa bạn quay lại ngay biểu mẫu sự kiện. "
 
@@ -1373,6 +1129,7 @@ msgstr "Menu kỹ thuật này hiển thị tất cả mục menu phụ của s�
 #. module: website_event
 #. odoo-python
 #: code:addons/website_event/controllers/main.py:0
+#, python-format
 msgid "This ticket is not available for sale for this event"
 msgstr "Vé này không được bán cho sự kiện này"
 
@@ -1382,20 +1139,26 @@ msgid "Ticket #"
 msgstr "Vé #"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.modal_ticket_registration
-msgid "Tickets"
-msgstr "Phiếu hỗ trợ"
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
+msgid "Ticket Sales starting on"
+msgstr "Bán vé bắt đầu vào"
+
+#. module: website_event
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
+msgid "Tickets for this Event are <b>Sold Out</b>"
+msgstr "Vé cho sự kiện này đã <b>hết</b>"
 
 #. module: website_event
 #. odoo-python
 #: code:addons/website_event/models/event_event.py:0
+#, python-format
 msgid "Today"
 msgstr "Hôm nay"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.snippet_options
-msgid "Top"
-msgstr "Trên"
+#: model_terms:ir.ui.view,arch_db:website_event.layout
+msgid "Toggle navigation"
+msgstr "Chuyển đổi điều hướng"
 
 #. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.snippet_options
@@ -1404,30 +1167,22 @@ msgstr "Bộ lọc thanh trên"
 
 #. module: website_event
 #. odoo-python
-#: code:addons/website_event/models/website_visitor.py:0
-msgid "Unsupported 'Not In' operation on visitors registrations"
-msgstr ""
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_time
-msgid "Upcoming"
-msgstr "Sắp diễn ra"
-
-#. module: website_event
-#. odoo-python
 #: code:addons/website_event/models/event_event.py:0
 #: model:website.snippet.filter,name:website_event.website_snippet_filter_event_list
+#: model_terms:ir.ui.view,arch_db:website_event.event_time
+#, python-format
 msgid "Upcoming Events"
 msgstr "Sự kiện sắp tới"
 
 #. module: website_event
-#: model:website.snippet.filter,name:website_event.website_snippet_filter_event_list_unfinished
-msgid "Upcoming and Ongoing Events"
-msgstr "Sự kiện sắp tới và đang diễn ra"
+#: model_terms:ir.ui.view,arch_db:website_event.events_list
+msgid "Use the top button '<b>+ New</b>' to create an event."
+msgstr "Dùng nút '<b>+ Mới</b>' ở trên cùng để tạo một sự kiện. "
 
 #. module: website_event
 #. odoo-javascript
 #: code:addons/website_event/static/src/js/tours/event_tour.js:0
+#, python-format
 msgid "Use this <b>shortcut</b> to easily access your event web page."
 msgstr "Sử dụng <b>lối tắt</b> này để dễ dàng truy cập trang web sự kiện. "
 
@@ -1443,42 +1198,15 @@ msgid "Used when not being an url based menu"
 msgstr "Sử dụng khi không phải là menu dạng url"
 
 #. module: website_event
-#. odoo-python
-#: code:addons/website_event/models/event_event.py:0
-msgid "Value should be True or False (not %)"
-msgstr "Giá trị phải là Đúng hoặc Sai (không phải %)"
-
-#. module: website_event
-#: model:event.question.answer,name:website_event.event_0_question_0_answer_1
-msgid "Vegetarian"
-msgstr "Đồ chay"
-
-#. module: website_event
-#: model:ir.model.fields.selection,name:website_event.selection__event_event__website_visibility__link
-msgid "Via a Link"
-msgstr "Qua liên kết"
-
-#. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_website_event_menu__view_id
 msgid "View"
-msgstr "Chế độ xem"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_event_view_form
-msgid "Visibility"
-msgstr "Chế độ hiển thị"
-
-#. module: website_event
-#: model:ir.model.fields,field_description:website_event.field_event_event__is_visible_on_website
-msgid "Visible On Website"
-msgstr "Hiển thị trên trang web"
+msgstr "Xem"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event__website_published
-#: model:ir.model.fields,field_description:website_event.field_event_tag__website_published
 #: model:ir.model.fields,field_description:website_event.field_event_tag_category__website_published
 msgid "Visible on current website"
-msgstr "Hiển thị trên trang web hiện tại"
+msgstr "Hiển thị ở website hiện tại"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_registration__visitor_id
@@ -1486,23 +1214,8 @@ msgid "Visitor"
 msgstr "Khách"
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.events_list
-msgid "We couldn't find any event matching your search for:"
-msgstr "Chúng tôi không thể tìm thấy bất kỳ sự kiện nào phù hợp với tìm kiếm:"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.events_list
-msgid "We couldn't find any event scheduled at this moment."
-msgstr ""
-"Chúng tôi không thể tìm thấy bất kỳ sự kiện nào được lên lịch vào thời điểm "
-"này."
-
-#. module: website_event
 #: model:ir.model,name:website_event.model_website
 #: model:ir.model.fields,field_description:website_event.field_event_event__website_id
-#: model:ir.model.fields,field_description:website_event.field_event_tag__website_id
-#: model:ir.model.fields,field_description:website_event.field_event_tag_category__website_id
-#: model_terms:ir.ui.view,arch_db:website_event.event_tag_category_view_form
 msgid "Website"
 msgstr "Trang web"
 
@@ -1527,7 +1240,7 @@ msgstr "Trang chủ Website"
 #: model:ir.model,name:website_event.model_website_menu
 #: model:ir.model.fields,field_description:website_event.field_event_event__website_menu
 msgid "Website Menu"
-msgstr "Menu trang web"
+msgstr "Trình đơn Website"
 
 #. module: website_event
 #: model:ir.ui.menu,name:website_event.menu_website_event_menu
@@ -1547,20 +1260,14 @@ msgstr "Menu phụ sự kiện"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event__website_url
-#: model:ir.model.fields,field_description:website_event.field_event_tag__website_url
 #: model:ir.model.fields,field_description:website_event.field_event_tag_category__website_url
 msgid "Website URL"
-msgstr "URL trang web"
-
-#. module: website_event
-#: model:ir.model.fields,field_description:website_event.field_event_event__website_visibility
-msgid "Website Visibility"
-msgstr "Chế độ hiển thị trên trang web"
+msgstr "Địa chỉ website"
 
 #. module: website_event
 #: model:ir.model,name:website_event.model_website_visitor
 msgid "Website Visitor"
-msgstr "Khách truy cập trang web"
+msgstr "Khách truy cập website"
 
 #. module: website_event
 #: model:ir.model.fields,field_description:website_event.field_event_event__website_meta_description
@@ -1583,14 +1290,9 @@ msgid "Website opengraph image"
 msgstr "Hình ảnh trang web"
 
 #. module: website_event
-#: model:event.question,title:website_event.event_5_question_1
-msgid "What's your Hockey level?"
-msgstr "Trình độ khúc côn cầu của bạn thế nào?"
-
-#. module: website_event
 #: model:ir.model.fields,help:website_event.field_event_event__is_ongoing
 msgid "Whether event has begun"
-msgstr "Liệu sự kiện đã bắt đầu"
+msgstr "Whether event has begun"
 
 #. module: website_event
 #: model:ir.model.fields,help:website_event.field_event_event__start_today
@@ -1598,13 +1300,9 @@ msgid "Whether event is going to start today if still not ongoing"
 msgstr "Liệu sự kiện sắp bắt đầu hôm nay nếu vẫn không diễn ra"
 
 #. module: website_event
-#: model:event.question,title:website_event.event_7_question_0
-msgid "Which field are you working in"
-msgstr "Bạn đang làm trong lĩnh vực nào"
-
-#. module: website_event
 #. odoo-javascript
 #: code:addons/website_event/static/src/js/tours/event_tour.js:0
+#, python-format
 msgid ""
 "With the Edit button, you can <b>customize</b> the web page visitors will "
 "see when registering."
@@ -1613,7 +1311,7 @@ msgstr ""
 "thấy khi đăng ký. "
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.modal_ticket_registration
+#: model_terms:ir.ui.view,arch_db:website_event.registration_template
 msgid "available)"
 msgstr "vé)"
 
@@ -1623,16 +1321,6 @@ msgid "e.g. \"Conference for Architects\""
 msgstr "VD: \"Hội thảo cho kiến trúc sư\""
 
 #. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.registration_template
-msgid "time)"
-msgstr "thời gian)"
-
-#. module: website_event
 #: model_terms:ir.ui.view,arch_db:website_event.event_description_full
-msgid "w-100"
-msgstr "w-100"
-
-#. module: website_event
-#: model_terms:ir.ui.view,arch_db:website_event.event_description_full
-msgid "w-100 py-sm-3 mt-sm-2"
-msgstr "w-100 py-sm-3 mt-sm-2"
+msgid "iCal/Outlook"
+msgstr "iCal/Outlook"

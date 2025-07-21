@@ -1,38 +1,50 @@
 /** @odoo-module **/
 
-import { _t } from "@web/core/l10n/translation";
-import {
-    EmojisTextField,
-    emojisTextField,
-} from "@mail/views/web/fields/emojis_text_field/emojis_text_field";
+import basic_fields from 'web.basic_fields';
+import { patch } from "@web/core/utils/patch";
+import { EmojisTextField} from '@mail/views/fields/emojis_text_field/emojis_text_field';
 import { useService } from "@web/core/utils/hooks";
 import { registry } from "@web/core/registry";
 
+const DynamicPlaceholderFieldMixin = basic_fields.DynamicPlaceholderFieldMixin;
 /**
  * SmsWidget is a widget to display a textarea (the body) and a text representing
  * the number of SMS and the number of characters. This text is computed every
  * time the user changes the body.
  */
 export class SmsWidget extends EmojisTextField {
-    static template = "sms.SmsWidget";
     setup() {
         super.setup();
-        this._emojiAdded = () => this.props.record.update({ [this.props.name]: this.targetEditElement.el.value });
         this.notification = useService('notification');
     }
 
     get encoding() {
-        return this._extractEncoding(this.props.record.data[this.props.name] || '');
+        return this._extractEncoding(this.props.value || '');
     }
     get nbrChar() {
-        const content = this._getValueForSmsCounts(this.props.record.data[this.props.name] || "");
+        const content = this._getValueForSmsCounts(this.props.value || '');
         return content.length + (content.match(/\n/g) || []).length;
     }
     get nbrCharExplanation() {
-        return "";
+        return '';
     }
     get nbrSMS() {
         return this._countSMS(this.nbrChar, this.encoding);
+    }
+
+    /**
+     * Open a Model Field Selector in order to select fields
+     * and create a dynamic placeholder string with or without
+     * a default text value.
+     *
+     * @public
+     * @param {String} baseModel
+     * @param {Array} chain
+     *
+     */
+    async openDynamicPlaceholder(baseModel, chain = []) {
+        const modelSelector = await this._openNewModelSelector(baseModel, chain);
+        modelSelector.$el.css('margin-top', 4);
     }
 
     //--------------------------------------------------------------------------
@@ -97,14 +109,13 @@ export class SmsWidget extends EmojisTextField {
      * @private
      */
     async onBlur() {
-        await super.onBlur();
-        var content = this.props.record.data[this.props.name] || '';
+        var content = this.props.value || '';
         if( !content.trim().length && content.length > 0) {
             this.notification.add(
-                _t("Your SMS Text Message must include at least one non-whitespace character"),
+                this.env._t("Your SMS Text Message must include at least one non-whitespace character"),
                 { type: 'danger' },
             )
-            await this.props.record.update({ [this.props.name]: content.trim() });
+            await this.props.update(content.trim());
         }
     }
 
@@ -113,19 +124,18 @@ export class SmsWidget extends EmojisTextField {
      * @private
      */
     async onInput(ev) {
+        await this.props.update(this.targetEditElement.el.value);
         super.onInput(...arguments);
-        await this.props.record.update({ [this.props.name]: this.targetEditElement.el.value });
+        const key = ev.originalEvent ? ev.originalEvent.data : '';
+        if (this.props.dynamicPlaceholder && key === this.DYNAMIC_PLACEHOLDER_TRIGGER_KEY) {
+            const baseModel = this.recordData && this.recordData.mailing_model_real ? this.recordData.mailing_model_real : undefined;
+            if (baseModel) {
+                this.openDynamicPlaceholder(baseModel);
+            }
+        }
     }
-}
-
-export const smsWidget = {
-    ...emojisTextField,
-    component: SmsWidget,
-    additionalClasses: [
-        ...(emojisTextField.additionalClasses || []),
-        "o_field_text",
-        "o_field_text_emojis",
-    ],
 };
-
-registry.category("fields").add("sms_widget", smsWidget);
+SmsWidget.template = 'sms.SmsWidget';
+SmsWidget.additionalClasses = [...(EmojisTextField.additionalClasses || []), 'o_field_text'];
+patch(SmsWidget.prototype, 'sms_widget_dynamic_placeholder_field_mixin', DynamicPlaceholderFieldMixin);
+registry.category("fields").add("sms_widget", SmsWidget);

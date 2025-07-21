@@ -7,9 +7,8 @@ class SpreadsheetDashboardGroup(models.Model):
     _description = 'Group of dashboards'
     _order = 'sequence'
 
-    name = fields.Char(required=True, translate=True)
+    name = fields.Char(required=True)
     dashboard_ids = fields.One2many('spreadsheet.dashboard', 'dashboard_group_id')
-    published_dashboard_ids = fields.One2many('spreadsheet.dashboard', 'dashboard_group_id', domain=[('is_published', '=', True)])
     sequence = fields.Integer()
 
     @api.ondelete(at_uninstall=False)

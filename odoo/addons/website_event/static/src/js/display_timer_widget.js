@@ -1,6 +1,7 @@
-/** @odoo-module **/
+odoo.define('website_event.display_timer_widget', function (require) {
+'use strict';
 
-import publicWidget from "@web/legacy/js/public/public_widget";
+var publicWidget = require('web.public.widget');
 
 publicWidget.registry.displayTimerWidget = publicWidget.Widget.extend({
     selector: '.o_display_timer',
@@ -17,19 +18,19 @@ publicWidget.registry.displayTimerWidget = publicWidget.Widget.extend({
     start: function () {
         var self = this;
         return this._super.apply(this, arguments).then(function () {
-            self.options = self.el.dataset;
+            self.options = self.$target.data();
             self.preCountdownDisplay = self.options["preCountdownDisplay"];
-            self.preCountdownTime = parseInt(self.options["preCountdownTime"]);
+            self.preCountdownTime = self.options["preCountdownTime"];
             self.preCountdownText = self.options["preCountdownText"];
 
-            self.mainCountdownTime = parseInt(self.options["mainCountdownTime"]);
+            self.mainCountdownTime = self.options["mainCountdownTime"];
             self.mainCountdownText = self.options["mainCountdownText"];
             self.mainCountdownDisplay = self.options["mainCountdownDisplay"];
 
             self.displayClass = self.options["displayClass"];
 
-            if (self.preCountdownDisplay === "true") {
-                self.el.parentElement.classList.remove("d-none");
+            if (self.preCountdownDisplay) {
+                $(self.$el).parent().removeClass('d-none');
             }
 
             self._checkTimer();
@@ -49,15 +50,15 @@ publicWidget.registry.displayTimerWidget = publicWidget.Widget.extend({
 
         var remainingPreSeconds = this.preCountdownTime - (now.getTime()/1000);
         if (remainingPreSeconds <= 1) {
-            this.el.querySelector(".o_countdown_text").textContent = this.mainCountdownText;
-            if (this.mainCountdownDisplay === "true") {
-                this.el.parentElement.classList.remove("d-none");
+            this.$('.o_countdown_text').text(this.mainCountdownText);
+            if (this.mainCountdownDisplay) {
+                $(this.$el).parent().removeClass('d-none');
             }
             var remainingMainSeconds = this.mainCountdownTime - (now.getTime()/1000);
             if (remainingMainSeconds <= 1) {
                 clearInterval(this.interval);
-                document.querySelector(this.displayClass).classList.remove("d-none");
-                this.el.parentElement.classList.add("d-none");
+                $(this.displayClass).removeClass('d-none');
+                $(this.$el).parent().addClass('d-none');
             } else {
                 this._updateCountdown(remainingMainSeconds);
             }
@@ -85,22 +86,10 @@ publicWidget.registry.displayTimerWidget = publicWidget.Widget.extend({
 
         remainingSeconds = Math.floor(remainingSeconds % 60);
 
-        const daysEl = this.el.querySelector("span.o_timer_days");
-        if (daysEl) {
-            daysEl.textContent = days;
-        }
-        const hoursEl = this.el.querySelector("span.o_timer_hours");
-        if (hoursEl) {
-            hoursEl.textContent = this._zeroPad(hours, 2);
-        }
-        const minutesEl = this.el.querySelector("span.o_timer_minutes");
-        if (minutesEl) {
-            minutesEl.textContent = this._zeroPad(minutes, 2);
-        }
-        const secondsEl = this.el.querySelector("span.o_timer_seconds");
-        if (secondsEl) {
-            secondsEl.textContent = this._zeroPad(remainingSeconds, 2);
-        }
+        this.$("span.o_timer_days").text(days);
+        this.$("span.o_timer_hours").text(this._zeroPad(hours, 2));
+        this.$("span.o_timer_minutes").text(this._zeroPad(minutes, 2));
+        this.$("span.o_timer_seconds").text(this._zeroPad(remainingSeconds, 2));
     },
 
     /**
@@ -115,4 +104,6 @@ publicWidget.registry.displayTimerWidget = publicWidget.Widget.extend({
 
 });
 
-export default publicWidget.registry.countdownWidget;
+return publicWidget.registry.countdownWidget;
+
+});

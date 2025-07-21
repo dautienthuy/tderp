@@ -30,12 +30,12 @@ class TestSubcontractingPortalUi(HttpCase):
         # 2. Create a BOM of subcontracting type
         cls.comp = cls.env['product.product'].create({
             'name': 'Component',
-            'is_storable': True,
+            'type': 'product',
         })
 
         cls.finished_product = cls.env['product.product'].create({
             'name': 'Finished',
-            'is_storable': True,
+            'type': 'product',
         })
         bom_form = Form(cls.env['mrp.bom'])
         bom_form.type = 'subcontract'
@@ -55,8 +55,6 @@ class TestSubcontractingPortalUi(HttpCase):
         with picking_form.move_ids_without_package.new() as move:
             move.product_id = self.finished_product
             move.product_uom_qty = 2
-            move.quantity = 2
-            move.picked = True
         picking_receipt = picking_form.save()
         picking_receipt.action_confirm()
 

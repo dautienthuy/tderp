@@ -3,26 +3,22 @@
 # 	* auth_totp
 # 
 # Translators:
-# Manel Fernandez Ramirez <manelfera@outlook.com>, 2024
-# Albert Parera, 2024
-# jabiri7, 2024
-# Quim - coopdevs <quim.rebull@coopdevs.org>, 2024
-# Óscar Fonseca <tecnico@pyming.com>, 2024
-# Arnau Ros, 2024
-# Ivan Espinola, 2024
-# Josep Anton Belchi, 2024
-# Martin Trigaux, 2024
-# marcescu, 2024
-# Santiago Payà <santiagopim@gmail.com>, 2025
-# Noemi Pla, 2025
+# AncesLatino2004, 2022
+# Manel Fernandez Ramirez <manelfera@outlook.com>, 2022
+# Arnau Ros, 2022
+# jabelchi, 2022
+# Martin Trigaux, 2022
+# marcescu, 2022
+# Ivan Espinola, 2023
+# Óscar Fonseca <tecnico@extreme-micro.com>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 08:40+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Noemi Pla, 2025\n"
+"POT-Creation-Date: 2022-10-10 10:22+0000\n"
+"PO-Revision-Date: 2022-09-22 05:45+0000\n"
+"Last-Translator: Óscar Fonseca <tecnico@extreme-micro.com>, 2023\n"
 "Language-Team: Catalan (https://app.transifex.com/odoo/teams/41243/ca/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -31,8 +27,8 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: auth_totp
-#. odoo-python
 #: code:addons/auth_totp/controllers/home.py:0
+#, python-format
 msgid "%(browser)s on %(platform)s"
 msgstr "%(browser)s a %(platform)s"
 
@@ -42,10 +38,46 @@ msgid "2-Factor Setup Wizard"
 msgstr "2-Auxiliar de configuració de factors"
 
 #. module: auth_totp
-#. odoo-python
 #: code:addons/auth_totp/wizard/auth_totp_wizard.py:0
+#, python-format
 msgid "2-Factor authentication is now enabled."
 msgstr "2-L'autenticació de factor està habilitada."
+
+#. module: auth_totp
+#: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_form
+msgid ""
+"<i title=\"Documentation\" class=\"fa fa-fw o_button_icon fa-info-circle\"/>\n"
+"                                    Learn More"
+msgstr ""
+"<i title=\"Documentation\" class=\"fa fa-fw o_button_icon fa-info-circle\"/>\n"
+"Més informació"
+
+#. module: auth_totp
+#: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_field
+msgid ""
+"<i title=\"Documentation\" class=\"fa fa-fw o_button_icon fa-info-circle\"/>\n"
+"                            Learn More"
+msgstr ""
+"<i title=\"Documentation\" class=\"fa fa-fw o_button_icon fa-info-circle\"/>\n"
+"Més informació"
+
+#. module: auth_totp
+#: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_form
+msgid ""
+"<span attrs=\"{'invisible': [('totp_enabled', '=', False)]}\" class=\"text-"
+"muted\">This account is protected!</span>"
+msgstr ""
+"<span attrs=\"{'invisible': [('totp_enabled', '=', False)]}\" class=\"text-"
+"muted\">Aquest compte està protegit!</span>"
+
+#. module: auth_totp
+#: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_field
+msgid ""
+"<span attrs=\"{'invisible': [('totp_enabled', '=', False)]}\" class=\"text-"
+"muted\">Your account is protected!</span>"
+msgstr ""
+"<span attrs=\"{'invisible': [('totp_enabled', '=', False)]}\" class=\"text-"
+"muted\">El vostre compte està protegit!</span>"
 
 #. module: auth_totp
 #: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_wizard
@@ -53,8 +85,8 @@ msgid ""
 "<span class=\"d-md-none d-block\">Or install an authenticator app</span>\n"
 "                                        <span class=\"d-none d-md-block\">Install an authenticator app on your mobile device</span>"
 msgstr ""
-"<span class=\"d-md-none d-block\">O instal·la una aplicació d'autenticació</span>\n"
-"                                        <span class=\"d-none d-md-block\">Instal·la una aplicació d'autenticació al teu dispositiu mòbil</span>"
+"<span class=\"d-md-none d-block\">O instal·la una aplicació d'autenticador</span>\n"
+"                                        <span class=\"d-none d-md-block\">Instal·la una aplicació d'autenticador al teu dispositiu mòbil</span>"
 
 #. module: auth_totp
 #: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_wizard
@@ -62,8 +94,8 @@ msgid ""
 "<span class=\"d-none d-md-block\">When requested to do so, scan the barcode below</span>\n"
 "                                    <span class=\"d-block d-md-none\">When requested to do so, copy the key below</span>"
 msgstr ""
-"<span class=\"d-none d-md-block\">Quan se us demani que ho feu, escanegeu el codi de barres a sota</span>\n"
-"                                    <span class=\"d-block d-md-none\">Quan se us demani que ho feu, copieu la clau següent</span>"
+"<span class=\"d-none d-md-block\">Quan se li demana que ho faci, escanegeu el codi de barres a sota</span>\n"
+"                                    <span class=\"d-block d-md-none\">Quan se li demana que ho faci, copieu la clau següent</span>"
 
 #. module: auth_totp
 #: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_wizard
@@ -76,21 +108,8 @@ msgstr ""
 
 #. module: auth_totp
 #: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_form
-msgid ""
-"<span invisible=\"not totp_enabled\" class=\"text-muted\">This account is "
-"protected!</span>"
-msgstr ""
-"<span invisible=\"not totp_enabled\" class=\"text-muted\">Aquest compte està"
-" protegit!</span>"
-
-#. module: auth_totp
-#: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_field
-msgid ""
-"<span invisible=\"not totp_enabled\" class=\"text-muted\">Your account is "
-"protected!</span>"
-msgstr ""
-"<span invisible=\"not totp_enabled\" class=\"text-muted\">Aquest compte està"
-" protegit!</span>"
+msgid "Account Security"
+msgstr "Seguretat del compte"
 
 #. module: auth_totp
 #: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_wizard
@@ -134,13 +153,13 @@ msgstr "Dispositiu d'autenticació"
 #. module: auth_totp
 #: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_wizard
 msgid "Authenticator App Setup"
-msgstr "Configuració de l'aplicació d'autenticació"
+msgstr "Configuració de l'aplicació delenenticator"
 
 #. module: auth_totp
 #: model_terms:ir.ui.view,arch_db:auth_totp.auth_totp_form
 #: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_wizard
 msgid "Cancel"
-msgstr "Cancel·la"
+msgstr "Cancel·lar"
 
 #. module: auth_totp
 #: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_wizard
@@ -151,7 +170,7 @@ msgstr "No es pot escanejar?"
 #: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_wizard
 msgid "Click on this link to open your authenticator app"
 msgstr ""
-"Feu clic en aquest enllaç per obrir la vostra aplicació d'autenticació"
+"Feu clic en aquest enllaç per obrir la vostra aplicació d'autenticador"
 
 #. module: auth_totp
 #: model:ir.model.fields,field_description:auth_totp.field_auth_totp_wizard__create_uid
@@ -194,7 +213,7 @@ msgstr "Desactiva l'autenticació de doble factor"
 #: model:ir.model.fields,field_description:auth_totp.field_auth_totp_device__display_name
 #: model:ir.model.fields,field_description:auth_totp.field_auth_totp_wizard__display_name
 msgid "Display Name"
-msgstr "Nom mostrat"
+msgstr "Nom a mostrar"
 
 #. module: auth_totp
 #: model_terms:ir.ui.view,arch_db:auth_totp.auth_totp_form
@@ -213,9 +232,9 @@ msgid "Enter your six-digit code below"
 msgstr "Introduïu el vostre codi de sis dígits a sota"
 
 #. module: auth_totp
-#: model:ir.model.fields,field_description:auth_totp.field_auth_totp_device__expiration_date
-msgid "Expiration Date"
-msgstr "Data d'expiració "
+#: model:ir.model,name:auth_totp.model_ir_http
+msgid "HTTP Routing"
+msgstr "Enrutament HTTP"
 
 #. module: auth_totp
 #: model:ir.model.fields,field_description:auth_totp.field_auth_totp_device__id
@@ -224,10 +243,16 @@ msgid "ID"
 msgstr "ID"
 
 #. module: auth_totp
-#. odoo-python
 #: code:addons/auth_totp/controllers/home.py:0
+#, python-format
 msgid "Invalid authentication code format."
 msgstr "El format del codi d'autenticació no és vàlid."
+
+#. module: auth_totp
+#: model:ir.model.fields,field_description:auth_totp.field_auth_totp_device____last_update
+#: model:ir.model.fields,field_description:auth_totp.field_auth_totp_wizard____last_update
+msgid "Last Modified on"
+msgstr "Última modificació el "
 
 #. module: auth_totp
 #: model:ir.model.fields,field_description:auth_totp.field_auth_totp_wizard__write_uid
@@ -294,8 +319,8 @@ msgid "Secret"
 msgstr "Secret"
 
 #. module: auth_totp
-#. odoo-python
 #: code:addons/auth_totp/wizard/auth_totp_wizard.py:0
+#, python-format
 msgid "The verification code should only contain numbers"
 msgstr "El codi de verificació només hauria de contenir números"
 
@@ -321,8 +346,8 @@ msgid "Trusted Devices"
 msgstr "Dispositiu de confiança"
 
 #. module: auth_totp
-#. odoo-python
 #: code:addons/auth_totp/models/res_users.py:0
+#, python-format
 msgid "Two-Factor Authentication Activation"
 msgstr "Activació de l'autenticació en dos factors"
 
@@ -334,8 +359,18 @@ msgid "Two-factor Authentication"
 msgstr "Autenticació de dos factors"
 
 #. module: auth_totp
-#: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_field
 #: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_form
+msgid ""
+"Two-factor Authentication (\"2FA\") is a system of double authentication.\n"
+"                                The first one is done with your password and the second one with a code you get from a dedicated mobile app.\n"
+"                                Popular ones include Authy, Google Authenticator or the Microsoft Authenticator."
+msgstr ""
+"Autenticació de doble factor (\"2FA\") és un sistema d'autenticació doble.\n"
+"El primer es fa amb la vostra contrasenya i el segon amb un codi que obteniu d'una aplicació mòbil dedicada.\n"
+"Els més populars inclouen Authy, Google Authenticator o Microsoft Authenticator"
+
+#. module: auth_totp
+#: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_field
 msgid ""
 "Two-factor Authentication (\"2FA\") is a system of double authentication.\n"
 "                        The first one is done with your password and the second one with a code you get from a dedicated mobile app.\n"
@@ -361,27 +396,27 @@ msgid "Two-factor authentication Enabled"
 msgstr "Autenticació de dos passos activada"
 
 #. module: auth_totp
-#. odoo-python
 #: code:addons/auth_totp/models/res_users.py:0
+#, python-format
 msgid "Two-factor authentication already enabled"
 msgstr "L'autenticació de doble factor ja està habilitada"
 
 #. module: auth_totp
-#. odoo-python
 #: code:addons/auth_totp/models/res_users.py:0
+#, python-format
 msgid "Two-factor authentication can only be enabled for yourself"
 msgstr "L'autenticació de doble factor només es pot habilitar per a tu mateix"
 
 #. module: auth_totp
-#. odoo-python
 #: code:addons/auth_totp/models/res_users.py:0
+#, python-format
 msgid "Two-factor authentication disabled for the following user(s): %s"
 msgstr "Autenticació de dos factors inhabilitada per als següents usuari(s)%s"
 
 #. module: auth_totp
 #: model:ir.model.fields,field_description:auth_totp.field_auth_totp_wizard__url
 msgid "Url"
-msgstr "Url"
+msgstr "Adreça URL"
 
 #. module: auth_totp
 #: model:ir.model,name:auth_totp.model_res_users
@@ -397,9 +432,9 @@ msgid "Verification Code"
 msgstr "Codi de verificació"
 
 #. module: auth_totp
-#. odoo-python
 #: code:addons/auth_totp/models/res_users.py:0
 #: code:addons/auth_totp/wizard/auth_totp_wizard.py:0
+#, python-format
 msgid "Verification failed, please double-check the 6-digit code"
 msgstr "La verificació ha fallat, si us plau comproveu el codi de 6 dígits"
 

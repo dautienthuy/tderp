@@ -3,19 +3,21 @@
 # 	* sale_crm
 # 
 # Translators:
-# Konstantins Zabogonskis <inculin4ik@gmail.com>, 2024
-# Arnis Putniņš <arnis@allegro.lv>, 2024
-# Martin Trigaux, 2024
-# Armīns Jeltajevs <armins.jeltajevs@gmail.com>, 2024
-# ievaputnina <ievai.putninai@gmail.com>, 2024
+# Anzelika Adejanova, 2022
+# InfernalLV <karlisdreizis@gmail.com>, 2022
+# Konstantins Zabogonskis <inculin4ik@gmail.com>, 2022
+# Martin Trigaux, 2022
+# Arnis Putniņš <arnis@allegro.lv>, 2022
+# ievaputnina <ievai.putninai@gmail.com>, 2022
+# Armīns Jeltajevs <armins.jeltajevs@gmail.com>, 2023
 # Will Sensors, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:56+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2022-09-20 09:02+0000\n"
+"PO-Revision-Date: 2022-09-22 05:54+0000\n"
 "Last-Translator: Will Sensors, 2024\n"
 "Language-Team: Latvian (https://app.transifex.com/odoo/teams/41243/lv/)\n"
 "MIME-Version: 1.0\n"
@@ -77,18 +79,12 @@ msgstr "Klients"
 #. module: sale_crm
 #: model:ir.model.fields,field_description:sale_crm.field_crm_quotation_partner__display_name
 msgid "Display Name"
-msgstr "Nosaukums"
+msgstr "Parādīt vārdu"
 
 #. module: sale_crm
 #: model:ir.model.fields.selection,name:sale_crm.selection__crm_quotation_partner__action__nothing
 msgid "Do not link to a customer"
 msgstr "Do not link to a customer"
-
-#. module: sale_crm
-#. odoo-python
-#: code:addons/sale_crm/models/crm_lead.py:0
-msgid "Expected revenue has been updated based on the linked Sales Orders."
-msgstr ""
 
 #. module: sale_crm
 #: model:ir.model.fields,field_description:sale_crm.field_crm_quotation_partner__id
@@ -101,14 +97,19 @@ msgid "Invoiced in Sales Orders Target"
 msgstr "Izrakstīts pārdošanas pasūtījuma mērķī"
 
 #. module: sale_crm
+#: model:ir.model.fields,field_description:sale_crm.field_crm_quotation_partner____last_update
+msgid "Last Modified on"
+msgstr "Pēdējoreiz mainīts"
+
+#. module: sale_crm
 #: model:ir.model.fields,field_description:sale_crm.field_crm_quotation_partner__write_uid
 msgid "Last Updated by"
-msgstr "Pēdējo reizi atjaunoja"
+msgstr "Pēdējoreiz atjaunoja"
 
 #. module: sale_crm
 #: model:ir.model.fields,field_description:sale_crm.field_crm_quotation_partner__write_date
 msgid "Last Updated on"
-msgstr "Pēdējās izmaiņas"
+msgstr "Pēdējoreiz atjaunots"
 
 #. module: sale_crm
 #: model:ir.model,name:sale_crm.model_crm_lead
@@ -118,7 +119,12 @@ msgstr "Lead/Opportunity"
 #. module: sale_crm
 #: model:ir.model.fields.selection,name:sale_crm.selection__crm_quotation_partner__action__exist
 msgid "Link to an existing customer"
-msgstr "Savienot ar esošu klientu"
+msgstr "Link to an existing customer"
+
+#. module: sale_crm
+#: model_terms:ir.ui.view,arch_db:sale_crm.sale_view_inherit123
+msgid "Log in the chatter from which opportunity the order originates"
+msgstr ""
 
 #. module: sale_crm
 #: model:ir.ui.menu,name:sale_crm.sale_order_menu_quotations_crm
@@ -130,7 +136,7 @@ msgstr "Mani piedavājumi"
 #: model_terms:ir.ui.view,arch_db:sale_crm.crm_case_form_view_oppor
 #: model_terms:ir.ui.view,arch_db:sale_crm.crm_quotation_partner_view_form
 msgid "New Quotation"
-msgstr "Jauns piedāvājums"
+msgstr "New Quotation"
 
 #. module: sale_crm
 #: model:ir.model.fields,field_description:sale_crm.field_crm_lead__quotation_count
@@ -170,27 +176,27 @@ msgstr "Piedāvājumi"
 #. module: sale_crm
 #: model_terms:ir.ui.view,arch_db:sale_crm.crm_lead_merge_summary_inherit_sale_crm
 msgid "Sale Orders"
-msgstr "Pārdošanas pasūtījumi"
+msgstr "Pārdošanas pasūtījumi "
 
 #. module: sale_crm
-#. odoo-python
 #: code:addons/sale_crm/models/crm_team.py:0
+#, python-format
 msgid "Sales Analysis"
-msgstr "Pārdošanas analīze"
+msgstr "Pārdošanu Analīze"
 
 #. module: sale_crm
 #: model:ir.model,name:sale_crm.model_sale_order
 msgid "Sales Order"
-msgstr "Pārdošanas pasūtījums"
+msgstr "Pasūtījums"
 
 #. module: sale_crm
 #: model:ir.model,name:sale_crm.model_crm_team
 msgid "Sales Team"
-msgstr "Pārdevēju komanda"
+msgstr "Sales Team"
 
 #. module: sale_crm
-#. odoo-python
 #: code:addons/sale_crm/models/crm_team.py:0
+#, python-format
 msgid "Sales: Untaxed Total"
 msgstr "Tirdzniecība: Summa bez nodokļa"
 
@@ -202,7 +208,7 @@ msgstr "Pasūtījumu summa"
 #. module: sale_crm
 #: model:ir.model.fields,help:sale_crm.field_crm_lead__sale_amount_total
 msgid "Untaxed Total of Confirmed Orders"
-msgstr "Apstiprināto pasūtījumu summa kopā bez PVN"
+msgstr "Apstiprināto pasūtījumu summa kopā bez nodokļiem"
 
 #. module: sale_crm
 #: model:ir.model,name:sale_crm.model_res_users
@@ -210,7 +216,7 @@ msgid "User"
 msgstr "Lietotājs"
 
 #. module: sale_crm
-#. odoo-python
 #: code:addons/sale_crm/wizard/crm_opportunity_to_quotation.py:0
+#, python-format
 msgid "You can only apply this action from a lead."
 msgstr "Šo darbību var izmantot tikai no pieprasījuma"

@@ -20,7 +20,6 @@ function cycle(num, max) {
  *     fontawesome: string; // a fontawesome class name
  *     callback: () => void; // to execute when the command is picked
  *     isDisabled?: () => boolean; // return true to disable the command
- *     keywords: Array<String> // to add synonyms for command
  * }
  */
 
@@ -43,11 +42,11 @@ export class Powerbox {
 
         // Draw the powerbox.
         this.el = document.createElement('div');
-        this.el.className = 'oe-powerbox-wrapper position-absolute overflow-hidden';
+        this.el.className = 'oe-powerbox-wrapper';
         this.el.style.display = 'none';
         document.body.append(this.el);
         this._mainWrapperElement = document.createElement('div');
-        this._mainWrapperElement.className = 'oe-powerbox-mainWrapper flex-skrink-1 overflow-auto py-2';
+        this._mainWrapperElement.className = 'oe-powerbox-mainWrapper';
         this.el.append(this._mainWrapperElement);
         this.el.addEventListener('mousedown', ev => ev.stopPropagation());
 
@@ -178,19 +177,19 @@ export class Powerbox {
         for (const [category, categoryCommands] of this._groupCommands(commands, categories)) {
             const categoryWrapperEl = parser.parseFromString(`
                 <div class="oe-powerbox-categoryWrapper">
-                    <div class="oe-powerbox-category mx-3 my-1 text-uppercase"></div>
+                    <div class="oe-powerbox-category"></div>
                 </div>`, 'text/html').body.firstChild;
             this._mainWrapperElement.append(categoryWrapperEl);
             categoryWrapperEl.firstElementChild.innerText = category;
             for (const command of categoryCommands) {
                 const commandElWrapper = document.createElement('div');
-                commandElWrapper.className = 'oe-powerbox-commandWrapper d-flex align-items-center px-3 py-2 cursor-pointer';
+                commandElWrapper.className = 'oe-powerbox-commandWrapper';
                 commandElWrapper.classList.toggle('active', this._context.selectedCommand === command);
                 commandElWrapper.replaceChildren(...parser.parseFromString(`
-                    <div class="oe-powerbox-commandLeftCol border rounded">
-                        <i class="oe-powerbox-commandImg d-flex align-items-center justify-content-center fa"></i>
+                    <div class="oe-powerbox-commandLeftCol">
+                        <i class="oe-powerbox-commandImg fa"></i>
                     </div>
-                    <div class="oe-powerbox-commandRightCol ms-3">
+                    <div class="oe-powerbox-commandRightCol">
                         <div class="oe-powerbox-commandName"></div>
                         <div class="oe-powerbox-commandDescription"></div>
                     </div>`, 'text/html').body.children);
@@ -199,7 +198,7 @@ export class Powerbox {
                 commandElWrapper.querySelector('.oe-powerbox-commandDescription').innerText = command.description;
                 categoryWrapperEl.append(commandElWrapper);
                 // Handle events on command (activate and pick).
-                commandElWrapper.addEventListener('mouseenter', () => {
+                commandElWrapper.addEventListener('mousemove', () => {
                     this.el.querySelector('.oe-powerbox-commandWrapper.active').classList.remove('active');
                     this._context.selectedCommand = command;
                     commandElWrapper.classList.add('active');
@@ -348,9 +347,7 @@ export class Powerbox {
                     this._context.filteredCommands = this._context.commands.filter(command => {
                         const commandText = (command.category + ' ' + command.name);
                         const commandDescription = command.description.replace(/\s/g, '');
-                        return commandText.match(fuzzyRegex)
-                            || commandDescription.match(exactRegex)
-                            || command.keywords?.some(keyword => exactRegex.test(keyword));
+                        return commandText.match(fuzzyRegex) || commandDescription.match(exactRegex);
                     });
                 } else {
                     this._context.filteredCommands = this._context.commands;
@@ -366,7 +363,7 @@ export class Powerbox {
      * @param {KeyboardEvent} ev
      */
     _onKeydown(ev) {
-        if (['Enter', 'Tab'].includes(ev.key)) {
+        if (ev.key === 'Enter') {
             ev.stopImmediatePropagation();
             this._pickCommand();
             ev.preventDefault();

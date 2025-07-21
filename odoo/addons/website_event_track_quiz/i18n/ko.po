@@ -3,15 +3,17 @@
 # 	* website_event_track_quiz
 # 
 # Translators:
-# Wil Odoo, 2024
+# Martin Trigaux, 2022
+# Daye Jeong, 2023
+# JH CHOI <hwangtog@gmail.com>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:57+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: Wil Odoo, 2024\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:56+0000\n"
+"Last-Translator: JH CHOI <hwangtog@gmail.com>, 2023\n"
 "Language-Team: Korean (https://app.transifex.com/odoo/teams/41243/ko/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -47,8 +49,9 @@ msgstr "퀴즈 추가"
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/js/event_quiz.js:0
-msgid "All questions must be answered!"
-msgstr "모든 질문에 다 답변해야 합니다!"
+#, python-format
+msgid "All questions must be answered !"
+msgstr "질문에 모두다 답해야 합니다!"
 
 #. module: website_event_track_quiz
 #: model_terms:ir.ui.view,arch_db:website_event_track_quiz.event_quiz_view_form
@@ -64,12 +67,15 @@ msgstr "답변"
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "Check answers"
 msgstr "답변 확인"
 
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "Check your answers"
 msgstr "귀하의 답을 확인하세요"
 
@@ -86,6 +92,7 @@ msgstr "콘크리트 블록 벽"
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "Congratulations, you scored a total of"
 msgstr "축하합니다, 다음과 같은 점수를 획득하셨습니다"
 
@@ -107,6 +114,7 @@ msgstr "정확한 답변"
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "Correct."
 msgstr "정답입니다."
 
@@ -174,14 +182,14 @@ msgstr "추가 의견"
 msgid ""
 "From here you will be able to examine all quiz questions you have linked to "
 "Tracks."
-msgstr "여기에서 세션과 연결된 모든 퀴즈의 질문을 검토할 수 있습니다."
+msgstr "여기에서 트랙과 연결된 모든 퀴즈 질문을 검토할 수 있습니다."
 
 #. module: website_event_track_quiz
 #: model_terms:ir.actions.act_window,help:website_event_track_quiz.event_quiz_action
 msgid ""
 "From here you will be able to overview all quizzes you have linked to "
 "Tracks."
-msgstr "여기에서 세션과 연결된 모든 퀴즈를 한눈에 볼 수 있습니다."
+msgstr "여기에서 트랙과 연결된 모든 퀴즈를 한눈에 볼 수 있습니다."
 
 #. module: website_event_track_quiz
 #: model_terms:ir.ui.view,arch_db:website_event_track_quiz.event_track_view_form
@@ -221,6 +229,7 @@ msgstr "사고를 방지하려면 운송 중 제품을 안전하게 보관해야
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "Incorrect."
 msgstr "틀렸습니다."
 
@@ -228,6 +237,13 @@ msgstr "틀렸습니다."
 #: model:ir.model.fields,field_description:website_event_track_quiz.field_event_track__is_quiz_completed
 msgid "Is Quiz Done"
 msgstr "퀴즈 종료"
+
+#. module: website_event_track_quiz
+#: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz____last_update
+#: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz_answer____last_update
+#: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz_question____last_update
+msgid "Last Modified on"
+msgstr "최근 수정일"
 
 #. module: website_event_track_quiz
 #: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz__write_uid
@@ -301,6 +317,7 @@ msgstr "포인트 획득 수"
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "Oopsie, you did not score any point on this quiz."
 msgstr "죄송합니다, 이 퀴즈에서 점수를 얻지 못하셨습니다."
 
@@ -317,6 +334,7 @@ msgstr "OpenWood는 앱에 관한 오픈 소스 모임이 아닙니다."
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "Point"
 msgstr "포인트"
 
@@ -324,6 +342,7 @@ msgstr "포인트"
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
 #: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz_answer__awarded_points
+#, python-format
 msgid "Points"
 msgstr "포인트"
 
@@ -341,6 +360,7 @@ msgstr "질문"
 #. module: website_event_track_quiz
 #. odoo-python
 #: code:addons/website_event_track_quiz/models/event_quiz.py:0
+#, python-format
 msgid ""
 "Question \"%s\" must have 1 correct answer and at least 1 incorrect answer "
 "to be valid."
@@ -349,6 +369,7 @@ msgstr "질문 \"%s\"에는 정답이 1개와 적어도 오답이 1개 이상 �
 #. module: website_event_track_quiz
 #. odoo-python
 #: code:addons/website_event_track_quiz/models/event_quiz.py:0
+#, python-format
 msgid "Question \"%s\" must have 1 correct answer to be valid."
 msgstr "질문 \"%s\"에는 정답이 1개여야 합니다."
 
@@ -393,6 +414,7 @@ msgstr "퀴즈 질문"
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/js/event_quiz.js:0
+#, python-format
 msgid "Quiz validation error"
 msgstr "퀴즈 승인 에러"
 
@@ -407,6 +429,7 @@ msgstr "문제"
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "Reset"
 msgstr "초기화"
 
@@ -448,8 +471,8 @@ msgstr "철제 벽"
 
 #. module: website_event_track_quiz
 #: model:event.quiz.answer,text_value:website_event_track_quiz.event_7_track_1_question_1_1
-msgid "Stores!"
-msgstr "매장!"
+msgid "Stores !"
+msgstr ""
 
 #. module: website_event_track_quiz
 #: model_terms:ir.ui.view,arch_db:website_event_track_quiz.event_track_content
@@ -459,6 +482,7 @@ msgstr "퀴즈 풀기"
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "The correct answer was:"
 msgstr "정답은:"
 
@@ -470,8 +494,9 @@ msgstr "현재 사용 가능한 점수획득판이 없습니다."
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/js/event_quiz.js:0
+#, python-format
 msgid "There was an error validating this quiz."
-msgstr "이 문제를 확인하는 중 오류가 발생했습니다."
+msgstr "이 문제를 확인하는 중에 오류가 발생했습니다."
 
 #. module: website_event_track_quiz
 #: model:ir.model.fields,help:website_event_track_quiz.field_event_quiz_answer__comment
@@ -485,6 +510,7 @@ msgstr ""
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/js/event_quiz.js:0
+#, python-format
 msgid "This quiz is already done. Retaking it is not possible."
 msgstr "이 문제는 이미 끝났습니다. 다시 시작할 수 없습니다."
 
@@ -510,8 +536,8 @@ msgstr "매장에서 집까지 목재를 안전하게 운송할 수 있습니다
 
 #. module: website_event_track_quiz
 #: model:event.quiz.answer,text_value:website_event_track_quiz.event_7_track_1_question_1_0
-msgid "Trees!"
-msgstr "나무!"
+msgid "Trees !"
+msgstr ""
 
 #. module: website_event_track_quiz
 #: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz__repeatable
@@ -535,23 +561,23 @@ msgstr "이번 행사의 내용"
 
 #. module: website_event_track_quiz
 #: model:event.quiz.question,name:website_event_track_quiz.event_7_track_5_question_1
-msgid "What kind of tool are needed to secure your lumber?"
-msgstr "목재를 고정하는 데 필요한 도구에는 어떤 것들이 있나요?"
+msgid "What kind of tool are needed to secure your lumber ?"
+msgstr ""
 
 #. module: website_event_track_quiz
 #: model:event.quiz.question,name:website_event_track_quiz.event_7_track_13_question_0
-msgid "What kind of wall is transformed here?"
-msgstr "여기에서는 어떤 종류의 벽이 변형되나요?"
+msgid "What kind of wall is transformed here ?"
+msgstr ""
 
 #. module: website_event_track_quiz
 #: model:event.quiz.question,name:website_event_track_quiz.event_7_track_1_question_0
-msgid "What will we talk about during this event?"
-msgstr "이번 행사에서는 어떤 이야기를 나눌 예정인가요?"
+msgid "What will we talk about during this event ?"
+msgstr ""
 
 #. module: website_event_track_quiz
 #: model:event.quiz.question,name:website_event_track_quiz.event_7_track_1_question_1
-msgid "Where does lumber comes from?"
-msgstr "목재는 어디에서 생산되나요?"
+msgid "Where does lumber comes from ?"
+msgstr ""
 
 #. module: website_event_track_quiz
 #: model:event.quiz.answer,text_value:website_event_track_quiz.event_7_track_1_question_0_0
@@ -571,8 +597,8 @@ msgstr "귀하"
 
 #. module: website_event_track_quiz
 #: model:event.quiz.answer,comment:website_event_track_quiz.event_7_track_1_question_0_0
-msgid "You're really smart!"
-msgstr "정말 똑똑하시네요!"
+msgid "You're really smart !"
+msgstr ""
 
 #. module: website_event_track_quiz
 #: model_terms:ir.ui.view,arch_db:website_event_track_quiz.event_quiz_view_form
@@ -587,11 +613,13 @@ msgstr "예. Joe의 좌우명은 무엇인가요?"
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "point!"
 msgstr "점!"
 
 #. module: website_event_track_quiz
 #. odoo-javascript
 #: code:addons/website_event_track_quiz/static/src/xml/quiz_templates.xml:0
+#, python-format
 msgid "points!"
 msgstr "점!"

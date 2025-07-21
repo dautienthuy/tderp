@@ -9,7 +9,7 @@ from datetime import datetime
 class CalendarLeaves(models.Model):
     _inherit = "resource.calendar.leaves"
 
-    holiday_id = fields.Many2one("hr.leave", string='Time Off Request')
+    holiday_id = fields.Many2one("hr.leave", string='Leave Request')
 
     @api.constrains('date_from', 'date_to', 'calendar_id')
     def _check_compare_dates(self):
@@ -32,15 +32,14 @@ class CalendarLeaves(models.Model):
                     raise ValidationError(_('Two public holidays cannot overlap each other for the same working hours.'))
 
     def _get_domain(self, time_domain_dict):
-        domain = expression.OR([
-            [
-                ('employee_company_id', '=', date['company_id']),
-                ('date_to', '>', date['date_from']),
-                ('date_from', '<', date['date_to']),
-            ]
-            for date in time_domain_dict
-        ])
-        return expression.AND([domain, [('state', 'not in', ['refuse', 'cancel'])]])
+        domain = []
+        for date in time_domain_dict:
+            domain = expression.OR([domain, [
+                    ('employee_company_id', '=', date['company_id']),
+                    ('date_to', '>', date['date_from']),
+                    ('date_from', '<', date['date_to'])]
+            ])
+        return expression.AND([domain, [('state', '!=', 'refuse'), ('active', '=', True)]])
 
     def _get_time_domain_dict(self):
         return [{
@@ -61,32 +60,32 @@ class CalendarLeaves(models.Model):
         previous_durations = leaves.mapped('number_of_days')
         previous_states = leaves.mapped('state')
         leaves.sudo().write({
-            'state': 'confirm',
+            'state': 'draft',
         })
         self.env.add_to_compute(self.env['hr.leave']._fields['number_of_days'], leaves)
         self.env.add_to_compute(self.env['hr.leave']._fields['duration_display'], leaves)
-        sick_time_status = self.env.ref('hr_holidays.holiday_status_sl', raise_if_not_found=False)
-        leaves_to_recreate = self.env['hr.leave']
+        sick_time_status = self.env.ref('hr_holidays.holiday_status_sl')
         for previous_duration, leave, state in zip(previous_durations, leaves, previous_states):
             duration_difference = previous_duration - leave.number_of_days
-            message = False
-            if duration_difference > 0 and leave.holiday_status_id.requires_allocation == 'yes':
+            if duration_difference > 0 and leave['holiday_allocation_id'] and leave.number_of_days == 0.0:
                 message = _("Due to a change in global time offs, you have been granted %s day(s) back.", duration_difference)
-            if leave.number_of_days > previous_duration\
-                    and (not sick_time_status or leave.holiday_status_id not in sick_time_status):
-                message = _("Due to a change in global time offs, %s extra day(s) have been taken from your allocation. Please review this leave if you need it to be changed.", -1 * duration_difference)
-            try:
-                leave.write({'state': state})
-                leave._check_validity()
-                if leave.state == 'validate':
-                    # recreate the resource leave that were removed by writing state to draft
-                    leaves_to_recreate |= leave
-            except ValidationError:
-                leave.action_refuse()
-                message = _("Due to a change in global time offs, this leave no longer has the required amount of available allocation and has been set to refused. Please review this leave.")
-            if message:
                 leave._notify_change(message)
-        leaves_to_recreate.sudo()._create_resource_leave()
+            if leave.number_of_days > previous_duration\
+                    and leave.holiday_status_id not in sick_time_status:
+                new_leaves = leave.split_leave(time_domain_dict)
+                leaves |= new_leaves
+                previous_states += [state] * len(new_leaves)
+
+        leaves_to_cancel = self.env['hr.leave']
+        for state, leave in zip(previous_states, leaves):
+            leave.write({'state': state})
+            if leave.number_of_days == 0.0:
+                leaves_to_cancel |= leave
+            elif leave.state == 'validate':
+                # recreate the resource leave that were removed by writing state to draft
+                leave.sudo()._create_resource_leave()
+
+        leaves_to_cancel._force_cancel(_("a new public holiday completely overrides this leave."), 'mail.mt_comment')
 
     def _convert_timezone(self, utc_naive_datetime, tz_from, tz_to):
         """
@@ -161,15 +160,15 @@ class CalendarLeaves(models.Model):
 class ResourceCalendar(models.Model):
     _inherit = "resource.calendar"
 
-    associated_leaves_count = fields.Integer("Time Off Count", compute='_compute_associated_leaves_count')
+    associated_leaves_count = fields.Integer("Leave Count", compute='_compute_associated_leaves_count')
 
     def _compute_associated_leaves_count(self):
-        leaves_read_group = self.env['resource.calendar.leaves']._read_group(
-            [('resource_id', '=', False), ('calendar_id', 'in', [False, *self.ids])],
+        leaves_read_group = self.env['resource.calendar.leaves'].read_group(
+            [('resource_id', '=', False)],
             ['calendar_id'],
-            ['__count'],
+            ['calendar_id']
         )
-        result = {calendar.id if calendar else 'global': count for calendar, count in leaves_read_group}
+        result = dict((data['calendar_id'][0] if data['calendar_id'] else 'global', data['calendar_id_count']) for data in leaves_read_group)
         global_leave_count = result.get('global', 0)
         for calendar in self:
             calendar.associated_leaves_count = result.get(calendar.id, 0) + global_leave_count

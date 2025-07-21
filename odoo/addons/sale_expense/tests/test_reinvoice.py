@@ -23,28 +23,15 @@ class TestReInvoice(TestExpenseCommon, TestSaleCommon):
     """
 
     @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+    def setUpClass(cls, chart_template_ref=None):
+        super().setUpClass(chart_template_ref=chart_template_ref)
         new_sale_tax, new_purchase_tax = cls.env['account.tax'].create([{
             'name': 'Tax 12.499%',
             'amount': 12.499,
             'amount_type': 'percent',
             'type_tax_use': tax_type,
-            'repartition_line_ids': [
-                Command.create({'document_type': 'invoice', 'repartition_type': 'base'}),
-                Command.create({
-                    'document_type': 'invoice',
-                    'repartition_type': 'tax',
-                    'account_id': cls.company_data[f'default_account_tax_{tax_type}'].id
-                }),
-                Command.create({'document_type': 'refund', 'repartition_type': 'base'}),
-                Command.create({
-                    'document_type': 'refund',
-                    'repartition_type': 'tax',
-                    'account_id': cls.company_data[f'default_account_tax_{tax_type}'].id
-                }),
-            ],
         } for tax_type in ('sale', 'purchase')])
+
         cls.company_data.update({
             'service_order_sales_price': cls.env['product.product'].with_company(cls.company_data['company']).create({
                 'name': 'service_order_sales_price',
@@ -193,14 +180,14 @@ class TestReInvoice(TestExpenseCommon, TestSaleCommon):
             'accounting_date': '2017-01-01',
             'expense_line_ids': [Command.set(cls.sale_expenses.ids)],
         })
-        cls.sale_expense_sheet.action_submit_sheet()
+        cls.sale_expense_sheet._do_approve()
 
     def test_expenses_reinvoice_case_1_create_moves(self):
         """
         CASE 1: Creation of the expense sheets moves. The sale order lines are created.
         """
-        self.sale_expense_sheet._do_approve()
-        self.sale_expense_sheet.action_sheet_move_post()
+        # pylint: disable=bad-whitespace
+        self.sale_expense_sheet.action_sheet_move_create()
 
         self.assertRecordValues(self.expense_sale_order.order_line, [
             # [0] Line not created from a re-invoiced, should never be changed
@@ -219,11 +206,10 @@ class TestReInvoice(TestExpenseCommon, TestSaleCommon):
         CASE 2: Reset to draft of the expense sheet, the quantities of the corresponding SOL are set to 0
         """
         # CASE 1 steps
-        self.sale_expense_sheet._do_approve()
-        self.sale_expense_sheet.action_sheet_move_post()
+        self.sale_expense_sheet.action_sheet_move_create()
 
         # CASE 2 steps
-        self.sale_expense_sheet.action_reset_expense_sheets()
+        self.sale_expense_sheet.action_unpost()
 
         self.assertRecordValues(self.expense_sale_order.order_line, [
             # [0] Line not created from a re-invoiced, should never be changed
@@ -242,16 +228,14 @@ class TestReInvoice(TestExpenseCommon, TestSaleCommon):
         CASE 3: Re-Approve and Re-Post the expense sheet after a reset, creating new SOLs with the correct quantities
         """
         # CASE 1 steps
-        self.sale_expense_sheet._do_approve()
-        self.sale_expense_sheet.action_sheet_move_post()
+        self.sale_expense_sheet.action_sheet_move_create()
 
         # CASE 2 steps
-        self.sale_expense_sheet.action_reset_expense_sheets()
+        self.sale_expense_sheet.action_unpost()
 
         # CASE 3 steps
-        self.sale_expense_sheet.action_submit_sheet()
         self.sale_expense_sheet._do_approve()
-        self.sale_expense_sheet.action_sheet_move_post()
+        self.sale_expense_sheet.action_sheet_move_create()
 
         self.assertRecordValues(self.expense_sale_order.order_line, [
             # [0] Line not created from a re-invoiced, should never be changed
@@ -277,11 +261,10 @@ class TestReInvoice(TestExpenseCommon, TestSaleCommon):
         CASE 4: Reset to draft of the expense sheet's move, the quantities of the corresponding SOL are set to 0
         """
         # CASE 1 steps
-        self.sale_expense_sheet._do_approve()
-        self.sale_expense_sheet.action_sheet_move_post()
+        self.sale_expense_sheet.action_sheet_move_create()
 
         # CASE 4 steps
-        self.sale_expense_sheet.account_move_ids.button_draft()
+        self.sale_expense_sheet.account_move_id.button_draft()
 
         self.assertRecordValues(self.expense_sale_order.order_line, [
             # [0] Line not created from a re-invoiced, should never be changed
@@ -293,6 +276,7 @@ class TestReInvoice(TestExpenseCommon, TestSaleCommon):
             {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_3 invoicing=delivery, expense=sales_price'},
             {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_2 invoicing=order, expense=sales_price'},
             {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
+
         ])
 
     def test_expenses_reinvoice_case_5_repost_sheet_move_after_reset_to_draft(self):
@@ -300,14 +284,13 @@ class TestReInvoice(TestExpenseCommon, TestSaleCommon):
         CASE 5: Re-Post the expense sheet's move, creating new SOLs with the correct quantities
         """
         # CASE 1 steps
-        self.sale_expense_sheet._do_approve()
-        self.sale_expense_sheet.action_sheet_move_post()
+        self.sale_expense_sheet.action_sheet_move_create()
 
         # CASE 4 steps
-        self.sale_expense_sheet.account_move_ids.button_draft()
+        self.sale_expense_sheet.account_move_id.button_draft()
 
         # CASE 5 steps
-        self.sale_expense_sheet.account_move_ids.action_post()
+        self.sale_expense_sheet.account_move_id.action_post()
 
         self.assertRecordValues(self.expense_sale_order.order_line, [
             # [0] Line not created from a re-invoiced, should never be changed
@@ -333,11 +316,10 @@ class TestReInvoice(TestExpenseCommon, TestSaleCommon):
         CASE 6: Reverse the expense sheet's move, the quantities of the corresponding SOL are reset to 0
         """
         # CASE 1 steps
-        self.sale_expense_sheet._do_approve()
-        self.sale_expense_sheet.action_sheet_move_post()
+        self.sale_expense_sheet.action_sheet_move_create()
 
         # CASE 6 steps
-        self.sale_expense_sheet.account_move_ids._reverse_moves()
+        self.sale_expense_sheet.account_move_id._reverse_moves()
 
         self.assertRecordValues(self.expense_sale_order.order_line, [
             # [0] Line not created from a re-invoiced, should never be changed
@@ -349,6 +331,7 @@ class TestReInvoice(TestExpenseCommon, TestSaleCommon):
             {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_3 invoicing=delivery, expense=sales_price'},
             {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_2 invoicing=order, expense=sales_price'},
             {'qty_delivered': 0.0, 'product_uom_qty': 0.0, 'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
+
         ])
 
     def test_expenses_reinvoice_case_7_ensure_one2one_relationship(self):
@@ -360,16 +343,14 @@ class TestReInvoice(TestExpenseCommon, TestSaleCommon):
             'expense_line_ids': [Command.link(expense.copy().id) for expense in original_expenses],  # Duplicates of the expenses IN the reset sheet
             'accounting_date': '2017-01-01',  # To avoid "duplicate vendor reference raised" in the move
         })
-        self.sale_expense_sheet.action_submit_sheet()
         self.sale_expense_sheet._do_approve()
-        self.sale_expense_sheet.action_sheet_move_post()
+        self.sale_expense_sheet.action_sheet_move_create()
         sheet_2 = self.sale_expense_sheet.copy({
             'expense_line_ids': [Command.set([expense.copy().id for expense in original_expenses])],  # Duplicates of the expenses OUTSIDE the reset sheet
             'accounting_date': '2017-01-02',
         })
-        sheet_2.action_submit_sheet()
         sheet_2._do_approve()
-        sheet_2.action_sheet_move_post()
+        sheet_2.action_sheet_move_create()
         self.assertRecordValues(self.expense_sale_order.order_line, [
             # [0] Line not created from a re-invoiced, should never be changed
             {'qty_delivered': 0.0, 'product_uom_qty': 3.0, 'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
@@ -395,7 +376,7 @@ class TestReInvoice(TestExpenseCommon, TestSaleCommon):
             {'qty_delivered': 1.0, 'product_uom_qty': 1.0, 'name': 'expense_employee: expense_1 invoicing=order, expense=sales_price'},
         ])
 
-        self.sale_expense_sheet.account_move_ids.button_draft()
+        self.sale_expense_sheet.account_move_id.button_draft()
 
         self.assertRecordValues(self.expense_sale_order.order_line, [
             # [0] Line not created from a re-invoiced, should never be changed
@@ -461,9 +442,8 @@ class TestReInvoice(TestExpenseCommon, TestSaleCommon):
             ],
         })
 
-        expense_sheet.action_submit_sheet()
-        expense_sheet.action_approve_expense_sheets()
-        expense_sheet.action_sheet_move_post()
+        expense_sheet.approve_expense_sheets()
+        expense_sheet.action_sheet_move_create()
 
         self.assertRecordValues(sale_order.order_line, [
             # Original SO line:
@@ -560,9 +540,8 @@ class TestReInvoice(TestExpenseCommon, TestSaleCommon):
             ],
         })
 
-        expense_sheet.action_submit_sheet()
-        expense_sheet._do_approve()
-        expense_sheet.action_sheet_move_post()
+        expense_sheet.approve_expense_sheets()
+        expense_sheet.action_sheet_move_create()
 
         self.assertRecordValues(sale_order.order_line, [
             # Original SO line:
@@ -578,3 +557,4 @@ class TestReInvoice(TestExpenseCommon, TestSaleCommon):
                 'is_expense': True,
             },
         ])
+

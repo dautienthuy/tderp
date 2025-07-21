@@ -4,17 +4,16 @@
 {
     'name': 'SMS Marketing',
     'summary': 'Design, send and track SMS',
-    'version': '1.1',
+    'version': '1.0',
     'category': 'Marketing/Email Marketing',
     'sequence': 245,
-    'website': 'https://www.odoo.com/app/sms-marketing',
     'depends': [
         'portal',
         'mass_mailing',
         'sms',
     ],
     'data': [
-        'data/utm.xml',
+        'data/utm_data.xml',
         'security/ir.model.access.csv',
         'report/mailing_trace_report_views.xml',
         'views/mailing_list_views.xml',
@@ -27,20 +26,16 @@
         'wizard/sms_composer_views.xml',
         'wizard/mailing_sms_test_views.xml',
     ],
-    'demo': [
-        'demo/mailing_list_contact.xml',
-        'demo/mailing_subscription.xml',
-        'demo/mailing_mailing.xml',
-        'demo/mailing_trace.xml',
-    ],
     'assets': {
         'web.assets_backend': [
             'mass_mailing_sms/static/src/**',
         ],
-        'web.assets_tests': [
-            'mass_mailing_sms/static/tests/tours/**/*',
-        ],
     },
+    'demo': [
+        'data/utm_demo.xml',
+        'data/mailing_list_demo.xml',
+        'data/mailing_demo.xml',
+    ],
     'application': True,
     'license': 'LGPL-3',
 }

@@ -1,70 +1,80 @@
-import { _t } from "@web/core/l10n/translation";
+/** @odoo-module **/
+
 import { browser } from "@web/core/browser/browser";
-import { router } from "@web/core/browser/router";
+import { routeToUrl } from "@web/core/browser/router_service";
 import { registry } from "@web/core/registry";
-import { user } from "@web/core/user";
 
-function activateTestsAssetsDebugging({ env }) {
-    if (String(router.current.debug).includes("tests")) {
-        return;
-    }
-
+function activateAssetsDebugging({ env }) {
     return {
         type: "item",
-        description: _t("Activate Test Mode"),
+        description: env._t("Activate Assets Debugging"),
         callback: () => {
-            router.pushState({ debug: "assets,tests" }, { reload: true });
+            browser.location.search = "?debug=assets";
         },
-        sequence: 580,
-        section: "tools",
+        sequence: 410,
+    };
+}
+
+function activateTestsAssetsDebugging({ env }) {
+    return {
+        type: "item",
+        description: env._t("Activate Tests Assets Debugging"),
+        callback: () => {
+            browser.location.search = "?debug=assets,tests";
+        },
+        sequence: 420,
     };
 }
 
 export function regenerateAssets({ env }) {
     return {
         type: "item",
-        description: _t("Regenerate Assets"),
+        description: env._t("Regenerate Assets Bundles"),
         callback: async () => {
-            await env.services.orm.call("ir.attachment", "regenerate_assets_bundles");
+            await env.services.orm.call(
+                "ir.attachment",
+                "regenerate_assets_bundles",
+            );
             browser.location.reload();
         },
-        sequence: 550,
-        section: "tools",
+        sequence: 430,
     };
 }
 
 export function becomeSuperuser({ env }) {
     const becomeSuperuserURL = browser.location.origin + "/web/become";
-    if (!user.isAdmin) {
+    if (!env.services.user.isAdmin) {
         return false;
     }
     return {
         type: "item",
-        description: _t("Become Superuser"),
+        description: env._t("Become Superuser"),
         href: becomeSuperuserURL,
         callback: () => {
             browser.open(becomeSuperuserURL, "_self");
         },
-        sequence: 560,
-        section: "tools",
+        sequence: 440,
     };
 }
 
-function leaveDebugMode() {
+function leaveDebugMode({ env }) {
     return {
         type: "item",
-        description: _t("Leave Debug Mode"),
+        description: env._t("Leave the Developer Tools"),
         callback: () => {
-            router.pushState({ debug: 0 }, { reload: true });
+            const route = env.services.router.current;
+            route.search.debug = "";
+            browser.location.href = browser.location.origin + routeToUrl(route);
         },
-        sequence: 650,
+        sequence: 450,
     };
 }
 
 registry
     .category("debug")
     .category("default")
+    .add("activateAssetsDebugging", activateAssetsDebugging)
     .add("regenerateAssets", regenerateAssets)
     .add("becomeSuperuser", becomeSuperuser)
-    .add("activateTestsAssetsDebugging", activateTestsAssetsDebugging)
-    .add("leaveDebugMode", leaveDebugMode);
+    .add("leaveDebugMode", leaveDebugMode)
+    .add("activateTestsAssetsDebugging", activateTestsAssetsDebugging);

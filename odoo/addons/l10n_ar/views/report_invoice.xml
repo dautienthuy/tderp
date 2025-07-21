@@ -3,10 +3,10 @@
 
     <!-- this header can be used on any Argentinean report, to be useful some variables should be passed -->
     <template id="custom_header">
-        <div class="mb-3">
-            <div class="row mb-2">
+        <div>
+            <div class="row">
                 <div name="left-upper-side" class="col-5" t-if="not pre_printed_report">
-                    <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 65px;" alt="Logo"/>
+                    <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 45px;" alt="Logo"/>
                 </div>
                 <div name="center-upper" class="col-2 text-center" t-att-style="'color: %s;' % o.company_id.primary_color">
                     <span style="display: inline-block; text-align: center; line-height: 8px;">
@@ -112,10 +112,7 @@
         </xpath>
 
         <!-- remove default document title -->
-        <xpath expr="//t[@t-set='layout_document_title']" position="replace"/>
-
-        <!-- remove detail of taxes when currency != from company's currency -->
-        <t t-call="account.document_tax_totals_company_currency_template" position="replace"/>
+        <h2 position="replace"/>
 
         <!-- NCM column for fiscal bond -->
         <th name="th_description" position="after">
@@ -138,14 +135,20 @@
             <attribute name="t-value">current_subtotal + l10n_ar_values['price_subtotal']</attribute>
         </t>
         <!-- if b2c we still wants the latam subtotal -->
-        <t t-set="current_total" t-value="current_total + line.price_total" position="attributes">
+        <t t-set="current_subtotal" t-value="current_subtotal + line.price_total" position="attributes">
             <attribute name="t-value">current_subtotal + l10n_ar_values['price_subtotal']</attribute>
         </t>
         <!-- label amount for subtotal column on b2b and b2c -->
-        <xpath expr="//th[@name='th_subtotal']/span" position="replace">
-            <span>Amount</span>
+        <xpath expr="//th[@name='th_subtotal']/span[@groups='account.group_show_line_subtotals_tax_included']" position="replace">
+            <span groups="account.group_show_line_subtotals_tax_included">Amount</span>
         </xpath>
         <span t-field="line.price_subtotal" position="attributes">
+            <attribute name="t-field"></attribute>
+            <attribute name="t-out">l10n_ar_values['price_subtotal']</attribute>
+            <attribute name="t-options">{"widget": "monetary", "display_currency": o.currency_id}</attribute>
+        </span>
+        <!-- if b2c we still wants the latam subtotal -->
+        <span t-field="line.price_total" position="attributes">
             <attribute name="t-field"></attribute>
             <attribute name="t-out">l10n_ar_values['price_subtotal']</attribute>
             <attribute name="t-options">{"widget": "monetary", "display_currency": o.currency_id}</attribute>
@@ -169,7 +172,7 @@
             <attribute name="t-if">not o._l10n_ar_include_vat()</attribute>
         </xpath>
         <span id="line_tax_ids" position="attributes">
-            <attribute name="t-out">', '.join(map(lambda x: (x.invoice_label or x.name), line.tax_ids.filtered(lambda x: x.tax_group_id.l10n_ar_vat_afip_code)))</attribute>
+            <attribute name="t-out">', '.join(map(lambda x: (x.description or x.name), line.tax_ids.filtered(lambda x: x.tax_group_id.l10n_ar_vat_afip_code)))</attribute>
         </span>
 
         <!-- remove payment reference that is not used in Argentina -->
@@ -225,13 +228,7 @@
                     <!-- We do not have remitos implement yet. print here the remito number when we have it -->
 
                     <t t-if="o.invoice_incoterm_id">
-                        <br/>
-                        <strong>Incoterm:</strong>
-                        <p t-if="o.incoterm_location">
-                            <span t-field="o.invoice_incoterm_id.code"/> <br/>
-                            <span t-field="o.incoterm_location"/>
-                        </p>
-                        <p t-else="" t-field="o.invoice_incoterm_id.name" class="m-0"/>
+                        <br/><strong>Incoterm:</strong><span t-field="o.invoice_incoterm_id.name"/>
                     </t>
 
                 </div>
@@ -239,14 +236,20 @@
             </div>
         </div>
 
-        <xpath expr="//div[@id='payment_term']" position="before">
-            <div class="mb-4">
+        <!--  we remove the ml auto and also give more space to avoid multiple lines on tax detail -->
+        <xpath expr="//div[@id='total']/div" position="attributes">
+            <attribute name="t-attf-class">#{'col-6' if report_type != 'html' else 'col-sm-7 col-md-6'}</attribute>
+        </xpath>
+
+        <xpath expr="//div[@id='total']/div" position="before">
+            <div t-attf-class="#{'col-6' if report_type != 'html' else 'col-sm-7 col-md-6'}">
+
                 <t t-if="o.l10n_ar_afip_concept in ['2', '3', '4'] and o.l10n_ar_afip_service_start and o.l10n_ar_afip_service_end">
                     <strong>Invoiced period: </strong><span t-field="o.l10n_ar_afip_service_start"/> to <span t-field="o.l10n_ar_afip_service_end"/>
                 </t>
                 <t t-if="o.currency_id != o.company_id.currency_id">
                     <br/><strong>Currency: </strong><span t-out="'%s - %s' % (o.currency_id.name, o.currency_id.currency_unit_label)"/>
-                    <br/><span>1 <t t-out="o.currency_id.name"/> = <t t-out="1 / o.invoice_currency_rate" t-options='{"widget": "float", "precision": 2}'/> <t t-out="o.company_currency_id.name"/></span>
+                    <br/><strong>Exchange rate: </strong> <span t-field="o.l10n_ar_currency_rate"/>
                 </t>
                 <!-- Show CBU for FACTURA DE CREDITO ELECTRONICA MiPyMEs and NOTA DE DEBITO ELECTRONICA MiPyMEs -->
                 <t t-if="o.l10n_latam_document_type_id.code in ['201', '206', '211', '202', '207', '212'] and o.partner_bank_id">
@@ -267,36 +270,13 @@
         <!-- RG 5003: Add legend for 'A' documents that have a Monotribuista receptor -->
         <div name="comment" position="after">
             <p t-if="o.partner_id.l10n_ar_afip_responsibility_type_id.code in ['6', '13'] and o.l10n_latam_document_type_id.l10n_ar_letter == 'A'" >
-                The tax credit specified in this voucher may only be computed for purposes of the Tax Support and Inclusion Regime for Small Taxpayers of Law No. 27,618.
+                El crédito fiscal discriminado en el presente comprobante, sólo podrá ser computado a efectos del Régimen de Sostenimiento e Inclusión Fiscal para Pequeños Contribuyentes de la Ley Nº 27.618
             </p>
         </div>
 
         <t t-call="account.document_tax_totals" position="attributes">
             <attribute name="t-call">l10n_ar.document_tax_totals</attribute>
         </t>
-
-        <div id="qrcode" position="after">
-            <!-- RG 5614/2024: Show ARCA VAT and Other National Internal Taxes -->
-            <t t-set="l10n_ar_custom_tax_summary" t-value="o._l10n_ar_get_invoice_custom_tax_summary_for_report()"/>
-            <div t-attf-class="l10n_ar_tax_details {{ 'col-6' if report_type == 'pdf' else '' }}" t-if="l10n_ar_custom_tax_summary">
-                <table class="table table-sm table-borderless" style="page-break-inside: avoid;">
-                    <th class="border-black" style="border-bottom: 1px solid" colspan="2">
-                           Fiscal Transparency Regime for the Final Consumer (Law 27.743)
-                    </th>
-                    <t t-foreach="l10n_ar_custom_tax_summary" t-as="detail">
-                        <tr>
-                            <td class="text-end"><strong t-esc="detail['name']"/></td>
-                            <td class="text-end">
-                                <span
-                                    class="oe_subtotal_footer_separator"
-                                    t-out="detail['formatted_tax_amount_currency']"
-                                />
-                            </td>
-                        </tr>
-                    </t>
-                </table>
-            </div>
-        </div>
 
     </template>
 
@@ -307,12 +287,19 @@
         </xpath>
     </template>
 
-    <!-- Workaround for Studio reports, see odoo/odoo#60660 -->
+    <!-- FIXME: Temp fix to allow fetching invoice_documemt in Studio Reports with localisation -->
     <template id="report_invoice" inherit_id="account.report_invoice">
         <xpath expr='//t[@t-call="account.report_invoice_document"]' position="after">
-            <t t-elif="o._get_name_invoice_report() == 'l10n_ar.report_invoice_document'"
-               t-call="l10n_ar.report_invoice_document"
-               t-lang="lang"/>
+            <t t-if="o._get_name_invoice_report() == 'l10n_ar.report_invoice_document'"
+                t-call="l10n_ar.report_invoice_document" t-lang="lang"/>
         </xpath>
     </template>
+
+    <template id="report_invoice_with_payments" inherit_id="account.report_invoice_with_payments">
+        <xpath expr='//t[@t-call="account.report_invoice_document"]' position="after">
+            <t t-if="o._get_name_invoice_report() == 'l10n_ar.report_invoice_document'"
+                t-call="l10n_ar.report_invoice_document" t-lang="lang"/>
+        </xpath>
+    </template>
+
 </odoo>

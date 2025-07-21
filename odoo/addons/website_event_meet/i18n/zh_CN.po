@@ -3,23 +3,35 @@
 # 	* website_event_meet
 # 
 # Translators:
-# Wil Odoo, 2024
-# Chloe Wang, 2024
-# Odoo哥 <vnsoft.he@gmail.com>, 2024
+# Martin Trigaux, 2022
+# 山西清水欧度(QQ:54773801) <54773801@qq.com>, 2022
+# Raymond Yu <cl_yu@hotmail.com>, 2022
+# digitalliuzg8888, 2022
+# Jeffery CHEN <jeffery9@gmail.com>, 2022
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:56+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: Odoo哥 <vnsoft.he@gmail.com>, 2024\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:56+0000\n"
+"Last-Translator: Jeffery CHEN <jeffery9@gmail.com>, 2022\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/odoo/teams/41243/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: zh_CN\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: website_event_meet
+#: model_terms:ir.ui.view,arch_db:website_event_meet.meeting_room_card
+msgid "&amp;nbsp;"
+msgstr "&amp;nbsp;"
+
+#. module: website_event_meet
+#: model_terms:ir.ui.view,arch_db:website_event_meet.meeting_room_aside
+msgid "<b>&amp;#9900;&amp;nbsp;</b>"
+msgstr "<b>&amp;#9900;&amp;nbsp。</b>"
 
 #. module: website_event_meet
 #: model_terms:ir.ui.view,arch_db:website_event_meet.meeting_room_main
@@ -36,11 +48,26 @@ msgid "<span class=\"badge text-bg-danger\">Unpublished</span>"
 msgstr "<small class=\"badge text-bg-danger\">未发布</small>"
 
 #. module: website_event_meet
+#: model_terms:ir.ui.view,arch_db:website_event_meet.meeting_room_aside
+msgid "<span class=\"h5 m-3\">Other Rooms</span>"
+msgstr "<span class=\"h5 m-3\">其他的房间</span>"
+
+#. module: website_event_meet
+#: model_terms:ir.ui.view,arch_db:website_event_meet.community_aside
+msgid "<span>Create a Room</span>"
+msgstr "<span>创建房间</span>"
+
+#. module: website_event_meet
+#: model_terms:ir.ui.view,arch_db:website_event_meet.community_main
+msgid "<span>Join a room</span>"
+msgstr "<span>加入一个房间</span>"
+
+#. module: website_event_meet
 #: model_terms:ir.ui.view,arch_db:website_event_meet.meeting_room_main
 msgid ""
-"<span>Oops! This room is full!</span><br/>Come back later to have a chat "
+"<span>Oops! This room is full !</span><br/>Come back later to have a chat "
 "with us!"
-msgstr "<span>哎呀！该房间已满！</span><br/>稍后再来与我们聊天！"
+msgstr "<span>糟糕！这个房间已经满了。这个房间已经满了！</span><br/>请稍后再来和我们聊天吧！"
 
 #. module: website_event_meet
 #: model_terms:ir.ui.view,arch_db:website_event_meet.meeting_room_card
@@ -59,17 +86,12 @@ msgstr "聊一聊"
 #. module: website_event_meet
 #: model:ir.model.fields,field_description:website_event_meet.field_event_meeting_room__active
 msgid "Active"
-msgstr "有效"
+msgstr "启用"
 
 #. module: website_event_meet
 #: model_terms:ir.ui.view,arch_db:website_event_meet.community_main
 msgid "All Languages"
 msgstr "所有语言"
-
-#. module: website_event_meet
-#: model_terms:ir.ui.view,arch_db:website_event_meet.event_meet_main
-msgid "All Rooms"
-msgstr "所有房间"
 
 #. module: website_event_meet
 #: model:ir.model.fields,field_description:website_event_meet.field_event_event__meeting_room_allow_creation
@@ -80,14 +102,16 @@ msgstr "允许创建房间"
 #. module: website_event_meet
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/js/website_event_meeting_room.js:0
-msgid "Are you sure you want to close this room?"
-msgstr "你确定要关闭这个房间吗？"
+#, python-format
+msgid "Are you sure you want to close this room ?"
+msgstr "您确定您要关闭这个房间吗？"
 
 #. module: website_event_meet
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/js/website_event_meeting_room.js:0
-msgid "Are you sure you want to duplicate this room?"
-msgstr "你确定要复制这个房间吗？"
+#, python-format
+msgid "Are you sure you want to duplicate this room ?"
+msgstr "您确定您要复制这个房间吗？"
 
 #. module: website_event_meet
 #: model:ir.model.fields,field_description:website_event_meet.field_event_meeting_room__target_audience
@@ -96,13 +120,9 @@ msgid "Audience"
 msgstr "听众"
 
 #. module: website_event_meet
-#: model_terms:ir.ui.view,arch_db:website_event_meet.event_meet_main
-msgid "Back to all Rooms"
-msgstr "返回所有房间"
-
-#. module: website_event_meet
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
+#, python-format
 msgid ""
 "Be sure you are ready to spend at least 10 minutes in the room if you want "
 "to initiate a new topic."
@@ -121,6 +141,7 @@ msgstr "可以发布"
 #. module: website_event_meet
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
+#, python-format
 msgid "Capacity"
 msgstr "能力"
 
@@ -144,6 +165,7 @@ msgstr "关闭"
 #. module: website_event_meet
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
+#, python-format
 msgid "Create"
 msgstr "创建"
 
@@ -167,18 +189,12 @@ msgstr "创建人"
 #. module: website_event_meet
 #: model:ir.model.fields,field_description:website_event_meet.field_event_meeting_room__create_date
 msgid "Created on"
-msgstr "创建日期"
-
-#. module: website_event_meet
-#: model_terms:ir.ui.view,arch_db:website_event_meet.event_meet
-msgid ""
-"DROP BUILDING BLOCKS HERE TO MAKE THEM AVAILABLE ACROSS ALL PROPOSAL PAGES "
-"OF ALL EVENTS"
-msgstr "将内容方块拖放至此处，使它可用于所有活动的所有提案页面"
+msgstr "创建时间"
 
 #. module: website_event_meet
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
+#, python-format
 msgid "Discard"
 msgstr "丢弃"
 
@@ -238,7 +254,7 @@ msgstr "全"
 #. module: website_event_meet
 #: model_terms:ir.ui.view,arch_db:website_event_meet.event_meeting_room_view_search
 msgid "Group By"
-msgstr "分组方式"
+msgstr "分组"
 
 #. module: website_event_meet
 #: model:ir.model.fields,field_description:website_event_meet.field_event_meeting_room__id
@@ -256,11 +272,6 @@ msgid "Is Published"
 msgstr "已发布"
 
 #. module: website_event_meet
-#: model_terms:ir.ui.view,arch_db:website_event_meet.community_main
-msgid "Join a room"
-msgstr "进入房间"
-
-#. module: website_event_meet
 #: model_terms:ir.ui.view,arch_db:website_event_meet.meeting_room_card
 #: model_terms:ir.ui.view,arch_db:website_event_meet.meeting_room_main
 msgid "Join us next time to chat about"
@@ -275,6 +286,7 @@ msgstr "在那里加入我们的聊天，聊一聊"
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
 #: model:ir.model.fields,field_description:website_event_meet.field_event_meeting_room__room_lang_id
+#, python-format
 msgid "Language"
 msgstr "语言"
 
@@ -284,6 +296,11 @@ msgid "Languages Menu"
 msgstr "语言菜单"
 
 #. module: website_event_meet
+#: model:ir.model.fields,field_description:website_event_meet.field_event_meeting_room____last_update
+msgid "Last Modified on"
+msgstr "最后修改时间"
+
+#. module: website_event_meet
 #: model:ir.model.fields,field_description:website_event_meet.field_event_meeting_room__write_uid
 msgid "Last Updated by"
 msgstr "最后更新人"
@@ -291,7 +308,7 @@ msgstr "最后更新人"
 #. module: website_event_meet
 #: model:ir.model.fields,field_description:website_event_meet.field_event_meeting_room__write_date
 msgid "Last Updated on"
-msgstr "上次更新日期"
+msgstr "最后更新时间"
 
 #. module: website_event_meet
 #: model:ir.model.fields,field_description:website_event_meet.field_event_meeting_room__room_last_activity
@@ -301,6 +318,7 @@ msgstr "上次活动"
 #. module: website_event_meet
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
+#, python-format
 msgid "Launch a new topic"
 msgstr "启动一个新的议题"
 
@@ -348,11 +366,6 @@ msgid "No Room Open"
 msgstr "没有房间开放"
 
 #. module: website_event_meet
-#: model_terms:ir.ui.view,arch_db:website_event_meet.meeting_room_aside
-msgid "Other Rooms"
-msgstr "其他房间"
-
-#. module: website_event_meet
 #: model:ir.model.fields,field_description:website_event_meet.field_event_meeting_room__room_participant_count
 msgid "Participant count"
 msgstr "参加人数"
@@ -364,13 +377,13 @@ msgstr "高峰参与者"
 
 #. module: website_event_meet
 #: model:event.meeting.room,name:website_event_meet.event_meeting_room_1
-msgid "Reducing the ecological footprint with wood?"
-msgstr "利用木材减少生态足迹？"
+msgid "Reducing the ecological footprint with wood ?"
+msgstr "用木材减少生态足迹 ?"
 
 #. module: website_event_meet
 #: model_terms:ir.ui.view,arch_db:website_event_meet.event_meeting_room_view_form
 msgid "Reporting"
-msgstr "报表"
+msgstr "报告"
 
 #. module: website_event_meet
 #: model_terms:ir.ui.view,arch_db:website_event_meet.snippet_options
@@ -390,6 +403,7 @@ msgstr "房间名称"
 #. module: website_event_meet
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
+#, python-format
 msgid "Room Topic"
 msgstr "房间话题"
 
@@ -423,6 +437,7 @@ msgstr "分享您使用木材减少生态足迹的技巧。"
 #. module: website_event_meet
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
+#, python-format
 msgid "Short Summary"
 msgstr "简短摘要"
 
@@ -440,6 +455,7 @@ msgstr "摘要"
 #. module: website_event_meet
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
+#, python-format
 msgid "Target People"
 msgstr "目标人群"
 
@@ -451,12 +467,13 @@ msgstr "本次活动"
 #. module: website_event_meet
 #. odoo-python
 #: code:addons/website_event_meet/controllers/website_event_main.py:0
+#, python-format
 msgid ""
-"The event %(name)s starts on %(date_begin)s (%(timezone)s).\n"
-"Join us there to chat about \"%(subject)s\"!"
+"The event %s starts on %s (%s). \n"
+"Join us there to chat about \"%s\" !"
 msgstr ""
-"活动 %(name)s 将于 %(date_begin)s (%(timezone)s)开始。\n"
-"届时加入我们一起讨论 \"%(subject)s\"吧!"
+"活动 %s 开始于 %s (%s)。\n"
+"和我们一起聊聊 \"%s\" 吧！"
 
 #. module: website_event_meet
 #: model:ir.model.fields,help:website_event_meet.field_event_meeting_room__website_url
@@ -497,8 +514,8 @@ msgstr "您喜欢的物品？"
 
 #. module: website_event_meet
 #: model_terms:ir.ui.view,arch_db:website_event_meet.community_aside
-msgid "Want to create your own discussion room?"
-msgstr "想建立自己的讨论室吗？"
+msgid "Want to create your own discussion room ?"
+msgstr "想创建您自己的讨论室？"
 
 #. module: website_event_meet
 #: model:ir.model,name:website_event_meet.model_website_event_menu
@@ -524,6 +541,7 @@ msgstr "客户(们)"
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
 #: model_terms:ir.ui.view,arch_db:website_event_meet.event_meeting_room_view_form
+#, python-format
 msgid "e.g. Accountants"
 msgstr "例如：Accountants"
 
@@ -531,6 +549,7 @@ msgstr "例如：Accountants"
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
 #: model_terms:ir.ui.view,arch_db:website_event_meet.event_meeting_room_view_form
+#, python-format
 msgid "e.g. Finance"
 msgstr "例如：Finance"
 
@@ -538,6 +557,7 @@ msgstr "例如：Finance"
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
 #: model_terms:ir.ui.view,arch_db:website_event_meet.event_meeting_room_view_form
+#, python-format
 msgid "e.g. Let's talk about Corporate Finance"
 msgstr "例如：我们来谈谈公司财务问题"
 

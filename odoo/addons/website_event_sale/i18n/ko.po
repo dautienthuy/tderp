@@ -3,16 +3,18 @@
 # 	* website_event_sale
 # 
 # Translators:
+# Martin Trigaux, 2022
+# Sarah Park, 2023
+# Daye Jeong, 2023
 # Wil Odoo, 2024
-# Sarah Park, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:56+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: Sarah Park, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:56+0000\n"
+"Last-Translator: Wil Odoo, 2024\n"
 "Language-Team: Korean (https://app.transifex.com/odoo/teams/41243/ko/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,26 +24,30 @@ msgstr ""
 
 #. module: website_event_sale
 #: model_terms:ir.ui.view,arch_db:website_event_sale.event_confirmation
-msgid "<i class=\"fa fa-check me-2\" role=\"img\"/>Registered"
-msgstr "<i class=\"fa fa-check me-2\" role=\"img\"/>등록됨"
+msgid ""
+"<i class=\"fa fa-ban me-2\"/>\n"
+"                                            Unpublished"
+msgstr ""
+"<i class=\"fa fa-ban me-2\"/>\n"
+"                                            게시 안 됨"
 
 #. module: website_event_sale
 #: model_terms:ir.ui.view,arch_db:website_event_sale.event_confirmation
-msgid "<small>Add this event to your calendar</small>"
-msgstr "<small>이 행사를 캘린더에 추가하기</small>"
-
-#. module: website_event_sale
-#: model_terms:ir.ui.view,arch_db:website_event_sale.registration_attendee_details
 msgid ""
-"<span>Sign In</span>\n"
-"                <span class=\"fa fa-sign-in\"/>"
+"<small class=\"o_wevent_participating text-bg-success\">\n"
+"                                            <i class=\"fa fa-check me-2\"/>\n"
+"                                            Registered\n"
+"                                        </small>"
 msgstr ""
-"<span>로그인</span>\n"
-"                <span class=\"fa fa-sign-in\"/>"
+"<small class=\"o_wevent_participating text-bg-success\">\n"
+"                                            <i class=\"fa fa-check me-2\"/>\n"
+"                                            등록 완료\n"
+"                                        </small>"
 
 #. module: website_event_sale
 #. odoo-python
 #: code:addons/website_event_sale/models/product_pricelist.py:0
+#, python-format
 msgid ""
 "A pricelist item with a positive min. quantity cannot be applied to this "
 "event tickets product."
@@ -52,6 +58,7 @@ msgstr ""
 #. module: website_event_sale
 #. odoo-python
 #: code:addons/website_event_sale/models/product_pricelist.py:0
+#, python-format
 msgid ""
 "A pricelist item with a positive min. quantity will not be applied to the "
 "event tickets products."
@@ -60,34 +67,9 @@ msgstr ""
 "이 행사 티켓 제품에는 수량을 적용할 수 없습니다."
 
 #. module: website_event_sale
-#: model_terms:ir.ui.view,arch_db:website_event_sale.event_confirmation
-msgid "Add to Google Agenda"
-msgstr "Google 아젠다 추가"
-
-#. module: website_event_sale
-#: model_terms:ir.ui.view,arch_db:website_event_sale.event_confirmation
-msgid "Add to iCal/Outlook"
-msgstr "iCal/아웃룩에 추가"
-
-#. module: website_event_sale
-#: model_terms:ir.ui.view,arch_db:website_event_sale.registration_attendee_details
-msgid "Confirm Registration"
-msgstr "등록 확인"
-
-#. module: website_event_sale
-#: model_terms:ir.ui.view,arch_db:website_event_sale.event_confirmation
-msgid "Don't miss out!"
-msgstr "놓치지 마세요!"
-
-#. module: website_event_sale
 #: model:ir.model,name:website_event_sale.model_event_sale_report
 msgid "Event Sales Report"
 msgstr "행사 판매 보고서"
-
-#. module: website_event_sale
-#: model_terms:ir.ui.view,arch_db:website_event_sale.event_confirmation
-msgid "Event Subtitle"
-msgstr "행사 부제"
 
 #. module: website_event_sale
 #: model:ir.model.fields,field_description:website_event_sale.field_product_product__event_ticket_ids
@@ -95,34 +77,19 @@ msgid "Event Tickets"
 msgstr "행사 티켓"
 
 #. module: website_event_sale
-#: model_terms:ir.ui.view,arch_db:website_event_sale.event_confirmation
-msgid "Event Title"
-msgstr "행사 제목"
-
-#. module: website_event_sale
-#: model_terms:ir.ui.view,arch_db:website_event_sale.modal_ticket_registration
+#: model_terms:ir.ui.view,arch_db:website_event_sale.registration_template
 msgid "Free"
 msgstr "무료"
 
 #. module: website_event_sale
-#: model_terms:ir.ui.view,arch_db:website_event_sale.modal_ticket_registration
+#: model_terms:ir.ui.view,arch_db:website_event_sale.registration_template
 msgid "From"
-msgstr "시작"
-
-#. module: website_event_sale
-#: model_terms:ir.ui.view,arch_db:website_event_sale.registration_attendee_details
-msgid "Go to Payment"
-msgstr "결제로 이동"
+msgstr "출발"
 
 #. module: website_event_sale
 #: model_terms:ir.ui.view,arch_db:website_event_sale.event_confirmation
-msgid "Google Agenda"
-msgstr "Google 아젠다"
-
-#. module: website_event_sale
-#: model_terms:ir.ui.view,arch_db:website_event_sale.event_confirmation
-msgid "Outlook"
-msgstr "아웃룩"
+msgid "Go to Event"
+msgstr "행사로 이동"
 
 #. module: website_event_sale
 #: model:ir.model,name:website_event_sale.model_product_pricelist_item
@@ -158,12 +125,14 @@ msgstr "판매 주문 내역"
 #. module: website_event_sale
 #. odoo-python
 #: code:addons/website_event_sale/models/sale_order.py:0
+#, python-format
 msgid "Sorry, The %(ticket)s tickets for the %(event)s event are sold out."
 msgstr "죄송합니다. %(event)s행사 %(ticket)s티켓은 매진되었습니다."
 
 #. module: website_event_sale
 #. odoo-python
 #: code:addons/website_event_sale/models/sale_order.py:0
+#, python-format
 msgid ""
 "Sorry, only %(remaining_seats)d seats are still available for the %(ticket)s"
 " ticket for the %(event)s event."
@@ -173,20 +142,23 @@ msgstr ""
 #. module: website_event_sale
 #. odoo-python
 #: code:addons/website_event_sale/models/sale_order.py:0
+#, python-format
 msgid "The provided ticket doesn't exist"
-msgstr "제공한 티켓이 존재하지 않습니다"
+msgstr "제공한 티켓이 존재하지 않습니다."
 
 #. module: website_event_sale
 #. odoo-python
 #: code:addons/website_event_sale/models/sale_order.py:0
+#, python-format
 msgid "The ticket doesn't match with this product."
 msgstr "티켓이 이 상품에 일치하지 않습니다."
 
 #. module: website_event_sale
 #. odoo-python
 #: code:addons/website_event_sale/models/product_pricelist.py:0
+#, python-format
 msgid "Warning"
-msgstr "주의"
+msgstr "경고"
 
 #. module: website_event_sale
 #: model_terms:ir.ui.view,arch_db:website_event_sale.event_confirmation
@@ -194,8 +166,14 @@ msgid "We are looking forward to meeting you at the following"
 msgstr "다음 행사에서 귀하를 만나 뵙기를 기대합니다"
 
 #. module: website_event_sale
+#: model:ir.model,name:website_event_sale.model_website
+msgid "Website"
+msgstr "웹사이트"
+
+#. module: website_event_sale
 #. odoo-python
 #: code:addons/website_event_sale/models/sale_order.py:0
+#, python-format
 msgid "You cannot raise manually the event ticket quantity in your cart"
 msgstr "장바구니에서 행사 티켓 수량을 올릴 수 없습니다."
 
@@ -210,6 +188,6 @@ msgid "events"
 msgstr "행사"
 
 #. module: website_event_sale
-#: model_terms:ir.ui.view,arch_db:website_event_sale.modal_ticket_registration
+#: model_terms:ir.ui.view,arch_db:website_event_sale.registration_template
 msgid "to"
 msgstr "종료"

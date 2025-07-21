@@ -5,16 +5,15 @@ import { ActionContainer } from '@web/webclient/actions/action_container';
 import { MainComponentsContainer } from "@web/core/main_components_container";
 import { useOwnDebugContext } from "@web/core/debug/debug_context";
 import { session } from '@web/session';
-import { Component, useEffect, useExternalListener, useState } from "@odoo/owl";
+
+const { Component, useEffect, useExternalListener, useState } = owl;
 
 export class ProjectSharingWebClient extends Component {
-    static props = {};
-    static components = { ActionContainer, MainComponentsContainer };
-    static template = "project.ProjectSharingWebClient";
-
     setup() {
         window.parent.document.body.style.margin = "0"; // remove the margin in the parent body
         this.actionService = useService('action');
+        this.user = useService("user");
+        useService("legacy_service_provider");
         useOwnDebugContext({ categories: ["default"] });
         this.state = useState({
             fullscreen: false,
@@ -34,18 +33,13 @@ export class ProjectSharingWebClient extends Component {
     }
 
     async _showView() {
-        const { action_name, action_context, project_id, project_name, open_task_action } = session;
-        const action = await this.actionService.loadAction(action_name, {
-            active_id: project_id,
-        });
-        action.display_name = project_name;
+        const { action_name, project_id, open_task_action } = session;
         await this.actionService.doAction(
-            action,
+            action_name,
             {
                 clearBreadcrumbs: true,
                 additionalContext: {
                     active_id: project_id,
-                    ...action_context,
                 }
             }
         );
@@ -71,3 +65,6 @@ export class ProjectSharingWebClient extends Component {
         }
     }
 }
+
+ProjectSharingWebClient.components = { ActionContainer, MainComponentsContainer };
+ProjectSharingWebClient.template = 'project.ProjectSharingWebClient';

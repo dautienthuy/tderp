@@ -3,19 +3,18 @@
 # 	* event
 # 
 # Translators:
+# Martin Trigaux, 2023
 # Gautam Hingrajiya, 2024
-# Martin Trigaux, 2024
 # Wil Odoo, 2024
 # Manav Shah, 2025
-# Ujjawal Pathak, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-27 13:03+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Ujjawal Pathak, 2025\n"
+"POT-Creation-Date: 2023-05-23 08:23+0000\n"
+"PO-Revision-Date: 2022-09-22 05:45+0000\n"
+"Last-Translator: Manav Shah, 2025\n"
 "Language-Team: Hindi (https://app.transifex.com/odoo/teams/41243/hi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -37,77 +36,48 @@ msgstr ""
 #. module: event
 #. odoo-python
 #: code:addons/event/models/event_event.py:0
+#, python-format
 msgid "%(event_name)s (%(count)s seats remaining)"
 msgstr ""
 
 #. module: event
 #. odoo-python
 #: code:addons/event/models/event_event.py:0
+#, python-format
 msgid "%(event_name)s (Sold out)"
 msgstr ""
 
 #. module: event
 #. odoo-python
-#: code:addons/event/models/event_registration.py:0
-msgid "%(event_name)s - Registration #%(registration_id)s"
-msgstr ""
-
-#. module: event
-#. odoo-python
-#: code:addons/event/models/event_registration.py:0
-msgid "%(event_name)s - Registration for %(attendee_name)s"
-msgstr ""
-
-#. module: event
-#. odoo-python
-#: code:addons/event/models/event_event.py:0
-msgid "%(start_date)s to %(end_date)s"
-msgstr ""
-
-#. module: event
-#. odoo-python
 #: code:addons/event/models/event_ticket.py:0
+#, python-format
 msgid "%(ticket_name)s (%(count)s seats remaining)"
 msgstr ""
 
 #. module: event
 #. odoo-python
 #: code:addons/event/models/event_ticket.py:0
+#, python-format
 msgid "%(ticket_name)s (Sold out)"
 msgstr ""
 
 #. module: event
 #. odoo-python
 #: code:addons/event/models/event_event.py:0
+#, python-format
 msgid "%s (copy)"
-msgstr "%s (कॉपी)"
-
-#. module: event
-#. odoo-javascript
-#: code:addons/event/static/src/client_action/event_registration_summary_dialog.js:0
-msgid "'%(name)s' badge sent to printer '%(printer)s'"
 msgstr ""
 
 #. module: event
-#: model:ir.actions.report,print_report_name:event.action_report_event_event_attendee_list
-msgid "'Attendee List - %s' % (object.name)"
-msgstr ""
-
-#. module: event
-#: model:ir.actions.report,print_report_name:event.action_report_event_registration_attendee_list
-msgid "'Attendee List'"
-msgstr ""
-
-#. module: event
-#: model:ir.actions.report,print_report_name:event.action_report_event_registration_badge
+#: model:ir.actions.report,print_report_name:event.action_report_event_registration_foldable_badge
 msgid ""
-"'Badge - %s - %s' % ((object.event_id.name or 'Event').replace('/',''), "
-"(object.name or '').replace('/',''))"
+"'Foldable Badge - %s - %s' % ((object.event_id.name or "
+"'Event').replace('/',''), (object.name or '').replace('/',''))"
 msgstr ""
 
 #. module: event
-#: model:ir.actions.report,print_report_name:event.action_report_event_event_badge
-msgid "'Badge - %s' % (object.name or 'Event').replace('/','')"
+#: model:ir.actions.report,print_report_name:event.action_report_event_event_foldable_badge
+msgid "'Foldable Badge - %s' % (object.name or 'Event').replace('/','')"
 msgstr ""
 
 #. module: event
@@ -123,19 +93,16 @@ msgid "'Full Page Ticket - %s' % (object.name or 'Event').replace('/','')"
 msgstr ""
 
 #. module: event
-#: model_terms:ir.ui.view,arch_db:event.event_report_full_page_ticket_layout
-msgid "+123456789"
-msgstr ""
-
-#. module: event
 #. odoo-python
 #: code:addons/event/models/event_event.py:0
+#, python-format
 msgid "- \"%(event_name)s\": Missing %(nb_too_many)i seats."
 msgstr ""
 
 #. module: event
 #. odoo-python
 #: code:addons/event/models/event_ticket.py:0
+#, python-format
 msgid ""
 "- the ticket \"%(ticket_name)s\" (%(event_name)s): Missing %(nb_too_many)i "
 "seats."
@@ -144,11 +111,6 @@ msgstr ""
 #. module: event
 #: model:event.tag,name:event.event_tag_category_1_tag_2
 msgid "10-14"
-msgstr ""
-
-#. module: event
-#: model_terms:ir.ui.view,arch_db:event.event_report_template_formatted_event_address
-msgid "1000 Brussels"
 msgstr ""
 
 #. module: event
@@ -162,23 +124,8 @@ msgid "18+"
 msgstr ""
 
 #. module: event
-#: model:ir.model.fields.selection,name:event.selection__event_event__badge_format__four_per_sheet
-msgid "4 per sheet"
-msgstr ""
-
-#. module: event
 #: model:event.tag,name:event.event_tag_category_1_tag_1
 msgid "5-10"
-msgstr ""
-
-#. module: event
-#: model:ir.model.fields.selection,name:event.selection__event_event__badge_format__96x134
-msgid "96x134mm (Badge Printer)"
-msgstr ""
-
-#. module: event
-#: model:ir.model.fields.selection,name:event.selection__event_event__badge_format__96x82
-msgid "96x82mm (Badge Printer)"
 msgstr ""
 
 #. module: event
@@ -226,31 +173,34 @@ msgid "<b>Workshop Room</b> - Mainly for developers."
 msgstr ""
 
 #. module: event
-#: model_terms:ir.ui.view,arch_db:event.event_report_template_full_page_ticket
+#: model_terms:ir.ui.view,arch_db:event.res_config_settings_view_form
 msgid ""
 "<br/>\n"
-"                                            <span class=\"me-1\">from</span>"
-msgstr ""
-
-#. module: event
-#: model_terms:ir.ui.view,arch_db:event.event_report_template_full_page_ticket
-msgid ""
-"<br/>\n"
-"                                            <span class=\"me-1\">to</span>"
+"                                            <span class=\"text-muted\">Air your tracks online through a Youtube integration</span>"
 msgstr ""
 
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.res_config_settings_view_form
 msgid ""
 "<br/>\n"
-"                                        <span class=\"text-muted\">Air your tracks online through a Youtube integration</span>"
+"                                            <span class=\"text-muted\">Share a quiz to your attendees once a track is over</span>"
 msgstr ""
 
 #. module: event
-#: model_terms:ir.ui.view,arch_db:event.res_config_settings_view_form
+#: model:mail.template,body_html:event.event_registration_mail_template_badge
 msgid ""
-"<br/>\n"
-"                                        <span class=\"text-muted\">Share a quiz to your attendees once a track is over</span>"
+"<div>\n"
+"    Dear <t t-out=\"object.name or ''\">Oscar Morgan</t>,<br>\n"
+"    Thank you for your inquiry.<br>\n"
+"    Here is your badge for the event <t t-out=\"object.event_id.name or ''\">OpenWood Collection Online Reveal</t>.<br>\n"
+"    If you have any questions, please let us know.\n"
+"    <br><br>\n"
+"    Thank you,\n"
+"    <t t-if=\"object.event_id.user_id.signature\">\n"
+"        <br>\n"
+"        <t t-out=\"object.event_id.user_id.signature or ''\">--<br>Mitchell Admin</t>\n"
+"    </t>\n"
+"</div>"
 msgstr ""
 
 #. module: event
@@ -264,27 +214,22 @@ msgid ""
 msgstr ""
 
 #. module: event
-#: model_terms:ir.ui.view,arch_db:event.event_registration_view_kanban
-msgid "<i class=\"fa fa-building\" title=\"Attendee Company\"/>"
-msgstr ""
-
-#. module: event
-#: model_terms:ir.ui.view,arch_db:event.event_registration_view_kanban
-msgid ""
-"<i class=\"fa fa-check fa-3x\" role=\"img\" aria-label=\"Confirm Attendance "
-"Button\" title=\"Confirm Attendance\"/>"
-msgstr ""
-
-#. module: event
-#: model_terms:ir.ui.view,arch_db:event.event_registration_view_kanban
-msgid ""
-"<i class=\"fa fa-check fa-3x\" role=\"img\" aria-label=\"Reset To Registered"
-" Button\" title=\"Reset To Registered\"/>"
-msgstr ""
-
-#. module: event
 #: model_terms:ir.ui.view,arch_db:event.view_event_kanban
-msgid "<i class=\"fa fa-group mt-1 me-2 text-center\" title=\"Attendees\"/>"
+msgid "<i class=\"fa fa-arrow-right me-2 o_event_fontsize_09\" title=\"End date\"/>"
+msgstr ""
+
+#. module: event
+#: model_terms:ir.ui.view,arch_db:event.event_registration_view_kanban
+msgid ""
+"<i class=\"fa fa-check fa-3x\" role=\"img\" aria-label=\"Confirm button\" "
+"title=\"Confirm Registration\"/>"
+msgstr ""
+
+#. module: event
+#: model_terms:ir.ui.view,arch_db:event.event_registration_view_kanban
+msgid ""
+"<i class=\"fa fa-check\" role=\"img\" aria-label=\"Confirm button\" "
+"title=\"Confirm Registration\"/>"
 msgstr ""
 
 #. module: event
@@ -295,7 +240,13 @@ msgid ""
 msgstr ""
 
 #. module: event
-#: model_terms:ir.ui.view,arch_db:event.event_event_view_activity
+#: model_terms:ir.ui.view,arch_db:event.view_event_kanban
+msgid "<i class=\"fa fa-level-up fa-rotate-90\" title=\"Confirmed\"/>"
+msgstr ""
+
+#. module: event
+#: model_terms:ir.ui.view,arch_db:event.event_event_view_form_quick_create
+#: model_terms:ir.ui.view,arch_db:event.view_event_form
 msgid ""
 "<i class=\"fa fa-long-arrow-right mx-2\" aria-label=\"Arrow icon\" "
 "title=\"Arrow\"/>"
@@ -303,17 +254,21 @@ msgstr ""
 
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.view_event_kanban
-msgid "<i class=\"fa fa-map-marker mt-1 me-2 text-center ps-1\" title=\"Location\"/>"
+msgid "<i class=\"fa fa-map-marker mt-1 me-1\" title=\"Location\"/>"
 msgstr ""
 
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.event_registration_view_kanban
-msgid "<i class=\"fa fa-ticket\" title=\"Ticket type\"/>"
+msgid ""
+"<i class=\"fa fa-user-plus fa-3x\" role=\"img\" aria-label=\"Attended "
+"button\" title=\"Confirm Attendance\"/>"
 msgstr ""
 
 #. module: event
-#: model_terms:ir.ui.view,arch_db:event.view_event_kanban
-msgid "<i class=\"oi oi-arrow-right me-2\" title=\"End date\"/>"
+#: model_terms:ir.ui.view,arch_db:event.event_registration_view_kanban
+msgid ""
+"<i class=\"fa fa-user-plus\" role=\"img\" aria-label=\"Attended button\" "
+"title=\"Confirm Attendance\"/>"
 msgstr ""
 
 #. module: event
@@ -324,269 +279,47 @@ msgid ""
 msgstr ""
 
 #. module: event
-#: model_terms:ir.ui.view,arch_db:event.event_report_template_full_page_ticket
-msgid "<span class=\"me-1\">to</span>"
+#: model_terms:ir.ui.view,arch_db:event.event_registration_view_kanban
+msgid "<span class=\"bg-danger\">Archived</span>"
 msgstr ""
 
 #. module: event
-#: model_terms:ir.ui.view,arch_db:event.event_report_template_badge_card
-msgid "<span class=\"o_event_badge_font_faded\">My Placeholder Company</span>"
+#: model_terms:ir.ui.view,arch_db:event.res_config_settings_view_form
+msgid ""
+"<span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-"
+"specific.\" groups=\"base.group_multi_company\"/>"
 msgstr ""
 
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.view_event_form
 msgid ""
 "<span class=\"o_stat_text\">\n"
-"                                    Registration\n"
-"                                </span>"
+"                                Registration statistics\n"
+"                            </span>"
 msgstr ""
 
 #. module: event
-#: model_terms:ir.ui.view,arch_db:event.event_report_template_badge_card
+#: model_terms:ir.ui.view,arch_db:event.event_registration_view_kanban
+msgid ""
+"<span class=\"text-muted\" states=\"done\">Attended</span>\n"
+"                                    <span class=\"text-muted\" states=\"cancel\">Canceled</span>"
+msgstr ""
+
+#. module: event
+#: model_terms:ir.ui.view,arch_db:event.event_report_template_foldable_badge
 #: model_terms:ir.ui.view,arch_db:event.event_report_template_full_page_ticket
 msgid "<span>John Doe</span>"
-msgstr ""
-
-#. module: event
-#: model:mail.template,body_html:event.event_registration_mail_template_badge
-msgid ""
-"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;\"><tr><td align=\"center\">\n"
-"<t t-set=\"date_begin\" t-value=\"format_datetime(object.event_id.date_begin, tz='UTC', dt_format=&quot;yyyyMMdd'T'HHmmss'Z'&quot;)\"/>\n"
-"<t t-set=\"date_end\" t-value=\"format_datetime(object.event_id.date_end, tz='UTC', dt_format=&quot;yyyyMMdd'T'HHmmss'Z'&quot;)\"/>\n"
-"<t t-set=\"is_online\" t-value=\"'is_published' in object.event_id and object.event_id.is_published\"/>\n"
-"<t t-set=\"event_organizer\" t-value=\"object.event_id.organizer_id\"/>\n"
-"<t t-set=\"event_address\" t-value=\"object.event_id.address_id\"/>\n"
-"<t t-set=\"registration_ids\" t-value=\"object.ids if not is_sale else object._get_event_registration_ids_from_order()\"/>\n"
-"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"padding: 16px; background-color: white; color: #454748; border-collapse:separate;\">\n"
-"<tbody>\n"
-"    <!-- HEADER -->\n"
-"    <tr>\n"
-"        <td align=\"center\" style=\"min-width: 590px;\">\n"
-"            <table width=\"590\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
-"                <tr><td valign=\"middle\">\n"
-"                    <span style=\"font-size: 10px;\">Your registration</span><br/>\n"
-"                    <span style=\"font-size: 20px; font-weight: bold;\">\n"
-"                        <t t-out=\"object.name or 'Guest'\"/>\n"
-"                    </span>\n"
-"                </td><td valign=\"middle\" align=\"right\">\n"
-"                    <a t-attf-href=\"/event/{{ object.event_id.id }}/my_tickets?badge_mode=1&amp;registration_ids={{ registration_ids }}&amp;tickets_hash={{ object.event_id._get_tickets_access_hash(registration_ids) }}\" target=\"_blank\" style=\"padding: 8px 12px; font-size: 12px; color: #FFFFFF; text-decoration: none !important; font-weight: 400; background-color: #875A7B; border: 0px solid #875A7B; border-radius:3px\">\n"
-"                        Download Badges\n"
-"                    </a>\n"
-"                    <t t-if=\"not object.company_id.uses_default_logo\">\n"
-"                        <img t-att-src=\"'/logo.png?company=%s' % object.company_id.id\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"'%s' % object.company_id.name\"/>\n"
-"                    </t>\n"
-"                </td></tr>\n"
-"                <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
-"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:16px 0px 16px 0px;\"/>\n"
-"                </td></tr>\n"
-"            </table>\n"
-"        </td>\n"
-"    </tr>\n"
-"    <!-- EVENT DESCRIPTION -->\n"
-"    <tr>\n"
-"        <td align=\"center\" style=\"min-width: 590px;\">\n"
-"            <table width=\"590\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
-"                <tr><td valign=\"top\" style=\"font-size: 14px;\">\n"
-"                    <div>\n"
-"                        Hello <t t-out=\"object.name or 'Guest'\"/>,<br/><br/>\n"
-"                        Please find attached your badge for\n"
-"                        <t t-if=\"is_online\">\n"
-"                            <a t-att-href=\"object.event_id.website_url\" style=\"font-weight:bold;color:#875A7B;text-decoration:none;\" t-out=\"object.event_id.name or ''\">OpenWood Collection Online Reveal</a>\n"
-"                        </t>\n"
-"                        <t t-else=\"\">\n"
-"                            <strong t-out=\"object.event_id.name or ''\">OpenWood Collection Online Reveal</strong>.\n"
-"                        </t>\n"
-"                    </div>\n"
-"                    <div>\n"
-"                        <br/>\n"
-"                        <strong>Add this event to your calendar</strong>\n"
-"                        <a t-attf-href=\"https://www.google.com/calendar/render?action=TEMPLATE&amp;text={{ object.event_id.name }}&amp;dates={{ date_begin }}/{{ date_end }}&amp;location={{ location }}&amp;details={{ object.event_id._get_external_description() }}\" style=\"padding:3px 5px;border:1px solid #875A7B;color:#875A7B;text-decoration:none;border-radius:3px;\" target=\"new\"><img src=\"/web_editor/font_to_img/61525/rgb(135,90,123)/16\" style=\"vertical-align:middle;\" height=\"16\" alt=\"\"/> Google</a>\n"
-"                        <a t-attf-href=\"/event/{{ slug(object.event_id) }}/ics\" style=\"padding:3px 5px;border:1px solid #875A7B;color:#875A7B;text-decoration:none;border-radius:3px;\"><img src=\"/web_editor/font_to_img/61525/rgb(135,90,123)/16\" style=\"vertical-align:middle;\" height=\"16\" alt=\"\"/> iCal/Outlook</a>\n"
-"                        <a t-attf-href=\"https://calendar.yahoo.com/?v=60&amp;view=d&amp;type=20&amp;title={{ object.event_id.name }}&amp;in_loc={{ location }}&amp;st={{ format_datetime(object.event_id.date_begin, tz='UTC', dt_format='yyyyMMdd\\'T\\'HHmmss') }}&amp;et={{ format_datetime(object.event_id.date_end, tz='UTC', dt_format='yyyyMMdd\\'T\\'HHmmss') }}\" style=\"padding:3px 5px;border:1px solid #875A7B;color:#875A7B;text-decoration:none;border-radius:3px;\" target=\"new\">\n"
-"                            <img src=\"/web_editor/font_to_img/61525/rgb(135,90,123)/16\" style=\"vertical-align:middle;\" height=\"16\" alt=\"\"/> Yahoo\n"
-"                        </a>\n"
-"                        <br/><br/>\n"
-"                    </div>\n"
-"                    <div>\n"
-"                        See you soon,<br/>\n"
-"                        <span style=\"color: #454748;\">\n"
-"                        -- <br/>\n"
-"                        <t t-if=\"event_organizer\">\n"
-"                            <t t-out=\"event_organizer.name or ''\">YourCompany</t>\n"
-"                        </t>\n"
-"                        <t t-else=\"\">\n"
-"                            The <t t-out=\"object.event_id.name or ''\">OpenWood Collection Online Reveal</t> Team\n"
-"                        </t>\n"
-"                        </span>\n"
-"                    </div>\n"
-"                </td></tr>\n"
-"                <tr><td style=\"text-align:center;\">\n"
-"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
-"                </td></tr>\n"
-"            </table>\n"
-"        </td>\n"
-"    </tr>\n"
-"    <!-- DETAILS -->\n"
-"    <tr>\n"
-"        <td align=\"center\" style=\"min-width: 590px;\">\n"
-"            <table width=\"590\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
-"                <tr><td valign=\"top\" style=\"font-size: 14px;\">\n"
-"                    <table style=\"width:100%;\">\n"
-"                        <tr>\n"
-"                            <td style=\"vertical-align:top;\">\n"
-"                                <img src=\"/web_editor/font_to_img/61555/rgb(81,81,102)/34\" style=\"padding:4px;max-width:inherit;\" height=\"34\" alt=\"\"/>\n"
-"                            </td>\n"
-"                            <td style=\"padding: 0px 10px 0px 10px;width:50%;line-height:20px;vertical-align:top;\">\n"
-"                                <div>\n"
-"                                    <strong>From</strong>\n"
-"                                    <t t-out=\"object.event_id.date_begin\" t-options=\"{&quot;widget&quot;: &quot;datetime&quot;, &quot;date_only&quot;: True, &quot;tz_name&quot;: object.event_id.date_tz, &quot;format&quot;: &quot;long&quot;}\">May 4, 2021</t>\n"
-"                                     - <t t-out=\"object.event_id.date_begin\" t-options=\"{&quot;widget&quot;: &quot;datetime&quot;, &quot;time_only&quot;: True, &quot;tz_name&quot;: object.event_id.date_tz, &quot;hide_seconds&quot;: True, &quot;format&quot;: &quot;short&quot;}\">7:00 AM</t>\n"
-"                                </div>\n"
-"                                <div>\n"
-"                                    <strong>To</strong>\n"
-"                                    <t t-out=\"object.event_id.date_end\" t-options=\"{&quot;widget&quot;: &quot;datetime&quot;, &quot;date_only&quot;: True, &quot;tz_name&quot;: object.event_id.date_tz, &quot;format&quot;: &quot;long&quot;}\">May 6, 2021</t>\n"
-"                                     - <t t-out=\"object.event_id.date_end\" t-options=\"{&quot;widget&quot;: &quot;datetime&quot;, &quot;time_only&quot;: True, &quot;tz_name&quot;: object.event_id.date_tz, &quot;hide_seconds&quot;: True, &quot;format&quot;: &quot;short&quot;}\">5:00 PM</t>\n"
-"                                </div>\n"
-"                                <div style=\"font-size:12px;color:#9e9e9e\"><i>(<t t-out=\"object.event_id.date_tz or ''\">Europe/Brussels</t>)</i></div>\n"
-"                            </td>\n"
-"                            <td style=\"vertical-align:top;\">\n"
-"                                <t t-if=\"event_address\">\n"
-"                                    <img src=\"/web_editor/font_to_img/61505/rgb(81,81,102)/34\" style=\"padding:4px;max-width:inherit;\" height=\"34\" alt=\"\"/>\n"
-"                                </t>\n"
-"                            </td>\n"
-"                            <td style=\"padding: 0px 10px 0px 10px;width:50%;vertical-align:top;\">\n"
-"                                <t t-if=\"event_address\">\n"
-"                                    <t t-set=\"location\" t-value=\"''\"/>\n"
-"                                    <t t-if=\"object.event_id.address_id.name\">\n"
-"                                        <div t-out=\"object.event_id.address_id.name\">Teksa SpA</div>\n"
-"                                    </t>\n"
-"                                    <t t-if=\"object.event_id.address_id.street\">\n"
-"                                        <div t-out=\"object.event_id.address_id.street\">Puerto Madero 9710</div>\n"
-"                                        <t t-set=\"location\" t-value=\"object.event_id.address_id.street\"/>\n"
-"                                    </t>\n"
-"                                    <t t-if=\"object.event_id.address_id.street2\">\n"
-"                                        <div t-out=\"object.event_id.address_id.street2\">Of A15, Santiago (RM)</div>\n"
-"                                        <t t-set=\"location\" t-valuef=\"{{location}}, {{object.event_id.address_id.street2}}\"/>\n"
-"                                    </t>\n"
-"                                    <div>\n"
-"                                    <t t-if=\"object.event_id.address_id.city\">\n"
-"                                        <t t-out=\"object.event_id.address_id.city\">Pudahuel</t>,\n"
-"                                        <t t-set=\"location\" t-valuef=\"{{location}}, {{object.event_id.address_id.city}}\"/>\n"
-"                                    </t>\n"
-"                                    <t t-if=\"object.event_id.address_id.state_id.name\">\n"
-"                                        <t t-out=\"object.event_id.address_id.state_id.name\">C1</t>,\n"
-"                                        <t t-set=\"location\" t-valuef=\"{{location}}, {{object.event_id.address_id.state_id.name}}\"/>\n"
-"                                    </t>\n"
-"                                    <t t-if=\"object.event_id.address_id.zip\">\n"
-"                                        <t t-out=\"object.event_id.address_id.zip\">98450</t>\n"
-"                                        <t t-set=\"location\" t-valuef=\"{{location}}, {{object.event_id.address_id.zip}}\"/>\n"
-"                                    </t>\n"
-"                                    </div>\n"
-"                                    <t t-if=\"object.event_id.address_id.country_id.name\">\n"
-"                                        <div t-out=\"object.event_id.address_id.country_id.name\">Argentina</div>\n"
-"                                        <t t-set=\"location\" t-valuef=\"{{location}}, {{object.event_id.address_id.country_id.name}}\"/>\n"
-"                                    </t>\n"
-"                                </t>\n"
-"                            </td>\n"
-"                        </tr>\n"
-"                    </table>\n"
-"                </td></tr>\n"
-"                <tr><td style=\"text-align:center;\">\n"
-"                    <t t-if=\"event_organizer\">\n"
-"                        <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
-"                    </t>\n"
-"                </td></tr>\n"
-"\n"
-"                <tr><td valign=\"top\" style=\"font-size: 14px;\">\n"
-"                    <!-- CONTACT ORGANIZER -->\n"
-"                    <t t-if=\"event_organizer\">\n"
-"                        <div>\n"
-"                            <span style=\"font-weight:300;margin:10px 0px\">Questions about this event?</span>\n"
-"                            <div>Please contact the organizer:</div>\n"
-"                            <ul>\n"
-"                                <li><t t-out=\"event_organizer.name or ''\">YourCompany</t></li>\n"
-"                                <t t-if=\"event_organizer.email\">\n"
-"                                    <li>Mail: <a t-attf-href=\"mailto:{{ event_organizer.email }}\" style=\"text-decoration:none;color:#875A7B;\" t-out=\"event_organizer.email\">info@yourcompany.com</a></li>\n"
-"                                </t>\n"
-"                                <t t-if=\"event_organizer.phone\">\n"
-"                                    <li>Phone: <t t-out=\"event_organizer.phone\">+1 650-123-4567</t></li>\n"
-"                                </t>\n"
-"                            </ul>\n"
-"                        </div>\n"
-"                    </t>\n"
-"                </td></tr>\n"
-"                <tr><td style=\"text-align:center;\">\n"
-"                    <!-- CONTACT ORGANIZER SEPARATION -->\n"
-"                    <t t-if=\"is_online or event_address\">\n"
-"                        <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
-"                    </t>\n"
-"                </td></tr>\n"
-"\n"
-"                <tr><td valign=\"top\" style=\"font-size: 14px;\">\n"
-"                    <!-- PWA MARKGETING -->\n"
-"                    <t t-if=\"is_online\">\n"
-"                        <div>\n"
-"                            <strong>Get the best mobile experience.</strong>\n"
-"                            <a href=\"/event\">Install our mobile app</a>\n"
-"                        </div>\n"
-"                    </t>\n"
-"                </td></tr>\n"
-"                <tr><td style=\"text-align:center;\">\n"
-"                    <!-- PWA MARKGETING SEPARATION-->\n"
-"                    <t t-if=\"is_online and event_address\">\n"
-"                        <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
-"                    </t>\n"
-"                </td></tr>\n"
-"\n"
-"                <tr><td valign=\"top\" style=\"font-size: 14px;\">\n"
-"                    <!-- GOOGLE MAPS LINK -->\n"
-"                    <t t-if=\"event_address and location\">\n"
-"                        <table style=\"width:100%;\"><tr><td>\n"
-"                            <div>\n"
-"                                <i class=\"fa fa-map-marker\"/>\n"
-"                                <a t-attf-href=\"https://maps.google.com/maps?q={{ location }}\" target=\"new\">\n"
-"                                    <img t-if=\"event_address.static_map_url and event_address.static_map_url_is_valid\" t-att-src=\"event_address.static_map_url\" style=\"vertical-align:bottom; width: 100%;\" alt=\"Google Maps\"/>\n"
-"                                    <t t-else=\"\">See location on Google Maps</t>\n"
-"                                </a>\n"
-"                            </div>\n"
-"                        </td></tr></table>\n"
-"                    </t>\n"
-"                </td></tr>\n"
-"            </table>\n"
-"        </td>\n"
-"    </tr>\n"
-"</tbody>\n"
-"</table>\n"
-"</td></tr>\n"
-"<!-- FOOTER BY -->\n"
-"<tr><td align=\"center\" style=\"min-width: 590px;\">\n"
-"    <t t-if=\"object.company_id\">\n"
-"        <table width=\"590\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"min-width: 590px; background-color: #F1F1F1; color: #454748; padding: 8px; border-collapse:separate;\">\n"
-"        <tr><td style=\"text-align: center; font-size: 14px;\">\n"
-"            Sent by <a target=\"_blank\" t-attf-href=\"{{ object.company_id.website }}\" style=\"color: #875A7B;\" t-out=\"object.company_id.name or ''\">YourCompany</a>\n"
-"            <t t-if=\"is_online\">\n"
-"                <br/>\n"
-"                Discover <a href=\"/event\" style=\"color:#875A7B;\">all our events</a>.\n"
-"            </t>\n"
-"        </td></tr>\n"
-"        </table>\n"
-"    </t>\n"
-"</td></tr>\n"
-"</table>\n"
-"            "
 msgstr ""
 
 #. module: event
 #: model:mail.template,body_html:event.event_reminder
 msgid ""
 "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;\"><tr><td align=\"center\">\n"
-"<t t-set=\"date_begin\" t-value=\"format_datetime(object.event_id.date_begin, tz='UTC', dt_format=&quot;yyyyMMdd'T'HHmmss'Z'&quot;)\"/>\n"
-"<t t-set=\"date_end\" t-value=\"format_datetime(object.event_id.date_end, tz='UTC', dt_format=&quot;yyyyMMdd'T'HHmmss'Z'&quot;)\"/>\n"
-"<t t-set=\"is_online\" t-value=\"'is_published' in object.event_id and object.event_id.is_published\"/>\n"
-"<t t-set=\"is_sale\" t-value=\"'sale_order_id' in object and object.sale_order_id\"/>\n"
-"<t t-set=\"event_organizer\" t-value=\"object.event_id.organizer_id\"/>\n"
-"<t t-set=\"event_address\" t-value=\"object.event_id.address_id\"/>\n"
-"<t t-set=\"registration_ids\" t-value=\"object.ids if not is_sale else object._get_event_registration_ids_from_order()\"/>\n"
+"<t t-set=\"date_begin\" t-value=\"format_datetime(object.event_id.date_begin, tz='UTC', dt_format=&quot;yyyyMMdd'T'HHmmss'Z'&quot;)\"></t>\n"
+"<t t-set=\"date_end\" t-value=\"format_datetime(object.event_id.date_end, tz='UTC', dt_format=&quot;yyyyMMdd'T'HHmmss'Z'&quot;)\"></t>\n"
+"<t t-set=\"is_online\" t-value=\"'is_published' in object.event_id and object.event_id.is_published\"></t>\n"
+"<t t-set=\"event_organizer\" t-value=\"object.event_id.organizer_id\"></t>\n"
+"<t t-set=\"event_address\" t-value=\"object.event_id.address_id\"></t>\n"
 "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"padding: 16px; background-color: white; color: #454748; border-collapse:separate;\">\n"
 "<tbody>\n"
 "    <!-- HEADER -->\n"
@@ -594,25 +327,20 @@ msgid ""
 "        <td align=\"center\" style=\"min-width: 590px;\">\n"
 "            <table width=\"590\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
 "                <tr><td valign=\"middle\">\n"
-"                    <span style=\"font-size: 10px;\">Your registration</span><br/>\n"
-"                    <span style=\"font-size: 20px; font-weight: bold;\" t-out=\"object.name or 'Guest'\"/>\n"
-"                    <div style=\"margin-bottom: 5px;margin-top: 18px;\">\n"
-"                        <a t-attf-href=\"/event/{{ object.event_id.id }}/my_tickets?registration_ids={{ registration_ids }}&amp;tickets_hash={{ object.event_id._get_tickets_access_hash(registration_ids) }}&amp;responsive_html=1\" target=\"_blank\" style=\"padding: 8px 12px; font-size: 12px; color: #FFFFFF; text-decoration: none !important; font-weight: 400; background-color: #875A7B; border: 0px solid #875A7B; border-radius:3px\">\n"
-"                            View Tickets\n"
-"                        </a>\n"
-"                    </div>\n"
+"                    <span style=\"font-size: 10px;\">Your registration</span><br>\n"
+"                    <span style=\"font-size: 20px; font-weight: bold;\" t-out=\"object.name or ''\">Oscar Morgan</span>\n"
 "                </td><td valign=\"middle\" align=\"right\">\n"
-"                    <t t-if=\"object.barcode\">\n"
-"                        <div style=\"margin-bottom: 5px;\">\n"
-"                            <img t-attf-src=\"/report/barcode/QR/{{object.barcode}}?&amp;width=100&amp;height=100&amp;quiet=0\" width=\"100\" height=\"100\" alt=\"QR Code\"/>\n"
-"                        </div>\n"
+"                    <t t-if=\"is_online\">\n"
+"                        <a t-attf-href=\"{{ object.event_id.website_url }}\" style=\"padding: 8px 12px; font-size: 12px; color: #FFFFFF; text-decoration: none !important; font-weight: 400; background-color: #875A7B; border: 0px solid #875A7B; border-radius:3px\">\n"
+"                            View Event\n"
+"                        </a>\n"
 "                    </t>\n"
-"                    <t t-if=\"not object.company_id.uses_default_logo\">\n"
-"                        <img t-att-src=\"'/logo.png?company=%s' % object.company_id.id\" style=\"padding: 0px; margin: 0px; margin-right: 10px; height: auto; width: 80px;\" t-att-alt=\"'%s' % object.company_id.name\"/>\n"
+"                    <t t-else=\"\">\n"
+"                        <img t-att-src=\"'/logo.png?company=%s' % object.company_id.id\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"'%s' % object.company_id.name\">\n"
 "                    </t>\n"
 "                </td></tr>\n"
 "                <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
-"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:16px 0px 16px 0px;\"/>\n"
+"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:16px 0px 16px 0px;\">\n"
 "                </td></tr>\n"
 "            </table>\n"
 "        </td>\n"
@@ -623,30 +351,30 @@ msgid ""
 "            <table width=\"590\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
 "                <tr><td valign=\"top\" style=\"font-size: 14px;\">\n"
 "                    <div>\n"
-"                        Hello <t t-out=\"object.name or 'Guest'\"/>,<br/><br/>\n"
+"                        Hello <t t-out=\"object.name or ''\">Oscar Morgan</t>,<br>\n"
 "                        We are excited to remind you that the event\n"
 "                        <t t-if=\"is_online\">\n"
-"                            <a t-att-href=\"object.event_id.website_url\" style=\"font-weight:bold;color:#875A7B;text-decoration:none;\" t-out=\"object.event_id.name or ''\">OpenWood Collection Online Reveal</a>\n"
+"                            <a t-att-href=\"object.event_id.website_url\" style=\"color:#875A7B;text-decoration:none;\" t-out=\"object.event_id.name or ''\">OpenWood Collection Online Reveal</a>\n"
 "                        </t>\n"
 "                        <t t-else=\"\">\n"
 "                            <strong t-out=\"object.event_id.name or ''\">OpenWood Collection Online Reveal</strong>\n"
 "                        </t>\n"
-"                        is starting <strong t-out=\"object.event_date_range or ''\">today</strong>.\n"
+"                        is starting <strong t-out=\"object.get_date_range_str() or ''\">today</strong>.\n"
 "                    </div>\n"
 "                    <div>\n"
-"                        <br/>\n"
+"                        <br>\n"
 "                        <strong>Add this event to your calendar</strong>\n"
-"                        <a t-attf-href=\"https://www.google.com/calendar/render?action=TEMPLATE&amp;text={{ object.event_id.name }}&amp;dates={{ date_begin }}/{{ date_end }}&amp;location={{ location }}&amp;details={{ object.event_id._get_external_description() }}\" style=\"padding:3px 5px;border:1px solid #875A7B;color:#875A7B;text-decoration:none;border-radius:3px;\" target=\"new\"><img src=\"/web_editor/font_to_img/61525/rgb(135,90,123)/16\" style=\"vertical-align:middle;\" height=\"16\" alt=\"\"/> Google</a>\n"
-"                        <a t-attf-href=\"/event/{{ slug(object.event_id) }}/ics\" style=\"padding:3px 5px;border:1px solid #875A7B;color:#875A7B;text-decoration:none;border-radius:3px;\"><img src=\"/web_editor/font_to_img/61525/rgb(135,90,123)/16\" style=\"vertical-align:middle;\" height=\"16\" alt=\"\"/> iCal/Outlook</a>\n"
+"                        <a t-attf-href=\"https://www.google.com/calendar/render?action=TEMPLATE&amp;text={{ object.event_id.name }}&amp;dates={{ date_begin }}/{{ date_end }}&amp;location={{ location }}\" style=\"padding:3px 5px;border:1px solid #875A7B;color:#875A7B;text-decoration:none;border-radius:3px;\" target=\"new\"><img src=\"/web_editor/font_to_img/61525/rgb(135,90,123)/16\" style=\"vertical-align:middle;\" height=\"16\" alt=\"\"> Google</a>\n"
+"                        <a t-attf-href=\"/event/{{ slug(object.event_id) }}/ics\" style=\"padding:3px 5px;border:1px solid #875A7B;color:#875A7B;text-decoration:none;border-radius:3px;\"><img src=\"/web_editor/font_to_img/61525/rgb(135,90,123)/16\" style=\"vertical-align:middle;\" height=\"16\" alt=\"\"> iCal/Outlook</a>\n"
 "                        <a t-attf-href=\"https://calendar.yahoo.com/?v=60&amp;view=d&amp;type=20&amp;title={{ object.event_id.name }}&amp;in_loc={{ location }}&amp;st={{ format_datetime(object.event_id.date_begin, tz='UTC', dt_format='yyyyMMdd\\'T\\'HHmmss') }}&amp;et={{ format_datetime(object.event_id.date_end, tz='UTC', dt_format='yyyyMMdd\\'T\\'HHmmss') }}\" style=\"padding:3px 5px;border:1px solid #875A7B;color:#875A7B;text-decoration:none;border-radius:3px;\" target=\"new\">\n"
-"                            <img src=\"/web_editor/font_to_img/61525/rgb(135,90,123)/16\" style=\"vertical-align:middle;\" height=\"16\" alt=\"\"/> Yahoo\n"
+"                            <img src=\"/web_editor/font_to_img/61525/rgb(135,90,123)/16\" style=\"vertical-align:middle;\" height=\"16\" alt=\"\"> Yahoo\n"
 "                        </a>\n"
-"                        <br/><br/>\n"
+"                        <br><br>\n"
 "                    </div>\n"
 "                    <div>\n"
-"                        We confirm your registration and hope to meet you there,<br/>\n"
+"                        We confirm your registration and hope to meet you there,<br>\n"
 "                        <span style=\"color: #454748;\">\n"
-"                        -- <br/>\n"
+"                        -- <br>\n"
 "                        <t t-if=\"event_organizer\">\n"
 "                            <t t-out=\"event_organizer.name or ''\">YourCompany</t>\n"
 "                        </t>\n"
@@ -657,7 +385,7 @@ msgid ""
 "                    </div>\n"
 "                </td></tr>\n"
 "                <tr><td style=\"text-align:center;\">\n"
-"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\">\n"
 "                </td></tr>\n"
 "            </table>\n"
 "        </td>\n"
@@ -670,57 +398,49 @@ msgid ""
 "                    <table style=\"width:100%;\">\n"
 "                        <tr>\n"
 "                            <td style=\"vertical-align:top;\">\n"
-"                                <img src=\"/web_editor/font_to_img/61555/rgb(81,81,102)/34\" style=\"padding:4px;max-width:inherit;\" height=\"34\" alt=\"\"/>\n"
+"                                <img src=\"/web_editor/font_to_img/61555/rgb(81,81,102)/34\" style=\"padding:4px;max-width:inherit;\" height=\"34\" alt=\"\">\n"
 "                            </td>\n"
 "                            <td style=\"padding: 0px 10px 0px 10px;width:50%;line-height:20px;vertical-align:top;\">\n"
-"                                <div>\n"
-"                                    <strong>From</strong>\n"
-"                                    <t t-out=\"object.event_id.date_begin\" t-options=\"{&quot;widget&quot;: &quot;datetime&quot;, &quot;date_only&quot;: True, &quot;tz_name&quot;: object.event_id.date_tz, &quot;format&quot;: &quot;long&quot;}\">May 4, 2021</t>\n"
-"                                     - <t t-out=\"object.event_id.date_begin\" t-options=\"{&quot;widget&quot;: &quot;datetime&quot;, &quot;time_only&quot;: True, &quot;tz_name&quot;: object.event_id.date_tz, &quot;hide_seconds&quot;: True, &quot;format&quot;: &quot;short&quot;}\">7:00 AM</t>\n"
-"                                </div>\n"
-"                                <div>\n"
-"                                    <strong>To</strong>\n"
-"                                    <t t-out=\"object.event_id.date_end\" t-options=\"{&quot;widget&quot;: &quot;datetime&quot;, &quot;date_only&quot;: True, &quot;tz_name&quot;: object.event_id.date_tz, &quot;format&quot;: &quot;long&quot;}\">May 6, 2021</t>\n"
-"                                     - <t t-out=\"object.event_id.date_end\" t-options=\"{&quot;widget&quot;: &quot;datetime&quot;, &quot;time_only&quot;: True, &quot;tz_name&quot;: object.event_id.date_tz, &quot;hide_seconds&quot;: True, &quot;format&quot;: &quot;short&quot;}\">5:00 PM</t>\n"
-"                                </div>\n"
+"                                <div><strong>From</strong> <t t-out=\"object.event_id.date_begin_located or ''\">May 4, 2021, 7:00:00 AM</t></div>\n"
+"                                <div><strong>To</strong> <t t-out=\"object.event_id.date_end_located or ''\">May 6, 2021, 5:00:00 PM</t></div>\n"
 "                                <div style=\"font-size:12px;color:#9e9e9e\"><i><t t-out=\"object.event_id.date_tz or ''\">Europe/Brussels</t></i></div>\n"
 "                            </td>\n"
 "                            <td style=\"vertical-align:top;\">\n"
 "                                <t t-if=\"event_address\">\n"
-"                                    <img src=\"/web_editor/font_to_img/61505/rgb(81,81,102)/34\" style=\"padding:4px;max-width:inherit;\" height=\"34\" alt=\"\"/>\n"
+"                                    <img src=\"/web_editor/font_to_img/61505/rgb(81,81,102)/34\" style=\"padding:4px;max-width:inherit;\" height=\"34\" alt=\"\">\n"
 "                                </t>\n"
 "                            </td>\n"
 "                            <td style=\"padding: 0px 10px 0px 10px;width:50%;vertical-align:top;\">\n"
 "                                <t t-if=\"event_address\">\n"
-"                                    <t t-set=\"location\" t-value=\"''\"/>\n"
+"                                    <t t-set=\"location\" t-value=\"''\"></t>\n"
 "                                    <t t-if=\"object.event_id.address_id.name\">\n"
 "                                        <div t-out=\"object.event_id.address_id.name or ''\">Teksa SpA</div>\n"
 "                                    </t>\n"
 "                                    <t t-if=\"object.event_id.address_id.street\">\n"
 "                                        <div t-out=\"object.event_id.address_id.street or ''\">Puerto Madero 9710</div>\n"
-"                                        <t t-set=\"location\" t-value=\"object.event_id.address_id.street\"/>\n"
+"                                        <t t-set=\"location\" t-value=\"object.event_id.address_id.street\"></t>\n"
 "                                    </t>\n"
 "                                    <t t-if=\"object.event_id.address_id.street2\">\n"
 "                                        <div t-out=\"object.event_id.address_id.street2 or ''\">Of A15, Santiago (RM)</div>\n"
-"                                        <t t-set=\"location\" t-value=\"'%s, %s' % (location, object.event_id.address_id.street2)\"/>\n"
+"                                        <t t-set=\"location\" t-value=\"'%s, %s' % (location, object.event_id.address_id.street2)\"></t>\n"
 "                                    </t>\n"
 "                                    <div>\n"
 "                                    <t t-if=\"object.event_id.address_id.city\">\n"
 "                                        <t t-out=\"object.event_id.address_id.city or ''\">Pudahuel</t>,\n"
-"                                        <t t-set=\"location\" t-value=\"'%s, %s' % (location, object.event_id.address_id.city)\"/>\n"
+"                                        <t t-set=\"location\" t-value=\"'%s, %s' % (location, object.event_id.address_id.city)\"></t>\n"
 "                                    </t>\n"
 "                                    <t t-if=\"object.event_id.address_id.state_id.name\">\n"
 "                                        <t t-out=\"object.event_id.address_id.state_id.name or ''\">C1</t>,\n"
-"                                        <t t-set=\"location\" t-value=\"'%s, %s' % (location, object.event_id.address_id.state_id.name)\"/>\n"
+"                                        <t t-set=\"location\" t-value=\"'%s, %s' % (location, object.event_id.address_id.state_id.name)\"></t>\n"
 "                                    </t>\n"
 "                                    <t t-if=\"object.event_id.address_id.zip\">\n"
 "                                        <t t-out=\"object.event_id.address_id.zip or ''\">98450</t>\n"
-"                                        <t t-set=\"location\" t-value=\"'%s, %s' % (location, object.event_id.address_id.zip)\"/>\n"
+"                                        <t t-set=\"location\" t-value=\"'%s, %s' % (location, object.event_id.address_id.zip)\"></t>\n"
 "                                    </t>\n"
 "                                    </div>\n"
 "                                    <t t-if=\"object.event_id.address_id.country_id.name\">\n"
 "                                        <div t-out=\"object.event_id.address_id.country_id.name or ''\">Argentina</div>\n"
-"                                        <t t-set=\"location\" t-value=\"'%s, %s' % (location, object.event_id.address_id.country_id.name)\"/>\n"
+"                                        <t t-set=\"location\" t-value=\"'%s, %s' % (location, object.event_id.address_id.country_id.name)\"></t>\n"
 "                                    </t>\n"
 "                                </t>\n"
 "                            </td>\n"
@@ -729,7 +449,7 @@ msgid ""
 "                </td></tr>\n"
 "                <tr><td style=\"text-align:center;\">\n"
 "                    <t t-if=\"event_organizer\">\n"
-"                        <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                        <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\">\n"
 "                    </t>\n"
 "                </td></tr>\n"
 "\n"
@@ -742,10 +462,10 @@ msgid ""
 "                            <ul>\n"
 "                                <li t-out=\"event_organizer.name or ''\">YourCompany</li>\n"
 "                                <t t-if=\"event_organizer.email\">\n"
-"                                    <li>Mail: <a t-attf-href=\"mailto:{{ event_organizer.email }}\" style=\"text-decoration:none;color:#875A7B;\" t-out=\"event_organizer.email or ''\"/></li>\n"
+"                                    <li>Mail: <a t-attf-href=\"mailto:{{ event_organizer.email }}\" style=\"text-decoration:none;color:#875A7B;\" t-out=\"event_organizer.email or ''\"></a></li>\n"
 "                                </t>\n"
 "                                <t t-if=\"event_organizer.phone\">\n"
-"                                    <li>Phone: <t t-out=\"event_organizer.phone or ''\"/></li>\n"
+"                                    <li>Phone: <t t-out=\"event_organizer.phone or ''\"></t></li>\n"
 "                                </t>\n"
 "                            </ul>\n"
 "                        </div>\n"
@@ -753,7 +473,7 @@ msgid ""
 "                </td></tr>\n"
 "                <tr><td style=\"text-align:center;\">\n"
 "                    <!-- CONTACT ORGANIZER SEPARATION -->\n"
-"                    <hr t-if=\"is_online or event_address\" width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                    <hr t-if=\"is_online or event_address\" width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\">\n"
 "                </td></tr>\n"
 "\n"
 "                <tr><td valign=\"top\" style=\"font-size: 14px;\">\n"
@@ -765,17 +485,16 @@ msgid ""
 "                </td></tr>\n"
 "                <tr><td style=\"text-align:center;\">\n"
 "                    <!-- PWA MARKGETING SEPARATION-->\n"
-"                    <hr t-if=\"is_online and event_address\" width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                    <hr t-if=\"is_online and event_address\" width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\">\n"
 "                </td></tr>\n"
 "\n"
 "                <tr><td valign=\"top\" style=\"font-size: 14px;\">\n"
 "                    <!-- GOOGLE MAPS LINK -->\n"
-"                    <table t-if=\"event_address and location\" style=\"width:100%;\"><tr><td>\n"
+"                    <table t-if=\"event_address\" style=\"width:100%;\"><tr><td>\n"
 "                        <div>\n"
-"                            <i class=\"fa fa-map-marker\"/>\n"
+"                            <i class=\"fa fa-map-marker\"></i>\n"
 "                            <a t-attf-href=\"https://maps.google.com/maps?q={{ location }}\" target=\"new\">\n"
-"                                <img t-if=\"event_address.static_map_url and event_address.static_map_url_is_valid\" t-attf-src=\"{{ event_address.static_map_url }}\" style=\"vertical-align:bottom; width: 100%;\" alt=\"Google Maps\"/>\n"
-"                                <span t-else=\"\">See location on Google Maps</span>\n"
+"                                See location on Google Maps\n"
 "                            </a>\n"
 "                        </div>\n"
 "                    </td></tr></table>\n"
@@ -792,7 +511,7 @@ msgid ""
 "      <tr><td style=\"text-align: center; font-size: 14px;\">\n"
 "        Sent by <a target=\"_blank\" t-attf-href=\"{{ object.company_id.website }}\" style=\"color: #875A7B;\" t-out=\"object.company_id.name or ''\">YourCompany</a>\n"
 "        <t t-if=\"'website_url' in object.event_id and object.event_id.website_url\">\n"
-"            <br/>\n"
+"            <br>\n"
 "            Discover <a href=\"/event\" style=\"color:#875A7B;\">all our events</a>.\n"
 "        </t>\n"
 "      </td></tr>\n"
@@ -806,13 +525,11 @@ msgstr ""
 #: model:mail.template,body_html:event.event_subscription
 msgid ""
 "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;\"><tr><td align=\"center\">\n"
-"<t t-set=\"date_begin\" t-value=\"format_datetime(object.event_id.date_begin, tz='UTC', dt_format=&quot;yyyyMMdd'T'HHmmss'Z'&quot;)\"/>\n"
-"<t t-set=\"date_end\" t-value=\"format_datetime(object.event_id.date_end, tz='UTC', dt_format=&quot;yyyyMMdd'T'HHmmss'Z'&quot;)\"/>\n"
-"<t t-set=\"is_online\" t-value=\"'is_published' in object.event_id and object.event_id.is_published\"/>\n"
-"<t t-set=\"is_sale\" t-value=\"'sale_order_id' in object and object.sale_order_id\"/>\n"
-"<t t-set=\"event_organizer\" t-value=\"object.event_id.organizer_id\"/>\n"
-"<t t-set=\"event_address\" t-value=\"object.event_id.address_id\"/>\n"
-"<t t-set=\"registration_ids\" t-value=\"object.ids if not is_sale else object._get_event_registration_ids_from_order()\"/>\n"
+"<t t-set=\"date_begin\" t-value=\"format_datetime(object.event_id.date_begin, tz='UTC', dt_format=&quot;yyyyMMdd'T'HHmmss'Z'&quot;)\"></t>\n"
+"<t t-set=\"date_end\" t-value=\"format_datetime(object.event_id.date_end, tz='UTC', dt_format=&quot;yyyyMMdd'T'HHmmss'Z'&quot;)\"></t>\n"
+"<t t-set=\"is_online\" t-value=\"'is_published' in object.event_id and object.event_id.is_published\"></t>\n"
+"<t t-set=\"event_organizer\" t-value=\"object.event_id.organizer_id\"></t>\n"
+"<t t-set=\"event_address\" t-value=\"object.event_id.address_id\"></t>\n"
 "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"padding: 16px; background-color: white; color: #454748; border-collapse:separate;\">\n"
 "<tbody>\n"
 "    <!-- HEADER -->\n"
@@ -820,27 +537,22 @@ msgid ""
 "        <td align=\"center\" style=\"min-width: 590px;\">\n"
 "            <table width=\"590\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
 "                <tr><td valign=\"middle\">\n"
-"                    <span style=\"font-size: 10px;\">Your registration</span><br/>\n"
+"                    <span style=\"font-size: 10px;\">Your registration</span><br>\n"
 "                    <span style=\"font-size: 20px; font-weight: bold;\">\n"
-"                        <t t-out=\"object.name or 'Guest'\"/>\n"
+"                        <t t-out=\"object.name or ''\">Oscar Morgan</t>\n"
 "                    </span>\n"
-"                    <div style=\"margin-bottom: 5px;margin-top: 18px;\">\n"
-"                        <a t-attf-href=\"/event/{{ object.event_id.id }}/my_tickets?registration_ids={{ registration_ids }}&amp;tickets_hash={{ object.event_id._get_tickets_access_hash(registration_ids) }}&amp;responsive_html=1\" target=\"_blank\" style=\"padding: 8px 12px; font-size: 12px; color: #FFFFFF; text-decoration: none !important; font-weight: 400; background-color: #875A7B; border: 0px solid #875A7B; border-radius:3px\">\n"
-"                            View Tickets\n"
-"                        </a>\n"
-"                    </div>\n"
 "                </td><td valign=\"middle\" align=\"right\">\n"
-"                    <t t-if=\"object.barcode\"> \n"
-"                        <div style=\"margin-bottom: 5px;\">\n"
-"                            <img t-attf-src=\"/report/barcode/QR/{{object.barcode}}?&amp;width=100&amp;height=100&amp;quiet=0\" width=\"100\" height=\"100\" alt=\"QR Code\"/>\n"
-"                        </div>\n"
+"                    <t t-if=\"is_online\">\n"
+"                        <a t-att-href=\"object.event_id.website_url\" style=\"padding: 8px 12px; font-size: 12px; color: #FFFFFF; text-decoration: none !important; font-weight: 400; background-color: #875A7B; border: 0px solid #875A7B; border-radius:3px\">\n"
+"                            View Event\n"
+"                        </a>\n"
 "                    </t>\n"
-"                    <t t-if=\"not object.company_id.uses_default_logo\">\n"
-"                        <img t-att-src=\"'/logo.png?company=%s' % object.company_id.id\" style=\"padding: 0px; margin: 0px; margin-right: 10px; height: auto; width: 80px;\" t-att-alt=\"'%s' % object.company_id.name\"/>\n"
+"                    <t t-else=\"\">\n"
+"                        <img t-att-src=\"'/logo.png?company=%s' % object.company_id.id\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"'%s' % object.company_id.name\">\n"
 "                    </t>\n"
 "                </td></tr>\n"
 "                <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
-"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:16px 0px 16px 0px;\"/>\n"
+"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:16px 0px 16px 0px;\">\n"
 "                </td></tr>\n"
 "            </table>\n"
 "        </td>\n"
@@ -851,42 +563,32 @@ msgid ""
 "            <table width=\"590\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
 "                <tr><td valign=\"top\" style=\"font-size: 14px;\">\n"
 "                    <div>\n"
-"                        Hello <t t-out=\"object.name or 'Guest'\"/>,<br/><br/>\n"
+"                        Hello <t t-out=\"object.name or ''\">Oscar Morgan</t>,<br>\n"
 "                        We are happy to confirm your registration to the event\n"
 "                        <t t-if=\"is_online\">\n"
-"                            <a t-att-href=\"object.event_id.website_url\" style=\"color:#875A7B;text-decoration:none;font-weight:bold;\" t-out=\"object.event_id.name or ''\">OpenWood Collection Online Reveal</a>\n"
+"                            <a t-att-href=\"object.event_id.website_url\" style=\"color:#875A7B;text-decoration:none;\" t-out=\"object.event_id.name or ''\">OpenWood Collection Online Reveal</a>\n"
 "                        </t>\n"
 "                        <t t-else=\"\">\n"
 "                            <strong t-out=\"object.event_id.name or ''\">OpenWood Collection Online Reveal</strong>\n"
-"                        </t>.\n"
-"                        <t t-if=\"object.partner_id and object.partner_id.name and object.partner_id.name != object.name\">\n"
-"                            This ticket was registered by <t t-out=\"object.partner_id.name\"/>.\n"
 "                        </t>\n"
-"                    </div>\n"
-"                    <div t-if=\"is_sale\">\n"
-"                        <br/>\n"
-"                        The order for this ticket has reference <t t-out=\"object.sale_order_id.name\"/>\n"
-"                        and was placed on <t t-out=\"object.sale_order_id.date_order.date()\"/>\n"
-"                        <t t-if=\"object.sale_order_line_id.price_unit\"> for an amount of\n"
-"                            <t t-out=\"object.sale_order_line_id.price_unit\" t-options=\"{'widget': 'monetary', 'display_currency': object.sale_order_line_id.currency_id}\"/>\n"
-"                        </t>.\n"
+"                        for attendee <t t-out=\"object.name or ''\">Oscar Morgan</t>.\n"
 "                    </div>\n"
 "                    <div>\n"
-"                        <br/>\n"
+"                        <br>\n"
 "                        <strong>Add this event to your calendar</strong>\n"
-"                        <a t-attf-href=\"https://www.google.com/calendar/render?action=TEMPLATE&amp;text={{ object.event_id.name }}&amp;dates={{ date_begin }}/{{ date_end }}&amp;location={{ location }}&amp;details={{ object.event_id._get_external_description() }}\" style=\"padding:3px 5px;border:1px solid #875A7B;color:#875A7B;text-decoration:none;border-radius:3px;\" target=\"new\"><img src=\"/web_editor/font_to_img/61525/rgb(135,90,123)/16\" style=\"vertical-align:middle;\" height=\"16\" alt=\"\"/> Google</a>\n"
-"                        <a t-attf-href=\"/event/{{ slug(object.event_id) }}/ics\" style=\"padding:3px 5px;border:1px solid #875A7B;color:#875A7B;text-decoration:none;border-radius:3px;\"><img src=\"/web_editor/font_to_img/61525/rgb(135,90,123)/16\" style=\"vertical-align:middle;\" height=\"16\" alt=\"\"/> iCal/Outlook</a>\n"
+"                        <a t-attf-href=\"https://www.google.com/calendar/render?action=TEMPLATE&amp;text={{ object.event_id.name }}&amp;dates={{ date_begin }}/{{ date_end }}&amp;location={{ location }}\" style=\"padding:3px 5px;border:1px solid #875A7B;color:#875A7B;text-decoration:none;border-radius:3px;\" target=\"new\"><img src=\"/web_editor/font_to_img/61525/rgb(135,90,123)/16\" style=\"vertical-align:middle;\" height=\"16\" alt=\"\"> Google</a>\n"
+"                        <a t-attf-href=\"/event/{{ slug(object.event_id) }}/ics\" style=\"padding:3px 5px;border:1px solid #875A7B;color:#875A7B;text-decoration:none;border-radius:3px;\"><img src=\"/web_editor/font_to_img/61525/rgb(135,90,123)/16\" style=\"vertical-align:middle;\" height=\"16\" alt=\"\"> iCal/Outlook</a>\n"
 "                        <a t-attf-href=\"https://calendar.yahoo.com/?v=60&amp;view=d&amp;type=20&amp;title={{ object.event_id.name }}&amp;in_loc={{ location }}&amp;st={{ format_datetime(object.event_id.date_begin, tz='UTC', dt_format='yyyyMMdd\\'T\\'HHmmss') }}&amp;et={{ format_datetime(object.event_id.date_end, tz='UTC', dt_format='yyyyMMdd\\'T\\'HHmmss') }}\" style=\"padding:3px 5px;border:1px solid #875A7B;color:#875A7B;text-decoration:none;border-radius:3px;\" target=\"new\">\n"
-"                            <img src=\"/web_editor/font_to_img/61525/rgb(135,90,123)/16\" style=\"vertical-align:middle;\" height=\"16\" alt=\"\"/> Yahoo\n"
+"                            <img src=\"/web_editor/font_to_img/61525/rgb(135,90,123)/16\" style=\"vertical-align:middle;\" height=\"16\" alt=\"\"> Yahoo\n"
 "                        </a>\n"
-"                        <br/><br/>\n"
+"                        <br><br>\n"
 "                    </div>\n"
 "                    <div>\n"
-"                        See you soon,<br/>\n"
+"                        See you soon,<br>\n"
 "                        <span style=\"color: #454748;\">\n"
-"                        -- <br/>\n"
+"                        -- <br>\n"
 "                        <t t-if=\"event_organizer\">\n"
-"                            <t t-out=\"event_organizer.name\">YourCompany</t>\n"
+"                            <t t-out=\"event_organizer.name or ''\">YourCompany</t>\n"
 "                        </t>\n"
 "                        <t t-else=\"\">\n"
 "                            The <t t-out=\"object.event_id.name or ''\">OpenWood Collection Online Reveal</t> Team\n"
@@ -895,7 +597,7 @@ msgid ""
 "                    </div>\n"
 "                </td></tr>\n"
 "                <tr><td style=\"text-align:center;\">\n"
-"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\">\n"
 "                </td></tr>\n"
 "            </table>\n"
 "        </td>\n"
@@ -908,57 +610,49 @@ msgid ""
 "                    <table style=\"width:100%;\">\n"
 "                        <tr>\n"
 "                            <td style=\"vertical-align:top;\">\n"
-"                                <img src=\"/web_editor/font_to_img/61555/rgb(81,81,102)/34\" style=\"padding:4px;max-width:inherit;\" height=\"34\" alt=\"\"/>\n"
+"                                <img src=\"/web_editor/font_to_img/61555/rgb(81,81,102)/34\" style=\"padding:4px;max-width:inherit;\" height=\"34\" alt=\"\">\n"
 "                            </td>\n"
 "                            <td style=\"padding: 0px 10px 0px 10px;width:50%;line-height:20px;vertical-align:top;\">\n"
-"                                <div>\n"
-"                                    <strong>From</strong>\n"
-"                                    <t t-out=\"object.event_id.date_begin\" t-options=\"{&quot;widget&quot;: &quot;datetime&quot;, &quot;date_only&quot;: True, &quot;tz_name&quot;: object.event_id.date_tz, &quot;format&quot;: &quot;long&quot;}\">May 4, 2021</t>\n"
-"                                     - <t t-out=\"object.event_id.date_begin\" t-options=\"{&quot;widget&quot;: &quot;datetime&quot;, &quot;time_only&quot;: True, &quot;tz_name&quot;: object.event_id.date_tz, &quot;hide_seconds&quot;: True, &quot;format&quot;: &quot;short&quot;}\">7:00 AM</t>\n"
-"                                </div>\n"
-"                                <div>\n"
-"                                    <strong>To</strong>\n"
-"                                    <t t-out=\"object.event_id.date_end\" t-options=\"{&quot;widget&quot;: &quot;datetime&quot;, &quot;date_only&quot;: True, &quot;tz_name&quot;: object.event_id.date_tz, &quot;format&quot;: &quot;long&quot;}\">May 6, 2021</t>\n"
-"                                     - <t t-out=\"object.event_id.date_end\" t-options=\"{&quot;widget&quot;: &quot;datetime&quot;, &quot;time_only&quot;: True, &quot;tz_name&quot;: object.event_id.date_tz, &quot;hide_seconds&quot;: True, &quot;format&quot;: &quot;short&quot;}\">5:00 PM</t>\n"
-"                                </div>\n"
+"                                <div><strong>From</strong> <t t-out=\"object.event_id.date_begin_located or ''\">May 4, 2021, 7:00:00 AM</t></div>\n"
+"                                <div><strong>To</strong> <t t-out=\"object.event_id.date_end_located or ''\">May 6, 2021, 5:00:00 PM</t></div>\n"
 "                                <div style=\"font-size:12px;color:#9e9e9e\"><i>(<t t-out=\"object.event_id.date_tz or ''\">Europe/Brussels</t>)</i></div>\n"
 "                            </td>\n"
 "                            <td style=\"vertical-align:top;\">\n"
 "                                <t t-if=\"event_address\">\n"
-"                                    <img src=\"/web_editor/font_to_img/61505/rgb(81,81,102)/34\" style=\"padding:4px;max-width:inherit;\" height=\"34\" alt=\"\"/>\n"
+"                                    <img src=\"/web_editor/font_to_img/61505/rgb(81,81,102)/34\" style=\"padding:4px;max-width:inherit;\" height=\"34\" alt=\"\">\n"
 "                                </t>\n"
 "                            </td>\n"
 "                            <td style=\"padding: 0px 10px 0px 10px;width:50%;vertical-align:top;\">\n"
 "                                <t t-if=\"event_address\">\n"
-"                                    <t t-set=\"location\" t-value=\"''\"/>\n"
+"                                    <t t-set=\"location\" t-value=\"''\"></t>\n"
 "                                    <t t-if=\"object.event_id.address_id.name\">\n"
-"                                        <div t-out=\"object.event_id.address_id.name\">Teksa SpA</div>\n"
+"                                        <div t-out=\"object.event_id.address_id.name or ''\">Teksa SpA</div>\n"
 "                                    </t>\n"
 "                                    <t t-if=\"object.event_id.address_id.street\">\n"
-"                                        <div t-out=\"object.event_id.address_id.street\">Puerto Madero 9710</div>\n"
-"                                        <t t-set=\"location\" t-value=\"object.event_id.address_id.street\"/>\n"
+"                                        <div t-out=\"object.event_id.address_id.street or ''\">Puerto Madero 9710</div>\n"
+"                                        <t t-set=\"location\" t-value=\"object.event_id.address_id.street\"></t>\n"
 "                                    </t>\n"
 "                                    <t t-if=\"object.event_id.address_id.street2\">\n"
-"                                        <div t-out=\"object.event_id.address_id.street2\">Of A15, Santiago (RM)</div>\n"
-"                                        <t t-set=\"location\" t-valuef=\"{{location}}, {{object.event_id.address_id.street2}}\"/>\n"
+"                                        <div t-out=\"object.event_id.address_id.street2 or ''\">Of A15, Santiago (RM)</div>\n"
+"                                        <t t-set=\"location\" t-value=\"'%s, %s' % (location, object.event_id.address_id.street2)\"></t>\n"
 "                                    </t>\n"
 "                                    <div>\n"
 "                                    <t t-if=\"object.event_id.address_id.city\">\n"
-"                                        <t t-out=\"object.event_id.address_id.city\">Pudahuel</t>,\n"
-"                                        <t t-set=\"location\" t-valuef=\"{{location}}, {{object.event_id.address_id.city}}\"/>\n"
+"                                        <t t-out=\"object.event_id.address_id.city or ''\">Pudahuel</t>,\n"
+"                                        <t t-set=\"location\" t-value=\"'%s, %s' % (location, object.event_id.address_id.city)\"></t>\n"
 "                                    </t>\n"
 "                                    <t t-if=\"object.event_id.address_id.state_id.name\">\n"
-"                                        <t t-out=\"object.event_id.address_id.state_id.name\">C1</t>,\n"
-"                                        <t t-set=\"location\" t-valuef=\"{{location}}, {{object.event_id.address_id.state_id.name}}\"/>\n"
+"                                        <t t-out=\"object.event_id.address_id.state_id.name or ''\">C1</t>,\n"
+"                                        <t t-set=\"location\" t-value=\"'%s, %s' % (location, object.event_id.address_id.state_id.name)\"></t>\n"
 "                                    </t>\n"
 "                                    <t t-if=\"object.event_id.address_id.zip\">\n"
-"                                        <t t-out=\"object.event_id.address_id.zip\">98450</t>\n"
-"                                        <t t-set=\"location\" t-valuef=\"{{location}}, {{object.event_id.address_id.zip}}\"/>\n"
+"                                        <t t-out=\"object.event_id.address_id.zip or ''\">98450</t>\n"
+"                                        <t t-set=\"location\" t-value=\"'%s, %s' % (location, object.event_id.address_id.zip)\"></t>\n"
 "                                    </t>\n"
 "                                    </div>\n"
 "                                    <t t-if=\"object.event_id.address_id.country_id.name\">\n"
-"                                        <div t-out=\"object.event_id.address_id.country_id.name\">Argentina</div>\n"
-"                                        <t t-set=\"location\" t-valuef=\"{{location}}, {{object.event_id.address_id.country_id.name}}\"/>\n"
+"                                        <div t-out=\"object.event_id.address_id.country_id.name or ''\">Argentina</div>\n"
+"                                        <t t-set=\"location\" t-value=\"'%s, %s' % (location, object.event_id.address_id.country_id.name)\"></t>\n"
 "                                    </t>\n"
 "                                </t>\n"
 "                            </td>\n"
@@ -967,7 +661,7 @@ msgid ""
 "                </td></tr>\n"
 "                <tr><td style=\"text-align:center;\">\n"
 "                    <t t-if=\"event_organizer\">\n"
-"                        <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                        <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\">\n"
 "                    </t>\n"
 "                </td></tr>\n"
 "\n"
@@ -983,7 +677,7 @@ msgid ""
 "                                    <li>Mail: <a t-attf-href=\"mailto:{{ event_organizer.email }}\" style=\"text-decoration:none;color:#875A7B;\" t-out=\"event_organizer.email or ''\">info@yourcompany.com</a></li>\n"
 "                                </t>\n"
 "                                <t t-if=\"event_organizer.phone\">\n"
-"                                    <li>Phone: <t t-out=\"event_organizer.phone\">+1 650-123-4567</t></li>\n"
+"                                    <li>Phone: <t t-out=\"event_organizer.phone or ''\">+1 650-123-4567</t></li>\n"
 "                                </t>\n"
 "                            </ul>\n"
 "                        </div>\n"
@@ -992,7 +686,7 @@ msgid ""
 "                <tr><td style=\"text-align:center;\">\n"
 "                    <!-- CONTACT ORGANIZER SEPARATION -->\n"
 "                    <t t-if=\"is_online or event_address\">\n"
-"                        <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                        <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\">\n"
 "                    </t>\n"
 "                </td></tr>\n"
 "\n"
@@ -1008,7 +702,7 @@ msgid ""
 "                <tr><td style=\"text-align:center;\">\n"
 "                    <!-- PWA MARKGETING SEPARATION-->\n"
 "                    <t t-if=\"is_online and event_address\">\n"
-"                        <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                        <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\">\n"
 "                    </t>\n"
 "                </td></tr>\n"
 "\n"
@@ -1017,10 +711,9 @@ msgid ""
 "                    <t t-if=\"event_address and location\">\n"
 "                        <table style=\"width:100%;\"><tr><td>\n"
 "                            <div>\n"
-"                                <i class=\"fa fa-map-marker\"/>\n"
+"                                <i class=\"fa fa-map-marker\"></i>\n"
 "                                <a t-attf-href=\"https://maps.google.com/maps?q={{ location }}\" target=\"new\">\n"
-"                                    <img t-if=\"event_address.static_map_url and event_address.static_map_url_is_valid\" t-att-src=\"event_address.static_map_url\" style=\"vertical-align:bottom; width: 100%;\" alt=\"Google Maps\"/>\n"
-"                                    <t t-else=\"\">See location on Google Maps</t>\n"
+"                                    See location on Google Maps\n"
 "                                </a>\n"
 "                            </div>\n"
 "                        </td></tr></table>\n"
@@ -1039,7 +732,7 @@ msgid ""
 "        <tr><td style=\"text-align: center; font-size: 14px;\">\n"
 "            Sent by <a target=\"_blank\" t-attf-href=\"{{ object.company_id.website }}\" style=\"color: #875A7B;\" t-out=\"object.company_id.name or ''\">YourCompany</a>\n"
 "            <t t-if=\"is_online\">\n"
-"                <br/>\n"
+"                <br>\n"
 "                Discover <a href=\"/event\" style=\"color:#875A7B;\">all our events</a>.\n"
 "            </t>\n"
 "        </td></tr>\n"
@@ -1049,249 +742,6 @@ msgid ""
 "</table>\n"
 "            "
 msgstr ""
-"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;\"><tr><td align=\"center\">\n"
-"<t t-set=\"date_begin\" t-value=\"format_datetime(object.event_id.date_begin, tz='UTC', dt_format=&quot;yyyyMMdd'T'HHmmss'Z'&quot;)\"/>\n"
-"<t t-set=\"date_end\" t-value=\"format_datetime(object.event_id.date_end, tz='UTC', dt_format=&quot;yyyyMMdd'T'HHmmss'Z'&quot;)\"/>\n"
-"<t t-set=\"is_online\" t-value=\"'is_published' in object.event_id and object.event_id.is_published\"/>\n"
-"<t t-set=\"is_sale\" t-value=\"'sale_order_id' in object and object.sale_order_id\"/>\n"
-"<t t-set=\"event_organizer\" t-value=\"object.event_id.organizer_id\"/>\n"
-"<t t-set=\"event_address\" t-value=\"object.event_id.address_id\"/>\n"
-"<t t-set=\"registration_ids\" t-value=\"object.ids if not is_sale else object._get_event_registration_ids_from_order()\"/>\n"
-"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"padding: 16px; background-color: white; color: #454748; border-collapse:separate;\">\n"
-"<tbody>\n"
-"    <!-- हेडर -->\n"
-"    <tr>\n"
-"        <td align=\"center\" style=\"min-width: 590px;\">\n"
-"            <table width=\"590\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
-"                <tr><td valign=\"middle\">\n"
-"                    <span style=\"font-size: 10px;\">आपका रजिस्ट्रेशन</span><br/>\n"
-"                    <span style=\"font-size: 20px; font-weight: bold;\">\n"
-"                        <t t-out=\"object.name or 'Guest'\"/>\n"
-"                    </span>\n"
-"                    <div style=\"margin-bottom: 5px;margin-top: 18px;\">\n"
-"                        <a t-attf-href=\"/event/{{ object.event_id.id }}/my_tickets?registration_ids={{ registration_ids }}&amp;tickets_hash={{ object.event_id._get_tickets_access_hash(registration_ids) }}&amp;responsive_html=1\" target=\"_blank\" style=\"padding: 8px 12px; font-size: 12px; color: #FFFFFF; text-decoration: none !important; font-weight: 400; background-color: #875A7B; border: 0px solid #875A7B; border-radius:3px\">\n"
-"                            टिकट देखें\n"
-"                        </a>\n"
-"                    </div>\n"
-"                </td><td valign=\"middle\" align=\"right\">\n"
-"                    <t t-if=\"object.barcode\"> \n"
-"                        <div style=\"margin-bottom: 5px;\">\n"
-"                            <img t-attf-src=\"/report/barcode/QR/{{object.barcode}}?&amp;width=100&amp;height=100&amp;quiet=0\" width=\"100\" height=\"100\" alt=\"QR Code\"/>\n"
-"                        </div>\n"
-"                    </t>\n"
-"                    <t t-if=\"not object.company_id.uses_default_logo\">\n"
-"                        <img t-att-src=\"'/logo.png?company=%s' % object.company_id.id\" style=\"padding: 0px; margin: 0px; margin-right: 10px; height: auto; width: 80px;\" t-att-alt=\"'%s' % object.company_id.name\"/>\n"
-"                    </t>\n"
-"                </td></tr>\n"
-"                <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
-"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:16px 0px 16px 0px;\"/>\n"
-"                </td></tr>\n"
-"            </table>\n"
-"        </td>\n"
-"    </tr>\n"
-"    <!-- इवेंट की जानकारी -->\n"
-"    <tr>\n"
-"        <td align=\"center\" style=\"min-width: 590px;\">\n"
-"            <table width=\"590\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
-"                <tr><td valign=\"top\" style=\"font-size: 14px;\">\n"
-"                    <div>\n"
-"                        नमस्ते <t t-out=\"object.name or 'Guest'\"/>,<br/><br/>\n"
-"                        हमें आपको यह बताते हुए खुशी हो रही है कि इवेंट में आपके रजिस्ट्रेशन हो गया है\n"
-"                        <t t-if=\"is_online\">\n"
-"                            <a t-att-href=\"object.event_id.website_url\" style=\"color:#875A7B;text-decoration:none;font-weight:bold;\" t-out=\"object.event_id.name or ''\">OpenWood Collection Online Reveal</a>\n"
-"                        </t>\n"
-"                        <t t-else=\"\">\n"
-"                            <strong t-out=\"object.event_id.name or ''\">OpenWood Collection Online Reveal</strong>\n"
-"                        </t>.\n"
-"                        <t t-if=\"object.partner_id and object.partner_id.name and object.partner_id.name != object.name\">\n"
-"                            आपका टिकट <t t-out=\"object.partner_id.name\"/> ने रजिस्टर किया है.\n"
-"                        </t>\n"
-"                    </div>\n"
-"                    <div t-if=\"is_sale\">\n"
-"                        <br/>\n"
-"                        इस इवेंट के लिए ऑर्डर नंबर <t t-out=\"object.sale_order_id.name\"/> है \n"
-"                        और <t t-out=\"object.sale_order_id.date_order.date()\"/> तारीख को दिया गया था और \n"
-"                        <t t-if=\"object.sale_order_line_id.price_unit\"> \n"
-"                            इतना <t t-out=\"object.sale_order_line_id.price_unit\" t-options=\"{'widget': 'monetary', 'display_currency': object.sale_order_line_id.currency_id}\"/> पैसा लगा था.\n"
-"                        </t>.\n"
-"                    </div>\n"
-"                    <div>\n"
-"                        <br/>\n"
-"                        <strong>अपने कैलेंडर में यह इवेंट जोड़ें</strong>\n"
-"                        <a t-attf-href=\"https://www.google.com/calendar/render?action=TEMPLATE&amp;text={{ object.event_id.name }}&amp;dates={{ date_begin }}/{{ date_end }}&amp;location={{ location }}&amp;details={{ object.event_id._get_external_description() }}\" style=\"padding:3px 5px;border:1px solid #875A7B;color:#875A7B;text-decoration:none;border-radius:3px;\" target=\"new\"><img src=\"/web_editor/font_to_img/61525/rgb(135,90,123)/16\" style=\"vertical-align:middle;\" height=\"16\" alt=\"\"/> Google</a>\n"
-"                        <a t-attf-href=\"/event/{{ slug(object.event_id) }}/ics\" style=\"padding:3px 5px;border:1px solid #875A7B;color:#875A7B;text-decoration:none;border-radius:3px;\"><img src=\"/web_editor/font_to_img/61525/rgb(135,90,123)/16\" style=\"vertical-align:middle;\" height=\"16\" alt=\"\"/> iCal/Outlook</a>\n"
-"                        <a t-attf-href=\"https://calendar.yahoo.com/?v=60&amp;view=d&amp;type=20&amp;title={{ object.event_id.name }}&amp;in_loc={{ location }}&amp;st={{ format_datetime(object.event_id.date_begin, tz='UTC', dt_format='yyyyMMdd\\'T\\'HHmmss') }}&amp;et={{ format_datetime(object.event_id.date_end, tz='UTC', dt_format='yyyyMMdd\\'T\\'HHmmss') }}\" style=\"padding:3px 5px;border:1px solid #875A7B;color:#875A7B;text-decoration:none;border-radius:3px;\" target=\"new\">\n"
-"                            <img src=\"/web_editor/font_to_img/61525/rgb(135,90,123)/16\" style=\"vertical-align:middle;\" height=\"16\" alt=\"\"/> Yahoo\n"
-"                        </a>\n"
-"                        <br/><br/>\n"
-"                    </div>\n"
-"                    <div>\n"
-"                        जल्दी मिलेंगे,<br/>\n"
-"                        <span style=\"color: #454748;\">\n"
-"                        -- <br/>\n"
-"                        <t t-if=\"event_organizer\">\n"
-"                            <t t-out=\"event_organizer.name\">आपकी कंपनी</t>\n"
-"                        </t>\n"
-"                        <t t-else=\"\">\n"
-"                            The <t t-out=\"object.event_id.name or ''\">OpenWood Collection Online Reveal</t> की टीम\n"
-"                        </t>\n"
-"                        </span>\n"
-"                    </div>\n"
-"                </td></tr>\n"
-"                <tr><td style=\"text-align:center;\">\n"
-"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
-"                </td></tr>\n"
-"            </table>\n"
-"        </td>\n"
-"    </tr>\n"
-"    <!-- जानकारी -->\n"
-"    <tr>\n"
-"        <td align=\"center\" style=\"min-width: 590px;\">\n"
-"            <table width=\"590\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
-"                <tr><td valign=\"top\" style=\"font-size: 14px;\">\n"
-"                    <table style=\"width:100%;\">\n"
-"                        <tr>\n"
-"                            <td style=\"vertical-align:top;\">\n"
-"                                <img src=\"/web_editor/font_to_img/61555/rgb(81,81,102)/34\" style=\"padding:4px;max-width:inherit;\" height=\"34\" alt=\"\"/>\n"
-"                            </td>\n"
-"                            <td style=\"padding: 0px 10px 0px 10px;width:50%;line-height:20px;vertical-align:top;\">\n"
-"                                <div>\n"
-"                                    <strong>द्वारा</strong>\n"
-"                                    <t t-out=\"object.event_id.date_begin\" t-options=\"{&quot;widget&quot;: &quot;datetime&quot;, &quot;date_only&quot;: True, &quot;tz_name&quot;: object.event_id.date_tz, &quot;format&quot;: &quot;long&quot;}\">4 मई, 2021</t>\n"
-"                                     - <t t-out=\"object.event_id.date_begin\" t-options=\"{&quot;widget&quot;: &quot;datetime&quot;, &quot;time_only&quot;: True, &quot;tz_name&quot;: object.event_id.date_tz, &quot;hide_seconds&quot;: True, &quot;format&quot;: &quot;short&quot;}\">सुबह 7:00 बजे</t>\n"
-"                                </div>\n"
-"                                <div>\n"
-"                                    <strong>इनके लिए</strong>\n"
-"                                    <t t-out=\"object.event_id.date_end\" t-options=\"{&quot;widget&quot;: &quot;datetime&quot;, &quot;date_only&quot;: True, &quot;tz_name&quot;: object.event_id.date_tz, &quot;format&quot;: &quot;long&quot;}\">6 मई, 2021</t>\n"
-"                                     - <t t-out=\"object.event_id.date_end\" t-options=\"{&quot;widget&quot;: &quot;datetime&quot;, &quot;time_only&quot;: True, &quot;tz_name&quot;: object.event_id.date_tz, &quot;hide_seconds&quot;: True, &quot;format&quot;: &quot;short&quot;}\">शाम 5:00 बजे</t>\n"
-"                                </div>\n"
-"                                <div style=\"font-size:12px;color:#9e9e9e\"><i>(<t t-out=\"object.event_id.date_tz or ''\">यूरोप/ब्रसेल्स</t>)</i></div>\n"
-"                            </td>\n"
-"                            <td style=\"vertical-align:top;\">\n"
-"                                <t t-if=\"event_address\">\n"
-"                                    <img src=\"/web_editor/font_to_img/61505/rgb(81,81,102)/34\" style=\"padding:4px;max-width:inherit;\" height=\"34\" alt=\"\"/>\n"
-"                                </t>\n"
-"                            </td>\n"
-"                            <td style=\"padding: 0px 10px 0px 10px;width:50%;vertical-align:top;\">\n"
-"                                <t t-if=\"event_address\">\n"
-"                                    <t t-set=\"location\" t-value=\"''\"/>\n"
-"                                    <t t-if=\"object.event_id.address_id.name\">\n"
-"                                        <div t-out=\"object.event_id.address_id.name\">Teksa SpA</div>\n"
-"                                    </t>\n"
-"                                    <t t-if=\"object.event_id.address_id.street\">\n"
-"                                        <div t-out=\"object.event_id.address_id.street\">Puerto Madero 9710</div>\n"
-"                                        <t t-set=\"location\" t-value=\"object.event_id.address_id.street\"/>\n"
-"                                    </t>\n"
-"                                    <t t-if=\"object.event_id.address_id.street2\">\n"
-"                                        <div t-out=\"object.event_id.address_id.street2\">Of A15, Santiago (RM)</div>\n"
-"                                        <t t-set=\"location\" t-valuef=\"{{location}}, {{object.event_id.address_id.street2}}\"/>\n"
-"                                    </t>\n"
-"                                    <div>\n"
-"                                    <t t-if=\"object.event_id.address_id.city\">\n"
-"                                        <t t-out=\"object.event_id.address_id.city\">Pudahuel</t>,\n"
-"                                        <t t-set=\"location\" t-valuef=\"{{location}}, {{object.event_id.address_id.city}}\"/>\n"
-"                                    </t>\n"
-"                                    <t t-if=\"object.event_id.address_id.state_id.name\">\n"
-"                                        <t t-out=\"object.event_id.address_id.state_id.name\">C1</t>,\n"
-"                                        <t t-set=\"location\" t-valuef=\"{{location}}, {{object.event_id.address_id.state_id.name}}\"/>\n"
-"                                    </t>\n"
-"                                    <t t-if=\"object.event_id.address_id.zip\">\n"
-"                                        <t t-out=\"object.event_id.address_id.zip\">98450</t>\n"
-"                                        <t t-set=\"location\" t-valuef=\"{{location}}, {{object.event_id.address_id.zip}}\"/>\n"
-"                                    </t>\n"
-"                                    </div>\n"
-"                                    <t t-if=\"object.event_id.address_id.country_id.name\">\n"
-"                                        <div t-out=\"object.event_id.address_id.country_id.name\">अर्जेंटीना</div>\n"
-"                                        <t t-set=\"location\" t-valuef=\"{{location}}, {{object.event_id.address_id.country_id.name}}\"/>\n"
-"                                    </t>\n"
-"                                </t>\n"
-"                            </td>\n"
-"                        </tr>\n"
-"                    </table>\n"
-"                </td></tr>\n"
-"                <tr><td style=\"text-align:center;\">\n"
-"                    <t t-if=\"event_organizer\">\n"
-"                        <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
-"                    </t>\n"
-"                </td></tr>\n"
-"\n"
-"                <tr><td valign=\"top\" style=\"font-size: 14px;\">\n"
-"                    <!-- आयोजक से संपर्क करें -->\n"
-"                    <t t-if=\"event_organizer\">\n"
-"                        <div>\n"
-"                            <span style=\"font-weight:300;margin:10px 0px\">इस इवेंट के बारे में कोई सवाल है?</span>\n"
-"                            <div>कृपया आयोजक से संपर्क करें:</div>\n"
-"                            <ul>\n"
-"                                <li><t t-out=\"event_organizer.name or ''\">आपकी कंपनी</t></li>\n"
-"                                <t t-if=\"event_organizer.email\">\n"
-"                                    <li>Mail: <a t-attf-href=\"mailto:{{ event_organizer.email }}\" style=\"text-decoration:none;color:#875A7B;\" t-out=\"event_organizer.email or ''\">info@yourcompany.com</a></li>\n"
-"                                </t>\n"
-"                                <t t-if=\"event_organizer.phone\">\n"
-"                                    <li>Phone: <t t-out=\"event_organizer.phone\">+1 650-123-4567</t></li>\n"
-"                                </t>\n"
-"                            </ul>\n"
-"                        </div>\n"
-"                    </t>\n"
-"                </td></tr>\n"
-"                <tr><td style=\"text-align:center;\">\n"
-"                    <!-- आयोजक की जानकारी अलग से दी गई है -->\n"
-"                    <t t-if=\"is_online or event_address\">\n"
-"                        <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
-"                    </t>\n"
-"                </td></tr>\n"
-"\n"
-"                <tr><td valign=\"top\" style=\"font-size: 14px;\">\n"
-"                    <!-- PWA मार्केटिंग -->\n"
-"                    <t t-if=\"is_online\">\n"
-"                        <div>\n"
-"                            <strong>मोबाइल पर सबसे बढ़िया अनुभव पाएं.</strong>\n"
-"                            <a href=\"/event\">हमारा मोबाइल ऐप्लिकेशन इंस्टॉल करें</a>\n"
-"                        </div>\n"
-"                    </t>\n"
-"                </td></tr>\n"
-"                <tr><td style=\"text-align:center;\">\n"
-"                    <!-- PWA मार्केटिंग की जानकारी अलग दी गई है-->\n"
-"                    <t t-if=\"is_online and event_address\">\n"
-"                        <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
-"                    </t>\n"
-"                </td></tr>\n"
-"\n"
-"                <tr><td valign=\"top\" style=\"font-size: 14px;\">\n"
-"                    <!-- GOOGLE MAPS लिंक -->\n"
-"                    <t t-if=\"event_address and location\">\n"
-"                        <table style=\"width:100%;\"><tr><td>\n"
-"                            <div>\n"
-"                                <i class=\"fa fa-map-marker\"/>\n"
-"                                <a t-attf-href=\"https://maps.google.com/maps?q={{ location }}\" target=\"new\">\n"
-"                                    <img t-if=\"event_address.static_map_url and event_address.static_map_url_is_valid\" t-att-src=\"event_address.static_map_url\" style=\"vertical-align:bottom; width: 100%;\" alt=\"Google Maps\"/>\n"
-"                                    <t t-else=\"\">Google Maps पर हमारी जगह की जानकारी देखें</t>\n"
-"                                </a>\n"
-"                            </div>\n"
-"                        </td></tr></table>\n"
-"                    </t>\n"
-"                </td></tr>\n"
-"            </table>\n"
-"        </td>\n"
-"    </tr>\n"
-"</tbody>\n"
-"</table>\n"
-"</td></tr>\n"
-"<!-- फ़ुटर -->\n"
-"<tr><td align=\"center\" style=\"min-width: 590px;\">\n"
-"    <t t-if=\"object.company_id\">\n"
-"        <table width=\"590\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"min-width: 590px; background-color: #F1F1F1; color: #454748; padding: 8px; border-collapse:separate;\">\n"
-"        <tr><td style=\"text-align: center; font-size: 14px;\">\n"
-"             <a target=\"_blank\" t-attf-href=\"{{ object.company_id.website }}\" style=\"color: #875A7B;\" t-out=\"object.company_id.name or ''\">आपकी कंपनी</a> ने भेजा है\n"
-"            <t t-if=\"is_online\">\n"
-"                <br/>\n"
-"                <a href=\"/event\" style=\"color:#875A7B;\">हमारे सभी इवेंट</a> के बारे में जानें.\n"
-"            </t>\n"
-"        </td></tr>\n"
-"        </table>\n"
-"    </t>\n"
-"</td></tr>\n"
-"</table>\n"
-"            "
 
 #. module: event
 #: model:ir.model.fields,help:event.field_event_event_ticket__description
@@ -1301,20 +751,10 @@ msgid ""
 msgstr ""
 
 #. module: event
-#: model:ir.model.fields.selection,name:event.selection__event_event__badge_format__a4_french_fold
-msgid "A4 foldable"
-msgstr ""
-
-#. module: event
-#: model:ir.model.fields.selection,name:event.selection__event_event__badge_format__a6
-msgid "A6"
-msgstr ""
-
-#. module: event
 #: model:ir.model.fields,field_description:event.field_event_event__message_needaction
 #: model:ir.model.fields,field_description:event.field_event_registration__message_needaction
 msgid "Action Needed"
-msgstr "कार्रवाई की ज़रूरत है"
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_event__active
@@ -1331,25 +771,25 @@ msgstr "गतिविधियाँ"
 #. module: event
 #: model:event.tag.category,name:event.event_tag_category_2
 msgid "Activity"
-msgstr "ऐक्टिविटी"
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_event__activity_exception_decoration
 #: model:ir.model.fields,field_description:event.field_event_registration__activity_exception_decoration
 msgid "Activity Exception Decoration"
-msgstr "ऐक्टिविटी एक्सेप्शन डेकोरेशन"
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_event__activity_state
 #: model:ir.model.fields,field_description:event.field_event_registration__activity_state
 msgid "Activity State"
-msgstr "ऐक्टिविटी स्टेट"
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_event__activity_type_icon
 #: model:ir.model.fields,field_description:event.field_event_registration__activity_type_icon
 msgid "Activity Type Icon"
-msgstr "ऐक्टिविटी टाइप आइकॉन"
+msgstr ""
 
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.event_stage_view_form
@@ -1372,12 +812,12 @@ msgstr ""
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_event__address_search
 msgid "Address"
-msgstr "पता"
+msgstr ""
 
 #. module: event
 #: model:res.groups,name:event.group_event_manager
 msgid "Administrator"
-msgstr "एडमिन"
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_res_config_settings__module_website_event_exhibitor
@@ -1402,13 +842,6 @@ msgid "Age"
 msgstr ""
 
 #. module: event
-#: model:ir.model.fields,help:event.field_event_event__lang
-msgid ""
-"All the communication emails sent to attendees will be translated in this "
-"language."
-msgstr ""
-
-#. module: event
 #: model:event.event,name:event.event_6
 msgid "An unpublished event"
 msgstr ""
@@ -1426,40 +859,17 @@ msgid "Announced"
 msgstr ""
 
 #. module: event
-#: model:ir.model.fields,field_description:event.field_event_question_answer__name
-msgid "Answer"
-msgstr ""
-
-#. module: event
-#: model:ir.actions.act_window,name:event.action_event_registration_report
-#: model_terms:ir.ui.view,arch_db:event.event_registration_answer_view_graph
-#: model_terms:ir.ui.view,arch_db:event.event_registration_answer_view_pivot
-#: model_terms:ir.ui.view,arch_db:event.event_registration_answer_view_tree
-#: model_terms:ir.ui.view,arch_db:event.view_event_form
-msgid "Answer Breakdown"
-msgstr ""
-
-#. module: event
-#. odoo-javascript
-#: code:addons/event/static/src/client_action/event_registration_summary_dialog.xml:0
-#: model:ir.model.fields,field_description:event.field_event_question__answer_ids
-#: model_terms:ir.ui.view,arch_db:event.event_question_view_form
-#: model_terms:ir.ui.view,arch_db:event.view_event_form
-msgid "Answers"
-msgstr ""
-
-#. module: event
 #. odoo-javascript
 #: code:addons/event/static/src/js/tours/event_tour.js:0
+#, python-format
 msgid "Apply change."
 msgstr ""
 
 #. module: event
-#: model_terms:ir.ui.view,arch_db:event.event_registration_view_kanban
 #: model_terms:ir.ui.view,arch_db:event.view_event_search
 #: model_terms:ir.ui.view,arch_db:event.view_registration_search
 msgid "Archived"
-msgstr "संग्रहीत किया गया"
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_event_ticket__is_launched
@@ -1475,14 +885,10 @@ msgstr ""
 
 #. module: event
 #: model_terms:res.partner,website_description:event.res_partner_event_1
+#: model_terms:res.partner,website_description:event.res_partner_event_2
 #: model_terms:res.partner,website_description:event.res_partner_event_3
 #: model_terms:res.partner,website_description:event.res_partner_event_4
 msgid "As a team, we are happy to contribute to this event."
-msgstr ""
-
-#. module: event
-#: model:ir.model.fields,field_description:event.field_event_question__once_per_order
-msgid "Ask once per order"
 msgstr ""
 
 #. module: event
@@ -1498,7 +904,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:event.field_event_event__message_attachment_count
 #: model:ir.model.fields,field_description:event.field_event_registration__message_attachment_count
 msgid "Attachment Count"
-msgstr "अटैचमेंट काउंट"
+msgstr ""
 
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.res_config_settings_view_form
@@ -1525,29 +931,8 @@ msgid "Attendee"
 msgstr ""
 
 #. module: event
-#: model:ir.model.fields,field_description:event.field_event_registration__registration_answer_ids
-msgid "Attendee Answers"
-msgstr ""
-
-#. module: event
-#: model:ir.actions.report,name:event.action_report_event_event_attendee_list
-#: model:ir.actions.report,name:event.action_report_event_registration_attendee_list
-msgid "Attendee List"
-msgstr ""
-
-#. module: event
 #: model:ir.model.fields,field_description:event.field_event_registration__name
 msgid "Attendee Name"
-msgstr ""
-
-#. module: event
-#: model:ir.model.fields,field_description:event.field_event_registration__registration_answer_choice_ids
-msgid "Attendee Selection Answers"
-msgstr ""
-
-#. module: event
-#: model_terms:ir.ui.view,arch_db:event.attendee_list
-msgid "Attendee list"
 msgstr ""
 
 #. module: event
@@ -1558,57 +943,31 @@ msgstr ""
 #: model:ir.model.fields,field_description:event.field_event_event__registration_ids
 #: model:ir.ui.menu,name:event.menu_action_registration
 #: model_terms:ir.ui.view,arch_db:event.view_event_form
-#: model_terms:ir.ui.view,arch_db:event.view_event_kanban
-#: model_terms:ir.ui.view,arch_db:event.view_event_type_form
 msgid "Attendees"
 msgstr ""
 
 #. module: event
-#. odoo-javascript
-#: code:addons/event/static/src/client_action/event_registration_summary_dialog.xml:0
-msgid "Auto-Print"
+#: model:ir.model.fields,help:event.field_event_event__auto_confirm
+msgid ""
+"Autoconfirm Registrations. Registrations will automatically be confirmed "
+"upon creation."
+msgstr ""
+
+#. module: event
+#: model:ir.model.fields,field_description:event.field_event_event__auto_confirm
+#: model_terms:ir.ui.view,arch_db:event.view_event_type_form
+msgid "Autoconfirmation"
+msgstr ""
+
+#. module: event
+#: model:ir.model.fields,field_description:event.field_event_type__auto_confirm
+msgid "Automatically Confirm Registrations"
 msgstr ""
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_event__seats_available
 #: model:ir.model.fields,field_description:event.field_event_event_ticket__seats_available
 msgid "Available Seats"
-msgstr ""
-
-#. module: event
-#: model:ir.actions.report,name:event.action_report_event_registration_badge
-msgid "Badge"
-msgstr ""
-
-#. module: event
-#: model:ir.actions.report,name:event.action_report_event_registration_badge_96x134
-msgid "Badge (96x134mm)"
-msgstr ""
-
-#. module: event
-#: model:ir.actions.report,name:event.action_report_event_registration_badge_96x82
-msgid "Badge (96x82mm)"
-msgstr ""
-
-#. module: event
-#: model:ir.model.fields,field_description:event.field_event_event__badge_image
-msgid "Badge Background"
-msgstr ""
-
-#. module: event
-#: model:ir.model.fields,field_description:event.field_event_event__badge_format
-msgid "Badge Dimension"
-msgstr ""
-
-#. module: event
-#: model:ir.actions.report,name:event.action_report_event_event_badge
-msgid "Badge Example"
-msgstr ""
-
-#. module: event
-#. odoo-python
-#: code:addons/event/controllers/main.py:0
-msgid "Badges"
 msgstr ""
 
 #. module: event
@@ -1619,24 +978,8 @@ msgid ""
 msgstr ""
 
 #. module: event
-#: model:ir.model.fields,field_description:event.field_event_registration__barcode
-#: model_terms:ir.ui.view,arch_db:event.event_report_template_full_page_ticket
+#: model:ir.model.fields,field_description:event.field_res_config_settings__module_event_barcode
 msgid "Barcode"
-msgstr ""
-
-#. module: event
-#: model:ir.actions.client,name:event.event_barcode_action_main_view
-msgid "Barcode Interface"
-msgstr ""
-
-#. module: event
-#: model_terms:ir.ui.view,arch_db:event.res_config_settings_view_form
-msgid "Barcode Nomenclature"
-msgstr ""
-
-#. module: event
-#: model:ir.model.constraint,message:event.constraint_event_registration_barcode_event_uniq
-msgid "Barcode should be unique"
 msgstr ""
 
 #. module: event
@@ -1654,8 +997,9 @@ msgstr ""
 #: model:event.stage,legend_blocked:event.event_stage_done
 #: model:event.stage,legend_blocked:event.event_stage_new
 #: model:ir.model.fields.selection,name:event.selection__event_event__kanban_state__blocked
+#, python-format
 msgid "Blocked"
-msgstr "ब्लॉक किया गया"
+msgstr ""
 
 #. module: event
 #: model:res.partner,website_short_description:event.res_partner_event_1
@@ -1670,8 +1014,13 @@ msgid "Booked"
 msgstr ""
 
 #. module: event
+#: model_terms:ir.ui.view,arch_db:event.event_report_template_full_page_ticket
+msgid "Booked By"
+msgstr ""
+
+#. module: event
 #: model:ir.model.fields,field_description:event.field_event_registration__partner_id
-#: model:ir.model.fields,field_description:event.field_event_registration_answer__partner_id
+#: model_terms:ir.ui.view,arch_db:event.event_registration_view_kanban
 msgid "Booked by"
 msgstr ""
 
@@ -1716,12 +1065,6 @@ msgid "Cancelled"
 msgstr "निरस्त"
 
 #. module: event
-#. odoo-javascript
-#: code:addons/event/static/src/client_action/event_registration_summary_dialog.xml:0
-msgid "Cancelled registration"
-msgstr ""
-
-#. module: event
 #: model:ir.model.fields,field_description:event.field_event_tag__category_id
 msgid "Category"
 msgstr "वर्ग"
@@ -1739,39 +1082,23 @@ msgid ""
 msgstr ""
 
 #. module: event
-#: model:ir.model.fields,help:event.field_event_event__event_type_id
-msgid ""
-"Choose a template to auto-fill tickets, communications, descriptions and "
-"other fields."
-msgstr ""
-
-#. module: event
-#: model:ir.model.fields,field_description:event.field_event_event_ticket__color
-msgid "Color"
-msgstr "कलर"
-
-#. module: event
 #: model:ir.model.fields,field_description:event.field_event_tag__color
 msgid "Color Index"
-msgstr "कलर इंडेक्स"
-
-#. module: event
-#: model_terms:ir.actions.act_window,help:event.action_event_registration_report
-msgid "Come back once you have registrations to overview answers."
 msgstr ""
 
 #. module: event
 #: model_terms:res.partner,website_description:event.res_partner_event_1
+#: model_terms:res.partner,website_description:event.res_partner_event_2
 #: model_terms:res.partner,website_description:event.res_partner_event_3
 #: model_terms:res.partner,website_description:event.res_partner_event_4
-msgid "Come see us live, we hope to meet you!"
+msgid "Come see us live, we hope to meet you !"
 msgstr ""
 
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.view_event_form
 #: model_terms:ir.ui.view,arch_db:event.view_event_type_form
 msgid "Communication"
-msgstr "कम्यूनिकेशन "
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,help:event.field_event_mail__mail_registration_ids
@@ -1784,36 +1111,23 @@ msgid "Community Chat Rooms"
 msgstr ""
 
 #. module: event
-#. odoo-javascript
-#: code:addons/event/static/src/client_action/event_registration_summary_dialog.xml:0
 #: model:ir.model.fields,field_description:event.field_event_event__company_id
 #: model:ir.model.fields,field_description:event.field_event_event_ticket__company_id
 #: model:ir.model.fields,field_description:event.field_event_registration__company_id
-#: model:ir.model.fields.selection,name:event.selection__event_question__question_type__company_name
 #: model_terms:event.event,description:event.event_2
-#: model_terms:ir.ui.view,arch_db:event.attendee_list
 msgid "Company"
 msgstr "संस्था"
 
 #. module: event
-#. odoo-javascript
-#: code:addons/event/static/src/client_action/event_barcode.xml:0
-msgid "Company Logo"
-msgstr ""
-
-#. module: event
-#: model:ir.model.fields,field_description:event.field_event_registration__company_name
-msgid "Company Name"
-msgstr ""
-
-#. module: event
 #. odoo-python
 #: code:addons/event/models/event_registration.py:0
+#, python-format
 msgid "Compose Email"
 msgstr ""
 
 #. module: event
 #: model:event.tag,name:event.event_tag_category_3_tag_2
+#: model:event.type,name:event.event_type_data_conference
 msgid "Conference"
 msgstr ""
 
@@ -1831,12 +1145,18 @@ msgstr ""
 #. module: event
 #: model:ir.model,name:event.model_res_config_settings
 msgid "Config Settings"
-msgstr "कॉन्फ़िगरेशन सेटिंग"
+msgstr ""
 
 #. module: event
 #: model:ir.ui.menu,name:event.menu_event_configuration
 msgid "Configuration"
 msgstr "कॉन्फ़िगरेशन"
+
+#. module: event
+#: model_terms:ir.ui.view,arch_db:event.view_event_registration_form
+#: model_terms:ir.ui.view,arch_db:event.view_event_registration_tree
+msgid "Confirm"
+msgstr "पुष्टि करें"
 
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.event_registration_view_kanban
@@ -1845,25 +1165,27 @@ msgstr ""
 
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.event_registration_view_kanban
-msgid "Confirm Attendance Button"
+msgid "Confirm Registration"
 msgstr ""
 
 #. module: event
-#. odoo-javascript
-#: code:addons/event/static/src/client_action/event_registration_summary_dialog.xml:0
-msgid "Confirm attendance?"
+#: model:ir.model.fields.selection,name:event.selection__event_registration__state__open
+#: model_terms:ir.ui.view,arch_db:event.event_event_ticket_view_tree_from_event
+#: model_terms:ir.ui.view,arch_db:event.view_event_kanban
+#: model_terms:ir.ui.view,arch_db:event.view_registration_search
+msgid "Confirmed"
+msgstr "पुष्टि"
+
+#. module: event
+#: model_terms:ir.ui.view,arch_db:event.view_event_form
+#: model_terms:ir.ui.view,arch_db:event.view_event_type_form
+msgid "Confirmed Attendees"
 msgstr ""
 
 #. module: event
 #: model:ir.model,name:event.model_res_partner
 msgid "Contact"
 msgstr "संपर्क"
-
-#. module: event
-#. odoo-javascript
-#: code:addons/event/static/src/client_action/event_registration_summary_dialog.xml:0
-msgid "Continue"
-msgstr ""
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_event__country_id
@@ -1900,10 +1222,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:event.field_event_event_ticket__create_uid
 #: model:ir.model.fields,field_description:event.field_event_mail__create_uid
 #: model:ir.model.fields,field_description:event.field_event_mail_registration__create_uid
-#: model:ir.model.fields,field_description:event.field_event_question__create_uid
-#: model:ir.model.fields,field_description:event.field_event_question_answer__create_uid
 #: model:ir.model.fields,field_description:event.field_event_registration__create_uid
-#: model:ir.model.fields,field_description:event.field_event_registration_answer__create_uid
 #: model:ir.model.fields,field_description:event.field_event_stage__create_uid
 #: model:ir.model.fields,field_description:event.field_event_tag__create_uid
 #: model:ir.model.fields,field_description:event.field_event_tag_category__create_uid
@@ -1918,10 +1237,7 @@ msgstr "द्वारा निर्मित"
 #: model:ir.model.fields,field_description:event.field_event_event_ticket__create_date
 #: model:ir.model.fields,field_description:event.field_event_mail__create_date
 #: model:ir.model.fields,field_description:event.field_event_mail_registration__create_date
-#: model:ir.model.fields,field_description:event.field_event_question__create_date
-#: model:ir.model.fields,field_description:event.field_event_question_answer__create_date
 #: model:ir.model.fields,field_description:event.field_event_registration__create_date
-#: model:ir.model.fields,field_description:event.field_event_registration_answer__create_date
 #: model:ir.model.fields,field_description:event.field_event_stage__create_date
 #: model:ir.model.fields,field_description:event.field_event_tag__create_date
 #: model:ir.model.fields,field_description:event.field_event_tag_category__create_date
@@ -1929,7 +1245,7 @@ msgstr "द्वारा निर्मित"
 #: model:ir.model.fields,field_description:event.field_event_type_mail__create_date
 #: model:ir.model.fields,field_description:event.field_event_type_ticket__create_date
 msgid "Created on"
-msgstr "इस तारीख को बनाया गया"
+msgstr ""
 
 #. module: event
 #: model:event.tag,name:event.event_tag_category_2_tag_1
@@ -1939,14 +1255,16 @@ msgstr ""
 #. module: event
 #. odoo-python
 #: code:addons/event/models/event_registration.py:0
+#, python-format
 msgid "Customer"
 msgstr "साथी"
 
 #. module: event
 #. odoo-python
 #: code:addons/event/models/event_registration.py:0
+#, python-format
 msgid "Customer Email"
-msgstr "कस्टमर ईमल"
+msgstr ""
 
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.event_event_view_form_quick_create
@@ -1955,15 +1273,10 @@ msgid "Date"
 msgstr "तिथि"
 
 #. module: event
-#: model:ir.model.fields,field_description:event.field_event_registration__event_date_range
-msgid "Date Range"
-msgstr "तारीख का रेंज"
-
-#. module: event
 #: model:ir.model.fields.selection,name:event.selection__event_mail__interval_unit__days
 #: model:ir.model.fields.selection,name:event.selection__event_type_mail__interval_unit__days
 msgid "Days"
-msgstr "दिन"
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,help:event.field_event_event_ticket__seats_max
@@ -1993,6 +1306,7 @@ msgstr ""
 
 #. module: event
 #: model_terms:res.partner,website_description:event.res_partner_event_1
+#: model_terms:res.partner,website_description:event.res_partner_event_2
 #: model_terms:res.partner,website_description:event.res_partner_event_3
 #: model_terms:res.partner,website_description:event.res_partner_event_4
 msgid "Discover more"
@@ -2008,10 +1322,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:event.field_event_event_ticket__display_name
 #: model:ir.model.fields,field_description:event.field_event_mail__display_name
 #: model:ir.model.fields,field_description:event.field_event_mail_registration__display_name
-#: model:ir.model.fields,field_description:event.field_event_question__display_name
-#: model:ir.model.fields,field_description:event.field_event_question_answer__display_name
 #: model:ir.model.fields,field_description:event.field_event_registration__display_name
-#: model:ir.model.fields,field_description:event.field_event_registration_answer__display_name
 #: model:ir.model.fields,field_description:event.field_event_stage__display_name
 #: model:ir.model.fields,field_description:event.field_event_tag__display_name
 #: model:ir.model.fields,field_description:event.field_event_tag_category__display_name
@@ -2019,16 +1330,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:event.field_event_type_mail__display_name
 #: model:ir.model.fields,field_description:event.field_event_type_ticket__display_name
 msgid "Display Name"
-msgstr "डिस्प्ले नाम"
+msgstr ""
 
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.res_config_settings_view_form
 msgid "Display Sponsors and Exhibitors on your event pages"
-msgstr ""
-
-#. module: event
-#: model:ir.model.fields,field_description:event.field_event_event__date_tz
-msgid "Display Timezone"
 msgstr ""
 
 #. module: event
@@ -2049,32 +1355,13 @@ msgid ""
 msgstr ""
 
 #. module: event
-#. odoo-javascript
-#: code:addons/event/static/src/client_action/event_registration_summary_dialog.xml:0
-msgid "Edit"
-msgstr "संपादित"
-
-#. module: event
-#. odoo-python
-#: code:addons/event/models/event_event.py:0
 #: model:ir.model.fields,field_description:event.field_event_registration__email
-#: model:ir.model.fields.selection,name:event.selection__event_question__question_type__email
 msgid "Email"
 msgstr "ईमेल"
 
 #. module: event
 #: model:ir.model,name:event.model_mail_template
 msgid "Email Templates"
-msgstr "ईमेल टेंप्लेट"
-
-#. module: event
-#: model_terms:ir.ui.view,arch_db:event.res_config_settings_view_form
-msgid "Enable barcode scanning"
-msgstr ""
-
-#. module: event
-#: model:ir.model.fields,help:event.field_res_config_settings__use_event_barcode
-msgid "Enable or Disable Event Barcode functionality."
 msgstr ""
 
 #. module: event
@@ -2103,16 +1390,11 @@ msgid "Enhance your architectural business and improve professional skills."
 msgstr ""
 
 #. module: event
-#. odoo-javascript
-#: code:addons/event/static/src/client_action/event_registration_summary_dialog.xml:0
 #: model:ir.model,name:event.model_event_event
 #: model:ir.model.fields,field_description:event.field_event_event__name
 #: model:ir.model.fields,field_description:event.field_event_event_ticket__event_id
 #: model:ir.model.fields,field_description:event.field_event_mail__event_id
-#: model:ir.model.fields,field_description:event.field_event_question__event_id
 #: model:ir.model.fields,field_description:event.field_event_registration__event_id
-#: model:ir.model.fields,field_description:event.field_event_registration_answer__event_id
-#: model_terms:ir.ui.view,arch_db:event.event_event_view_activity
 #: model_terms:ir.ui.view,arch_db:event.view_event_search
 #: model_terms:ir.ui.view,arch_db:event.view_registration_search
 msgid "Event"
@@ -2163,13 +1445,6 @@ msgid "Event Mail Schedulers"
 msgstr ""
 
 #. module: event
-#. odoo-javascript
-#: code:addons/event/static/src/template_reference_field/field_event_mail_template_reference.js:0
-msgid "Event Mail Template Reference"
-msgstr ""
-
-#. module: event
-#: model_terms:ir.ui.view,arch_db:event.event_event_view_activity
 #: model_terms:ir.ui.view,arch_db:event.view_event_form
 msgid "Event Name"
 msgstr ""
@@ -2185,32 +1460,11 @@ msgid "Event Organizer"
 msgstr ""
 
 #. module: event
-#: model:ir.model,name:event.model_event_question
-msgid "Event Question"
-msgstr ""
-
-#. module: event
-#: model:ir.model,name:event.model_event_question_answer
-msgid "Event Question Answer"
-msgstr ""
-
-#. module: event
 #: model:ir.model,name:event.model_event_registration
 #: model_terms:ir.ui.view,arch_db:event.view_event_registration_calendar
 #: model_terms:ir.ui.view,arch_db:event.view_event_registration_form
 #: model_terms:ir.ui.view,arch_db:event.view_registration_search
 msgid "Event Registration"
-msgstr ""
-
-#. module: event
-#: model:ir.model,name:event.model_event_registration_answer
-msgid "Event Registration Answer"
-msgstr ""
-
-#. module: event
-#. odoo-python
-#: code:addons/event/controllers/main.py:0
-msgid "Event Registrations"
 msgstr ""
 
 #. module: event
@@ -2221,6 +1475,7 @@ msgstr ""
 #. module: event
 #. odoo-python
 #: code:addons/event/models/event_mail.py:0
+#, python-format
 msgid ""
 "Event Scheduler for:\n"
 "  - Event: %(event_name)s (%(event_id)s)\n"
@@ -2307,11 +1562,16 @@ msgstr ""
 #. module: event
 #: model:ir.model,name:event.model_event_event_ticket
 #: model:ir.model.fields,field_description:event.field_event_event__event_ticket_ids
+#: model:ir.model.fields,field_description:event.field_event_registration__event_ticket_id
 msgid "Event Ticket"
 msgstr ""
 
 #. module: event
-#: model:ir.model.fields,field_description:event.field_event_question__event_type_id
+#: model_terms:ir.ui.view,arch_db:event.event_report_template_full_page_ticket
+msgid "Event Ticket For"
+msgstr ""
+
+#. module: event
 #: model:ir.model.fields,field_description:event.field_event_type_mail__event_type_id
 msgid "Event Type"
 msgstr ""
@@ -2335,6 +1595,7 @@ msgstr ""
 
 #. module: event
 #: model:ir.actions.server,name:event.event_mail_scheduler_ir_actions_server
+#: model:ir.cron,cron_name:event.event_mail_scheduler
 msgid "Event: Mail Scheduler"
 msgstr ""
 
@@ -2346,7 +1607,7 @@ msgstr ""
 #. module: event
 #: model:mail.template,name:event.event_subscription
 msgid "Event: Registration Confirmation"
-msgstr "इवेंट: रजिस्ट्रेशन की पुष्टि"
+msgstr ""
 
 #. module: event
 #: model:mail.template,name:event.event_reminder
@@ -2377,13 +1638,18 @@ msgid "Events Stage"
 msgstr ""
 
 #. module: event
+#: model:ir.model.fields,help:event.field_event_type__auto_confirm
+msgid ""
+"Events and registrations will automatically be confirmed upon creation, "
+"easing the flow for simple events."
+msgstr ""
+
+#. module: event
 #: model:ir.model.fields,help:event.field_event_stage__pipe_end
 msgid ""
 "Events will automatically be moved into this stage when they are finished. "
 "The event moved into this stage will automatically be set as green."
 msgstr ""
-"जब कोई इवेंट पूरा हो जाता है, तो वह अपने-आप इस स्टेज में चला जाएगा. जो इवेंट"
-" इस स्टेज में जाएंगे, वे अपने-आप हरे रंग के हो जाएंगे."
 
 #. module: event
 #: model_terms:event.event,description:event.event_4
@@ -2409,15 +1675,39 @@ msgid "Exhibition"
 msgstr ""
 
 #. module: event
+#: model_terms:ir.ui.view,arch_db:event.view_registration_search
+msgid "Expected"
+msgstr ""
+
+#. module: event
+#: model_terms:ir.ui.view,arch_db:event.view_event_tree
+msgid "Expected Attendees"
+msgstr ""
+
+#. module: event
+#: model_terms:ir.ui.view,arch_db:event.view_event_kanban
+msgid "Expected attendees"
+msgstr ""
+
+#. module: event
 #: model:event.event,subtitle:event.event_3
 msgid "Experience live music, local food and beverages."
 msgstr ""
 
 #. module: event
-#: model:event.stage,description:event.event_stage_done
+#: model:ir.actions.report,name:event.action_report_event_registration_foldable_badge
+msgid "Foldable Badge"
+msgstr ""
+
+#. module: event
+#: model:mail.template,report_name:event.event_registration_mail_template_badge
 msgid ""
-"Finished events. Odoo will automatically move them to this stage once their "
-"end date has passed."
+"Foldable Badge - {{ (object.event_id.name or 'Event').replace('/','_') }}"
+msgstr ""
+
+#. module: event
+#: model:ir.actions.report,name:event.action_report_event_event_foldable_badge
+msgid "Foldable Badge Example"
 msgstr ""
 
 #. module: event
@@ -2429,19 +1719,19 @@ msgstr ""
 #: model:ir.model.fields,field_description:event.field_event_event__message_follower_ids
 #: model:ir.model.fields,field_description:event.field_event_registration__message_follower_ids
 msgid "Followers"
-msgstr "फ़ॉलोवर"
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_event__message_partner_ids
 #: model:ir.model.fields,field_description:event.field_event_registration__message_partner_ids
 msgid "Followers (Partners)"
-msgstr "फ़ॉलोवर (पार्टनर)"
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,help:event.field_event_event__activity_type_icon
 #: model:ir.model.fields,help:event.field_event_registration__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
-msgstr "फॉन्ट के बेहतरीन आइकॉन जैसे, फा-टॉस्क"
+msgstr ""
 
 #. module: event
 #: model_terms:event.event,description:event.event_0
@@ -2478,7 +1768,7 @@ msgstr "स्वतंत्र"
 
 #. module: event
 #: model:event.event.ticket,description:event.event_0_ticket_0
-msgid "Free entrance, no food!"
+msgid "Free entrance, no food !"
 msgstr ""
 
 #. module: event
@@ -2500,8 +1790,19 @@ msgid "Full Page Ticket"
 msgstr ""
 
 #. module: event
+#: model:mail.template,report_name:event.event_subscription
+msgid ""
+"Full Page Ticket - {{ (object.event_id.name or 'Event').replace('/','') }}"
+msgstr ""
+
+#. module: event
 #: model:ir.actions.report,name:event.action_report_event_event_full_page_ticket
 msgid "Full Page Ticket Example"
+msgstr ""
+
+#. module: event
+#: model:event.stage,description:event.event_stage_done
+msgid "Fully ended"
 msgstr ""
 
 #. module: event
@@ -2513,16 +1814,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:event.view_event_search
 #: model_terms:ir.ui.view,arch_db:event.view_registration_search
 msgid "Future Activities"
-msgstr "फ्यूचर ऐक्टिविटी"
+msgstr ""
 
 #. module: event
 #: model:event.event.ticket,name:event.event_4_ticket_0
 msgid "General Admission"
-msgstr ""
-
-#. module: event
-#: model:ir.model.fields,field_description:event.field_event_event__general_question_ids
-msgid "General Questions"
 msgstr ""
 
 #. module: event
@@ -2536,32 +1832,14 @@ msgid "Global communication Status"
 msgstr ""
 
 #. module: event
-#: model_terms:ir.ui.view,arch_db:event.res_config_settings_view_form
-msgid "Google Maps"
-msgstr ""
-
-#. module: event
-#: model:ir.model.fields,field_description:event.field_res_config_settings__google_maps_static_api_key
-msgid "Google Maps API key"
-msgstr ""
-
-#. module: event
-#: model:ir.model.fields,field_description:event.field_res_config_settings__google_maps_static_api_secret
-msgid "Google Maps API secret"
-msgstr ""
-
-#. module: event
-#: model:ir.model.fields,field_description:event.field_res_config_settings__use_google_maps_static_api
-msgid "Google Maps static API"
-msgstr ""
-
-#. module: event
 #: model:event.event,name:event.event_1
 msgid "Great Reno Ballon Race"
 msgstr ""
 
 #. module: event
-#: model_terms:web_tour.tour,rainbow_man_message:event.event_tour
+#. odoo-javascript
+#: code:addons/event/static/src/js/tours/event_tour.js:0
+#, python-format
 msgid "Great! Now all you have to do is wait for your attendees to show up!"
 msgstr ""
 
@@ -2579,16 +1857,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:event.view_event_search
 #: model_terms:ir.ui.view,arch_db:event.view_registration_search
 msgid "Group By"
-msgstr "इन्होंने ग्रुप किया"
-
-#. module: event
-#. odoo-javascript
-#: code:addons/event/static/src/client_action/event_registration_summary_dialog.xml:0
-msgid "Guest #"
 msgstr ""
 
 #. module: event
 #: model_terms:res.partner,website_description:event.res_partner_event_1
+#: model_terms:res.partner,website_description:event.res_partner_event_2
 #: model_terms:res.partner,website_description:event.res_partner_event_3
 #: model_terms:res.partner,website_description:event.res_partner_event_4
 msgid "Happy to be Sponsor"
@@ -2598,7 +1871,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:event.field_event_event__has_message
 #: model:ir.model.fields,field_description:event.field_event_registration__has_message
 msgid "Has Message"
-msgstr "मैसेज है"
+msgstr ""
 
 #. module: event
 #: model_terms:event.event,description:event.event_2
@@ -2607,18 +1880,12 @@ msgstr ""
 
 #. module: event
 #: model_terms:event.event,description:event.event_3
-msgid "Here it is, the 12th edition of our Live Musical Festival!"
+msgid "Here it is, the 12th edition of our Live Musical Festival !"
 msgstr ""
 
 #. module: event
 #: model:event.event,name:event.event_5
 msgid "Hockey Tournament"
-msgstr ""
-
-#. module: event
-#. odoo-javascript
-#: code:addons/event/static/src/client_action/event_registration_summary_dialog.xml:0
-msgid "Home"
 msgstr ""
 
 #. module: event
@@ -2652,10 +1919,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:event.field_event_event_ticket__id
 #: model:ir.model.fields,field_description:event.field_event_mail__id
 #: model:ir.model.fields,field_description:event.field_event_mail_registration__id
-#: model:ir.model.fields,field_description:event.field_event_question__id
-#: model:ir.model.fields,field_description:event.field_event_question_answer__id
 #: model:ir.model.fields,field_description:event.field_event_registration__id
-#: model:ir.model.fields,field_description:event.field_event_registration_answer__id
 #: model:ir.model.fields,field_description:event.field_event_stage__id
 #: model:ir.model.fields,field_description:event.field_event_tag__id
 #: model:ir.model.fields,field_description:event.field_event_tag_category__id
@@ -2663,17 +1927,18 @@ msgstr ""
 #: model:ir.model.fields,field_description:event.field_event_type_mail__id
 #: model:ir.model.fields,field_description:event.field_event_type_ticket__id
 msgid "ID"
-msgstr "आईडी"
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_event__activity_exception_icon
 #: model:ir.model.fields,field_description:event.field_event_registration__activity_exception_icon
 msgid "Icon"
-msgstr "आइकॉन"
+msgstr ""
 
 #. module: event
 #. odoo-javascript
 #: code:addons/event/static/src/icon_selection_field/icon_selection_field.js:0
+#, python-format
 msgid "Icon Selection"
 msgstr ""
 
@@ -2681,21 +1946,13 @@ msgstr ""
 #: model:ir.model.fields,help:event.field_event_event__activity_exception_icon
 #: model:ir.model.fields,help:event.field_event_registration__activity_exception_icon
 msgid "Icon to indicate an exception activity."
-msgstr "एक छोटा निशान जो बताता है कि कुछ अलग या असामान्य हुआ है."
-
-#. module: event
-#: model:ir.model.fields,help:event.field_event_question__once_per_order
-msgid ""
-"If True, this question will be asked only once and its value will be "
-"propagated to every attendees.If not it will be asked for every attendee of "
-"a reservation."
 msgstr ""
 
 #. module: event
 #: model:ir.model.fields,help:event.field_event_event__message_needaction
 #: model:ir.model.fields,help:event.field_event_registration__message_needaction
 msgid "If checked, new messages require your attention."
-msgstr "अगर यह बॉक्स चेक है, तो नए मैसेज देखने ज़रूरी हैं."
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,help:event.field_event_event__message_has_error
@@ -2703,7 +1960,7 @@ msgstr "अगर यह बॉक्स चेक है, तो नए मै�
 #: model:ir.model.fields,help:event.field_event_registration__message_has_error
 #: model:ir.model.fields,help:event.field_event_registration__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
-msgstr "अगर बॉक्स पर टिक है, तो कुछ मैसेज भेजने में गलती हुई है."
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,help:event.field_event_event__start_sale_datetime
@@ -2720,7 +1977,7 @@ msgstr ""
 #: model_terms:event.event,description:event.event_5
 msgid ""
 "If you don't know anything about Hockey, this is a great introduction to this wonderful sport as you will will be able to see some training process and also have some time\n"
-"                to chat with experienced players and trainers once the tournament is over!"
+"                to chat with experienced players and trainers once the tournament is over !"
 msgstr ""
 
 #. module: event
@@ -2743,6 +2000,7 @@ msgstr ""
 #: model:event.stage,legend_normal:event.event_stage_done
 #: model:event.stage,legend_normal:event.event_stage_new
 #: model:ir.model.fields.selection,name:event.selection__event_event__kanban_state__normal
+#, python-format
 msgid "In Progress"
 msgstr "प्रगति में है"
 
@@ -2751,17 +2009,6 @@ msgstr "प्रगति में है"
 msgid ""
 "Indicates the timezone in which the event dates/times will be displayed on "
 "the website."
-msgstr ""
-
-#. module: event
-#: model_terms:ir.ui.view,arch_db:event.res_config_settings_view_form
-msgid "Insert dynamic Google Maps in your email templates"
-msgstr ""
-
-#. module: event
-#. odoo-javascript
-#: code:addons/event/static/src/client_action/event_barcode.xml:0
-msgid "Install"
 msgstr ""
 
 #. module: event
@@ -2778,13 +2025,8 @@ msgstr ""
 #. module: event
 #. odoo-python
 #: code:addons/event/models/event_registration.py:0
+#, python-format
 msgid "Invalid event / ticket choice"
-msgstr ""
-
-#. module: event
-#. odoo-javascript
-#: code:addons/event/static/src/client_action/event_barcode.js:0
-msgid "Invalid ticket"
 msgstr ""
 
 #. module: event
@@ -2806,7 +2048,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:event.field_event_event__message_is_follower
 #: model:ir.model.fields,field_description:event.field_event_registration__message_is_follower
 msgid "Is Follower"
-msgstr "फ़ॉलोवर है"
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_event__is_one_day
@@ -2829,13 +2071,8 @@ msgid "John DOE"
 msgstr ""
 
 #. module: event
-#: model_terms:ir.ui.view,arch_db:event.event_report_template_foldable_badge
-msgid "John Doe"
-msgstr ""
-
-#. module: event
 #: model_terms:event.event,description:event.event_1
-msgid "Join us for the greatest ballon race of all times!"
+msgid "Join us for the greatest ballon race of all times !"
 msgstr ""
 
 #. module: event
@@ -2876,23 +2113,23 @@ msgid "Kanban Valid Explanation"
 msgstr ""
 
 #. module: event
-#: model_terms:ir.ui.view,arch_db:event.res_config_settings_view_form
-msgid "Key"
-msgstr ""
-
-#. module: event
-#: model:ir.model.fields,field_description:event.field_event_event__lang
-msgid "Language"
-msgstr "भाषा"
-
-#. module: event
 #: model_terms:ir.ui.view,arch_db:event.view_registration_search
 msgid "Last 30 days"
 msgstr ""
 
 #. module: event
-#: model:ir.model.fields,field_description:event.field_event_mail__last_registration_id
-msgid "Last Attendee"
+#: model:ir.model.fields,field_description:event.field_event_event____last_update
+#: model:ir.model.fields,field_description:event.field_event_event_ticket____last_update
+#: model:ir.model.fields,field_description:event.field_event_mail____last_update
+#: model:ir.model.fields,field_description:event.field_event_mail_registration____last_update
+#: model:ir.model.fields,field_description:event.field_event_registration____last_update
+#: model:ir.model.fields,field_description:event.field_event_stage____last_update
+#: model:ir.model.fields,field_description:event.field_event_tag____last_update
+#: model:ir.model.fields,field_description:event.field_event_tag_category____last_update
+#: model:ir.model.fields,field_description:event.field_event_type____last_update
+#: model:ir.model.fields,field_description:event.field_event_type_mail____last_update
+#: model:ir.model.fields,field_description:event.field_event_type_ticket____last_update
+msgid "Last Modified on"
 msgstr ""
 
 #. module: event
@@ -2900,10 +2137,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:event.field_event_event_ticket__write_uid
 #: model:ir.model.fields,field_description:event.field_event_mail__write_uid
 #: model:ir.model.fields,field_description:event.field_event_mail_registration__write_uid
-#: model:ir.model.fields,field_description:event.field_event_question__write_uid
-#: model:ir.model.fields,field_description:event.field_event_question_answer__write_uid
 #: model:ir.model.fields,field_description:event.field_event_registration__write_uid
-#: model:ir.model.fields,field_description:event.field_event_registration_answer__write_uid
 #: model:ir.model.fields,field_description:event.field_event_stage__write_uid
 #: model:ir.model.fields,field_description:event.field_event_tag__write_uid
 #: model:ir.model.fields,field_description:event.field_event_tag_category__write_uid
@@ -2911,17 +2145,14 @@ msgstr ""
 #: model:ir.model.fields,field_description:event.field_event_type_mail__write_uid
 #: model:ir.model.fields,field_description:event.field_event_type_ticket__write_uid
 msgid "Last Updated by"
-msgstr "इन्होंने आखिरी बार अपडेट किया"
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_event__write_date
 #: model:ir.model.fields,field_description:event.field_event_event_ticket__write_date
 #: model:ir.model.fields,field_description:event.field_event_mail__write_date
 #: model:ir.model.fields,field_description:event.field_event_mail_registration__write_date
-#: model:ir.model.fields,field_description:event.field_event_question__write_date
-#: model:ir.model.fields,field_description:event.field_event_question_answer__write_date
 #: model:ir.model.fields,field_description:event.field_event_registration__write_date
-#: model:ir.model.fields,field_description:event.field_event_registration_answer__write_date
 #: model:ir.model.fields,field_description:event.field_event_stage__write_date
 #: model:ir.model.fields,field_description:event.field_event_tag__write_date
 #: model:ir.model.fields,field_description:event.field_event_tag_category__write_date
@@ -2929,17 +2160,18 @@ msgstr "इन्होंने आखिरी बार अपडेट क�
 #: model:ir.model.fields,field_description:event.field_event_type_mail__write_date
 #: model:ir.model.fields,field_description:event.field_event_type_ticket__write_date
 msgid "Last Updated on"
-msgstr "आखिरी बार अपडेट हुआ"
+msgstr ""
 
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.view_event_search
 #: model_terms:ir.ui.view,arch_db:event.view_registration_search
 msgid "Late Activities"
-msgstr "लेट एक्टिविटी"
+msgstr ""
 
 #. module: event
 #. odoo-javascript
 #: code:addons/event/static/src/js/tours/event_tour.js:0
+#, python-format
 msgid "Let's create your first <b>event</b>."
 msgstr ""
 
@@ -2978,9 +2210,7 @@ msgstr ""
 
 #. module: event
 #: model:ir.model.fields.selection,name:event.selection__event_mail__notification_type__mail
-#: model:ir.model.fields.selection,name:event.selection__event_mail__template_ref__mail_template
 #: model:ir.model.fields.selection,name:event.selection__event_type_mail__notification_type__mail
-#: model:ir.model.fields.selection,name:event.selection__event_type_mail__template_ref__mail_template
 msgid "Mail"
 msgstr ""
 
@@ -3016,25 +2246,15 @@ msgid "Mail Sent"
 msgstr ""
 
 #. module: event
+#: model:ir.model.fields,field_description:event.field_event_event__message_main_attachment_id
+#: model:ir.model.fields,field_description:event.field_event_registration__message_main_attachment_id
+msgid "Main Attachment"
+msgstr ""
+
+#. module: event
 #: model_terms:ir.ui.view,arch_db:event.res_config_settings_view_form
-msgid "Manage & publish a schedule with tracks"
+msgid "Manage &amp; publish a schedule with tracks"
 msgstr ""
-
-#. module: event
-#: model_terms:ir.ui.view,arch_db:event.view_event_form
-#: model_terms:ir.ui.view,arch_db:event.view_event_type_form
-msgid "Mandatory"
-msgstr ""
-
-#. module: event
-#: model:ir.model.fields,field_description:event.field_event_question__is_mandatory_answer
-msgid "Mandatory Answer"
-msgstr ""
-
-#. module: event
-#: model_terms:ir.ui.view,arch_db:event.event_report_full_page_ticket_layout
-msgid "Marc Demo"
-msgstr "मार्क डेमो"
 
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.view_event_registration_tree
@@ -3078,7 +2298,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:event.field_event_event__message_has_error
 #: model:ir.model.fields,field_description:event.field_event_registration__message_has_error
 msgid "Message Delivery error"
-msgstr "मैसेज डिलीवरी में गड़बड़ी"
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_event__message_ids
@@ -3087,10 +2307,15 @@ msgid "Messages"
 msgstr "संदेश"
 
 #. module: event
+#: model:ir.model.fields,field_description:event.field_event_registration__mobile
+msgid "Mobile"
+msgstr ""
+
+#. module: event
 #: model:ir.model.fields.selection,name:event.selection__event_mail__interval_unit__months
 #: model:ir.model.fields.selection,name:event.selection__event_type_mail__interval_unit__months
 msgid "Months"
-msgstr "महीने"
+msgstr ""
 
 #. module: event
 #: model:event.tag,name:event.event_tag_category_2_tag_2
@@ -3101,7 +2326,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:event.field_event_event__my_activity_date_deadline
 #: model:ir.model.fields,field_description:event.field_event_registration__my_activity_date_deadline
 msgid "My Activity Deadline"
-msgstr "मेरी गतिविधि की डेडलाइन"
+msgstr ""
 
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.view_event_search
@@ -3109,14 +2334,10 @@ msgid "My Events"
 msgstr ""
 
 #. module: event
-#. odoo-python
-#: code:addons/event/models/event_event.py:0
 #: model:ir.model.fields,field_description:event.field_event_event_ticket__name
 #: model:ir.model.fields,field_description:event.field_event_tag__name
 #: model:ir.model.fields,field_description:event.field_event_tag_category__name
 #: model:ir.model.fields,field_description:event.field_event_type_ticket__name
-#: model:ir.model.fields.selection,name:event.selection__event_question__question_type__name
-#: model_terms:ir.ui.view,arch_db:event.attendee_list
 msgid "Name"
 msgstr "नाम"
 
@@ -3129,29 +2350,24 @@ msgstr "नया"
 #: model:ir.model.fields,field_description:event.field_event_event__activity_calendar_event_id
 #: model:ir.model.fields,field_description:event.field_event_registration__activity_calendar_event_id
 msgid "Next Activity Calendar Event"
-msgstr "अगली गतिविधि कैलेंडर इवेंट"
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_event__activity_date_deadline
 #: model:ir.model.fields,field_description:event.field_event_registration__activity_date_deadline
 msgid "Next Activity Deadline"
-msgstr "अगली गतिविधि की डेडलाइन"
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_event__activity_summary
 #: model:ir.model.fields,field_description:event.field_event_registration__activity_summary
 msgid "Next Activity Summary"
-msgstr "अगली गतिविधी की जानकारी"
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_event__activity_type_id
 #: model:ir.model.fields,field_description:event.field_event_registration__activity_type_id
 msgid "Next Activity Type"
-msgstr "अगली गतिविधि का प्रकार"
-
-#. module: event
-#: model_terms:ir.actions.act_window,help:event.action_event_registration_report
-msgid "No Answers yet!"
 msgstr ""
 
 #. module: event
@@ -3168,8 +2384,10 @@ msgid "No Attendees yet!"
 msgstr ""
 
 #. module: event
-#: model:ir.model.fields,field_description:event.field_res_config_settings__barcode_nomenclature_id
-msgid "Nomenclature"
+#. odoo-python
+#: code:addons/event/models/event_registration.py:0
+#, python-format
+msgid "None"
 msgstr ""
 
 #. module: event
@@ -3178,7 +2396,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:event.view_event_form
 #: model_terms:ir.ui.view,arch_db:event.view_event_type_form
 msgid "Note"
-msgstr "ध्यान दें"
+msgstr ""
 
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.view_event_form
@@ -3194,6 +2412,7 @@ msgstr ""
 #. module: event
 #. odoo-javascript
 #: code:addons/event/static/src/js/tours/event_tour.js:0
+#, python-format
 msgid "Now that your event is ready, click here to move it to another stage."
 msgstr ""
 
@@ -3201,11 +2420,16 @@ msgstr ""
 #: model:ir.model.fields,field_description:event.field_event_event__message_needaction_counter
 #: model:ir.model.fields,field_description:event.field_event_registration__message_needaction_counter
 msgid "Number of Actions"
-msgstr "कार्रवाई की संख्या"
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_event__seats_used
 msgid "Number of Attendees"
+msgstr ""
+
+#. module: event
+#: model:ir.model.fields,field_description:event.field_event_event__seats_expected
+msgid "Number of Expected Attendees"
 msgstr ""
 
 #. module: event
@@ -3214,27 +2438,22 @@ msgid "Number of Registrations"
 msgstr ""
 
 #. module: event
-#: model:ir.model.fields,field_description:event.field_event_event__seats_taken
-msgid "Number of Taken Seats"
-msgstr ""
-
-#. module: event
 #: model:ir.model.fields,field_description:event.field_event_event__message_has_error_counter
 #: model:ir.model.fields,field_description:event.field_event_registration__message_has_error_counter
 msgid "Number of errors"
-msgstr "गलतियों की संख्या"
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,help:event.field_event_event__message_needaction_counter
 #: model:ir.model.fields,help:event.field_event_registration__message_needaction_counter
 msgid "Number of messages requiring action"
-msgstr "ऐसे मैसेज की संख्या जिनपर कार्रवाई करना ज़रूरी है"
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,help:event.field_event_event__message_has_error_counter
 #: model:ir.model.fields,help:event.field_event_registration__message_has_error_counter
 msgid "Number of messages with delivery error"
-msgstr "ऐसे मैसेज की संख्या जिनमें डिलीवरी की गड़बड़ी है"
+msgstr ""
 
 #. module: event
 #: model_terms:event.event,description:event.event_2
@@ -3242,19 +2461,8 @@ msgid "Objectives"
 msgstr ""
 
 #. module: event
-#: model_terms:ir.ui.view,arch_db:event.event_report_full_page_ticket_layout
-msgid "Odoo Community Days"
-msgstr ""
-
-#. module: event
 #: model_terms:event.event,description:event.event_3
 msgid "Once again we assembled the most legendary bands in Rock history."
-msgstr ""
-
-#. module: event
-#: model_terms:ir.ui.view,arch_db:event.view_event_form
-#: model_terms:ir.ui.view,arch_db:event.view_event_type_form
-msgid "Once per Order"
 msgstr ""
 
 #. module: event
@@ -3264,13 +2472,7 @@ msgstr ""
 
 #. module: event
 #: model:event.tag,name:event.event_tag_category_3_tag_1
-#: model_terms:ir.ui.view,arch_db:event.view_event_search
 msgid "Online"
-msgstr ""
-
-#. module: event
-#: model_terms:ir.ui.view,arch_db:event.view_event_kanban
-msgid "Online Event"
 msgstr ""
 
 #. module: event
@@ -3284,14 +2486,10 @@ msgid "Online Ticketing"
 msgstr ""
 
 #. module: event
-#: model_terms:ir.ui.view,arch_db:event.view_event_form
-msgid "Online if not set"
-msgstr ""
-
-#. module: event
 #. odoo-javascript
 #: code:addons/event/static/src/js/tours/event_tour.js:0
-msgid "Open date range picker.<br/>Pick a Start and End date for your event."
+#, python-format
+msgid "Open date range picker. Pick a Start date for your event"
 msgstr ""
 
 #. module: event
@@ -3307,8 +2505,16 @@ msgid "OpenWood Collection Online Reveal"
 msgstr ""
 
 #. module: event
+#: model:res.partner,website_short_description:event.res_partner_event_2
+msgid ""
+"OpenWood brings honesty and seriousness to wood industry while helping "
+"customers deal with trees, flowers and fungi."
+msgstr ""
+
+#. module: event
 #. odoo-python
 #: code:addons/event/models/event_event.py:0
+#, python-format
 msgid "Operation not supported."
 msgstr ""
 
@@ -3360,16 +2566,8 @@ msgid "Partner"
 msgstr "साथी"
 
 #. module: event
-#. odoo-python
-#: code:addons/event/models/event_event.py:0
 #: model:ir.model.fields,field_description:event.field_event_registration__phone
-#: model:ir.model.fields.selection,name:event.selection__event_question__question_type__phone
 msgid "Phone"
-msgstr "फ़ोन"
-
-#. module: event
-#: model_terms:ir.ui.view,arch_db:event.attendee_list
-msgid "Phone number"
 msgstr ""
 
 #. module: event
@@ -3379,27 +2577,9 @@ msgid ""
 msgstr ""
 
 #. module: event
-#. odoo-python
-#: code:addons/event/models/res_config_settings.py:0
-msgid "Please enter a valid base64 secret"
-msgstr ""
-
-#. module: event
-#. odoo-javascript
-#: code:addons/event/static/src/client_action/event_barcode.js:0
-msgid "Please, Scan again!"
-msgstr ""
-
-#. module: event
 #: model_terms:event.event,description:event.event_2
 msgid "Point of Sale (POS), Introduction to report customization."
 msgstr ""
-
-#. module: event
-#. odoo-javascript
-#: code:addons/event/static/src/client_action/event_registration_summary_dialog.xml:0
-msgid "Print"
-msgstr "प्रिंट"
 
 #. module: event
 #: model_terms:event.event,description:event.event_0
@@ -3413,62 +2593,14 @@ msgid "Project management, Human resources, Contract management."
 msgstr ""
 
 #. module: event
-#: model:ir.model.fields,field_description:event.field_event_registration__registration_properties
-msgid "Properties"
-msgstr "प्रॉपर्टीज़"
-
-#. module: event
 #: model_terms:event.event,description:event.event_2
 msgid "Purchase, Sales &amp; Purchase management, Financial accounting."
-msgstr ""
-
-#. module: event
-#: model_terms:ir.ui.view,arch_db:event.attendee_list
-#: model_terms:ir.ui.view,arch_db:event.event_report_template_badge_card
-#: model_terms:ir.ui.view,arch_db:event.event_report_template_foldable_badge
-#: model_terms:ir.ui.view,arch_db:event.event_report_template_full_page_ticket
-msgid "QR Code"
-msgstr "क्यूआर को"
-
-#. module: event
-#: model:ir.model.fields,field_description:event.field_event_question_answer__question_id
-#: model:ir.model.fields,field_description:event.field_event_registration_answer__question_id
-#: model_terms:ir.ui.view,arch_db:event.event_question_view_form
-#: model_terms:ir.ui.view,arch_db:event.view_event_form
-msgid "Question"
-msgstr ""
-
-#. module: event
-#: model:ir.model.fields,field_description:event.field_event_question__question_type
-#: model:ir.model.fields,field_description:event.field_event_registration_answer__question_type
-msgid "Question Type"
-msgstr ""
-
-#. module: event
-#. odoo-python
-#: code:addons/event/models/event_question.py:0
-msgid "Question cannot be linked to both an Event and an Event Type."
-msgstr ""
-
-#. module: event
-#: model:ir.model.fields,field_description:event.field_event_event__question_ids
-#: model:ir.model.fields,field_description:event.field_event_type__question_ids
-#: model_terms:ir.ui.view,arch_db:event.view_event_form
-#: model_terms:ir.ui.view,arch_db:event.view_event_registration_form
-#: model_terms:ir.ui.view,arch_db:event.view_event_type_form
-msgid "Questions"
 msgstr ""
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_res_config_settings__module_website_event_track_quiz
 msgid "Quiz on Tracks"
 msgstr ""
-
-#. module: event
-#: model:ir.model.fields,field_description:event.field_event_event__rating_ids
-#: model:ir.model.fields,field_description:event.field_event_registration__rating_ids
-msgid "Ratings"
-msgstr "रेटिंग"
 
 #. module: event
 #. odoo-python
@@ -3478,12 +2610,15 @@ msgstr "रेटिंग"
 #: model:event.stage,legend_done:event.event_stage_cancelled
 #: model:event.stage,legend_done:event.event_stage_done
 #: model:event.stage,legend_done:event.event_stage_new
+#, python-format
 msgid "Ready for Next Stage"
 msgstr ""
 
 #. module: event
 #. odoo-javascript
 #: code:addons/event/static/src/js/tours/event_tour.js:0
+#: code:addons/event/static/src/js/tours/event_tour.js:0
+#, python-format
 msgid "Ready to <b>organize events</b> in a few minutes? Let's get started!"
 msgstr ""
 
@@ -3493,23 +2628,15 @@ msgid "Red Kanban Label"
 msgstr ""
 
 #. module: event
-#: model:ir.model.fields.selection,name:event.selection__event_registration__state__open
-#: model_terms:ir.ui.view,arch_db:event.view_event_registration_form
-#: model_terms:ir.ui.view,arch_db:event.view_event_registration_tree
-#: model_terms:ir.ui.view,arch_db:event.view_registration_search
-msgid "Registered"
-msgstr ""
-
-#. module: event
 #. odoo-python
 #: code:addons/event/models/event_ticket.py:0
-#: model:ir.model.fields,field_description:event.field_event_registration_answer__registration_id
-#: model_terms:ir.ui.view,arch_db:event.event_event_ticket_view_tree_from_event
+#: code:addons/event/models/event_ticket.py:0
 #: model_terms:ir.ui.view,arch_db:event.res_config_settings_view_form
 #: model_terms:ir.ui.view,arch_db:event.view_event_registration_form
 #: model_terms:ir.ui.view,arch_db:event.view_event_registration_graph
 #: model_terms:ir.ui.view,arch_db:event.view_event_registration_pivot
 #: model_terms:ir.ui.view,arch_db:event.view_event_registration_tree
+#, python-format
 msgid "Registration"
 msgstr ""
 
@@ -3521,10 +2648,7 @@ msgid "Registration Date"
 msgstr ""
 
 #. module: event
-#: model:ir.actions.client,name:event.event_action_install_kiosk_pwa
-#: model:ir.ui.menu,name:event.menu_event_registration_desk
 #: model:res.groups,name:event.group_event_registration_desk
-#: model_terms:ir.ui.view,arch_db:event.view_event_form
 msgid "Registration Desk"
 msgstr ""
 
@@ -3549,18 +2673,19 @@ msgid "Registration Mails"
 msgstr ""
 
 #. module: event
-#: model:ir.model.fields,field_description:event.field_event_event__registration_properties_definition
-msgid "Registration Properties"
-msgstr ""
-
-#. module: event
 #: model:ir.model.fields,field_description:event.field_event_event_ticket__start_sale_datetime
 msgid "Registration Start"
 msgstr ""
 
 #. module: event
+#: model:ir.model.fields,field_description:event.field_res_config_settings__module_website_event_questions
+msgid "Registration Survey"
+msgstr ""
+
+#. module: event
 #. odoo-python
 #: code:addons/event/models/event_ticket.py:0
+#, python-format
 msgid "Registration for %s"
 msgstr ""
 
@@ -3601,21 +2726,11 @@ msgstr ""
 #. module: event
 #: model:ir.ui.menu,name:event.menu_reporting_events
 msgid "Reporting"
-msgstr "रिपोर्टिंग"
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_event_ticket__seats_reserved
 msgid "Reserved Seats"
-msgstr ""
-
-#. module: event
-#: model_terms:ir.ui.view,arch_db:event.event_registration_view_kanban
-msgid "Reset To Registered"
-msgstr ""
-
-#. module: event
-#: model_terms:ir.ui.view,arch_db:event.event_registration_view_kanban
-msgid "Reset To Registered Button"
 msgstr ""
 
 #. module: event
@@ -3629,16 +2744,6 @@ msgstr "जिम्मेदार"
 #: model:ir.model.fields,field_description:event.field_event_event__activity_user_id
 #: model:ir.model.fields,field_description:event.field_event_registration__activity_user_id
 msgid "Responsible User"
-msgstr "जिम्मेदार उपयोगकर्ता"
-
-#. module: event
-#: model:ir.actions.report,name:event.action_report_event_registration_responsive_html_ticket
-msgid "Responsive Html Full Page Ticket"
-msgstr ""
-
-#. module: event
-#: model_terms:ir.ui.view,arch_db:event.event_report_template_formatted_event_address
-msgid "Rue de la Paix 123"
 msgstr ""
 
 #. module: event
@@ -3650,12 +2755,11 @@ msgstr "फैलना"
 #: model:ir.model.fields,field_description:event.field_event_event__message_has_sms_error
 #: model:ir.model.fields,field_description:event.field_event_registration__message_has_sms_error
 msgid "SMS Delivery error"
-msgstr "एसएमएस डिलीवरी में गड़बड़ी"
+msgstr ""
 
 #. module: event
-#. odoo-javascript
-#: code:addons/event/static/src/client_action/event_barcode.xml:0
-msgid "Scan or Tap"
+#: model_terms:ir.ui.view,arch_db:event.res_config_settings_view_form
+msgid "Scan badges to confirm attendances"
 msgstr ""
 
 #. module: event
@@ -3686,50 +2790,18 @@ msgid "Scheduled Time"
 msgstr ""
 
 #. module: event
-#: model:ir.model.fields,field_description:event.field_event_registration__mail_registration_ids
-msgid "Scheduler Emails"
-msgstr ""
-
-#. module: event
 #: model_terms:event.event,description:event.event_5
-msgid "Seasoned Hockey Fans and curious people, this tournament is for you!"
+msgid "Seasoned Hockey Fans and curious people, this tournament is for you !"
 msgstr ""
 
 #. module: event
-#: model_terms:ir.ui.view,arch_db:event.res_config_settings_view_form
-msgid "Secret"
-msgstr ""
-
-#. module: event
-#. odoo-javascript
-#: code:addons/event/static/src/client_action/event_barcode.xml:0
-msgid "Select Attendee"
-msgstr ""
-
-#. module: event
-#. odoo-javascript
-#: code:addons/event/static/src/client_action/event_registration_summary_dialog.xml:0
-msgid "Select printer..."
-msgstr ""
-
-#. module: event
-#: model_terms:ir.ui.view,arch_db:event.event_registration_answer_view_tree
-msgid "Selected answer"
-msgstr ""
-
-#. module: event
-#: model:ir.model.fields.selection,name:event.selection__event_question__question_type__simple_choice
-msgid "Selection"
+#: model:event.type,name:event.event_type_data_ticket
+msgid "Sell Online"
 msgstr ""
 
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.res_config_settings_view_form
 msgid "Sell tickets on your website"
-msgstr ""
-
-#. module: event
-#: model_terms:ir.ui.view,arch_db:event.res_config_settings_view_form
-msgid "Sell tickets with Point of Sale"
 msgstr ""
 
 #. module: event
@@ -3741,7 +2813,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:event.field_event_mail__notification_type
 #: model:ir.model.fields,field_description:event.field_event_type_mail__notification_type
 msgid "Send"
-msgstr "भेजें"
+msgstr ""
 
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.view_event_registration_form
@@ -3753,7 +2825,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:event.selection__event_mail__mail_state__sent
 #: model_terms:ir.ui.view,arch_db:event.view_event_mail_form
 msgid "Sent"
-msgstr "भेजा गया"
+msgstr ""
 
 #. module: event
 #: model:mail.template,description:event.event_reminder
@@ -3769,19 +2841,20 @@ msgstr ""
 #. module: event
 #: model:mail.template,description:event.event_subscription
 msgid "Sent to attendees after registering to an event"
-msgstr "इवेंट में रजिस्ट्रेशन के बाद लोगों को ये भेजा जाता है"
+msgstr ""
 
 #. module: event
-#: model:ir.model.fields,field_description:event.field_event_event_ticket__sequence
-#: model:ir.model.fields,field_description:event.field_event_question__sequence
-#: model:ir.model.fields,field_description:event.field_event_question_answer__sequence
 #: model:ir.model.fields,field_description:event.field_event_stage__sequence
 #: model:ir.model.fields,field_description:event.field_event_tag__sequence
 #: model:ir.model.fields,field_description:event.field_event_tag_category__sequence
 #: model:ir.model.fields,field_description:event.field_event_type__sequence
-#: model:ir.model.fields,field_description:event.field_event_type_ticket__sequence
 msgid "Sequence"
 msgstr "अनुक्रम"
+
+#. module: event
+#: model_terms:ir.ui.view,arch_db:event.view_event_registration_form
+msgid "Set To Unconfirmed"
+msgstr ""
 
 #. module: event
 #: model:ir.actions.act_window,name:event.action_event_configuration
@@ -3812,11 +2885,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:event.field_event_registration__utm_source_id
 #: model_terms:ir.ui.view,arch_db:event.view_registration_search
 msgid "Source"
-msgstr ""
-
-#. module: event
-#: model:ir.model.fields,field_description:event.field_event_event__specific_question_ids
-msgid "Specific Questions"
 msgstr ""
 
 #. module: event
@@ -3871,23 +2939,6 @@ msgid "Start sale date"
 msgstr ""
 
 #. module: event
-#: model:ir.model.fields,field_description:event.field_res_partner__static_map_url
-#: model:ir.model.fields,field_description:event.field_res_users__static_map_url
-msgid "Static Map Url"
-msgstr ""
-
-#. module: event
-#: model:ir.model.fields,field_description:event.field_res_partner__static_map_url_is_valid
-#: model:ir.model.fields,field_description:event.field_res_users__static_map_url_is_valid
-msgid "Static Map Url Is Valid"
-msgstr ""
-
-#. module: event
-#: model_terms:ir.ui.view,arch_db:event.view_event_form
-msgid "Stats"
-msgstr ""
-
-#. module: event
 #: model:ir.model.fields,field_description:event.field_event_registration__state
 #: model_terms:ir.ui.view,arch_db:event.view_registration_search
 msgid "Status"
@@ -3901,21 +2952,6 @@ msgid ""
 "Overdue: Due date is already passed\n"
 "Today: Activity date is today\n"
 "Planned: Future activities."
-msgstr ""
-"ऐक्टिविटी के हिसाब से स्टेटस\n"
-"ओवरड्यू: जिस काम की आखिरी तारीख निकल गई हो\n"
-"टुडे: जो काम आज करना है\n"
-"प्लान्ड: जो काम भविष्य में करने हैं."
-
-#. module: event
-#. odoo-javascript
-#: code:addons/event/static/src/client_action/event_registration_summary_dialog.xml:0
-msgid "Successfully registered!"
-msgstr ""
-
-#. module: event
-#: model:ir.model.fields,field_description:event.field_event_registration_answer__value_answer_id
-msgid "Suggested answer"
 msgstr ""
 
 #. module: event
@@ -3932,16 +2968,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:event.event_tag_category_view_form
 msgid "Tags"
 msgstr "टैग"
-
-#. module: event
-#: model_terms:ir.ui.view,arch_db:event.view_registration_search
-msgid "Taken"
-msgstr ""
-
-#. module: event
-#: model:ir.model.fields,field_description:event.field_event_event_ticket__seats_taken
-msgid "Taken Seats"
-msgstr ""
 
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.event_stage_view_form
@@ -3963,13 +2989,9 @@ msgid "Template"
 msgstr ""
 
 #. module: event
-#: model:ir.model.fields.selection,name:event.selection__event_question__question_type__text_box
-msgid "Text Input"
-msgstr ""
-
-#. module: event
-#: model:ir.model.fields,field_description:event.field_event_registration_answer__value_text_box
-msgid "Text answer"
+#: model:ir.model.fields,field_description:event.field_event_mail__template_model_id
+#: model:ir.model.fields,field_description:event.field_event_type_mail__template_model_id
+msgid "Template Model"
 msgstr ""
 
 #. module: event
@@ -3996,6 +3018,7 @@ msgstr ""
 #. module: event
 #. odoo-python
 #: code:addons/event/models/event_event.py:0
+#, python-format
 msgid "The closing date cannot be earlier than the beginning date."
 msgstr ""
 
@@ -4026,19 +3049,26 @@ msgstr ""
 #. module: event
 #. odoo-python
 #: code:addons/event/models/event_ticket.py:0
+#, python-format
 msgid ""
 "The following tickets cannot be deleted while they have one or more registrations linked to them:\n"
 "- %s"
 msgstr ""
 
 #. module: event
+#: model:event.stage,description:event.event_stage_booked
+msgid "The place has been reserved"
+msgstr ""
+
+#. module: event
 #: model_terms:event.event,description:event.event_1
-msgid "The safety of our attendees and our aeronauts comes first!"
+msgid "The safety of our attendees and our aeronauts comes first !"
 msgstr ""
 
 #. module: event
 #. odoo-python
 #: code:addons/event/models/event_ticket.py:0
+#, python-format
 msgid ""
 "The stop date cannot be earlier than the start date. Please check ticket "
 "%(ticket_name)s"
@@ -4046,14 +3076,18 @@ msgstr ""
 
 #. module: event
 #. odoo-python
-#: code:addons/event/models/event_event.py:0
-#: code:addons/event/models/event_ticket.py:0
-msgid "There are not enough seats available for:"
+#: code:addons/event/models/event_mail.py:0
+#, python-format
+msgid ""
+"The template which is referenced should be coming from %(model_name)s model."
 msgstr ""
 
 #. module: event
-#: model:ir.model.constraint,message:event.constraint_event_registration_answer_value_check
-msgid "There must be a suggested value or a text value."
+#. odoo-python
+#: code:addons/event/models/event_event.py:0
+#: code:addons/event/models/event_ticket.py:0
+#, python-format
+msgid "There are not enough seats available for:"
 msgstr ""
 
 #. module: event
@@ -4080,6 +3114,7 @@ msgstr ""
 #. module: event
 #. odoo-javascript
 #: code:addons/event/static/src/js/tours/event_tour.js:0
+#, python-format
 msgid "This is the <b>name</b> your guests will see when registering."
 msgstr ""
 
@@ -4087,7 +3122,7 @@ msgstr ""
 #: model_terms:event.event,description:event.event_1
 msgid ""
 "This is the perfect place for spending a nice day with your family, we "
-"guarantee you will be leaving with beautiful everlasting memories!"
+"guarantee you will be leaving with beautiful everlasting memories !"
 msgstr ""
 
 #. module: event
@@ -4100,6 +3135,8 @@ msgstr ""
 #. module: event
 #. odoo-python
 #: code:addons/event/models/event_event.py:0
+#: code:addons/event/models/event_event.py:0
+#, python-format
 msgid "This operator is not supported"
 msgstr ""
 
@@ -4109,22 +3146,7 @@ msgid "This step is done. Click to block or set in progress."
 msgstr ""
 
 #. module: event
-#. odoo-javascript
-#: code:addons/event/static/src/client_action/event_registration_summary_dialog.xml:0
-msgid "This ticket is for another event!"
-msgstr ""
-
-#. module: event
-#. odoo-javascript
-#: code:addons/event/static/src/client_action/event_registration_summary_dialog.xml:0
-msgid "This ticket is not for an ongoing event"
-msgstr ""
-
-#. module: event
-#. odoo-python
-#: code:addons/event/controllers/main.py:0
 #: model_terms:ir.ui.view,arch_db:event.event_event_ticket_view_form_from_event
-#: model_terms:ir.ui.view,arch_db:event.view_registration_search
 msgid "Ticket"
 msgstr ""
 
@@ -4137,9 +3159,6 @@ msgid "Ticket Instructions"
 msgstr ""
 
 #. module: event
-#. odoo-javascript
-#: code:addons/event/static/src/client_action/event_registration_summary_dialog.xml:0
-#: model:ir.model.fields,field_description:event.field_event_registration__event_ticket_id
 #: model_terms:ir.ui.view,arch_db:event.event_event_ticket_form_view
 #: model_terms:ir.ui.view,arch_db:event.view_registration_search
 msgid "Ticket Type"
@@ -4147,27 +3166,16 @@ msgstr ""
 
 #. module: event
 #. odoo-javascript
-#: code:addons/event/static/src/client_action/event_registration_summary_dialog.xml:0
-msgid "Ticket already scanned!"
-msgstr ""
-
-#. module: event
-#: model_terms:ir.ui.view,arch_db:event.attendee_list
-msgid "Ticket type"
-msgstr ""
-
-#. module: event
-#. odoo-javascript
 #: code:addons/event/static/src/js/tours/event_tour.js:0
+#, python-format
 msgid ""
 "Ticket types allow you to distinguish your attendees. Let's <b>create</b> a "
 "new one."
 msgstr ""
 
 #. module: event
-#. odoo-python
-#: code:addons/event/controllers/main.py:0
 #: model:ir.model.fields,field_description:event.field_event_type__event_type_ticket_ids
+#: model:ir.model.fields,field_description:event.field_res_config_settings__module_event_sale
 #: model_terms:ir.ui.view,arch_db:event.event_event_ticket_view_tree_from_event
 #: model_terms:ir.ui.view,arch_db:event.view_event_form
 #: model_terms:ir.ui.view,arch_db:event.view_event_type_form
@@ -4180,40 +3188,21 @@ msgid "Tickets can be printed or scanned directly from your phone."
 msgstr ""
 
 #. module: event
-#: model:ir.model.fields,field_description:event.field_res_config_settings__module_pos_event
-msgid "Tickets with PoS"
-msgstr ""
-
-#. module: event
-#: model:ir.model.fields,field_description:event.field_res_config_settings__module_event_sale
-msgid "Tickets with Sale"
-msgstr ""
-
-#. module: event
+#: model:ir.model.fields,field_description:event.field_event_event__date_tz
 #: model:ir.model.fields,field_description:event.field_event_type__default_timezone
 msgid "Timezone"
-msgstr ""
-
-#. module: event
-#: model:ir.model.fields,field_description:event.field_event_question__title
-msgid "Title"
 msgstr ""
 
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.view_event_search
 #: model_terms:ir.ui.view,arch_db:event.view_registration_search
 msgid "Today Activities"
-msgstr "आज की गतिविधियां"
+msgstr ""
 
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.event_event_ticket_view_tree_from_event
 #: model_terms:ir.ui.view,arch_db:event.view_event_tree
 msgid "Total"
-msgstr "कुल"
-
-#. module: event
-#: model_terms:ir.ui.view,arch_db:event.view_event_tree
-msgid "Total Attendees"
 msgstr ""
 
 #. module: event
@@ -4241,7 +3230,7 @@ msgstr ""
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_type_mail__interval_type
 msgid "Trigger"
-msgstr "ट्रिगर"
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_mail__interval_type
@@ -4250,8 +3239,6 @@ msgstr ""
 
 #. module: event
 #: model:event.tag.category,name:event.event_tag_category_3
-#: model_terms:ir.ui.view,arch_db:event.view_event_form
-#: model_terms:ir.ui.view,arch_db:event.view_event_registration_form
 msgid "Type"
 msgstr "प्रकार"
 
@@ -4259,21 +3246,24 @@ msgstr "प्रकार"
 #: model:ir.model.fields,help:event.field_event_event__activity_exception_decoration
 #: model:ir.model.fields,help:event.field_event_registration__activity_exception_decoration
 msgid "Type of the exception activity on record."
-msgstr "रिकॉर्ड में जो अलग तरह की गतिविधि हुई है, वह किस तरह की है."
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields.selection,name:event.selection__event_registration__state__draft
+#: model_terms:ir.ui.view,arch_db:event.event_event_ticket_view_tree_from_event
 #: model_terms:ir.ui.view,arch_db:event.view_registration_search
 msgid "Unconfirmed"
 msgstr ""
 
 #. module: event
-#: model:ir.model.fields,help:event.field_event_registration__state
-msgid ""
-"Unconfirmed: registrations in a pending state waiting for an action (specific case, notably with sale status)\n"
-"Registered: registrations considered taken by a client\n"
-"Attended: registrations for which the attendee attended the event\n"
-"Cancelled: registrations cancelled manually"
+#: model:ir.model.fields,field_description:event.field_event_event__seats_unconfirmed
+msgid "Unconfirmed Registrations"
+msgstr ""
+
+#. module: event
+#: model:ir.model.fields,field_description:event.field_event_event_ticket__seats_unconfirmed
+#: model_terms:ir.ui.view,arch_db:event.view_event_tree
+msgid "Unconfirmed Seats"
 msgstr ""
 
 #. module: event
@@ -4289,16 +3279,10 @@ msgid "Understand the various modules;"
 msgstr ""
 
 #. module: event
-#. odoo-javascript
-#: code:addons/event/static/src/client_action/event_registration_summary_dialog.xml:0
-msgid "Undo"
-msgstr ""
-
-#. module: event
 #: model:ir.model.fields,field_description:event.field_event_mail__interval_unit
 #: model:ir.model.fields,field_description:event.field_event_type_mail__interval_unit
 msgid "Unit"
-msgstr "यूनिट"
+msgstr ""
 
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.view_event_search
@@ -4311,16 +3295,6 @@ msgid "Upcoming/Running"
 msgstr ""
 
 #. module: event
-#: model:ir.model.fields,field_description:event.field_event_event__use_barcode
-msgid "Use Barcode"
-msgstr ""
-
-#. module: event
-#: model:ir.model.fields,field_description:event.field_res_config_settings__use_event_barcode
-msgid "Use Event Barcode"
-msgstr ""
-
-#. module: event
 #: model_terms:ir.actions.act_window,help:event.event_tag_category_action_tree
 msgid "Use Event Tag Categories to classify and organize your event tags."
 msgstr ""
@@ -4328,6 +3302,7 @@ msgstr ""
 #. module: event
 #. odoo-javascript
 #: code:addons/event/static/src/js/tours/event_tour.js:0
+#, python-format
 msgid "Use the <b>breadcrumbs</b> to go back to your kanban overview."
 msgstr ""
 
@@ -4352,12 +3327,13 @@ msgstr ""
 #. module: event
 #. odoo-python
 #: code:addons/event/models/event_event.py:0
+#: code:addons/event/models/event_event.py:0
+#, python-format
 msgid "Value should be True or False (not %s)"
 msgstr ""
 
 #. module: event
 #: model:ir.model.fields,field_description:event.field_event_event__address_id
-#: model_terms:ir.ui.view,arch_db:event.view_event_search
 msgid "Venue"
 msgstr ""
 
@@ -4369,6 +3345,7 @@ msgstr ""
 #. module: event
 #. odoo-python
 #: code:addons/event/models/event_mail.py:0
+#, python-format
 msgid "WARNING: Event Scheduler Error for event: %s"
 msgstr ""
 
@@ -4387,12 +3364,6 @@ msgid "Warehouse management, Manufacturing (MRP) &amp; Sales, Import/Export."
 msgstr ""
 
 #. module: event
-#. odoo-javascript
-#: code:addons/event/static/src/client_action/event_barcode.js:0
-msgid "Warning"
-msgstr "चेतावनी"
-
-#. module: event
 #: model_terms:event.event,description:event.event_1
 #: model_terms:event.event,description:event.event_3
 #: model_terms:event.event,description:event.event_5
@@ -4405,13 +3376,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:event.field_event_event__website_message_ids
 #: model:ir.model.fields,field_description:event.field_event_registration__website_message_ids
 msgid "Website Messages"
-msgstr "वेबसाइट मैसेज"
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields,help:event.field_event_event__website_message_ids
 #: model:ir.model.fields,help:event.field_event_registration__website_message_ids
 msgid "Website communication history"
-msgstr "वेबसाइट कम्यूनिकेशन हिस्ट्री"
+msgstr ""
 
 #. module: event
 #: model:ir.model.fields.selection,name:event.selection__event_mail__interval_unit__weeks
@@ -4420,22 +3391,16 @@ msgid "Weeks"
 msgstr ""
 
 #. module: event
-#. odoo-javascript
-#: code:addons/event/static/src/client_action/event_barcode.xml:0
-msgid "Welcome to"
-msgstr ""
-
-#. module: event
-#: model_terms:event.event,description:event.event_0
-msgid "What's new?"
-msgstr ""
-
-#. module: event
 #: model:ir.model.fields,help:event.field_event_event__date_begin
 #: model:ir.model.fields,help:event.field_event_registration__event_begin_date
 msgid ""
 "When the event is scheduled to take place (expressed in your local timezone "
 "on the form view)."
+msgstr ""
+
+#. module: event
+#: model_terms:event.event,description:event.event_0
+msgid "What's new?"
 msgstr ""
 
 #. module: event
@@ -4473,27 +3438,6 @@ msgid ""
 msgstr ""
 
 #. module: event
-#. odoo-python
-#: code:addons/event/models/event_question.py:0
-msgid ""
-"You cannot change the question type of a question that already has answers!"
-msgstr ""
-
-#. module: event
-#. odoo-python
-#: code:addons/event/models/event_question.py:0
-msgid ""
-"You cannot delete a question that has already been answered by attendees."
-msgstr ""
-
-#. module: event
-#. odoo-python
-#: code:addons/event/models/event_question_answer.py:0
-msgid ""
-"You cannot delete an answer that has already been selected by attendees."
-msgstr ""
-
-#. module: event
 #: model:mail.template,subject:event.event_registration_mail_template_badge
 msgid "Your badge for {{ object.event_id.name }}"
 msgstr ""
@@ -4501,32 +3445,6 @@ msgstr ""
 #. module: event
 #: model:mail.template,subject:event.event_subscription
 msgid "Your registration at {{ object.event_id.name }}"
-msgstr "{{ object.event_id.name }} पर आपका रजिस्ट्रेशन"
-
-#. module: event
-#: model_terms:ir.ui.view,arch_db:event.event_tag_category_view_form
-msgid "e.g. \"12-16 years old\""
-msgstr ""
-
-#. module: event
-#: model_terms:ir.ui.view,arch_db:event.event_tag_category_view_form
-msgid "e.g. \"Age Category\""
-msgstr ""
-
-#. module: event
-#: model_terms:ir.ui.view,arch_db:event.view_event_registration_form
-msgid "e.g. \"Azure Interior\""
-msgstr ""
-
-#. module: event
-#: model_terms:ir.ui.view,arch_db:event.event_question_view_form
-#: model_terms:ir.ui.view,arch_db:event.view_event_form
-msgid "e.g. \"Do you have any diet restrictions?\""
-msgstr ""
-
-#. module: event
-#: model_terms:ir.ui.view,arch_db:event.event_stage_view_form
-msgid "e.g. \"Promoting\""
 msgstr ""
 
 #. module: event
@@ -4570,43 +3488,31 @@ msgid "events@yourcompany.com"
 msgstr ""
 
 #. module: event
-#: model_terms:ir.ui.view,arch_db:event.event_report_full_page_ticket_layout
-msgid "https://www.example.com"
-msgstr ""
-
-#. module: event
 #. odoo-python
-#: code:addons/event/models/event_event.py:0
+#: code:addons/event/models/event_registration.py:0
+#, python-format
 msgid "in %d days"
 msgstr ""
 
 #. module: event
 #. odoo-python
-#: code:addons/event/models/event_event.py:0
+#: code:addons/event/models/event_registration.py:0
+#, python-format
 msgid "next month"
 msgstr ""
 
 #. module: event
 #. odoo-python
-#: code:addons/event/models/event_event.py:0
+#: code:addons/event/models/event_registration.py:0
+#, python-format
 msgid "next week"
 msgstr ""
 
 #. module: event
 #. odoo-python
-#: code:addons/event/models/event_event.py:0
+#: code:addons/event/models/event_registration.py:0
+#, python-format
 msgid "on %(date)s"
-msgstr ""
-
-#. module: event
-#. odoo-javascript
-#: code:addons/event/static/src/client_action/event_barcode.xml:0
-msgid "or"
-msgstr " "
-
-#. module: event
-#: model_terms:ir.ui.view,arch_db:event.event_report_full_page_ticket_layout
-msgid "organizer@email.com"
 msgstr ""
 
 #. module: event
@@ -4618,28 +3524,35 @@ msgstr ""
 
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.event_event_ticket_view_kanban_from_event
-msgid "reserved"
+msgid "reserved +"
 msgstr ""
 
 #. module: event
 #: model_terms:ir.ui.view,arch_db:event.view_event_form
 #: model_terms:ir.ui.view,arch_db:event.view_event_type_form
 msgid "to"
-msgstr " "
+msgstr ""
 
 #. module: event
 #. odoo-python
-#: code:addons/event/models/event_event.py:0
+#: code:addons/event/models/event_registration.py:0
+#, python-format
 msgid "today"
 msgstr ""
 
 #. module: event
 #. odoo-python
-#: code:addons/event/models/event_event.py:0
+#: code:addons/event/models/event_registration.py:0
+#, python-format
 msgid "tomorrow"
 msgstr ""
 
 #. module: event
+#: model_terms:ir.ui.view,arch_db:event.event_event_ticket_view_kanban_from_event
+msgid "unconfirmed"
+msgstr ""
+
+#. module: event
 #: model:mail.template,subject:event.event_reminder
-msgid "{{ object.event_id.name }}: {{ object.event_date_range }}"
+msgid "{{ object.event_id.name }}: {{ object.get_date_range_str() }}"
 msgstr ""

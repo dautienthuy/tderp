@@ -13,6 +13,10 @@ class StockPicking(models.Model):
     _name = 'stock.picking'
     _inherit = 'stock.picking'
 
+    # override existing field domains to prevent suboncontracting production lines from showing in Detailed Operations tab
+    move_line_nosuggest_ids = fields.One2many(
+        domain=['&', '|', ('location_dest_id.usage', '!=', 'production'), ('move_id.picking_code', '!=', 'outgoing'),
+                     '|', ('reserved_qty', '=', 0.0), '&', ('reserved_qty', '!=', 0.0), ('qty_done', '!=', 0.0)])
     move_line_ids_without_package = fields.One2many(
         domain=['&', '|', ('location_dest_id.usage', '!=', 'production'), ('move_id.picking_code', '!=', 'outgoing'),
                      '|', ('package_level_id', '=', False), ('picking_type_entire_packs', '=', False)])
@@ -34,19 +38,6 @@ class StockPicking(models.Model):
             if subcontracted_moves._subcontrating_can_be_record():
                 picking.display_action_record_components = 'facultative'
 
-    @api.depends('picking_type_id', 'partner_id')
-    def _compute_location_id(self):
-        super()._compute_location_id()
-
-        for picking in self:
-            # If this is a subcontractor resupply transfer, set the destination location
-            # to the vendor subcontractor location
-            subcontracting_resupply_type_id = picking.picking_type_id.warehouse_id.subcontracting_resupply_type_id
-            if picking.picking_type_id == subcontracting_resupply_type_id\
-                and picking.partner_id.property_stock_subcontractor:
-                picking.location_dest_id = picking.partner_id.property_stock_subcontractor
-
-
     # -------------------------------------------------------------------------
     # Action methods
     # -------------------------------------------------------------------------
@@ -60,10 +51,8 @@ class StockPicking(models.Model):
             productions = move._get_subcontract_production()
             recorded_productions = productions.filtered(lambda p: p._has_been_recorded())
             recorded_qty = sum(recorded_productions.mapped('qty_producing'))
-            sm_done_qty = sum(productions._get_subcontract_move().filtered(lambda m: m.picked).mapped('quantity'))
+            sm_done_qty = sum(productions._get_subcontract_move().mapped('quantity_done'))
             rounding = self.env['decimal.precision'].precision_get('Product Unit of Measure')
-            if float_compare(move.product_uom_qty, move.quantity, precision_digits=rounding) > 0 and self._context.get('cancel_backorder'):
-                move._update_subcontract_order_qty(move.quantity)
             if float_compare(recorded_qty, sm_done_qty, precision_digits=rounding) >= 0:
                 continue
             production = productions - recorded_productions
@@ -72,7 +61,7 @@ class StockPicking(models.Model):
             if len(production) > 1:
                 raise UserError(_("There shouldn't be multiple productions to record for the same subcontracted move."))
             # Manage additional quantities
-            quantity_done_move = move.product_uom._compute_quantity(move.quantity, production.product_uom_id)
+            quantity_done_move = move.product_uom._compute_quantity(move.quantity_done, production.product_uom_id)
             if float_compare(production.product_qty, quantity_done_move, precision_rounding=production.product_uom_id.rounding) == -1:
                 change_qty = self.env['change.production.qty'].create({
                     'mo_id': production.id,
@@ -80,10 +69,12 @@ class StockPicking(models.Model):
                 })
                 change_qty.with_context(skip_activity=True).change_prod_qty()
             # Create backorder MO for each move lines
-            amounts = [move_line.quantity for move_line in move.move_line_ids]
+            amounts = [move_line.qty_done for move_line in move.move_line_ids]
             len_amounts = len(amounts)
+            # _split_production can set the qty_done, but not split it.
+            # Remove the qty_done potentially set by a previous split to prevent any issue.
+            production.move_line_raw_ids.filtered(lambda sml: sml.state not in ['done', 'cancel']).write({'qty_done': 0})
             productions = production._split_productions({production: amounts}, set_consumed_qty=True)
-            productions.move_finished_ids.move_line_ids.write({'quantity': 0})
             for production, move_line in zip(productions, move.move_line_ids):
                 if move_line.lot_id:
                     production.lot_producing_id = move_line.lot_id
@@ -144,9 +135,6 @@ class StockPicking(models.Model):
         })
         product = subcontract_move.product_id
         warehouse = self._get_warehouse(subcontract_move)
-        subcontracting_location = \
-            subcontract_move.picking_id.partner_id.with_company(subcontract_move.company_id).property_stock_subcontractor \
-            or subcontract_move.company_id.subcontracting_location_id
         vals = {
             'company_id': subcontract_move.company_id.id,
             'procurement_group_id': group.id,
@@ -155,12 +143,11 @@ class StockPicking(models.Model):
             'product_id': product.id,
             'product_uom_id': subcontract_move.product_uom.id,
             'bom_id': bom.id,
-            'location_src_id': subcontracting_location.id,
-            'location_dest_id': subcontracting_location.id,
-            'product_qty': subcontract_move.product_uom_qty or subcontract_move.quantity,
+            'location_src_id': subcontract_move.picking_id.partner_id.with_company(subcontract_move.company_id).property_stock_subcontractor.id,
+            'location_dest_id': subcontract_move.picking_id.partner_id.with_company(subcontract_move.company_id).property_stock_subcontractor.id,
+            'product_qty': subcontract_move.product_uom_qty,
             'picking_type_id': warehouse.subcontracting_type_id.id,
-            'date_start': subcontract_move.date - relativedelta(days=bom.produce_delay),
-            'origin': self.name,
+            'date_planned_start': subcontract_move.date - relativedelta(days=product.produce_delay)
         }
         return vals
 
@@ -172,11 +159,9 @@ class StockPicking(models.Model):
             # do not create extra production for move that have their quantity updated
             if move.move_orig_ids.production_id:
                 continue
-            quantity = move.product_qty or move.quantity
-            if float_compare(quantity, 0, precision_rounding=move.product_uom.rounding) <= 0:
+            if float_compare(move.product_qty, 0, precision_rounding=move.product_uom.rounding) <= 0:
                 # If a subcontracted amount is decreased, don't create a MO that would be for a negative value.
                 continue
-
             mo_subcontract = self._prepare_subcontract_mo_vals(move, bom)
             # Link the move to the id of the MO's procurement group
             group_move[mo_subcontract['procurement_group_id']] = move
@@ -193,8 +178,24 @@ class StockPicking(models.Model):
 
         for mo in all_mo:
             move = group_move[mo.procurement_group_id.id][0]
-            mo.write({'date_finished': move.date})
             finished_move = mo.move_finished_ids.filtered(lambda m: m.product_id == move.product_id)
             finished_move.write({'move_dest_ids': [(4, move.id, False)]})
 
         all_mo.action_assign()
+
+    @api.onchange('location_id', 'location_dest_id')
+    def _onchange_locations(self):
+        moves = self.move_ids | self.move_ids_without_package
+        moves.filtered(lambda m: m.is_subcontract).update({
+            "location_dest_id": self.location_dest_id,
+        })
+        moves.filtered(lambda m: not m.is_subcontract).update({
+            "location_id": self.location_id,
+            "location_dest_id": self.location_dest_id,
+        })
+        if any(line.reserved_qty or line.qty_done for line in self.move_ids.move_line_ids):
+            return {'warning': {
+                    'title': _("Locations to update"),
+                    'message': _("You might want to update the locations of this transfer's operations"),
+                }
+            }

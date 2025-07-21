@@ -14,11 +14,14 @@ import atexit
 import csv # pylint: disable=deprecated-module
 import logging
 import os
-import re
+import signal
 import sys
+import threading
+import traceback
+import time
 from pathlib import Path
 
-from psycopg2.errors import InsufficientPrivilege
+from psycopg2 import ProgrammingError, errorcodes
 
 import odoo
 
@@ -29,8 +32,6 @@ __version__ = odoo.release.version
 
 # Also use the `odoo` logger for the main script.
 _logger = logging.getLogger('odoo')
-
-re._MAXCACHE = 4096  # default is 512, a little too small for odoo
 
 def check_root_user():
     """Warn if the process's user is 'root' (on POSIX system)."""
@@ -61,16 +62,10 @@ def report_configuration():
     _logger.info('addons paths: %s', odoo.addons.__path__)
     if config.get('upgrade_path'):
         _logger.info('upgrade path: %s', config['upgrade_path'])
-    if config.get('pre_upgrade_scripts'):
-        _logger.info('extra upgrade scripts: %s', config['pre_upgrade_scripts'])
     host = config['db_host'] or os.environ.get('PGHOST', 'default')
     port = config['db_port'] or os.environ.get('PGPORT', 'default')
     user = config['db_user'] or os.environ.get('PGUSER', 'default')
     _logger.info('database: %s@%s:%s', user, host, port)
-    replica_host = config['db_replica_host']
-    replica_port = config['db_replica_port']
-    if replica_host is not False or replica_port:
-        _logger.info('replica database: %s@%s:%s', user, replica_host or 'default', replica_port or 'default')
     if sys.version_info[:2] > odoo.MAX_PY_VERSION:
         _logger.warning("Python %s is not officially supported, please use Python %s instead",
             '.'.join(map(str, sys.version_info[:2])),
@@ -116,7 +111,7 @@ def export_translation():
     with open(config["translate_out"], "wb") as buf:
         registry = odoo.modules.registry.Registry.new(dbname)
         with registry.cursor() as cr:
-            odoo.tools.translate.trans_export(config["language"],
+            odoo.tools.trans_export(config["language"],
                 config["translate_modules"] or ["all"], buf, fileformat, cr)
 
     _logger.info('translation file written successfully')
@@ -134,7 +129,7 @@ def import_translation():
 
 def main(args):
     check_root_user()
-    odoo.tools.config.parse_config(args, setup_logging=True)
+    odoo.tools.config.parse_config(args)
     check_postgres_user()
     report_configuration()
 
@@ -152,12 +147,15 @@ def main(args):
             try:
                 odoo.service.db._create_empty_database(db_name)
                 config['init']['base'] = True
-            except InsufficientPrivilege as err:
-                # We use an INFO loglevel on purpose in order to avoid
-                # reporting unnecessary warnings on build environment
-                # using restricted database access.
-                _logger.info("Could not determine if database %s exists, "
-                             "skipping auto-creation: %s", db_name, err)
+            except ProgrammingError as err:
+                if err.pgcode == errorcodes.INSUFFICIENT_PRIVILEGE:
+                    # We use an INFO loglevel on purpose in order to avoid
+                    # reporting unnecessary warnings on build environment
+                    # using restricted database access.
+                    _logger.info("Could not determine if database %s exists, "
+                                 "skipping auto-creation: %s", db_name, err)
+                else:
+                    raise err
             except odoo.service.db.DatabaseExists:
                 pass
 
@@ -168,6 +166,11 @@ def main(args):
     if config["translate_in"]:
         import_translation()
         sys.exit(0)
+
+    # This needs to be done now to ensure the use of the multiprocessing
+    # signaling mechanism for registries loaded with -d
+    if config['workers']:
+        odoo.multi_process = True
 
     stop = config["stop_after_init"]
 

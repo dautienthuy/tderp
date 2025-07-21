@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import werkzeug
@@ -8,8 +9,8 @@ from odoo.http import request
 
 class WebsiteBackend(http.Controller):
 
-    @http.route('/website/fetch_dashboard_data', type="json", auth='user', readonly=True)
-    def fetch_dashboard_data(self, website_id):
+    @http.route('/website/fetch_dashboard_data', type="json", auth='user')
+    def fetch_dashboard_data(self, website_id, date_from, date_to):
         Website = request.env['website']
         has_group_system = request.env.user.has_group('base.group_system')
         has_group_designer = request.env.user.has_group('website.group_website_designer')
@@ -18,6 +19,7 @@ class WebsiteBackend(http.Controller):
                 'system': has_group_system,
                 'website_designer': has_group_designer
             },
+            'currency': request.env.company.currency_id.id,
             'dashboards': {}
         }
 
@@ -33,15 +35,11 @@ class WebsiteBackend(http.Controller):
             dashboard_data['dashboards']['plausible_share_url'] = current_website._get_plausible_share_url()
         return dashboard_data
 
-    @http.route('/website/iframefallback', type="http", auth='user', website=True, readonly=True)
+    @http.route('/website/iframefallback', type="http", auth='user', website=True)
     def get_iframe_fallback(self):
-        # TODO adapt in master (done like this as a fix in stable)
-        view = request.env.ref('website.iframefallback').with_context(no_cow=True).sudo()
-        if '"website.assets_wysiwyg"' in view.arch:
-            view.arch = view.arch.replace('"website.assets_wysiwyg"', '"website.assets_wysiwyg_inside"')
         return request.render('website.iframefallback')
 
-    @http.route('/website/check_new_content_access_rights', type="json", auth='user', readonly=True)
+    @http.route('/website/check_new_content_access_rights', type="json", auth='user')
     def check_create_access_rights(self, models):
         """
         TODO: In master, remove this route and method and find a better way
@@ -54,26 +52,6 @@ class WebsiteBackend(http.Controller):
             raise werkzeug.exceptions.Forbidden()
 
         return {
-            model: request.env[model].has_access('create')
+            model: request.env[model].check_access_rights('create', raise_exception=False)
             for model in models
         }
-
-    @http.route('/website/track_installing_modules', type='json', auth='user', readonly=True)
-    def website_track_installing_modules(self, selected_features, total_features=None):
-        """
-        During the website configuration, this route allows to track the
-        website features being installed and their dependencies in order to
-        show the progress between installed and yet to install features.
-        """
-        features_not_installed = request.env['website.configurator.feature']\
-            .browse(selected_features).module_id.upstream_dependencies(exclude_states=('',))\
-            .filtered(lambda feature: feature.state != 'installed')
-
-        # On the 1st run, the total tallies the targeted, not yet installed
-        # features. From then on, the compared to total should not change.
-        total_features = total_features or len(features_not_installed)
-        features_info = {
-            'total': total_features,
-            'nbInstalled': total_features - len(features_not_installed)
-        }
-        return features_info

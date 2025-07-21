@@ -3,15 +3,16 @@
 # 	* website_crm_partner_assign
 # 
 # Translators:
-# Wil Odoo, 2025
+# Martin Trigaux, 2023
+# Wil Odoo, 2024
 # Tony Ng, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-16 13:41+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
+"POT-Creation-Date: 2023-05-23 08:24+0000\n"
+"PO-Revision-Date: 2022-09-22 05:56+0000\n"
 "Last-Translator: Tony Ng, 2025\n"
 "Language-Team: Chinese (Taiwan) (https://app.transifex.com/odoo/teams/41243/zh_TW/)\n"
 "MIME-Version: 1.0\n"
@@ -28,38 +29,26 @@ msgstr "銷售機會數目"
 #. module: website_crm_partner_assign
 #. odoo-javascript
 #: code:addons/website_crm_partner_assign/static/src/js/crm_partner_assign.js:0
+#, python-format
 msgid "%s's Opportunity"
 msgstr "%s 的銷售機會"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.crm_lead_view_kanban
 msgid ""
-"(<i class=\"fa fa-long-arrow-right me-1\" aria-label=\"Assigned Partner\" "
+"<i class=\"fa fa-arrow-circle-right\" aria-label=\"Assigned Partner\" "
 "title=\"Assigned Partner\"/>"
-msgstr ""
-"(<i class=\"fa fa-long-arrow-right me-1\" aria-label=\"已指派合作夥伴\" "
-"title=\"已指派合作夥伴\"/>"
+msgstr "<i class=\"fa fa-arrow-circle-right\" aria-label=\"已指派合作夥伴\" title=\"已指派合作夥伴\"/>"
 
 #. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.partner
-msgid "<i class=\"fa fa-chevron-left me-2\"/>Back to resellers"
-msgstr "<i class=\"fa fa-chevron-left me-2\"/> 返回經銷商"
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
+msgid "<i class=\"fa fa-file-text-o\"/> I'm interested"
+msgstr "<i class=\"fa fa-file-text-o\"/>  我感興趣"
 
 #. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid ""
-"<i class=\"fa fa-info-circle me-2\"/>\n"
-"                There are no matching partners found for the selected country. Displaying results across all countries instead."
-msgstr ""
-"<i class=\"fa fa-info-circle me-2\"/>\n"
-"                沒有找到與所選國家/地區相符的合作夥伴。現已顯示所有國家/地區的結果。"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.ref_country
-msgid ""
-"<i class=\"fa fa-map-marker\" role=\"img\" aria-label=\"Open map\" "
-"title=\"Open map\"/>"
-msgstr "<i class=\"fa fa-map-marker\" role=\"img\" aria-label=\"開啟地圖\" title=\"開啟地圖\"/>"
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
+msgid "<i class=\"fa fa-fw fa-times\"/> I'm not interested"
+msgstr "<i class=\"fa fa-fw fa-times\"/> 我不感興趣"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
@@ -77,14 +66,64 @@ msgid "<option>States...</option>"
 msgstr "<option>州/省</option>"
 
 #. module: website_crm_partner_assign
+#. odoo-python
+#: code:addons/website_crm_partner_assign/models/crm_lead.py:0
+#, python-format
+msgid "<p>I am interested by this lead.</p>"
+msgstr "<p>我對此潛在商機感興趣。</p>"
+
+#. module: website_crm_partner_assign
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
+msgid "<small class=\"me-2 mt-1 float-start\"><b>Stage:</b></small>"
+msgstr "<small class=\"me-2 mt-1 float-start\"><b>階段：</b></small>"
+
+#. module: website_crm_partner_assign
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
+msgid "<small class=\"text-muted\">Opportunity - </small>"
+msgstr "<small class=\"text-muted\">銷售機會 － </small>"
+
+#. module: website_crm_partner_assign
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
+msgid ""
+"<span class=\"fa fa-envelope fa-fw\" role=\"img\" aria-label=\"Email\" "
+"title=\"Email\"/>"
+msgstr "<span class=\"fa fa-envelope fa-fw\" role=\"img\" aria-label=\"電郵\" title=\"電郵\"/>"
+
+#. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
 msgid "<span class=\"fa fa-envelope\" role=\"img\" aria-label=\"Email\" title=\"Email\"/>"
 msgstr "<span class=\"fa fa-envelope\" role=\"img\" aria-label=\"電郵\" title=\"電郵\"/>"
 
 #. module: website_crm_partner_assign
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.ref_country
+msgid ""
+"<span class=\"fa fa-external-link\" role=\"img\" aria-label=\"External "
+"link\" title=\"External link\"/>"
+msgstr "<span class=\"fa fa-external-link\" role=\"img\" aria-label=\"外部連結\" title=\"外部連結\"/>"
+
+#. module: website_crm_partner_assign
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
+msgid ""
+"<span class=\"fa fa-map-marker fa-fw\" role=\"img\" aria-label=\"Address\" "
+"title=\"Address\"/>"
+msgstr "<span class=\"fa fa-map-marker fa-fw\" role=\"img\" aria-label=\"地址\" title=\"地址\"/>"
+
+#. module: website_crm_partner_assign
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
+msgid ""
+"<span class=\"fa fa-mobile fa-fw\" role=\"img\" aria-label=\"Mobile\" "
+"title=\"Mobile\"/>"
+msgstr "<span class=\"fa fa-mobile fa-fw\" role=\"img\" aria-label=\"流動電話\" title=\"流動電話\"/>"
+
+#. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
 msgid "<span class=\"fa fa-mobile\" role=\"img\" aria-label=\"Mobile\" title=\"Mobile\"/>"
 msgstr "<span class=\"fa fa-mobile\" role=\"img\" aria-label=\"流動電話\" title=\"流動電話\"/>"
+
+#. module: website_crm_partner_assign
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
+msgid "<span class=\"fa fa-phone fa-fw\" role=\"img\" aria-label=\"Phone\" title=\"Phone\"/>"
+msgstr "<span class=\"fa fa-phone fa-fw\" role=\"img\" aria-label=\"電話\" title=\"電話\"/>"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
@@ -93,44 +132,49 @@ msgstr "<span class=\"fa fa-phone\" role=\"img\" aria-label=\"電話\" title=\"�
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
-msgid ""
-"<span class=\"input-group-text o_input_group_date_icon\">\n"
-"                                                        <span class=\"fa fa-calendar\" role=\"img\" aria-label=\"Calendar\" title=\"Calendar\"/>\n"
-"                                                    </span>"
-msgstr ""
-"<span class=\"input-group-text o_input_group_date_icon\">\n"
-"                                                        <span class=\"fa fa-calendar\" role=\"img\" aria-label=\"日曆\" title=\"日曆\"/>\n"
-"                                                    </span>"
+msgid "<span class=\"fa fa-user fa-fw\" role=\"img\" aria-label=\"User\" title=\"User\"/>"
+msgstr "<span class=\"fa fa-user fa-fw\" role=\"img\" aria-label=\"使用者\" title=\"使用者\"/>"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
 msgid ""
-"<span class=\"input-group-text o_input_group_date_icon\">\n"
-"                                                        <span class=\"fa fa-calendar\" role=\"img\" aria-label=\"Calendar\"/>\n"
-"                                                    </span>"
+"<span class=\"input-group-text\" data-target=\"#exp_closing_div\" data-toggle=\"datetimepicker\">\n"
+"                                                                <span class=\"fa fa-calendar\" role=\"img\" aria-label=\"Calendar\"/>\n"
+"                                                            </span>"
 msgstr ""
-"<span class=\"input-group-text o_input_group_date_icon\">\n"
-"                                                        <span class=\"fa fa-calendar\" role=\"img\" aria-label=\"日曆\"/>\n"
-"                                                    </span>"
+"<span class=\"input-group-text\" data-target=\"#exp_closing_div\" data-toggle=\"datetimepicker\">\n"
+"                                                                <span class=\"fa fa-calendar\" role=\"img\" aria-label=\"日曆\"/>\n"
+"                                                            </span>"
+
+#. module: website_crm_partner_assign
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
+msgid ""
+"<span class=\"input-group-text\" data-target=\"#next_activity_div\" data-toggle=\"datetimepicker\">\n"
+"                                                                <span class=\"fa fa-calendar\" role=\"img\" aria-label=\"Calendar\" title=\"Calendar\"/>\n"
+"                                                            </span>"
+msgstr ""
+"<span class=\"input-group-text\" data-target=\"#next_activity_div\" data-toggle=\"datetimepicker\">\n"
+"                                                                <span class=\"fa fa-calendar\" role=\"img\" aria-label=\"日曆\" title=\"日曆\"/>\n"
+"                                                            </span>"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.view_crm_lead_opportunity_geo_assign_form
 msgid ""
-"<span class=\"oe_grey\" invisible=\"partner_latitude &lt;= 0\">N </span>\n"
-"                                    <span class=\"oe_grey\" invisible=\"partner_latitude &gt;= 0\">S </span>"
+"<span class=\"oe_grey\" attrs=\"{'invisible':[('partner_latitude','&lt;=',0)]}\">N </span>\n"
+"                                    <span class=\"oe_grey\" attrs=\"{'invisible':[('partner_latitude','&gt;=',0)]}\">S </span>"
 msgstr ""
-"<span class=\"oe_grey\" invisible=\"partner_latitude &lt;= 0\">N </span>\n"
-"                                    <span class=\"oe_grey\" invisible=\"partner_latitude &gt;= 0\">S </span>"
+"<span class=\"oe_grey\" attrs=\"{'invisible':[('partner_latitude','&lt;=',0)]}\">N </span>\n"
+"                                    <span class=\"oe_grey\" attrs=\"{'invisible':[('partner_latitude','&gt;=',0)]}\">S </span>"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.view_crm_lead_opportunity_geo_assign_form
 msgid ""
-"<span class=\"oe_grey\" invisible=\"partner_longitude &lt;= 0\">E </span>\n"
-"                                    <span class=\"oe_grey\" invisible=\"partner_longitude &gt;= 0\">W </span>\n"
+"<span class=\"oe_grey\" attrs=\"{'invisible':[('partner_longitude','&lt;=',0)]}\">E </span>\n"
+"                                    <span class=\"oe_grey\" attrs=\"{'invisible':[('partner_longitude','&gt;=',0)]}\">W </span>\n"
 "                                    <span class=\"oe_grey ps-1\">) </span>"
 msgstr ""
-"<span class=\"oe_grey\" invisible=\"partner_longitude &lt;= 0\">E </span>\n"
-"                                    <span class=\"oe_grey\" invisible=\"partner_longitude &gt;= 0\">W </span>\n"
+"<span class=\"oe_grey\" attrs=\"{'invisible':[('partner_longitude','&lt;=',0)]}\">E </span>\n"
+"                                    <span class=\"oe_grey\" attrs=\"{'invisible':[('partner_longitude','&gt;=',0)]}\">W </span>\n"
 "                                    <span class=\"oe_grey ps-1\">) </span>"
 
 #. module: website_crm_partner_assign
@@ -165,8 +209,14 @@ msgstr "<span class=\"text-muted\"> - </span>"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunities
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
 msgid "<span> at </span>"
 msgstr "<span> : </span>"
+
+#. module: website_crm_partner_assign
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
+msgid "<strong class=\"col-12 col-sm-3\">Address</strong>"
+msgstr "<strong class=\"col-12 col-sm-3\">地址</strong>"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
@@ -189,6 +239,12 @@ msgid "<strong class=\"col-12 col-sm-4\">Priority</strong>"
 msgstr "<strong class=\"col-12 col-sm-4\">重要度</strong>"
 
 #. module: website_crm_partner_assign
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
+msgid "<strong>Message and communication history</strong>"
+msgstr "<strong>消息和溝通歷史</strong>"
+
+#. module: website_crm_partner_assign
 #: model:mail.template,body_html:website_crm_partner_assign.email_template_lead_forward_mail
 msgid ""
 "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;\"><tr><td align=\"center\">\n"
@@ -199,12 +255,12 @@ msgid ""
 "        <td align=\"center\" style=\"min-width: 590px;\">\n"
 "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
 "                <tr><td valign=\"middle\">\n"
-"                    <span style=\"font-size: 10px;\">Your leads</span><br/>\n"
-"                </td><td valign=\"middle\" align=\"right\" t-if=\"not user.company_id.uses_default_logo\">\n"
-"                    <img t-attf-src=\"/logo.png?company={{ user.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"user.company_id.name\"/>\n"
+"                    <span style=\"font-size: 10px;\">Your leads</span><br>\n"
+"                </td><td valign=\"middle\" align=\"right\">\n"
+"                    <img t-attf-src=\"/logo.png?company={{ user.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"user.company_id.name\">\n"
 "                </td></tr>\n"
 "                <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
-"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:16px 0px 16px 0px;\"/>\n"
+"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:16px 0px 16px 0px;\">\n"
 "                </td></tr>\n"
 "            </table>\n"
 "        </td>\n"
@@ -216,22 +272,22 @@ msgid ""
 "                <tr>\n"
 "                    <td valign=\"top\" style=\"font-size: 13px;\">\n"
 "                        <div>\n"
-"                            Hello,<br/>\n"
-"                            We have been contacted by those prospects that are in your region. Thus, the following leads have been assigned to <t t-out=\"ctx['partner_id'].name or ''\"/>:<br/>\n"
+"                            Hello,<br>\n"
+"                            We have been contacted by those prospects that are in your region. Thus, the following leads have been assigned to <t t-out=\"ctx['partner_id'].name or ''\"></t>:<br>\n"
 "                            <ol>\n"
-"                                <li t-foreach=\"ctx['partner_leads']\" t-as=\"lead\"><a t-att-href=\"lead['lead_link']\" t-out=\"lead['lead_id'].name or 'Subject Undefined'\">Subject Undefined</a>, <t t-out=\"lead['lead_id'].partner_name or lead['lead_id'].contact_name or 'Contact Name Undefined'\">Contact Name Undefined</t>, <t t-out=\"lead['lead_id'].country_id and lead['lead_id'].country_id.name or 'Country Undefined'\">Country Undefined</t>, <t t-out=\"lead['lead_id'].email_from or 'Email Undefined' or ''\">Email Undefined</t>, <t t-out=\"lead['lead_id'].phone or ''\">+1 650-123-4567</t> </li><br/>\n"
+"                                <li t-foreach=\"ctx['partner_leads']\" t-as=\"lead\"><a t-att-href=\"lead['lead_link']\" t-out=\"lead['lead_id'].name or 'Subject Undefined'\">Subject Undefined</a>, <t t-out=\"lead['lead_id'].partner_name or lead['lead_id'].contact_name or 'Contact Name Undefined'\">Contact Name Undefined</t>, <t t-out=\"lead['lead_id'].country_id and lead['lead_id'].country_id.name or 'Country Undefined'\">Country Undefined</t>, <t t-out=\"lead['lead_id'].email_from or 'Email Undefined' or ''\">Email Undefined</t>, <t t-out=\"lead['lead_id'].phone or ''\">+1 650-123-4567</t> </li><br>\n"
 "                            </ol>\n"
 "                            <t t-if=\"ctx.get('partner_in_portal')\">\n"
-"                                Please connect to your <a t-att-href=\"'%s?db=%s' % (object.get_base_url(), object.env.cr.dbname)\">Partner Portal</a> to get details. On each lead are two buttons on the top left corner that you should press after having contacted the lead: \"I'm interested\" &amp; \"I'm not interested\".<br/>\n"
+"                                Please connect to your <a t-att-href=\"'%s?db=%s' % (object.get_base_url(), object.env.cr.dbname)\">Partner Portal</a> to get details. On each lead are two buttons on the top left corner that you should press after having contacted the lead: \"I'm interested\" &amp; \"I'm not interested\".<br>\n"
 "                            </t>\n"
 "                            <t t-else=\"\">\n"
 "                                You do not have yet a portal access to our database. Please contact\n"
-"                                <t t-out=\"ctx['partner_id'].user_id and ctx['partner_id'].user_id.email and 'your account manager %s (%s)' % (ctx['partner_id'].user_id.name,ctx['partner_id'].user_id.email) or 'us'\">us</t>.<br/>\n"
+"                                <t t-out=\"ctx['partner_id'].user_id and ctx['partner_id'].user_id.email and 'your account manager %s (%s)' % (ctx['partner_id'].user_id.name,ctx['partner_id'].user_id.email) or 'us'\">us</t>.<br>\n"
 "                            </t>\n"
-"                            The lead will be sent to another partner if you do not contact the lead before 20 days.<br/><br/>\n"
-"                            Thank you,<br/>\n"
-"                            <t t-out=\"ctx['partner_id'].user_id and ctx['partner_id'].user_id.signature or ''\"/>\n"
-"                            <br/>\n"
+"                            The lead will be sent to another partner if you do not contact the lead before 20 days.<br><br>\n"
+"                            Thank you,<br>\n"
+"                            <t t-out=\"ctx['partner_id'].user_id and ctx['partner_id'].user_id.signature or ''\"></t>\n"
+"                            <br>\n"
 "                            <t t-if=\"not ctx['partner_id'].user_id\">\n"
 "                                PS: It looks like you do not have an account manager assigned to you, please contact us.\n"
 "                            </t>\n"
@@ -240,7 +296,7 @@ msgid ""
 "                </tr>\n"
 "                <tr>\n"
 "                    <td style=\"text-align:center;\">\n"
-"                        <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                        <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\">\n"
 "                    </td>\n"
 "                </tr>\n"
 "            </table>\n"
@@ -285,12 +341,12 @@ msgstr ""
 "        <td align=\"center\" style=\"min-width: 590px;\">\n"
 "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
 "                <tr><td valign=\"middle\">\n"
-"                    <span style=\"font-size: 10px;\">你的潛在客戶</span><br/>\n"
-"                </td><td valign=\"middle\" align=\"right\" t-if=\"not user.company_id.uses_default_logo\">\n"
-"                    <img t-attf-src=\"/logo.png?company={{ user.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"user.company_id.name\"/>\n"
+"                    <span style=\"font-size: 10px;\">你的潛在客戶</span><br>\n"
+"                </td><td valign=\"middle\" align=\"right\">\n"
+"                    <img t-attf-src=\"/logo.png?company={{ user.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"user.company_id.name\">\n"
 "                </td></tr>\n"
 "                <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
-"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:16px 0px 16px 0px;\"/>\n"
+"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:16px 0px 16px 0px;\">\n"
 "                </td></tr>\n"
 "            </table>\n"
 "        </td>\n"
@@ -302,22 +358,22 @@ msgstr ""
 "                <tr>\n"
 "                    <td valign=\"top\" style=\"font-size: 13px;\">\n"
 "                        <div>\n"
-"                            你好！<br/>\n"
-"                            你所在地區的潛在客戶已與我們聯絡。因此，以下潛在客戶已分配給 <t t-out=\"ctx['partner_id'].name or ''\"/>：<br/>\n"
+"                            你好！<br>\n"
+"                            你所在地區的潛在客戶已與我們聯絡。因此，以下潛在客戶已分配給 <t t-out=\"ctx['partner_id'].name or ''\"></t>：<br>\n"
 "                            <ol>\n"
-"                                <li t-foreach=\"ctx['partner_leads']\" t-as=\"lead\"><a t-att-href=\"lead['lead_link']\" t-out=\"lead['lead_id'].name or '對象未定義'\">對象未定義</a>，<t t-out=\"lead['lead_id'].partner_name or lead['lead_id'].contact_name or '聯絡人姓名未定義'\">聯絡人姓名未定義</t>，<t t-out=\"lead['lead_id'].country_id and lead['lead_id'].country_id.name or '國家/地區未定義'\">國家/地區未定義</t>，<t t-out=\"lead['lead_id'].email_from or '電郵地址未定義' or ''\">電郵地址未定義</t>，<t t-out=\"lead['lead_id'].phone or ''\">+1 650-123-4567</t> </li><br/>\n"
+"                                <li t-foreach=\"ctx['partner_leads']\" t-as=\"lead\"><a t-att-href=\"lead['lead_link']\" t-out=\"lead['lead_id'].name or '對象未定義'\">對象未定義</a>，<t t-out=\"lead['lead_id'].partner_name or lead['lead_id'].contact_name or '聯絡人姓名未定義'\">聯絡人姓名未定義</t>，<t t-out=\"lead['lead_id'].country_id and lead['lead_id'].country_id.name or '國家/地區未定義'\">國家/地區未定義</t>，<t t-out=\"lead['lead_id'].email_from or '電郵地址未定義' or ''\">電郵地址未定義</t>，<t t-out=\"lead['lead_id'].phone or ''\">+1 650-123-4567</t> </li><br>\n"
 "                            </ol>\n"
 "                            <t t-if=\"ctx.get('partner_in_portal')\">\n"
-"                                請登入你的<a t-att-href=\"'%s?db=%s' % (object.get_base_url(), object.env.cr.dbname)\">合作夥伴頁面</a>以查看詳情。每名潛在客戶，頁面左上角都有兩個按鈕：「我感興趣」以及「我不感興趣」。你在聯絡潛在客戶後應按下按鈕。<br/>\n"
+"                                請登入你的<a t-att-href=\"'%s?db=%s' % (object.get_base_url(), object.env.cr.dbname)\">合作夥伴頁面</a>以查看詳情。每名潛在客戶，頁面左上角都有兩個按鈕：「我感興趣」以及「我不感興趣」。你在聯絡潛在客戶後應按下按鈕。<br>\n"
 "                            </t>\n"
 "                            <t t-else=\"\">\n"
 "                                你目前仍未有存取我們資料庫的門戶網頁。請聯絡\n"
-"                                <t t-out=\"ctx['partner_id'].user_id and ctx['partner_id'].user_id.email and '你的客戶經理 %s （%s）' % (ctx['partner_id'].user_id.name,ctx['partner_id'].user_id.email) or '我們'\">我們</t>。<br/>\n"
+"                                <t t-out=\"ctx['partner_id'].user_id and ctx['partner_id'].user_id.email and '你的客戶經理 %s （%s）' % (ctx['partner_id'].user_id.name,ctx['partner_id'].user_id.email) or '我們'\">我們</t>。<br>\n"
 "                            </t>\n"
-"                            若你未在 20 天內聯絡對方，這名潛在客戶將轉交其他合作夥伴跟進。<br/><br/>\n"
-"                            謝謝！<br/>\n"
-"                            <t t-out=\"ctx['partner_id'].user_id and ctx['partner_id'].user_id.signature or ''\"/>\n"
-"                            <br/>\n"
+"                            若你未在 20 天內聯絡對方，這名潛在客戶將轉交其他合作夥伴跟進。<br><br>\n"
+"                            謝謝！<br>\n"
+"                            <t t-out=\"ctx['partner_id'].user_id and ctx['partner_id'].user_id.signature or ''\"></t>\n"
+"                            <br>\n"
 "                            <t t-if=\"not ctx['partner_id'].user_id\">\n"
 "                                註：似乎你未獲分派客戶經理，請聯絡我們。\n"
 "                            </t>\n"
@@ -326,7 +382,7 @@ msgstr ""
 "                </tr>\n"
 "                <tr>\n"
 "                    <td style=\"text-align:center;\">\n"
-"                        <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                        <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\">\n"
 "                    </td>\n"
 "                </tr>\n"
 "            </table>\n"
@@ -378,6 +434,7 @@ msgstr "啟用"
 #: code:addons/website_crm_partner_assign/controllers/main.py:0
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_partner_activation__active
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_partner_grade__active
+#, python-format
 msgid "Active"
 msgstr "啟用"
 
@@ -387,33 +444,31 @@ msgid "Add an opportunity"
 msgstr "新增商機"
 
 #. module: website_crm_partner_assign
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.snippet_options
 msgid "Address"
 msgstr "地址"
 
 #. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
-msgid "Address:"
-msgstr "地址："
-
-#. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/controllers/main.py:0
+#, python-format
 msgid "All Categories"
 msgstr "所有類別"
 
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/controllers/main.py:0
+#, python-format
 msgid "All Countries"
 msgstr "所有國家"
 
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/models/crm_lead.py:0
-msgid "All fields are required!"
-msgstr "所有欄位都是必填。"
+#, python-format
+msgid "All fields are required !"
+msgstr "必須填寫所有欄位！"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.res_partner_activation_view_search
@@ -426,13 +481,13 @@ msgstr "已封存"
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_lead_assignation__partner_assigned_id
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.crm_lead_partner_filter
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.crm_opportunity_partner_filter
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.view_crm_lead_opportunity_geo_assign_form
 msgid "Assigned Partner"
 msgstr "指定的合作夥伴"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.crm_lead_merge_summary_inherit_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
 msgid "Assigned Partner:"
 msgstr "已指派合作夥伴："
 
@@ -447,11 +502,6 @@ msgid "Automatically sanitized HTML contents"
 msgstr "自動整理HTML內容"
 
 #. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.partner
-msgid "Back to resellers list"
-msgstr "返回經銷商列表"
-
-#. module: website_crm_partner_assign
 #: model:res.partner.grade,name:website_crm_partner_assign.res_partner_grade_data_bronze
 msgid "Bronze"
 msgstr "銅級"
@@ -463,8 +513,8 @@ msgstr "CRM 合作夥伴關係分析"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
-msgid "Campaign:"
-msgstr "推廣活動："
+msgid "Campaign"
+msgstr "行銷"
 
 #. module: website_crm_partner_assign
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_partner_grade__can_publish
@@ -485,19 +535,12 @@ msgid "City"
 msgstr "城市"
 
 #. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunities
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.ref_country
 msgid "Close"
 msgstr "關閉"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
-msgid "Communication history"
-msgstr "通訊歷史"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
@@ -516,9 +559,16 @@ msgstr "聯絡人"
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/controllers/main.py:0
+#: code:addons/website_crm_partner_assign/controllers/main.py:0
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_leads
+#, python-format
 msgid "Contact Name"
 msgstr "聯絡人姓名"
+
+#. module: website_crm_partner_assign
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
+msgid "Contact a reseller"
+msgstr "聯繫經銷商"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunities
@@ -556,7 +606,7 @@ msgstr "新增合作夥伴級別"
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_partner_activation__create_uid
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_partner_grade__create_uid
 msgid "Created by"
-msgstr "建立人員"
+msgstr "創立者"
 
 #. module: website_crm_partner_assign
 #: model:crm.tag,name:website_crm_partner_assign.tag_portal_lead_own_opp
@@ -577,19 +627,14 @@ msgid "Current stage of the opportunity"
 msgstr "商機的目前階段"
 
 #. module: website_crm_partner_assign
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
+msgid "Customer"
+msgstr "客戶"
+
+#. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
 msgid "Customer Name"
 msgstr "客戶名稱"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
-msgid "Customer:"
-msgstr "客戶:"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.layout
-msgid "DROP BUILDING BLOCKS HERE TO MAKE THEM AVAILABLE ACROSS ALL RESELLERS"
-msgstr "將內容方塊拖放至此處，使它可用於所有經銷商"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_leads
@@ -637,13 +682,6 @@ msgid "Edit Opportunity"
 msgstr "編輯銷售機會"
 
 #. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid "Edit to add a short description"
-msgstr "編輯以加入簡短描述"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_leads
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunities
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
 msgid "Email"
 msgstr "電郵"
@@ -660,6 +698,10 @@ msgstr "預期"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
+msgid "Expected Closing"
+msgstr "預期結束"
+
+#. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
 msgid "Expected Closing:"
 msgstr "預期結束："
@@ -667,38 +709,19 @@ msgstr "預期結束："
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/controllers/main.py:0
+#, python-format
 msgid "Expected Revenue"
 msgstr "預期收入"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid "Filter by category"
-msgstr "以類別篩選"
+msgid "Filter by Country"
+msgstr "按國家篩選"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid "Filter by country"
-msgstr "以國家/地區篩選"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid "Filters"
-msgstr "篩選"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid "Find a reseller"
-msgstr "尋找經銷商"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_home_lead
-msgid "Follow and convert your leads"
-msgstr "追隨並轉換你的潛在客戶"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_home_lead
-msgid "Follow and convert your opportunities"
-msgstr "追隨並轉換你的銷售機會"
+msgid "Filter by Level"
+msgstr "按等級篩選"
 
 #. module: website_crm_partner_assign
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_lead_forward_to_partner__partner_id
@@ -719,12 +742,6 @@ msgstr "轉移到合作夥伴"
 #: model:ir.actions.act_window,name:website_crm_partner_assign.action_crm_send_mass_forward
 msgid "Forward to partner"
 msgstr "連結到合作夥伴"
-
-#. module: website_crm_partner_assign
-#. odoo-python
-#: code:addons/website_crm_partner_assign/controllers/main.py:0
-msgid "Future Activities"
-msgstr "未來活動"
 
 #. module: website_crm_partner_assign
 #: model:mail.template,subject:website_crm_partner_assign.email_template_lead_forward_mail
@@ -759,11 +776,6 @@ msgid ""
 msgstr "給出將潛在商機分配給該合作夥伴的概率。 （0 表示沒有賦值。）"
 
 #. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid "Go to reseller"
-msgstr "前往經銷商"
-
-#. module: website_crm_partner_assign
 #: model:res.partner.grade,name:website_crm_partner_assign.res_partner_grade_data_gold
 msgid "Gold"
 msgstr "金級"
@@ -776,23 +788,19 @@ msgstr "級別"
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.view_report_crm_partner_assign_filter
 msgid "Group By"
-msgstr "分組依據"
+msgstr "分組方式"
 
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/models/crm_lead.py:0
-msgid "I am interested by this lead."
-msgstr "我對此潛在商機有興趣。"
-
-#. module: website_crm_partner_assign
-#. odoo-python
-#: code:addons/website_crm_partner_assign/models/crm_lead.py:0
+#, python-format
 msgid "I am not interested by this lead. I contacted the lead."
 msgstr "我對此潛在商機不感興趣。我已聯繫此潛在商機。"
 
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/models/crm_lead.py:0
+#, python-format
 msgid "I am not interested by this lead. I have not contacted the lead."
 msgstr "對此潛在商機不感興趣。我尚未聯繫此潛在商機。"
 
@@ -802,29 +810,19 @@ msgid "I have contacted the customer"
 msgstr "我已經聯繫了客戶"
 
 #. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
-msgid "I'm interested"
-msgstr "我有興趣"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
-msgid "I'm not interested"
-msgstr "我不感興趣"
-
-#. module: website_crm_partner_assign
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_lead_assignation__id
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_lead_forward_to_partner__id
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_partner_report_assign__id
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_partner_activation__id
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_partner_grade__id
 msgid "ID"
-msgstr "識別號"
+msgstr "ID"
 
 #. module: website_crm_partner_assign
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_partner__implemented_partner_ids
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_users__implemented_partner_ids
 msgid "Implementation References"
-msgstr "實施參考"
+msgstr "執行編碼"
 
 #. module: website_crm_partner_assign
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_partner__implemented_partner_count
@@ -849,6 +847,15 @@ msgid "Is Published"
 msgstr "已發佈"
 
 #. module: website_crm_partner_assign
+#: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_lead_assignation____last_update
+#: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_lead_forward_to_partner____last_update
+#: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_partner_report_assign____last_update
+#: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_partner_activation____last_update
+#: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_partner_grade____last_update
+msgid "Last Modified on"
+msgstr "最後修改於"
+
+#. module: website_crm_partner_assign
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_lead_assignation__write_uid
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_lead_forward_to_partner__write_uid
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_partner_activation__write_uid
@@ -870,12 +877,6 @@ msgid "Last date this case was forwarded/assigned to a partner"
 msgstr "此案件轉移/指定給合作夥伴的最近日期"
 
 #. module: website_crm_partner_assign
-#. odoo-python
-#: code:addons/website_crm_partner_assign/controllers/main.py:0
-msgid "Late Activities"
-msgstr "逾期活動"
-
-#. module: website_crm_partner_assign
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_partner_report_assign__date_review
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_partner__date_review
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_users__date_review
@@ -884,7 +885,6 @@ msgstr "最近合作夥伴審查"
 
 #. module: website_crm_partner_assign
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_lead_assignation__lead_id
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_leads
 msgid "Lead"
 msgstr "潛在商機"
 
@@ -906,7 +906,7 @@ msgstr "潛在商機回饋"
 #. module: website_crm_partner_assign
 #: model:mail.template,name:website_crm_partner_assign.email_template_lead_forward_mail
 msgid "Lead Forward: Send to partner"
-msgstr "潛在商機轉交：傳送給合作夥伴"
+msgstr "Lead Forward：發送給合作夥伴"
 
 #. module: website_crm_partner_assign
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_lead_assignation__lead_location
@@ -933,7 +933,7 @@ msgstr "潛在商機"
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.view_partner_grade_form
 msgid "Level"
-msgstr "等級"
+msgstr "層級"
 
 #. module: website_crm_partner_assign
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_partner_grade__name
@@ -953,20 +953,26 @@ msgid "Link to Lead"
 msgstr "連結到潛在商機"
 
 #. module: website_crm_partner_assign
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
+msgid "Looking For a Local Store?"
+msgstr "搜尋本地商店？"
+
+#. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/controllers/main.py:0
+#, python-format
 msgid "Lost"
-msgstr "丟失"
+msgstr "未成交"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
-msgid "Medium:"
-msgstr "媒介："
+msgid "Medium"
+msgstr "媒體"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
 msgid "Mobile"
-msgstr "行動電話"
+msgstr "手機"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.crm_lead_partner_filter
@@ -977,7 +983,11 @@ msgstr "我的指定合作夥伴"
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/controllers/main.py:0
+#: code:addons/website_crm_partner_assign/controllers/main.py:0
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_res_partner_activation__name
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_leads
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunities
+#, python-format
 msgid "Name"
 msgstr "名稱"
 
@@ -989,6 +999,8 @@ msgstr "新商機"
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/controllers/main.py:0
+#: code:addons/website_crm_partner_assign/controllers/main.py:0
+#, python-format
 msgid "Newest"
 msgstr "最新"
 
@@ -1009,12 +1021,6 @@ msgid "Next Partner Review"
 msgstr "下一次合作夥伴審查"
 
 #. module: website_crm_partner_assign
-#. odoo-python
-#: code:addons/website_crm_partner_assign/controllers/main.py:0
-msgid "No Activities"
-msgstr "沒有活動"
-
-#. module: website_crm_partner_assign
 #: model_terms:ir.actions.act_window,help:website_crm_partner_assign.action_report_crm_partner_assign
 msgid "No data yet!"
 msgstr "暫無資料！"
@@ -1026,24 +1032,15 @@ msgstr "無可用合作夥伴"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid "No results found for \""
-msgstr "找不到結果：\""
+msgid "No result found"
+msgstr "找不到結果"
 
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/models/crm_lead.py:0
-msgid "Not allowed to update the following field(s): %s."
+#, python-format
+msgid "Not allowed to update the following field(s) : %s."
 msgstr "不允許更新以下欄位：%s。"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid "Open categories dropdown"
-msgstr "打開類別下拉式選單"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid "Open countries dropdown"
-msgstr "打開國家/地區下拉式選單"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_home_lead
@@ -1063,9 +1060,16 @@ msgid "Opportunity"
 msgstr "商機"
 
 #. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
-msgid "Opportunity -"
-msgstr "銷售機會 -"
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.partner
+msgid "Our Partners"
+msgstr "我們的合作夥伴"
+
+#. module: website_crm_partner_assign
+#. odoo-python
+#: code:addons/website_crm_partner_assign/controllers/main.py:0
+#, python-format
+msgid "Overdue Activities"
+msgstr "逾期活動"
 
 #. module: website_crm_partner_assign
 #: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_partner_report_assign__partner_id
@@ -1175,8 +1179,6 @@ msgid "Partnerships"
 msgstr "合作關係"
 
 #. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_leads
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunities
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
 msgid "Phone"
 msgstr "電話"
@@ -1195,6 +1197,7 @@ msgstr "優先級："
 #. odoo-python
 #: code:addons/website_crm_partner_assign/controllers/main.py:0
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
+#, python-format
 msgid "Probability"
 msgstr "概率"
 
@@ -1243,25 +1246,23 @@ msgstr "客戶成功案例"
 #. odoo-python
 #: code:addons/website_crm_partner_assign/models/website.py:0
 #: model:ir.ui.menu,name:website_crm_partner_assign.crm_menu_resellers
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.layout
+#, python-format
 msgid "Resellers"
 msgstr "經銷商"
 
 #. module: website_crm_partner_assign
+#: model:ir.model.fields,field_description:website_crm_partner_assign.field_crm_partner_report_assign__team_id
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
-msgid "Sales Team:"
-msgstr "銷售團隊："
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.view_report_crm_partner_assign_filter
+msgid "Sales Team"
+msgstr "銷售團隊"
 
 #. module: website_crm_partner_assign
+#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.view_report_crm_partner_assign_filter
 msgid "Salesperson"
 msgstr "銷售員"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
-msgid "Salesperson:"
-msgstr "銷售人員："
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
@@ -1271,22 +1272,7 @@ msgstr "搜尋"
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.res_partner_grade_view_search
 msgid "Search Partner Grade"
-msgstr "搜尋合作夥伴評級"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid "See all resellers"
-msgstr "查看所有經銷商"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid "See categories filters"
-msgstr "查看類別篩選器"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid "See countries filters"
-msgstr "查看國家/地區篩選器"
+msgstr "搜索合作夥伴評級"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.crm_lead_forward_to_partner_form
@@ -1296,7 +1282,7 @@ msgstr "發送"
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.view_crm_lead_opportunity_geo_assign_form
 msgid "Send Email"
-msgstr "發送電子郵件"
+msgstr "傳送電郵"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.crm_lead_forward_to_partner_form
@@ -1319,12 +1305,14 @@ msgstr "序號"
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/wizard/crm_forward_to_partner.py:0
+#, python-format
 msgid "Set an email address for the partner %s"
 msgstr "給合作夥伴%s設定電郵地址"
 
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/wizard/crm_forward_to_partner.py:0
+#, python-format
 msgid "Set an email address for the partner(s): %s"
 msgstr "給合作夥伴%s設定電郵地址："
 
@@ -1347,13 +1335,9 @@ msgstr "垃圾信件"
 #. odoo-python
 #: code:addons/website_crm_partner_assign/controllers/main.py:0
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunities
+#, python-format
 msgid "Stage"
 msgstr "階段"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
-msgid "Stage:"
-msgstr "階段："
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
@@ -1363,7 +1347,7 @@ msgstr "街道"
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
 msgid "Street2"
-msgstr "街道2"
+msgstr "街道 2"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
@@ -1373,13 +1357,14 @@ msgstr "標籤"
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/wizard/crm_forward_to_partner.py:0
+#, python-format
 msgid "The Forward Email Template is not in the database"
 msgstr "轉發信件範本在資料庫中不存在"
 
 #. module: website_crm_partner_assign
 #: model:ir.model.fields,help:website_crm_partner_assign.field_res_partner_grade__website_url
 msgid "The full URL to access the document through the website."
-msgstr "通過網站存取此文件的完整網址."
+msgstr "通過網站存取此文件的完整網址。"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_leads
@@ -1394,8 +1379,16 @@ msgstr "這兒沒有商機。"
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/models/crm_lead.py:0
+#, python-format
 msgid "There is no country set in addresses for %(lead_names)s."
 msgstr "潛在商機的地址未設定國家/地區：%(lead_names)s。"
+
+#. module: website_crm_partner_assign
+#. odoo-python
+#: code:addons/website_crm_partner_assign/controllers/main.py:0
+#, python-format
+msgid "This Week Activities"
+msgstr "這一周的活動"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_lead
@@ -1419,6 +1412,7 @@ msgstr "這些用於了解你的合作夥伴在新手簡介流程的進度。"
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/controllers/main.py:0
+#, python-format
 msgid "Today Activities"
 msgstr "今天的活動"
 
@@ -1440,6 +1434,7 @@ msgstr "在當前網站可見"
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/models/crm_lead.py:0
+#, python-format
 msgid "Warning"
 msgstr "警告"
 
@@ -1466,6 +1461,7 @@ msgstr "你為什麼對這條潛在商機不感興趣？"
 #. module: website_crm_partner_assign
 #. odoo-python
 #: code:addons/website_crm_partner_assign/controllers/main.py:0
+#, python-format
 msgid "Won"
 msgstr "贏得"
 
@@ -1478,7 +1474,7 @@ msgstr "世界地圖"
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
 msgid "ZIP"
-msgstr "郵遞區號"
+msgstr "郵編"
 
 #. module: website_crm_partner_assign
 #: model:ir.model.fields.selection,name:website_crm_partner_assign.selection__crm_lead_forward_to_partner__forward_type__single
@@ -1488,17 +1484,12 @@ msgstr "單一合作夥伴：手動選擇合作夥伴"
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
 msgid "at"
-msgstr " "
+msgstr "在"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.view_partner_grade_form
 msgid "e.g. Gold Partner"
 msgstr "例：金級合作夥伴"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid "in"
-msgstr "網誌："
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.crm_lead_merge_summary_inherit_partner_assign
@@ -1513,17 +1504,12 @@ msgstr "經度"
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.portal_my_opportunity
 msgid "on"
-msgstr "於"
+msgstr "在"
 
 #. module: website_crm_partner_assign
 #: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid "reference"
-msgstr "參考編號"
-
-#. module: website_crm_partner_assign
-#: model_terms:ir.ui.view,arch_db:website_crm_partner_assign.index
-msgid "references"
-msgstr "參考"
+msgid "reference(s)"
+msgstr "成功案例"
 
 #. module: website_crm_partner_assign
 #: model:ir.model.fields.selection,name:website_crm_partner_assign.selection__crm_lead_forward_to_partner__forward_type__assigned

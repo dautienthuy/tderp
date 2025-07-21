@@ -3,32 +3,26 @@
 # 	* payment_stripe
 # 
 # Translators:
-# Veikko Väätäjä <veikko.vaataja@gmail.com>, 2024
-# Martin Trigaux, 2024
-# Jarmo Kortetjärvi <jarmo.kortetjarvi@gmail.com>, 2024
-# Tuomas Lyyra <tuomas.lyyra@legenda.fi>, 2024
-# Ossi Mantylahti <ossi.mantylahti@obs-solutions.fi>, 2024
-# Jiri Grönroos <jiri.gronroos@iki.fi>, 2024
+# Jarmo Kortetjärvi <jarmo.kortetjarvi@gmail.com>, 2023
+# Tuomas Lyyra <tuomas.lyyra@legenda.fi>, 2023
+# Veikko Väätäjä <veikko.vaataja@gmail.com>, 2023
+# Martin Trigaux, 2023
+# Jiri Grönroos <jiri.gronroos@iki.fi>, 2023
+# Ossi Mantylahti <ossi.mantylahti@obs-solutions.fi>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:56+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Jiri Grönroos <jiri.gronroos@iki.fi>, 2024\n"
+"POT-Creation-Date: 2023-01-31 14:10+0000\n"
+"PO-Revision-Date: 2023-09-25 06:59+0000\n"
+"Last-Translator: Ossi Mantylahti <ossi.mantylahti@obs-solutions.fi>, 2023\n"
 "Language-Team: Finnish (https://app.transifex.com/odoo/teams/41243/fi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: fi\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-
-#. module: payment_stripe
-#. odoo-javascript
-#: code:addons/payment_stripe/static/src/js/payment_form.js:0
-msgid "Cannot display the payment form"
-msgstr "Maksulomaketta ei voi näyttää"
 
 #. module: payment_stripe
 #: model:ir.model.fields,field_description:payment_stripe.field_payment_provider__code
@@ -43,12 +37,14 @@ msgstr "Yhdistä Stripe"
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_provider.py:0
+#, python-format
 msgid "Could not establish the connection to the API."
 msgstr "Yhteyttä API:han ei saatu muodostettua."
 
 #. module: payment_stripe
 #. odoo-javascript
 #: code:addons/payment_stripe/static/src/js/express_checkout_form.js:0
+#, python-format
 msgid "Delivery"
 msgstr "Toimitus"
 
@@ -56,12 +52,6 @@ msgstr "Toimitus"
 #: model_terms:ir.ui.view,arch_db:payment_stripe.payment_provider_form
 msgid "Enable Apple Pay"
 msgstr "Ota Apple Pay käyttöön"
-
-#. module: payment_stripe
-#. odoo-javascript
-#: code:addons/payment_stripe/static/src/js/express_checkout_form.js:0
-msgid "Free Shipping"
-msgstr "Ilmainen toimitus"
 
 #. module: payment_stripe
 #: model_terms:ir.ui.view,arch_db:payment_stripe.payment_provider_form
@@ -83,22 +73,11 @@ msgstr ""
 "asetettava, jotta Stripe lähettää Odooon viestin."
 
 #. module: payment_stripe
-#. odoo-javascript
-#: code:addons/payment_stripe/static/src/js/payment_form.js:0
-msgid "Incorrect payment details"
-msgstr "Virheelliset maksutiedot"
-
-#. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_transaction.py:0
+#, python-format
 msgid "No transaction found matching reference %s."
 msgstr "Viitettä %s vastaavaa tapahtumaa ei löytynyt."
-
-#. module: payment_stripe
-#. odoo-python
-#: code:addons/payment_stripe/models/payment_provider.py:0
-msgid "Other Payment Providers"
-msgstr "Muut maksupalvelujen tarjoajat"
 
 #. module: payment_stripe
 #: model:ir.model,name:payment_stripe.model_payment_provider
@@ -121,14 +100,9 @@ msgid "Payment Transaction"
 msgstr "Maksutapahtuma"
 
 #. module: payment_stripe
-#. odoo-javascript
-#: code:addons/payment_stripe/static/src/js/payment_form.js:0
-msgid "Payment processing failed"
-msgstr "Maksun käsittely epäonnistui"
-
-#. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_provider.py:0
+#, python-format
 msgid "Please use live credentials to enable Apple Pay."
 msgstr "Käytä live-tunnuksia ottaaksesi Apple Payn käyttöön."
 
@@ -140,18 +114,21 @@ msgstr "Julkinen avain (Publishable Key)"
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_transaction.py:0
+#, python-format
 msgid "Received data with invalid intent status: %s"
 msgstr "Vastaanotettu data, jonka tila on virheellinen: %s"
 
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_transaction.py:0
+#, python-format
 msgid "Received data with missing intent status."
 msgstr "Vastaanotetut tiedot, joista puuttuu aikomuksen tila."
 
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_transaction.py:0
+#, python-format
 msgid "Received data with missing merchant reference"
 msgstr "Vastaanotetut tiedot, joista puuttuu kauppiasviite"
 
@@ -166,19 +143,9 @@ msgid "Stripe"
 msgstr "Stripe"
 
 #. module: payment_stripe
-#. odoo-python
-#: code:addons/payment_stripe/models/payment_provider.py:0
-msgid ""
-"Stripe Connect is not available in your country, please use another payment "
-"provider."
-msgstr ""
-"Stripe Connect ei ole saatavilla maassasi, käytä toista "
-"maksupalveluntarjoajaa."
-
-#. module: payment_stripe
-#: model:ir.model.fields,field_description:payment_stripe.field_payment_token__stripe_mandate
-msgid "Stripe Mandate"
-msgstr "Stripe-mandaatti"
+#: model:ir.model.fields,field_description:payment_stripe.field_payment_transaction__stripe_payment_intent
+msgid "Stripe Payment Intent ID"
+msgstr "Stripe-maksun aikomustunniste (intent id)"
 
 #. module: payment_stripe
 #: model:ir.model.fields,field_description:payment_stripe.field_payment_token__stripe_payment_method
@@ -188,12 +155,14 @@ msgstr "Stripe-maksutavan ID"
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_provider.py:0
+#, python-format
 msgid "Stripe Proxy error: %(error)s"
 msgstr "Stripe Proxy -virhe: %(error)s"
 
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_provider.py:0
+#, python-format
 msgid "Stripe Proxy: An error occurred when communicating with the proxy."
 msgstr ""
 "Stripe Proxy: Välityspalvelimen kanssa kommunikoitaessa tapahtui virhe."
@@ -201,6 +170,7 @@ msgstr ""
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_provider.py:0
+#, python-format
 msgid "Stripe Proxy: Could not establish the connection."
 msgstr "Stripe Stripe: Yhteyttä ei voitu luoda."
 
@@ -208,6 +178,7 @@ msgstr "Stripe Stripe: Yhteyttä ei voitu luoda."
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_provider.py:0
 #: code:addons/payment_stripe/models/payment_transaction.py:0
+#, python-format
 msgid ""
 "The communication with the API failed.\n"
 "Stripe gave us the following info about the problem:\n"
@@ -220,6 +191,7 @@ msgstr ""
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_transaction.py:0
+#, python-format
 msgid "The customer left the payment page."
 msgstr "Asiakas poistui maksusivulta."
 
@@ -231,6 +203,7 @@ msgstr "Avain, jota käytetään ainoastaan tilin tunnistamiseen Stripen kanssa"
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_transaction.py:0
+#, python-format
 msgid ""
 "The refund did not go through. Please log into your Stripe Dashboard to get "
 "more information on that matter, and address any accounting discrepancies."
@@ -247,12 +220,14 @@ msgstr "Tämän maksupalveluntarjoajan tekninen koodi."
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_transaction.py:0
+#, python-format
 msgid "The transaction is not linked to a token."
 msgstr "Transaktio ei ole sidottu valtuutuskoodiin."
 
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_token.py:0
+#, python-format
 msgid "Unable to convert payment token to new API."
 msgstr "Maksutunnuksen muuntaminen uuteen API:hin ei onnistu."
 
@@ -264,12 +239,14 @@ msgstr "Webhookin allekirjoittamisen salaisuus"
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_provider.py:0
+#, python-format
 msgid "You Stripe Webhook was successfully set up!"
 msgstr "Stripe Webhook on perustettu onnistuneesti!"
 
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_provider.py:0
+#, python-format
 msgid ""
 "You cannot create a Stripe Webhook if your Stripe Secret Key is not set."
 msgstr ""
@@ -278,6 +255,7 @@ msgstr ""
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_provider.py:0
+#, python-format
 msgid ""
 "You cannot set the provider state to Enabled until your onboarding to Stripe"
 " is completed."
@@ -288,6 +266,7 @@ msgstr ""
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_provider.py:0
+#, python-format
 msgid ""
 "You cannot set the provider to Test Mode while it is linked with your Stripe"
 " account."
@@ -298,17 +277,20 @@ msgstr ""
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_provider.py:0
+#, python-format
 msgid "Your Stripe Webhook is already set up."
 msgstr "Stripe Webhook on jo määritetty."
 
 #. module: payment_stripe
 #. odoo-javascript
 #: code:addons/payment_stripe/static/src/js/express_checkout_form.js:0
+#, python-format
 msgid "Your order"
 msgstr "Tilauksesi"
 
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_provider.py:0
+#, python-format
 msgid "Your web domain was successfully verified."
 msgstr "Verkkotunnuksesi vahvistettiin onnistuneesti."

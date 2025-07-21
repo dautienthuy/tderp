@@ -1,12 +1,22 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import http
+from lxml import etree
+import re
+
+from odoo import http, tools
 from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
 from odoo.addons.website.tools import MockRequest
+from odoo.modules.module import get_module_resource
 from odoo.tests.common import TransactionCase
 
 
 class TestQweb(TransactionCaseWithUserDemo):
+    def _load(self, module, *args):
+        tools.convert_file(self.cr, 'website',
+                           get_module_resource(module, *args),
+                           {}, 'init', False, 'test')
+
     def test_qweb_post_processing_att(self):
         website = self.env.ref('website.default_website')
         t = self.env['ir.ui.view'].create({
@@ -23,6 +33,66 @@ class TestQweb(TransactionCaseWithUserDemo):
             """
         rendered = self.env['ir.qweb']._render(t.id, {'url': 'http://test.external.img/img2.png'}, website_id=website.id)
         self.assertEqual(rendered.strip(), result.strip())
+
+    def test_qweb_cdn(self):
+        self._load('website', 'tests', 'template_qweb_test.xml')
+
+        website = self.env.ref('website.default_website')
+        website.write({
+            "cdn_activated": True,
+            "cdn_url": "http://test.cdn"
+        })
+
+        demo = self.env['res.users'].search([('login', '=', 'demo')])[0]
+        demo.write({"signature": '''<span class="toto">
+                span<span class="fa"></span><img src="/web/image/1"/>
+            </span>'''})
+
+        demo_env = self.env(user=demo)
+
+        html = demo_env['ir.qweb']._render('website.test_template', {"user": demo}, website_id= website.id)
+        asset_data = etree.HTML(html).xpath('//*[@data-asset-bundle]')[0]
+        asset_xmlid = asset_data.attrib.get('data-asset-bundle')
+        asset_version = asset_data.attrib.get('data-asset-version')
+
+        html = html.strip()
+        html = re.sub(r'\?unique=[^"]+', '', html).encode('utf8')
+
+        attachments = demo_env['ir.attachment'].search([('url', '=like', '/web/assets/%-%/website.test_bundle.%')])
+        self.assertEqual(len(attachments), 2)
+
+        format_data = {
+            "js": attachments[0].url,
+            "css": attachments[1].url,
+            "user_id": demo.id,
+            "filename": "Marc%20Demo",
+            "alt": "Marc Demo",
+            "asset_xmlid": asset_xmlid,
+            "asset_version": asset_version,
+        }
+        self.assertHTMLEqual(html, ("""<!DOCTYPE html>
+<html>
+    <head>
+        <link type="text/css" rel="stylesheet" href="http://test.external.link/style1.css"/>
+        <link type="text/css" rel="stylesheet" href="http://test.external.link/style2.css"/>
+        <link type="text/css" rel="stylesheet" href="http://test.cdn%(css)s" data-asset-bundle="%(asset_xmlid)s" data-asset-version="%(asset_version)s"/>
+        <meta/>
+        <script type="text/javascript" src="http://test.external.link/javascript1.js"></script>
+        <script type="text/javascript" src="http://test.external.link/javascript2.js"></script>
+        <script type="text/javascript" src="http://test.cdn%(js)s" data-asset-bundle="%(asset_xmlid)s" data-asset-version="%(asset_version)s"></script>
+    </head>
+    <body>
+        <img src="http://test.external.link/img.png" loading="lazy"/>
+        <img src="http://test.cdn/website/static/img.png" loading="lazy"/>
+        <a href="http://test.external.link/link">x</a>
+        <a href="http://test.cdn/web/content/local_link">x</a>
+        <span style="background-image: url(&#39;http://test.cdn/web/image/2&#39;)">xxx</span>
+        <div widget="html"><span class="toto">
+                span<span class="fa"></span><img src="http://test.cdn/web/image/1" loading="lazy">
+            </span></div>
+        <div widget="image"><img src="http://test.cdn/web/image/res.users/%(user_id)s/avatar_1920/%(filename)s" class="img img-fluid" alt="%(alt)s" loading="lazy"/></div>
+    </body>
+</html>""" % format_data).encode('utf8'))
 
 
 class TestQwebProcessAtt(TransactionCase):
@@ -76,7 +146,7 @@ class TestQwebProcessAtt(TransactionCase):
 
     def test_process_att_with_request_lang(self):
         with MockRequest(self.env, website=self.website, context={'lang': 'fr_FR'}):
-            self._test_att('/', {'href': '/fr'})
+            self._test_att('/', {'href': '/fr/'})
             self._test_att('/en/', {'href': '/'})
             self._test_att('/fr/', {'href': '/fr/'})
             self._test_att('/fr', {'href': '/fr'})
@@ -107,134 +177,3 @@ class TestQwebProcessAtt(TransactionCase):
             match.reset_calls()
             self._test_att('/x?y#z', {'href': '/x?y#z'})
             match.assert_called_with('/x', method='POST', query_args='y')
-
-
-class TestQwebDataSnippet(TransactionCase):
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.env['ir.ui.view'].create({
-            'name': 'some_html',
-            'type': 'qweb',
-            'key': 'website.some_html',
-            'arch': '''
-                <t t-name="some_html">
-                    <article>
-                        <span>Hello</span>
-                        <t t-out="0"/>
-                    </article>
-                </t>
-            '''
-        })
-
-        cls.env['ir.ui.view'].create({
-            'name': 's_a',
-            'type': 'qweb',
-            'key': 'website.s_a',
-            'arch': '''
-                <t t-name="s_a">
-                    <section class="hello">
-                        <t t-call="website.some_html"/>
-                        <t t-out="0"/>
-                    </section>
-                </t>
-            '''
-        })
-        cls.env['ir.ui.view'].create({
-            'name': 's_b',
-            'type': 'qweb',
-            'key': 'website.s_b',
-            'arch': '''
-                <t t-name="s_b">
-                    <section class="foo">
-                        <t t-snippet-call="website.s_a"/>
-                    </section>
-                </t>
-            '''
-        })
-        cls.env['ir.ui.view'].create({
-            'name': 's_c',
-            'type': 'qweb',
-            'key': 'website.s_c',
-            'arch': '''
-                <t t-name="s_c">
-                    <t t-call="website.some_html">
-                        <p>World!</p>
-                    </t>
-                </t>
-            '''
-        })
-        cls.env['ir.ui.view'].create({
-            'name': 's_d',
-            'type': 'qweb',
-            'key': 'website.s_d',
-            'arch_db': '''
-                <t t-name="s_d">
-                    <t t-snippet-call="website.s_a">
-                        <p>World!</p>
-                    </t>
-                </t>
-            '''
-        })
-
-    def _normalize_xml(self, html):
-        return "\n".join(
-            line.strip() for line in html.strip().splitlines() if line.strip()
-    )
-
-    def _render_snippet(self, snippet):
-        render_template = self.env['ir.ui.view'].create({
-            'name': f't-snippet-call_{snippet}',
-            'type': 'qweb',
-            'arch': f'''
-                <t t-snippet-call="{snippet}"/>
-            '''
-        })
-        return self.env['ir.qweb']._render(render_template.id)
-
-    def test_t_call_inside_snippet(self):
-        expected_output = '''
-            <section class="hello" data-snippet="s_a">
-                <article>
-                    <span>Hello</span>
-                </article>
-            </section>
-        '''
-        rendered = self._render_snippet('website.s_a')
-        self.assertEqual(self._normalize_xml(rendered), self._normalize_xml(expected_output))
-
-    def test_t_snippet_call_inside_snippet(self):
-        expected_output = '''
-            <section class="foo" data-snippet="s_b">
-                <section class="hello" data-snippet="s_a">
-                    <article>
-                        <span>Hello</span>
-                    </article>
-                </section>
-            </section>
-        '''
-        rendered = self._render_snippet('website.s_b')
-        self.assertEqual(self._normalize_xml(rendered), self._normalize_xml(expected_output))
-
-    def test_t_call_as_snippet_root(self):
-        expected_output = '''
-            <article data-snippet="s_c">
-                <span>Hello</span>
-                <p>World!</p>
-            </article>
-        '''
-        rendered = self._render_snippet('website.s_c')
-        self.assertEqual(self._normalize_xml(rendered), self._normalize_xml(expected_output))
-
-    def test_t_snippet_call_as_snippet_root(self):
-        expected_output = '''
-            <section class="hello" data-snippet="s_a">
-                <article>
-                    <span>Hello</span>
-                </article>
-                <p>World!</p>
-            </section>
-        '''
-        rendered = self._render_snippet('website.s_d')
-        self.assertEqual(self._normalize_xml(rendered), self._normalize_xml(expected_output))

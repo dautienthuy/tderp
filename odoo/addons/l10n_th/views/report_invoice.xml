@@ -11,7 +11,7 @@
         <xpath expr="//div[@name='no_shipping']//span[@t-field='o.partner_id.vat']" position="after">
             <span t-esc="o.partner_id.l10n_th_branch_name"/>
         </xpath>
-        <xpath expr="//t[@t-set='layout_document_title']/span[contains(@t-if, 'posted')]" position="replace">
+        <xpath expr="//h2/span[contains(@t-if, 'posted')]" position="replace">
             <t t-if="o.move_type == 'out_invoice' and o.state == 'posted'">
                 <span t-if="o.company_id.account_fiscal_country_id.code == 'TH' and not commercial_invoice">Tax Invoice</span>
                 <span t-else="">Invoice</span>
@@ -28,6 +28,21 @@
         </t>
     </template>
 
+    <template id="report_invoice" inherit_id="account.report_invoice">
+        <xpath expr='//t[@t-call="account.report_invoice_document"]' position="after">
+            <t t-if="o._get_name_invoice_report() == 'l10n_th.report_invoice_document'"
+               t-call="l10n_th.report_invoice_document" t-lang="lang"/>
+        </xpath>
+    </template>
+
+    <template id="report_invoice_with_payments" inherit_id="account.report_invoice_with_payments">
+        <xpath expr='//t[@t-call="account.report_invoice_document"]' position="after">
+            <t t-if="o._get_name_invoice_report() == 'l10n_th.report_invoice_document'"
+               t-call="l10n_th.report_invoice_document" t-lang="lang"/>
+        </xpath>
+    </template>
+
+
     <record id="action_report_commercial_invoice" model="ir.actions.report">
         <field name="name">Commercial Invoice</field>
         <field name="model">account.move</field>
@@ -38,12 +53,4 @@
         <field name="binding_type">report</field>
     </record>
 
-    <!-- Workaround for Studio reports, see odoo/odoo#60660 -->
-    <template id="report_invoice" inherit_id="account.report_invoice">
-        <xpath expr='//t[@t-call="account.report_invoice_document"]' position="after">
-            <t t-elif="o._get_name_invoice_report() == 'l10n_th.report_invoice_document'"
-               t-call="l10n_th.report_invoice_document"
-               t-lang="lang"/>
-        </xpath>
-    </template>
 </odoo>

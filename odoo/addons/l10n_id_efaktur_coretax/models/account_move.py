@@ -2,6 +2,7 @@
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError, RedirectWarning
+from odoo.tools import cleanup_xml_node
 
 COUNTRY_CODE_MAP = {
     "BD": "BGD", "BE": "BEL", "BF": "BFA", "BG": "BGR", "BA": "BIH", "BB": "BRB", "WF": "WLF", "BL": "BLM", "BM": "BMU",
@@ -134,7 +135,7 @@ class AccountMove(models.Model):
 
     l10n_id_kode_transaksi = fields.Selection(selection_add=[('10', '10 Other deliveries')])
     l10n_id_coretax_efaktur_available = fields.Boolean(compute="_compute_l10n_id_coretax_efaktur_available")
-    l10n_id_coretax_document = fields.Many2one('l10n_id_efaktur_coretax.document', readonly=True, copy=False, string="e-Faktur Document (Coretax)")
+    l10n_id_coretax_document = fields.Many2one('l10n_id_efaktur_coretax.document', readonly=True, copy=False, string="e-Faktur Document")
     l10n_id_coretax_custom_doc = fields.Char(help="Additional documentation when choosing kode 07 or 08")
 
     def _compute_need_kode_transaksi(self):
@@ -212,8 +213,6 @@ class AccountMove(models.Model):
                 err_messages.append(_("Document number for customer %s hasn't been filled in", comm.name))
             if not comm.vat:
                 err_messages.append(_("NPWP for customer %s hasn't been filled in yet", comm.name))
-            if not comm.country_id:
-                err_messages.append(_("No country is set for customer %s", comm.name))
 
         # check for every invoice
         for record in self:
@@ -269,7 +268,7 @@ class AccountMove(models.Model):
         """ Fill in vals with invoice-related information """
         self.ensure_one()
 
-        partner = self.commercial_partner_id
+        partner = self.partner_id.commercial_partner_id
         trx_code = self.l10n_id_kode_transaksi
 
         vals.update({
@@ -279,7 +278,6 @@ class AccountMove(models.Model):
             "TrxCode": trx_code,
             "AddInfo": "",
             "CustomDoc": self.l10n_id_coretax_custom_doc or "",
-            "CustomDocMonthYear": "",
             "FacilityStamp": "",
             "RefDesc": self.name,
             "SellerIDTKU": self.company_id.vat + self.company_id.partner_id.l10n_id_tku,
@@ -287,8 +285,8 @@ class AccountMove(models.Model):
             "BuyerTin": partner.vat if partner.l10n_id_buyer_document_type == "TIN" else "0000000000000000",
             "BuyerCountry": COUNTRY_CODE_MAP.get(partner.country_id.code),
             "BuyerDocumentNumber": partner.l10n_id_buyer_document_number if partner.l10n_id_buyer_document_type != "TIN" else "",
-            "BuyerName": self.partner_id.name,
-            "BuyerAdress": self.partner_id.contact_address.replace('\n', ' ').strip(),
+            "BuyerName": partner.name,
+            "BuyerAdress": partner.contact_address.replace('\n', ' ').strip(),
             "BuyerEmail": partner.email or "",
             "BuyerIDTKU": partner.vat + partner.l10n_id_tku,
         })

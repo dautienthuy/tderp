@@ -9,9 +9,7 @@ from werkzeug.urls import url_join
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
-from odoo.addons.payment import utils as payment_utils
-from odoo.addons.payment.const import REPORT_REASONS_MAPPING
-from odoo.addons.payment_flutterwave import const
+from odoo.addons.payment_flutterwave.const import SUPPORTED_CURRENCIES
 
 
 _logger = logging.getLogger(__name__)
@@ -51,32 +49,18 @@ class PaymentProvider(models.Model):
     # === BUSINESS METHODS ===#
 
     @api.model
-    def _get_compatible_providers(self, *args, is_validation=False, report=None, **kwargs):
-        """ Override of `payment` to filter out Flutterwave providers for validation operations. """
+    def _get_compatible_providers(self, *args, currency_id=None, is_validation=False, **kwargs):
+        """ Override of payment to filter out Flutterwave providers for unsupported currencies or
+        for validation operations. """
         providers = super()._get_compatible_providers(
-            *args, is_validation=is_validation, report=report, **kwargs
+            *args, currency_id=currency_id, is_validation=is_validation, **kwargs
         )
 
-        if is_validation:
-            unfiltered_providers = providers
+        currency = self.env['res.currency'].browse(currency_id).exists()
+        if (currency and currency.name not in SUPPORTED_CURRENCIES) or is_validation:
             providers = providers.filtered(lambda p: p.code != 'flutterwave')
-            payment_utils.add_to_report(
-                report,
-                unfiltered_providers - providers,
-                available=False,
-                reason=REPORT_REASONS_MAPPING['validation_not_supported'],
-            )
 
         return providers
-
-    def _get_supported_currencies(self):
-        """ Override of `payment` to return the supported currencies. """
-        supported_currencies = super()._get_supported_currencies()
-        if self.code == 'flutterwave':
-            supported_currencies = supported_currencies.filtered(
-                lambda c: c.name in const.SUPPORTED_CURRENCIES
-            )
-        return supported_currencies
 
     def _flutterwave_make_request(self, endpoint, payload=None, method='POST'):
         """ Make a request to Flutterwave API at the specified endpoint.
@@ -115,10 +99,3 @@ class PaymentProvider(models.Model):
                 "Flutterwave: " + _("Could not establish the connection to the API.")
             )
         return response.json()
-
-    def _get_default_payment_method_codes(self):
-        """ Override of `payment` to return the default payment method codes. """
-        default_codes = super()._get_default_payment_method_codes()
-        if self.code != 'flutterwave':
-            return default_codes
-        return const.DEFAULT_PAYMENT_METHOD_CODES

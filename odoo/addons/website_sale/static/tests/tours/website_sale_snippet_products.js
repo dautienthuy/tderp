@@ -1,17 +1,10 @@
 /** @odoo-module */
 
-import { queryFirst } from '@odoo/hoot-dom';
-import {
-    changeOption,
-    clickOnSave,
-    clickOnSnippet,
-    insertSnippet,
-    registerWebsitePreviewTour,
-} from '@website/js/tours/tour_utils';
-import { goToCart } from '@website_sale/js/tours/tour_utils';
+import wTourUtils from 'website.tour_utils';
+import wSaleTourUtils from 'website_sale.tour_utils';
 
 const optionBlock = 'dynamic_snippet_products';
-const productsSnippet = {id: "s_dynamic_snippet_products", name: "Products", groupName: "Products"};
+const productsSnippet = {id: 's_dynamic_snippet_products', name: 'Products'};
 const templates = [
     "dynamic_filter_template_product_product_add_to_cart",
     "dynamic_filter_template_product_product_view_detail",
@@ -30,60 +23,62 @@ const templates = [
 function changeTemplate(templateKey) {
     const templateClass = templateKey.replace(/dynamic_filter_template_/, "s_");
     return [
-        changeOption(optionBlock, 'we-select[data-name="template_opt"] we-toggler', 'template'),
-        changeOption(optionBlock, `we-button[data-select-data-attribute="website_sale.${templateKey}"]`),
+        wTourUtils.changeOption(optionBlock, 'we-select[data-name="template_opt"] we-toggler', 'template'),
+        wTourUtils.changeOption(optionBlock, `we-button[data-select-data-attribute="website_sale.${templateKey}"]`),
         {
             content: 'Check the template is applied',
-            trigger: `:iframe .s_dynamic_snippet_products.${templateClass} .carousel`,
+            trigger: `iframe .s_dynamic_snippet_products.${templateClass} .carousel`,
+            run: () => null, // It's a check
         },
     ];
 }
 
-registerWebsitePreviewTour('website_sale.snippet_products', {
+let templatesSteps = [];
+for (const templateKey of templates) {
+    templatesSteps = templatesSteps.concat(changeTemplate(templateKey));
+}
+wTourUtils.registerWebsitePreviewTour('website_sale.snippet_products', {
+    test: true,
     url: '/',
     edition: true,
 },
-() => {
-    let templatesSteps = [];
-    for (const templateKey of templates) {
-        templatesSteps = templatesSteps.concat(changeTemplate(templateKey));
-    }
-    return [
-        ...insertSnippet(productsSnippet),
-        ...clickOnSnippet(productsSnippet),
-        ...templatesSteps,
-        ...changeTemplate('dynamic_filter_template_product_product_add_to_cart'),
-        ...clickOnSave(),
-        {
-            trigger: ":iframe .s_dynamic_snippet_products .o_carousel_product_card_body .js_add_cart",
-            run: 'click',
-        },
-        goToCart({ backend: true, expectUnloadPage: false }),
-    ]
-});
-
-registerWebsitePreviewTour('website_sale.products_snippet_recently_viewed', {
-    url: '/',
-    edition: true,
-},
-() => [
-    ...insertSnippet(productsSnippet),
-    ...clickOnSnippet(productsSnippet),
+[
+    wTourUtils.dragNDrop(productsSnippet),
+    wTourUtils.clickOnSnippet(productsSnippet),
+    ...templatesSteps,
     ...changeTemplate('dynamic_filter_template_product_product_add_to_cart'),
-    changeOption(optionBlock, 'we-select[data-name="filter_opt"] we-toggler', 'filter'),
-    changeOption(optionBlock, 'we-select[data-name="filter_opt"] we-button:contains("Recently Viewed")', 'filter'),
-    ...clickOnSave(),
+    ...wTourUtils.clickOnSave(),
+    {
+        trigger: "iframe .s_dynamic_snippet_products .o_carousel_product_card_body .js_add_cart",
+        run: 'click',
+    },
+    wSaleTourUtils.goToCart({backend: true}),
+]);
+
+wTourUtils.registerWebsitePreviewTour('website_sale.products_snippet_recently_viewed', {
+    test: true,
+    url: '/',
+    edition: true,
+},
+[
+    wTourUtils.dragNDrop(productsSnippet),
+    wTourUtils.clickOnSnippet(productsSnippet),
+    ...changeTemplate('dynamic_filter_template_product_product_add_to_cart'),
+    wTourUtils.changeOption(optionBlock, 'we-select[data-name="filter_opt"] we-toggler', 'filter'),
+    wTourUtils.changeOption(optionBlock, 'we-select[data-name="filter_opt"] we-button:contains("Recently Viewed")', 'filter'),
+    ...wTourUtils.clickOnSave(),
     {
         content: 'make delete icon appear',
-        trigger: ':iframe .s_dynamic_snippet_products .o_carousel_product_card',
-        run() {
-            queryFirst(
-                `:iframe .o_carousel_product_card:has(a img[alt="Storage Box"]) .js_remove`,
-            ).style.display = "block";
+        trigger: 'iframe .s_dynamic_snippet_products .o_carousel_product_card',
+        run: function () {
+            const $iframe = $('.o_iframe').contents();
+            const $productCard = $iframe.find('.o_carousel_product_card:has(a img[alt="Storage Box"])');
+            console.log($productCard);
+            $productCard.find('.js_remove').attr('style', 'display: block;');
         }
     },
     {
-        trigger: ':iframe .s_dynamic_snippet_products .o_carousel_product_card .js_remove',
+        trigger: 'iframe .s_dynamic_snippet_products .o_carousel_product_card .js_remove',
         run: 'click',
     },
 ]);

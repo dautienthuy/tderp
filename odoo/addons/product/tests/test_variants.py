@@ -4,8 +4,6 @@
 import base64
 from collections import OrderedDict
 from datetime import timedelta
-from unittest.mock import patch
-
 import io
 import unittest.mock
 
@@ -44,29 +42,12 @@ class TestVariantsSearch(ProductVariantsCommon):
     def test_name_search(self):
         self.product_slip_template = self.env['product.template'].create({
             'name': 'Slip',
-            'default_code': 'ABC',
         })
         res = self.env['product.product'].name_search('Shirt', [], 'not ilike', None)
         res_ids = [r[0] for r in res]
         self.assertIn(self.product_slip_template.product_variant_ids.id, res_ids,
                       'Slip should be found searching \'not ilike\'')
 
-        templates = self.product_slip_template.name_search(
-            "ABC",
-            [['id', '!=', -1]],
-        )
-        self.assertFalse(templates, "Should not return template when searching on code")
-        templates = self.product_slip_template.with_context(search_product_product=True).name_search(
-            "ABC",
-            [['id', '!=', -1]],
-        )
-        self.assertTrue(templates, "Should return template when searching on code")
-
-        templates = self.product_slip_template.with_context(search_product_product=True).name_search(
-            "ABC",
-            [['id', '!=', self.product_slip_template.id]],
-        )
-        self.assertFalse(templates, "Should not return template.")
 
 @tagged('post_install', '-at_install')
 class TestVariants(ProductVariantsCommon):
@@ -78,20 +59,6 @@ class TestVariants(ProductVariantsCommon):
                          'Product template is not a variant')
         self.assertEqual({True}, set(v.is_product_variant for v in variants),
                          'Product variants are variants')
-
-    def test_variants_pricelist_code(self):
-        vendor = self.env['res.partner'].create({'name': 'Bidou', 'email': 'bidou@odoo.com'})
-        codes = ['bidou-red', 'bidou-green', 'bidou-blue']
-        self.env['product.supplierinfo'].create([{
-            'partner_id': vendor.id,
-            'product_tmpl_id': self.product_template_sofa.id,
-            'product_id': product.id,
-            'product_code': code,
-        } for product, code in zip(self.product_template_sofa.product_variant_ids, codes)])
-        variants = self.product_template_sofa.product_variant_ids.with_context(partner_id=vendor.id)
-        self.assertEqual(variants[0].code, codes[0], "sofa red should have code bidou-red")
-        self.assertEqual(variants[1].code, codes[1], "sofa green should have code bidou-green")
-        self.assertEqual(variants[2].code, codes[2], "sofa blue should have code bidou-blue")
 
     def test_variants_creation_mono(self):
         test_template = self.env['product.template'].create({
@@ -262,10 +229,6 @@ class TestVariants(ProductVariantsCommon):
         self.assertEqual(template_dyn.name, 'Test Dynamical')
 
         variant_dyn = template_dyn._create_product_variant(template_dyn._get_first_possible_combination())
-        if 'create_product_product' in variant_dyn._context:
-            new_context = dict(variant_dyn._context)
-            new_context.pop('create_product_product')
-            variant_dyn = variant_dyn.with_context(new_context)
         self.assertEqual(len(template_dyn.product_variant_ids), 1)
 
         variant_dyn_copy = variant_dyn.copy()
@@ -390,16 +353,6 @@ class TestVariants(ProductVariantsCommon):
         self.assertTrue(variant_1.active, 'Should activate variant')
         self.assertFalse(variant_2.active, 'Should not re-activate other variant')
         self.assertTrue(template.active, 'Should re-activate template')
-
-    def test_open_product_form_with_default_uom_id_is_false(self):
-        """ Test default UoM is False when creating a product. """
-        uom_unit = self.env.ref('uom.product_uom_unit')
-        product_form = Form(self.env['product.product'].with_context(
-            default_uom_id=False,
-        ))
-        product_form.name = 'Test Product'
-        product = product_form.save()
-        self.assertEqual(uom_unit, product.uom_id)
 
 @tagged('post_install', '-at_install')
 class TestVariantsNoCreate(ProductAttributesCommon):
@@ -813,11 +766,11 @@ class TestVariantsImages(ProductVariantsCommon):
         images = self.variants.mapped('image_1920')
         self.assertEqual(len(set(images)), 4)
         variant_no_image = self.variants[0]
-        old_last_update = variant_no_image.write_date
+        old_last_update = variant_no_image['__last_update']
 
         self.assertFalse(variant_no_image.image_1920)
         self.template.image_1920 = image_black
-        new_last_update = variant_no_image.write_date
+        new_last_update = variant_no_image['__last_update']
 
         # the first has no image variant, all the others do
         self.assertFalse(variant_no_image.image_variant_1920)
@@ -914,7 +867,7 @@ class TestVariantsArchive(ProductVariantsCommon):
 
         def unlink(self):
             raise Exception('just')
-        self.patch(type(Product), 'unlink', unlink)
+        Product._patch_method('unlink', unlink)
 
         variants_2x1 = self.template.product_variant_ids
         self._assert_2color_x_1size()
@@ -936,6 +889,8 @@ class TestVariantsArchive(ProductVariantsCommon):
         archived_variants = self._get_archived_variants()
         self.assertFalse(archived_variants)
 
+        Product._revert_method('unlink')
+
     def test_02_update_variant_archive_2_value(self):
         """We do the same operations on the template as in the previous tests,
            except we simulate that the variants can't be unlinked.
@@ -947,7 +902,7 @@ class TestVariantsArchive(ProductVariantsCommon):
 
         def unlink(slef):
             raise Exception('just')
-        self.patch(type(Product), 'unlink', unlink)
+        Product._patch_method('unlink', unlink)
 
         variants_2x2 = self.template.product_variant_ids
         self._assert_2color_x_2size()
@@ -1003,6 +958,8 @@ class TestVariantsArchive(ProductVariantsCommon):
         self.assertEqual(archived_variants, variants_2x2)
         self._assert_2color_x_2size(archived_variants)
 
+        Product._revert_method('unlink')
+
     @mute_logger('odoo.models.unlink')
     def test_03_update_variant_archive_3_value(self):
         self._remove_ptal_size()
@@ -1012,7 +969,7 @@ class TestVariantsArchive(ProductVariantsCommon):
 
         def unlink(slef):
             raise Exception('just')
-        self.patch(type(Product), 'unlink', unlink)
+        Product._patch_method('unlink', unlink)
 
         self._assert_2color_x_1size()
         archived_variants = self._get_archived_variants()
@@ -1060,12 +1017,14 @@ class TestVariantsArchive(ProductVariantsCommon):
         archived_variants = self._get_archived_variants()
         self.assertEqual(archived_variants, variants_2x1 + variant_0x0)
 
+        Product._revert_method('unlink')
+
     def test_04_from_to_single_values(self):
         Product = self.env['product.product']
 
         def unlink(slef):
             raise Exception('just')
-        self.patch(type(Product), 'unlink', unlink)
+        Product._patch_method('unlink', unlink)
 
         # CASE: remove one value, line becoming single value
         variants_2x2 = self.template.product_variant_ids
@@ -1101,6 +1060,8 @@ class TestVariantsArchive(ProductVariantsCommon):
         archived_variants = self._get_archived_variants()
         self._assert_2color_x_0size(archived_variants)
         self.assertEqual(archived_variants, variants_2x0)
+
+        Product._revert_method('unlink')
 
     def test_name_search_dynamic_attributes(self):
         # To be able to test dynamic variant "variants" feature must be set up
@@ -1154,7 +1115,7 @@ class TestVariantsArchive(ProductVariantsCommon):
         # Patch unlink method to force archiving instead deleting
         def unlink(self):
             self.active = False
-        self.patch(type(Product), 'unlink', unlink)
+        Product._patch_method('unlink', unlink)
 
         # Creating attributes
         pa_color = ProductAttribute.create({'sequence': 1, 'name': 'color', 'create_variant': 'dynamic'})
@@ -1258,6 +1219,8 @@ class TestVariantsArchive(ProductVariantsCommon):
             })]
         })
         self.assertTrue(product_white.active)
+
+        Product._revert_method('unlink')
 
     def test_set_barcode(self):
         tmpl = self.product.product_tmpl_id
@@ -1390,40 +1353,6 @@ class TestVariantsArchive(ProductVariantsCommon):
         self.assertEqual(len(variants), 1)
         self.assertFalse(variants[0].product_template_attribute_value_ids)
 
-    @mute_logger('odoo.models.unlink')
-    def test_unlink_and_archive_multiple_variants(self):
-        """
-        Test unlinking multiple variants in various scenarios
-        - Unlink one archived variant
-        - Unlink one archived and one active variant
-        - Unlink multiple archived variants and multiple active variants at once
-        """
-        products = self.env['product.product'].create([
-            {'name': 'variant 1', 'description': 'var 1'},
-            {'name': 'variant 2', 'description': 'var 2'},
-            {'name': 'variant 3', 'description': 'var 3'},
-            {'name': 'variant 4', 'description': 'var 4'},
-            {'name': 'variant 5', 'description': 'var 5'},
-            {'name': 'variant 6', 'description': 'var 6'},
-            {'name': 'variant 7', 'description': 'var 7'},
-        ])
-        # Unlink one archived variant
-        products[0].action_archive()
-        products[0].unlink()
-        self.assertFalse(products[0].exists())
-
-        # Unlink one archived and one active variant
-        products[1].action_archive()
-        active_and_archived = products[1] + products[2]
-        active_and_archived.unlink()
-        self.assertFalse(active_and_archived.exists())
-
-        # Unlink multiple archived variants and multiple active variants at once
-        multiple_archived = products[3] + products[4]
-        multiple_active = products[5] + products[6]
-        multiple_archived.action_archive()
-        (multiple_archived + multiple_active).unlink()
-        self.assertFalse(products.exists())
 
 @tagged('post_install', '-at_install')
 class TestVariantWrite(TransactionCase):
@@ -1608,56 +1537,3 @@ class TestVariantsExclusion(ProductAttributesCommon):
 
         exclude.unlink()
         self.assertEqual(len(self.smartphone.product_variant_ids), 4)
-
-    @mute_logger('odoo.models.unlink')
-    def test_dynamic_variants_unarchive(self):
-        """ Make sure that exclusions creation, update & delete are correctly handled.
-
-        Exclusions updates are not necessarily done from a specific template.
-        """
-        product_template = self.env['product.template'].create({
-            'name': 'Test dynamic',
-            'attribute_line_ids': [
-                Command.create({
-                    'attribute_id': self.dynamic_attribute.id,
-                    'value_ids': [Command.set(self.dynamic_attribute.value_ids.ids)],
-                }),
-                Command.create({
-                    'attribute_id': self.dynamic_attribute.id,
-                    'value_ids': [Command.set(self.dynamic_attribute.value_ids.ids)],
-                })
-            ]
-        })
-        self.assertFalse(product_template.product_variant_ids)
-        first_line_ptavs = product_template.attribute_line_ids[0].product_template_value_ids
-        second_line_ptavs = product_template.attribute_line_ids[1].product_template_value_ids
-        for ptav1, ptav2 in zip(first_line_ptavs, second_line_ptavs, strict=True):
-            product_template._create_product_variant(ptav1 + ptav2)
-
-        self.assertEqual(len(product_template.product_variant_ids), 2)
-
-        pav_to_remove = self.dynamic_attribute.value_ids[:1]
-        variant_to_archive = product_template.product_variant_ids.filtered(
-            lambda pp:
-                pav_to_remove in pp.product_template_attribute_value_ids.product_attribute_value_id
-        )
-
-        # Removing one option will archive one variant
-        with patch(
-            'odoo.addons.product.models.product_product.ProductProduct._filter_to_unlink',
-            lambda products: products.filtered(
-                lambda pp: pp.product_tmpl_id.id != product_template.id
-            ),
-        ):
-            product_template.attribute_line_ids[1].value_ids = [
-                Command.unlink(self.dynamic_attribute.value_ids[:1].id)
-            ]
-        self.assertEqual(len(product_template.product_variant_ids), 1)
-        self.assertFalse(variant_to_archive.active)
-
-        # Putting it back should unarchive the archived variant
-        product_template.attribute_line_ids[1].value_ids = [
-            Command.link(self.dynamic_attribute.value_ids[:1].id)
-        ]
-        self.assertEqual(len(product_template.product_variant_ids), 2)
-        self.assertTrue(variant_to_archive.active)

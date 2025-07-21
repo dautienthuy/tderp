@@ -1,63 +1,65 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, models
-from odoo.tools import SQL
 
 
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
     @api.model
-    def _get_query_tax_details_from_domain(self, domain, fallback=True) -> SQL:
+    def _get_query_tax_details_from_domain(self, domain, fallback=True):
         """ Create the tax details sub-query based on the orm domain passed as parameter.
 
         :param domain:      An orm domain on account.move.line.
         :param fallback:    Fallback on an approximated mapping if the mapping failed.
-        :return:            query as SQL object
+        :return:            A tuple <query, params>.
         """
-        self.env['account.move.line'].check_access('read')
+        self.env['account.move.line'].check_access_rights('read')
 
         query = self.env['account.move.line']._where_calc(domain)
 
         # Wrap the query with 'company_id IN (...)' to avoid bypassing company access rights.
         self.env['account.move.line']._apply_ir_rules(query)
 
-        return self._get_query_tax_details(query.from_clause, query.where_clause, fallback=fallback)
+        tables, where_clause, where_params = query.get_sql()
+        return self._get_query_tax_details(tables, where_clause, where_params, fallback=fallback)
 
     @api.model
-    def _get_extra_query_base_tax_line_mapping(self) -> SQL:
+    def _get_extra_query_base_tax_line_mapping(self):
         #TO OVERRIDE
-        return SQL()
+        return ''
 
     @api.model
-    def _get_query_tax_details(self, table_references, search_condition, fallback=True) -> SQL:
+    def _get_query_tax_details(self, tables, where_clause, where_params, fallback=True):
         """ Create the tax details sub-query based on the orm domain passed as parameter.
 
-        :param table_references:    The query to inject after the FROM, as an SQL object.
-        :param search_condition:    The query to inject in the WHERE clause, as an SQL object.
-        :param fallback:            Fallback on an approximated mapping if the mapping failed.
-        :return:                    query as an SQL object
+        :param tables:          The 'tables' query to inject after the FROM.
+        :param where_clause:    The 'where_clause' query computed based on an orm domain.
+        :param where_params:    The params to fill the 'where_clause' query.
+        :param fallback:        Fallback on an approximated mapping if the mapping failed.
+        :return:                A tuple <query, params>.
         """
         group_taxes = self.env['account.tax'].search([('amount_type', '=', 'group')])
 
         group_taxes_query_list = []
+        group_taxes_params = []
         for group_tax in group_taxes:
             children_taxes = group_tax.children_tax_ids
             if not children_taxes:
                 continue
 
-            children_taxes_in_query = SQL(','.join('%s' for dummy in children_taxes),
-                                          *children_taxes.ids)
-            group_taxes_query_list.append(SQL('WHEN tax.id = %s THEN ARRAY[%s]', group_tax.id, children_taxes_in_query))
+            children_taxes_in_query = ','.join('%s' for dummy in children_taxes)
+            group_taxes_query_list.append(f'WHEN tax.id = %s THEN ARRAY[{children_taxes_in_query}]')
+            group_taxes_params.append(group_tax.id)
+            group_taxes_params.extend(children_taxes.ids)
 
         if group_taxes_query_list:
-            group_taxes_query = SQL('''UNNEST(CASE %s ELSE ARRAY[tax.id] END)''', SQL(' ').join(group_taxes_query_list))
+            group_taxes_query = f'''UNNEST(CASE {' '.join(group_taxes_query_list)} ELSE ARRAY[tax.id] END)'''
         else:
-            group_taxes_query = SQL('tax.id')
+            group_taxes_query = 'tax.id'
 
         if fallback:
-            fallback_query = SQL(
-                '''
+            fallback_query = f'''
                 UNION ALL
 
                 SELECT
@@ -66,7 +68,7 @@ class AccountMoveLine(models.Model):
                     base_line.id AS src_line_id,
                     base_line.balance AS base_amount,
                     base_line.amount_currency AS base_amount_currency
-                FROM %(table_references)s
+                FROM {tables}
                 LEFT JOIN base_tax_line_mapping ON
                     base_tax_line_mapping.tax_line_id = account_move_line.id
                 JOIN account_move_line_account_tax_rel tax_rel ON
@@ -77,18 +79,16 @@ class AccountMoveLine(models.Model):
                     AND base_line.move_id = account_move_line.move_id
                     AND base_line.currency_id = account_move_line.currency_id
                 WHERE base_tax_line_mapping.tax_line_id IS NULL
-                AND %(search_condition)s
-                ''',
-                table_references=table_references,
-                search_condition=search_condition,
-            )
+                AND {where_clause}
+            '''
+            fallback_params = where_params
         else:
-            fallback_query = SQL()
+            fallback_query = ''
+            fallback_params = []
 
         extra_query_base_tax_line_mapping = self._get_extra_query_base_tax_line_mapping()
 
-        return SQL(
-            '''
+        return f'''
             /*
             As example to explain the different parts of the query, we'll consider a move with the following lines:
             Name            Tax_line_id         Tax_ids                 Debit       Credit      Base lines
@@ -102,7 +102,42 @@ class AccountMoveLine(models.Model):
             tax_line_4      5                                                       275         base_line_2/3
             */
 
-            WITH base_tax_line_mapping AS (
+            WITH affecting_base_tax_ids AS (
+
+                /*
+                This CTE builds a reference table based on the tax_ids field, with the following changes:
+                  - flatten the group of taxes
+                  - exclude the taxes having 'is_base_affected' set to False.
+                Those allow to match only base_line_1 when finding the base lines of tax_line_1, as we need to find
+                base lines having a 'affecting_base_tax_ids' ending with [10_affect_base, 20], not only containing
+                '10_affect_base'. Otherwise, base_line_2/3 would also be matched.
+                In our example, as all the taxes are set to be affected by previous ones affecting the base, the
+                result is similar to the table 'account_move_line_account_tax_rel':
+                Id                 Tax_ids
+                -------------------------------------------
+                base_line_1        [10_affect_base, 20]
+                base_line_2        [10_affect_base, 5]
+                base_line_3        [10_affect_base, 5]
+                */
+
+                SELECT
+                    sub.line_id AS id,
+                    ARRAY_AGG(sub.tax_id ORDER BY sub.sequence, sub.tax_id) AS tax_ids
+                FROM (
+                    SELECT
+                        tax_rel.account_move_line_id AS line_id,
+                        {group_taxes_query} AS tax_id,
+                        tax.sequence
+                    FROM {tables}
+                    JOIN account_move_line_account_tax_rel tax_rel ON account_move_line.id = tax_rel.account_move_line_id
+                    JOIN account_tax tax ON tax.id = tax_rel.account_tax_id
+                    WHERE tax.is_base_affected
+                    AND {where_clause}
+                ) AS sub
+                GROUP BY sub.line_id
+            ),
+
+            base_tax_line_mapping AS (
 
                 /*
                 Create the mapping of each tax lines with their corresponding base lines.
@@ -124,7 +159,7 @@ class AccountMoveLine(models.Model):
                     base_line.balance AS base_amount,
                     base_line.amount_currency AS base_amount_currency
 
-                FROM %(table_references)s
+                FROM {tables}
                 JOIN account_tax_repartition_line tax_rep ON
                     tax_rep.id = account_move_line.tax_repartition_line_id
                 JOIN account_tax tax ON
@@ -149,58 +184,21 @@ class AccountMoveLine(models.Model):
                         OR (tax.tax_exigibility = 'on_payment' AND tax.cash_basis_transition_account_id IS NOT NULL)
                     )
                     AND (
-                        (tax.analytic IS NULL OR tax.analytic = FALSE)
+                        NOT tax.analytic
                         OR (base_line.analytic_distribution IS NULL AND account_move_line.analytic_distribution IS NULL)
                         OR base_line.analytic_distribution = account_move_line.analytic_distribution
                     )
-                    %(extra_query_base_tax_line_mapping)s
+                    {extra_query_base_tax_line_mapping}
                 JOIN res_currency curr ON
                     curr.id = account_move_line.currency_id
                 JOIN res_currency comp_curr ON
                     comp_curr.id = account_move_line.company_currency_id
-                LEFT JOIN LATERAL (
-                    /*
-                        This table builds a reference table based on the tax_ids field, with the following changes:
-                          - flatten the group of taxes
-                          - exclude the taxes having 'is_base_affected' set to False.
-                        Those allow to match only base_line_1 when finding the base lines of tax_line_1, as we need to find
-                        base lines having a 'affecting_base_tax_ids' ending with [10_affect_base, 20], not only containing
-                        '10_affect_base'. Otherwise, base_line_2/3 would also be matched.
-                        In our example, as all the taxes are set to be affected by previous ones affecting the base, the
-                        result is similar to the table 'account_move_line_account_tax_rel':
-                        Id                 Tax_ids
-                        -------------------------------------------
-                        base_line_1        [10_affect_base, 20]
-                        base_line_2        [10_affect_base, 5]
-                        base_line_3        [10_affect_base, 5]
-                    */
-                    SELECT ARRAY_AGG(sub.tax_id ORDER BY sub.sequence, sub.tax_id) AS tax_ids
-                    FROM (
-                        SELECT
-                            %(group_taxes_query)s AS tax_id,
-                            tax.sequence
-                        FROM account_move_line_account_tax_rel tax_rel
-                        JOIN account_tax tax ON tax.id = tax_rel.account_tax_id
-                        WHERE tax.is_base_affected
-                        AND tax_rel.account_move_line_id = account_move_line.id
-                    ) AS sub
-                ) tax_line_tax_ids ON TRUE
-                LEFT JOIN LATERAL (
-                    SELECT ARRAY_AGG(sub.tax_id ORDER BY sub.sequence, sub.tax_id) AS tax_ids
-                    FROM (
-                        SELECT
-                            %(group_taxes_query)s AS tax_id,
-                            tax.sequence
-                        FROM account_move_line_account_tax_rel tax_rel
-                        JOIN account_tax tax ON tax.id = tax_rel.account_tax_id
-                        WHERE tax.is_base_affected
-                        AND tax_rel.account_move_line_id = base_line.id
-                    ) AS sub
-                ) base_line_tax_ids ON TRUE
+                LEFT JOIN affecting_base_tax_ids tax_line_tax_ids ON tax_line_tax_ids.id = account_move_line.id
+                JOIN affecting_base_tax_ids base_line_tax_ids ON base_line_tax_ids.id = base_line.id
                 WHERE account_move_line.tax_repartition_line_id IS NOT NULL
-                    AND %(search_condition)s
+                    AND {where_clause}
                     AND (
-                        -- keeping only the rows from affecting_base_tax_lines that end with the same taxes applied (see comment in tax_line_tax_ids)
+                        -- keeping only the rows from affecting_base_tax_lines that end with the same taxes applied (see comment in affecting_base_tax_ids)
                         NOT tax.include_base_amount
                         OR base_line_tax_ids.tax_ids[ARRAY_LENGTH(base_line_tax_ids.tax_ids, 1) - COALESCE(ARRAY_LENGTH(tax_line_tax_ids.tax_ids, 1), 0):ARRAY_LENGTH(base_line_tax_ids.tax_ids, 1)]
                             = ARRAY[account_move_line.tax_line_id] || COALESCE(tax_line_tax_ids.tax_ids, ARRAY[]::INTEGER[])
@@ -270,7 +268,7 @@ class AccountMoveLine(models.Model):
                     ) OVER (PARTITION BY tax_line.id, account_move_line.id) AS total_base_amount_currency,
                     account_move_line.amount_currency AS total_tax_amount_currency
 
-                FROM %(table_references)s
+                FROM {tables}
                 JOIN account_tax tax_include_base_amount ON
                     tax_include_base_amount.include_base_amount
                     AND tax_include_base_amount.id = account_move_line.tax_line_id
@@ -291,7 +289,7 @@ class AccountMoveLine(models.Model):
                     comp_curr.id = tax_line.company_currency_id
                 JOIN account_move_line base_line ON
                     base_line.id = base_tax_line_mapping.base_line_id
-                WHERE %(search_condition)s
+                WHERE {where_clause}
             ),
 
 
@@ -370,7 +368,7 @@ class AccountMoveLine(models.Model):
 
                 Skipped if the 'fallback' method parameter is False.
                 */
-                %(fallback_query)s
+                {fallback_query}
             ),
 
 
@@ -399,7 +397,6 @@ class AccountMoveLine(models.Model):
                     tax_line.tax_line_id AS tax_id,
                     tax_line.group_tax_id,
                     tax_line.tax_repartition_line_id,
-                    tax_line.analytic_distribution,
 
                     tax_line.company_id,
                     tax_line.display_type AS display_type,
@@ -470,7 +467,6 @@ class AccountMoveLine(models.Model):
                 sub.tax_line_id,
                 sub.display_type,
                 sub.src_line_id,
-                sub.analytic_distribution,
 
                 sub.tax_id,
                 sub.group_tax_id,
@@ -510,10 +506,4 @@ class AccountMoveLine(models.Model):
                     0.0
                 ) AS tax_amount_currency
             FROM base_tax_matching_all_amounts sub
-            ''',
-            extra_query_base_tax_line_mapping=extra_query_base_tax_line_mapping,
-            group_taxes_query=group_taxes_query,
-            search_condition=search_condition,
-            table_references=table_references,
-            fallback_query=fallback_query,
-        )
+        ''', group_taxes_params + where_params + where_params + where_params + fallback_params

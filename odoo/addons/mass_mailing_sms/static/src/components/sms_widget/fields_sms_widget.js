@@ -1,6 +1,5 @@
 /** @odoo-module **/
 
-import { _t } from "@web/core/l10n/translation";
 import { useService } from "@web/core/utils/hooks";
 import { patch } from "@web/core/utils/patch";
 
@@ -15,9 +14,9 @@ const TEXT_URL_REGEX = /https?:\/\/[\w@:%.+&~#=/-]+(?:\?\S+)?/g;  // from tools.
  * consider links converted with link_tracker and opt-out
  * link if the option is selected.
  */
-patch(SmsWidget.prototype, {
+patch(SmsWidget.prototype, 'sms_widget_mass_mailing', {
     setup() {
-        super.setup(...arguments);
+        this._super(...arguments);
         this.orm = useService("orm");
         this.optOutEnabled = false;
         this.noticeLinksReplaced = false;
@@ -41,18 +40,18 @@ patch(SmsWidget.prototype, {
     get nbrCharExplanation() {
         if (this.optOutEnabled) {
             return this.noticeLinksReplaced
-                ? _t(" (including link trackers and opt-out link)")
-                : _t(" (including opt-out link)");
+                ? this.env._t(" (including link trackers and opt-out link) ")
+                : this.env._t(" (including opt-out link) ");
         }
         return this.noticeLinksReplaced
-            ? _t(" (including link trackers)")
-            : super.nbrCharExplanation; // Also default when no linkReplacementsPlaceholders
+            ? this.env._t(" (including link trackers) ")
+            : this._super.apply(this, arguments); // Also default when no linkReplacementsPlaceholders
     },
     /**
      * @override
      */
     get nbrChar() {
-        let res = super.nbrChar;
+        let res = this._super(...arguments);
         if (this.props.record.data.sms_allow_unsubscribe) {
             this.optOutEnabled = true;
             res += this.linkReplacementsPlaceholders.unsubscribe.length;
@@ -63,7 +62,7 @@ patch(SmsWidget.prototype, {
      * @override
      */
     _getValueForSmsCounts(value) {
-        let res = super._getValueForSmsCounts(...arguments);
+        let res = this._super(...arguments);
         if (this.linkReplacementsPlaceholders) {
             const replaced = res.replaceAll(TEXT_URL_REGEX, this.linkReplacementsPlaceholders.link);
             this.noticeLinksReplaced = replaced !== res;

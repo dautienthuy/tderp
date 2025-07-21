@@ -4,6 +4,7 @@
 import math
 
 from odoo import http
+from odoo.addons.http_routing.models.ir_http import slug
 from odoo.addons.website_event.controllers.community import EventCommunityController
 from odoo.http import request
 
@@ -26,7 +27,8 @@ class WebsiteEventTrackQuizCommunityController(EventCommunityController):
         values = self._get_community_leaderboard_render_values(event, None, None)
         return request.render('website_event_track_quiz.event_leaderboard', values)
 
-    @http.route()
+    @http.route('/event/<model("event.event"):event>/community',
+                type='http', auth="public", website=True, sitemap=False)
     def community(self, event, **kwargs):
         values = self._get_community_leaderboard_render_values(event, None, None)
         return request.render('website_event_track_quiz.event_leaderboard', values)
@@ -38,7 +40,7 @@ class WebsiteEventTrackQuizCommunityController(EventCommunityController):
         user_count = len(values['visitors'])
         if user_count:
             page_count = math.ceil(user_count / self._visitors_per_page)
-            url = '/event/%s/community/leaderboard/results' % (request.env['ir.http']._slug(event))
+            url = '/event/%s/community/leaderboard/results' % (slug(event))
             if values.get('current_visitor_position') and not page:
                 values['scroll_to_position'] = True
                 page = math.ceil(values['current_visitor_position'] / self._visitors_per_page)
@@ -54,14 +56,14 @@ class WebsiteEventTrackQuizCommunityController(EventCommunityController):
         return values
 
     def _get_leaderboard(self, event, searched_name=None):
-        current_visitor = request.env['website.visitor']._get_visitor_from_request()
-        track_visitor_data = request.env['event.track.visitor'].sudo()._read_group(
+        current_visitor = request.env['website.visitor']._get_visitor_from_request(force_create=False)
+        track_visitor_data = request.env['event.track.visitor'].sudo().read_group(
             [('track_id', 'in', event.track_ids.ids),
              ('visitor_id', '!=', False),
              ('quiz_points', '>', 0)],
-            ['visitor_id'],
-            ['quiz_points:sum'], order='quiz_points:sum DESC, visitor_id ASC')
-        data_map = {visitor.id: points for visitor, points in track_visitor_data}
+            ['id', 'visitor_id', 'points:sum(quiz_points)'],
+            ['visitor_id'], orderby="points DESC")
+        data_map = {datum['visitor_id'][0]: datum['points'] for datum in track_visitor_data if datum.get('visitor_id')}
         leaderboard = []
         position = 1
         current_visitor_position = False

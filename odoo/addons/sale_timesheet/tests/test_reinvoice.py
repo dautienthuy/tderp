@@ -12,8 +12,8 @@ from odoo.tests import Form, tagged
 class TestReInvoice(TestCommonSaleTimesheet):
 
     @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+    def setUpClass(cls, chart_template_ref=None):
+        super().setUpClass(chart_template_ref=chart_template_ref)
 
         # patch expense products to make them services creating task/project
         service_values = {
@@ -31,7 +31,8 @@ class TestReInvoice(TestCommonSaleTimesheet):
 
         # create AA, SO and invoices
         cls.analytic_plan = cls.env['account.analytic.plan'].create({
-            'name': 'Timesheet Plan',
+            'name': 'Plan',
+            'company_id': cls.company_data['company'].id,
         })
 
         cls.analytic_account = cls.env['account.analytic.account'].create({
@@ -42,28 +43,24 @@ class TestReInvoice(TestCommonSaleTimesheet):
             'partner_id': cls.partner_a.id
         })
 
-        cls.project = cls.env['project.project'].create({
-            'name': 'SO Project',
-            'allow_timesheets': False,
-            f'{cls.analytic_plan._column_name()}': cls.analytic_account.id,
-        })
-
-        cls.sale_order = cls.env['sale.order'].create({
+        cls.sale_order = cls.env['sale.order'].with_context(mail_notrack=True, mail_create_nolog=True).create({
             'partner_id': cls.partner_a.id,
             'partner_invoice_id': cls.partner_a.id,
             'partner_shipping_id': cls.partner_a.id,
-            'project_id': cls.project.id,
+            'analytic_account_id': cls.analytic_account.id,
             'pricelist_id': cls.company_data['default_pricelist'].id,
         })
 
         cls.Invoice = cls.env['account.move'].with_context(
             default_move_type='in_invoice',
             default_invoice_date=cls.sale_order.date_order,
+            mail_notrack=True,
+            mail_create_nolog=True,
         )
 
     def test_at_cost(self):
         """ Test vendor bill at cost for product based on ordered and delivered quantities. """
-        # Required for `analytic_distribution` to be visible in the view
+        # Required for `analytic_account_id` to be visible in the view
         self.env.user.groups_id += self.env.ref('analytic.group_analytic_accounting')
         # create SO line and confirm SO (with only one line)
         sale_order_line1 = self.env['sale.order.line'].create({
@@ -121,8 +118,8 @@ class TestReInvoice(TestCommonSaleTimesheet):
         self.assertFalse(sale_order_line4.task_id, "Adding a new expense SO line should not create a task (sol4)")
         self.assertEqual(len(self.sale_order.project_ids), 1, "SO create only one project with its service line. Adding new expense SO line should not impact that")
 
-        self.assertEqual((sale_order_line3.price_unit, sale_order_line3.qty_delivered, sale_order_line3.product_uom_qty, sale_order_line3.qty_invoiced), (self.company_data['product_order_cost'].standard_price, 3.0, 3.0, 0), 'Sale line is wrong after confirming vendor invoice')
-        self.assertEqual((sale_order_line4.price_unit, sale_order_line4.qty_delivered, sale_order_line4.product_uom_qty, sale_order_line4.qty_invoiced), (self.company_data['product_delivery_cost'].standard_price, 3.0, 3.0, 0), 'Sale line is wrong after confirming vendor invoice')
+        self.assertEqual((sale_order_line3.price_unit, sale_order_line3.qty_delivered, sale_order_line3.product_uom_qty, sale_order_line3.qty_invoiced), (self.company_data['product_order_cost'].standard_price, 3.0, 0, 0), 'Sale line is wrong after confirming vendor invoice')
+        self.assertEqual((sale_order_line4.price_unit, sale_order_line4.qty_delivered, sale_order_line4.product_uom_qty, sale_order_line4.qty_invoiced), (self.company_data['product_delivery_cost'].standard_price, 3.0, 0, 0), 'Sale line is wrong after confirming vendor invoice')
 
         self.assertEqual(sale_order_line3.qty_delivered_method, 'analytic', "Delivered quantity of 'expense' SO line should be computed by analytic amount")
         self.assertEqual(sale_order_line4.qty_delivered_method, 'analytic', "Delivered quantity of 'expense' SO line should be computed by analytic amount")
@@ -150,14 +147,14 @@ class TestReInvoice(TestCommonSaleTimesheet):
         self.assertEqual(len(self.sale_order.order_line), 6, "There should be still 4 lines on the SO, no new created")
         self.assertEqual(len(self.sale_order.order_line.filtered(lambda sol: sol.is_expense)), 4, "There should be still 2 expenses lines on the SO")
 
-        self.assertEqual((sale_order_line5.price_unit, sale_order_line5.qty_delivered, sale_order_line5.product_uom_qty, sale_order_line5.qty_invoiced), (self.company_data['product_order_cost'].standard_price, 2.0, 2.0, 0), 'Sale line 5 is wrong after confirming 2e vendor invoice')
-        self.assertEqual((sale_order_line6.price_unit, sale_order_line6.qty_delivered, sale_order_line6.product_uom_qty, sale_order_line6.qty_invoiced), (self.company_data['product_delivery_cost'].standard_price, 2.0, 2.0, 0), 'Sale line 6 is wrong after confirming 2e vendor invoice')
+        self.assertEqual((sale_order_line5.price_unit, sale_order_line5.qty_delivered, sale_order_line5.product_uom_qty, sale_order_line5.qty_invoiced), (self.company_data['product_order_cost'].standard_price, 2.0, 0, 0), 'Sale line 5 is wrong after confirming 2e vendor invoice')
+        self.assertEqual((sale_order_line6.price_unit, sale_order_line6.qty_delivered, sale_order_line6.product_uom_qty, sale_order_line6.qty_invoiced), (self.company_data['product_delivery_cost'].standard_price, 2.0, 0, 0), 'Sale line 6 is wrong after confirming 2e vendor invoice')
 
     def test_sales_price(self):
         """ Test invoicing vendor bill at sales price for products based on delivered and ordered quantities. Check no existing SO line is incremented, but when invoicing a
             second time, increment only the delivered so line.
         """
-        # Required for `analytic_distribution` to be visible in the view
+        # Required for `analytic_account_id` to be visible in the view
         self.env.user.groups_id += self.env.ref('analytic.group_analytic_accounting')
         # create SO line and confirm SO (with only one line)
         sale_order_line1 = self.env['sale.order.line'].create({
@@ -213,8 +210,8 @@ class TestReInvoice(TestCommonSaleTimesheet):
         self.assertFalse(sale_order_line4.task_id, "Adding a new expense SO line should not create a task (sol4)")
         self.assertEqual(len(self.sale_order.project_ids), 1, "SO create only one project with its service line. Adding new expense SO line should not impact that")
 
-        self.assertEqual((sale_order_line3.price_unit, sale_order_line3.qty_delivered, sale_order_line3.product_uom_qty, sale_order_line3.qty_invoiced), (self.company_data['product_delivery_sales_price'].list_price, 3.0, 3.0, 0), 'Sale line is wrong after confirming vendor invoice')
-        self.assertEqual((sale_order_line4.price_unit, sale_order_line4.qty_delivered, sale_order_line4.product_uom_qty, sale_order_line4.qty_invoiced), (self.company_data['product_order_sales_price'].list_price, 3.0, 3.0, 0), 'Sale line is wrong after confirming vendor invoice')
+        self.assertEqual((sale_order_line3.price_unit, sale_order_line3.qty_delivered, sale_order_line3.product_uom_qty, sale_order_line3.qty_invoiced), (self.company_data['product_delivery_sales_price'].list_price, 3.0, 0, 0), 'Sale line is wrong after confirming vendor invoice')
+        self.assertEqual((sale_order_line4.price_unit, sale_order_line4.qty_delivered, sale_order_line4.product_uom_qty, sale_order_line4.qty_invoiced), (self.company_data['product_order_sales_price'].list_price, 3.0, 0, 0), 'Sale line is wrong after confirming vendor invoice')
 
         self.assertEqual(sale_order_line3.qty_delivered_method, 'analytic', "Delivered quantity of 'expense' SO line 3 should be computed by analytic amount")
         self.assertEqual(sale_order_line4.qty_delivered_method, 'analytic', "Delivered quantity of 'expense' SO line 4 should be computed by analytic amount")
@@ -242,11 +239,11 @@ class TestReInvoice(TestCommonSaleTimesheet):
         self.assertEqual(len(self.sale_order.order_line), 5, "There should be 5 lines on the SO, 1 new created and 1 incremented")
         self.assertEqual(len(self.sale_order.order_line.filtered(lambda sol: sol.is_expense)), 3, "There should be 3 expenses lines on the SO")
 
-        self.assertEqual((sale_order_line6.price_unit, sale_order_line6.qty_delivered, sale_order_line4.product_uom_qty, sale_order_line6.qty_invoiced), (self.company_data['product_order_sales_price'].list_price, 2.0, 3.0, 0), 'Sale line is wrong after confirming 2e vendor invoice')
+        self.assertEqual((sale_order_line6.price_unit, sale_order_line6.qty_delivered, sale_order_line4.product_uom_qty, sale_order_line6.qty_invoiced), (self.company_data['product_order_sales_price'].list_price, 2.0, 0, 0), 'Sale line is wrong after confirming 2e vendor invoice')
 
     def test_no_expense(self):
         """ Test invoicing vendor bill with no policy. Check nothing happen. """
-        # Required for `analytic_distribution` to be visible in the view
+        # Required for `analytic_account_id` to be visible in the view
         self.env.user.groups_id += self.env.ref('analytic.group_analytic_accounting')
         # confirm SO
         sale_order_line = self.env['sale.order.line'].create({
@@ -337,6 +334,7 @@ class TestReInvoice(TestCommonSaleTimesheet):
             "active_model": 'sale.order',
             "active_ids": [sale_order.id],
             "active_id": sale_order.id,
+            'open_invoices': True,
         }
         # Invoice the 1
         wizard = self.env['sale.advance.payment.inv'].with_context(context).create({
@@ -355,9 +353,10 @@ class TestReInvoice(TestCommonSaleTimesheet):
         }
         refund_invoice_wiz = self.env['account.move.reversal'].with_context(wiz_context).create({
             'reason': 'please reverse :c',
+            'refund_method': 'refund',
             'date': today,
         })
-        refund_invoice = self.env['account.move'].browse(refund_invoice_wiz.refund_moves()['res_id'])
+        refund_invoice = self.env['account.move'].browse(refund_invoice_wiz.reverse_moves()['res_id'])
         refund_invoice.action_post()
         # reversing with action_reverse and then action_post does not reset the invoice_status to 'to invoice' in tests
 
@@ -370,47 +369,3 @@ class TestReInvoice(TestCommonSaleTimesheet):
 
         # The actual test :
         wizard.create_invoices()  # No exception should be raised, there is indeed something to be invoiced since it was reversed
-
-    def test_project_update_reinvoiced_vendor_bill_product(self):
-        project_product, expense_product = self.env['product.product'].create([{
-            'name': 'Project creation',
-            'type': 'service',
-            'service_tracking': 'task_in_project',
-        }, {
-            'name': 'Expense Product',
-            'expense_policy': 'sales_price',
-            'list_price': 20,
-        }])
-        sale_order = self.env['sale.order'].create({'partner_id': self.partner_a.id})
-        self.env['sale.order.line'].create({
-            'product_id': project_product.id,
-            'order_id': sale_order.id,
-        })
-        sale_order.action_confirm()
-        project = sale_order.project_ids
-        self.assertTrue(project, 'Project should have been created on sale order confirmation')
-
-        vendor_bill = self.env['account.move'].create({
-            'partner_id': self.partner_a.id,
-            'invoice_date': sale_order.date_order,
-            'journal_id': self.env['account.journal'].search([('code', '=', 'BILL'), ('company_id', '=', self.env.company.id)]).id,
-            'move_type': 'in_invoice',
-        })
-        self.env['account.move.line'].create({
-            'product_id': expense_product.id,
-            'move_id': vendor_bill.id,
-            'account_id': self.env['account.account'].search([('code', '=', '600000')]).id,
-            'analytic_distribution': {project.account_id.id: 100},
-            'price_unit': 20,
-        })
-        vendor_bill.action_post()  # An analytic line is created for the vendor bill move line
-        self.assertEqual(project.account_id.vendor_bill_count, 1, 'Vendor bill should be linked to project account')
-        self.assertTrue(vendor_bill.line_ids.analytic_line_ids, 'Analytic line should be created for the account move line')
-        self.assertTrue(sale_order.order_line.analytic_line_ids, 'Analytic line should be linked to the sale order line created by the re-invoiced expense product')
-
-        # Only the original vendor bill amount should appear on the project update, to stay consistent with the corresponding hr_expense behavior
-        updates = project._get_profitability_items()
-        data_line = updates['costs']['data'][0]
-        self.assertEqual(data_line['id'], 'other_purchase_costs')
-        self.assertEqual(data_line['billed'], -20)
-        self.assertEqual(updates['costs']['total']['billed'], -20, 'Only the vendor bill should be deducted')

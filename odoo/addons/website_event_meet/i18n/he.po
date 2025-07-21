@@ -3,32 +3,39 @@
 # 	* website_event_meet
 # 
 # Translators:
-# MichaelHadar, 2024
-# Ha Ketem <haketem@gmail.com>, 2024
-# Yihya Hugirat <hugirat@gmail.com>, 2024
-# yael terner, 2024
+# דודי מלכה <Dudimalka6@gmail.com>, 2022
+# Yihya Hugirat <hugirat@gmail.com>, 2022
+# Adi Sharashov <Adi@laylinetech.com>, 2022
+# Martin Trigaux, 2022
+# Hed Shefer <hed@laylinetech.com>, 2022
+# ZVI BLONDER <ZVIBLONDER@gmail.com>, 2022
+# Ha Ketem <haketem@gmail.com>, 2022
 # Roy Sayag, 2024
-# Adi Sharashov <Adi@laylinetech.com>, 2024
-# דודי מלכה <Dudimalka6@gmail.com>, 2024
-# Martin Trigaux, 2024
-# Hed Shefer <hed@laylinetech.com>, 2024
-# ZVI BLONDER <ZVIBLONDER@gmail.com>, 2024
 # Lilach Gilliam <lilach.gilliam@gmail.com>, 2025
-# or balmas, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:56+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: or balmas, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:56+0000\n"
+"Last-Translator: Lilach Gilliam <lilach.gilliam@gmail.com>, 2025\n"
 "Language-Team: Hebrew (https://app.transifex.com/odoo/teams/41243/he/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: he\n"
 "Plural-Forms: nplurals=3; plural=(n == 1 && n % 1 == 0) ? 0 : (n == 2 && n % 1 == 0) ? 1: 2;\n"
+
+#. module: website_event_meet
+#: model_terms:ir.ui.view,arch_db:website_event_meet.meeting_room_card
+msgid "&amp;nbsp;"
+msgstr "&amp;nbsp;"
+
+#. module: website_event_meet
+#: model_terms:ir.ui.view,arch_db:website_event_meet.meeting_room_aside
+msgid "<b>&amp;#9900;&amp;nbsp;</b>"
+msgstr ""
 
 #. module: website_event_meet
 #: model_terms:ir.ui.view,arch_db:website_event_meet.meeting_room_main
@@ -40,12 +47,27 @@ msgstr ""
 #. module: website_event_meet
 #: model_terms:ir.ui.view,arch_db:website_event_meet.meeting_room_card
 msgid "<span class=\"badge text-bg-danger\">Unpublished</span>"
-msgstr "<span class=\"badge text-bg-danger\">לא פורסם</span>"
+msgstr "<span class=\"o_stat_text text-danger\">לא פורסם</span>"
+
+#. module: website_event_meet
+#: model_terms:ir.ui.view,arch_db:website_event_meet.meeting_room_aside
+msgid "<span class=\"h5 m-3\">Other Rooms</span>"
+msgstr ""
+
+#. module: website_event_meet
+#: model_terms:ir.ui.view,arch_db:website_event_meet.community_aside
+msgid "<span>Create a Room</span>"
+msgstr "<span>צור חדר </span>"
+
+#. module: website_event_meet
+#: model_terms:ir.ui.view,arch_db:website_event_meet.community_main
+msgid "<span>Join a room</span>"
+msgstr "<span>הצטרף לחדר</span>"
 
 #. module: website_event_meet
 #: model_terms:ir.ui.view,arch_db:website_event_meet.meeting_room_main
 msgid ""
-"<span>Oops! This room is full!</span><br/>Come back later to have a chat "
+"<span>Oops! This room is full !</span><br/>Come back later to have a chat "
 "with us!"
 msgstr ""
 
@@ -72,11 +94,6 @@ msgid "All Languages"
 msgstr "כל השפות"
 
 #. module: website_event_meet
-#: model_terms:ir.ui.view,arch_db:website_event_meet.event_meet_main
-msgid "All Rooms"
-msgstr ""
-
-#. module: website_event_meet
 #: model:ir.model.fields,field_description:website_event_meet.field_event_event__meeting_room_allow_creation
 #: model:ir.model.fields,field_description:website_event_meet.field_event_type__meeting_room_allow_creation
 msgid "Allow Room Creation"
@@ -85,14 +102,16 @@ msgstr "אפשר יצירת חדר"
 #. module: website_event_meet
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/js/website_event_meeting_room.js:0
-msgid "Are you sure you want to close this room?"
-msgstr ""
+#, python-format
+msgid "Are you sure you want to close this room ?"
+msgstr "האם אתה בטוח שברצונך לסגור חדר?"
 
 #. module: website_event_meet
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/js/website_event_meeting_room.js:0
-msgid "Are you sure you want to duplicate this room?"
-msgstr ""
+#, python-format
+msgid "Are you sure you want to duplicate this room ?"
+msgstr "האם אתה בטוח שברצונך לשכפל חדר זה?"
 
 #. module: website_event_meet
 #: model:ir.model.fields,field_description:website_event_meet.field_event_meeting_room__target_audience
@@ -101,13 +120,9 @@ msgid "Audience"
 msgstr "קהל"
 
 #. module: website_event_meet
-#: model_terms:ir.ui.view,arch_db:website_event_meet.event_meet_main
-msgid "Back to all Rooms"
-msgstr ""
-
-#. module: website_event_meet
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
+#, python-format
 msgid ""
 "Be sure you are ready to spend at least 10 minutes in the room if you want "
 "to initiate a new topic."
@@ -126,6 +141,7 @@ msgstr "יכול לפרסם"
 #. module: website_event_meet
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
+#, python-format
 msgid "Capacity"
 msgstr "קיבולת"
 
@@ -151,8 +167,9 @@ msgstr "סגור"
 #. module: website_event_meet
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
+#, python-format
 msgid "Create"
-msgstr "יצירה"
+msgstr "צור"
 
 #. module: website_event_meet
 #: model_terms:ir.actions.act_window,help:website_event_meet.action_meeting_room_from_event
@@ -177,15 +194,9 @@ msgid "Created on"
 msgstr "נוצר ב-"
 
 #. module: website_event_meet
-#: model_terms:ir.ui.view,arch_db:website_event_meet.event_meet
-msgid ""
-"DROP BUILDING BLOCKS HERE TO MAKE THEM AVAILABLE ACROSS ALL PROPOSAL PAGES "
-"OF ALL EVENTS"
-msgstr ""
-
-#. module: website_event_meet
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
+#, python-format
 msgid "Discard"
 msgstr "בטל"
 
@@ -225,7 +236,7 @@ msgstr "תפריט חדר דיונים בארוע"
 #. module: website_event_meet
 #: model_terms:ir.ui.view,arch_db:website_event_meet.snippet_options
 msgid "Event Page"
-msgstr "דף אירוע"
+msgstr ""
 
 #. module: website_event_meet
 #: model:ir.actions.act_window,name:website_event_meet.action_meeting_room_from_event
@@ -235,7 +246,7 @@ msgstr "חדרי הארוע"
 #. module: website_event_meet
 #: model:ir.model,name:website_event_meet.model_event_type
 msgid "Event Template"
-msgstr "תבנית אירוע"
+msgstr "תבניות ארוע"
 
 #. module: website_event_meet
 #: model_terms:ir.ui.view,arch_db:website_event_meet.meeting_room_card
@@ -263,11 +274,6 @@ msgid "Is Published"
 msgstr "מפורסם"
 
 #. module: website_event_meet
-#: model_terms:ir.ui.view,arch_db:website_event_meet.community_main
-msgid "Join a room"
-msgstr ""
-
-#. module: website_event_meet
 #: model_terms:ir.ui.view,arch_db:website_event_meet.meeting_room_card
 #: model_terms:ir.ui.view,arch_db:website_event_meet.meeting_room_main
 msgid "Join us next time to chat about"
@@ -282,6 +288,7 @@ msgstr "הצטרפו אלינו לשם לשוחח על "
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
 #: model:ir.model.fields,field_description:website_event_meet.field_event_meeting_room__room_lang_id
+#, python-format
 msgid "Language"
 msgstr "שפה"
 
@@ -289,6 +296,11 @@ msgstr "שפה"
 #: model_terms:ir.ui.view,arch_db:website_event_meet.community_main
 msgid "Languages Menu"
 msgstr "תפריט שפות"
+
+#. module: website_event_meet
+#: model:ir.model.fields,field_description:website_event_meet.field_event_meeting_room____last_update
+msgid "Last Modified on"
+msgstr "שינוי אחרון ב"
 
 #. module: website_event_meet
 #: model:ir.model.fields,field_description:website_event_meet.field_event_meeting_room__write_uid
@@ -308,6 +320,7 @@ msgstr ""
 #. module: website_event_meet
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
+#, python-format
 msgid "Launch a new topic"
 msgstr ""
 
@@ -355,11 +368,6 @@ msgid "No Room Open"
 msgstr "אין חדר פתוח"
 
 #. module: website_event_meet
-#: model_terms:ir.ui.view,arch_db:website_event_meet.meeting_room_aside
-msgid "Other Rooms"
-msgstr ""
-
-#. module: website_event_meet
 #: model:ir.model.fields,field_description:website_event_meet.field_event_meeting_room__room_participant_count
 msgid "Participant count"
 msgstr ""
@@ -371,7 +379,7 @@ msgstr ""
 
 #. module: website_event_meet
 #: model:event.meeting.room,name:website_event_meet.event_meeting_room_1
-msgid "Reducing the ecological footprint with wood?"
+msgid "Reducing the ecological footprint with wood ?"
 msgstr ""
 
 #. module: website_event_meet
@@ -397,6 +405,7 @@ msgstr "שם החדר"
 #. module: website_event_meet
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
+#, python-format
 msgid "Room Topic"
 msgstr "נושא החדר"
 
@@ -430,6 +439,7 @@ msgstr ""
 #. module: website_event_meet
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
+#, python-format
 msgid "Short Summary"
 msgstr "תיאור קצר"
 
@@ -447,6 +457,7 @@ msgstr "תקציר"
 #. module: website_event_meet
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
+#, python-format
 msgid "Target People"
 msgstr ""
 
@@ -458,10 +469,13 @@ msgstr "הארוע"
 #. module: website_event_meet
 #. odoo-python
 #: code:addons/website_event_meet/controllers/website_event_main.py:0
+#, python-format
 msgid ""
-"The event %(name)s starts on %(date_begin)s (%(timezone)s).\n"
-"Join us there to chat about \"%(subject)s\"!"
+"The event %s starts on %s (%s). \n"
+"Join us there to chat about \"%s\" !"
 msgstr ""
+"האירוע %s מתחיל ב- %s (%s). \n"
+"הצטרפו אלינו לשם לשוחח על \"%s\" !"
 
 #. module: website_event_meet
 #: model:ir.model.fields,help:website_event_meet.field_event_meeting_room__website_url
@@ -502,8 +516,8 @@ msgstr ""
 
 #. module: website_event_meet
 #: model_terms:ir.ui.view,arch_db:website_event_meet.community_aside
-msgid "Want to create your own discussion room?"
-msgstr ""
+msgid "Want to create your own discussion room ?"
+msgstr "רוצה ליצור חדר דיונים משלך?"
 
 #. module: website_event_meet
 #: model:ir.model,name:website_event_meet.model_website_event_menu
@@ -529,6 +543,7 @@ msgstr "לקוח(ות)"
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
 #: model_terms:ir.ui.view,arch_db:website_event_meet.event_meeting_room_view_form
+#, python-format
 msgid "e.g. Accountants"
 msgstr ""
 
@@ -536,6 +551,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
 #: model_terms:ir.ui.view,arch_db:website_event_meet.event_meeting_room_view_form
+#, python-format
 msgid "e.g. Finance"
 msgstr "לדוג' כספים"
 
@@ -543,6 +559,7 @@ msgstr "לדוג' כספים"
 #. odoo-javascript
 #: code:addons/website_event_meet/static/src/xml/website_event_meeting_room.xml:0
 #: model_terms:ir.ui.view,arch_db:website_event_meet.event_meeting_room_view_form
+#, python-format
 msgid "e.g. Let's talk about Corporate Finance"
 msgstr ""
 

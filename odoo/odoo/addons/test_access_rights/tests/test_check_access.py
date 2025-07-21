@@ -37,7 +37,8 @@ class TestAccess(odoo.tests.HttpCase):
         # while this is bad, this is not the object of this test
         self.internal_user_partner.invalidate_model(['active'])
         # from portal's _document_check_access:
-        document.check_access('read')
+        document.check_access_rights('read')
+        document.check_access_rule('read')
         # no raise, because we are supposed to be able to read our ticket
 
     def test_name_search_with_sudo(self):
@@ -50,4 +51,8 @@ class TestAccess(odoo.tests.HttpCase):
         })
         document = self.env['test_access_right.ticket'].with_user(no_access_user)
         res = document.sudo().name_search('Need help here')
+        #Invalide cache in case the name is already there
+        #and will not trigget check_access_rights when
+        #the name_get will access the name
+        self.document.invalidate_model(['name'])
         self.assertEqual(res[0][1], "Need help here")

@@ -3,14 +3,21 @@
 # 	* hr_holidays_attendance
 # 
 # Translators:
+# Martin Trigaux, 2022
+# Karol Rybak <karolrybak85@gmail.com>, 2022
+# Piotr Szlązak <szlazakpiotr@gmail.com>, 2022
+# Cezary Drożak, 2022
+# Andrzej Wiśniewski <a.wisniewski@hadron.eu.com>, 2023
+# Tadeusz Karpiński <tadeusz.karpinski@braintec.com>, 2023
+# Tadeusz Karpiński <tadeuszkarpinski@gmail.com>, 2023
 # Wil Odoo, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-06 14:58+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2025-02-03 09:16+0000\n"
+"PO-Revision-Date: 2022-09-22 05:46+0000\n"
 "Last-Translator: Wil Odoo, 2024\n"
 "Language-Team: Polish (https://app.transifex.com/odoo/teams/41243/pl/)\n"
 "MIME-Version: 1.0\n"
@@ -22,13 +29,9 @@ msgstr ""
 #. module: hr_holidays_attendance
 #. odoo-python
 #: code:addons/hr_holidays_attendance/models/hr_leave_type.py:0
+#, python-format
 msgid "%s hours available"
 msgstr "%s dostępnych godzin"
-
-#. module: hr_holidays_attendance
-#: model:ir.model,name:hr_holidays_attendance.model_hr_leave_accrual_level
-msgid "Accrual Plan Level"
-msgstr "Poziom planu naliczania"
 
 #. module: hr_holidays_attendance
 #: model:ir.model,name:hr_holidays_attendance.model_hr_attendance
@@ -36,24 +39,26 @@ msgid "Attendance"
 msgstr "Obecność"
 
 #. module: hr_holidays_attendance
-#: model:ir.model.fields.selection,name:hr_holidays_attendance.selection__hr_leave_accrual_level__frequency_hourly_source__attendance
-msgid "Attendances"
-msgstr "Obecności"
-
-#. module: hr_holidays_attendance
 #. odoo-javascript
 #: code:addons/hr_holidays_attendance/static/src/xml/time_off_calendar.xml:0
+#, python-format
 msgid "Available"
 msgstr "Dostępny"
 
 #. module: hr_holidays_attendance
-#: model:ir.model.fields.selection,name:hr_holidays_attendance.selection__hr_leave_accrual_level__frequency_hourly_source__calendar
-msgid "Calendar"
-msgstr "Kalendarz"
+#: model:ir.model,name:hr_holidays_attendance.model_res_company
+msgid "Companies"
+msgstr "Firmy"
+
+#. module: hr_holidays_attendance
+#: model:ir.model.fields,field_description:hr_holidays_attendance.field_hr_leave_allocation__hr_attendance_overtime
+msgid "Count Extra Hours"
+msgstr "Liczenie dodatkowych godzin"
 
 #. module: hr_holidays_attendance
 #. odoo-javascript
 #: code:addons/hr_holidays_attendance/static/src/xml/time_off_calendar.xml:0
+#, python-format
 msgid "Days"
 msgstr "Dni"
 
@@ -83,23 +88,16 @@ msgid "Extra Hours Available"
 msgstr "Dostępne dodatkowe godziny"
 
 #. module: hr_holidays_attendance
-#: model:ir.model.fields,field_description:hr_holidays_attendance.field_hr_leave_accrual_level__frequency_hourly_source
-msgid "Frequency Hourly Source"
-msgstr ""
-
-#. module: hr_holidays_attendance
 #. odoo-javascript
 #: code:addons/hr_holidays_attendance/static/src/xml/time_off_calendar.xml:0
+#, python-format
 msgid "Hours"
 msgstr "Godziny"
 
 #. module: hr_holidays_attendance
-#: model:ir.model.fields,help:hr_holidays_attendance.field_hr_leave_accrual_level__frequency_hourly_source
-msgid ""
-"If the source is set to \"Calendar\", the amount of worked hours will be "
-"computed based on the Employee's working schedule. Otherwise, the amount of "
-"worked hours will be based on Attendance records."
-msgstr ""
+#: model:ir.model.fields,field_description:hr_holidays_attendance.field_hr_leave_type__hr_attendance_overtime
+msgid "Hr Attendance Overtime"
+msgstr "Godziny obecności w godzinach nadliczbowych"
 
 #. module: hr_holidays_attendance
 #: model:ir.actions.act_window,name:hr_holidays_attendance.hr_leave_allocation_overtime_action
@@ -119,6 +117,7 @@ msgstr ""
 #. module: hr_holidays_attendance
 #. odoo-python
 #: code:addons/hr_holidays_attendance/models/hr_leave_allocation.py:0
+#, python-format
 msgid ""
 "Only an Officer or Administrator is allowed to edit the allocation duration "
 "in this status."
@@ -141,13 +140,9 @@ msgid "Save"
 msgstr "Zapisz"
 
 #. module: hr_holidays_attendance
-#: model_terms:ir.ui.view,arch_db:hr_holidays_attendance.hr_leave_accrual_level_view_form
-msgid "Source"
-msgstr "Źródło"
-
-#. module: hr_holidays_attendance
 #. odoo-python
 #: code:addons/hr_holidays_attendance/models/hr_leave_allocation.py:0
+#, python-format
 msgid ""
 "The employee does not have enough extra hours to extend this allocation."
 msgstr ""
@@ -157,6 +152,7 @@ msgstr ""
 #. module: hr_holidays_attendance
 #. odoo-python
 #: code:addons/hr_holidays_attendance/models/hr_leave.py:0
+#, python-format
 msgid "The employee does not have enough extra hours to extend this leave."
 msgstr ""
 "Pracownik nie ma wystarczającej liczby dodatkowych godzin, aby przedłużyć "
@@ -164,7 +160,18 @@ msgstr ""
 
 #. module: hr_holidays_attendance
 #. odoo-python
+#: code:addons/hr_holidays_attendance/models/hr_leave_allocation.py:0
+#, python-format
+msgid ""
+"The employee does not have enough extra hours to request this allocation."
+msgstr ""
+"Pracownik nie ma wystarczającej liczby dodatkowych godzin, aby ubiegać się o"
+" tę alokację."
+
+#. module: hr_holidays_attendance
+#. odoo-python
 #: code:addons/hr_holidays_attendance/models/hr_leave.py:0
+#, python-format
 msgid "The employee does not have enough extra hours to request this leave."
 msgstr ""
 "Pracownik nie ma wystarczającej liczby dodatkowych godzin, aby złożyć "
@@ -173,6 +180,7 @@ msgstr ""
 #. module: hr_holidays_attendance
 #. odoo-python
 #: code:addons/hr_holidays_attendance/models/hr_leave_allocation.py:0
+#, python-format
 msgid ""
 "The employee does not have enough overtime hours to request this leave."
 msgstr ""
@@ -208,6 +216,7 @@ msgstr "Użytkownik"
 #. module: hr_holidays_attendance
 #. odoo-python
 #: code:addons/hr_holidays_attendance/models/hr_leave.py:0
+#, python-format
 msgid "You do not have enough extra hours to request this leave"
 msgstr ""
 "Nie masz wystarczającej liczby dodatkowych godzin, aby wnioskować o ten "

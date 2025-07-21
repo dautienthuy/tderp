@@ -3,15 +3,16 @@
 # 	* calendar_sms
 # 
 # Translators:
-# Wil Odoo, 2024
+# Martin Trigaux, 2022
+# Alina Lisnenko <alina.lisnenko@erp.co.ua>, 2022
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 12:52+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Wil Odoo, 2024\n"
+"POT-Creation-Date: 2022-12-15 12:50+0000\n"
+"PO-Revision-Date: 2022-09-22 05:45+0000\n"
+"Last-Translator: Alina Lisnenko <alina.lisnenko@erp.co.ua>, 2022\n"
 "Language-Team: Ukrainian (https://app.transifex.com/odoo/teams/41243/uk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -42,6 +43,7 @@ msgstr "Менеджер сповіщення про подію"
 #. module: calendar_sms
 #. odoo-python
 #: code:addons/calendar_sms/models/calendar_event.py:0
+#, python-format
 msgid "Event reminder: %(name)s, %(time)s."
 msgstr "Нагадування про подію: %(name)s, %(time)s."
 
@@ -53,13 +55,6 @@ msgid ""
 msgstr ""
 "Нагадування про подію: {{ object.name }}, {{ "
 "object.get_display_time_tz(object.partner_id.tz) }}"
-
-#. module: calendar_sms
-#. odoo-python
-#: code:addons/calendar_sms/models/calendar_alarm.py:0
-#: model:ir.model.fields,field_description:calendar_sms.field_calendar_alarm__sms_notify_responsible
-msgid "Notify Responsible"
-msgstr "Сповістити відповідальних"
 
 #. module: calendar_sms
 #: model_terms:ir.ui.view,arch_db:calendar_sms.view_calendar_event_form_inherited
@@ -77,16 +72,21 @@ msgid "SMS Text Message"
 msgstr "Текст SMS-повідомлення "
 
 #. module: calendar_sms
-#. odoo-python
-#: code:addons/calendar_sms/models/calendar_event.py:0
 #: model_terms:ir.ui.view,arch_db:calendar_sms.view_calendar_event_tree_inherited
 msgid "Send SMS"
-msgstr "Надіслати SMS"
+msgstr "Надішліть SMS"
+
+#. module: calendar_sms
+#. odoo-python
+#: code:addons/calendar_sms/models/calendar_event.py:0
+#, python-format
+msgid "Send SMS Text Message"
+msgstr "Надіслати SMS-повідомлення"
 
 #. module: calendar_sms
 #: model_terms:ir.ui.view,arch_db:calendar_sms.view_calendar_event_form_inherited
 msgid "Send SMS to attendees"
-msgstr "Відправити SMS учасникам"
+msgstr "Відправте SMS учасникам"
 
 #. module: calendar_sms
 #: model:ir.model.fields,help:calendar_sms.field_calendar_alarm__sms_template_id
@@ -96,6 +96,7 @@ msgstr "Шаблон, який використовується для відт�
 #. module: calendar_sms
 #. odoo-python
 #: code:addons/calendar_sms/models/calendar_event.py:0
+#, python-format
 msgid "There are no attendees on these events"
 msgstr "Немає учасників на цих подіях"
 

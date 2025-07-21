@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models, tools
+from odoo import api, fields, models, tools, SUPERUSER_ID
 
 from odoo.addons.base.models.res_partner import _tz_get
 
@@ -11,7 +12,7 @@ class LeaveReportCalendar(models.Model):
     _auto = False
     _order = "start_datetime DESC, employee_id"
 
-    name = fields.Char(string='Name', readonly=True, compute="_compute_name")
+    name = fields.Char(string='Name', readonly=True)
     start_datetime = fields.Datetime(string='From', readonly=True)
     stop_datetime = fields.Datetime(string='To', readonly=True)
     tz = fields.Selection(_tz_get, string="Timezone", readonly=True)
@@ -21,43 +22,33 @@ class LeaveReportCalendar(models.Model):
     job_id = fields.Many2one('hr.job', readonly=True)
     company_id = fields.Many2one('res.company', readonly=True)
     state = fields.Selection([
-        ('cancel', 'Cancelled'),
+        ('draft', 'To Submit'),
+        ('cancel', 'Cancelled'),  # YTI This state seems to be unused. To remove
         ('confirm', 'To Approve'),
         ('refuse', 'Refused'),
         ('validate1', 'Second Approval'),
         ('validate', 'Approved')
     ], readonly=True)
-    description = fields.Char("Description", readonly=True, groups='hr_holidays.group_hr_holidays_user')
-    holiday_status_id = fields.Many2one('hr.leave.type', readonly=True, string="Time Off Type",
-        groups='hr_holidays.group_hr_holidays_user')
 
     is_hatched = fields.Boolean('Hatched', readonly=True)
     is_striked = fields.Boolean('Striked', readonly=True)
 
-    is_absent = fields.Boolean(related='employee_id.is_absent')
-    leave_manager_id = fields.Many2one(related='employee_id.leave_manager_id')
-    leave_id = fields.Many2one(comodel_name='hr.leave', readonly=True, groups='hr_holidays.group_hr_holidays_user')
-    is_manager = fields.Boolean("Manager", compute="_compute_is_manager")
-
     def init(self):
         tools.drop_view_if_exists(self._cr, 'hr_leave_report_calendar')
         self._cr.execute("""CREATE OR REPLACE VIEW hr_leave_report_calendar AS
-        (SELECT
+        (SELECT 
             hl.id AS id,
-            hl.id AS leave_id,
+            CONCAT(em.name, ': ', hl.duration_display) AS name,
             hl.date_from AS start_datetime,
             hl.date_to AS stop_datetime,
             hl.employee_id AS employee_id,
             hl.state AS state,
             hl.department_id AS department_id,
             hl.number_of_days as duration,
-            hl.private_name AS description,
-            hl.holiday_status_id AS holiday_status_id,
             em.company_id AS company_id,
             em.job_id AS job_id,
             COALESCE(
-                rr.tz,
-                rc.tz,
+                CASE WHEN hl.holiday_type = 'employee' THEN COALESCE(rr.tz, rc.tz) END,
                 cc.tz,
                 'UTC'
             ) AS tz,
@@ -74,42 +65,20 @@ class LeaveReportCalendar(models.Model):
                 ON co.id = em.company_id
             LEFT JOIN resource_calendar cc
                 ON cc.id = co.resource_calendar_id
-        WHERE
-            hl.state IN ('confirm', 'validate', 'validate1', 'refuse')
+        WHERE 
+            hl.state IN ('confirm', 'validate', 'validate1')
+            AND hl.active IS TRUE
         );
         """)
 
-    def _compute_display_name(self):
+    def _read(self, fields):
+        res = super()._read(fields)
         if self.env.context.get('hide_employee_name') and 'employee_id' in self.env.context.get('group_by', []):
-            for record in self:
-                record.display_name = record.name.removeprefix(f"{record.employee_id.name}: ")
-        else:
-            super()._compute_display_name()
+            name_field = self._fields['name']
+            for record in self.with_user(SUPERUSER_ID):
+                self.env.cache.set(record, name_field, record.name.split(':')[-1].strip())
+        return res
 
     @api.model
     def get_unusual_days(self, date_from, date_to=None):
         return self.env.user.employee_id._get_unusual_days(date_from, date_to)
-
-    @api.depends('employee_id.name', 'leave_id')
-    def _compute_name(self):
-        for leave in self:
-            leave.name = leave.employee_id.name
-            if self.env.user.has_group('hr_holidays.group_hr_holidays_user'):
-                # Include the time off type name
-                leave.name += f" {leave.leave_id.holiday_status_id.name}"
-            # Include the time off duration.
-            leave.name += f": {leave.sudo().leave_id.duration_display}"
-
-    @api.depends('leave_manager_id')
-    def _compute_is_manager(self):
-        for leave in self:
-            leave.is_manager = self.env.user.has_group('hr_holidays.group_hr_holidays_user') or leave.leave_manager_id == self.env.user
-
-    def action_approve(self):
-        self.leave_id.action_approve(check_state=False)
-
-    def action_validate(self):
-        self.leave_id.action_validate()
-
-    def action_refuse(self):
-        self.leave_id.action_refuse()

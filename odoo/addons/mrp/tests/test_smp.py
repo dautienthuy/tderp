@@ -14,7 +14,7 @@ class TestMrpSerialMassProduce(TestMrpCommon):
         """
         mo = self.generate_mo()[0]
         self.assertEqual(mo.state, 'confirmed')
-        res = mo.action_mass_produce()
+        res = mo.action_serial_mass_produce_wizard()
         self.assertFalse(res)
 
     def test_smp_produce_all(self):
@@ -31,23 +31,19 @@ class TestMrpSerialMassProduce(TestMrpCommon):
                 'location_id': mo.location_src_id.id,
             })._apply_inventory()
         mo.action_assign()
-        mo_form = Form(mo)
-        mo_form.qty_producing = 1
-        mo = mo_form.save()
-        self.assertEqual(len(mo.move_finished_ids.move_line_ids), 1)
-        mo.qty_producing = 0
         # Open the wizard
-        action = mo.action_mass_produce()
-        wizard_form = Form(self.env['mrp.batch.produce'].with_context(**action['context']))
+        action = mo.action_serial_mass_produce_wizard()
+        wizard = Form(self.env['stock.assign.serial'].with_context(**action['context']))
         # Let the wizard generate all serial numbers
-        wizard_form.lot_name = "sn#1"
-        wizard_form.lot_qty = count
-        wizard = wizard_form.save()
-        wizard.action_generate_production_text()
-        wizard.action_prepare()
-        # Initial MO should have a backorder-sequenced name and be in progress state
+        wizard.next_serial_number = "sn#1"
+        wizard.next_serial_count = count
+        action = wizard.save().generate_serial_numbers_production()
+        # Reload the wizard to apply generated serial numbers
+        wizard = Form(self.env['stock.assign.serial'].browse(action['res_id']))
+        wizard.save().apply()
+        # Initial MO should have a backorder-sequenced name and be in to_close state
         self.assertTrue("-001" in mo.name)
-        self.assertEqual(mo.state, "progress")
+        self.assertEqual(mo.state, "to_close")
         # Each generated serial number should have its own mo
         self.assertEqual(len(mo.procurement_group_id.mrp_production_ids), count)
         # Check generated serial numbers
@@ -67,14 +63,14 @@ class TestMrpSerialMassProduce(TestMrpCommon):
                 'location_id': mo.location_src_id.id,
             })._apply_inventory()
         mo.action_assign()
-        action = mo.action_mass_produce()
-        wizard = Form(self.env['mrp.batch.produce'].with_context(**action['context']))
-        wizard.lot_name = "sn#1"
-        wizard.lot_qty = count - 1
-        wizard = wizard.save()
-        wizard.action_generate_production_text()
-        wizard.action_prepare()
-
+        action = mo.action_serial_mass_produce_wizard()
+        wizard = Form(self.env['stock.assign.serial'].with_context(**action['context']))
+        wizard.next_serial_number = "sn#1"
+        wizard.next_serial_count = count - 1
+        action = wizard.save().generate_serial_numbers_production()
+        # Reload the wizard to create backorder (applying generated serial numbers)
+        wizard = Form(self.env['stock.assign.serial'].browse(action['res_id']))
+        wizard.save().create_backorder()
         # Last MO in sequence is the backorder
         bo = mo.procurement_group_id.mrp_production_ids[-1]
         self.assertEqual(bo.backorder_sequence, count)
@@ -92,6 +88,7 @@ class TestMrpSerialMassProduce(TestMrpCommon):
         for _ in range(2):  # 2 lots of 3 to satisfy the need and check lot splitting
             lot = self.env['stock.lot'].create({
                 'product_id': product_to_use_1.id,
+                'company_id': self.env.company.id,
             })
             self.env['stock.quant'].with_context(inventory_mode=True).create({
                 'product_id': product_to_use_1.id,
@@ -102,6 +99,7 @@ class TestMrpSerialMassProduce(TestMrpCommon):
         for _ in range(3):  # 3 serial numbers
             lot = self.env['stock.lot'].create({
                 'product_id': product_to_use_2.id,
+                'company_id': self.env.company.id,
             })
             self.env['stock.quant'].with_context(inventory_mode=True).create({
                 'product_id': product_to_use_2.id,
@@ -111,45 +109,20 @@ class TestMrpSerialMassProduce(TestMrpCommon):
             })._apply_inventory()
         mo.action_assign()
         # Open the wizard
-        action = mo.action_mass_produce()
-        wizard = Form(self.env['mrp.batch.produce'].with_context(**action['context']))
+        action = mo.action_serial_mass_produce_wizard()
+        wizard = Form(self.env['stock.assign.serial'].with_context(**action['context']))
         # Let the wizard generate all serial numbers
-        wizard.lot_name = "sn#1"
-        wizard.lot_qty = count
-        wizard = wizard.save()
-        wizard.action_generate_production_text()
-        wizard.action_prepare()
-        # 1st & 2nd MO in sequence should have only 1 move lines (1 lot) for product_to_use_1 (2nd in bom)
+        wizard.next_serial_number = "sn#1"
+        wizard.next_serial_count = count
+        action = wizard.save().generate_serial_numbers_production()
+        # Reload the wizard to apply generated serial numbers
+        wizard = Form(self.env['stock.assign.serial'].browse(action['res_id']))
+        wizard.save().apply()
+        # 1st & 3rd MO in sequence should have only 1 move lines (1 lot) for product_to_use_1 (2nd in bom)
         self.assertEqual(mo.procurement_group_id.mrp_production_ids[0].move_raw_ids[1].move_lines_count, 1)
-        self.assertEqual(mo.procurement_group_id.mrp_production_ids[1].move_raw_ids[1].move_lines_count, 1)
-        # 3rd MO should have 2 move lines (2 different lots) for product_to_use_1
-        self.assertEqual(mo.procurement_group_id.mrp_production_ids[2].move_raw_ids[1].move_lines_count, 2)
-
-        # Verify mark as done
-
-        mos = mo.procurement_group_id.mrp_production_ids
-        mos.button_mark_done()
-
-        self.assertRecordValues(mos.lot_producing_id, [
-            {'product_qty': 1},
-            {'product_qty': 1},
-            {'product_qty': 1},
-        ])
-
-        self.assertRecordValues(mos.move_finished_ids, [
-            {'picked': True},
-            {'picked': True},
-            {'picked': True},
-        ])
-
-        self.assertRecordValues(mos.move_raw_ids, [
-            {'picked': True},
-            {'picked': True},
-            {'picked': True},
-            {'picked': True},
-            {'picked': True},
-            {'picked': True},
-        ])
+        self.assertEqual(mo.procurement_group_id.mrp_production_ids[2].move_raw_ids[1].move_lines_count, 1)
+        # 2nd MO should have 2 move lines (2 different lots) for product_to_use_1
+        self.assertEqual(mo.procurement_group_id.mrp_production_ids[1].move_raw_ids[1].move_lines_count, 2)
 
     def test_mass_produce_with_tracked_product(self):
         """
@@ -157,16 +130,16 @@ class TestMrpSerialMassProduce(TestMrpCommon):
         """
         tracked_product = self.env['product.product'].create({
             'name': 'Tracked Product',
-            'is_storable': True,
+            'type': 'product',
             'tracking': 'serial',
         })
         component = self.env['product.product'].create({
             'name': 'Component',
-            'is_storable': True,
+            'type': 'product',
         })
         byproduct = self.env['product.product'].create({
             'name': 'Byproduct',
-            'is_storable': True,
+            'type': 'product',
         })
         # create a BoM
         bom = self.env['mrp.bom'].create({
@@ -207,7 +180,7 @@ class TestMrpSerialMassProduce(TestMrpCommon):
         mo.action_confirm()
         mo.action_assign()
         mo.qty_producing = 2
-        mo.move_raw_ids.move_line_ids.write({'quantity': 1})
+        mo.move_raw_ids.move_line_ids.write({'qty_done': 1})
         mo.button_mark_done()
         self.assertEqual(mo.state, 'done')
         # create a Mo to produce 2 units of tracked product
@@ -222,71 +195,29 @@ class TestMrpSerialMassProduce(TestMrpCommon):
 
         mo.action_assign()
         # Open the wizard
-        action = mo.action_mass_produce()
-
-        wizard = Form(self.env['mrp.batch.produce'].with_context(**action['context']))
+        action = mo.action_serial_mass_produce_wizard()
+        wizard = Form(self.env['stock.assign.serial'].with_context(**action['context']))
         # Let the wizard generate all serial numbers
-        wizard.lot_name = "sn#3"
-        wizard.lot_qty = 2
-        wizard = wizard.save()
-        wizard.action_generate_production_text()
+        wizard.next_serial_number = "sn#3"
+        wizard.next_serial_count = 2
+        action = wizard.save().generate_serial_numbers_production()
         # Reload the wizard to apply generated serial numbers
-        wizard.action_prepare()
-        # Initial MO should have a backorder-sequenced name and be in confirmed state
+        wizard = Form(self.env['stock.assign.serial'].browse(action['res_id']))
+        wizard.save().apply()
+        # Initial MO should have a backorder-sequenced name and be in to_close state
         self.assertTrue("-001" in mo.name)
-        self.assertEqual(mo.state, "confirmed")
+        self.assertEqual(mo.state, "to_close")
         # Each generated serial number should have its own mo
         self.assertEqual(len(mo.procurement_group_id.mrp_production_ids), 2)
         # Check generated serial numbers
         self.assertEqual(mo.procurement_group_id.mrp_production_ids.lot_producing_id.mapped('name'), ["sn#3", "sn#4"])
         #check byproduct quantity
-        self.assertEqual(mo.procurement_group_id.mrp_production_ids.move_byproduct_ids.mapped('quantity'), [1, 1])
+        self.assertEqual(mo.procurement_group_id.mrp_production_ids.move_byproduct_ids.mapped('quantity_done'), [1, 1])
         # check the component quantity
-        self.assertEqual(mo.procurement_group_id.mrp_production_ids.move_raw_ids.mapped('quantity'), [1, 1])
+        self.assertEqual(mo.procurement_group_id.mrp_production_ids.move_raw_ids.mapped('quantity_done'), [1, 1])
         # Mark the MOs as done
-        mo.procurement_group_id.mrp_production_ids.move_raw_ids.picked = True
         mo.procurement_group_id.mrp_production_ids.button_mark_done()
         self.assertEqual(mo.procurement_group_id.mrp_production_ids.mapped('state'), ['done', 'done'])
-
-    def test_mass_produce_with_tracked_product_2(self):
-        """
-        Check that the components are correclty consumed during mass
-        production of a tracked product.
-        """
-        mo = self.generate_mo(tracking_final='serial', qty_final=3, qty_base_1=1, qty_base_2=1)[0]
-        comp1, comp2 = mo.move_raw_ids.mapped('product_id')
-        self.env['stock.quant']._update_available_quantity(comp1, mo.warehouse_id.lot_stock_id, 5)
-        # Generate an SN using the action_generate_serial
-        mo.action_generate_serial()
-        # In the end mass produce the SN's
-        action = mo.action_mass_produce()
-        wizard = Form(self.env['mrp.batch.produce'].with_context(**action['context']))
-        # Let the wizard generate all serial numbers
-        wizard.lot_name = "sn#5"
-        wizard.lot_qty = 3
-        wizard = wizard.save()
-        wizard.action_generate_production_text()
-        # Reload the wizard to apply generated serial numbers
-        wizard.action_prepare()
-
-        # Initial MO should have a backorder-sequenced name and be in to_close state
-        self.assertIn("-001", mo.name)
-        self.assertEqual(mo.state, "to_close")
-        # Each generated serial number should have its own mo
-        self.assertEqual(mo.procurement_group_id.mrp_production_ids.lot_producing_id.mapped('name'), ["sn#5", "sn#6", "sn#7"])
-        # check the component quantity
-        self.assertRecordValues(mo.procurement_group_id.mrp_production_ids.move_raw_ids, [
-            {'quantity': 1.0, 'picked': True},
-            {'quantity': 1.0, 'picked': True},
-            {'quantity': 1.0, 'picked': False},
-            {'quantity': 0.0, 'picked': False},
-            {'quantity': 1.0, 'picked': False},
-            {'quantity': 0.0, 'picked': False},
-        ])
-        mo.procurement_group_id.mrp_production_ids.button_mark_done()
-        self.assertEqual(mo.procurement_group_id.mrp_production_ids.mapped('state'), ['done', 'done', 'done'])
-        self.assertEqual(comp1.qty_available, 2.0)
-        self.assertEqual(comp2.qty_available, -3.0)
 
     def test_smp_produce_with_consumable_component(self):
         """Create a MO for a product tracked by serial number with a consumable component.
@@ -322,37 +253,17 @@ class TestMrpSerialMassProduce(TestMrpCommon):
         self.assertEqual(mo.state, 'confirmed')
 
         # Open the wizard
-        action = mo.button_mark_done()
-        wizard = Form(self.env['mrp.batch.produce'].with_context(**action['context']))
+        action = mo.action_serial_mass_produce_wizard()
+        wizard = Form(self.env['stock.assign.serial'].with_context(**action['context']))
         # Let the wizard generate all serial numbers
-        wizard.lot_name = "sn#1"
-        wizard.lot_qty = mo.product_qty
-        wizard = wizard.save()
-        wizard.action_generate_production_text()
-        wizard.action_prepare()
-
-        # Initial MO should have a backorder-sequenced name and be in confirmed state
+        wizard.next_serial_number = "sn#1"
+        wizard.next_serial_count = mo.product_qty
+        action = wizard.save().generate_serial_numbers_production()
+        # Reload the wizard to apply generated serial numbers
+        wizard = Form(self.env['stock.assign.serial'].browse(action['res_id']))
+        wizard.save().apply()
+        # Initial MO should have a backorder-sequenced name and be in to_close state
         self.assertTrue("-001" in mo.name)
-        self.assertEqual(mo.state, "confirmed")
+        self.assertEqual(mo.state, "to_close")
         # Each generated serial number should have its own mo
         self.assertEqual(len(mo.procurement_group_id.mrp_production_ids), 12)
-
-    def test_smp_two_steps(self):
-        """Create a MO for a product tracked by lot and with a component untracked and tracked by lot.
-           As the smp wizard should not open even if in two steps
-        """
-        self.env['res.config.settings'].write({
-            'group_stock_adv_location': True,
-        })
-        self.env.ref('stock.warehouse0').manufacture_steps = 'pbm'
-        mo = self.generate_mo(tracking_final='lot', tracking_base_1='lot')[0]
-        # Make some stock and reserve
-        for product in mo.move_raw_ids.product_id:
-            self.env['stock.quant'].with_context(inventory_mode=True).create({
-                'product_id': product.id,
-                'inventory_quantity': 100,
-                'location_id': mo.location_src_id.id,
-            })._apply_inventory()
-        mo.action_assign()
-        action = mo.action_mass_produce()
-        self.assertEqual(action, None)

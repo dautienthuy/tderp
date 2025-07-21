@@ -3,19 +3,19 @@
 # 	* sale_purchase
 # 
 # Translators:
-# Весел Карастоянов <vesel@abv.bg>, 2024
-# Martin Trigaux, 2024
-# Maria Boyadjieva <marabo2000@gmail.com>, 2024
-# Boris Stefanov <borkata@gmail.com>, 2024
-# Igor Sheludko <igor.sheludko@gmail.com>, 2024
+# Martin Trigaux, 2023
+# Весел Карастоянов <vesel@abv.bg>, 2023
+# Boris Stefanov <borkata@gmail.com>, 2023
+# Maria Boyadjieva <marabo2000@gmail.com>, 2023
+# Igor Sheludko <igor.sheludko@gmail.com>, 2023
 # Elena Varbanova, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:56+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:55+0000\n"
 "Last-Translator: Elena Varbanova, 2024\n"
 "Language-Team: Bulgarian (https://app.transifex.com/odoo/teams/41243/bg/)\n"
 "MIME-Version: 1.0\n"
@@ -33,6 +33,11 @@ msgid ""
 msgstr ""
 
 #. module: sale_purchase
+#: model_terms:ir.ui.view,arch_db:sale_purchase.product_template_form_view_inherit
+msgid "<span class=\"fa fa-lg fa-building-o fa-fw\" title=\"Service to Purchase\"/>"
+msgstr ""
+
+#. module: sale_purchase
 #: model_terms:ir.ui.view,arch_db:sale_purchase.sale_order_inherited_form_purchase
 msgid "<span class=\"o_stat_text\">Purchase</span>"
 msgstr "<span class=\"o_stat_text\">Покупка</span>"
@@ -46,16 +51,11 @@ msgstr "<span class=\"o_stat_text\">Продажба</span>"
 #: model_terms:ir.ui.view,arch_db:sale_purchase.sale_order_cancel_view_form
 msgid ""
 "<span id=\"display_invoice_alert\" position=\"after\">\n"
-"                <span id=\"display_purchase_orders_alert\" invisible=\"not display_purchase_orders_alert\" groups=\"purchase.group_purchase_user\">\n"
+"                <span id=\"display_purchase_orders_alert\" attrs=\"{'invisible': [('display_purchase_orders_alert', '=', False)]}\" groups=\"purchase.group_purchase_user\">\n"
 "                    There are active purchase orders linked to this sale order that are not cancelled automatically! <br/>\n"
 "                </span>\n"
 "            </span>"
 msgstr ""
-"<span id=\"display_invoice_alert\" position=\"after\">\n"
-"                <span id=\"display_purchase_orders_alert\" invisible=\"not display_purchase_orders_alert\" groups=\"purchase.group_purchase_user\">\n"
-"                   Има активни поръчки за покупка, свързани с тази поръчка за продажба, които не се анулират автоматично! <br/>\n"
-"                </span>\n"
-"            </span>"
 
 #. module: sale_purchase
 #: model_terms:ir.ui.view,arch_db:sale_purchase.exception_sale_on_purchase_cancellation
@@ -115,6 +115,7 @@ msgstr "Брой генерирани артикули за покупка"
 #. module: sale_purchase
 #. odoo-python
 #: code:addons/sale_purchase/models/sale_order_line.py:0
+#, python-format
 msgid "Ordered quantity decreased!"
 msgstr "Намалено поръчано количество!"
 
@@ -126,6 +127,7 @@ msgstr "Произход на продукта за продажба"
 #. module: sale_purchase
 #. odoo-python
 #: code:addons/sale_purchase/models/product_template.py:0
+#, python-format
 msgid ""
 "Please define the vendor from whom you would like to purchase this service "
 "automatically."
@@ -141,6 +143,7 @@ msgstr "Продукт"
 #. module: sale_purchase
 #. odoo-python
 #: code:addons/sale_purchase/models/product_template.py:0
+#, python-format
 msgid "Product that is not a service can not create RFQ."
 msgstr "Продукт, който не е услуга, не може да създава RFQ."
 
@@ -162,6 +165,7 @@ msgstr "Ред на поръчка за покупка"
 #. module: sale_purchase
 #. odoo-python
 #: code:addons/sale_purchase/models/sale_order.py:0
+#, python-format
 msgid "Purchase Order generated from %s"
 msgstr "Поръчка за покупка, генерирана от %s"
 
@@ -202,6 +206,7 @@ msgstr "Ред на поръчка за продажби"
 #. module: sale_purchase
 #. odoo-python
 #: code:addons/sale_purchase/models/purchase_order.py:0
+#, python-format
 msgid "Sources Sale Orders %s"
 msgstr "Източници на поръчки за продажба %s"
 
@@ -214,6 +219,7 @@ msgstr "Подизпълнителска услуга"
 #. module: sale_purchase
 #. odoo-python
 #: code:addons/sale_purchase/models/sale_order_line.py:0
+#, python-format
 msgid ""
 "There is no vendor associated to the product %s. Please define a vendor for "
 "this product."
@@ -224,6 +230,7 @@ msgstr ""
 #. module: sale_purchase
 #. odoo-python
 #: code:addons/sale_purchase/models/sale_order_line.py:0
+#, python-format
 msgid ""
 "You are decreasing the ordered quantity! Do not forget to manually update "
 "the purchase order if needed."

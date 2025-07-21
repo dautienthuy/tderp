@@ -3,18 +3,20 @@
 # 	* barcodes_gs1_nomenclature
 # 
 # Translators:
-# Simon S, 2024
-# Lasse L, 2024
+# Mikael Åkerberg <mikael.akerberg@mariaakerberg.com>, 2022
+# Simon S, 2022
+# Martin Trigaux, 2022
+# Kim Asplund <kim.asplund@gmail.com>, 2022
+# Lasse L, 2023
 # Anders Wallenquist <anders.wallenquist@vertel.se>, 2024
-# Kim Asplund <kim.asplund@gmail.com>, 2024
 # Jakob Krabbe <jakob.krabbe@vertel.se>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 08:40+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2022-12-15 12:50+0000\n"
+"PO-Revision-Date: 2022-09-22 05:45+0000\n"
 "Last-Translator: Jakob Krabbe <jakob.krabbe@vertel.se>, 2024\n"
 "Language-Team: Swedish (https://app.transifex.com/odoo/teams/41243/sv/)\n"
 "MIME-Version: 1.0\n"
@@ -45,7 +47,7 @@ msgstr "Associerad Uom"
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model,name:barcodes_gs1_nomenclature.model_barcode_nomenclature
 msgid "Barcode Nomenclature"
-msgstr "Nomenklatur för streckkoder"
+msgstr "Streckkodsnomenklatur"
 
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model,name:barcodes_gs1_nomenclature.model_barcode_rule
@@ -70,7 +72,7 @@ msgstr "Decimal"
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields.selection,name:barcodes_gs1_nomenclature.selection__barcode_rule__type__location_dest
 msgid "Destination location"
-msgstr "Destinationens läge"
+msgstr "Destinationsplats"
 
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields,field_description:barcodes_gs1_nomenclature.field_barcode_rule__encoding
@@ -80,7 +82,7 @@ msgstr "Kodning"
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields.selection,name:barcodes_gs1_nomenclature.selection__barcode_rule__type__expiration_date
 msgid "Expiration Date"
-msgstr "Utgångsdatum"
+msgstr "Slutdatum"
 
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields,field_description:barcodes_gs1_nomenclature.field_barcode_nomenclature__gs1_separator_fnc1
@@ -100,7 +102,7 @@ msgstr "GS1-128"
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model,name:barcodes_gs1_nomenclature.model_ir_http
 msgid "HTTP Routing"
-msgstr "HTTP-routing"
+msgstr "HTTP-rutt"
 
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields,help:barcodes_gs1_nomenclature.field_barcode_rule__gs1_decimal_usage
@@ -113,12 +115,14 @@ msgstr ""
 #. module: barcodes_gs1_nomenclature
 #. odoo-javascript
 #: code:addons/barcodes_gs1_nomenclature/static/src/js/barcode_parser.js:0
+#, python-format
 msgid "Invalid barcode: can't be formated as date"
 msgstr "Ogiltig streckkod: kan inte formateras som datum"
 
 #. module: barcodes_gs1_nomenclature
 #. odoo-javascript
 #: code:addons/barcodes_gs1_nomenclature/static/src/js/barcode_parser.js:0
+#, python-format
 msgid "Invalid barcode: the check digit is incorrect"
 msgstr "Ogiltig streckkod: kontrollsiffran är felaktig"
 
@@ -136,12 +140,12 @@ msgstr "Plats"
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields.selection,name:barcodes_gs1_nomenclature.selection__barcode_rule__type__lot
 msgid "Lot"
-msgstr "Lot"
+msgstr "Parti"
 
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields.selection,name:barcodes_gs1_nomenclature.selection__barcode_rule__gs1_content_type__measure
 msgid "Measure"
-msgstr "Mått"
+msgstr "Mätning"
 
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields.selection,name:barcodes_gs1_nomenclature.selection__barcode_rule__gs1_content_type__identifier
@@ -156,7 +160,7 @@ msgstr "Datum för paketering"
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields.selection,name:barcodes_gs1_nomenclature.selection__barcode_rule__type__package
 msgid "Package"
-msgstr "Paket"
+msgstr "Emballage"
 
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields.selection,name:barcodes_gs1_nomenclature.selection__barcode_rule__type__package_type
@@ -171,8 +175,9 @@ msgstr "Antal"
 #. module: barcodes_gs1_nomenclature
 #. odoo-python
 #: code:addons/barcodes_gs1_nomenclature/models/barcode_nomenclature.py:0
-msgid "The FNC1 Separator Alternative is not a valid Regex: %(error)s"
-msgstr "FNC1-separatoralternativet är inte ett giltigt Regex: %(error)s"
+#, python-format
+msgid "The FNC1 Separator Alternative is not a valid Regex: "
+msgstr "FNC1 Separator Alternative är inte en giltig Regex: "
 
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields,help:barcodes_gs1_nomenclature.field_barcode_rule__gs1_content_type
@@ -192,6 +197,14 @@ msgstr ""
 #. module: barcodes_gs1_nomenclature
 #. odoo-python
 #: code:addons/barcodes_gs1_nomenclature/models/barcode_rule.py:0
+#, python-format
+msgid "The rule pattern \"%s\" is not a valid Regex: "
+msgstr "Regelmönstret \"%s\" är inte en giltig Regex: "
+
+#. module: barcodes_gs1_nomenclature
+#. odoo-python
+#: code:addons/barcodes_gs1_nomenclature/models/barcode_rule.py:0
+#, python-format
 msgid ""
 "The rule pattern \"%s\" is not valid, it needs two groups:\n"
 "\t- A first one for the Application Identifier (usually 2 to 4 digits);\n"
@@ -203,13 +216,8 @@ msgstr ""
 
 #. module: barcodes_gs1_nomenclature
 #. odoo-python
-#: code:addons/barcodes_gs1_nomenclature/models/barcode_rule.py:0
-msgid "The rule pattern '%(rule)s' is not a valid Regex: %(error)s"
-msgstr "Regelmönstret  '%(rule)s' är inte en giltig Regex: %(error)s"
-
-#. module: barcodes_gs1_nomenclature
-#. odoo-python
 #: code:addons/barcodes_gs1_nomenclature/models/barcode_nomenclature.py:0
+#, python-format
 msgid ""
 "There is something wrong with the barcode rule \"%s\" pattern.\n"
 "If this rule uses decimal, check it can't get sometime else than a digit as last char for the Application Identifier.\n"
@@ -232,12 +240,14 @@ msgstr ""
 #. module: barcodes_gs1_nomenclature
 #. odoo-javascript
 #: code:addons/barcodes_gs1_nomenclature/static/src/js/barcode_parser.js:0
+#, python-format
 msgid "This barcode can't be parsed by any barcode rules."
 msgstr "Den här streckkoden kan inte tolkas av någon streckkodsregel."
 
 #. module: barcodes_gs1_nomenclature
 #. odoo-javascript
 #: code:addons/barcodes_gs1_nomenclature/static/src/js/barcode_parser.js:0
+#, python-format
 msgid "This barcode can't be partially or fully parsed."
 msgstr "Den här streckkoden kan inte analyseras helt eller delvis."
 

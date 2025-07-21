@@ -7,7 +7,8 @@ from odoo import api, fields, models
 class Expense(models.Model):
     _inherit = "hr.expense"
 
-    sale_order_id = fields.Many2one('sale.order', compute='_compute_sale_order_id', store=True, index='btree_not_null', string='Customer to Reinvoice', readonly=False, tracking=True,
+    sale_order_id = fields.Many2one('sale.order', compute='_compute_sale_order_id', store=True, string='Customer to Reinvoice', readonly=False, tracking=True,
+        states={'done': [('readonly', True)], 'refused': [('readonly', True)]},
         # NOTE: only confirmed SO can be selected, but this domain in activated throught the name search with the `sale_expense_all_order`
         # context key. So, this domain is not the one applied.
         domain="[('state', '=', 'sale'), ('company_id', '=', company_id)]",
@@ -24,6 +25,12 @@ class Expense(models.Model):
         for expense in self.filtered(lambda e: not e.can_be_reinvoiced):
             expense.sale_order_id = False
 
+    def _compute_analytic_distribution(self):
+        super(Expense, self)._compute_analytic_distribution()
+        for expense in self.filtered('sale_order_id'):
+            if expense.sale_order_id.sudo().analytic_account_id:
+                expense.analytic_distribution = {expense.sale_order_id.sudo().analytic_account_id.id: 100}  # `sudo` required for normal employee without sale access rights
+
     @api.onchange('sale_order_id')
     def _onchange_sale_order_id(self):
         to_reset = self.filtered(lambda line: not self.env.is_protected(self._fields['analytic_distribution'], line))
@@ -35,3 +42,17 @@ class Expense(models.Model):
         for split_value in vals:
             split_value['sale_order_id'] = self.sale_order_id.id
         return vals
+
+    def action_move_create(self):
+        """ When posting expense, if the AA is given, we will track cost in that
+            If a SO is set, this means we want to reinvoice the expense. But to do so, we
+            need the analytic entries to be generated, so a AA is required to reinvoice. So,
+            we ensure the AA if a SO is given.
+        """
+        for expense in self.filtered(lambda expense: expense.sale_order_id and not expense.analytic_distribution):
+            if not expense.sale_order_id.analytic_account_id:
+                expense.sale_order_id._create_analytic_account()
+            expense.write({
+                'analytic_distribution': {expense.sale_order_id.analytic_account_id.id: 100}
+            })
+        return super(Expense, self).action_move_create()

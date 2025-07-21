@@ -3,7 +3,8 @@
 from lxml import etree
 
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.tests import Form, tagged
+from odoo.tests.common import Form
+from odoo.tests import tagged
 from odoo import fields, Command
 
 from collections import defaultdict
@@ -13,14 +14,13 @@ from collections import defaultdict
 class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
 
     @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-
-        cls.other_currency = cls.setup_other_currency('EUR')
+    def setUpClass(cls, chart_template_ref=None):
+        super().setUpClass(chart_template_ref=chart_template_ref)
 
         cls.invoice = cls.init_invoice('in_refund', products=cls.product_a+cls.product_b)
 
         cls.product_line_vals_1 = {
+            'name': cls.product_a.name,
             'product_id': cls.product_a.id,
             'account_id': cls.product_a.property_account_expense_id.id,
             'partner_id': cls.partner_a.id,
@@ -39,7 +39,7 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
             'date_maturity': False,
         }
         cls.product_line_vals_2 = {
-            'name': 'product_b',
+            'name': cls.product_b.name,
             'product_id': cls.product_b.id,
             'account_id': cls.product_b.property_account_expense_id.id,
             'partner_id': cls.partner_a.id,
@@ -96,7 +96,7 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
             'date_maturity': False,
         }
         cls.term_line_vals_1 = {
-            'name': False,
+            'name': '',
             'product_id': False,
             'account_id': cls.company_data['default_account_payable'].id,
             'partner_id': cls.partner_a.id,
@@ -120,16 +120,13 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
             'journal_id': cls.company_data['default_journal_purchase'].id,
             'invoice_date': fields.Date.from_string('2019-01-01'),
             'fiscal_position_id': False,
-            'payment_reference': False,
+            'payment_reference': '',
             'invoice_payment_term_id': cls.pay_terms_a.id,
             'amount_untaxed': 960.0,
             'amount_tax': 168.0,
             'amount_total': 1128.0,
         }
-
-    @classmethod
-    def setup_armageddon_tax(cls, tax_name, company_data, **kwargs):
-        return super().setup_armageddon_tax(tax_name, company_data, type_tax_use='purchase', **kwargs)
+        (cls.tax_armageddon + cls.tax_armageddon.children_tax_ids).write({'type_tax_use': 'purchase'})
 
     def setUp(self):
         super(TestAccountMoveInRefundOnchanges, self).setUp()
@@ -150,7 +147,7 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
         self.assertInvoiceValues(self.invoice, [
             {
                 **self.product_line_vals_1,
-                'name': 'product_b',
+                'name': self.product_b.name,
                 'product_id': self.product_b.id,
                 'product_uom_id': self.product_b.uom_id.id,
                 'account_id': self.product_b.property_account_expense_id.id,
@@ -269,7 +266,7 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
             },
             {
                 **self.term_line_vals_1,
-                'name': 'turlututu installment #1',
+                'name': 'turlututu',
                 'partner_id': self.partner_b.id,
                 'account_id': self.partner_b.property_account_payable_id.id,
                 'amount_currency': 338.4,
@@ -277,7 +274,7 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
             },
             {
                 **self.term_line_vals_1,
-                'name': 'turlututu installment #2',
+                'name': 'turlututu',
                 'partner_id': self.partner_b.id,
                 'account_id': self.partner_b.property_account_payable_id.id,
                 'amount_currency': 789.6,
@@ -326,7 +323,7 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
             },
             {
                 **self.term_line_vals_1,
-                'name': 'turlututu installment #1',
+                'name': 'turlututu',
                 'account_id': self.partner_b.property_account_payable_id.id,
                 'partner_id': self.partner_b.id,
                 'amount_currency': 331.2,
@@ -334,7 +331,7 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
             },
             {
                 **self.term_line_vals_1,
-                'name': 'turlututu installment #2',
+                'name': 'turlututu',
                 'account_id': self.partner_b.property_account_payable_id.id,
                 'partner_id': self.partner_b.id,
                 'amount_currency': 772.8,
@@ -606,43 +603,43 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
 
     def test_in_refund_line_onchange_currency_1(self):
         move_form = Form(self.invoice)
-        move_form.currency_id = self.other_currency
+        move_form.currency_id = self.currency_data['currency']
         move_form.save()
 
         self.assertInvoiceValues(self.invoice, [
             {
                 **self.product_line_vals_1,
-                'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'amount_currency': -800.0,
                 'credit': 400.0,
             },
             {
                 **self.product_line_vals_2,
-                'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'amount_currency': -160.0,
                 'credit': 80.0,
             },
             {
                 **self.tax_line_vals_1,
-                'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'amount_currency': -144.0,
                 'credit': 72.0,
             },
             {
                 **self.tax_line_vals_2,
-                'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'amount_currency': -24.0,
                 'credit': 12.0,
             },
             {
                 **self.term_line_vals_1,
-                'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'amount_currency': 1128.0,
                 'debit': 564.0,
             },
         ], {
             **self.move_vals,
-            'currency_id': self.other_currency.id,
+            'currency_id': self.currency_data['currency'].id,
         })
 
         # Change the date to get another rate: 1/3 instead of 1/2.
@@ -653,38 +650,38 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
         self.assertInvoiceValues(self.invoice, [
             {
                 **self.product_line_vals_1,
-                'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'amount_currency': -800.0,
                 'credit': 266.67,
             },
             {
                 **self.product_line_vals_2,
-                'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'amount_currency': -160.0,
                 'credit': 53.33,
             },
             {
                 **self.tax_line_vals_1,
-                'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'amount_currency': -144.0,
                 'credit': 48.0,
             },
             {
                 **self.tax_line_vals_2,
-                'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'amount_currency': -24.0,
                 'credit': 8.0,
             },
             {
                 **self.term_line_vals_1,
-                'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'amount_currency': 1128.0,
                 'debit': 376.0,
                 'date_maturity': fields.Date.from_string('2016-01-01'),
             },
         ], {
             **self.move_vals,
-            'currency_id': self.other_currency.id,
+            'currency_id': self.currency_data['currency'].id,
             'date': fields.Date.from_string('2016-01-01'),
             'invoice_date': fields.Date.from_string('2016-01-01'),
         })
@@ -704,38 +701,38 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
                 'price_unit': 0.05,
                 'price_subtotal': 0.005,
                 'price_total': 0.006,
-                'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'amount_currency': -0.005,
                 'credit': 0.0,
             },
             {
                 **self.product_line_vals_2,
-                'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'amount_currency': -160.0,
                 'credit': 53.33,
             },
             {
                 **self.tax_line_vals_1,
-                'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'amount_currency': -24.001,
                 'credit': 8.0,
             },
             {
                 **self.tax_line_vals_2,
-                'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'amount_currency': -24.0,
                 'credit': 8.0,
             },
             {
                 **self.term_line_vals_1,
-                'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'amount_currency': 208.006,
                 'debit': 69.33,
                 'date_maturity': fields.Date.from_string('2016-01-01'),
             },
         ], {
             **self.move_vals,
-            'currency_id': self.other_currency.id,
+            'currency_id': self.currency_data['currency'].id,
             'date': fields.Date.from_string('2016-01-01'),
             'invoice_date': fields.Date.from_string('2016-01-01'),
             'amount_untaxed': 160.005,
@@ -789,13 +786,13 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
             # https://github.com/odoo/odoo/blob/385884afd31f25d61e99d139ecd4c574d99a1863/addons/purchase/views/account_move_views.xml#L26
             self.env.user.groups_id -= self.env.ref('purchase.group_purchase_manager')
             self.env.user.groups_id -= self.env.ref('purchase.group_purchase_user')
-        # invisible="state != 'draft' or move_type != 'in_invoice'"
+        # 'invisible': ['|', ('state', '!=', 'draft'), ('move_type', '!=', 'in_invoice')]
         # This is an in_refund invoice, `invoice_vendor_bill_id` is not supposed to be visible
         # and therefore not supposed to be changed.
         view = self.env.ref('account.view_move_form')
         tree = etree.fromstring(view.arch)
         for node in tree.xpath('//field[@name="invoice_vendor_bill_id"]'):
-            del node.attrib['invisible']
+            del node.attrib['attrs']
         view.arch = etree.tostring(tree)
 
         move_form = Form(self.invoice)
@@ -818,7 +815,7 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
             'move_type': 'in_refund',
             'partner_id': self.partner_a.id,
             'invoice_date': fields.Date.from_string('2019-01-01'),
-            'currency_id': self.other_currency.id,
+            'currency_id': self.currency_data['currency'].id,
             'invoice_payment_term_id': self.pay_terms_a.id,
             'invoice_line_ids': [
                 Command.create({
@@ -839,37 +836,37 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
         self.assertInvoiceValues(move, [
             {
                 **self.product_line_vals_1,
-                'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'amount_currency': -800.0,
                 'credit': 400.0,
             },
             {
                 **self.product_line_vals_2,
-                'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'amount_currency': -160.0,
                 'credit': 80.0,
             },
             {
                 **self.tax_line_vals_1,
-                'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'amount_currency': -144.0,
                 'credit': 72.0,
             },
             {
                 **self.tax_line_vals_2,
-                'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'amount_currency': -24.0,
                 'credit': 12.0,
             },
             {
                 **self.term_line_vals_1,
-                'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'amount_currency': 1128.0,
                 'debit': 564.0,
             },
         ], {
             **self.move_vals,
-            'currency_id': self.other_currency.id,
+            'currency_id': self.currency_data['currency'].id,
         })
 
     def test_in_refund_write_1(self):
@@ -878,7 +875,7 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
             'move_type': 'in_refund',
             'partner_id': self.partner_a.id,
             'invoice_date': fields.Date.from_string('2019-01-01'),
-            'currency_id': self.other_currency.id,
+            'currency_id': self.currency_data['currency'].id,
             'invoice_payment_term_id': self.pay_terms_a.id,
             'invoice_line_ids': [
                 Command.create({
@@ -903,37 +900,37 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
         self.assertInvoiceValues(move, [
             {
                 **self.product_line_vals_1,
-                'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'amount_currency': -800.0,
                 'credit': 400.0,
             },
             {
                 **self.product_line_vals_2,
-                'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'amount_currency': -160.0,
                 'credit': 80.0,
             },
             {
                 **self.tax_line_vals_1,
-                'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'amount_currency': -144.0,
                 'credit': 72.0,
             },
             {
                 **self.tax_line_vals_2,
-                'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'amount_currency': -24.0,
                 'credit': 12.0,
             },
             {
                 **self.term_line_vals_1,
-                'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'amount_currency': 1128.0,
                 'debit': 564.0,
             },
         ], {
             **self.move_vals,
-            'currency_id': self.other_currency.id,
+            'currency_id': self.currency_data['currency'].id,
         })
 
     def test_in_refund_create_storno(self):
@@ -945,7 +942,7 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
             'move_type': 'in_refund',
             'partner_id': self.partner_a.id,
             'invoice_date': fields.Date.from_string('2019-01-01'),
-            'currency_id': self.other_currency.id,
+            'currency_id': self.currency_data['currency'].id,
             'invoice_payment_term_id': self.pay_terms_a.id,
             'invoice_line_ids': [
                 Command.create({
@@ -966,7 +963,7 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
         self.assertInvoiceValues(move, [
             {
                 **self.product_line_vals_1,
-                'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'amount_currency': -800.0,
                 'balance': -400.0,
                 'debit': -400.0,
@@ -974,7 +971,7 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
             },
             {
                 **self.product_line_vals_2,
-                'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'amount_currency': -160.0,
                 'balance': -80.0,
                 'debit': -80.0,
@@ -982,7 +979,7 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
             },
             {
                 **self.tax_line_vals_1,
-                'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'amount_currency': -144.0,
                 'balance': -72.0,
                 'debit': -72.0,
@@ -990,7 +987,7 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
             },
             {
                 **self.tax_line_vals_2,
-                'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'amount_currency': -24.0,
                 'balance': -12.0,
                 'debit': -12.0,
@@ -998,7 +995,7 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
             },
             {
                 **self.term_line_vals_1,
-                'currency_id': self.other_currency.id,
+                'currency_id': self.currency_data['currency'].id,
                 'amount_currency': 1128.0,
                 'balance': 564.0,
                 'debit': 0.0,
@@ -1006,7 +1003,7 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
             },
         ], {
              **self.move_vals,
-             'currency_id': self.other_currency.id,
+             'currency_id': self.currency_data['currency'].id,
         })
 
     def test_in_refund_reverse_caba(self):
@@ -1015,16 +1012,19 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
             'code': 'TWAIT',
             'account_type': 'liability_current',
             'reconcile': True,
+            'company_id': self.company_data['company'].id,
         })
         tax_final_account = self.env['account.account'].create({
             'name': 'TAX_TO_DEDUCT',
             'code': 'TDEDUCT',
             'account_type': 'asset_current',
+            'company_id': self.company_data['company'].id,
         })
         tax_base_amount_account = self.env['account.account'].create({
             'name': 'TAX_BASE',
             'code': 'TBASE',
             'account_type': 'asset_current',
+            'company_id': self.company_data['company'].id,
         })
         self.env.company.account_cash_basis_base_account_id = tax_base_amount_account
         self.env.company.tax_exigibility = True
@@ -1138,17 +1138,20 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
             'code': 'TWAIT',
             'account_type': 'liability_current',
             'reconcile': True,
+            'company_id': self.company_data['company'].id,
         })
         tax_final_account = self.env['account.account'].create({
             'name': 'TAX_TO_DEDUCT',
             'code': 'TDEDUCT',
             'account_type': 'asset_current',
+            'company_id': self.company_data['company'].id,
         })
         default_expense_account = self.company_data['default_account_expense']
         not_default_expense_account = self.env['account.account'].create({
             'name': 'NOT_DEFAULT_EXPENSE',
             'code': 'NDE',
             'account_type': 'expense',
+            'company_id': self.company_data['company'].id,
         })
         self.env.company.tax_exigibility = True
         tax_tags = defaultdict(dict)

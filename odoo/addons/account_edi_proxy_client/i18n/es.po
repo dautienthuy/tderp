@@ -3,32 +3,23 @@
 # 	* account_edi_proxy_client
 # 
 # Translators:
+# Martin Trigaux, 2023
+# Larissa Manderfeld, 2023
 # Wil Odoo, 2024
-# Larissa Manderfeld, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-19 20:36+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Larissa Manderfeld, 2025\n"
+"POT-Creation-Date: 2023-04-14 05:51+0000\n"
+"PO-Revision-Date: 2022-09-22 05:44+0000\n"
+"Last-Translator: Wil Odoo, 2024\n"
 "Language-Team: Spanish (https://app.transifex.com/odoo/teams/41243/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: es\n"
 "Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
-
-#. module: account_edi_proxy_client
-#. odoo-python
-#: code:addons/account_edi_proxy_client/models/account_edi_proxy_user.py:0
-msgid ""
-"A user already exists with theses credentials on our server. Please check "
-"your information."
-msgstr ""
-"Ya existe un usuario con estas credenciales en nuestro servidor. Compruebe "
-"sus datos."
 
 #. module: account_edi_proxy_client
 #: model:ir.model,name:account_edi_proxy_client.model_account_edi_proxy_client_user
@@ -51,6 +42,11 @@ msgid "Active"
 msgstr "Activo"
 
 #. module: account_edi_proxy_client
+#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__edi_format_code
+msgid "Code"
+msgstr "Código"
+
+#. module: account_edi_proxy_client
 #: model:ir.model,name:account_edi_proxy_client.model_res_company
 msgid "Companies"
 msgstr "Compañías"
@@ -71,16 +67,6 @@ msgid "Created on"
 msgstr "Creado el"
 
 #. module: account_edi_proxy_client
-#: model:ir.model,name:account_edi_proxy_client.model_certificate_key
-msgid "Cryptographic Keys"
-msgstr "Claves criptográficas"
-
-#. module: account_edi_proxy_client
-#: model:ir.model.fields.selection,name:account_edi_proxy_client.selection__account_edi_proxy_client_user__edi_mode__demo
-msgid "Demo mode"
-msgstr "Modo de demostración"
-
-#. module: account_edi_proxy_client
 #: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__display_name
 msgid "Display Name"
 msgstr "Nombre mostrado"
@@ -96,9 +82,14 @@ msgid "EDI Proxy Users"
 msgstr "Usuarios del proxy de EDI"
 
 #. module: account_edi_proxy_client
-#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__edi_mode
-msgid "EDI operating mode"
-msgstr "Modo operacional EDI "
+#: model:ir.model,name:account_edi_proxy_client.model_account_edi_format
+msgid "EDI format"
+msgstr "Formato EDI"
+
+#. module: account_edi_proxy_client
+#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__edi_format_id
+msgid "Edi Format"
+msgstr "Formato EDI"
 
 #. module: account_edi_proxy_client
 #: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__edi_identification
@@ -116,16 +107,9 @@ msgid "Id Client"
 msgstr "ID del cliente"
 
 #. module: account_edi_proxy_client
-#. odoo-python
-#: code:addons/account_edi_proxy_client/models/account_edi_proxy_user.py:0
-msgid ""
-"Invalid signature for request. This might be due to another connection to odoo Access Point server. It can occur if you have duplicated your database. \n"
-"\n"
-"If you are not sure how to fix this, please contact our support."
-msgstr ""
-"La firma de la solicitud no es válida. Esto puede ocurrir si hay otra conexión al servidor del punto de acceso de Odoo, por ejemplo, si ha duplicado su base de datos.\n"
-"\n"
-"Si no está seguro de cómo solucionarlo, póngase en contacto con nuestro servicio de asistencia."
+#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user____last_update
+msgid "Last Modified on"
+msgstr "Última modificación el"
 
 #. module: account_edi_proxy_client
 #: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__write_uid
@@ -138,19 +122,14 @@ msgid "Last Updated on"
 msgstr "Última actualización el"
 
 #. module: account_edi_proxy_client
-#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__private_key_id
+#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__private_key
 msgid "Private Key"
 msgstr "Clave privada"
 
 #. module: account_edi_proxy_client
-#: model:ir.model.fields.selection,name:account_edi_proxy_client.selection__account_edi_proxy_client_user__edi_mode__prod
-msgid "Production mode"
-msgstr "Modo de producción "
-
-#. module: account_edi_proxy_client
-#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__proxy_type
-msgid "Proxy Type"
-msgstr "Tipo de proxy"
+#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__private_key_filename
+msgid "Private Key Filename"
+msgstr "Nombre de archivo de la clave privada "
 
 #. module: account_edi_proxy_client
 #: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__refresh_token
@@ -158,33 +137,23 @@ msgid "Refresh Token"
 msgstr "Token de actualización"
 
 #. module: account_edi_proxy_client
-#: model:ir.model.fields.selection,name:account_edi_proxy_client.selection__account_edi_proxy_client_user__edi_mode__test
-msgid "Test mode"
-msgstr "Modo de prueba"
-
-#. module: account_edi_proxy_client
-#: model:ir.model.fields,help:account_edi_proxy_client.field_account_edi_proxy_client_user__private_key_id
+#: model:ir.model.fields,help:account_edi_proxy_client.field_account_edi_proxy_client_user__private_key
 msgid "The key to encrypt all the user's data"
 msgstr "La clave para encriptar todos los datos del usuario"
 
 #. module: account_edi_proxy_client
 #: model:ir.model.fields,help:account_edi_proxy_client.field_account_edi_proxy_client_user__edi_identification
-msgid "The unique id that identifies this user, typically the vat"
-msgstr "La ID con la que se identifica a este usuario, por lo general el NIF"
-
-#. module: account_edi_proxy_client
-#. odoo-python
-#: code:addons/account_edi_proxy_client/models/account_edi_proxy_user.py:0
 msgid ""
-"The url that this service requested returned an error. The url it tried to "
-"contact was %(url)s. %(error_message)s"
+"The unique id that identifies this user for on the edi format, typically the"
+" vat"
 msgstr ""
-"La URL que solicitó este servicio generó un error. La URL que intentó "
-"contactar fue %(url)s. %(error_message)s"
+"lA id única que identifica este usuario en el formato EDI, típicamente el "
+"vat"
 
 #. module: account_edi_proxy_client
 #. odoo-python
 #: code:addons/account_edi_proxy_client/models/account_edi_proxy_user.py:0
+#, python-format
 msgid ""
 "The url that this service requested returned an error. The url it tried to "
 "contact was %s"
@@ -195,21 +164,27 @@ msgstr ""
 #. module: account_edi_proxy_client
 #. odoo-python
 #: code:addons/account_edi_proxy_client/models/account_edi_proxy_user.py:0
+#, python-format
 msgid ""
-"The url that this service tried to contact does not exist. The url was “%s”"
+"The url that this service requested returned an error. The url it tried to "
+"contact was %s. %s"
 msgstr ""
-"La URL que se intentó contactar con este servicio no existe. La URL era "
-"\"%s\""
+"La url que solicitó este servicio generó un error. La url que intentó "
+"contactar fue %s. %s"
 
 #. module: account_edi_proxy_client
-#: model:ir.model.constraint,message:account_edi_proxy_client.constraint_account_edi_proxy_client_user_unique_active_company_proxy
-msgid "This company has an active user already created for this EDI type"
-msgstr "Esta empresa ya tiene un usuario activo creado para este tipo de EDI"
+#. odoo-python
+#: code:addons/account_edi_proxy_client/models/account_edi_proxy_user.py:0
+#, python-format
+msgid ""
+"The url that this service tried to contact does not exist. The url was %r"
+msgstr ""
+"La URL que se intentó contactar con este servicio no existe. La URL era %r"
 
 #. module: account_edi_proxy_client
-#: model:ir.model.constraint,message:account_edi_proxy_client.constraint_account_edi_proxy_client_user_unique_active_edi_identification
-msgid "This edi identification is already assigned to an active user"
-msgstr "Esta identificación EDI ya está asignada a un usuario activo"
+#: model:ir.model.constraint,message:account_edi_proxy_client.constraint_account_edi_proxy_client_user_unique_edi_identification_per_format
+msgid "This edi identification is already assigned to a user"
+msgstr "Esta identificación edi ya está asignada a un usuario"
 
 #. module: account_edi_proxy_client
 #: model:ir.model.constraint,message:account_edi_proxy_client.constraint_account_edi_proxy_client_user_unique_id_client

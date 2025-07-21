@@ -3,25 +3,24 @@
 # 	* barcodes_gs1_nomenclature
 # 
 # Translators:
-# Martin Trigaux, 2024
-# RGB Consulting <odoo@rgbconsulting.com>, 2024
-# Quim - coopdevs <quim.rebull@coopdevs.org>, 2024
-# Eugeni Chafer <eugeni@chafer.cat>, 2024
-# Sandra Franch <sandra.franch@upc.edu>, 2024
-# Ivan Espinola, 2024
-# Marc Tormo i Bochaca <mtbochaca@gmail.com>, 2024
-# Arnau Ros, 2024
-# marcescu, 2024
-# Josep Anton Belchi, 2024
-# Noemi Pla, 2025
+# Eugeni Chafer <eugeni@chafer.cat>, 2022
+# jabelchi, 2022
+# Marc Tormo i Bochaca <mtbochaca@gmail.com>, 2022
+# Quim - eccit <quim@eccit.com>, 2022
+# Sandra Franch <sandra.franch@upc.edu>, 2022
+# marcescu, 2022
+# RGB Consulting <odoo@rgbconsulting.com>, 2022
+# Martin Trigaux, 2022
+# Arnau Ros, 2022
+# Ivan Espinola, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 08:40+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Noemi Pla, 2025\n"
+"POT-Creation-Date: 2022-12-15 12:50+0000\n"
+"PO-Revision-Date: 2022-09-22 05:45+0000\n"
+"Last-Translator: Ivan Espinola, 2023\n"
 "Language-Team: Catalan (https://app.transifex.com/odoo/teams/41243/ca/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -119,12 +118,14 @@ msgstr ""
 #. module: barcodes_gs1_nomenclature
 #. odoo-javascript
 #: code:addons/barcodes_gs1_nomenclature/static/src/js/barcode_parser.js:0
+#, python-format
 msgid "Invalid barcode: can't be formated as date"
 msgstr "Codi de barres no vàlid: no es pot formatar com a data"
 
 #. module: barcodes_gs1_nomenclature
 #. odoo-javascript
 #: code:addons/barcodes_gs1_nomenclature/static/src/js/barcode_parser.js:0
+#, python-format
 msgid "Invalid barcode: the check digit is incorrect"
 msgstr "Codi de barres no vàlid: el dígit de comprovació és incorrecte"
 
@@ -177,8 +178,9 @@ msgstr "Quantitat"
 #. module: barcodes_gs1_nomenclature
 #. odoo-python
 #: code:addons/barcodes_gs1_nomenclature/models/barcode_nomenclature.py:0
-msgid "The FNC1 Separator Alternative is not a valid Regex: %(error)s"
-msgstr "El separador alternatiu FNC1 no és un Regex vàlid: %(error)s"
+#, python-format
+msgid "The FNC1 Separator Alternative is not a valid Regex: "
+msgstr "El separador alternatiu FNC1 no és un Regex vàlid:"
 
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields,help:barcodes_gs1_nomenclature.field_barcode_rule__gs1_content_type
@@ -199,6 +201,14 @@ msgstr ""
 #. module: barcodes_gs1_nomenclature
 #. odoo-python
 #: code:addons/barcodes_gs1_nomenclature/models/barcode_rule.py:0
+#, python-format
+msgid "The rule pattern \"%s\" is not a valid Regex: "
+msgstr "El patró de la regla\"%s\" no és un Regex vàlid:"
+
+#. module: barcodes_gs1_nomenclature
+#. odoo-python
+#: code:addons/barcodes_gs1_nomenclature/models/barcode_rule.py:0
+#, python-format
 msgid ""
 "The rule pattern \"%s\" is not valid, it needs two groups:\n"
 "\t- A first one for the Application Identifier (usually 2 to 4 digits);\n"
@@ -210,13 +220,8 @@ msgstr ""
 
 #. module: barcodes_gs1_nomenclature
 #. odoo-python
-#: code:addons/barcodes_gs1_nomenclature/models/barcode_rule.py:0
-msgid "The rule pattern '%(rule)s' is not a valid Regex: %(error)s"
-msgstr "El patró de la regla '%(rule)s' no és un Regex vàlid: %(error)s"
-
-#. module: barcodes_gs1_nomenclature
-#. odoo-python
 #: code:addons/barcodes_gs1_nomenclature/models/barcode_nomenclature.py:0
+#, python-format
 msgid ""
 "There is something wrong with the barcode rule \"%s\" pattern.\n"
 "If this rule uses decimal, check it can't get sometime else than a digit as last char for the Application Identifier.\n"
@@ -239,6 +244,7 @@ msgstr ""
 #. module: barcodes_gs1_nomenclature
 #. odoo-javascript
 #: code:addons/barcodes_gs1_nomenclature/static/src/js/barcode_parser.js:0
+#, python-format
 msgid "This barcode can't be parsed by any barcode rules."
 msgstr ""
 "Aquest codi de barres no es pot analitzar per cap regla de codi de barres."
@@ -246,6 +252,7 @@ msgstr ""
 #. module: barcodes_gs1_nomenclature
 #. odoo-javascript
 #: code:addons/barcodes_gs1_nomenclature/static/src/js/barcode_parser.js:0
+#, python-format
 msgid "This barcode can't be partially or fully parsed."
 msgstr "Aquest codi de barres no es pot analitzar parcialment o completament."
 

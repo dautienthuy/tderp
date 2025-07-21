@@ -1,15 +1,13 @@
-/** @odoo-module **/
+/** @odoo-module */
 
-import { _t } from "@web/core/l10n/translation";
-import { rpc } from "@web/core/network/rpc";
-import weUtils from '@web_editor/js/common/utils';
+import { useService } from '@web/core/utils/hooks';
+import { getCSSVariableValue, DEFAULT_PALETTE } from 'web_editor.utils';
 import { Attachment, FileSelector, IMAGE_MIMETYPES, IMAGE_EXTENSIONS } from './file_selector';
 import { KeepLast } from "@web/core/utils/concurrency";
 
 import { useRef, useState, useEffect } from "@odoo/owl";
 
 export class AutoResizeImage extends Attachment {
-    static template = "web_editor.AutoResizeImage";
     setup() {
         super.setup();
 
@@ -46,30 +44,13 @@ export class AutoResizeImage extends Attachment {
         this.state.loaded = true;
     }
 }
-const newLocal = "img-fluid";
-export class ImageSelector extends FileSelector {
-    static mediaSpecificClasses = ["img", newLocal, "o_we_custom_image"];
-    static mediaSpecificStyles = [];
-    static mediaExtraClasses = [
-        "rounded-circle",
-        "rounded",
-        "img-thumbnail",
-        "shadow",
-        "w-25",
-        "w-50",
-        "w-75",
-        "w-100",
-    ];
-    static tagNames = ["IMG"];
-    static attachmentsListTemplate = "web_editor.ImagesListTemplate";
-    static components = {
-        ...FileSelector.components,
-        AutoResizeImage,
-    };
+AutoResizeImage.template = 'web_editor.AutoResizeImage';
 
+export class ImageSelector extends FileSelector {
     setup() {
         super.setup();
 
+        this.rpc = useService('rpc');
         this.keepLastLibraryMedia = new KeepLast();
 
         this.state.libraryMedia = [];
@@ -79,17 +60,16 @@ export class ImageSelector extends FileSelector {
         this.state.showOptimized = false;
         this.NUMBER_OF_MEDIA_TO_DISPLAY = 10;
 
-        this.uploadText = _t("Upload an image");
+        this.uploadText = this.env._t("Upload an image");
         this.urlPlaceholder = "https://www.odoo.com/logo.png";
-        this.addText = _t("Add URL");
-        this.searchPlaceholder = _t("Search an image");
-        this.urlWarningTitle = _t("Uploaded image's format is not supported. Try with: " + IMAGE_EXTENSIONS.join(', '));
-        this.allLoadedText = _t("All images have been loaded");
+        this.addText = this.env._t("Add URL");
+        this.searchPlaceholder = this.env._t("Search an image");
+        this.urlWarningTitle = this.env._t("Uploaded image's format is not supported. Try with: " + IMAGE_EXTENSIONS.join(', '));
+        this.allLoadedText = this.env._t("All images have been loaded");
         this.showOptimizedOption = this.env.debug;
         this.MIN_ROW_HEIGHT = 128;
 
         this.fileMimetypes = IMAGE_MIMETYPES.join(',');
-        this.isImageField = !!(this.props.media && this.props.media.closest("[data-oe-type=image]")) || !!this.env.addFieldImage;
     }
 
     get canLoadMore() {
@@ -117,17 +97,11 @@ export class ImageSelector extends FileSelector {
         return this.props.selectedMedia[this.props.id].filter(media => media.mediaType === 'libraryMedia').map(({ id }) => id);
     }
 
-    get allAttachments() {
-        return [...super.allAttachments, ...this.state.libraryMedia];
-    }
-
     get attachmentsDomain() {
         const domain = super.attachmentsDomain;
         domain.push(['mimetype', 'in', IMAGE_MIMETYPES]);
         if (!this.props.useMediaLibrary) {
-            domain.push("|", ["url", "=", false],
-                "!", "|", ["url", "=ilike", "/html_editor/shape/%"], ["url", "=ilike", "/web_editor/shape/%"],
-            );
+            domain.push('|', ['url', '=', false], '!', ['url', '=ilike', '/web_editor/shape/%']);
         }
         domain.push('!', ['name', '=like', '%.crop']);
         domain.push('|', ['type', '=', 'binary'], '!', ['url', '=like', '/%/static/%']);
@@ -163,59 +137,10 @@ export class ImageSelector extends FileSelector {
         await this.uploadService.uploadFiles(files, { resModel: this.props.resModel, resId: this.props.resId, isImage: true }, (attachment) => this.onUploaded(attachment));
     }
 
-    async uploadUrl(url) {
-        await fetch(url).then(async result => {
-            const blob = await result.blob();
-            blob.id = new Date().getTime();
-            blob.name = new URL(url, window.location.href).pathname.split("/").findLast(s => s);
-            await this.uploadFiles([blob]);
-        }).catch(async () => {
-            await new Promise(resolve => {
-                // If it works from an image, use URL.
-                const imageEl = document.createElement("img");
-                imageEl.onerror = () => {
-                    // This message is about the blob fetch failure.
-                    // It is only displayed if the fallback did not work.
-                    this.notificationService.add(_t("An error occurred while fetching the entered URL."), {
-                        title: _t("Error"),
-                        sticky: true,
-                    });
-                    resolve();
-                };
-                imageEl.onload = () => {
-                    const urlPathname = new URL(url, window.location.href).pathname;
-                    const imageExtension = IMAGE_EXTENSIONS.find(format => urlPathname.endsWith(format));
-                    if (this.isImageField && imageExtension === ".webp") {
-                        // Do not allow the user to replace an image field by a
-                        // webp CORS protected image as we are not currently
-                        // able to manage the report creation if such images are
-                        // in there (as the equivalent jpeg can not be
-                        // generated). It also causes a problem for resize
-                        // operations as 'libwep' can not be used.
-                        this.notificationService.add(_t(
-                            "You can not replace a field by this image. If you want to use this image, first save it on your computer and then upload it here."
-                        ), {
-                            title: _t("Error"),
-                            sticky: true,
-                        });
-                        return resolve();
-                    }
-                    super.uploadUrl(url).then(resolve);
-                };
-                imageEl.src = url;
-            });
-        });
-    }
-
-    async validateUrl(...args) {
+    validateUrl(...args) {
         const { isValidUrl, path } = super.validateUrl(...args);
-        const isValidFileFormat = isValidUrl && await new Promise(resolve => {
-            const img = new Image();
-            img.src = path;
-            img.onload = () => resolve(true);
-            img.onerror = () => resolve(false);
-        });
-        return { isValidUrl, isValidFileFormat };
+        const isValidFileFormat = IMAGE_EXTENSIONS.some(format => path.endsWith(format));
+        return { isValidFileFormat, isValidUrl };
     }
 
     isInitialMedia(attachment) {
@@ -227,29 +152,16 @@ export class ImageSelector extends FileSelector {
 
     async fetchAttachments(limit, offset) {
         const attachments = await super.fetchAttachments(limit, offset);
-        if (this.isImageField) {
-            // The image is a field; mark the attachments if they are linked to
-            // a webp CORS protected image. Indeed, in this case, they should
-            // not be selectable on the media dialog (due to a problem of image
-            // resize and report creation).
-            for (const attachment of attachments) {
-                if (attachment.mimetype === "image/webp" && await weUtils.isSrcCorsProtected(attachment.image_src)) {
-                    attachment.unselectable = true;
-                }
-            }
-        }
         // Color-substitution for dynamic SVG attachment
         const primaryColors = {};
         for (let color = 1; color <= 5; color++) {
-            primaryColors[color] = weUtils.getCSSVariableValue('o-color-' + color);
+            primaryColors[color] = getCSSVariableValue('o-color-' + color);
         }
         return attachments.map(attachment => {
             if (attachment.image_src.startsWith('/')) {
                 const newURL = new URL(attachment.image_src, window.location.origin);
                 // Set the main colors of dynamic SVGs to o-color-1~5
-                if (attachment.image_src.startsWith('/html_editor/shape/') ||
-                    attachment.image_src.startsWith('/web_editor/shape/')
-                ) {
+                if (attachment.image_src.startsWith('/web_editor/shape/')) {
                     newURL.searchParams.forEach((value, key) => {
                         const match = key.match(/^c([1-5])$/);
                         if (match) {
@@ -276,7 +188,7 @@ export class ImageSelector extends FileSelector {
 
         this.state.isFetchingLibrary = true;
         try {
-            const response = await rpc(
+            const response = await this.rpc(
                 '/web_editor/media_library_search',
                 {
                     'query': this.state.needle,
@@ -330,15 +242,6 @@ export class ImageSelector extends FileSelector {
     }
 
     async onClickAttachment(attachment) {
-        if (attachment.unselectable) {
-            this.notificationService.add(_t(
-                "You can not replace a field by this image. If you want to use this image, first save it on your computer and then upload it here."
-            ), {
-                title: _t("Error"),
-                sticky: true,
-            });
-            return;
-        }
         this.selectAttachment(attachment);
         if (!this.props.multiSelect) {
             await this.props.save();
@@ -355,7 +258,7 @@ export class ImageSelector extends FileSelector {
     /**
      * Utility method used by the MediaDialog component.
      */
-    static async createElements(selectedMedia, { orm }) {
+    static async createElements(selectedMedia, { orm, rpc }) {
         // Create all media-library attachments.
         const toSave = Object.fromEntries(selectedMedia.filter(media => media.mediaType === 'libraryMedia').map(media => [
             media.id, {
@@ -370,15 +273,12 @@ export class ImageSelector extends FileSelector {
         }
         const selected = selectedMedia.filter(media => media.mediaType === 'attachment').concat(savedMedia).map(attachment => {
             // Color-customize dynamic SVGs with the theme colors
-            if (attachment.image_src && (
-                attachment.image_src.startsWith('/html_editor/shape/') ||
-                attachment.image_src.startsWith('/web_editor/shape/')
-            )) {
+            if (attachment.image_src && attachment.image_src.startsWith('/web_editor/shape/')) {
                 const colorCustomizedURL = new URL(attachment.image_src, window.location.origin);
                 colorCustomizedURL.searchParams.forEach((value, key) => {
                     const match = key.match(/^c([1-5])$/);
                     if (match) {
-                        colorCustomizedURL.searchParams.set(key, weUtils.getCSSVariableValue(`o-color-${match[1]}`));
+                        colorCustomizedURL.searchParams.set(key, getCSSVariableValue(`o-color-${match[1]}`));
                     }
                 });
                 attachment.image_src = colorCustomizedURL.pathname + colorCustomizedURL.search;
@@ -406,7 +306,7 @@ export class ImageSelector extends FileSelector {
     }
 
     async onImageLoaded(imgEl, attachment) {
-        this.debouncedScrollUpdate();
+        this.debouncedScroll();
         if (attachment.mediaType === 'libraryMedia' && !imgEl.src.startsWith('blob')) {
             // This call applies the theme's color palette to the
             // loaded illustration. Upon replacement of the image,
@@ -429,15 +329,14 @@ export class ImageSelector extends FileSelector {
         const mediaUrl = imgEl.src;
         try {
             const response = await fetch(mediaUrl);
-            const contentType = response.headers.get("content-type");
-            if (contentType && contentType.startsWith("image/svg+xml")) {
+            if (response.headers.get('content-type') === 'image/svg+xml') {
                 let svg = await response.text();
                 const dynamicColors = {};
-                const combinedColorsRegex = new RegExp(Object.values(weUtils.DEFAULT_PALETTE).join('|'), 'gi');
+                const combinedColorsRegex = new RegExp(Object.values(DEFAULT_PALETTE).join('|'), 'gi');
                 svg = svg.replace(combinedColorsRegex, match => {
-                    const colorId = Object.keys(weUtils.DEFAULT_PALETTE).find(key => weUtils.DEFAULT_PALETTE[key] === match.toUpperCase());
+                    const colorId = Object.keys(DEFAULT_PALETTE).find(key => DEFAULT_PALETTE[key] === match.toUpperCase());
                     const colorKey = 'c' + colorId
-                    dynamicColors[colorKey] = weUtils.getCSSVariableValue('o-color-' + colorId);
+                    dynamicColors[colorKey] = getCSSVariableValue('o-color-' + colorId);
                     return dynamicColors[colorKey];
                 });
                 const fileName = mediaUrl.split('/').pop();
@@ -450,8 +349,21 @@ export class ImageSelector extends FileSelector {
                     media.dynamicColors = dynamicColors;
                 }
             }
-        } catch {
+        } catch (_e) {
             console.error('CORS is misconfigured on the API server, image will be treated as non-dynamic.');
         }
     }
 }
+
+ImageSelector.mediaSpecificClasses = ['img', 'img-fluid', 'o_we_custom_image'];
+ImageSelector.mediaSpecificStyles = [];
+ImageSelector.mediaExtraClasses = [
+    'rounded-circle', 'rounded', 'img-thumbnail', 'shadow',
+    'w-25', 'w-50', 'w-75', 'w-100',
+];
+ImageSelector.tagNames = ['IMG'];
+ImageSelector.attachmentsListTemplate = 'web_editor.ImagesListTemplate';
+ImageSelector.components = {
+    ...FileSelector.components,
+    AutoResizeImage,
+};

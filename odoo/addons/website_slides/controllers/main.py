@@ -2,7 +2,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from ast import literal_eval
-from dateutil.relativedelta import relativedelta
 
 import base64
 import json
@@ -10,21 +9,17 @@ import logging
 import math
 import werkzeug
 
-from odoo import fields, http, tools, _
+from odoo import http, tools, _
+from odoo.addons.http_routing.models.ir_http import slug, unslug
 from odoo.addons.website.controllers.main import QueryURL
 from odoo.addons.website.models.ir_http import sitemap_qs2dom
 from odoo.addons.website_profile.controllers.main import WebsiteProfile
 from odoo.exceptions import AccessError, ValidationError, UserError, MissingError
 from odoo.http import request, Response
 from odoo.osv import expression
-from odoo.tools import consteq, email_split
+from odoo.tools import email_split
 
 _logger = logging.getLogger(__name__)
-
-
-def handle_wslide_error(exception):
-    if isinstance(exception, AccessError):
-        return request.redirect("/slides?invite_error=no_rights", 302)
 
 
 class WebsiteSlides(WebsiteProfile):
@@ -42,7 +37,7 @@ class WebsiteSlides(WebsiteProfile):
         dom = sitemap_qs2dom(qs=qs, route='/slides/', field=Channel._rec_name)
         dom += env['website'].get_current_website().website_domain()
         for channel in Channel.search(dom):
-            loc = '/slides/%s' % env['ir.http']._slug(channel)
+            loc = '/slides/%s' % slug(channel)
             if not qs or qs.lower() in loc:
                 yield {'loc': loc}
 
@@ -62,7 +57,10 @@ class WebsiteSlides(WebsiteProfile):
         slide = request.env['slide.slide'].browse(int(slide_id)).exists()
         if not slide:
             return {'error': 'slide_wrong'}
-        if not slide.has_access('read'):
+        try:
+            slide.check_access_rights('read')
+            slide.check_access_rule('read')
+        except AccessError:
             return {'error': 'slide_access'}
         return {'slide': slide}
 
@@ -79,11 +77,9 @@ class WebsiteSlides(WebsiteProfile):
                 # e.g. upgrade from Odoo 15.0 to 18.0.
                 request.session.viewed_slides = dict.fromkeys(request.session.get('viewed_slides', []), 1)
             viewed_slides = request.session['viewed_slides']
-            # Convert `slide.id` to string is necessary because of the JSON format of the session
-            slide_id = str(slide.id)
-            if slide_id not in viewed_slides:
+            if slide.id not in viewed_slides:
                 if tools.sql.increment_fields_skiplock(slide, 'public_views', 'total_views'):
-                    viewed_slides[slide_id] = 1
+                    viewed_slides[slide.id] = 1
                     request.session.touch()
         else:
             slide.action_set_viewed(quiz_attempts_inc=quiz_attempts_inc)
@@ -164,7 +160,7 @@ class WebsiteSlides(WebsiteProfile):
             } for question in slide.question_ids],
             'slide_resource_ids': [{
                 'display_name' : resource.display_name,
-                'download_url': resource.download_url,
+                'download_url': resource._get_download_url(),
                 'id': resource.id,
                 'link': resource.link,
                 'resource_type': resource.resource_type,
@@ -242,31 +238,12 @@ class WebsiteSlides(WebsiteProfile):
         slides_domain = [('channel_id', '=', channel.id)]
         if slide:
             slides_domain = expression.AND([slides_domain, [('id', '=', slide.id)]])
-        slides = request.env['slide.slide'].search(slides_domain)
+        slides = request.env['slide.slide'].search_read(slides_domain, ['id'])
 
         session_slide_answer_quiz = json.loads(request.session['slide_answer_quiz'])
-        for slide_id in slides.ids:
-            session_slide_answer_quiz.pop(str(slide_id), None)
+        for slide in slides:
+            session_slide_answer_quiz.pop(str(slide['id']), None)
         request.session['slide_answer_quiz'] = json.dumps(session_slide_answer_quiz)
-
-    def _prepare_collapsed_categories(self, categories_values, slide, next_category_to_open):
-        """ Collapse the category if:
-            - there is no category (the slides are uncategorized)
-            - the category contains the current slide
-            - the category is ongoing (has at least one slide completed but not all of its slides)
-            - the category is the next one to be opened because the current one has just been completed
-        """
-        if request.env.user._is_public() or not slide.channel_id.is_member:
-            return categories_values
-        for category_dict in categories_values:
-            category = category_dict.get('category')
-            if not category or slide in category.slide_ids or category == next_category_to_open:
-                category_dict['is_collapsed'] = True
-            else:
-                # collapse if category is ongoing
-                slides_completion = category.slide_ids.mapped('user_has_completed')
-                category_dict['is_collapsed'] = any(slides_completion) and not all(slides_completion)
-        return categories_values
 
     # TAG UTILITIES
     # --------------------------------------------------
@@ -284,7 +261,7 @@ class WebsiteSlides(WebsiteProfile):
             tag_ids.remove(toggle_tag_id)
         elif toggle_tag_id:
             tag_ids.append(toggle_tag_id)
-        return ','.join(request.env['ir.http']._slug(tag) for tag in request.env['slide.channel.tag'].browse(tag_ids))
+        return ','.join(slug(tag) for tag in request.env['slide.channel.tag'].browse(tag_ids))
 
     def _channel_search_tags_ids(self, search_tags):
         """ Input: %5B4%5D """
@@ -300,7 +277,7 @@ class WebsiteSlides(WebsiteProfile):
         """ Input: hotels-1,adventure-2 """
         ChannelTag = request.env['slide.channel.tag']
         try:
-            tag_ids = list(filter(None, [request.env['ir.http']._unslug(tag)[1] for tag in (search_tags or '').split(',')]))
+            tag_ids = list(filter(None, [unslug(tag)[1] for tag in (search_tags or '').split(',')]))
         except Exception:
             return ChannelTag
         # perform a search to filter on existing / valid tags implicitly
@@ -336,7 +313,7 @@ class WebsiteSlides(WebsiteProfile):
     # SLIDE.CHANNEL MAIN / SEARCH
     # --------------------------------------------------
 
-    @http.route('/slides', type='http', auth="public", website=True, sitemap=True, readonly=True)
+    @http.route('/slides', type='http', auth="public", website=True, sitemap=True)
     def slides_channel_home(self, **post):
         """ Home page for eLearning platform. Is mainly a container page, does not allow search / filter. """
         channels_all = tools.lazy(lambda: request.env['slide.channel'].search(request.website.website_domain()))
@@ -385,30 +362,18 @@ class WebsiteSlides(WebsiteProfile):
 
         return request.render('website_slides.courses_home', render_values)
 
-    def _get_slide_channel_search_options(self, my=None, slug_tags=None, slide_category=None, **post):
-        return {
-            'displayDescription': True,
-            'displayDetail': False,
-            'displayExtraDetail': False,
-            'displayExtraLink': False,
-            'displayImage': False,
-            'allowFuzzy': not post.get('noFuzzy'),
-            'my': my,
-            'tag': slug_tags or post.get('tag'),
-            'slide_category': slide_category,
-        }
-
-    @http.route(['/slides/all', '/slides/all/tag/<string:slug_tags>'], type='http', auth="public", website=True, sitemap=True, readonly=True)
+    @http.route(['/slides/all', '/slides/all/tag/<string:slug_tags>'], type='http', auth="public", website=True, sitemap=True)
     def slides_channel_all(self, slide_category=None, slug_tags=None, my=False, **post):
-        if slug_tags and slug_tags.count(',') > 0 and request.httprequest.method == 'GET' and not post.get('prevent_redirect'):
-            # Previously, the tags were searched using GET, which caused issues with crawlers (too many hits)
-            # We replaced those with POST to avoid that, but it's not sufficient as bots "remember" crawled pages for a while
-            # This permanent redirect is placed to instruct the bots that this page is no longer valid
-            # TODO: remove in a few stable versions (v19?), including the "prevent_redirect" param in templates
-            # Note: We allow a single tag to be GET, to keep crawlers & indexes on those pages
-            # What we really want to avoid is combinatorial explosions
-            return request.redirect('/slides/all', code=301)
-
+        if slug_tags and request.httprequest.method == 'GET':
+            # Redirect `tag-1,tag-2` to `tag-1` to disallow multi tags
+            # in GET request for proper bot indexation;
+            # if the search term is available, do not remove any existing
+            # tags because it is user who provided search term with GET
+            # request and so clearly it's not SEO bot.
+            tag_list = slug_tags.split(',')
+            if len(tag_list) > 1 and not post.get('search'):
+                url = QueryURL('/slides/all', ['tag'], tag=tag_list[0], my=my, slide_category=slide_category)()
+                return request.redirect(url, code=302)
         render_values = self.slides_channel_all_values(slide_category=slide_category, slug_tags=slug_tags, my=my, **post)
         return request.render('website_slides.courses_all', render_values)
 
@@ -427,12 +392,17 @@ class WebsiteSlides(WebsiteProfile):
 
            * ``search``: filter on course description / name;
         """
-        options = self._get_slide_channel_search_options(
-            my=my,
-            slug_tags=slug_tags,
-            slide_category=slide_category,
-            **post
-        )
+        options = {
+            'displayDescription': True,
+            'displayDetail': False,
+            'displayExtraDetail': False,
+            'displayExtraLink': False,
+            'displayImage': False,
+            'allowFuzzy': not post.get('noFuzzy'),
+            'my': my,
+            'tag': slug_tags or post.get('tag'),
+            'slide_category': slide_category,
+        }
         search = post.get('search')
         order = self._channel_order_by_criterion.get(post.get('sorting'))
         search_count, details, fuzzy_search_term = request.website._search_with_fuzzy("slide_channels_only", search,
@@ -485,8 +455,10 @@ class WebsiteSlides(WebsiteProfile):
         """
         status = 'authorized'
         try:
-            slide = request.env['slide.slide'].browse(slide_id)
-            slide.check_access('read')
+            slide_model = request.env['slide.slide']
+            slide_model.check_access_rights('read')
+            slide = slide_model.browse(slide_id)
+            slide.check_access_rule('read')
         except (AccessError, MissingError):
             try:
                 slide = request.env['slide.slide'].sudo().browse([slide_id])
@@ -496,74 +468,26 @@ class WebsiteSlides(WebsiteProfile):
         return {'status': status, 'slide': slide, 'channel_id': slide.sudo().channel_id.id}
 
     @http.route([
-        '/slides/<int:channel_id>',
-        '/slides/<int:channel_id>/category/<int:category_id>',
-        '/slides/<int:channel_id>/category/<int:category_id>/page/<int:page>',
         '/slides/<model("slide.channel"):channel>',
         '/slides/<model("slide.channel"):channel>/page/<int:page>',
         '/slides/<model("slide.channel"):channel>/tag/<model("slide.tag"):tag>',
         '/slides/<model("slide.channel"):channel>/tag/<model("slide.tag"):tag>/page/<int:page>',
         '/slides/<model("slide.channel"):channel>/category/<model("slide.slide"):category>',
         '/slides/<model("slide.channel"):channel>/category/<model("slide.slide"):category>/page/<int:page>',
-    ], type='http', auth="public", website=True, sitemap=sitemap_slide, handle_params_access_error=handle_wslide_error, readonly=True)
-    def channel(self, channel=False, channel_id=False, category=None, category_id=False, tag=None, page=1, slide_category=None, uncategorized=False, sorting=None, search=None, **kw):
-        """ Will return the rendered page of a course, with optional parameters allowing customization:
-
-        :param channel: slide.channel to be rendered.
-        :param channel_id: id of the rendered channel. (*)
-        :param category: slide.slide (should be a category). Filter contents to those
-            below this category (= section).
-        :param category_id: id of the desired slide.slide category. (*)
-        :param tag: slide.tag used to filter contents.
-        :param slide_category: one of the values of linked selection field.
-            Filter to this category of slides (video, article...)
-        :param uncategorized: To set to True to access all slides outside of any slide.slide category.
-        :param sorting: string defining the way to sort contents. ('most_voted', ...)
-        :param search: string of the user search in the search bar.
-        :param kw.invite_partner_id: id of the invited partner. (**)
-        :param kw.invite_hash: string hash based on course and partner. (**)
-
-        (*) Should be used for preview of invited attendees only. A 403 error could occur when using
-            channel and category, if their access to models is denied. The generic shared course link
-            uses channel_id as well, for the same reason.
-        (**) Those are used to check and give invited attendees the access to the course and
-            allow them browing its list of contents.
+    ], type='http', auth="public", website=True, sitemap=sitemap_slide)
+    def channel(self, channel, category=None, tag=None, page=1, slide_category=None, uncategorized=False, sorting=None, search=None, **kw):
         """
-        invite_partner_id = int(kw['invite_partner_id']) if kw.get('invite_partner_id') else False
-        invite_hash = kw.get('invite_hash')
-        valid_invite_values = {}
+        Will return all necessary data to display the requested slide_channel along with a possible category.
+        """
 
-        # Invitation data processing
-        if request.website.is_public_user() and invite_partner_id and invite_hash and channel_id and not channel:
-            valid_invite_values = self._get_channel_values_from_invite(channel_id, invite_hash, invite_partner_id)
-            if valid_invite_values.get('invite_preview'):
-                channel = valid_invite_values.get('invite_channel')
-                valid_invite_values['pager_args'] = {
-                    'invite_hash': invite_hash,
-                    'invite_partner_id': invite_partner_id
-                }
-
-        if channel_id < 0:
-            # the string part of the channel "slugification" can be blank
-            # meaning it can be "/slides/taking-care-of-trees-2" OR just "/slides/-2" if the first part is blank
-            # as we use a IntConverter on the route definition, this will pick up a negative ID
-            # (the IntConverter is necessary as we want a custom page in case the user can't access the course)
-            channel_id = abs(channel_id)
-
-        # Check access rights
-        if channel_id and not channel:
-            channel = request.env['slide.channel'].browse(channel_id).exists()
-            if not channel:
-                return self._redirect_to_slides_main('no_channel')
-        if not channel.has_access('read'):
-            return self._redirect_to_slides_main('no_rights')
-
-        if category_id and not category:
-            category = channel.slide_category_ids.filtered(lambda category: category.id == category_id)
+        # retro-compatibility for older links, 'slide_category' field was previously named 'slide_type'
+        # can be safely removed after 15.3 (I swear though, don't be afraid, remove it!)
+        slide_category = slide_category or kw.get('slide_type')
 
         domain = self._get_channel_slides_base_domain(channel)
+
         pager_url = "/slides/%s" % (channel.id)
-        pager_args = valid_invite_values.get('pager_args', {})
+        pager_args = {}
         slide_categories = dict(request.env['slide.slide']._fields['slide_category']._description_selection(request.env))
 
         if search:
@@ -638,14 +562,8 @@ class WebsiteSlides(WebsiteProfile):
             'search': search,
             # display data
             'pager': pager,
-            'slide_count': slide_count,
             # display upload modal
             'enable_slide_upload': kw.get('enable_slide_upload', False),
-            # invitation data
-            'invite_hash': invite_hash,
-            'invite_partner_id': invite_partner_id,
-            'invite_preview': valid_invite_values.get('invite_preview'),
-            'is_partner_without_user': valid_invite_values.get('is_partner_without_user'),
             ** errors,
             ** self._slide_channel_prepare_review_values(channel),
         })
@@ -678,55 +596,18 @@ class WebsiteSlides(WebsiteProfile):
         if request.env.user.has_group('base.group_system'):
             module = request.env.ref('base.module_survey')
             if module.state != 'installed':
-                render_values['modules_to_install'] = json.dumps([{
+                render_values['modules_to_install'] = [{
                     'id': module.id,
                     'name': module.shortdesc,
                     'motivational': _('Want to test and certify your students?'),
                     'default_slide_category': 'certification',
-                }])
+                }]
 
         render_values = self._prepare_additional_channel_values(render_values, **kw)
         return request.render('website_slides.course_main', render_values)
 
-    @staticmethod
-    def _get_channel_values_from_invite(channel_id, invite_hash, invite_partner_id):
-        """ Check identification parameters and returns values used to give access to signed out invited members.
-        The course is returned as sudo to allow them seeing a preview of the course even if visibility if not public.
-        Returns dict of values or containing 'invite_error' and a value corresponding to the error. See _get_invite_error_msg."""
-        channel_sudo = request.env['slide.channel'].browse(channel_id).exists().sudo()
-        partner_sudo = request.env['res.partner'].browse(invite_partner_id).exists().sudo()
-        if not partner_sudo or not channel_sudo.is_published:
-            return {'invite_error': 'no_partner' if not partner_sudo else 'no_channel' if not channel_sudo else 'no_rights'}
-
-        channel_partner_sudo = channel_sudo.channel_partner_all_ids.filtered(lambda cp: cp.partner_id.id == invite_partner_id)
-        if not channel_partner_sudo:
-            return {'invite_error': 'expired'}
-        if not consteq(channel_partner_sudo._get_invitation_hash(), invite_hash):
-            return {'invite_error': 'hash_fail'}
-
-        if channel_partner_sudo.member_status == 'invited':
-            if not channel_partner_sudo.last_invitation_date or \
-               channel_partner_sudo.last_invitation_date + relativedelta(months=3) < fields.Datetime.now():
-                return {'invite_error': 'expired'}
-
-        return {
-            'invite_channel': channel_sudo,
-            'invite_channel_partner': channel_partner_sudo,
-            'invite_preview': True,
-            'is_partner_without_user': not partner_sudo.user_ids,
-            'invite_partner': partner_sudo
-        }
-
     # SLIDE.CHANNEL UTILS
     # --------------------------------------------------
-
-    @staticmethod
-    def _redirect_to_slides_main(invite_error=''):
-        return request.redirect(f"/slides?invite_error={invite_error}" if invite_error else "/slides")
-
-    @staticmethod
-    def _redirect_to_channel(channel):
-        return request.redirect(f"/slides/{request.env['ir.http']._slug(channel)}")
 
     def _slide_channel_prepare_review_values(self, channel):
         values = {
@@ -773,91 +654,22 @@ class WebsiteSlides(WebsiteProfile):
 
         return values
 
-    @http.route('/slides/<int:channel_id>/invite', type='http', auth='public', website=True, sitemap=False)
-    def slide_channel_invite(self, channel_id, invite_partner_id, invite_hash):
-        """ This route is included in the invitation link in email to join / check out the course. It is
-        the main entry point on the attendee's side when sharing or inviting them. As rule of thumb, this will
-        redirect to the course if the rights are given, and to the main /slides page with appropriate error
-        message otherwise. (See _get_invite_error_msg method)
-
-        It acts as a redirector:
-            - Returns error if parameters are not valid or if expired invitation.
-            - If a user is logged, verify the link is for this user. Redirects according to Acl's.
-            - If no user is logged:
-                - Redirects to login / signup if the partner is enrolled.
-                - Redirects to the course with invite parameters. They will be able to browse a course preview
-                before logging in / signing up, as prompted in an information banner.
-
-        :param channel_id: The id of the course the user is invited to. Do not use <model> in the route instead,
-            otherwise an error 403 could be returned if the (public) user has no access to the record.
-        :param invite_partner_id: The id of the invited partner.
-        :param invite_hash: The invitation hash that allows a direct access to channel_id, even if not connected.
-        """
-        channel = request.env['slide.channel'].browse(int(channel_id)).exists()
-        if not channel:
-            return self._redirect_to_slides_main('no_channel')
-
-        # --- Compute rights of current user
-        has_rights = channel.has_access('read')
-
-        invite_values = self._get_channel_values_from_invite(channel_id, invite_hash, int(invite_partner_id))
-        if invite_values.get('invite_error'):
-            return self._redirect_to_channel(channel) if has_rights else self._redirect_to_slides_main(invite_values.get('invite_error'))
-
-        invite_partner = invite_values.get('invite_partner')
-        invite_channel_partner = invite_values.get('invite_channel_partner')
-
-        # --- A user is logged
+    @http.route('/slides/channel/enroll', type='http', auth='public', website=True)
+    def slide_channel_join_http(self, channel_id):
+        # TDE FIXME: why 2 routes ?
         if not request.website.is_public_user():
-            if request.env.user.partner_id.id != invite_partner.id:
-                return self._redirect_to_slides_main('partner_fail')
-            return self._redirect_to_channel(channel) if has_rights else self._redirect_to_slides_main('no_rights')
-
-        redirect_url = f'/slides/{channel_id}'
-
-        # --- No user is logged.
-        if invite_channel_partner.member_status != 'invited':
-            # Enrolled partner. Access to the course but needs to log in / sign up.
-            if invite_values.get('is_partner_without_user'):
-                invite_partner.signup_prepare()
-                signup_url = invite_partner._get_signup_url_for_action(url=redirect_url)[invite_partner.id]
-                return request.redirect(signup_url)
-            else:
-                return request.redirect(f'/web/login?redirect={redirect_url}&auth_login={invite_partner.user_ids[0].login}')
-        # Pending invitation. A banner will allow partner to login / signup on the course page.
-        return request.redirect(f'{redirect_url}?invite_partner_id={invite_partner_id}&invite_hash={invite_hash}')
-
-    @http.route(['/slides/<int:channel_id>/identify'], type='http', auth='public', website=True, sitemap=False)
-    def slide_channel_identify_from_invite(self, channel_id, invite_partner_id, invite_hash):
-        """ This route redirects invited partners when they click on the login / signup button, when they are
-        asked to login / signup as invited to a course as public user on the course page preview. """
-        if not request.website.is_public_user():
-            return self._redirect_to_slides_main('identify_fail')
-
-        invite_partner_id = int(invite_partner_id)
-        invite_values = self._get_channel_values_from_invite(channel_id, invite_hash, invite_partner_id)
-        if invite_values.get('invite_preview'):
-            partner_sudo = invite_values.get('invite_partner')
-            if invite_values.get('is_partner_without_user'):
-                partner_sudo.signup_prepare()
-                return request.redirect(partner_sudo._get_signup_url_for_action(url=f'/slides/{channel_id}')[partner_sudo.id])
-            else:
-                return request.redirect(f'/web/login?redirect=/slides/{channel_id}&auth_login={partner_sudo.user_ids[0].login}')
-        return self._redirect_to_slides_main('identify_fail')
+            channel = request.env['slide.channel'].browse(int(channel_id))
+            channel.action_add_member()
+        return request.redirect("/slides/%s" % (slug(channel)))
 
     @http.route(['/slides/channel/join'], type='json', auth='public', website=True)
     def slide_channel_join(self, channel_id):
         if request.website.is_public_user():
-            return {
-                'error': 'public_user',
-                'error_signup_allowed': request.env['res.users'].sudo()._get_signup_invitation_scope() == 'b2c',
-            }
-        channel = request.env['slide.channel'].browse(channel_id)
-        if channel.is_member_invited and channel.enroll == 'invite':
-            success = channel.sudo()._action_add_members(request.env.user.partner_id)
-        else:
-            success = channel._action_add_members(request.env.user.partner_id)
-        return {'error': 'join_done'} if not success else success
+            return {'error': 'public_user', 'error_signup_allowed': request.env['res.users'].sudo()._get_signup_invitation_scope() == 'b2c'}
+        success = request.env['slide.channel'].browse(channel_id).action_add_member()
+        if not success:
+            return {'error': 'join_done'}
+        return success
 
     @http.route(['/slides/channel/leave'], type='json', auth='user', website=True)
     def slide_channel_leave(self, channel_id):
@@ -868,7 +680,7 @@ class WebsiteSlides(WebsiteProfile):
 
     @http.route(['/slides/channel/tag/search_read'], type='json', auth='user', methods=['POST'], website=True)
     def slide_channel_tag_search_read(self, fields, domain):
-        can_create = request.env['slide.channel.tag'].has_access('create')
+        can_create = request.env['slide.channel.tag'].check_access_rights('create', raise_exception=False)
         return {
             'read_results': request.env['slide.channel.tag'].search_read(domain, fields),
             'can_create': can_create,
@@ -876,7 +688,7 @@ class WebsiteSlides(WebsiteProfile):
 
     @http.route(['/slides/channel/tag/group/search_read'], type='json', auth='user', methods=['POST'], website=True)
     def slide_channel_tag_group_search_read(self, fields, domain):
-        can_create = request.env['slide.channel.tag.group'].has_access('create')
+        can_create = request.env['slide.channel.tag.group'].check_access_rights('create', raise_exception=False)
         return {
             'read_results': request.env['slide.channel.tag.group'].search_read(domain, fields),
             'can_create': can_create,
@@ -893,8 +705,8 @@ class WebsiteSlides(WebsiteProfile):
                               tag group to generate and expects a second list value of the name of the
                               new tag group. This value is required for when a new tag is being created.
 
-        tag_id and group_id values are provided by a SelectMenu OWL component. Default "None" values
-        allow for graceful failures in exceptional cases when values are not provided.
+        tag_id and group_id values are provided by a Select2. Default "None" values allow for
+        graceful failures in exceptional cases when values are not provided.
 
         :return: channel's course page
         """
@@ -915,7 +727,7 @@ class WebsiteSlides(WebsiteProfile):
         tag = self._create_or_get_channel_tag(tag_id, group_id)
         tag.write({'channel_ids': [(4, channel.id, 0)]})
 
-        return {'url': "/slides/%s" % (request.env['ir.http']._slug(channel))}
+        return {'url': "/slides/%s" % (slug(channel))}
 
     @http.route(['/slides/channel/send_share_email'], type='json', auth='user', website=True)
     def slide_channel_send_share_email(self, channel_id, emails):
@@ -943,8 +755,7 @@ class WebsiteSlides(WebsiteProfile):
     # SLIDE.SLIDE MAIN / SEARCH
     # --------------------------------------------------
 
-    @http.route('/slides/slide/<model("slide.slide"):slide>', type='http', auth="public",
-                website=True, sitemap=True, handle_params_access_error=handle_wslide_error)
+    @http.route('''/slides/slide/<model("slide.slide"):slide>''', type='http', auth="public", website=True, sitemap=True)
     def slide_view(self, slide, **kwargs):
         if not slide.channel_id.can_access_from_current_website() or not slide.active:
             raise werkzeug.exceptions.NotFound()
@@ -955,10 +766,8 @@ class WebsiteSlides(WebsiteProfile):
         if slide.can_self_mark_completed and not slide.user_has_completed \
            and slide.channel_id.channel_type == 'training' and slide.slide_category != 'video':
             self._slide_mark_completed(slide)
-            next_category_to_open = slide._get_next_category()
         else:
             self._set_viewed_slide(slide)
-            next_category_to_open = False
 
         values = self._get_slide_detail(slide)
         # quiz-specific: update with karma and quiz information
@@ -966,8 +775,6 @@ class WebsiteSlides(WebsiteProfile):
             values.update(self._get_slide_quiz_data(slide))
         # sidebar: update with user channel progress
         values['channel_progress'] = self._get_channel_progress(slide.channel_id, include_quiz=True)
-        # sidebar: auto-collapsed the categories depending on conditions
-        values['category_data'] = self._prepare_collapsed_categories(values['category_data'], slide, next_category_to_open)
 
         # Allows to have breadcrumb for the previously used filter
         values.update({
@@ -1007,8 +814,8 @@ class WebsiteSlides(WebsiteProfile):
             'access_error_slide_name': user_slide_authorization['slide'].name,
         })))
 
-    @http.route('/slides/slide/<model("slide.slide"):slide>/pdf_content',
-                type='http', auth="public", website=True, sitemap=False, handle_params_access_error=handle_wslide_error)
+    @http.route('''/slides/slide/<model("slide.slide"):slide>/pdf_content''',
+                type='http', auth="public", website=True, sitemap=False)
     def slide_get_pdf_content(self, slide):
         response = Response()
         response.data = slide.binary_content and base64.b64decode(slide.binary_content) or b''
@@ -1021,7 +828,7 @@ class WebsiteSlides(WebsiteProfile):
         if field not in ('image_128', 'image_256', 'image_512', 'image_1024', 'image_1920'):
             return werkzeug.exceptions.Forbidden()
 
-        slide = request.env['slide.slide'].search([('id', '=', int(slide_id))])
+        slide = request.env['slide.slide'].sudo().browse(slide_id).exists()
         if not slide:
             raise werkzeug.exceptions.NotFound()
 
@@ -1041,14 +848,13 @@ class WebsiteSlides(WebsiteProfile):
             'html_content': request.env['ir.qweb.field.html'].record_to_html(fetch_res['slide'], 'html_content', {'template_options': {}})
         }
 
-    @http.route('/slides/slide/<model("slide.slide"):slide>/set_completed',
-                website=True, type="http", auth="user", handle_params_access_error=handle_wslide_error)
+    @http.route('/slides/slide/<model("slide.slide"):slide>/set_completed', website=True, type="http", auth="user")
     def slide_set_completed_and_redirect(self, slide, next_slide_id=None):
         self._slide_mark_completed(slide)
         next_slide = None
         if next_slide_id:
             next_slide = self._fetch_slide(next_slide_id).get('slide', None)
-        return request.redirect("/slides/slide/%s" % (request.env['ir.http']._slug(next_slide) if next_slide else request.env['ir.http']._slug(slide)))
+        return request.redirect("/slides/slide/%s" % (slug(next_slide) if next_slide else slug(slide)))
 
     @http.route('/slides/slide/set_completed', website=True, type="json", auth="public")
     def slide_set_completed(self, slide_id):
@@ -1058,17 +864,14 @@ class WebsiteSlides(WebsiteProfile):
         if fetch_res.get('error'):
             return fetch_res
         self._slide_mark_completed(fetch_res['slide'])
-        next_category = fetch_res['slide']._get_next_category()
         return {
-            'channel_completion': fetch_res['slide'].channel_id.completion,
-            'next_category_id': next_category.id if next_category else False,
+            'channel_completion': fetch_res['slide'].channel_id.completion
         }
 
-    @http.route('/slides/slide/<model("slide.slide"):slide>/set_uncompleted',
-                website=True, type='http', auth='user', handle_params_access_error=handle_wslide_error)
+    @http.route('/slides/slide/<model("slide.slide"):slide>/set_uncompleted', website=True, type='http', auth='user')
     def slide_set_uncompleted_and_redirect(self, slide):
         self._slide_mark_uncompleted(slide)
-        return request.redirect(f'/slides/slide/{request.env["ir.http"]._slug(slide)}')
+        return request.redirect(f'/slides/slide/{slug(slide)}')
 
     @http.route('/slides/slide/set_uncompleted', website=True, type='json', auth='public')
     def slide_set_uncompleted(self, slide_id):
@@ -1080,7 +883,6 @@ class WebsiteSlides(WebsiteProfile):
         self._slide_mark_uncompleted(fetch_res['slide'])
         return {
             'channel_completion': fetch_res['slide'].channel_id.completion,
-            'next_category_id': False,
         }
 
     @http.route('/slides/slide/like', type='json', auth="public", website=True)
@@ -1108,8 +910,8 @@ class WebsiteSlides(WebsiteProfile):
         # hence calling format_decimalized_number
         return {
             'user_vote': slide.user_vote,
-            'likes': tools.misc.format_decimalized_number(slide.likes),
-            'dislikes': tools.misc.format_decimalized_number(slide.dislikes),
+            'likes': tools.format_decimalized_number(slide.likes),
+            'dislikes': tools.format_decimalized_number(slide.dislikes),
         }
 
     @http.route('/slides/slide/archive', type='json', auth='user', website=True)
@@ -1314,7 +1116,7 @@ class WebsiteSlides(WebsiteProfile):
     def slide_category_search_read(self, fields, domain):
         category_slide_domain = domain if domain else []
         category_slide_domain = expression.AND([category_slide_domain, [('is_category', '=', True)]])
-        can_create = request.env['slide.slide'].has_access('create')
+        can_create = request.env['slide.slide'].check_access_rights('create', raise_exception=False)
         return {
             'read_results': request.env['slide.slide'].search_read(category_slide_domain, fields),
             'can_create': can_create,
@@ -1330,7 +1132,7 @@ class WebsiteSlides(WebsiteProfile):
 
         request.env['slide.slide'].create(self._get_new_slide_category_values(channel, name))
 
-        return request.redirect("/slides/%s" % (request.env['ir.http']._slug(channel)))
+        return request.redirect("/slides/%s" % (slug(channel)))
 
     # --------------------------------------------------
     # SLIDE.UPLOAD
@@ -1446,6 +1248,7 @@ class WebsiteSlides(WebsiteProfile):
         # create slide itself
         try:
             values['user_id'] = request.env.uid
+            values['is_published'] = values.get('is_published', False) and can_publish
             slide = request.env['slide.slide'].sudo().create(values)
         except UserError as e:
             _logger.error(e)
@@ -1463,7 +1266,7 @@ class WebsiteSlides(WebsiteProfile):
         elif slide.slide_category == 'quiz':
             redirect_url += "?quiz_quick_create"
         elif channel.channel_type == "training":
-            redirect_url = "/slides/%s" % (request.env['ir.http']._slug(channel))
+            redirect_url = "/slides/%s" % (slug(channel))
         return {
             'url': redirect_url,
             'channel_type': channel.channel_type,
@@ -1477,7 +1280,7 @@ class WebsiteSlides(WebsiteProfile):
 
     @http.route(['/slides/tag/search_read'], type='json', auth='user', methods=['POST'], website=True)
     def slide_tag_search_read(self, fields, domain):
-        can_create = request.env['slide.tag'].has_access('create')
+        can_create = request.env['slide.tag'].check_access_rights('create', raise_exception=False)
         return {
             'read_results': request.env['slide.tag'].search_read(domain, fields),
             'can_create': can_create,
@@ -1531,10 +1334,6 @@ class WebsiteSlides(WebsiteProfile):
 
     def _prepare_user_values(self, **kwargs):
         values = super(WebsiteSlides, self)._prepare_user_values(**kwargs)
-        invite_error_msg = self._get_invite_error_msg(kwargs.get('invite_error'))
-        if invite_error_msg:
-            values['invite_error_msg'] = invite_error_msg
-
         channel = self._get_channels(**kwargs)
         if channel:
             values['channel'] = channel
@@ -1548,21 +1347,9 @@ class WebsiteSlides(WebsiteProfile):
             channels = tools.lazy(lambda: request.env['slide.channel'].browse(int(kwargs['channel_id'])))
         return channels
 
-    @staticmethod
-    def _get_invite_error_msg(invite_error):
-        return {
-            'expired': _('This invitation link has expired.'),
-            'hash_fail': _('This invitation link has an invalid hash.'),
-            'identify_fail': _('This identification link does not seem to be valid.'),
-            'no_channel': _('This course does not exist.'),
-            'no_partner': _('The contact associated with this invitation does not seem to be valid.'),
-            'no_rights': _('You do not have permission to access this course.'),
-            'partner_fail': _('This invitation link is not for this contact.'),
-        }.get(invite_error, '')
-
     def _prepare_user_slides_profile(self, user):
-        courses = request.env['slide.channel.partner'].sudo().search([('partner_id', '=', user.partner_id.id), ('member_status', '!=', 'invited')])
-        courses_completed = courses.filtered(lambda c: c.member_status == 'completed')
+        courses = request.env['slide.channel.partner'].sudo().search([('partner_id', '=', user.partner_id.id)])
+        courses_completed = courses.filtered(lambda c: c.completed)
         courses_ongoing = courses - courses_completed
         values = {
             'uid': request.env.user.id,
@@ -1572,7 +1359,6 @@ class WebsiteSlides(WebsiteProfile):
             'courses_ongoing': courses_ongoing,
             'is_profile_page': True,
             'badge_category': 'slides',
-            'my_profile': request.env.user.id == user.id,
         }
         return values
 

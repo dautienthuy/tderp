@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import datetime, date
+from base64 import b64encode
+from datetime import datetime
 
 from freezegun import freeze_time
 from lxml import etree
@@ -22,7 +23,7 @@ class TestEdiTbaiXmls(TestEsEdiTbaiCommon):
         cls.out_invoice = cls.env['account.move'].create({
             'name': 'INV/01',
             'move_type': 'out_invoice',
-            'invoice_date': date(2025, 1, 1),
+            'invoice_date': datetime.now(),
             'partner_id': cls.partner_a.id,
             'invoice_line_ids': [(0, 0, {
                 'product_id': cls.product_a.id,
@@ -32,45 +33,14 @@ class TestEdiTbaiXmls(TestEsEdiTbaiCommon):
                 'tax_ids': [(6, 0, cls._get_tax_by_xml_id('s_iva21b').ids)],
             })],
         })
-
-    def create_total_refund(self):
-        move_reversal = self.env['account.move.reversal'].with_context(
-            active_model="account.move",
-            active_ids=self.out_invoice.ids
-        ).create({
-            'date': '2020-02-01',
-            'reason': 'no reason',
-            'journal_id': self.out_invoice.journal_id.id,
-        })
-        reversal = move_reversal.refund_moves()
-        reverse_move = self.env['account.move'].browse(reversal['res_id'])
-        reverse_move.action_post()
-        return reverse_move
+        cls.edi_format = cls.env.ref('l10n_es_edi_tbai.edi_es_tbai')
 
     def test_xml_tree_post(self):
         """Test of Customer Invoice XML"""
         with freeze_time(self.frozen_today):
-            edi_document = self.out_invoice._l10n_es_tbai_create_edi_document(cancel=False)
-            edi_document._generate_xml(self.out_invoice._l10n_es_tbai_get_values(cancel=False))
-            xml_doc = edi_document._get_xml()
+            xml_doc = self.edi_format._get_l10n_es_tbai_invoice_xml(self.out_invoice, cancel=False)[self.out_invoice]['xml_file']
             xml_doc.remove(xml_doc.find("Signature", namespaces=NS_MAP))
-            xml_expected = etree.fromstring(super()._get_sample_xml('xml_post.xml'))
-            self.assertXmlTreeEqual(xml_doc, xml_expected)
-
-    def test_xml_tree_post_refund(self):
-        """Test of Customer Invoice XML"""
-        with freeze_time(self.frozen_today):
-            edi_document = self.out_invoice._l10n_es_tbai_create_edi_document(cancel=False)
-            edi_document._generate_xml(self.out_invoice._l10n_es_tbai_get_values(cancel=False))
-            self.out_invoice.action_post()
-            self.out_invoice.l10n_es_tbai_post_document_id = edi_document.id
-            refund = self.create_total_refund()
-            edi_document = refund._l10n_es_tbai_create_edi_document(cancel=False)
-            edi_document._generate_xml(refund._l10n_es_tbai_get_values(cancel=False))
-            xml_doc = edi_document._get_xml()
-            xml_doc.remove(xml_doc.find("Signature", namespaces=NS_MAP))
-
-            xml_expected = etree.fromstring(super()._get_sample_xml('xml_post_refund.xml'))
+            xml_expected = etree.fromstring(super().L10N_ES_TBAI_SAMPLE_XML_POST)
             self.assertXmlTreeEqual(xml_doc, xml_expected)
 
     def test_xml_tree_post_generic_sequence(self):
@@ -78,13 +48,10 @@ class TestEdiTbaiXmls(TestEsEdiTbaiCommon):
         with freeze_time(self.frozen_today):
             invoice = self.out_invoice.copy({
                 'name': 'INV01',
-                'invoice_date': date(2025, 1, 1),
             })
-            edi_document = invoice._l10n_es_tbai_create_edi_document(cancel=False)
-            edi_document._generate_xml(invoice._l10n_es_tbai_get_values(cancel=False))
-            xml_doc = edi_document._get_xml()
+            xml_doc = self.edi_format._get_l10n_es_tbai_invoice_xml(invoice, cancel=False)[invoice]['xml_file']
             xml_doc.remove(xml_doc.find("Signature", namespaces=NS_MAP))
-            xml_expected = etree.fromstring(super()._get_sample_xml('xml_post.xml'))
+            xml_expected = etree.fromstring(super().L10N_ES_TBAI_SAMPLE_XML_POST)
             self.assertXmlTreeEqual(xml_doc, xml_expected)
 
     def test_xml_tree_post_multicurrency(self):
@@ -123,27 +90,25 @@ class TestEdiTbaiXmls(TestEsEdiTbaiCommon):
         })
 
         with freeze_time(self.frozen_today):
-            edi_document = invoice._l10n_es_tbai_create_edi_document(cancel=False)
-            edi_document._generate_xml(invoice._l10n_es_tbai_get_values(cancel=False))
-            xml_doc = edi_document._get_xml()
+            xml_doc = self.edi_format._get_l10n_es_tbai_invoice_xml(invoice, cancel=False)[invoice]['xml_file']
             xml_doc.remove(xml_doc.find("Signature", namespaces=NS_MAP))
-            xml_expected_base = etree.fromstring(super()._get_sample_xml('xml_post.xml'))
+            xml_expected_base = etree.fromstring(super().L10N_ES_TBAI_SAMPLE_XML_POST)
             xpath = """
                 <xpath expr="//DetallesFactura" position="replace">
                     <DetallesFactura>
                       <IDDetalleFactura>
                           <DescripcionDetalle>producta</DescripcionDetalle>
-                          <Cantidad>5.00000000</Cantidad>
-                          <ImporteUnitario>246.00000000</ImporteUnitario>
-                          <Descuento>246.00000000</Descuento>
-                          <ImporteTotal>1190.64000000</ImporteTotal>
+                          <Cantidad>5.00</Cantidad>
+                          <ImporteUnitario>246.00</ImporteUnitario>
+                          <Descuento>246.00</Descuento>
+                          <ImporteTotal>1190.64</ImporteTotal>
                       </IDDetalleFactura>
                       <IDDetalleFactura>
                           <DescripcionDetalle>producta</DescripcionDetalle>
-                          <Cantidad>5.00000000</Cantidad>
-                          <ImporteUnitario>246.00000000</ImporteUnitario>
-                          <Descuento>1230.00000000</Descuento>
-                          <ImporteTotal>0.00000000</ImporteTotal>
+                          <Cantidad>5.00</Cantidad>
+                          <ImporteUnitario>246.00</ImporteUnitario>
+                          <Descuento>1230.00</Descuento>
+                          <ImporteTotal>0.00</ImporteTotal>
                       </IDDetalleFactura>
                     </DetallesFactura>
                 </xpath>
@@ -156,6 +121,7 @@ class TestEdiTbaiXmls(TestEsEdiTbaiCommon):
                         <BaseImponible>984.00</BaseImponible>
                         <TipoImpositivo>21.00</TipoImpositivo>
                         <CuotaImpuesto>206.64</CuotaImpuesto>
+                        <OperacionEnRecargoDeEquivalenciaORegimenSimplificado>N</OperacionEnRecargoDeEquivalenciaORegimenSimplificado>
                       </DetalleIVA>
                     </DesgloseIVA>
                 </xpath>
@@ -166,11 +132,9 @@ class TestEdiTbaiXmls(TestEsEdiTbaiCommon):
     def test_xml_tree_post_retention(self):
         self.out_invoice.invoice_line_ids.tax_ids = [(4, self._get_tax_by_xml_id('s_irpf15').id)]
         with freeze_time(self.frozen_today):
-            edi_document = self.out_invoice._l10n_es_tbai_create_edi_document(cancel=False)
-            edi_document._generate_xml(self.out_invoice._l10n_es_tbai_get_values(cancel=False))
-            xml_doc = edi_document._get_xml()
+            xml_doc = self.edi_format._get_l10n_es_tbai_invoice_xml(self.out_invoice, cancel=False)[self.out_invoice]['xml_file']
             xml_doc.remove(xml_doc.find("Signature", namespaces=NS_MAP))
-            xml_expected_base = etree.fromstring(super()._get_sample_xml('xml_post.xml'))
+            xml_expected_base = etree.fromstring(super().L10N_ES_TBAI_SAMPLE_XML_POST)
             xpath = """
                 <xpath expr="//ImporteTotalFactura" position="after">
                     <RetencionSoportada>600.00</RetencionSoportada>
@@ -179,29 +143,8 @@ class TestEdiTbaiXmls(TestEsEdiTbaiCommon):
             xml_expected = self.with_applied_xpath(xml_expected_base, xpath)
             self.assertXmlTreeEqual(xml_doc, xml_expected)
 
-    def test_xml_tree_post_multitax(self):
-        self.out_invoice.invoice_line_ids.tax_ids = [self._get_tax_by_xml_id('s_req52').id, self._get_tax_by_xml_id('s_iva21b').id]
-        with freeze_time(self.frozen_today):
-            edi_document = self.out_invoice._l10n_es_tbai_create_edi_document(cancel=False)
-            edi_document._generate_xml(self.out_invoice._l10n_es_tbai_get_values(cancel=False))
-            xml_doc = edi_document._get_xml()
-            xml_doc.remove(xml_doc.find("Signature", namespaces=NS_MAP))
-            xml_expected_base = etree.fromstring(super()._get_sample_xml('xml_post.xml'))
-            xpath = """
-                <xpath expr="//ImporteTotal" position="replace">
-                    <ImporteTotal>5048.00000000</ImporteTotal>
-                </xpath>
-                <xpath expr="//ImporteTotalFactura" position="replace">
-                    <ImporteTotalFactura>5048.00</ImporteTotalFactura>
-                </xpath>
-            """
-            xml_expected = self.with_applied_xpath(xml_expected_base, xpath)
-            self.assertXmlTreeEqual(xml_doc, xml_expected)
-
     def test_xml_tree_in_post(self):
         """Test XML of vendor bill for LROE Batuz"""
-        self.company_data['company'].l10n_es_tbai_tax_agency = 'bizkaia'
-
         with freeze_time(self.frozen_today):
             self.in_invoice = self.env['account.move'].create({
                 'name': 'INV/01',
@@ -217,67 +160,12 @@ class TestEdiTbaiXmls(TestEsEdiTbaiCommon):
                     'tax_ids': [(6, 0, self._get_tax_by_xml_id('p_iva21_bc').ids)],
                 })],
             })
-            edi_document = self.in_invoice._l10n_es_tbai_create_edi_document(cancel=False)
-            edi_document._generate_xml(self.in_invoice._l10n_es_tbai_get_values(cancel=False))
-            xml_doc = edi_document._get_xml()
-            xml_expected = etree.fromstring(super()._get_sample_xml('xml_post_in.xml'))
-            self.assertXmlTreeEqual(xml_doc, xml_expected)
-
-    def test_xml_tree_in_140_post(self):
-        """Test XML of vendor bill for LROE Batuz autonomos (modelo 140)"""
-        self.company_data['company'].l10n_es_tbai_tax_agency = 'bizkaia'
-        self.company_data['company'].vat = '09760433S'
-        self.env['ir.config_parameter'].sudo().set_param('l10n_es_edi_tbai.epigrafe', '102100')
-
-        with freeze_time(self.frozen_today):
-            self.in_invoice = self.env['account.move'].create({
-                'name': 'INV/01',
-                'ref': 'INV/5234',
-                'move_type': 'in_invoice',
-                'invoice_date': datetime.now(),
-                'partner_id': self.partner_a.id,
-                'invoice_line_ids': [(0, 0, {
-                    'product_id': self.product_a.id,
-                    'price_unit': 1000.0,
-                    'quantity': 5,
-                    'discount': 20.0,
-                    'tax_ids': [(6, 0, self._get_tax_by_xml_id('p_iva21_bc').ids)],
-                })],
-            })
-            edi_document = self.in_invoice._l10n_es_tbai_create_edi_document(cancel=False)
-            edi_document._generate_xml(self.in_invoice._l10n_es_tbai_get_values(cancel=False))
-            xml_doc = edi_document._get_xml()
-            xml_expected = etree.fromstring(super()._get_sample_xml('xml_post_in_140.xml'))
-            self.assertXmlTreeEqual(xml_doc, xml_expected)
-
-    def test_xml_tree_no_deducible_tax(self):
-        """Test XML of vendor bill with non deductible tax"""
-        self.company_data['company'].l10n_es_tbai_tax_agency = 'bizkaia'
-
-        with freeze_time(self.frozen_today):
-            self.in_invoice = self.env['account.move'].create({
-                'name': 'INV/01',
-                'move_type': 'in_invoice',
-                'ref': 'INV/5234',
-                'invoice_date': datetime.now(),
-                'partner_id': self.partner_a.id,
-                'invoice_line_ids': [(0, 0, {
-                    'product_id': self.product_a.id,
-                    'price_unit': 1000.0,
-                    'quantity': 1,
-                    'tax_ids': [(6, 0, self._get_tax_by_xml_id('p_iva10_nd').ids)],
-                })],
-            })
-            edi_document = self.in_invoice._l10n_es_tbai_create_edi_document(cancel=False)
-            edi_document._generate_xml(self.in_invoice._l10n_es_tbai_get_values(cancel=False))
-            xml_doc = edi_document._get_xml()
-            xml_expected = etree.fromstring(super()._get_sample_xml('xml_post_in_nd.xml'))
+            xml_doc = etree.fromstring(self.edi_format._l10n_es_tbai_get_invoice_content_edi(self.in_invoice))
+            xml_expected = etree.fromstring(super().L10N_ES_TBAI_SAMPLE_XML_POST_IN)
             self.assertXmlTreeEqual(xml_doc, xml_expected)
 
     def test_xml_tree_in_ic_post(self):
         """Test XML of vendor bill for LROE Batuz intra-community"""
-        self.company_data['company'].l10n_es_tbai_tax_agency = 'bizkaia'
-
         with freeze_time(self.frozen_today):
             self.in_invoice = self.env['account.move'].create({
                 'name': 'INV/01',
@@ -299,31 +187,16 @@ class TestEdiTbaiXmls(TestEsEdiTbaiCommon):
                     'tax_ids': [(6, 0, self._get_tax_by_xml_id('p_iva21_sp_in').ids)],
                 })],
             })
-            edi_document = self.in_invoice._l10n_es_tbai_create_edi_document(cancel=False)
-            edi_document._generate_xml(self.in_invoice._l10n_es_tbai_get_values(cancel=False))
-            xml_doc = edi_document._get_xml()
-            xml_expected = etree.fromstring(super()._get_sample_xml('xml_post_in_ic.xml'))
+            xml_doc = etree.fromstring(self.edi_format._l10n_es_tbai_get_invoice_content_edi(self.in_invoice))
+            xml_expected = etree.fromstring(super().L10N_ES_TBAI_SAMPLE_XML_POST_IN_IC)
             self.assertXmlTreeEqual(xml_doc, xml_expected)
 
     def test_xml_tree_cancel(self):
-        post_xml = b"""<TicketBAI>
-<CabeceraFactura><FechaExpedicionFactura>01-01-2025</FechaExpedicionFactura></CabeceraFactura>
+        self.out_invoice.l10n_es_tbai_post_xml = b64encode(b"""<TicketBAI>
+<CabeceraFactura><FechaExpedicionFactura>01-01-2022</FechaExpedicionFactura></CabeceraFactura>
 <ds:SignatureValue xmlns:ds="http://www.w3.org/2000/09/xmldsig#">TEXT</ds:SignatureValue>
-</TicketBAI>"""  # hack to set out_invoice's registration date
-        post_edi_document = self.out_invoice._l10n_es_tbai_create_edi_document()
-        post_xml_attachment = self.env['ir.attachment'].create({
-            'name': self.out_invoice._l10n_es_tbai_get_attachment_name(cancel=True),
-            'raw': post_xml,
-            'type': 'binary',
-            'res_model': 'account.move',
-            'res_id': self.out_invoice.id,
-            'res_field': 'xml_attachment_id',
-        })
-        post_edi_document.xml_attachment_id = post_xml_attachment
-        self.out_invoice.l10n_es_tbai_post_document_id = post_edi_document
-        cancel_edi_document = self.out_invoice._l10n_es_tbai_create_edi_document(cancel=True)
-        cancel_edi_document._generate_xml(self.out_invoice._l10n_es_tbai_get_values(cancel=True))
-        xml_doc = cancel_edi_document._get_xml()
+</TicketBAI>""")  # hack to set out_invoice's registration date
+        xml_doc = self.edi_format._get_l10n_es_tbai_invoice_xml(self.out_invoice, cancel=True)[self.out_invoice]['xml_file']
         xml_doc.remove(xml_doc.find("Signature", namespaces=NS_MAP))
-        xml_expected = etree.fromstring(super()._get_sample_xml('xml_cancel.xml'))
+        xml_expected = etree.fromstring(super().L10N_ES_TBAI_SAMPLE_XML_CANCEL)
         self.assertXmlTreeEqual(xml_doc, xml_expected)

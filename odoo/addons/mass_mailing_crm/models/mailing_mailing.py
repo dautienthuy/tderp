@@ -18,9 +18,9 @@ class MassMailing(models.Model):
     def _compute_crm_lead_count(self):
         lead_data = self.env['crm.lead'].with_context(active_test=False).sudo()._read_group(
             [('source_id', 'in', self.source_id.ids)],
-            ['source_id'], ['__count'],
+            ['source_id'], ['source_id'],
         )
-        mapped_data = {source.id: count for source, count in lead_data}
+        mapped_data = {datum['source_id'][0]: datum['source_id_count'] for datum in lead_data}
         for mass_mailing in self:
             mass_mailing.crm_lead_count = mapped_data.get(mass_mailing.source_id.id, 0)
 
@@ -42,7 +42,7 @@ class MassMailing(models.Model):
             'name': _("Leads Analysis"),
             'res_model': 'crm.lead',
             'type': 'ir.actions.act_window',
-            'view_mode': 'list,pivot,graph,form',
+            'view_mode': 'graph,pivot,tree,form',
         }
 
     def _prepare_statistics_email_values(self):
@@ -50,10 +50,10 @@ class MassMailing(models.Model):
         values = super(MassMailing, self)._prepare_statistics_email_values()
         if not self.user_id:
             return values
-        if not self.env['crm.lead'].has_access('read'):
+        if not self.env['crm.lead'].check_access_rights('read', raise_exception=False):
             return values
         values['kpi_data'][1]['kpi_col1'] = {
-            'value': tools.misc.format_decimalized_number(self.crm_lead_count, decimal=0),
+            'value': tools.format_decimalized_number(self.crm_lead_count, decimal=0),
             'col_subtitle': _('LEADS'),
         }
         values['kpi_data'][1]['kpi_name'] = 'lead'

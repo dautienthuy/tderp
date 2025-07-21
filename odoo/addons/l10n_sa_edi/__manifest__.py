@@ -3,16 +3,15 @@
 
 {
     'name': 'Saudi Arabia - E-invoicing',
-    'countries': ['sa'],
-    'version': '0.2',
+    'icon': '/l10n_sa/static/description/icon.png',
+    'version': '0.1',
     'depends': [
-        'account_edi',
         'account_edi_ubl_cii',
         'account_debit_note',
         'l10n_sa',
-        'base_vat',
-        'certificate',
+        'base_vat'
     ],
+    'author': 'Odoo S.A.',
     'summary': """
         E-Invoicing, Universal Business Language
     """,

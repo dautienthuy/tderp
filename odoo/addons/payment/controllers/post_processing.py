@@ -1,10 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import logging
+from datetime import timedelta
 
 import psycopg2
 
-from odoo import http
+from odoo import fields, http
 from odoo.http import request
 
 _logger = logging.getLogger(__name__)
@@ -21,70 +22,118 @@ class PaymentPostProcessing(http.Controller):
     their post-processing.
     """
 
-    MONITORED_TX_ID_KEY = '__payment_monitored_tx_id__'
+    MONITORED_TX_IDS_KEY = '__payment_monitored_tx_ids__'
 
     @http.route('/payment/status', type='http', auth='public', website=True, sitemap=False)
     def display_status(self, **kwargs):
-        """ Fetch the transaction and display it on the payment status page.
+        """ Display the payment status page.
 
         :param dict kwargs: Optional data. This parameter is not used here
         :return: The rendered status page
         :rtype: str
         """
-        monitored_tx = self._get_monitored_transaction()
-        # The session might have expired, or the transaction never existed.
-        values = {'tx': monitored_tx} if monitored_tx else {'payment_not_found': True}
-        return request.render('payment.payment_status', values)
+        return request.render('payment.payment_status')
 
     @http.route('/payment/status/poll', type='json', auth='public')
     def poll_status(self, **_kwargs):
-        """ Fetch the transaction and trigger its post-processing.
+        """ Fetch the transactions to display on the status page and finalize their post-processing.
 
-        :return: The post-processing values of the transaction.
+        :return: The post-processing values of the transactions
         :rtype: dict
         """
-        # We only poll the payment status if a payment was found, so the transaction should exist.
-        monitored_tx = self._get_monitored_transaction()
+        # Retrieve recent user's transactions from the session
+        limit_date = fields.Datetime.now() - timedelta(days=1)
+        monitored_txs = request.env['payment.transaction'].sudo().search([
+            ('id', 'in', self.get_monitored_transaction_ids()),
+            ('last_state_change', '>=', limit_date)
+        ])
+        if not monitored_txs:  # The transaction was not correctly created
+            return {
+                'success': False,
+                'error': 'no_tx_found',
+            }
 
-        # Post-process the transaction before redirecting the user to the landing route and its
-        # document.
-        if not monitored_tx.is_post_processed:
-            try:
-                monitored_tx._post_process()
-            except (
-                psycopg2.OperationalError, psycopg2.IntegrityError
-            ):  # The database cursor could not be committed.
-                request.env.cr.rollback()  # Rollback and try later.
-                raise Exception('retry')
-            except Exception as e:
-                request.env.cr.rollback()
-                _logger.exception(
-                    "Encountered an error while post-processing transaction with id %s:\n%s",
-                    monitored_tx.id, e
-                )
-                raise
+        # Build the list of display values with the display message and post-processing values
+        display_values_list = []
+        for tx in monitored_txs:
+            display_message = None
+            if tx.state == 'pending':
+                display_message = tx.provider_id.pending_msg
+            elif tx.state == 'done':
+                display_message = tx.provider_id.done_msg
+            elif tx.state == 'cancel':
+                display_message = tx.provider_id.cancel_msg
+            display_values_list.append({
+                'display_message': display_message,
+                **tx._get_post_processing_values(),
+            })
+
+        # Stop monitoring already post-processed transactions
+        post_processed_txs = monitored_txs.filtered('is_post_processed')
+        self.remove_transactions(post_processed_txs)
+
+        # Finalize post-processing of transactions before displaying them to the user
+        txs_to_post_process = (monitored_txs - post_processed_txs).filtered(
+            lambda t: t.state == 'done'
+        )
+        success, error = True, None
+        try:
+            txs_to_post_process._finalize_post_processing()
+        except psycopg2.OperationalError:  # A collision of accounting sequences occurred
+            request.env.cr.rollback()  # Rollback and try later
+            success = False
+            error = 'tx_process_retry'
+        except Exception as e:
+            request.env.cr.rollback()
+            success = False
+            error = str(e)
+            _logger.exception(
+                "encountered an error while post-processing transactions with ids %s:\n%s",
+                ', '.join([str(tx_id) for tx_id in txs_to_post_process.ids]), e
+            )
 
         return {
-            'provider_code': monitored_tx.provider_code,
-            'state': monitored_tx.state,
-            'landing_route': monitored_tx.landing_route,
+            'success': success,
+            'error': error,
+            'display_values_list': display_values_list,
         }
 
     @classmethod
-    def monitor_transaction(cls, transaction):
-        """ Make the provided transaction id monitored.
+    def monitor_transactions(cls, transactions):
+        """ Add the ids of the provided transactions to the list of monitored transaction ids.
 
-        :param payment.transaction transaction: The transaction to monitor.
+        :param recordset transactions: The transactions to monitor, as a `payment.transaction`
+                                       recordset
         :return: None
         """
-        request.session[cls.MONITORED_TX_ID_KEY] = transaction.id
+        if transactions:
+            monitored_tx_ids = request.session.get(cls.MONITORED_TX_IDS_KEY, [])
+            request.session[cls.MONITORED_TX_IDS_KEY] = list(
+                set(monitored_tx_ids).union(transactions.ids)
+            )
 
-    def _get_monitored_transaction(self):
-        """ Retrieve the user's last transaction from the session (the transaction being monitored).
+    @classmethod
+    def get_monitored_transaction_ids(cls):
+        """ Return the ids of transactions being monitored.
 
-        :return: the user's last transaction
-        :rtype: payment.transaction
+        Only the ids and not the recordset itself is returned to allow the caller browsing the
+        recordset with sudo privileges, and using the ids in a custom query.
+
+        :return: The ids of transactions being monitored
+        :rtype: list
         """
-        return request.env['payment.transaction'].sudo().browse(
-            request.session.get(self.MONITORED_TX_ID_KEY)
-        ).exists()
+        return request.session.get(cls.MONITORED_TX_IDS_KEY, [])
+
+    @classmethod
+    def remove_transactions(cls, transactions):
+        """ Remove the ids of the provided transactions from the list of monitored transaction ids.
+
+        :param recordset transactions: The transactions to remove, as a `payment.transaction`
+                                       recordset
+        :return: None
+        """
+        if transactions:
+            monitored_tx_ids = request.session.get(cls.MONITORED_TX_IDS_KEY, [])
+            request.session[cls.MONITORED_TX_IDS_KEY] = [
+                tx_id for tx_id in monitored_tx_ids if tx_id not in transactions.ids
+            ]

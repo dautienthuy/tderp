@@ -4,14 +4,12 @@
 from odoo import http
 from odoo.http import request
 from odoo.addons.google_calendar.utils.google_calendar import GoogleCalendarService
-from odoo.addons.calendar.controllers.main import CalendarController
-from odoo.addons.google_account.models.google_service import _get_client_secret
 
 
-class GoogleCalendarController(CalendarController):
+class GoogleCalendarController(http.Controller):
 
     @http.route('/google_calendar/sync_data', type='json', auth='user')
-    def google_calendar_sync_data(self, model, **kw):
+    def sync_data(self, model, **kw):
         """ This route/function is called when we want to synchronize Odoo
             calendar with Google Calendar.
             Function return a dictionary with the status :  need_config_from_admin, need_auth,
@@ -46,11 +44,10 @@ class GoogleCalendarController(CalendarController):
             # If App authorized, and user access accepted, We launch the synchronization
             need_refresh = request.env.user.sudo()._sync_google_calendar(GoogleCal)
 
-            # If synchronization has been stopped or paused
-            sync_status = request.env.user._get_google_sync_status()
-            if not need_refresh and sync_status != "sync_active":
+            # If synchronization has been stopped
+            if not need_refresh and request.env.user.google_synchronization_stopped:
                 return {
-                    "status": sync_status,
+                    "status": "sync_stopped",
                     "url": ''
                 }
             return {
@@ -59,9 +56,3 @@ class GoogleCalendarController(CalendarController):
             }
 
         return {"status": "success"}
-
-    @http.route()
-    def check_calendar_credentials(self):
-        res = super().check_calendar_credentials()
-        res['google_calendar'] = request.env['res.users']._has_setup_credentials()
-        return res

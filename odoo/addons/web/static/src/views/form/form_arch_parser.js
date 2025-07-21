@@ -1,54 +1,86 @@
-import { exprToBoolean } from "@web/core/utils/strings";
-import { visitXML } from "@web/core/utils/xml";
+/** @odoo-module **/
+
+import { addFieldDependencies, archParseBoolean, getActiveActions } from "@web/views/utils";
 import { Field } from "@web/views/fields/field";
-import { getActiveActions } from "@web/views/utils";
+import { XMLParser } from "@web/core/utils/xml";
 import { Widget } from "@web/views/widgets/widget";
 
-export class FormArchParser {
-    parse(xmlDoc, models, modelName) {
+export class FormArchParser extends XMLParser {
+    parse(arch, models, modelName) {
+        const xmlDoc = this.parseXML(arch);
         const jsClass = xmlDoc.getAttribute("js_class");
-        const disableAutofocus = exprToBoolean(xmlDoc.getAttribute("disable_autofocus") || "");
+        const disableAutofocus = archParseBoolean(xmlDoc.getAttribute("disable_autofocus") || "");
         const activeActions = getActiveActions(xmlDoc);
         const fieldNodes = {};
-        const widgetNodes = {};
-        let widgetNextId = 0;
         const fieldNextIds = {};
-        // autofocusFieldId is now deprecated, it's kept until saas-18.2 for retro-compatibility
-        // and is removed in saas-18.3 to let autofocusFieldIds take over.
         let autofocusFieldId = null;
-        const autofocusFieldIds = [];
-        visitXML(xmlDoc, (node) => {
+        const activeFields = {};
+        this.visitXML(xmlDoc, (node) => {
             if (node.tagName === "field") {
                 const fieldInfo = Field.parseFieldNode(node, models, modelName, "form", jsClass);
-                if (!(fieldInfo.name in fieldNextIds)) {
-                    fieldNextIds[fieldInfo.name] = 0;
+                let fieldId = fieldInfo.name;
+                if (fieldInfo.name in fieldNextIds) {
+                    fieldId = `${fieldInfo.name}_${fieldNextIds[fieldInfo.name]++}`;
+                } else {
+                    fieldNextIds[fieldInfo.name] = 1;
                 }
-                const fieldId = `${fieldInfo.name}_${fieldNextIds[fieldInfo.name]++}`;
                 fieldNodes[fieldId] = fieldInfo;
                 node.setAttribute("field_id", fieldId);
-                if (exprToBoolean(node.getAttribute("default_focus") || "")) {
+                if (archParseBoolean(node.getAttribute("default_focus") || "")) {
                     autofocusFieldId = fieldId;
-                    autofocusFieldIds.push(fieldId);
                 }
-                if (fieldInfo.type === "properties") {
-                    activeActions.addPropertyFieldValue = true;
-                }
+                addFieldDependencies(
+                    activeFields,
+                    models[modelName],
+                    fieldInfo.FieldComponent.fieldDependencies
+                );
+                return false;
+            } else if (node.tagName === "div" && node.classList.contains("oe_chatter")) {
+                // remove this when chatter fields are declared as attributes on the root node
                 return false;
             } else if (node.tagName === "widget") {
-                const widgetInfo = Widget.parseWidgetNode(node);
-                const widgetId = `widget_${++widgetNextId}`;
-                widgetNodes[widgetId] = widgetInfo;
-                node.setAttribute("widget_id", widgetId);
+                const { WidgetComponent } = Widget.parseWidgetNode(node);
+                addFieldDependencies(
+                    activeFields,
+                    models[modelName],
+                    WidgetComponent.fieldDependencies
+                );
             }
         });
+        // TODO: generate activeFields for the model based on fieldNodes (merge duplicated fields)
+        for (const fieldNode of Object.values(fieldNodes)) {
+            const fieldName = fieldNode.name;
+            if (activeFields[fieldName]) {
+                const { alwaysInvisible } = fieldNode;
+                activeFields[fieldName] = {
+                    ...fieldNode,
+                    // a field can only be considered to be always invisible
+                    // if all its nodes are always invisible
+                    alwaysInvisible: activeFields[fieldName].alwaysInvisible && alwaysInvisible,
+                };
+            } else {
+                activeFields[fieldName] = fieldNode;
+            }
+            // const { onChange, modifiers } = fieldNode;
+            // let readonly = modifiers.readonly || [];
+            // let required = modifiers.required || [];
+            // if (activeFields[fieldNode.name]) {
+            //     activeFields[fieldNode.name].readonly = Domain.combine([activeFields[fieldNode.name].readonly, readonly], "|");
+            //     activeFields[fieldNode.name].required = Domain.combine([activeFields[fieldNode.name].required, required], "|");
+            //     activeFields[fieldNode.name].onChange = activeFields[fieldNode.name].onChange || onChange;
+            // } else {
+            //     activeFields[fieldNode.name] = { readonly, required, onChange };
+            // }
+        }
         return {
+            arch,
             activeActions,
+            activeFields,
             autofocusFieldId,
-            autofocusFieldIds,
             disableAutofocus,
             fieldNodes,
-            widgetNodes,
             xmlDoc,
+            __rawArch: arch,
         };
     }
 }

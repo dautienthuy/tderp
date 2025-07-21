@@ -1,3 +1,5 @@
+/** @odoo-module **/
+
 import { SearchModel } from "@web/search/search_model";
 
 export class GraphSearchModel extends SearchModel {

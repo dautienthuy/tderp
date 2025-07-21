@@ -3,20 +3,20 @@
 # 	* sale_expense
 # 
 # Translators:
-# Quim - coopdevs <quim.rebull@coopdevs.org>, 2024
-# Martin Trigaux, 2024
+# Martin Trigaux, 2022
+# marcescu, 2022
+# Manel Fernandez Ramirez <manelfera@outlook.com>, 2022
+# Quim - eccit <quim@eccit.com>, 2022
+# Óscar Fonseca <tecnico@pyming.com>, 2023
 # Ivan Espinola, 2024
-# Óscar Fonseca <tecnico@pyming.com>, 2024
-# marcescu, 2024
-# Manel Fernandez Ramirez <manelfera@outlook.com>, 2024
 # Josep Anton Belchi, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 17.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-05 12:32+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:54+0000\n"
 "Last-Translator: Josep Anton Belchi, 2024\n"
 "Language-Team: Catalan (https://app.transifex.com/odoo/teams/41243/ca/)\n"
 "MIME-Version: 1.0\n"
@@ -59,6 +59,13 @@ msgid "Expense Report"
 msgstr "Informe de despeses"
 
 #. module: sale_expense
+#: model:ir.model.fields,field_description:sale_expense.field_account_bank_statement_line__expense_sheet_id
+#: model:ir.model.fields,field_description:sale_expense.field_account_move__expense_sheet_id
+#: model:ir.model.fields,field_description:sale_expense.field_account_payment__expense_sheet_id
+msgid "Expense Sheet"
+msgstr "Full de despeses"
+
+#. module: sale_expense
 #: model:ir.model,name:sale_expense.model_hr_expense_split
 msgid "Expense Split"
 msgstr "Divisió de despeses"
@@ -73,6 +80,7 @@ msgstr "Despeses"
 #. module: sale_expense
 #. odoo-python
 #: code:addons/sale_expense/models/product_template.py:0
+#, python-format
 msgid "Expenses of this category may not be added to a Sales Order."
 msgstr ""
 "Les despeses d'aquesta categoria no es poden afegir a una comanda de vendes."
@@ -80,6 +88,7 @@ msgstr ""
 #. module: sale_expense
 #. odoo-python
 #: code:addons/sale_expense/models/product_template.py:0
+#, python-format
 msgid ""
 "Expenses will be added to the Sales Order at their actual cost when posted."
 msgstr ""
@@ -89,6 +98,7 @@ msgstr ""
 #. module: sale_expense
 #. odoo-python
 #: code:addons/sale_expense/models/product_template.py:0
+#, python-format
 msgid ""
 "Expenses will be added to the Sales Order at their sales price (product "
 "price, pricelist, etc.) when posted."
@@ -128,6 +138,7 @@ msgstr "Producte"
 #. module: sale_expense
 #. odoo-python
 #: code:addons/sale_expense/models/hr_expense_sheet.py:0
+#, python-format
 msgid "Reinvoiced Sales Orders"
 msgstr "Comandes de vendes facturades"
 
@@ -139,7 +150,7 @@ msgstr "Nombre de comandes"
 #. module: sale_expense
 #: model:ir.model,name:sale_expense.model_sale_order
 msgid "Sales Order"
-msgstr "Comanda"
+msgstr "Comanda de venda"
 
 #. module: sale_expense
 #: model_terms:ir.ui.view,arch_db:sale_expense.hr_expense_sheet_view_form

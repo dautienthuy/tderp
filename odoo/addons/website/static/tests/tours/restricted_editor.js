@@ -1,9 +1,12 @@
-/** @odoo-module **/
+odoo.define("website.tour.restricted_editor", function (require) {
+"use strict";
 
-import { clickOnEditAndWaitEditMode, registerWebsitePreviewTour } from "@website/js/tours/tour_utils";
+var wTourUtils = require("website.tour_utils");
 
-registerWebsitePreviewTour("restricted_editor", {
+wTourUtils.registerWebsitePreviewTour("restricted_editor", {
+    test: true,
     url: "/",
-}, () => [
-    ...clickOnEditAndWaitEditMode(),
+}, [
+    ...wTourUtils.clickOnEditAndWaitEditMode(),
 ]);
+});

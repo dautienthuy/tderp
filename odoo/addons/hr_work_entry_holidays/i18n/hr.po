@@ -3,16 +3,18 @@
 # 	* hr_work_entry_holidays
 # 
 # Translators:
-# Martin Trigaux, 2024
-# Bole <bole@dajmi5.com>, 2024
+# Vladimir Olujić <olujic.vladimir@storm.hr>, 2022
+# Martin Trigaux, 2022
+# Milan Tribuson <one.mile.code@gmail.com>, 2022
+# Bole <bole@dajmi5.com>, 2023
 # Kristina Palaš, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 08:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2022-09-20 09:01+0000\n"
+"PO-Revision-Date: 2022-09-22 05:52+0000\n"
 "Last-Translator: Kristina Palaš, 2024\n"
 "Language-Team: Croatian (https://app.transifex.com/odoo/teams/41243/hr/)\n"
 "MIME-Version: 1.0\n"
@@ -20,6 +22,27 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Language: hr\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+
+#. module: hr_work_entry_holidays
+#: code:addons/hr_work_entry_holidays/models/hr_leave.py:0
+#, python-format
+msgid "%s: Time Off"
+msgstr "%s: slobodan"
+
+#. module: hr_work_entry_holidays
+#: code:addons/hr_work_entry_holidays/models/hr_leave.py:0
+#, python-format
+msgid ""
+"A leave cannot be set across multiple contracts with different working schedules.\n"
+"\n"
+"Please create one time off for each contract.\n"
+"\n"
+"Time off:\n"
+"%s\n"
+"\n"
+"Contracts:\n"
+"%s"
+msgstr ""
 
 #. module: hr_work_entry_holidays
 #: model:ir.model,name:hr_work_entry_holidays.model_hr_contract
@@ -55,9 +78,17 @@ msgid ""
 "The status is 'Approved', when time off request is approved by manager."
 msgstr ""
 "Status je 'Za slanje' kada je zahtjev kreiran.\n"
-"Status je 'Za odobriti' kada je zahtjev potvrđen od strane djelatnika.\n"
-"Status je 'Odbijen' kada je zahtjev odbijen od strane Voditelja.\n"
-"Status je 'Odobren' kada je zahtjev odobren od strane Voditelja."
+"Status je 'Za odobriti' kada je zahtjev potvrđen od strane zaposlenika.\n"
+"Status je 'Odbijen' kada je zahtjev odbijen od strane menadžera.\n"
+"Status je 'Odobren' kada je zahtjev odobren od strane menadžera."
+
+#. module: hr_work_entry_holidays
+#: code:addons/hr_work_entry_holidays/models/hr_leave.py:0
+#, python-format
+msgid ""
+"There is no employee set on the time off. Please make sure you're logged in "
+"the correct company."
+msgstr ""
 
 #. module: hr_work_entry_holidays
 #: model:ir.model,name:hr_work_entry_holidays.model_hr_leave

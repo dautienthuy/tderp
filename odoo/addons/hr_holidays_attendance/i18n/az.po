@@ -3,15 +3,15 @@
 # 	* hr_holidays_attendance
 # 
 # Translators:
-# Jumshud Sultanov <cumshud@gmail.com>, 2024
+# Jumshud Sultanov <cumshud@gmail.com>, 2022
 # erpgo translator <jumshud@erpgo.az>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-06 14:58+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2025-02-03 09:16+0000\n"
+"PO-Revision-Date: 2022-09-22 05:46+0000\n"
 "Last-Translator: erpgo translator <jumshud@erpgo.az>, 2024\n"
 "Language-Team: Azerbaijani (https://app.transifex.com/odoo/teams/41243/az/)\n"
 "MIME-Version: 1.0\n"
@@ -23,12 +23,8 @@ msgstr ""
 #. module: hr_holidays_attendance
 #. odoo-python
 #: code:addons/hr_holidays_attendance/models/hr_leave_type.py:0
+#, python-format
 msgid "%s hours available"
-msgstr ""
-
-#. module: hr_holidays_attendance
-#: model:ir.model,name:hr_holidays_attendance.model_hr_leave_accrual_level
-msgid "Accrual Plan Level"
 msgstr ""
 
 #. module: hr_holidays_attendance
@@ -37,26 +33,28 @@ msgid "Attendance"
 msgstr "Davamiyyət"
 
 #. module: hr_holidays_attendance
-#: model:ir.model.fields.selection,name:hr_holidays_attendance.selection__hr_leave_accrual_level__frequency_hourly_source__attendance
-msgid "Attendances"
-msgstr "İştirak"
-
-#. module: hr_holidays_attendance
 #. odoo-javascript
 #: code:addons/hr_holidays_attendance/static/src/xml/time_off_calendar.xml:0
+#, python-format
 msgid "Available"
 msgstr "Mövcud"
 
 #. module: hr_holidays_attendance
-#: model:ir.model.fields.selection,name:hr_holidays_attendance.selection__hr_leave_accrual_level__frequency_hourly_source__calendar
-msgid "Calendar"
-msgstr "Təqvim"
+#: model:ir.model,name:hr_holidays_attendance.model_res_company
+msgid "Companies"
+msgstr "Şirkətlər"
+
+#. module: hr_holidays_attendance
+#: model:ir.model.fields,field_description:hr_holidays_attendance.field_hr_leave_allocation__hr_attendance_overtime
+msgid "Count Extra Hours"
+msgstr ""
 
 #. module: hr_holidays_attendance
 #. odoo-javascript
 #: code:addons/hr_holidays_attendance/static/src/xml/time_off_calendar.xml:0
+#, python-format
 msgid "Days"
-msgstr "günlər"
+msgstr "Gün"
 
 #. module: hr_holidays_attendance
 #: model:ir.model.fields,field_description:hr_holidays_attendance.field_hr_leave_type__overtime_deductible
@@ -84,22 +82,15 @@ msgid "Extra Hours Available"
 msgstr ""
 
 #. module: hr_holidays_attendance
-#: model:ir.model.fields,field_description:hr_holidays_attendance.field_hr_leave_accrual_level__frequency_hourly_source
-msgid "Frequency Hourly Source"
-msgstr ""
-
-#. module: hr_holidays_attendance
 #. odoo-javascript
 #: code:addons/hr_holidays_attendance/static/src/xml/time_off_calendar.xml:0
+#, python-format
 msgid "Hours"
 msgstr "Saatlar"
 
 #. module: hr_holidays_attendance
-#: model:ir.model.fields,help:hr_holidays_attendance.field_hr_leave_accrual_level__frequency_hourly_source
-msgid ""
-"If the source is set to \"Calendar\", the amount of worked hours will be "
-"computed based on the Employee's working schedule. Otherwise, the amount of "
-"worked hours will be based on Attendance records."
+#: model:ir.model.fields,field_description:hr_holidays_attendance.field_hr_leave_type__hr_attendance_overtime
+msgid "Hr Attendance Overtime"
 msgstr ""
 
 #. module: hr_holidays_attendance
@@ -118,6 +109,7 @@ msgstr ""
 #. module: hr_holidays_attendance
 #. odoo-python
 #: code:addons/hr_holidays_attendance/models/hr_leave_allocation.py:0
+#, python-format
 msgid ""
 "Only an Officer or Administrator is allowed to edit the allocation duration "
 "in this status."
@@ -140,13 +132,9 @@ msgid "Save"
 msgstr "Yadda Saxla"
 
 #. module: hr_holidays_attendance
-#: model_terms:ir.ui.view,arch_db:hr_holidays_attendance.hr_leave_accrual_level_view_form
-msgid "Source"
-msgstr "Mənbə"
-
-#. module: hr_holidays_attendance
 #. odoo-python
 #: code:addons/hr_holidays_attendance/models/hr_leave_allocation.py:0
+#, python-format
 msgid ""
 "The employee does not have enough extra hours to extend this allocation."
 msgstr ""
@@ -154,18 +142,29 @@ msgstr ""
 #. module: hr_holidays_attendance
 #. odoo-python
 #: code:addons/hr_holidays_attendance/models/hr_leave.py:0
+#, python-format
 msgid "The employee does not have enough extra hours to extend this leave."
 msgstr ""
 
 #. module: hr_holidays_attendance
 #. odoo-python
+#: code:addons/hr_holidays_attendance/models/hr_leave_allocation.py:0
+#, python-format
+msgid ""
+"The employee does not have enough extra hours to request this allocation."
+msgstr ""
+
+#. module: hr_holidays_attendance
+#. odoo-python
 #: code:addons/hr_holidays_attendance/models/hr_leave.py:0
+#, python-format
 msgid "The employee does not have enough extra hours to request this leave."
 msgstr ""
 
 #. module: hr_holidays_attendance
 #. odoo-python
 #: code:addons/hr_holidays_attendance/models/hr_leave_allocation.py:0
+#, python-format
 msgid ""
 "The employee does not have enough overtime hours to request this leave."
 msgstr ""
@@ -199,5 +198,6 @@ msgstr "İstifadəçi"
 #. module: hr_holidays_attendance
 #. odoo-python
 #: code:addons/hr_holidays_attendance/models/hr_leave.py:0
+#, python-format
 msgid "You do not have enough extra hours to request this leave"
 msgstr ""

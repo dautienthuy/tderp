@@ -1,10 +1,9 @@
+/** @odoo-module **/
+
 import { useAutofocus } from "../utils/hooks";
 import { clamp } from "../utils/numbers";
 
-import { Component, EventBus, useEffect, useExternalListener, useState } from "@odoo/owl";
-
-export const PAGER_UPDATED_EVENT = "PAGER:UPDATED";
-export const pagerBus = new EventBus();
+import { Component, useExternalListener, useState } from "@odoo/owl";
 
 /**
  * Pager
@@ -20,21 +19,6 @@ export const pagerBus = new EventBus();
  * @extends Component
  */
 export class Pager extends Component {
-    static template = "web.Pager";
-    static defaultProps = {
-        isEditable: true,
-        withAccessKey: true,
-    };
-    static props = {
-        offset: Number,
-        limit: Number,
-        total: Number,
-        onUpdate: Function,
-        isEditable: { type: Boolean, optional: true },
-        withAccessKey: { type: Boolean, optional: true },
-        updateTotal: { type: Function, optional: true },
-    };
-
     setup() {
         this.state = useState({
             isEditing: false,
@@ -42,19 +26,6 @@ export class Pager extends Component {
         });
         this.inputRef = useAutofocus();
         useExternalListener(document, "mousedown", this.onClickAway, { capture: true });
-        let firstMount = true;
-        useEffect(
-            () => {
-                if (!firstMount && this.env.isSmall) {
-                    pagerBus.trigger(PAGER_UPDATED_EVENT, {
-                        value: this.value,
-                        total: this.props.total,
-                    });
-                }
-                firstMount = false;
-            },
-            () => [this.props.offset, this.props.limit, this.props.total]
-        );
     }
 
     /**
@@ -144,12 +115,9 @@ export class Pager extends Component {
      */
     async update(offset, limit, hasNavigated) {
         this.state.isDisabled = true;
-        try {
-            await this.props.onUpdate({ offset, limit }, hasNavigated);
-        } finally {
-            this.state.isDisabled = false;
-            this.state.isEditing = false;
-        }
+        await this.props.onUpdate({ offset, limit }, hasNavigated);
+        this.state.isDisabled = false;
+        this.state.isEditing = false;
     }
 
     async updateTotal() {
@@ -206,3 +174,18 @@ export class Pager extends Component {
         }
     }
 }
+Pager.template = "web.Pager";
+
+Pager.defaultProps = {
+    isEditable: true,
+    withAccessKey: true,
+};
+Pager.props = {
+    offset: Number,
+    limit: Number,
+    total: Number,
+    onUpdate: Function,
+    isEditable: { type: Boolean, optional: true },
+    withAccessKey: { type: Boolean, optional: true },
+    updateTotal: { type: Function, optional: true },
+};

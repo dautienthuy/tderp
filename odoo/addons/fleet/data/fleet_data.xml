@@ -9,6 +9,8 @@
             <field name="user_id" ref="base.user_root" />
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field eval="False" name="doall" />
         </record>
 
         <record id="fleet_vehicle_state_new_request" model="fleet.vehicle.state">
@@ -29,16 +31,6 @@
         <record id="fleet_vehicle_state_downgraded" model="fleet.vehicle.state">
             <field name="name">Downgraded</field>
             <field name="sequence">8</field>
-        </record>
-
-        <record id="type_contract_omnium" model="fleet.service.type">
-          <field name="name">Omnium</field>
-          <field name="category">contract</field>
-        </record>
-
-        <record id="type_contract_leasing" model="fleet.service.type">
-          <field name="name">Leasing</field>
-          <field name="category">contract</field>
         </record>
     </data>
 </odoo>

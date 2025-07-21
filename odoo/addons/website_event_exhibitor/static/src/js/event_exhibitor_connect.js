@@ -1,9 +1,60 @@
-/** @odoo-module **/
+odoo.define('website_event_exhibitor.event_exhibitor_connect', function (require) {
+'use strict';
 
-import { debounce } from "@web/core/utils/timing";
-import publicWidget from "@web/legacy/js/public/public_widget";
-import { redirect } from "@web/core/utils/urls";
-import { ExhibitorConnectClosedDialog } from "../components/exhibitor_connect_closed_dialog/exhibitor_connect_closed_dialog";
+var Dialog = require('web.Dialog');
+var publicWidget = require('web.public.widget');
+const {Markup} = require('web.utils');
+
+var ExhibitorConnectClosedDialog = Dialog.extend({
+    events: _.extend({}, Dialog.prototype.events, {
+        'click .o_wesponsor_js_connect_modal_contry': '_onClickCountryFlag',
+    }),
+    template: 'exhibitor.connect.closed.modal',
+
+    /**
+     * @override
+     * @param {Object} parent;
+     * @param {Object} options holding a sponsorData obj with required values to
+     *   display (see .xml for details);
+     */
+    init: function (parent, options) {
+        options = _.defaults(options || {}, {
+            size: 'medium',
+            renderHeader: false,
+            renderFooter: false,
+            backdrop: true,
+        });
+        this.sponsorId = options.sponsorId;
+        this._super(parent, options);
+    },
+
+    /**
+     * @override
+     * Wait for fetching sponsor data;
+     */
+    willStart: function () {
+        return Promise.all([
+            this._super(...arguments),
+            this._fetchSponsor()
+        ]);
+    },
+
+    //---------------------------------------------------------------------
+    // Private
+    //---------------------------------------------------------------------
+
+    /**
+     * @private
+     */
+    async _fetchSponsor() {
+        const sponsorData = await this._rpc({
+            route: `/event_sponsor/${encodeURIComponent(this.sponsorId)}/read`
+        });
+        sponsorData.website_description = Markup(sponsorData.website_description);
+        this.sponsorData = sponsorData;
+    },
+});
+
 
 publicWidget.registry.eventExhibitorConnect = publicWidget.Widget.extend({
     selector: '.o_wesponsor_connect_button',
@@ -13,7 +64,7 @@ publicWidget.registry.eventExhibitorConnect = publicWidget.Widget.extend({
      */
     init: function () {
         this._super(...arguments);
-        this._onConnectClick = debounce(this._onConnectClick, 500, true).bind(this);
+        this._onConnectClick = _.debounce(this._onConnectClick, 500, true);
     },
 
     /**
@@ -23,21 +74,12 @@ publicWidget.registry.eventExhibitorConnect = publicWidget.Widget.extend({
     start: function () {
         var self = this;
         return this._super(...arguments).then(function () {
-            self.eventIsOngoing = self.el.dataset.eventIsOngoing || false;
-            self.sponsorIsOngoing = self.el.dataset.sponsorIsOngoing || false;
-            self.isParticipating = self.el.dataset.isParticipating || false;
-            self.userEventManager = self.el.dataset.userEventManager || false;
-            self.el.addEventListener("click", self._onConnectClick);
+            self.eventIsOngoing = self.$el.data('eventIsOngoing') || false;
+            self.sponsorIsOngoing = self.$el.data('sponsorIsOngoing') || false;
+            self.isParticipating = self.$el.data('isParticipating') || false;
+            self.userEventManager = self.$el.data('userEventManager') || false;
+            self.$el.on('click', self._onConnectClick.bind(self));
         });
-    },
-
-    /**
-     * @override
-     * @public
-     */
-    destory () {
-        this._super(...arguments);
-        this.el.removeEventListener("click", this._onConnectClick);
     },
 
     //--------------------------------------------------------------------------
@@ -55,11 +97,13 @@ publicWidget.registry.eventExhibitorConnect = publicWidget.Widget.extend({
         ev.preventDefault();
 
         if (this.userEventManager) {
-            redirect(this.el.dataset.sponsorUrl);
+            document.location = this.$el.data('sponsorUrl');
+        } else if (!this.eventIsOngoing && !this.isParticipating) {
+            document.location = this.$el.data('registerUrl');
         } else if (!this.eventIsOngoing || ! this.sponsorIsOngoing) {
             return this._openClosedDialog();
         } else {
-            redirect(this.el.dataset.sponsorUrl);
+            document.location = this.$el.data('sponsorUrl');
         }
     },
 
@@ -67,14 +111,21 @@ publicWidget.registry.eventExhibitorConnect = publicWidget.Widget.extend({
     // Private
     //--------------------------------------------------------------------------
 
-    _openClosedDialog: function () {
-        const sponsorId = parseInt(this.el.dataset.sponsorId);
-        this.call("dialog", "add", ExhibitorConnectClosedDialog, { sponsorId });
+    _openClosedDialog: function ($element) {
+        const sponsorId = this.$el.data('sponsorId');
+        return new ExhibitorConnectClosedDialog(
+            this, {
+                sponsorId: sponsorId,
+            }
+        ).open();
     },
 
 });
 
 
-export default {
+return {
+    ExhibitorConnectClosedDialog: ExhibitorConnectClosedDialog,
     eventExhibitorConnect: publicWidget.registry.eventExhibitorConnect,
 };
+
+});

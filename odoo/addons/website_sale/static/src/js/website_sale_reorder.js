@@ -1,11 +1,62 @@
 /** @odoo-module **/
 
-import { _t } from "@web/core/l10n/translation";
 import { debounce as debounceFn } from "@web/core/utils/timing";
-import publicWidget from "@web/legacy/js/public/public_widget";
+import publicWidget from "web.public.widget";
+import { localization as l10n } from "@web/core/l10n/localization";
+import { ComponentWrapper } from "web.OwlCompatibility";
+import { intersperse, nbsp } from "@web/core/utils/strings";
 import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
-import { formatCurrency } from "@web/core/currency";
-import { rpc } from "@web/core/network/rpc";
+
+/**
+ * Inserts "thousands" separators in the provided number.
+ *
+ * @private
+ * @param {string} string representing integer number
+ * @param {string} [thousandsSep=","] the separator to insert
+ * @param {number[]} [grouping=[]]
+ *   array of relative offsets at which to insert `thousandsSep`.
+ *   See `strings.intersperse` method.
+ * @returns {string}
+ */
+function insertThousandsSep(number, thousandsSep = ",", grouping = []) {
+    const negative = number[0] === "-";
+    number = negative ? number.slice(1) : number;
+    return (negative ? "-" : "") + intersperse(number, grouping, thousandsSep);
+}
+
+export function formatFloat(value, digits = 2) {
+    if (value === false) {
+        return "";
+    }
+    const grouping = l10n.grouping;
+    const thousandsSep = l10n.thousandsSep;
+    const decimalPoint = l10n.decimalPoint;
+    let precision = digits;
+    const formatted = (value || 0).toFixed(precision).split(".");
+    formatted[0] = insertThousandsSep(formatted[0], thousandsSep, grouping);
+    return formatted[1] ? formatted.join(decimalPoint) : formatted[0];
+}
+
+export function formatMonetary(value, currency) {
+    // Monetary fields want to display nothing when the value is unset.
+    // You wouldn't want a value of 0 euro if nothing has been provided.
+    if (value === false) {
+        return "";
+    }
+
+    const digits = (currency && currency.decimal_places) || 2;
+
+    let formattedValue = formatFloat(value, digits);
+
+    if (!currency) {
+        return formattedValue;
+    }
+    const formatted = [currency.symbol, formattedValue];
+    if (currency.position === "after") {
+        formatted.reverse();
+    }
+    return formatted.join(nbsp);
+}
 
 // Widget responsible for openingn the modal (giving out the sale order id)
 
@@ -22,38 +73,41 @@ publicWidget.registry.SaleOrderPortalReorderWidget = publicWidget.Widget.extend(
             return;
         }
         // Open the modal
-        this.call("dialog", "add", ReorderDialog, {
+        const dialogWrapper = new ComponentWrapper(this, ReorderDialogWrapper, {
             orderId: orderId,
             accessToken: urlSearchParams.get("access_token"),
         });
+        dialogWrapper.mount(document.body);
     },
 });
 
 import { useService } from "@web/core/utils/hooks";
 import { Dialog } from "@web/core/dialog/dialog";
-import { Component, onWillStart } from "@odoo/owl";
+
+const { Component, onRendered, onWillStart, xml } = owl;
 
 // Reorder Dialog
 
-export class ReorderConfirmationDialog extends ConfirmationDialog {
-    static template = "website_sale.ReorderConfirmationDialog";
+export class ReorderDialogWrapper extends Component {
+    setup() {
+        this.dialogService = useService("dialog");
+
+        onRendered(() => {
+            this.dialogService.add(ReorderDialog, this.props);
+        });
+    }
 }
+ReorderDialogWrapper.template = xml``;
+
+export class ReorderConfirmationDialog extends ConfirmationDialog {}
+ReorderConfirmationDialog.template = "website_sale.ReorderConfirmationDialog";
 
 export class ReorderDialog extends Component {
-    static template = "website_sale.ReorderModal";
-    static props = {
-        close: Function,
-        orderId: Number,
-        accessToken: String,
-    };
-    static components = {
-        Dialog,
-    };
-
     setup() {
+        this.rpc = useService("rpc");
         this.orm = useService("orm");
         this.dialogService = useService("dialog");
-        this.formatCurrency = formatCurrency;
+        this.formatMonetary = formatMonetary;
 
         onWillStart(this.onWillStartHandler.bind(this));
     }
@@ -62,10 +116,10 @@ export class ReorderDialog extends Component {
         // Cart Qty should not change while the dialog is opened.
         this.cartQty = parseInt(sessionStorage.getItem("website_sale_cart_quantity"));
         if (!this.cartQty) {
-            this.cartQty = await rpc("/shop/cart/quantity");
+            this.cartQty = await this.rpc("/shop/cart/quantity");
         }
         // Get required information about the order
-        this.content = await rpc("/my/orders/reorder_modal_content", {
+        this.content = await this.rpc("/my/orders/reorder_modal_content", {
             order_id: this.props.orderId,
             access_token: this.props.accessToken,
         });
@@ -91,22 +145,12 @@ export class ReorderDialog extends Component {
     }
 
     async loadProductCombinationInfo(product) {
-        for (const comboItem of product.selected_combo_items) {
-            comboItem.combinationInfo = await rpc("/website_sale/get_combination_info", {
-                product_template_id: comboItem.product_template_id,
-                product_id: comboItem.product_id,
-                combination: comboItem.combination,
-                add_qty: comboItem.qty,
-                context: {
-                    website_sale_no_images: true,
-                },
-            });
-        }
-        product.combinationInfo = await rpc("/website_sale/get_combination_info", {
+        product.combinationInfo = await this.rpc("/sale/get_combination_info_website", {
             product_template_id: product.product_template_id,
             product_id: product.product_id,
             combination: product.combination,
             add_qty: product.qty,
+            pricelist_id: false,
             context: {
                 website_sale_no_images: true,
             },
@@ -115,7 +159,7 @@ export class ReorderDialog extends Component {
 
     getWarningForProduct(product) {
         if (!product.add_to_cart_allowed) {
-            return _t("This product is not available for purchase.");
+            return this.env._t("This product is not available for purchase.");
         }
         return false;
     }
@@ -148,13 +192,12 @@ export class ReorderDialog extends Component {
         if (this.cartQty) {
             // Open confirmation modal
             this.dialogService.add(ReorderConfirmationDialog, {
-                body: _t("Do you wish to clear your cart before adding products to it?"),
+                body: this.env._t("Do you wish to clear your cart before adding products to it?"),
                 confirm: async () => {
-                    await rpc("/shop/cart/clear");
+                    await this.rpc("/shop/cart/clear");
                     await onConfirm();
                 },
                 cancel: onConfirm,
-                dismiss: () => {}, // Prevents fallback of 'cancel' from Confirmation Dialog
             });
         } else {
             await onConfirm();
@@ -166,21 +209,21 @@ export class ReorderDialog extends Component {
             if (!product.add_to_cart_allowed) {
                 continue;
             }
-            if (product.selected_combo_items.length) {
-                await rpc("/website_sale/combo_configurator/update_cart", {
-                    combo_product_id: product.product_id,
-                    quantity: product.qty,
-                    selected_combo_items: product.selected_combo_items,
-                });
-            } else {
-                await rpc("/shop/cart/update_json", {
-                    product_id: product.product_id,
-                    add_qty: product.qty,
-                    no_variant_attribute_value_ids: product.no_variant_attribute_value_ids,
-                    product_custom_attribute_values: JSON.stringify(product.product_custom_attribute_values),
-                    display: false,
-                });
-            }
+            await this.rpc("/shop/cart/update_json", {
+                product_id: product.product_id,
+                add_qty: product.qty,
+                no_variant_attribute_values: JSON.stringify(product.no_variant_attribute_values),
+                product_custom_attribute_values: JSON.stringify(product.product_custom_attribute_values),
+            });
         }
     }
 }
+ReorderDialog.props = {
+    close: Function,
+    orderId: Number,
+    accessToken: String,
+};
+ReorderDialog.components = {
+    Dialog,
+};
+ReorderDialog.template = "website_sale.ReorderModal";

@@ -1,9 +1,9 @@
+/** @odoo-module **/
 import { browser } from "@web/core/browser/browser";
 import { localization } from "@web/core/l10n/localization";
 import { clamp } from "@web/core/utils/numbers";
 
 import { Component, onMounted, onWillUnmount, useRef, useState } from "@odoo/owl";
-import { Deferred } from "@web/core/utils/concurrency";
 
 const isScrollSwipable = (scrollables) => {
     return {
@@ -24,41 +24,6 @@ const isScrollSwipable = (scrollables) => {
  * @extends Component
  */
 export class ActionSwiper extends Component {
-    static template = "web.ActionSwiper";
-    static props = {
-        onLeftSwipe: {
-            type: Object,
-            args: {
-                action: Function,
-                icon: String,
-                bgColor: String,
-            },
-            optional: true,
-        },
-        onRightSwipe: {
-            type: Object,
-            args: {
-                action: Function,
-                icon: String,
-                bgColor: String,
-            },
-            optional: true,
-        },
-        slots: Object,
-        animationOnMove: { type: Boolean, optional: true },
-        animationType: { type: String, optional: true },
-        swipeDistanceRatio: { type: Number, optional: true },
-        swipeInvalid: { type: Function, optional: true },
-    };
-
-    static defaultProps = {
-        onLeftSwipe: undefined,
-        onRightSwipe: undefined,
-        animationOnMove: true,
-        animationType: "bounce",
-        swipeDistanceRatio: 2,
-    };
-
     setup() {
         this.actionTimeoutId = null;
         this.resetTimeoutId = null;
@@ -203,23 +168,57 @@ export class ActionSwiper extends Component {
         if (this.props.animationType === "bounce") {
             this.state.containerStyle = `transform: translateX(${this.swipedDistance}px)`;
             this.actionTimeoutId = browser.setTimeout(async () => {
-                await action(Promise.resolve());
+                await action();
                 this._reset();
             }, 500);
         } else if (this.props.animationType === "forwards") {
             this.state.containerStyle = `transform: translateX(${this.swipedDistance}px)`;
             this.actionTimeoutId = browser.setTimeout(async () => {
-                const prom = new Deferred();
-                await action(prom);
+                await action();
                 this.state.isSwiping = true;
                 this.state.containerStyle = `transform: translateX(${-this.swipedDistance}px)`;
                 this.resetTimeoutId = browser.setTimeout(() => {
-                    prom.resolve();
                     this._reset();
                 }, 100);
             }, 100);
         } else {
-            return action(Promise.resolve());
+            return action();
         }
     }
 }
+
+ActionSwiper.props = {
+    onLeftSwipe: {
+        type: Object,
+        args: {
+            action: Function,
+            icon: String,
+            bgColor: String,
+        },
+        optional: true,
+    },
+    onRightSwipe: {
+        type: Object,
+        args: {
+            action: Function,
+            icon: String,
+            bgColor: String,
+        },
+        optional: true,
+    },
+    slots: Object,
+    animationOnMove: { type: Boolean, optional: true },
+    animationType: { type: String, optional: true },
+    swipeDistanceRatio: { type: Number, optional: true },
+    swipeInvalid: { type: Function, optional: true },
+};
+
+ActionSwiper.defaultProps = {
+    onLeftSwipe: undefined,
+    onRightSwipe: undefined,
+    animationOnMove: true,
+    animationType: "bounce",
+    swipeDistanceRatio: 2,
+};
+
+ActionSwiper.template = "web.ActionSwiper";

@@ -1,3 +1,5 @@
+/** @odoo-module */
+
 import { useComponent, useEffect } from "@odoo/owl";
 
 /**

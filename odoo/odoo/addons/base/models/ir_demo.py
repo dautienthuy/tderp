@@ -13,9 +13,9 @@ class IrDemo(models.TransientModel):
 
     @assert_log_admin_access
     def install_demo(self):
-        force_demo(self.env)
+        force_demo(self.env.cr)
         return {
             'type': 'ir.actions.act_url',
             'target': 'self',
-            'url': '/odoo',
+            'url': '/web',
         }

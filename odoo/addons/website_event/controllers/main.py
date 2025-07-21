@@ -1,14 +1,20 @@
 # -*- coding: utf-8 -*-
 
 import babel.dates
+import pytz
 import re
 import werkzeug
 
 from ast import literal_eval
-from collections import Counter
+from collections import defaultdict
+from datetime import datetime, timedelta
+from dateutil.parser import parse
+from dateutil.relativedelta import relativedelta
+from werkzeug.datastructures import OrderedMultiDict
 from werkzeug.exceptions import NotFound
 
 from odoo import fields, http, _
+from odoo.addons.http_routing.models.ir_http import slug
 from odoo.addons.website.controllers.main import QueryURL
 from odoo.http import request
 from odoo.osv import expression
@@ -26,32 +32,8 @@ class WebsiteEventController(http.Controller):
     # EVENT LIST
     # ------------------------------------------------------------
 
-    def _get_events_search_options(self, **post):
-        return {
-            'displayDescription': False,
-            'displayDetail': False,
-            'displayExtraDetail': False,
-            'displayExtraLink': False,
-            'displayImage': False,
-            'allowFuzzy': not post.get('noFuzzy'),
-            'date': post.get('date'),
-            'tags': post.get('tags'),
-            'type': post.get('type'),
-            'country': post.get('country'),
-        }
-
-    @http.route(['/event', '/event/page/<int:page>', '/events', '/events/page/<int:page>'], type='http', auth="public", website=True, sitemap=sitemap_event, readonly=True)
+    @http.route(['/event', '/event/page/<int:page>', '/events', '/events/page/<int:page>'], type='http', auth="public", website=True, sitemap=sitemap_event)
     def events(self, page=1, **searches):
-        if searches.get('tags', '[]').count(',') > 0 and request.httprequest.method == 'GET' and not searches.get('prevent_redirect'):
-            # Previously, the tags were searched using GET, which caused issues with crawlers (too many hits)
-            # We replaced those with POST to avoid that, but it's not sufficient as bots "remember" crawled pages for a while
-            # This permanent redirect is placed to instruct the bots that this page is no longer valid
-            # Note: We allow a single tag to be GET, to keep crawlers & indexes on those pages
-            # What we really want to avoid is combinatorial explosions
-            # (Tags are formed as a JSON array, so we count ',' to keep it simple)
-            # TODO: remove in a few stable versions (v19?), including the "prevent_redirect" param in templates
-            return request.redirect('/event', code=301)
-
         Event = request.env['event.event']
         SudoEventType = request.env['event.type'].sudo()
 
@@ -65,7 +47,18 @@ class WebsiteEventController(http.Controller):
 
         step = 12  # Number of events per page
 
-        options = self._get_events_search_options(**searches)
+        options = {
+            'displayDescription': False,
+            'displayDetail': False,
+            'displayExtraDetail': False,
+            'displayExtraLink': False,
+            'displayImage': False,
+            'allowFuzzy': not searches.get('noFuzzy'),
+            'date': searches.get('date'),
+            'tags': searches.get('tags'),
+            'type': searches.get('type'),
+            'country': searches.get('country'),
+        }
         order = 'date_begin'
         if searches.get('date', 'upcoming') == 'old':
             order = 'date_begin desc'
@@ -127,9 +120,7 @@ class WebsiteEventController(http.Controller):
             'current_type': current_type,
             'event_ids': events,  # event_ids used in website_event_track so we keep name as it is
             'dates': dates,
-            'categories': request.env['event.tag.category'].search([
-                ('is_published', '=', True), '|', ('website_id', '=', website.id), ('website_id', '=', False)
-            ]),
+            'categories': request.env['event.tag.category'].search([('is_published', '=', True)]),
             'countries': countries,
             'pager': pager,
             'searches': searches,
@@ -137,8 +128,11 @@ class WebsiteEventController(http.Controller):
             'keep': keep,
             'search_count': event_count,
             'original_search': fuzzy_search_term and search,
-            'website': website
         }
+
+        if searches['date'] == 'old':
+            # the only way to display this content is to set date=old so it must be canonical
+            values['canonical_params'] = OrderedMultiDict([('date', 'old')])
 
         return request.render("website_event.index", values)
 
@@ -146,7 +140,7 @@ class WebsiteEventController(http.Controller):
     # EVENT PAGE
     # ------------------------------------------------------------
 
-    @http.route(['''/event/<model("event.event"):event>/page/<path:page>'''], type='http', auth="public", website=True, sitemap=False, readonly=True)
+    @http.route(['''/event/<model("event.event"):event>/page/<path:page>'''], type='http', auth="public", website=True, sitemap=False)
     def event_page(self, event, page, **post):
         values = {
             'event': event,
@@ -171,7 +165,7 @@ class WebsiteEventController(http.Controller):
 
         return request.render(page, values)
 
-    @http.route(['''/event/<model("event.event"):event>'''], type='http', auth="public", website=True, sitemap=True, readonly=True)
+    @http.route(['''/event/<model("event.event"):event>'''], type='http', auth="public", website=True, sitemap=True)
     def event(self, event, **post):
         if event.menu_id and event.menu_id.child_id:
             target_url = event.menu_id.child_id[0].url
@@ -181,7 +175,7 @@ class WebsiteEventController(http.Controller):
             target_url += '?enable_editor=1'
         return request.redirect(target_url)
 
-    @http.route(['''/event/<model("event.event"):event>/register'''], type='http', auth="public", website=True, sitemap=False, readonly=True)
+    @http.route(['''/event/<model("event.event"):event>/register'''], type='http', auth="public", website=True, sitemap=False)
     def event_register(self, event, **post):
         values = self._prepare_event_register_values(event, **post)
         return request.render("website_event.event_description_full", values)
@@ -195,7 +189,6 @@ class WebsiteEventController(http.Controller):
             'range': range,
             'google_url': lazy(lambda: urls.get('google_url')),
             'iCal_url': lazy(lambda: urls.get('iCal_url')),
-            'registration_error_code': post.get('registration_error_code'),
         }
 
     def _process_tickets_form(self, event, form_details):
@@ -251,7 +244,7 @@ class WebsiteEventController(http.Controller):
             visitor = request.env['website.visitor']._get_visitor_from_request()
             if visitor.email:
                 default_first_attendee = {
-                    "name": visitor.display_name,
+                    "name": visitor.name,
                     "email": visitor.email,
                     "phone": visitor.mobile,
                 }
@@ -264,81 +257,35 @@ class WebsiteEventController(http.Controller):
 
     def _process_attendees_form(self, event, form_details):
         """ Process data posted from the attendee details form.
-        Extracts question answers:
-        - For both questions asked 'once_per_order' and questions asked to every attendee
-        - For questions of type 'simple_choice', extracting the suggested answer id
-        - For questions of type 'text_box', extracting the text answer of the attendee.
 
         :param form_details: posted data from frontend registration form, like
             {'1-name': 'r', '1-email': 'r@r.com', '1-phone': '', '1-event_ticket_id': '1'}
         """
+        form_details.pop("recaptcha_token_response", None)
         allowed_fields = request.env['event.registration']._get_website_registration_allowed_fields()
         registration_fields = {key: v for key, v in request.env['event.registration']._fields.items() if key in allowed_fields}
         for ticket_id in list(filter(lambda x: x is not None, [form_details[field] if 'event_ticket_id' in field else None for field in form_details.keys()])):
             if int(ticket_id) not in event.event_ticket_ids.ids and len(event.event_ticket_ids.ids) > 0:
                 raise UserError(_("This ticket is not available for sale for this event"))
         registrations = {}
-        general_answer_ids = []
-        general_identification_answers = {}
-        # as we may have several questions populating the same field (e.g: the phone)
-        # we use this to hold the fields that have already been handled
-        # goal is to use the answer to the first question of every 'type' (aka name / phone / email / company name)
-        already_handled_fields_data = {}
+        global_values = {}
         for key, value in form_details.items():
-            if not value or '-' not in key:
+            counter, attr_name = key.split('-', 1)
+            field_name = attr_name.split('-')[0]
+            if field_name not in registration_fields:
                 continue
-
-            key_values = key.split('-')
-            # Special case for handling event_ticket_id data that holds only 2 values
-            if len(key_values) == 2:
-                registration_index, field_name = key_values
-                if field_name not in registration_fields:
-                    continue
-                registrations.setdefault(registration_index, dict())[field_name] = int(value) or False
-                continue
-
-            if len(key_values) != 3:
-                continue
-
-            registration_index, question_type, question_id = key_values
-            answer_values = None
-            if question_type == 'simple_choice':
-                answer_values = {
-                    'question_id': int(question_id),
-                    'value_answer_id': int(value)
-                }
+            elif isinstance(registration_fields[field_name], (fields.Many2one, fields.Integer)):
+                value = int(value) or False  # 0 is considered as a void many2one aka False
             else:
-                answer_values = {
-                    'question_id': int(question_id),
-                    'value_text_box': value
-                }
+                value = value
 
-            if answer_values and not int(registration_index):
-                general_answer_ids.append((0, 0, answer_values))
-            elif answer_values:
-                registrations.setdefault(registration_index, dict())\
-                    .setdefault('registration_answer_ids', list()).append((0, 0, answer_values))
-
-            if question_type in ('name', 'email', 'phone', 'company_name')\
-                and question_type not in already_handled_fields_data.get(registration_index, []):
-                if question_type not in registration_fields:
-                    continue
-
-                field_name = question_type
-                already_handled_fields_data.setdefault(registration_index, list()).append(field_name)
-
-                if not int(registration_index):
-                    general_identification_answers[field_name] = value
-                else:
-                    registrations.setdefault(registration_index, dict())[field_name] = value
-
-        if general_answer_ids:
+            if counter == '0':
+                global_values[attr_name] = value
+            else:
+                registrations.setdefault(counter, dict())[attr_name] = value
+        for key, value in global_values.items():
             for registration in registrations.values():
-                registration.setdefault('registration_answer_ids', list()).extend(general_answer_ids)
-
-        if general_identification_answers:
-            for registration in registrations.values():
-                registration.update(general_identification_answers)
+                registration[key] = value
 
         return list(registrations.values())
 
@@ -366,18 +313,10 @@ class WebsiteEventController(http.Controller):
 
     @http.route(['''/event/<model("event.event"):event>/registration/confirm'''], type='http', auth="public", methods=['POST'], website=True)
     def registration_confirm(self, event, **post):
-        """ Check before creating and finalize the creation of the registrations
-            that we have enough seats for all selected tickets.
-            If we don't, the user is instead redirected to page to register with a
-            formatted error message. """
         if not request.env['ir.http']._verify_request_recaptcha_token('website_event_registration'):
             raise UserError(_('Suspicious activity detected by Google reCaptcha.'))
-        registrations_data = self._process_attendees_form(event, post)
-        registration_tickets = Counter(registration['event_ticket_id'] for registration in registrations_data)
-        event_tickets = request.env['event.event.ticket'].browse(list(registration_tickets.keys()))
-        if any(event_ticket.seats_limited and event_ticket.seats_available < registration_tickets.get(event_ticket.id) for event_ticket in event_tickets):
-            return request.redirect('/event/%s/register?registration_error_code=insufficient_seats' % event.id)
-        attendees_sudo = self._create_attendees_from_registration_post(event, registrations_data)
+        registrations = self._process_attendees_form(event, post)
+        attendees_sudo = self._create_attendees_from_registration_post(event, registrations)
 
         return request.redirect(('/event/%s/registration/success?' % event.id) + werkzeug.urls.url_encode({'registration_ids': ",".join([str(id) for id in attendees_sudo.ids])}))
 

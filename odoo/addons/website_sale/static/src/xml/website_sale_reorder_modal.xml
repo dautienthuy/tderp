@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates>
-    <t t-name="website_sale.ReorderModal">
-        <Dialog title.translate="Re-Order">
+    <t t-name="website_sale.ReorderModal" owl="1">
+        <Dialog title="env._t('Re-Order')">
             <table id="o_wsale_reorder_table" class="table table-sm">
                 <thead class="bg-100">
                     <tr id="o_wsale_reorder_header">
@@ -24,20 +24,6 @@
                             <td t-att-colspan="product.has_image ? '1' : '2'">
                                 <h5><t t-esc="product.name"/></h5>
                                 <span class="text-muted d-none d-md-inline-block" t-if="product.description_sale" t-out="product.description_sale"/>
-                                <ul
-                                    t-if="product.selected_combo_items.length"
-                                    class="list-unstyled mb-0 small text-muted mt-1"
-                                >
-                                    <t
-                                        t-foreach="product.selected_combo_items"
-                                        t-as="comboItem"
-                                        t-key="comboItem.combo_item_id"
-                                    >
-                                        <li>
-                                            <t t-esc="product.qty"/> x <t t-esc="comboItem.combinationInfo.display_name"/>
-                                        </li>
-                                    </t>
-                                </ul>
                             </td>
                             <t t-if="product.add_to_cart_allowed">
                                 <td class="text-center td-qty">
@@ -57,7 +43,7 @@
                                     </div>
                                 </td>
                                 <td class="text-end td-price">
-                                    <span t-esc="formatCurrency(product.combinationInfo.price, content.currency)"/>
+                                    <span t-esc="formatMonetary(product.combinationInfo.price, content.currency)"/>
                                 </td>
                             </t>
                             <t t-else="">
@@ -75,12 +61,12 @@
             <div id="o_wsale_reorder_total" class="row" name="total" style="page-break-inside: avoid;">
                 <div class="col-sm-7 col-md-6 ms-auto">
                     <table class="table table-sm">
-                        <tr class="o_total">
+                        <tr class="border-black o_total">
                             <td>
                                 <strong>Total</strong>
                             </td>
                             <td class="text-end">
-                                <span t-out="formatCurrency(total, content.currency)"/>
+                                <span t-out="formatMonetary(total, content.currency)"/>
                             </td>
                         </tr>
                     </table>
@@ -97,7 +83,7 @@
         </Dialog>
     </t>
 
-    <t t-name="website_sale.ReorderConfirmationDialog" t-inherit="web.ConfirmationDialog" t-inherit-mode="primary">
+    <t t-name="website_sale.ReorderConfirmationDialog" t-inherit="web.ConfirmationDialog" t-inherit-mode="primary" owl="1">
         <xpath expr="//button[1]" position="replace">
             <button class="btn btn-primary" t-on-click="_confirm">
               Yes

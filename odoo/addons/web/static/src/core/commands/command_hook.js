@@ -1,3 +1,5 @@
+/** @odoo-module **/
+
 import { useService } from "@web/core/utils/hooks";
 
 import { useEffect } from "@odoo/owl";
@@ -11,7 +13,7 @@ import { useEffect } from "@odoo/owl";
  * when the caller component will mount/unmount.
  *
  * @param {string} name
- * @param {()=>(void | import("@web/core/commands/command_palette").CommandPaletteConfig)} action
+ * @param {()=>(void | CommandPaletteConfig)} action
  * @param {CommandOptions} [options]
  */
 export function useCommand(name, action, options = {}) {

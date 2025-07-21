@@ -3,21 +3,20 @@
 # 	* website_slides_survey
 # 
 # Translators:
-# Tiffany Chang, 2024
-# Tuomo Aura <tuomo.aura@web-veistamo.fi>, 2024
-# Veikko Väätäjä <veikko.vaataja@gmail.com>, 2024
-# Jarmo Kortetjärvi <jarmo.kortetjarvi@gmail.com>, 2024
-# Miika Nissi <miika.nissi@tawasta.fi>, 2024
-# Ossi Mantylahti <ossi.mantylahti@obs-solutions.fi>, 2025
-# Jessica Jakara, 2025
+# Tuomo Aura <tuomo.aura@web-veistamo.fi>, 2022
+# Martin Trigaux, 2022
+# Jarmo Kortetjärvi <jarmo.kortetjarvi@gmail.com>, 2022
+# Veikko Väätäjä <veikko.vaataja@gmail.com>, 2022
+# Miika Nissi <miika.nissi@tawasta.fi>, 2022
+# Ossi Mantylahti <ossi.mantylahti@obs-solutions.fi>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-16 13:41+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: Jessica Jakara, 2025\n"
+"POT-Creation-Date: 2023-05-23 08:24+0000\n"
+"PO-Revision-Date: 2022-09-22 05:57+0000\n"
+"Last-Translator: Ossi Mantylahti <ossi.mantylahti@obs-solutions.fi>, 2023\n"
 "Language-Team: Finnish (https://app.transifex.com/odoo/teams/41243/fi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -26,15 +25,11 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: website_slides_survey
-#: model:ir.model.fields,field_description:website_slides_survey.field_slide_channel__members_certified_count
-msgid "# Certified Attendees"
-msgstr "# Sertifioidut osallistujat"
-
-#. module: website_slides_survey
 #. odoo-python
 #: code:addons/website_slides_survey/models/survey_survey.py:0
-msgid "- %(certification)s (Courses - %(courses)s)"
-msgstr "- %(certification)s (Kurssit - %(courses)s)"
+#, python-format
+msgid "- %s (Courses - %s)"
+msgstr "- %s (Kurssit - %s)"
 
 #. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.survey_survey_view_kanban
@@ -50,38 +45,48 @@ msgstr ""
 msgid ""
 "<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
 "    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"        Dear <t t-out=\"object.partner_id.name or 'participant' or ''\">participant</t><br/><br/>\n"
-"        Unfortunately, you have failed the certification and are no longer a member of the course: <t t-out=\"object.slide_partner_id.channel_id.name or ''\">Basics of Gardening</t>.<br/><br/>\n"
+"        Dear <t t-out=\"object.partner_id.name or 'participant' or ''\">participant</t><br><br>\n"
+"        Unfortunately, you have failed the certification and are no longer a member of the course: <t t-out=\"object.slide_partner_id.channel_id.name or ''\">Basics of Gardening</t>.<br><br>\n"
 "        Don't hesitate to enroll again!\n"
-"        </p><div style=\"margin: 16px 0px 16px 0px;\">\n"
+"        <div style=\"margin: 16px 0px 16px 0px;\">\n"
 "            <a t-att-href=\"(object.slide_partner_id.channel_id.website_url)\" style=\"background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;\">\n"
 "                Enroll now\n"
 "            </a>\n"
 "        </div>\n"
 "        Thank you for your participation.\n"
-"    \n"
+"    </p>\n"
 "</div>\n"
 "            "
 msgstr ""
 "<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"   <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"        Hyvä <t t-out=\"object.partner_id.name or 'participant' or ''\">osallistuja</t><br/><br/>\n"
-"        Valitettavasti olet epäonnistunut sertifioinnissa etkä ole enää osallistuja kurssilla: <t t-out=\"object.slide_partner_id.channel_id.name or ''\">Puutarhanhoidon perusteet</t>.<br/><br/>\n"
+"    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"        Hyvä <t t-out=\"object.partner_id.name or 'participant' or ''\">osallistuja</t><br><br>\n"
+"        Valitettavasti olet epäonnistunut sertifioinnissa, etkä ole enää kurssin jäsen: <t t-out=\"object.slide_partner_id.channel_id.name or ''\">Puutarhanhoidon perusteet</t>.<br><br>\n"
 "        Älä epäröi ilmoittautua uudelleen!\n"
-"       </p><div style=\"margin: 16px 0px 16px 0px;\">\n"
+"        <div style=\"margin: 16px 0px 16px 0px;\">\n"
 "            <a t-att-href=\"(object.slide_partner_id.channel_id.website_url)\" style=\"background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;\">\n"
 "                Ilmoittaudu nyt\n"
 "            </a>\n"
 "        </div>\n"
 "        Kiitos osallistumisestasi.\n"
-"    \n"
+"    </p>\n"
 "</div>\n"
 "            "
 
 #. module: website_slides_survey
+#: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_content_detailed
+msgid "<i class=\"fa fa-arrow-right me-1\"/>Add Questions to this Survey"
+msgstr "<i class=\"fa fa-arrow-right me-1\"/>Lisää kysymyksiä tähän kyselyyn"
+
+#. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.display_certificate
-msgid "<i class=\"fa fa-arrow-right\"/> Get Certified"
-msgstr "<i class=\"fa fa-arrow-right\"/> Hanki sertifiointi"
+msgid "<i class=\"fa fa-arrow-right me-1\"/>All Certifications"
+msgstr "<i class=\"fa fa-arrow-right me-1\"/>Kaikki sertifikaatit"
+
+#. module: website_slides_survey
+#: model_terms:ir.ui.view,arch_db:website_slides_survey.user_profile_content
+msgid "<i class=\"fa fa-arrow-right\"/> See Certifications"
+msgstr "<i class=\"fa fa-arrow-right\"/> Katso sertifikaatit"
 
 #. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.display_certificate
@@ -116,21 +121,6 @@ msgid "<i class=\"fa fa-share-alt\" aria-label=\"Share\" title=\"Share\"/>"
 msgstr "<i class=\"fa fa-share-alt\" aria-label=\"Jaa\" title=\"Jaa\"/>"
 
 #. module: website_slides_survey
-#: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_content_detailed
-msgid "<i class=\"oi oi-arrow-right me-1\"/>Add Questions to this Survey"
-msgstr "<i class=\"oi oi-arrow-right me-1\"/>Lisää kysymyksiä tähän kyselyyn"
-
-#. module: website_slides_survey
-#: model_terms:ir.ui.view,arch_db:website_slides_survey.display_certificate
-msgid "<i class=\"oi oi-arrow-right me-1\"/>All Certifications"
-msgstr "<i class=\"oi oi-arrow-right me-1\"/>Kaikki sertifikaatit"
-
-#. module: website_slides_survey
-#: model_terms:ir.ui.view,arch_db:website_slides_survey.user_profile_content
-msgid "<i class=\"oi oi-arrow-right\"/> See Certifications"
-msgstr "<i class=\"oi oi-arrow-right\"/> Katso sertifikaatit"
-
-#. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.badge_content
 msgid "<i class=\"text-muted\"> awarded users</i>"
 msgstr "<i class=\"text-muted\"> palkitut käyttäjät</i>"
@@ -142,8 +132,12 @@ msgstr "<span class=\"ms-1\">Sertifikaatit</span>"
 
 #. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_channel_view_form
-msgid "<span class=\"o_stat_text\">Certified</span>"
-msgstr "<span class=\"o_stat_text\">Sertifioitu</span>"
+msgid ""
+"<span class=\"o_stat_text\" attrs=\"{'invisible': [('nbr_certification', '&gt;', 0)]}\">Finished</span>\n"
+"                <span class=\"o_stat_text\" attrs=\"{'invisible': [('nbr_certification', '=', 0)]}\">Certified</span>"
+msgstr ""
+"<span class=\"o_stat_text\" attrs=\"{'invisible': [('nbr_certification', '&gt;', 0)]}\">Valmiit</span>\n"
+"                <span class=\"o_stat_text\" attrs=\"{'invisible': [('nbr_certification', '=', 0)]}\">Sertifioidut</span>"
 
 #. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.all_user_card
@@ -156,10 +150,20 @@ msgid "<span class=\"text-muted\">Certifications</span>"
 msgstr "<span class=\"text-muted\">Sertifioinnit</span>"
 
 #. module: website_slides_survey
+#: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_channel_view_kanban
+msgid "<span class=\"text-muted\">Certified</span>"
+msgstr "<span class=\"text-muted\">Sertifioitu</span>"
+
+#. module: website_slides_survey
+#: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_channel_view_kanban
+msgid "<span class=\"text-muted\">Finished</span>"
+msgstr "<span class=\"text-muted\">Valmistunut</span>"
+
+#. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.course_main
-msgid "<span>Start Now</span><i class=\"oi oi-chevron-right ms-2 align-middle\"/>"
+msgid "<span>Start Now</span><i class=\"fa fa-chevron-right ms-2 align-middle\"/>"
 msgstr ""
-"<span>Aloita nyt</span><i class=\"oi oi-chevron-right ms-2 align-middle\"/>"
+"<span>Aloita nyt</span><i class=\"fa fa-chevron-right ms-2 align-middle\"/>"
 
 #. module: website_slides_survey
 #: model:ir.model.constraint,message:website_slides_survey.constraint_slide_slide_check_survey_id
@@ -172,8 +176,6 @@ msgid "A slide of type certification cannot be previewed."
 msgstr "Tyypin 'sertifiointi' diaa ei voida esikatsella."
 
 #. module: website_slides_survey
-#. odoo-javascript
-#: code:addons/website_slides_survey/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.js:0
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_channel_view_form
 msgid "Add Certification"
 msgstr "Lisää sertifikaatti"
@@ -181,6 +183,7 @@ msgstr "Lisää sertifikaatti"
 #. module: website_slides_survey
 #. odoo-javascript
 #: code:addons/website_slides_survey/static/src/xml/website_slides_fullscreen.xml:0
+#, python-format
 msgid "Add Questions to this Survey"
 msgstr "Lisää kysymyksiä tähän kyselyyn"
 
@@ -197,6 +200,7 @@ msgstr "Salli esikatselu"
 #. module: website_slides_survey
 #. odoo-python
 #: code:addons/website_slides_survey/models/survey_survey.py:0
+#, python-format
 msgid ""
 "Any Survey listed below is currently used as a Course Certification and cannot be deleted:\n"
 "%s"
@@ -242,6 +246,7 @@ msgstr "Pyökki"
 #. odoo-javascript
 #: code:addons/website_slides_survey/static/src/xml/website_slides_fullscreen.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_content_detailed
+#, python-format
 msgid "Begin Certification"
 msgstr "Aloita sertifiointi"
 
@@ -257,10 +262,13 @@ msgstr "Kategoria"
 
 #. module: website_slides_survey
 #. odoo-javascript
-#: code:addons/website_slides_survey/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.js:0
+#: code:addons/website_slides_survey/static/src/js/slides_upload.js:0
+#: code:addons/website_slides_survey/static/src/js/slides_upload.js:0
+#: code:addons/website_slides_survey/static/src/xml/website_slide_upload.xml:0
 #: model:ir.model.fields,field_description:website_slides_survey.field_slide_slide__survey_id
 #: model:ir.model.fields.selection,name:website_slides_survey.selection__slide_slide__slide_category__certification
 #: model:ir.model.fields.selection,name:website_slides_survey.selection__slide_slide__slide_type__certification
+#, python-format
 msgid "Certification"
 msgstr "Sertifiointi"
 
@@ -313,6 +321,7 @@ msgstr "Sertifiointikuvake"
 #. module: website_slides_survey
 #. odoo-python
 #: code:addons/website_slides_survey/controllers/slides.py:0
+#, python-format
 msgid "Certification slides are completed when the survey is succeeded."
 msgstr "Sertifiointidiat tulevat suoritetuiksi, kun kysely onnistuu."
 
@@ -325,22 +334,10 @@ msgid "Certifications"
 msgstr "Sertifioinnit"
 
 #. module: website_slides_survey
-#: model_terms:ir.ui.view,arch_db:website_slides_survey.display_certificate
-msgid "Certifications are exams that you successfully passed. <br/>"
-msgstr ""
-"Sertifikaatit ovat tenttejä, jotka olet läpäissyt onnistuneesti. <br/>"
-
-#. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_content_detailed
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_sidebar_done_button
 msgid "Certifications you have passed cannot be marked as not done"
 msgstr "Läpäisemiäsi sertifikaatteja ei voi merkitä suorittamattomiksi"
-
-#. module: website_slides_survey
-#: model:ir.model.fields,field_description:website_slides_survey.field_slide_channel_partner__survey_certification_success
-#: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_channel_partner_view_search
-msgid "Certified"
-msgstr "Sertifioitu"
 
 #. module: website_slides_survey
 #: model:survey.question.answer,value:website_slides_survey.furniture_certification_page_1_question_2_choice_1
@@ -348,14 +345,10 @@ msgid "Chair"
 msgstr "Tuoli"
 
 #. module: website_slides_survey
-#: model:ir.model,name:website_slides_survey.model_slide_channel_partner
-msgid "Channel / Partners (Members)"
-msgstr "Kanava / Kumppanit (Jäsenet)"
-
-#. module: website_slides_survey
 #. odoo-javascript
 #: code:addons/website_slides_survey/static/src/xml/website_slides_fullscreen.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_content_detailed
+#, python-format
 msgid "Congratulations, you passed the Certification!"
 msgstr "Onnittelut, olet läpäissyt sertifioinnin!"
 
@@ -368,6 +361,7 @@ msgstr "Kurssi"
 #. odoo-python
 #: code:addons/website_slides_survey/models/survey_survey.py:0
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.survey_survey_view_form
+#, python-format
 msgid "Courses"
 msgstr "Kurssit"
 
@@ -394,6 +388,9 @@ msgstr "Pöytä"
 #. module: website_slides_survey
 #. odoo-javascript
 #: code:addons/website_slides_survey/static/src/xml/website_slides_fullscreen.xml:0
+#: code:addons/website_slides_survey/static/src/xml/website_slides_fullscreen.xml:0
+#: code:addons/website_slides_survey/static/src/xml/website_slides_fullscreen.xml:0
+#, python-format
 msgid "Download certification"
 msgstr "Lataa sertifikaatti"
 
@@ -420,7 +417,8 @@ msgstr "Palaa kurssille"
 
 #. module: website_slides_survey
 #. odoo-javascript
-#: code:addons/website_slides_survey/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
+#: code:addons/website_slides_survey/static/src/xml/website_slide_upload.xml:0
+#, python-format
 msgid "How to upload a certification on your course?"
 msgstr "Kuinka ladata sertifikaatti kurssillesi?"
 
@@ -440,13 +438,6 @@ msgid "Mark To Do"
 msgstr "Merkitse tehtäväksi"
 
 #. module: website_slides_survey
-#. odoo-python
-#: code:addons/website_slides_survey/models/slide_channel.py:0
-msgid "No Attendee passed this course certification yet!"
-msgstr ""
-"Yksikään osallistuja ei ole vielä läpäissyt tämän kurssin sertifiointia!"
-
-#. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.user_profile_content
 msgid "No certification found for the given search term."
 msgstr "Annetulle hakusanalle ei löytynyt sertifikaattia."
@@ -464,7 +455,6 @@ msgstr "Nyt kun olet suorittanut kurssin, on aika testata tietosi!"
 
 #. module: website_slides_survey
 #: model:ir.model.fields,field_description:website_slides_survey.field_slide_channel__nbr_certification
-#: model:ir.model.fields,field_description:website_slides_survey.field_slide_channel_partner__nbr_certification
 #: model:ir.model.fields,field_description:website_slides_survey.field_slide_slide__nbr_certification
 msgid "Number of Certifications"
 msgstr "Sertifikaattien määrä"
@@ -476,7 +466,8 @@ msgstr "Tammi"
 
 #. module: website_slides_survey
 #. odoo-javascript
-#: code:addons/website_slides_survey/static/src/js/public/components/slide_upload_dialog/slide_upload_category.xml:0
+#: code:addons/website_slides_survey/static/src/xml/website_slide_upload.xml:0
+#, python-format
 msgid "Please select a certification."
 msgstr "Valitse sertifiointi."
 
@@ -487,8 +478,8 @@ msgstr "Aiheeseen liittyvä kurssin dia"
 
 #. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.display_certificate
-msgid "Score:"
-msgstr "Pisteet:"
+msgid "Score :"
+msgstr "Pisteet :"
 
 #. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.user_profile_content
@@ -501,25 +492,9 @@ msgid "Search Attempts..."
 msgstr "Hakuyritykset..."
 
 #. module: website_slides_survey
-#. odoo-javascript
-#: code:addons/website_slides_survey/static/src/js/public/components/slide_upload_dialog/slide_upload_category.js:0
-msgid "Select a certification"
-msgstr "Valitse sertifiointi"
-
-#. module: website_slides_survey
 #: model:survey.question,title:website_slides_survey.furniture_certification_page_1_question_2
 msgid "Select all the furniture shown in the video"
 msgstr "Valitse kaikki videolla näkyvät huonekalut"
-
-#. module: website_slides_survey
-#. odoo-javascript
-#: code:addons/website_slides_survey/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
-msgid ""
-"Select an existing certification from the list. Creating or editing a "
-"certification can be done from the backend."
-msgstr ""
-"Valitse olemassa oleva varmenne luettelosta. Varmenteen luominen tai "
-"muokkaaminen voidaan tehdä taustajärjestelmästä."
 
 #. module: website_slides_survey
 #: model:mail.template,description:website_slides_survey.mail_template_user_input_certification_failed
@@ -599,6 +574,7 @@ msgstr "Vastaa kyselyyn"
 #. odoo-javascript
 #: code:addons/website_slides_survey/static/src/xml/website_slides_fullscreen.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.slide_content_detailed
+#, python-format
 msgid "Test Certification"
 msgstr "Testisertifiointi"
 
@@ -652,14 +628,27 @@ msgstr "Minkälainen puu on paras huonekaluille?"
 #. module: website_slides_survey
 #. odoo-python
 #: code:addons/website_slides_survey/controllers/slides.py:0
+#, python-format
 msgid "You are not allowed to create a survey."
 msgstr "Sinulla ei ole oikeutta luoda kyselyä."
 
 #. module: website_slides_survey
 #. odoo-python
 #: code:addons/website_slides_survey/controllers/slides.py:0
+#, python-format
 msgid "You are not allowed to link a certification."
 msgstr "Et saa linkittää sertifiointia."
+
+#. module: website_slides_survey
+#. odoo-javascript
+#: code:addons/website_slides_survey/static/src/xml/website_slide_upload.xml:0
+#, python-format
+msgid ""
+"You can create your certification from here or use an existing one. Once "
+"your certification is created, you can still edit it in backend."
+msgstr ""
+"Voit luoda sertifikaatin täältä tai käyttää olemassa olevaa. Kun "
+"sertifikaattisi on luotu, voit silti muokata sitä backendistä."
 
 #. module: website_slides_survey
 #: model_terms:ir.ui.view,arch_db:website_slides_survey.badge_content

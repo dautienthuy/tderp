@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tools.translate import LazyTranslate
-
-_lt = LazyTranslate(__name__)
+from odoo import _lt
 
 ERROR_CODES = {
     "100": _lt("Invalid json"),
@@ -21,8 +19,6 @@ ERROR_CODES = {
     "112": _lt("IMEI does not belong to the user"),
     "113": _lt("operating-system-type is mandatory in header"),
     "114": _lt("Invalid operating-system-type parameter value"),
-    "117": _lt("This option is not enabled in Eway Bill2"),
-    "118": _lt("Try after 5 minutes"),
     "201": _lt("Invalid Supply Type"),
     "202": _lt("Invalid Sub-supply Type"),
     "203": _lt("Sub-transaction type does not belongs to transaction type"),
@@ -211,13 +207,6 @@ ERROR_CODES = {
     "441": _lt("Invalid verification type"),
     "442": _lt("Error in inserting verification details"),
     "443": _lt("invalid invoice available value"),
-    "444": _lt("This Ewaybill cannot be cancelled as it is generated from NIC1"),
-    "445": _lt("This Ewaybill cannot be cancelled as it is generated from NIC2"),
-    "446": _lt("Transport details cannot be updated here as it is generated from NIC1"),
-    "447": _lt("Transport details cannot be updated here as it is generated from NIC2"),
-    "448": _lt("Part B cannot be updated as this Ewaybill Part A is generated in NIC1"),
-    "449": _lt("Part B cannot be updated as this Ewaybill Part A is generated in NIC2"),
-    "452": _lt("Consolidate Ewaybill cannot be generated as this Ewaybill Part A is generated in NIC2"),
     "600": _lt("Invalid category"),
     "601": _lt("Invalid date format"),
     "602": _lt("Invalid File Number"),
@@ -332,7 +321,4 @@ ERROR_CODES = {
     "817": _lt("MultiVehicleMovement cannot be initiated.Eway Bill is not in Active State"),
     "818": _lt("Validity period lapsed.Cannot generate consolidated Eway Bill"),
     "819": _lt("Ewaybill cannot be generated for the document date which is prior to 01/07/2017"),
-    "820": _lt("You cannot generate E Way Bill with document date earlier than 180 days"),
-    "821": _lt("E Way Bill cannot be extended as allowed limit is 360 days"),
-    "4043": _lt("You cannot generate E Way Bill with document date earlier than 180 days"),
 }

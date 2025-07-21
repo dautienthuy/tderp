@@ -22,10 +22,8 @@ class TestWebsocketRateLimiting(WebsocketCase):
         time.sleep(Websocket.RL_DELAY)
 
         for _ in range(Websocket.RL_BURST + 1):
-            ws.send(json.dumps({"event_name": "test_rate_limiting"}))
-            time.sleep(Websocket.RL_DELAY * 1.25)
-
-        self.assertTrue(ws.connected)
+            ws.send(json.dumps({'event_name': 'test_rate_limiting'}))
+            time.sleep(Websocket.RL_DELAY)
 
     def test_rate_limiting_base_ko(self):
         def check_base_ko():

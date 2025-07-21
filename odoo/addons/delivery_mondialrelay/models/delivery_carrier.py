@@ -25,9 +25,7 @@ class DeliveryCarrierMondialRelay(models.Model):
         return [('product_id.default_code', operator, 'MR')]
 
     def fixed_get_tracking_link(self, picking):
-        if self.is_mondialrelay:
-            return self.base_on_rule_get_tracking_link(picking)
-        return super().fixed_get_tracking_link(picking)
+        return self.base_on_rule_get_tracking_link(picking)
 
     def base_on_rule_get_tracking_link(self, picking):
         if self.is_mondialrelay:

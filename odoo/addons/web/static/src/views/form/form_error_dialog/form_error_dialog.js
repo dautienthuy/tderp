@@ -1,32 +1,19 @@
+/** @odoo-module **/
+
 import { Dialog } from "@web/core/dialog/dialog";
-import { useService } from "@web/core/utils/hooks";
+import { registry } from "@web/core/registry";
 
 import { Component } from "@odoo/owl";
+const errorHandlerRegistry = registry.category("error_handlers");
 
 export class FormErrorDialog extends Component {
-    static template = "web.FormErrorDialog";
-    static components = { Dialog };
-    static props = {
-        message: { type: String, optional: true },
-        data: { type: Object },
-        onDiscard: Function,
-        onStayHere: Function,
-        close: Function,
-    };
-
     setup() {
-        this.action = useService("action");
-        this.message = this.props.message;
-        if (this.props?.data.name === "odoo.exceptions.RedirectWarning") {
-            this.message = this.props.data.arguments[0];
-            this.redirectAction = this.props.data.arguments[1];
-            this.redirectBtnLabel = this.props.data.arguments[2];
+        const { data, message } = this.props;
+        if (data && data.arguments && data.arguments.length > 0) {
+            this.message = data.arguments[0];
+        } else {
+            this.message = message;
         }
-    }
-
-    onRedirectBtnClicked() {
-        this.action.doAction(this.redirectAction);
-        this.stay();
     }
 
     async discard() {
@@ -39,3 +26,33 @@ export class FormErrorDialog extends Component {
         this.props.close();
     }
 }
+FormErrorDialog.template = "web.FormErrorDialog";
+FormErrorDialog.components = { Dialog };
+
+function formSaveErrorHandler(env, error, originalError) {
+    if (originalError && originalError.__raisedOnFormSave) {
+        const event = originalError.event;
+        error.unhandledRejectionEvent.preventDefault();
+        if (event.isDefaultPrevented()) {
+            // in theory, here, event was already handled
+            return true;
+        }
+        event.preventDefault();
+
+        env.services.dialog.add(
+            FormErrorDialog,
+            {
+                message: originalError.message.message,
+                data: originalError.message.data,
+                onDiscard: originalError.onDiscard,
+                onStayHere: originalError.onStayHere,
+            },
+            {
+                onClose: originalError.onStayHere,
+            }
+        );
+
+        return true;
+    }
+}
+errorHandlerRegistry.add("formSaveErrorHandler", formSaveErrorHandler);

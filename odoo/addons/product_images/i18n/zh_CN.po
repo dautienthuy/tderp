@@ -3,15 +3,16 @@
 # 	* product_images
 # 
 # Translators:
-# Wil Odoo, 2024
+# Martin Trigaux, 2022
+# Jeffery CHEN <jeffery9@gmail.com>, 2022
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:55+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Wil Odoo, 2024\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:54+0000\n"
+"Last-Translator: Jeffery CHEN <jeffery9@gmail.com>, 2022\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/odoo/teams/41243/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,6 +23,7 @@ msgstr ""
 #. module: product_images
 #. odoo-python
 #: code:addons/product_images/wizard/product_fetch_image_wizard.py:0
+#, python-format
 msgid ""
 "%(matching_images_count)s matching images have been found for "
 "%(product_count)s products."
@@ -30,19 +32,20 @@ msgstr "已找到%(matching_images_count)s个与%(product_count)s个产品相匹
 #. module: product_images
 #: model_terms:ir.ui.view,arch_db:product_images.product_fetch_image_wizard_view_form
 msgid ""
-"<span invisible=\"nb_products_selected &lt;= 10000\">\n"
+"<span attrs=\"{'invisible': [('nb_products_selected', '&lt;=', 10000)]}\">\n"
 "                            As only 10,000 products can be processed per day, the remaining will be\n"
 "                            done tomorrow.\n"
 "                        </span>"
 msgstr ""
-"<span invisible=\"nb_products_selected &lt;= 10000\">\n"
-"                            由于每天只能处理 10,000 件产品，剩余的将在明天处理。\n"
-"                            明天处理。\n"
+"<span attrs=\"{'invisible': [('nb_products_selected', '&lt;=', 10000)]}\">\n"
+"                            由于每天只能处理10,000件产品，其余的将在明天完成。\n"
+"                            明天完成。\n"
 "                        </span>"
 
 #. module: product_images
 #. odoo-python
 #: code:addons/product_images/wizard/product_fetch_image_wizard.py:0
+#, python-format
 msgid ""
 "A task to process products in the background is already running. Please try "
 "againlater."
@@ -71,7 +74,7 @@ msgstr "创建人"
 #. module: product_images
 #: model:ir.model.fields,field_description:product_images.field_product_fetch_image_wizard__create_date
 msgid "Created on"
-msgstr "创建日期"
+msgstr "创建时间"
 
 #. module: product_images
 #: model:ir.model.fields,field_description:product_images.field_product_fetch_image_wizard__display_name
@@ -112,6 +115,11 @@ msgid "Image Fetch Pending"
 msgstr "图像获取待定"
 
 #. module: product_images
+#: model:ir.model.fields,field_description:product_images.field_product_fetch_image_wizard____last_update
+msgid "Last Modified on"
+msgstr "最后修改时间"
+
+#. module: product_images
 #: model:ir.model.fields,field_description:product_images.field_product_fetch_image_wizard__write_uid
 msgid "Last Updated by"
 msgstr "最后更新人"
@@ -119,7 +127,7 @@ msgstr "最后更新人"
 #. module: product_images
 #: model:ir.model.fields,field_description:product_images.field_product_fetch_image_wizard__write_date
 msgid "Last Updated on"
-msgstr "上次更新日期"
+msgstr "最后更新时间"
 
 #. module: product_images
 #: model:ir.model.fields,field_description:product_images.field_product_fetch_image_wizard__nb_products_unable_to_process
@@ -147,6 +155,7 @@ msgstr ""
 
 #. module: product_images
 #: model:ir.actions.server,name:product_images.ir_cron_fetch_image_ir_actions_server
+#: model:ir.cron,cron_name:product_images.ir_cron_fetch_image
 msgid "Product Images: Get product images from Google"
 msgstr "产品图像。从谷歌获取产品图像"
 
@@ -158,17 +167,19 @@ msgstr "产品变体"
 #. module: product_images
 #. odoo-python
 #: code:addons/product_images/wizard/product_fetch_image_wizard.py:0
+#, python-format
 msgid "Product images"
 msgstr "产品图像"
 
 #. module: product_images
 #: model:ir.model.fields,field_description:product_images.field_product_fetch_image_wizard__products_to_process
 msgid "Products To Process"
-msgstr "待处理的产品"
+msgstr "要加工的产品"
 
 #. module: product_images
 #. odoo-python
 #: code:addons/product_images/wizard/product_fetch_image_wizard.py:0
+#, python-format
 msgid ""
 "Products are processed in the background. Images will be updated "
 "progressively."
@@ -182,12 +193,14 @@ msgstr "搜索引擎ID"
 #. module: product_images
 #. odoo-python
 #: code:addons/product_images/wizard/product_fetch_image_wizard.py:0
+#, python-format
 msgid "The API Key and Search Engine ID must be set in the General Settings."
 msgstr "API密钥和搜索引擎ID必须在常规设置中设置。"
 
 #. module: product_images
 #. odoo-python
 #: code:addons/product_images/wizard/product_fetch_image_wizard.py:0
+#, python-format
 msgid ""
 "The Custom Search API is not enabled in your Google project. Please visit "
 "your Google Cloud Platform project page and enable it, then retry. If you "
@@ -209,6 +222,8 @@ msgstr "符合标准的所选产品列表（有条形码，无图像）。"
 #. module: product_images
 #. odoo-python
 #: code:addons/product_images/wizard/product_fetch_image_wizard.py:0
+#: code:addons/product_images/wizard/product_fetch_image_wizard.py:0
+#, python-format
 msgid ""
 "The scheduled action \"Product Images: Get product images from Google\" has "
 "been deleted. Please contact your administrator to have the action restored "
@@ -218,6 +233,7 @@ msgstr "计划中的动作 \"产品图像。从谷歌获取产品图像 \"已被
 #. module: product_images
 #. odoo-python
 #: code:addons/product_images/models/ir_cron_trigger.py:0
+#, python-format
 msgid "This action is already scheduled. Please try again later."
 msgstr "这个动作已经安排好了。请稍后再试。"
 
@@ -239,6 +255,7 @@ msgstr "您选择了"
 #. module: product_images
 #. odoo-python
 #: code:addons/product_images/wizard/product_fetch_image_wizard.py:0
+#, python-format
 msgid "Your API Key or your Search Engine ID is incorrect."
 msgstr "您的API密钥或您的搜索引擎ID不正确。"
 
@@ -261,4 +278,4 @@ msgstr ""
 #. module: product_images
 #: model_terms:ir.ui.view,arch_db:product_images.product_fetch_image_wizard_view_form
 msgid "products,"
-msgstr "产品,"
+msgstr "产品。"

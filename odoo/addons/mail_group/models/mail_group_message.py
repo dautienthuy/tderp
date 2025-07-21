@@ -3,12 +3,10 @@
 
 import logging
 
-from markupsafe import Markup
-
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
 from odoo.osv import expression
-from odoo.tools.mail import email_normalize, append_content_to_html
+from odoo.tools import email_normalize, append_content_to_html, ustr
 
 _logger = logging.getLogger(__name__)
 
@@ -98,15 +96,13 @@ class MailGroupMessage(models.Model):
                     field: vals.pop(field)
                     for field in self.env['mail.message']._fields
                     if field in vals
-                    and field in self.env['mail.thread']._get_message_create_valid_field_names()
                 }).id
         return super(MailGroupMessage, self).create(values_list)
 
-    def copy_data(self, default=None):
-        vals_list = super().copy_data(default)
-        for message, vals in zip(self, vals_list):
-            vals['mail_message_id'] = message.mail_message_id.copy().id
-        return vals_list
+    def copy(self, default=None):
+        default = dict(default or {})
+        default['mail_message_id'] = self.mail_message_id.copy().id
+        return super(MailGroupMessage, self).copy(default)
 
     # --------------------------------------------------
     # MODERATION API
@@ -237,7 +233,7 @@ class MailGroupMessage(models.Model):
             if not message.email_from:
                 continue
 
-            body_html = append_content_to_html(Markup('<div>%s</div>') % comment, message.body, plaintext=False)
+            body_html = append_content_to_html('<div>%s</div>' % ustr(comment), message.body, plaintext=False)
             body_html = self.env['mail.render.mixin']._replace_local_links(body_html)
             self.env['mail.mail'].sudo().create({
                 'author_id': self.env.user.partner_id.id,

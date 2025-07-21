@@ -1,7 +1,8 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.tests import TransactionCase, tagged
-from unittest.mock import patch
+
 
 @tagged('post_install', '-at_install')
 class TestDisableSnippetsAssets(TransactionCase):
@@ -45,9 +46,9 @@ class TestDisableSnippetsAssets(TransactionCase):
 
         # New snippet
         s_image_gallery_000 = self._get_snippet_asset('s_image_gallery', '000', 'scss')
-        s_image_gallery_002 = self._get_snippet_asset('s_image_gallery', '002', 'scss')
+        s_image_gallery_001 = self._get_snippet_asset('s_image_gallery', '001', 'scss')
         self.assertEqual(s_image_gallery_000.active, False)
-        self.assertEqual(s_image_gallery_002.active, True)
+        self.assertEqual(s_image_gallery_001.active, True)
 
         unwanted_snippets_assets_changes = set(self.initial_active_snippets_assets) - set(self._get_active_snippets_assets()) - set([s_image_gallery_000.path])
 
@@ -67,20 +68,7 @@ class TestDisableSnippetsAssets(TransactionCase):
             'mega_menu_content': MEGA_MENU_OUTDATED,
         })
         self.mega_menu.flush_recordset()
-        cache_clears = []
-
-        init_clear_cache = self.env.registry.clear_cache
-        def patched_clear_cache(*cache_names):
-            for cache_name in cache_names:
-                cache_clears.append(cache_name)
-            init_clear_cache(*cache_names)
-
-        with patch.object(self.env.registry, 'clear_cache', patched_clear_cache):
-            self.Website._disable_unused_snippets_assets()
-            self.assertIn('assets', cache_clears, 'Assets cache should have been invalidated when updating ir_assets')
-            cache_clears.clear()
-            self.Website._disable_unused_snippets_assets()
-            self.assertNotIn('assets', cache_clears, 'No update on ir_assets expected, no invalidation should be triggered')
+        self.Website._disable_unused_snippets_assets()
 
         s_website_form_000_scss = self._get_snippet_asset('s_website_form', '000', 'scss')
         s_website_form_001_scss = self._get_snippet_asset('s_website_form', '001', 'scss')
@@ -97,9 +85,9 @@ class TestDisableSnippetsAssets(TransactionCase):
         self.assertEqual(s_masonry_block_001_scss.active, True)
 
         s_image_gallery_000 = self._get_snippet_asset('s_image_gallery', '000', 'scss')
-        s_image_gallery_002 = self._get_snippet_asset('s_image_gallery', '002', 'scss')
+        s_image_gallery_001 = self._get_snippet_asset('s_image_gallery', '001', 'scss')
         self.assertEqual(s_image_gallery_000.active, True)
-        self.assertEqual(s_image_gallery_002.active, True)
+        self.assertEqual(s_image_gallery_001.active, True)
 
     def _get_snippet_asset(self, snippet_id, asset_version, asset_type):
         return self.IrAsset.search([('path', '=', 'website/static/src/snippets/' + snippet_id + '/' + asset_version + '.' + asset_type)], limit=1)
@@ -160,7 +148,7 @@ MEGA_MENU_UP_TO_DATE = """
         </div>
     </section>
 
-<section class="s_image_gallery o_slideshow pt24 o_colored_level" data-vcss="002" data-columns="3" style="height: 500px; overflow: hidden;" data-snippet="s_image_gallery" data-name="Image Gallery">
+<section class="s_image_gallery o_slideshow s_image_gallery_show_indicators s_image_gallery_indicators_rounded pt24 o_colored_level" data-vcss="001" data-columns="3" style="height: 500px; overflow: hidden;" data-snippet="s_image_gallery" data-name="Image Gallery">
         <div class="container">
         </div>
     </section>

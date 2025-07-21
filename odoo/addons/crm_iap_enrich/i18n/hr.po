@@ -3,17 +3,17 @@
 # 	* crm_iap_enrich
 # 
 # Translators:
-# Bole <bole@dajmi5.com>, 2024
-# Stjepan Lovasić <stjepan.lovasic@gmail.com>, 2024
-# Matej Mijoč, 2024
+# Bole <bole@dajmi5.com>, 2022
+# Stjepan Lovasić <stjepan.lovasic@gmail.com>, 2022
+# Matej Mijoč, 2022
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 17.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-26 21:55+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Matej Mijoč, 2024\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2022-09-22 05:45+0000\n"
+"Last-Translator: Matej Mijoč, 2022\n"
 "Language-Team: Croatian (https://app.transifex.com/odoo/teams/41243/hr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -41,20 +41,15 @@ msgid "Allow manual enrich"
 msgstr ""
 
 #. module: crm_iap_enrich
-#. odoo-python
-#: code:addons/crm_iap_enrich/models/crm_lead.py:0
-msgid "An error occurred during lead enrichment"
-msgstr ""
-
-#. module: crm_iap_enrich
 #: model:ir.actions.server,name:crm_iap_enrich.ir_cron_lead_enrichment_ir_actions_server
+#: model:ir.cron,cron_name:crm_iap_enrich.ir_cron_lead_enrichment
 msgid "CRM: enrich leads (IAP)"
 msgstr ""
 
 #. module: crm_iap_enrich
 #: model:ir.model,name:crm_iap_enrich.model_res_config_settings
 msgid "Config Settings"
-msgstr "Konfiguracijske postavke"
+msgstr "Postavke"
 
 #. module: crm_iap_enrich
 #: model:ir.actions.server,name:crm_iap_enrich.action_enrich_mail
@@ -75,7 +70,7 @@ msgstr ""
 #. module: crm_iap_enrich
 #: model:ir.model.fields,field_description:crm_iap_enrich.field_crm_lead__iap_enrich_done
 msgid "Enrichment done"
-msgstr "Obogaćivanje završeno"
+msgstr "Enrichment done"
 
 #. module: crm_iap_enrich
 #: model_terms:ir.ui.view,arch_db:crm_iap_enrich.mail_message_lead_enrich_no_email
@@ -86,6 +81,7 @@ msgstr ""
 #. module: crm_iap_enrich
 #. odoo-python
 #: code:addons/crm_iap_enrich/models/crm_lead.py:0
+#, python-format
 msgid "Lead enriched based on email address"
 msgstr ""
 
@@ -97,12 +93,21 @@ msgstr "Potencijal/prilika"
 #. module: crm_iap_enrich
 #. odoo-python
 #: code:addons/crm_iap_enrich/models/crm_lead.py:0
+#, python-format
 msgid "Not enough credits for Lead Enrichment"
 msgstr ""
 
 #. module: crm_iap_enrich
 #. odoo-python
 #: code:addons/crm_iap_enrich/models/crm_lead.py:0
+#, python-format
+msgid "Sent batch %s enrich requests: failed with exception %s"
+msgstr ""
+
+#. module: crm_iap_enrich
+#. odoo-python
+#: code:addons/crm_iap_enrich/models/crm_lead.py:0
+#, python-format
 msgid "The leads/opportunities have successfully been enriched"
 msgstr ""
 

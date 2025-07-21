@@ -3,21 +3,21 @@
 # 	* website_sale_slides
 # 
 # Translators:
-# Simon S, 2024
-# Martin Trigaux, 2024
-# Lasse L, 2024
-# Mikael Åkerberg <mikael.akerberg@mariaakerberg.com>, 2024
-# Kim Asplund <kim.asplund@gmail.com>, 2024
-# Anders Wallenquist <anders.wallenquist@vertel.se>, 2024
+# Simon S, 2022
+# Martin Wilderoth <martin.wilderoth@linserv.se>, 2022
+# Chrille Hedberg <hedberg.chrille@gmail.com>, 2022
+# Martin Trigaux, 2022
+# Kim Asplund <kim.asplund@gmail.com>, 2022
 # Jakob Krabbe <jakob.krabbe@vertel.se>, 2024
+# Anders Wallenquist <anders.wallenquist@vertel.se>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:56+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: Jakob Krabbe <jakob.krabbe@vertel.se>, 2024\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:57+0000\n"
+"Last-Translator: Anders Wallenquist <anders.wallenquist@vertel.se>, 2024\n"
 "Language-Team: Swedish (https://app.transifex.com/odoo/teams/41243/sv/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -36,15 +36,23 @@ msgid "<i class=\"fa fa-shopping-cart\"/> Add to Cart"
 msgstr "<i class=\"fa fa-shopping-cart\"/> Lägg i kundvagnen"
 
 #. module: website_sale_slides
-#. odoo-python
-#: code:addons/website_sale_slides/models/product_product.py:0
-msgid "Access to: %(new_line)s%(channel_list)s"
-msgstr "Tillgång till: %(new_line)s%(channel_list)s"
+#: model:ir.model.fields,help:website_sale_slides.field_product_product__detailed_type
+#: model:ir.model.fields,help:website_sale_slides.field_product_template__detailed_type
+msgid ""
+"A storable product is a product for which you manage stock. The Inventory app has to be installed.\n"
+"A consumable product is a product for which stock is not managed.\n"
+"A service is a non-material product you provide."
+msgstr ""
+"En lagerförd produkt är en produkt som du hanterar lager för. Appen Lager måste installeras.\n"
+"En förbrukningsvara är en produkt för vilken lager inte hanteras.\n"
+"En tjänst är en icke-materiell produkt du tillhandahåller."
 
 #. module: website_sale_slides
-#: model:product.template,name:website_sale_slides.product_course_channel_5_product_template
-msgid "Basics of Furniture Creation"
-msgstr "Grunderna i möbeltillverkning"
+#. odoo-python
+#: code:addons/website_sale_slides/models/product_product.py:0
+#, python-format
+msgid "Access to:%s%s"
+msgstr "Tillgång till:%s%s"
 
 #. module: website_sale_slides
 #: model_terms:ir.ui.view,arch_db:website_sale_slides.snippet_options
@@ -54,12 +62,14 @@ msgstr "Köp nu-knapp"
 #. module: website_sale_slides
 #. odoo-javascript
 #: code:addons/website_sale_slides/static/src/xml/website_sale_slides_quiz.xml:0
+#, python-format
 msgid "Buy the course to validate your answers!"
 msgstr "Köp kursen för att få dina svar rättade!"
 
 #. module: website_sale_slides
 #. odoo-javascript
 #: code:addons/website_sale_slides/static/src/xml/slide_course_join.xml:0
+#, python-format
 msgid "Buy this Course"
 msgstr "Köp denna kurs"
 
@@ -72,11 +82,11 @@ msgstr ""
 
 #. module: website_sale_slides
 #: model:ir.model,name:website_sale_slides.model_slide_channel
+#: model:ir.model.fields.selection,name:website_sale_slides.selection__product_template__detailed_type__course
 msgid "Course"
 msgstr "Kurs"
 
 #. module: website_sale_slides
-#: model:ir.model.fields.selection,name:website_sale_slides.selection__product_template__service_tracking__course
 #: model:product.template,name:website_sale_slides.default_product_course_product_template
 msgid "Course Access"
 msgstr "Tillgång till kursen"
@@ -94,13 +104,7 @@ msgstr "Kursen är inte tillgänglig"
 #. module: website_sale_slides
 #: model:ir.model.fields,field_description:website_sale_slides.field_product_product__channel_ids
 msgid "Courses"
-msgstr "Löpningar"
-
-#. module: website_sale_slides
-#: model:ir.model.fields,field_description:website_sale_slides.field_product_product__service_tracking
-#: model:ir.model.fields,field_description:website_sale_slides.field_product_template__service_tracking
-msgid "Create on Order"
-msgstr "Skapa på beställning"
+msgstr "Kurser"
 
 #. module: website_sale_slides
 #: model:ir.model.fields,field_description:website_sale_slides.field_slide_channel__currency_id
@@ -129,12 +133,6 @@ msgid "Free Preview"
 msgstr "Gratis förhandsvisning"
 
 #. module: website_sale_slides
-#. odoo-python
-#: code:addons/website_sale_slides/models/product_template.py:0
-msgid "Grant access to the eLearning course linked to this product."
-msgstr "Bevilja åtkomst till eLearning-kursen kopplad till den här produkten."
-
-#. module: website_sale_slides
 #: model_terms:ir.ui.view,arch_db:website_sale_slides.course_buy_course_link
 msgid "Join this Course"
 msgstr "Gå med i denna Kurs"
@@ -142,16 +140,12 @@ msgstr "Gå med i denna Kurs"
 #. module: website_sale_slides
 #. odoo-javascript
 #: code:addons/website_sale_slides/static/src/xml/website_slides_unsubscribe.xml:0
+#, python-format
 msgid ""
 "Leaving the course and re-enrolling afterwards means that you'll be charged "
 "again."
 msgstr ""
 "Att lämna kursen och återanmäla dig efteråt innebär att du debiteras igen."
-
-#. module: website_sale_slides
-#: model_terms:ir.ui.view,arch_db:website_sale_slides.course_buy_course_button
-msgid "Log in"
-msgstr "Logga in"
 
 #. module: website_sale_slides
 #: model_terms:ir.actions.act_window,help:website_sale_slides.sale_report_action_slides
@@ -171,11 +165,6 @@ msgstr ""
 "till:"
 
 #. module: website_sale_slides
-#: model_terms:ir.ui.view,arch_db:website_sale_slides.course_buy_course_button
-msgid "Prerequisite:"
-msgstr "Förkunskaper:"
-
-#. module: website_sale_slides
 #: model_terms:ir.ui.view,arch_db:website_sale_slides.course_slides_list_slide
 msgid "Preview"
 msgstr "Förhandsgranskning"
@@ -185,6 +174,12 @@ msgstr "Förhandsgranskning"
 #: model:ir.model.fields,field_description:website_sale_slides.field_slide_channel__product_id
 msgid "Product"
 msgstr "Produkt"
+
+#. module: website_sale_slides
+#: model:ir.model.fields,field_description:website_sale_slides.field_product_product__detailed_type
+#: model:ir.model.fields,field_description:website_sale_slides.field_product_template__detailed_type
+msgid "Product Type"
+msgstr "Produkttyp"
 
 #. module: website_sale_slides
 #: model:ir.model,name:website_sale_slides.model_product_product
@@ -210,24 +205,21 @@ msgstr "Försäljning"
 #. module: website_sale_slides
 #: model:ir.model,name:website_sale_slides.model_sale_order
 msgid "Sales Order"
-msgstr "Försäljningsorder"
+msgstr "Order"
 
 #. module: website_sale_slides
 #. odoo-javascript
 #: code:addons/website_sale_slides/static/src/xml/slide_course_join.xml:0
+#, python-format
 msgid "Sign in"
 msgstr "Logga in"
 
 #. module: website_sale_slides
 #. odoo-javascript
 #: code:addons/website_sale_slides/static/src/xml/website_sale_slides_quiz.xml:0
+#, python-format
 msgid "Sign in and buy the course to take the quiz"
 msgstr "Logga in och köp kursen så kan du besvara frågorna"
-
-#. module: website_sale_slides
-#: model_terms:ir.ui.view,arch_db:website_sale_slides.course_buy_course_button
-msgid "Sign up"
-msgstr "Registrera dig"
 
 #. module: website_sale_slides
 #: model_terms:ir.ui.view,arch_db:website_sale_slides.course_purchased_confirmation_message
@@ -240,11 +232,6 @@ msgid "Taking care of Trees Course"
 msgstr "Ta hand om trädenkurs"
 
 #. module: website_sale_slides
-#: model_terms:ir.ui.view,arch_db:website_sale_slides.course_buy_course_button
-msgid "There are some"
-msgstr "Det finns några"
-
-#. module: website_sale_slides
 #: model_terms:ir.ui.view,arch_db:website_sale_slides.course_main
 msgid "This course cannot be bought because its linked product"
 msgstr "Denna kurs kan inte köpas eftersom den är kopplad till en produkt"
@@ -252,6 +239,7 @@ msgstr "Denna kurs kan inte köpas eftersom den är kopplad till en produkt"
 #. module: website_sale_slides
 #. odoo-javascript
 #: code:addons/website_sale_slides/static/src/xml/website_slides_unsubscribe.xml:0
+#, python-format
 msgid "This course is paid."
 msgstr "Denna kurs är betalad."
 
@@ -266,18 +254,14 @@ msgid "Total revenues"
 msgstr "Totala intäkter"
 
 #. module: website_sale_slides
-#. odoo-python
-#: code:addons/website_sale_slides/models/slide_channel.py:0
-msgid ""
-"You are not allowed to add members to this course. Please contact the course"
-" responsible or an administrator."
-msgstr ""
-"Du har inte rätt att lägga till medlemmar i den här kursen. Vänligen "
-"kontakta kursansvarig eller en administratör."
+#: model:ir.model,name:website_sale_slides.model_website
+msgid "Website"
+msgstr "Webbplats"
 
 #. module: website_sale_slides
 #. odoo-python
 #: code:addons/website_sale_slides/models/sale_order.py:0
+#, python-format
 msgid "You can only add a course once in your cart."
 msgstr "Du kan bara lägga till en kurs en gång i din varukorg."
 
@@ -300,11 +284,6 @@ msgstr "eLearning Försäljningsanalys"
 #: model_terms:ir.ui.view,arch_db:website_sale_slides.course_main
 msgid "is not published."
 msgstr "är inte publicerad."
-
-#. module: website_sale_slides
-#: model_terms:ir.ui.view,arch_db:website_sale_slides.course_buy_course_button
-msgid "prerequisite courses."
-msgstr "förkunskapskurser."
 
 #. module: website_sale_slides
 #: model_terms:ir.ui.view,arch_db:website_sale_slides.course_purchased_confirmation_message

@@ -2,16 +2,13 @@
 
 import re
 
-import markupsafe
-
-from odoo.tools import html_escape
-from odoo.tools.mail import create_link, TEXT_URL_REGEX
+from odoo.tools import TEXT_URL_REGEX, create_link, html_escape
 
 
 def sms_content_to_rendered_html(text):
     """Transforms plaintext into html making urls clickable and preserving newlines"""
     urls = re.findall(TEXT_URL_REGEX, text)
-    escaped_text = html_escape(text)
+    escaped_text = str(html_escape(text))
     for url in urls:
-        escaped_text = escaped_text.replace(url, markupsafe.Markup(create_link(url, url)))
-    return markupsafe.Markup(re.sub(r'\r?\n|\r', '<br/>', escaped_text))
+        escaped_text = escaped_text.replace(url, create_link(url, url))
+    return re.sub(r'\r?\n|\r', '<br/>', escaped_text)

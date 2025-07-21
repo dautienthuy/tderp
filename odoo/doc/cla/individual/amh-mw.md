@@ -8,5 +8,4 @@ declaration.
 
 Signed,
 
-Adam Heinz adam.heinz@metricwise.com https://github.com/amh-mw
 Adam Heinz amh@metricwise.net https://github.com/amh-mw

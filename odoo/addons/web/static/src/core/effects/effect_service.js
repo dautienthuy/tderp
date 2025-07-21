@@ -1,7 +1,10 @@
-import { _t } from "@web/core/l10n/translation";
-import { registry } from "@web/core/registry";
-import { user } from "@web/core/user";
+/** @odoo-module **/
+
+import { registry } from "../registry";
+import { EffectContainer } from "./effect_container";
 import { RainbowMan } from "./rainbow_man";
+
+import { EventBus } from "@odoo/owl";
 
 const effectRegistry = registry.category("effects");
 
@@ -27,22 +30,27 @@ const effectRegistry = registry.category("effects");
  *    'fast' will make rainbowman dissapear quickly
  *    'medium' and 'slow' will wait little longer before disappearing (can be used when options.message is longer)
  *    'no' will keep rainbowman on screen until user clicks anywhere outside rainbowman
- * @param {typeof import("@odoo/owl").Component} [params.Component]
+ * @param {Component} [params.Component]
  *    Custom Component class to instantiate inside the Rainbow Man
  * @param {Object} [params.props]
  *    If params.Component is given, its props can be passed with this argument
  */
 function rainbowMan(env, params = {}) {
     let message = params.message;
-    if (message instanceof Element) {
+    if (message instanceof jQuery) {
+        console.log(
+            "Providing a jQuery element to an effect is deprecated. Note that all event handlers will be lost."
+        );
+        message = message.html();
+    } else if (message instanceof Element) {
         console.log(
             "Providing an HTML element to an effect is deprecated. Note that all event handlers will be lost."
         );
         message = message.outerHTML;
     } else if (!message) {
-        message = _t("Well Done!");
+        message = env._t("Well Done!");
     }
-    if (user.showEffect) {
+    if (env.services.user.showEffect) {
         /** @type {import("./rainbow_man").RainbowManProps} */
         const props = {
             imgUrl: params.img_url || "/web/static/img/smile.svg",
@@ -62,23 +70,26 @@ effectRegistry.add("rainbow_man", rainbowMan);
 // -----------------------------------------------------------------------------
 
 export const effectService = {
-    dependencies: ["overlay"],
-    start(env, { overlay }) {
+    start(env) {
+        const bus = new EventBus();
+        registry.category("main_components").add("EffectContainer", {
+            Component: EffectContainer,
+            props: { bus },
+        });
+        let effectId = 0;
+
         /**
          * @param {Object} [params] various params depending on the type of effect
          * @param {string} [params.type="rainbow_man"] the effect to display
          */
-        const add = (params = {}) => {
+        function add(params = {}) {
             const type = params.type || "rainbow_man";
             const effect = effectRegistry.get(type);
             const { Component, props } = effect(env, params) || {};
             if (Component) {
-                const remove = overlay.add(Component, {
-                    ...props,
-                    close: () => remove(),
-                });
+                bus.trigger("UPDATE", { Component, props, id: effectId++ });
             }
-        };
+        }
 
         return { add };
     },

@@ -1,5 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import json
+from uuid import uuid4
 from werkzeug import urls
 
 from odoo import Command
@@ -7,7 +9,7 @@ from odoo.http import root
 from odoo.tests import tagged
 
 from odoo.addons.base.tests.common import HttpCaseWithUserDemo
-from odoo.addons.website_sale.controllers.main import WebsiteSale
+from odoo.addons.website_sale.controllers.main import WebsiteSale as WebsiteSaleController
 
 
 @tagged('at_install')
@@ -67,16 +69,42 @@ class TestWebsiteSaleExpressCheckoutFlows(HttpCaseWithUserDemo):
                 "Partner's state should be within partner's country",
             )
 
+    def _make_json_rpc_request(self, url, data=None):
+        """ Make a JSON-RPC request to the provided URL.
+
+        :param str url: The URL to make the request to
+        :param dict data: The data to be send in the request body in JSON-RPC 2.0 format
+        :return dict: The result of the JSON-RPC request
+        """
+        rpc_request = {
+            "jsonrpc": "2.0",
+            "method": "call",
+             "id": str(uuid4()),
+            "params": data,
+        }
+
+        result = self.url_open(
+            url,
+            data=json.dumps(rpc_request).encode(),
+            headers={"Content-Type": "application/json"},
+            timeout=None,
+        )
+
+        if not result.ok:
+            return {}
+
+        return result.json().get("result", {})
+
     def test_express_checkout_public_user(self):
         """ Test that when using express checkout as a public user, a new partner is created. """
         session = self.authenticate(None, None)
         session['sale_order_id'] = self.sale_order.id
         root.session_store.save(session)
 
-        self.make_jsonrpc_request(
+        self._make_json_rpc_request(
             urls.url_join(
-                self.base_url(), WebsiteSale._express_checkout_route
-            ), params={
+                self.base_url(), WebsiteSaleController._express_checkout_route
+            ), data={
                 'billing_address': dict(self.express_checkout_billing_values)
             }
         )
@@ -98,10 +126,10 @@ class TestWebsiteSaleExpressCheckoutFlows(HttpCaseWithUserDemo):
         session['sale_order_id'] = self.sale_order.id
         root.session_store.save(session)
 
-        self.make_jsonrpc_request(
+        self._make_json_rpc_request(
             urls.url_join(
-                self.base_url(), WebsiteSale._express_checkout_route
-            ), params={
+                self.base_url(), WebsiteSaleController._express_checkout_route
+            ), data={
                 'billing_address': {
                     'name': self.user_demo.partner_id.name,
                     'email': self.user_demo.partner_id.email,
@@ -146,10 +174,10 @@ class TestWebsiteSaleExpressCheckoutFlows(HttpCaseWithUserDemo):
         session['sale_order_id'] = self.sale_order.id
         root.session_store.save(session)
 
-        self.make_jsonrpc_request(
+        self._make_json_rpc_request(
             urls.url_join(
-                self.base_url(), WebsiteSale._express_checkout_route
-            ), params={
+                self.base_url(), WebsiteSaleController._express_checkout_route
+            ), data={
                 'billing_address': dict(self.express_checkout_billing_values)
             }
         )
@@ -167,10 +195,10 @@ class TestWebsiteSaleExpressCheckoutFlows(HttpCaseWithUserDemo):
         session['sale_order_id'] = self.sale_order.id
         root.session_store.save(session)
 
-        self.make_jsonrpc_request(
+        self._make_json_rpc_request(
             urls.url_join(
-                self.base_url(), WebsiteSale._express_checkout_route
-            ), params={
+                self.base_url(), WebsiteSaleController._express_checkout_route
+            ), data={
                 'billing_address': dict(self.express_checkout_billing_values)
             }
         )

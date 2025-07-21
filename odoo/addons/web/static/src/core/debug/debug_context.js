@@ -1,25 +1,31 @@
-import { user } from "@web/core/user";
+/** @odoo-module **/
+
 import { registry } from "../registry";
+import { memoize } from "../utils/functions";
 
 import { useEffect, useEnv, useSubEnv } from "@odoo/owl";
 const debugRegistry = registry.category("debug");
 
-const getAccessRights = async () => {
+const getAccessRights = memoize(async function getAccessRights(orm) {
     const rightsToCheck = {
         "ir.ui.view": "write",
         "ir.rule": "read",
         "ir.model.access": "read",
     };
     const proms = Object.entries(rightsToCheck).map(([model, operation]) => {
-        return user.checkAccessRight(model, operation);
+        return orm.call(model, "check_access_rights", [], {
+            operation,
+            raise_exception: false,
+        });
     });
     const [canEditView, canSeeRecordRules, canSeeModelAccess] = await Promise.all(proms);
     const accessRights = { canEditView, canSeeRecordRules, canSeeModelAccess };
     return accessRights;
-};
+});
 
 class DebugContext {
-    constructor(defaultCategories) {
+    constructor(env, defaultCategories) {
+        this.orm = env.services.orm;
         this.categories = new Map(defaultCategories.map((cat) => [cat, [{}]]));
     }
 
@@ -37,7 +43,7 @@ class DebugContext {
     }
 
     async getItems(env) {
-        const accessRights = await getAccessRights();
+        const accessRights = await getAccessRights(this.orm);
         return [...this.categories.entries()]
             .flatMap(([category, contexts]) => {
                 return debugRegistry
@@ -55,12 +61,12 @@ class DebugContext {
 }
 
 const debugContextSymbol = Symbol("debugContext");
-export function createDebugContext({ categories = [] } = {}) {
-    return { [debugContextSymbol]: new DebugContext(categories) };
+export function createDebugContext(env, { categories = [] } = {}) {
+    return { [debugContextSymbol]: new DebugContext(env, categories) };
 }
 
 export function useOwnDebugContext({ categories = [] } = {}) {
-    useSubEnv(createDebugContext({ categories }));
+    useSubEnv(createDebugContext(useEnv(), { categories }));
 }
 
 export function useEnvDebugContext() {

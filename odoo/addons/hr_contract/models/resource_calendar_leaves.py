@@ -1,5 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from collections import defaultdict
 from datetime import datetime
 from pytz import timezone, utc
 
@@ -14,13 +15,19 @@ class ResourceCalendarLeaves(models.Model):
             dt = datetime.fromordinal(date.toordinal())
             return tz.localize(dt).astimezone(utc).replace(tzinfo=None)
 
-        leaves_by_contract = self.grouped(lambda leave: leave.resource_id.employee_id.contract_id)
-        # set aside leaves without contract_id for super
-        remaining = leaves_by_contract.pop(
-            self.env['hr.contract'],
-            self.env['resource.calendar.leaves'],
-        )
-        for contract, leaves in leaves_by_contract.items():
+        Resource = self.env['resource.resource']
+        CalendarLeaves = self.env['resource.calendar.leaves']
+        leaves_by_resource = defaultdict(lambda: CalendarLeaves, {Resource: CalendarLeaves})
+        for leave in self:
+            leaves_by_resource[leave.resource_id] += leave
+        # pass leaves without resource_id to super
+        remaining = leaves_by_resource.pop(Resource)
+
+        for resource, leaves in leaves_by_resource.items():
+            contract = resource.employee_id.contract_id
+            if not contract:
+                remaining += leaves
+                continue
             tz = timezone(contract.resource_calendar_id.tz or 'UTC')
             start_dt = date2datetime(contract.date_start, tz)
             end_dt = date2datetime(contract.date_end, tz) if contract.date_end else datetime.max

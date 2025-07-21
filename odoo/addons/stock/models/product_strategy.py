@@ -2,7 +2,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import _, api, fields, models
-from odoo.osv import expression
 from odoo.exceptions import UserError
 from odoo.tools.float_utils import float_compare
 
@@ -11,8 +10,8 @@ class RemovalStrategy(models.Model):
     _name = 'product.removal'
     _description = 'Removal Strategy'
 
-    name = fields.Char('Name', required=True, translate=True)
-    method = fields.Char("Method", required=True, translate=True, help="FIFO, LIFO...")
+    name = fields.Char('Name', required=True)
+    method = fields.Char("Method", required=True, help="FIFO, LIFO...")
 
 
 class StockPutawayRule(models.Model):
@@ -29,7 +28,7 @@ class StockPutawayRule(models.Model):
         if self.env.context.get('active_model') == 'stock.location':
             return self.env.context.get('active_id')
         if not self.env.user.has_group('stock.group_stock_multi_warehouses'):
-            wh = self.env['stock.warehouse'].search(self.env['stock.warehouse']._check_company_domain(self.env.company), limit=1)
+            wh = self.env['stock.warehouse'].search([('company_id', '=', self.env.company.id)], limit=1)
             input_loc, _ = wh._get_input_output_locations(wh.reception_steps, wh.delivery_steps)
             return input_loc
 
@@ -42,57 +41,41 @@ class StockPutawayRule(models.Model):
         elif self.env.context.get('active_model') == 'product.product':
             return self.env.context.get('active_id')
 
+    def _domain_category_id(self):
+        active_model = self.env.context.get('active_model')
+        if active_model in ('product.template', 'product.product') and self.env.context.get('active_id'):
+            product = self.env[active_model].browse(self.env.context.get('active_id'))
+            product = product.exists()
+            if product:
+                return [('id', '=', product.categ_id.id)]
+        return []
+
+    def _domain_product_id(self):
+        domain = "[('type', '!=', 'service'), '|', ('company_id', '=', False), ('company_id', '=', company_id)]"
+        if self.env.context.get('active_model') == 'product.template':
+            return [('product_tmpl_id', '=', self.env.context.get('active_id'))]
+        return domain
+
     product_id = fields.Many2one(
         'product.product', 'Product', check_company=True,
-        default=_default_product_id,
-        domain="[('product_tmpl_id', '=', context.get('active_id', False))] if context.get('active_model') == 'product.template' else [('type', '!=', 'service')]",
-        ondelete='cascade')
+        default=_default_product_id, domain=_domain_product_id, ondelete='cascade')
     category_id = fields.Many2one('product.category', 'Product Category',
-        default=_default_category_id, domain=[('filter_for_stock_putaway_rule', '=', True)], ondelete='cascade')
+        default=_default_category_id, domain=_domain_category_id, ondelete='cascade')
     location_in_id = fields.Many2one(
         'stock.location', 'When product arrives in', check_company=True,
-        domain="[('child_ids', '!=', False)]",
+        domain="[('child_ids', '!=', False), '|', ('company_id', '=', False), ('company_id', '=', company_id)]",
         default=_default_location_id, required=True, ondelete='cascade', index=True)
     location_out_id = fields.Many2one(
         'stock.location', 'Store to sublocation', check_company=True,
-        domain="[('id', 'child_of', location_in_id)]",
+        domain="[('id', 'child_of', location_in_id), '|', ('company_id', '=', False), ('company_id', '=', company_id)]",
         required=True, ondelete='cascade')
     sequence = fields.Integer('Priority', help="Give to the more specialized category, a higher priority to have them in top of the list.")
     company_id = fields.Many2one(
         'res.company', 'Company', required=True,
         default=lambda s: s.env.company.id, index=True)
     package_type_ids = fields.Many2many('stock.package.type', string='Package Type', check_company=True)
-    storage_category_id = fields.Many2one(
-        'stock.storage.category', 'Storage Category',
-        compute='_compute_storage_category', store=True, readonly=False,
-        ondelete='cascade', check_company=True)
+    storage_category_id = fields.Many2one('stock.storage.category', 'Storage Category', ondelete='cascade', check_company=True)
     active = fields.Boolean('Active', default=True)
-    sublocation = fields.Selection([
-        ('no', 'No'),
-        ('last_used', 'Last Used'),
-        ('closest_location', 'Closest Location')
-    ], default='no')
-
-    @api.depends('sublocation')
-    def _compute_storage_category(self):
-        for rule in self:
-            if rule.sublocation != 'closest_location':
-                rule.storage_category_id = False
-
-    @api.onchange('sublocation', 'location_out_id', 'storage_category_id')
-    def _onchange_sublocation(self):
-        if self.sublocation == 'closest_location':
-            child_location_ids = self.env['stock.location'].search([
-                ('id', 'child_of', self.location_out_id.id),
-                ('storage_category_id', '=', self.storage_category_id.id)
-            ])
-            if not child_location_ids:
-                return {
-                    'warning': {
-                        'title': _("Warning"),
-                        'message': _("Selected storage category does not exist in the 'store to' location or any of its sublocations"),
-                    },
-                }
 
     @api.onchange('location_in_id')
     def _onchange_location_in(self):
@@ -103,6 +86,7 @@ class StockPutawayRule(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         rules = super().create(vals_list)
+        rules._enable_show_reserved()
         return rules
 
     def write(self, vals):
@@ -110,29 +94,15 @@ class StockPutawayRule(models.Model):
             for rule in self:
                 if rule.company_id.id != vals['company_id']:
                     raise UserError(_("Changing the company of this record is forbidden at this point, you should rather archive it and create a new one."))
+        self._enable_show_reserved()
         return super(StockPutawayRule, self).write(vals)
 
-    def _get_last_used_search_domain(self, product):
-        self.ensure_one()
-        domain = expression.AND([
-            [('state', '=', 'done')],
-            [('location_dest_id', 'child_of', self.location_out_id.id)],
-            [('product_id', '=', product.id)],
-        ])
-        if self.package_type_ids:
-            domain = expression.AND([
-                domain,
-                [('result_package_id.package_type_id', 'in', self.package_type_ids.ids)],
-            ])
-        return domain
-
-    def _get_last_used_location(self, product):
-        self.ensure_one()
-        return self.env['stock.move.line'].search(
-            domain=self._get_last_used_search_domain(product),
-            limit=1,
-            order='date desc'
-        ).location_dest_id
+    def _enable_show_reserved(self):
+        out_locations = self.location_out_id
+        if out_locations:
+            self.env['stock.picking.type'].with_context(active_test=False)\
+                .search([('default_location_dest_id', 'in', out_locations.ids), ('show_reserved', '=', False)])\
+                .write({'show_reserved': True})
 
     def _get_putaway_location(self, product, quantity=0, package=None, packaging=None, qty_by_location=None):
         # find package type on package or packaging
@@ -145,10 +115,6 @@ class StockPutawayRule(models.Model):
         checked_locations = set()
         for putaway_rule in self:
             location_out = putaway_rule.location_out_id
-            if putaway_rule.sublocation == 'last_used':
-                location_dest_id = putaway_rule._get_last_used_location(product)
-                location_out = location_dest_id or location_out
-
             child_locations = location_out.child_internal_location_ids
 
             if not putaway_rule.storage_category_id:

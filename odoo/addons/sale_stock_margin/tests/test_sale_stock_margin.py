@@ -12,11 +12,8 @@ class TestSaleStockMargin(TestStockValuationCommon):
 
     @classmethod
     def setUpClass(cls):
-        super().setUpClass()
-        cls.pricelist = cls.env['product.pricelist'].create({
-            'name': 'Simple Pricelist',
-            'company_id': False,
-        })
+        super(TestSaleStockMargin, cls).setUpClass()
+        cls.pricelist = cls.env['product.pricelist'].create({'name': 'Simple Pricelist'})
         cls.env['res.currency.rate'].search([]).unlink()
 
     #########
@@ -44,7 +41,7 @@ class TestSaleStockMargin(TestStockValuationCommon):
     def _create_product(self):
         product_template = self.env['product.template'].create({
             'name': 'Super product',
-            'is_storable': True,
+            'type': 'product',
         })
         product_template.categ_id.property_cost_method = 'fifo'
         return product_template.product_variant_ids
@@ -66,7 +63,7 @@ class TestSaleStockMargin(TestStockValuationCommon):
         self.assertEqual(order_line.purchase_price, 35)
         self.assertEqual(sale_order.margin, 15)
 
-        sale_order.picking_ids.move_ids.write({'quantity': 1, 'picked': True})
+        sale_order.picking_ids.move_ids.quantity_done = 1
         sale_order.picking_ids.button_validate()
 
         self.assertEqual(order_line.purchase_price, 35)
@@ -84,10 +81,10 @@ class TestSaleStockMargin(TestStockValuationCommon):
         order_line = self._create_sale_order_line(sale_order, product, 2, 50)
         sale_order.action_confirm()
 
-        self.assertEqual(order_line.purchase_price, 19.5)
-        self.assertAlmostEqual(sale_order.margin, 61)
+        self.assertEqual(order_line.purchase_price, 32)
+        self.assertAlmostEqual(sale_order.margin, 36)
 
-        sale_order.picking_ids.move_ids.write({'quantity': 2, 'picked': True})
+        sale_order.picking_ids.move_ids.quantity_done = 2
         sale_order.picking_ids.button_validate()
 
         self.assertAlmostEqual(order_line.purchase_price, 24.5)
@@ -107,7 +104,7 @@ class TestSaleStockMargin(TestStockValuationCommon):
         self.assertEqual(order_line.purchase_price, 10)
         self.assertAlmostEqual(sale_order.margin, 20)
 
-        sale_order.picking_ids.move_ids.write({'quantity': 1, 'picked': True})
+        sale_order.picking_ids.move_ids.quantity_done = 1
         sale_order.picking_ids.button_validate()
 
         self.assertAlmostEqual(order_line.purchase_price, 10)
@@ -125,11 +122,12 @@ class TestSaleStockMargin(TestStockValuationCommon):
         order_line = self._create_sale_order_line(sale_order, product, 2, 20)
         sale_order.action_confirm()
 
-        self.assertEqual(order_line.purchase_price, 15)
-        self.assertAlmostEqual(sale_order.margin, 10)
+        self.assertEqual(order_line.purchase_price, 10)
+        self.assertAlmostEqual(sale_order.margin, 20)
 
-        sale_order.picking_ids.move_ids.write({'quantity': 1, 'picked': True})
-        Form.from_action(self.env, sale_order.picking_ids.button_validate()).save().process()
+        sale_order.picking_ids.move_ids.quantity_done = 1
+        res = sale_order.picking_ids.button_validate()
+        Form(self.env[res['res_model']].with_context(res['context'])).save().process()
 
         self.assertAlmostEqual(order_line.purchase_price, 15)
         self.assertAlmostEqual(order_line.margin, 10)
@@ -152,16 +150,17 @@ class TestSaleStockMargin(TestStockValuationCommon):
         order_line_2 = self._create_sale_order_line(sale_order, product_2, 4, 20)
         sale_order.action_confirm()
 
-        self.assertAlmostEqual(order_line_1.purchase_price, 43)
-        self.assertAlmostEqual(order_line_2.purchase_price, 14)
-        self.assertAlmostEqual(order_line_1.margin, 17 * 2)
-        self.assertAlmostEqual(order_line_2.margin, 6 * 4)
-        self.assertAlmostEqual(sale_order.margin, 58)
+        self.assertAlmostEqual(order_line_1.purchase_price, 35)
+        self.assertAlmostEqual(order_line_2.purchase_price, 17)
+        self.assertAlmostEqual(order_line_1.margin, 25 * 2)
+        self.assertAlmostEqual(order_line_2.margin, 3 * 4)
+        self.assertAlmostEqual(sale_order.margin, 62)
 
-        sale_order.picking_ids.move_ids[0].write({'quantity': 2, 'picked': True})
-        sale_order.picking_ids.move_ids[1].write({'quantity': 3, 'picked': True})
+        sale_order.picking_ids.move_ids[0].quantity_done = 2
+        sale_order.picking_ids.move_ids[1].quantity_done = 3
 
-        Form.from_action(self.env, sale_order.picking_ids.button_validate()).save().process()
+        res = sale_order.picking_ids.button_validate()
+        Form(self.env[res['res_model']].with_context(res['context'])).save().process()
 
         self.assertAlmostEqual(order_line_1.purchase_price, 43)       # (35 + 51) / 2
         self.assertAlmostEqual(order_line_2.purchase_price, 12.5)     # (17 + 11 + 11 + 11) / 4
@@ -278,7 +277,9 @@ class TestSaleStockMargin(TestStockValuationCommon):
             'picking_id': picking.id,
         })
         picking.action_confirm()
-        picking.button_validate()
+        res_dict = picking.button_validate()
+        wizard = Form(self.env[(res_dict.get('res_model'))].with_context(res_dict['context'])).save()
+        wizard.process()
 
         self.pricelist.currency_id = new_company_currency.id
         partner = self.env['res.partner'].create({'name': 'Super Partner'})
@@ -309,104 +310,7 @@ class TestSaleStockMargin(TestStockValuationCommon):
         so = so_form.save()
         email_act = so.action_quotation_send()
         email_ctx = email_act.get('context', {})
-        so.with_context(**email_ctx).message_post_with_source(
-            self.env['mail.template'].browse(email_ctx.get('default_template_id')),
-            subtype_id=self.env['ir.model.data']._xmlid_to_res_id('mail.mt_comment'),
-        )
+        so.with_context(**email_ctx).message_post_with_template(email_ctx.get('default_template_id'))
 
         self.assertEqual(so.state, 'sent')
         self.assertEqual(so.order_line[0].purchase_price, 15)
-        so.action_confirm()
-        self.assertEqual(so.order_line[0].purchase_price, 15)
-
-    def test_add_product_on_delivery_price_unit_on_sale(self):
-        """ Adding a product directly on a sale order's delivery should result in the new SOL
-        having its `purchase_price` and `margin` + `margin_percent` fields correctly calculated.
-        """
-        products = [self._create_product() for _ in range(2)]
-        for product, cost, price in zip(products, [20, 10], [25, 20]):
-            product.categ_id.property_cost_method = 'standard'
-            product.write({
-                'standard_price': cost,
-                'list_price': price,
-                'invoice_policy': 'delivery',
-            })
-        sale_order = self._create_sale_order()
-        self._create_sale_order_line(sale_order, products[0], 10, products[0].list_price)
-        sale_order.action_confirm()
-        delivery = sale_order.picking_ids[0]
-        with Form(delivery) as delivery_form:
-            with delivery_form.move_ids_without_package.new() as move:
-                move.product_id = products[1]
-                move.product_uom_qty = 10
-        delivery.move_ids.quantity = 10
-        delivery.button_validate()
-        self.assertRecordValues(
-            sale_order.order_line.filtered(lambda sol: sol.product_id == products[1]),
-            [{
-                'price_unit': products[1].list_price,
-                'purchase_price': products[1].standard_price,
-                'margin': 100,
-                'margin_percent': 0.5,
-            }]
-        )
-
-    def test_add_standard_product_on_delivery_cost_on_sale_order(self):
-        """ test that if product with standard cost method is added in delivery, the cost is computed."""
-        self.product1.write({
-                'standard_price': 20,
-                'list_price': 25,
-                'invoice_policy': 'order',
-            })
-        product2 = self.env['product.product'].create({
-            'name': 'product2',
-            'type': 'consu',
-            'is_storable': True,
-            'categ_id': self.env.ref('product.product_category_all').id,
-            'standard_price': 10,
-            'list_price': 20,
-            'invoice_policy': 'order',
-        })
-        sale_order = self._create_sale_order()
-        self._create_sale_order_line(sale_order, self.product1, 10, self.product1.list_price)
-        sale_order.action_confirm()
-        delivery = sale_order.picking_ids[0]
-        with Form(delivery) as delivery_form:
-            with delivery_form.move_ids_without_package.new() as move:
-                move.product_id = product2
-                move.product_uom_qty = 10
-        delivery.move_ids.quantity = 10
-        delivery.button_validate()
-        self.assertEqual(sale_order.order_line.filtered(lambda sol: sol.product_id == product2).purchase_price, 10)
-
-    def test_add_avco_product_on_delivery_cost_on_sale_order(self):
-        """ test that if product with avco cost method and an order "invoice_policy" is added in delivery, the cost is computed."""
-        categ_average = self.env['product.category'].create({
-            'name': 'AVERAGE',
-            'property_cost_method': 'average'
-        })
-        self.product1.write({
-                'standard_price': 20,
-                'list_price': 25,
-                'invoice_policy': 'order',
-            })
-        product2 = self.env['product.product'].create({
-            'name': 'product2',
-            'type': 'consu',
-            'is_storable': True,
-            'categ_id': categ_average.id,
-            'standard_price': 10,
-            'list_price': 20,
-            'invoice_policy': 'order',
-        })
-        sale_order = self._create_sale_order()
-        self._create_sale_order_line(sale_order, self.product1, 10, self.product1.list_price)
-        sale_order.action_confirm()
-        delivery = sale_order.picking_ids[0]
-        with Form(delivery) as delivery_form:
-            with delivery_form.move_ids_without_package.new() as move:
-                move.product_id = product2
-                move.product_uom_qty = 10
-        delivery.move_ids.quantity = 10
-        delivery.button_validate()
-        self.assertEqual(sale_order.order_line.filtered(lambda sol: sol.product_id == product2).purchase_price, 10)

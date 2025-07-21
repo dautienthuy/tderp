@@ -50,21 +50,12 @@ class UtmSourceMixin(models.AbstractModel):
     name = fields.Char('Name', related='source_id.name', readonly=False)
     source_id = fields.Many2one('utm.source', string='Source', required=True, ondelete='restrict', copy=False)
 
-    @api.model
-    def default_get(self, fields_list):
-        # Exclude 'name' from fields_list to avoid retrieving it from context.
-        return super().default_get([field for field in fields_list if field != "name"])
-
     @api.model_create_multi
     def create(self, vals_list):
         """Create the UTM sources if necessary, generate the name based on the content in batch."""
         # Create all required <utm.source>
         utm_sources = self.env['utm.source'].create([
-            {
-                'name': values.get('name')
-                or self.env.context.get('default_name')
-                or self.env['utm.source']._generate_name(self, values.get(self._rec_name)),
-            }
+            {'name': values.get('name') or self.env['utm.source']._generate_name(self, values.get(self._rec_name))}
             for values in vals_list
             if not values.get('source_id')
         ])
@@ -93,13 +84,10 @@ class UtmSourceMixin(models.AbstractModel):
                 utm_check_skip_record_ids=self.source_id.ids
             )._get_unique_names("utm.source", [values['name']])[0]
 
-        return super().write(values)
+        super().write(values)
 
-    def copy_data(self, default=None):
+    def copy(self, default=None):
         """Increment the counter when duplicating the source."""
         default = default or {}
-        default_name = default.get('name')
-        vals_list = super().copy_data(default=default)
-        for source, vals in zip(self, vals_list):
-            vals['name'] = self.env['utm.mixin']._get_unique_names("utm.source", [default_name or source.name])[0]
-        return vals_list
+        default['name'] = self.env['utm.mixin']._get_unique_names("utm.source", [self.name])[0]
+        return super().copy(default)

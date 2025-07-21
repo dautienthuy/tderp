@@ -1,12 +1,15 @@
-/** @odoo-module **/
+odoo.define('test_apikeys.tour', function(require) {
+"use strict";
 
-import { queryAll, queryText } from "@odoo/hoot-dom";
-import { rpc } from "@web/core/network/rpc";
-import { registry } from "@web/core/registry";
+const tour = require('web_tour.tour');
+const ajax = require('web.ajax');
 
-const openUserPreferenceSecurity = () => [{
+tour.register('apikeys_tour_setup', {
+    test: true,
+    url: '/web?debug=1', // Needed as API key part is now only displayed in debug mode
+}, [{
     content: 'Open user account menu',
-    trigger: '.o_user_menu .dropdown-toggle',
+    trigger: '.o_user_menu .oe_topbar_name',
     run: 'click',
 }, {
     content: "Open preferences / profile screen",
@@ -16,69 +19,66 @@ const openUserPreferenceSecurity = () => [{
     content: "Switch to security tab",
     trigger: 'a[role=tab]:contains("Account Security")',
     run: 'click',
-}]
-
-registry.category("web_tour.tours").add('apikeys_tour_setup', {
-    url: '/odoo?debug=1', // Needed as API key part is now only displayed in debug mode
-    steps: () => [
-    ...openUserPreferenceSecurity(), {
+}, {
     content: "Open API keys wizard",
     trigger: 'button:contains("New API Key")',
-    run: "click",
 }, {
     content: "Check that we have to enter enhanced security mode",
-    trigger: ".modal div:contains(entering your password)",
+    trigger: 'div:contains("enter your password")',
+    run: () => {},
 }, {
     content: "Input password",
-    trigger: '.modal [name=password] input',
-    run: "edit test_user",
+    trigger: '[name=password] input',
+    run: 'text demo', // FIXME: better way to do this?
 }, {
     content: "Confirm",
-    trigger: ".modal button:contains(Confirm Password)",
-    run: "click",
+    trigger: "button:contains(Confirm Password)",
 }, {
     content: "Check that we're now on the key description dialog",
-    trigger: '.modal p:contains("Enter a description of and purpose for the key.")',
+    trigger: 'p:contains("Enter a description of and purpose for the key.")',
+    run: () => {},
 }, {
     content: "Enter description",
-    trigger: '.modal [name=name] input',
-    run: "edit my key",
+    trigger: '[name=name] input',
+    run: 'text my key',
 }, {
     content: "Confirm key creation",
-    trigger: '.modal button:contains("Generate key")',
-    run: "click",
+    trigger: 'button:contains("Generate key")'
 }, {
     content: "Check that we're on the last step & grab key",
-    trigger: '.modal p:contains("Here is your new API key")',
+    trigger: 'p:contains("Here is your new API key")',
     run: async () => {
-        const key = queryText("code [name=key] span");
-        await rpc('/web/dataset/call_kw', {
+        const key = $('code [name=key] span').text();
+        await ajax.jsonRpc('/web/dataset/call_kw', 'call', {
             model: 'ir.logging', method: 'send_key',
             args: [key],
             kwargs: {},
         });
+        $('button:contains("Done")').click();
     }
-},
-{
-    trigger: "button:contains(Done)",
-    run: "click",
-},
-...openUserPreferenceSecurity(),
-{
-    content: "check that our key is present",
-    trigger: '[name=api_key_ids] td:contains("my key")',
-}]});
-
-// deletes the previously created key
-registry.category("web_tour.tours").add('apikeys_tour_teardown', {
-    url: '/odoo?debug=1', // Needed as API key part is now only displayed in debug mode
-    steps: () => [{
-    content: 'Open preferences',
-    trigger: '.o_user_menu .dropdown-toggle',
-    run: "click",
+}, {
+    content: 'Re-open preferences',
+    trigger: '.o_user_menu .oe_topbar_name',
 }, {
     trigger: '[data-menu=settings]',
-    run: "click",
+}, {
+    content: "Switch to security tab",
+    trigger: 'a[role=tab]:contains("Account Security")',
+    run: 'click',
+}, {
+    content: "check that our key is present",
+    trigger: '[name=api_key_ids] td:contains("my key")',
+}]);
+
+// deletes the previously created key
+tour.register('apikeys_tour_teardown', {
+    test: true,
+    url: '/web?debug=1', // Needed as API key part is now only displayed in debug mode
+}, [{
+    content: 'Open preferences',
+    trigger: '.o_user_menu .oe_topbar_name',
+}, {
+    trigger: '[data-menu=settings]',
 }, {
     content: "Switch to security tab",
     trigger: 'a[role=tab]:contains("Account Security")',
@@ -89,23 +89,16 @@ registry.category("web_tour.tours").add('apikeys_tour_teardown', {
     run: 'click',
 }, {
     content: "Input password for security mode again",
-    trigger: ".modal [name=password] input",
-    run: "edit test_user",
+    trigger: '[name=password] input',
+    run: 'text demo', // FIXME: better way to do this?
 }, {
     content: "And confirm",
-    trigger: ".modal button:contains(Confirm Password)",
-    run: "click",
-},
-{
-    trigger: "body:not(:has(.modal))",
-},
-{
+    trigger: 'button:contains(Confirm Password)',
+}, {
     content: 'Re-open preferences again',
-    trigger: '.o_user_menu .dropdown-toggle',
-    run: "click",
+    trigger: '.o_user_menu .oe_topbar_name',
 }, {
     trigger: '[data-menu=settings]',
-    run: "click",
 }, {
     content: "Switch to security tab",
     trigger: 'a[role=tab]:contains("Account Security")',
@@ -114,8 +107,9 @@ registry.category("web_tour.tours").add('apikeys_tour_teardown', {
     content: "Check that there's no more keys",
     trigger: '.o_notebook',
     run: function() {
-        if (queryAll("[name=api_key_ids]:visible", { root: this.anchor }).length) {
-            console.error("Expected API keys to be hidden (because empty), but it's not");
+        if (this.$anchor.find('[name=api_key_ids]:visible').length) {
+            throw new Error("Expected API keys to be hidden (because empty), but it's not");
         };
     }
-}]});
+}]);
+});

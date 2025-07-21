@@ -3,17 +3,19 @@
 # 	* repair
 # 
 # Translators:
+# Martin Trigaux, 2022
+# JH CHOI <hwangtog@gmail.com>, 2022
+# Sarah Park, 2023
+# Daye Jeong, 2023
 # Wil Odoo, 2024
-# Daye Jeong, 2025
-# Sarah Park, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-16 13:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Sarah Park, 2025\n"
+"POT-Creation-Date: 2023-05-23 08:22+0000\n"
+"PO-Revision-Date: 2022-09-22 05:54+0000\n"
+"Last-Translator: Wil Odoo, 2024\n"
 "Language-Team: Korean (https://app.transifex.com/odoo/teams/41243/ko/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,26 +24,15 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: repair
-#. odoo-python
-#: code:addons/repair/models/stock_warehouse.py:0
-msgid "%(name)s Sequence repair"
-msgstr "%(name)s 시퀀스 복구"
-
-#. module: repair
-#. odoo-python
-#: code:addons/repair/models/repair.py:0
-msgid "%(product)s: Insufficient Quantity To Repair"
-msgstr "%(product)s: 수리할 수량이 충분하지 않습니다."
-
-#. module: repair
 #: model:ir.actions.report,print_report_name:repair.action_report_repair_order
-msgid "('Repair Order - %s' % (object.name))"
-msgstr "('수리 요청서 - %s' % (object.name))"
-
-#. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.report_repairorder
-msgid "(<i>Recycle</i>)"
-msgstr "(<i>재활용</i>)"
+msgid ""
+"(\n"
+"                object.state == 'draft' and 'Repair Quotation - %s' % (object.name) or\n"
+"                'Repair Order - %s' % (object.name))"
+msgstr ""
+"(\n"
+"                object.state == 'draft' and 'Repair Quotation - %s' % (object.name) 또는\n"
+"                '수리요청서 - %s' % (object.name))"
 
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.report_repairorder
@@ -49,19 +40,59 @@ msgid "(<i>Remove</i>)"
 msgstr "(<i>제거</i>)"
 
 #. module: repair
+#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
+msgid "(update)"
+msgstr "(갱신)"
+
+#. module: repair
 #: model:ir.model.fields,help:repair.field_repair_order__state
 msgid ""
-"* The 'New' status is used when a user is encoding a new and unconfirmed repair order.\n"
+"* The 'Draft' status is used when a user is encoding a new and unconfirmed repair order.\n"
 "* The 'Confirmed' status is used when a user confirms the repair order.\n"
+"* The 'Ready to Repair' status is used to start to repairing, user can start repairing only after repair order is confirmed.\n"
 "* The 'Under Repair' status is used when the repair is ongoing.\n"
-"* The 'Repaired' status is set when repairing is completed.\n"
+"* The 'To be Invoiced' status is used to generate the invoice before or after repairing done.\n"
+"* The 'Done' status is set when repairing is completed.\n"
 "* The 'Cancelled' status is used when user cancel repair order."
 msgstr ""
-"* '신규' 상태는 사용자가 미승인된 신규 수리 요청서를 인코딩할 때 사용됩니다.\n"
-"* '확인됨' 상태는 사용자가 수리 요청서를 승인할 때 사용됩니다.\n"
+"* '초안' 상태는 사용자가 신규 미승인된 수리요청서를 기록할 때 사용합니다.\n"
+"* '확인됨' 상태는 사용자가 수리요청서를 승인할 때 사용됩니다.\n"
+"* '수리 준비 완료' 상태는 수리를 시작하는 데 사용되며, 수리요청서가 승인되어야만 수리를 시작할 수 있습니다.\n"
 "* '수리 중' 상태는 수리가 진행 중일 때 사용됩니다.\n"
-"* '수리 완료' 상태는 수리가 완료될 때 설정됩니다.\n"
-"* '취소됨' 상태는 사용자가 수리 요청을 취소한 경우에 사용됩니다."
+"* '청구서 발행대기' 상태는 수리 전 또는 수리 후 청구서를 생성하는 데 사용됩니다.\n"
+"* '완료' 상태는 수리가 완료되면 설정됩니다.\n"
+"* '취소' 상태는 사용자가 수리 요청을 취소할 때 사용됩니다."
+
+#. module: repair
+#. odoo-python
+#: code:addons/repair/models/repair.py:0
+#, python-format
+msgid ": Insufficient Quantity To Repair"
+msgstr ": 수리할 수량이 충분하지 않습니다."
+
+#. module: repair
+#: model:mail.template,body_html:repair.mail_template_repair_quotation
+msgid ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"    <p style=\"margin: 0px; padding: 0px;font-size: 13px;\">\n"
+"        Hello <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t>,<br>\n"
+"        Here is your repair order <strong t-out=\"object.name or ''\">RO/00004</strong>\n"
+"        <t t-if=\"object.invoice_method != 'none'\">\n"
+"            amounting in <strong><t t-out=\"format_amount(object.amount_total, object.pricelist_id.currency_id) or ''\">$ 100.00</t>.</strong><br>\n"
+"        </t>\n"
+"        <t t-else=\"\">\n"
+"            .<br>\n"
+"        </t>\n"
+"        You can reply to this email if you have any questions.\n"
+"        <br><br>\n"
+"        Thank you,\n"
+"        <t t-if=\"user.signature\">\n"
+"            <br>\n"
+"            <t t-out=\"user.signature or ''\">--<br>Mitchell Admin</t>\n"
+"        </t>\n"
+"    </p>\n"
+"</div>"
+msgstr ""
 
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.report_repairorder
@@ -69,74 +100,63 @@ msgid "<i>(Add)</i>"
 msgstr "<i>(추가하기)</i>"
 
 #. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.stock_repair_type_kanban
-msgid "<span class=\"col-6\">Confirmed</span>"
-msgstr "<span class=\"col-6\">확인됨</span>"
-
-#. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.stock_repair_type_kanban
-msgid "<span class=\"col-6\">Late</span>"
-msgstr "<span class=\"col-6\">지연</span>"
-
-#. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.stock_repair_type_kanban
-msgid "<span class=\"col-6\">Under Repair</span>"
-msgstr "<span class=\"col-6\">복구 중</span>"
-
-#. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.stock_production_lot_view_form
-msgid "<span class=\"o_stat_text\">Done:</span>"
-msgstr "<span class=\"o_stat_text\">완료:</span>"
-
-#. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.stock_production_lot_view_form
-msgid "<span class=\"o_stat_text\">Repair Parts:</span>"
-msgstr "<span class=\"o_stat_text\">부품 수리:</span>"
-
-#. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
-msgid "<span class=\"o_stat_text\">Sale Order</span>"
-msgstr "<span class=\"o_stat_text\">판매 주문</span>"
+msgid ""
+"<span class=\"o_stat_text\">1</span>\n"
+"                                <span class=\"o_stat_text\">Invoices</span>"
+msgstr ""
+"<span class=\"o_stat_text\">1</span>\n"
+"                                <span class=\"o_stat_text\">청구서</span>"
 
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.stock_production_lot_view_form
-msgid "<span class=\"o_stat_text\">To Do:</span>"
-msgstr "<span class=\"o_stat_text\">할 일:</span>"
-
-#. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.stock_repair_type_kanban
-msgid "<span>Orders</span>"
-msgstr "<span>주문</span>"
+msgid "<span class=\"o_stat_text\">Repairs</span>"
+msgstr "<span class=\"o_stat_text\">수리</span>"
 
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.report_repairorder
-msgid "<span>Repair Order #</span>"
-msgstr "<span>수리 주문 번호 #</span>"
+msgid "<strong>Lot/Serial Number:</strong>"
+msgstr "<strong>Lot/일련번호 :</strong>"
 
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.report_repairorder
-msgid "<strong>Customer:</strong>"
-msgstr "<strong>고객:</strong>"
+msgid "<strong>Operations</strong>"
+msgstr "<strong>운영</strong>"
 
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.report_repairorder
-msgid "<strong>Lot/Serial:</strong>"
-msgstr "<strong>Lot/일련번호:</strong>"
+msgid "<strong>Parts</strong>"
+msgstr "<strong>부품</strong>"
 
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.report_repairorder
-msgid "<strong>Product:</strong>"
-msgstr "<strong>품목:</strong>"
+msgid "<strong>Printing Date:</strong>"
+msgstr "<strong>인쇄 날짜 :</strong>"
 
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.report_repairorder
-msgid "<strong>Responsible:</strong>"
-msgstr "<strong>책임 :</strong>"
+msgid "<strong>Product to Repair:</strong>"
+msgstr "<strong>수리해야 할 상품 :</strong>"
 
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.report_repairorder
-msgid "<strong>Status:</strong>"
-msgstr "<strong>상태 : </strong>"
+msgid "<strong>Shipping address :</strong>"
+msgstr "<strong>선적 주소 :</strong>"
+
+#. module: repair
+#: model_terms:ir.ui.view,arch_db:repair.report_repairorder
+msgid "<strong>Total Without Taxes</strong>"
+msgstr "<storng>공급가액 :</strong>"
+
+#. module: repair
+#: model_terms:ir.ui.view,arch_db:repair.report_repairorder
+msgid "<strong>Total</strong>"
+msgstr "<strong>합계</strong>"
+
+#. module: repair
+#: model_terms:ir.ui.view,arch_db:repair.report_repairorder
+msgid "<strong>Warranty:</strong>"
+msgstr "<strong>보증 :</strong>"
 
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.stock_warn_insufficient_qty_repair_form_view
@@ -166,22 +186,12 @@ msgstr "활동 상태"
 #. module: repair
 #: model:ir.model.fields,field_description:repair.field_repair_order__activity_type_icon
 msgid "Activity Type Icon"
-msgstr "활동 유형 아이콘"
+msgstr "업무 유형 아이콘"
 
 #. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.repair_order_view_activity
-msgid "Activity view"
-msgstr "활동 보기"
-
-#. module: repair
-#: model:ir.model.fields.selection,name:repair.selection__stock_move__repair_line_type__add
+#: model:ir.model.fields.selection,name:repair.selection__repair_line__type__add
 msgid "Add"
 msgstr "추가"
-
-#. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
-msgid "Add a line"
-msgstr "항목 추가"
 
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
@@ -189,45 +199,19 @@ msgid "Add internal notes."
 msgstr "내부용 메모를 추가합니다."
 
 #. module: repair
-#: model:ir.model.fields,field_description:repair.field_repair_order__location_dest_id
-msgid "Added Parts Destination Location"
-msgstr "부품 목적지 위치 추가됨"
+#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
+msgid "Add quotation notes."
+msgstr "견적용 메모를 추가합니다."
 
 #. module: repair
-#: model:ir.model.fields.selection,name:repair.selection__repair_order__search_date_category__after
-#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form_filter
-msgid "After"
-msgstr "이후"
+#: model:ir.model.fields.selection,name:repair.selection__repair_order__invoice_method__after_repair
+msgid "After Repair"
+msgstr "수리 후"
 
 #. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.stock_repair_type_kanban
-msgid "All"
-msgstr "전체"
-
-#. module: repair
-#: model:ir.model.fields,field_description:repair.field_repair_order__is_parts_available
-msgid "All Parts are available"
-msgstr "모든 부품 사용 가능"
-
-#. module: repair
-#: model:ir.model.fields,field_description:repair.field_repair_order__allowed_lot_ids
-msgid "Allowed Lot"
-msgstr "허용되는 로트"
-
-#. module: repair
-#: model:ir.model.fields,field_description:repair.field_repair_order__reserve_visible
-msgid "Allowed to Reserve Production"
-msgstr "생산 예약 허용"
-
-#. module: repair
-#: model:ir.model.fields,field_description:repair.field_repair_order__unreserve_visible
-msgid "Allowed to Unreserve Production"
-msgstr "생산 예약 해제 허용"
-
-#. module: repair
-#: model:ir.model.fields,field_description:repair.field_repair_order__is_parts_late
-msgid "Any Part is late"
-msgstr "부품이 지연됨"
+#: model:ir.model.fields,field_description:repair.field_repair_order__allowed_picking_type_ids
+msgid "Allowed Picking Type"
+msgstr "픽업 유형 허용"
 
 #. module: repair
 #: model:ir.model.fields,field_description:repair.field_repair_order__message_attachment_count
@@ -235,34 +219,14 @@ msgid "Attachment Count"
 msgstr "첨부 파일 수"
 
 #. module: repair
-#. odoo-python
-#: code:addons/repair/models/repair.py:0
-#: model:ir.model.fields.selection,name:repair.selection__repair_order__parts_availability_state__available
-msgid "Available"
-msgstr "사용 가능"
+#: model:ir.model.fields.selection,name:repair.selection__repair_order__invoice_method__b4repair
+msgid "Before Repair"
+msgstr "수리 전"
 
 #. module: repair
-#. odoo-javascript
-#: code:addons/repair/static/src/components/product_catalog/kanban_controller.js:0
-msgid "Back to Repair"
-msgstr "복구로 돌아가기"
-
-#. module: repair
-#: model:ir.model.fields.selection,name:repair.selection__repair_order__search_date_category__before
-#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form_filter
-msgid "Before"
-msgstr "이전"
-
-#. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.product_view_search_catalog
-msgid "BoM Components"
-msgstr "BoM 부품"
-
-#. module: repair
-#. odoo-python
-#: code:addons/repair/models/stock_warehouse.py:0
-msgid "Can't find any production location."
-msgstr "생산 장소를 찾을 수 없습니다."
+#: model_terms:ir.ui.view,arch_db:repair.view_make_invoice
+msgid "Cancel"
+msgstr "취소"
 
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
@@ -270,33 +234,24 @@ msgid "Cancel Repair"
 msgstr "수리 취소"
 
 #. module: repair
+#: model:ir.model.fields.selection,name:repair.selection__repair_line__state__cancel
 #: model:ir.model.fields.selection,name:repair.selection__repair_order__state__cancel
-#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form_filter
 msgid "Cancelled"
-msgstr "취소됨"
+msgstr "취소 됨"
 
 #. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
-msgid "Catalog"
-msgstr "카탈로그"
-
-#. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_fee__product_uom_category_id
+#: model:ir.model.fields,field_description:repair.field_repair_line__product_uom_category_id
 #: model:ir.model.fields,field_description:repair.field_repair_order__product_uom_category_id
 msgid "Category"
 msgstr "카테고리"
-
-#. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
-msgid "Check availability"
-msgstr "적용 여부 확인"
 
 #. module: repair
 #: model:ir.model.fields,help:repair.field_repair_order__partner_id
 msgid ""
 "Choose partner for whom the order will be invoiced and delivered. You can "
 "find a partner by its Name, TIN, Email or Internal Reference."
-msgstr ""
-"주문 내역을 청구하고 배송을 진행할 협력사를 선택하세요. 이름, 사업자등록번호, 이메일 또는 내부 참조로 협력사를 검색하실 수 있습니다."
+msgstr "주문을 청구하고 전달할 협력사를 선택하십시오. 이름, TIN, 이메일 또는 내부 참조로 협력사를 찾을 수 있습니다."
 
 #. module: repair
 #: model:ir.model.fields,field_description:repair.field_repair_tags__color
@@ -304,32 +259,17 @@ msgid "Color Index"
 msgstr "색상표"
 
 #. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_fee__company_id
+#: model:ir.model.fields,field_description:repair.field_repair_line__company_id
 #: model:ir.model.fields,field_description:repair.field_repair_order__company_id
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form_filter
 msgid "Company"
 msgstr "회사"
 
 #. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.repair_view_picking_type_form
-msgid "Component Destination Location"
-msgstr "부품 대상 위치"
-
-#. module: repair
-#: model:ir.model.fields,field_description:repair.field_repair_order__location_id
-#: model_terms:ir.ui.view,arch_db:repair.repair_view_picking_type_form
-msgid "Component Source Location"
-msgstr "부품 원본 위치"
-
-#. module: repair
-#: model:ir.model.fields,field_description:repair.field_repair_order__parts_availability
-msgid "Component Status"
-msgstr "부품 상태"
-
-#. module: repair
 #: model:ir.ui.menu,name:repair.repair_menu_config
-#: model_terms:ir.ui.view,arch_db:repair.stock_repair_type_kanban
 msgid "Configuration"
-msgstr "설정"
+msgstr "구성"
 
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
@@ -337,14 +277,15 @@ msgid "Confirm Repair"
 msgstr "수리 확인"
 
 #. module: repair
-#. odoo-python
-#: code:addons/repair/models/stock_picking.py:0
+#: model:ir.model.fields.selection,name:repair.selection__repair_line__state__confirmed
 #: model:ir.model.fields.selection,name:repair.selection__repair_order__state__confirmed
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form_filter
 msgid "Confirmed"
 msgstr "확인됨"
 
 #. module: repair
+#: model:ir.model.fields,help:repair.field_repair_fee__product_uom_category_id
+#: model:ir.model.fields,help:repair.field_repair_line__product_uom_category_id
 #: model:ir.model.fields,help:repair.field_repair_order__product_uom_category_id
 msgid ""
 "Conversion between Units of Measure can only occur if they belong to the "
@@ -352,29 +293,39 @@ msgid ""
 msgstr "단위 사이의 변환은 동일 카테고리에서만 가능합니다. 변환은 비율에 따라 이루어집니다."
 
 #. module: repair
+#. odoo-python
+#: code:addons/repair/models/repair.py:0 code:addons/repair/models/repair.py:0
+#, python-format
+msgid ""
+"Couldn't find a pricelist line matching this product and quantity.\n"
+"You have to change either the product, the quantity or the pricelist."
+msgstr ""
+"이 상품 및 수량과 일치하는 가격표를 찾을 수 없습니다.\n"
+"상품, 수량 또는 가격표를 변경해야 합니다."
+
+#. module: repair
+#: model_terms:ir.ui.view,arch_db:repair.view_make_invoice
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
-msgid "Create Quotation"
-msgstr "견적서 생성"
+msgid "Create Invoice"
+msgstr "청구서 발행"
+
+#. module: repair
+#: model:ir.model,name:repair.model_repair_order_make_invoice
+msgid "Create Mass Invoice (repair)"
+msgstr "청구서 일괄 발행 (수리용)"
 
 #. module: repair
 #. odoo-python
 #: code:addons/repair/models/stock_picking.py:0
-#: model:ir.model.fields,field_description:repair.field_product_product__create_repair
-#: model:ir.model.fields,field_description:repair.field_product_template__create_repair
+#, python-format
 msgid "Create Repair"
-msgstr "수리 요청 생성"
+msgstr "수리 항목 생성"
 
 #. module: repair
+#: model:ir.model.fields,field_description:repair.field_stock_picking__is_repairable
 #: model:ir.model.fields,field_description:repair.field_stock_picking_type__is_repairable
 msgid "Create Repair Orders from Returns"
 msgstr "반품에서 수리요청서 생성"
-
-#. module: repair
-#: model:ir.model.fields,help:repair.field_product_product__create_repair
-#: model:ir.model.fields,help:repair.field_product_template__create_repair
-msgid ""
-"Create a linked Repair Order on Sale Order confirmation of this product."
-msgstr "이 제품의 판매주문 확인서와 연결된 수리요청서를 생성합니다."
 
 #. module: repair
 #: model_terms:ir.actions.act_window,help:repair.action_repair_order_tag
@@ -382,18 +333,37 @@ msgid "Create a new tag"
 msgstr "새 태그 만들기"
 
 #. module: repair
+#: model:ir.actions.act_window,name:repair.act_repair_invoice
+#: model_terms:ir.ui.view,arch_db:repair.view_make_invoice
+msgid "Create invoices"
+msgstr "청구서 발행"
+
+#. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_fee__create_uid
+#: model:ir.model.fields,field_description:repair.field_repair_line__create_uid
 #: model:ir.model.fields,field_description:repair.field_repair_order__create_uid
+#: model:ir.model.fields,field_description:repair.field_repair_order_make_invoice__create_uid
 #: model:ir.model.fields,field_description:repair.field_repair_tags__create_uid
 #: model:ir.model.fields,field_description:repair.field_stock_warn_insufficient_qty_repair__create_uid
 msgid "Created by"
 msgstr "작성자"
 
 #. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_fee__create_date
+#: model:ir.model.fields,field_description:repair.field_repair_line__create_date
 #: model:ir.model.fields,field_description:repair.field_repair_order__create_date
+#: model:ir.model.fields,field_description:repair.field_repair_order_make_invoice__create_date
 #: model:ir.model.fields,field_description:repair.field_repair_tags__create_date
 #: model:ir.model.fields,field_description:repair.field_stock_warn_insufficient_qty_repair__create_date
 msgid "Created on"
 msgstr "작성일자"
+
+#. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_fee__currency_id
+#: model:ir.model.fields,field_description:repair.field_repair_line__currency_id
+#: model:ir.model.fields,field_description:repair.field_repair_order__currency_id
+msgid "Currency"
+msgstr "통화"
 
 #. module: repair
 #: model:ir.model.fields,field_description:repair.field_repair_order__partner_id
@@ -402,28 +372,32 @@ msgid "Customer"
 msgstr "고객"
 
 #. module: repair
-#: model:ir.model.fields,field_description:repair.field_repair_order__search_date_category
-msgid "Date Category"
-msgstr "날짜 카테고리"
+#: model:ir.model.fields,field_description:repair.field_repair_order__default_address_id
+msgid "Default Address"
+msgstr "기본 주소"
 
 #. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
-msgid "Demand"
-msgstr "수요"
+#: model:ir.model.fields,field_description:repair.field_repair_order__address_id
+msgid "Delivery Address"
+msgstr "배송 주소"
 
 #. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_fee__name
+#: model:ir.model.fields,field_description:repair.field_repair_line__name
 #: model_terms:ir.ui.view,arch_db:repair.report_repairorder
-#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
 msgid "Description"
 msgstr "설명"
 
 #. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
-msgid "Details"
-msgstr "세부 정보"
+#: model:ir.model.fields,field_description:repair.field_repair_line__location_dest_id
+msgid "Dest. Location"
+msgstr "도착지"
 
 #. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_fee__display_name
+#: model:ir.model.fields,field_description:repair.field_repair_line__display_name
 #: model:ir.model.fields,field_description:repair.field_repair_order__display_name
+#: model:ir.model.fields,field_description:repair.field_repair_order_make_invoice__display_name
 #: model:ir.model.fields,field_description:repair.field_repair_tags__display_name
 #: model:ir.model.fields,field_description:repair.field_stock_warn_insufficient_qty_repair__display_name
 msgid "Display Name"
@@ -435,9 +409,30 @@ msgid "Do you confirm you want to repair"
 msgstr "수리를 승인하시겠습니까?"
 
 #. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
+#: model_terms:ir.ui.view,arch_db:repair.view_make_invoice
+msgid "Do you really want to create the invoice(s)?"
+msgstr "정말 청구서를 발행하시겠습니까?"
+
+#. module: repair
+#: model:ir.model.fields.selection,name:repair.selection__repair_line__state__done
 msgid "Done"
 msgstr "완료"
+
+#. module: repair
+#: model:ir.model.fields.selection,name:repair.selection__repair_line__state__draft
+msgid "Draft"
+msgstr "임시"
+
+#. module: repair
+#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
+msgid ""
+"Draft invoices for this order will be cancelled. Do you confirm the action?"
+msgstr "이 주문 항목의 청구서 초안이 삭제되었습니다. 작업을 승인하겠습니까?"
+
+#. module: repair
+#: model:ir.model,name:repair.model_mail_compose_message
+msgid "Email composition wizard"
+msgstr "이메일 구성 마법사"
 
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
@@ -445,20 +440,20 @@ msgid "End Repair"
 msgstr "수리 완료"
 
 #. module: repair
+#: model:ir.model.fields,help:repair.field_repair_line__tracking
 #: model:ir.model.fields,help:repair.field_repair_order__tracking
 msgid "Ensure the traceability of a storable product in your warehouse."
-msgstr "창고에 저장 가능한 품목의 추적성을 확인하십시오."
+msgstr "창고에 보관 가능한 품목의 추적성을 확인하십시오."
 
 #. module: repair
-#. odoo-python
-#: code:addons/repair/models/repair.py:0
-msgid "Exp %s"
-msgstr "예상 %s"
+#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
+msgid "Extra Info"
+msgstr "추가 정보"
 
 #. module: repair
-#: model:ir.model.fields.selection,name:repair.selection__repair_order__parts_availability_state__expected
-msgid "Expected"
-msgstr "예상됨"
+#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
+msgid "Fees"
+msgstr "수수료"
 
 #. module: repair
 #: model:ir.model.fields,field_description:repair.field_repair_order__message_follower_ids
@@ -468,29 +463,12 @@ msgstr "팔로워"
 #. module: repair
 #: model:ir.model.fields,field_description:repair.field_repair_order__message_partner_ids
 msgid "Followers (Partners)"
-msgstr "팔로워 (협력사)"
+msgstr "팔로워 (파트너)"
 
 #. module: repair
 #: model:ir.model.fields,help:repair.field_repair_order__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
-msgstr "멋진 아이콘 폰트 예: fa-tasks"
-
-#. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
-msgid ""
-"For some of the parts, there is a difference between the initial demand and "
-"the actual quantity that was used. Are you sure you want to confirm ?"
-msgstr "일부 부품의 경우 초기 수요와 실제 사용된 수량에 차이가 있습니다. 확인하시겠습니까?"
-
-#. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
-msgid "Forecast Report"
-msgstr "예측 보고서"
-
-#. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
-msgid "Forecasted"
-msgstr "예측 수량"
+msgstr "멋진 아이콘 폰트 예 : fa-tasks"
 
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form_filter
@@ -503,17 +481,25 @@ msgid "Group By"
 msgstr "그룹별"
 
 #. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_order_make_invoice__group
+msgid "Group by partner invoice address"
+msgstr "파트너 청구 주소지 기준 그룹화"
+
+#. module: repair
 #: model:ir.model.fields,field_description:repair.field_repair_order__has_message
 msgid "Has Message"
 msgstr "메시지가 있습니다"
 
 #. module: repair
-#: model:ir.model.fields,field_description:repair.field_repair_order__has_uncomplete_moves
-msgid "Has Uncomplete Moves"
-msgstr " 완료되지 않은 이동"
+#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
+msgid "History"
+msgstr "기록"
 
 #. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_fee__id
+#: model:ir.model.fields,field_description:repair.field_repair_line__id
 #: model:ir.model.fields,field_description:repair.field_repair_order__id
+#: model:ir.model.fields,field_description:repair.field_repair_order_make_invoice__id
 #: model:ir.model.fields,field_description:repair.field_repair_tags__id
 #: model:ir.model.fields,field_description:repair.field_stock_warn_insufficient_qty_repair__id
 msgid "ID"
@@ -541,13 +527,7 @@ msgid "If checked, some messages have a delivery error."
 msgstr "이 옵션을 선택하면 일부 정보가 전달 오류를 생성합니다."
 
 #. module: repair
-#: model:ir.model.fields,help:repair.field_repair_order__under_warranty
-msgid ""
-"If ticked, the sales price will be set to 0 for all products transferred "
-"from the repair order."
-msgstr "이 옵션을 선택하면 수리요청서에서 전송된 모든 제품에 대한 판매 가격이 0으로 설정됩니다."
-
-#. module: repair
+#: model:ir.model.fields,help:repair.field_stock_picking__is_repairable
 #: model:ir.model.fields,help:repair.field_stock_picking_type__is_repairable
 msgid ""
 "If ticked, you will be able to directly create repair orders from a return."
@@ -560,19 +540,9 @@ msgid ""
 "                add or replace and record the time you spent on the different\n"
 "                operations."
 msgstr ""
-"수리요청서에는 추가하거나 교체, 제거한 부품을 \n"
-"                  자세히 설명하고 수리 작업에 소요된 시간을 \n"
+"수리 요청서에서는 제거, 추가 또는 교체한 구성 요소를 \n"
+"                  자세히 설명하고 여러 작업에 소요된 시간을 \n"
 "                  기록할 수 있습니다."
-
-#. module: repair
-#: model:ir.model.fields,field_description:repair.field_stock_lot__in_repair_count
-msgid "In repair count"
-msgstr "수리 건수"
-
-#. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.product_view_search_catalog
-msgid "In the Repair Order"
-msgstr "수리 주문서에서"
 
 #. module: repair
 #: model:ir.model.fields,field_description:repair.field_repair_order__internal_notes
@@ -580,6 +550,7 @@ msgid "Internal Notes"
 msgstr "내부 메모"
 
 #. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_line__move_id
 #: model:ir.model.fields,field_description:repair.field_repair_order__move_id
 msgid "Inventory Move"
 msgstr "재고 이동"
@@ -590,54 +561,100 @@ msgid "Inventory Moves"
 msgstr "재고 이동"
 
 #. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_order__invoice_id
+msgid "Invoice"
+msgstr "청구서"
+
+#. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_fee__invoice_line_id
+#: model:ir.model.fields,field_description:repair.field_repair_line__invoice_line_id
+msgid "Invoice Line"
+msgstr "청구서 내역"
+
+#. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_order__invoice_method
+msgid "Invoice Method"
+msgstr "청구서 발행 방식"
+
+#. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_order__invoice_state
+msgid "Invoice State"
+msgstr "청구서 상태"
+
+#. module: repair
+#: model_terms:ir.ui.view,arch_db:repair.report_repairorder
+msgid "Invoice address:"
+msgstr "청구지 주소 :"
+
+#. module: repair
+#: model_terms:ir.ui.view,arch_db:repair.report_repairorder
+msgid "Invoice and shipping address:"
+msgstr "청구지 및 배송 주소 :"
+
+#. module: repair
+#. odoo-python
+#: code:addons/repair/models/repair.py:0
+#, python-format
+msgid "Invoice created"
+msgstr "청구서 생성 완료"
+
+#. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_fee__invoiced
+#: model:ir.model.fields,field_description:repair.field_repair_line__invoiced
+#: model:ir.model.fields,field_description:repair.field_repair_order__invoiced
+#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form_filter
+msgid "Invoiced"
+msgstr "청구서 발행 완료"
+
+#. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_order__partner_invoice_id
+msgid "Invoicing Address"
+msgstr "송장 주소"
+
+#. module: repair
 #: model:ir.model.fields,field_description:repair.field_repair_order__message_is_follower
 msgid "Is Follower"
 msgstr "팔로워임"
 
 #. module: repair
-#: model:ir.model.fields,field_description:repair.field_stock_picking__is_repairable
-msgid "Is Repairable"
-msgstr "수리할 수 있습니다."
+#: model:ir.model,name:repair.model_account_move
+msgid "Journal Entry"
+msgstr "분개"
 
 #. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.report_repairorder
-msgid "Jane Smith"
-msgstr "홍길동"
+#: model:ir.model,name:repair.model_account_move_line
+msgid "Journal Item"
+msgstr "분개 항목"
 
 #. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.report_repairorder
-msgid "John Doe"
-msgstr "홍길동"
+#: model:ir.model.fields,field_description:repair.field_repair_fee____last_update
+#: model:ir.model.fields,field_description:repair.field_repair_line____last_update
+#: model:ir.model.fields,field_description:repair.field_repair_order____last_update
+#: model:ir.model.fields,field_description:repair.field_repair_order_make_invoice____last_update
+#: model:ir.model.fields,field_description:repair.field_repair_tags____last_update
+#: model:ir.model.fields,field_description:repair.field_stock_warn_insufficient_qty_repair____last_update
+msgid "Last Modified on"
+msgstr "최근 수정일"
 
 #. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.report_repairorder
-msgid "L12345"
-msgstr "L12345"
-
-#. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.report_repairorder
-msgid "Laptop"
-msgstr "노트북"
-
-#. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_fee__write_uid
+#: model:ir.model.fields,field_description:repair.field_repair_line__write_uid
 #: model:ir.model.fields,field_description:repair.field_repair_order__write_uid
+#: model:ir.model.fields,field_description:repair.field_repair_order_make_invoice__write_uid
 #: model:ir.model.fields,field_description:repair.field_repair_tags__write_uid
 #: model:ir.model.fields,field_description:repair.field_stock_warn_insufficient_qty_repair__write_uid
 msgid "Last Updated by"
 msgstr "최근 갱신한 사람"
 
 #. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_fee__write_date
+#: model:ir.model.fields,field_description:repair.field_repair_line__write_date
 #: model:ir.model.fields,field_description:repair.field_repair_order__write_date
+#: model:ir.model.fields,field_description:repair.field_repair_order_make_invoice__write_date
 #: model:ir.model.fields,field_description:repair.field_repair_tags__write_date
 #: model:ir.model.fields,field_description:repair.field_stock_warn_insufficient_qty_repair__write_date
 msgid "Last Updated on"
 msgstr "최근 갱신 일자"
-
-#. module: repair
-#: model:ir.model.fields.selection,name:repair.selection__repair_order__parts_availability_state__late
-#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form_filter
-msgid "Late"
-msgstr "지연"
 
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form_filter
@@ -645,30 +662,22 @@ msgid "Late Activities"
 msgstr "지연된 활동"
 
 #. module: repair
-#: model:ir.model.fields,help:repair.field_repair_order__parts_availability
-msgid ""
-"Latest parts availability status for this RO. If green, then the RO's "
-"readiness status is ready."
-msgstr ""
-"이 수리요청서에 대한 최신 부품이 사용 가능한 상태입니다. 녹색으로 표시될 경우 수리요청서 설정에 따라 수리 준비가 완료되었다고 볼 수 "
-"있습니다."
-
-#. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_order__location_id
 #: model:ir.model.fields,field_description:repair.field_stock_warn_insufficient_qty_repair__location_id
 msgid "Location"
 msgstr "위치"
 
 #. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.repair_view_picking_type_form
-#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
-msgid "Locations"
-msgstr "위치"
-
-#. module: repair
 #: model:ir.model,name:repair.model_stock_lot
+#: model:ir.model.fields,field_description:repair.field_repair_line__lot_id
 #: model:ir.model.fields,field_description:repair.field_repair_order__lot_id
 msgid "Lot/Serial"
 msgstr "LOT/일련번호"
+
+#. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_order__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "주요 첨부 파일"
 
 #. module: repair
 #: model:ir.model.fields,field_description:repair.field_repair_order__message_has_error
@@ -681,21 +690,9 @@ msgid "Messages"
 msgstr "메시지"
 
 #. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
-msgid "Miscellaneous"
-msgstr "기타"
-
-#. module: repair
 #: model:ir.model.fields,field_description:repair.field_repair_order__my_activity_date_deadline
 msgid "My Activity Deadline"
 msgstr "내 활동 마감일"
-
-#. module: repair
-#: model:ir.model.fields.selection,name:repair.selection__repair_order__state__draft
-#: model_terms:ir.ui.view,arch_db:repair.stock_repair_type_kanban
-#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form_filter
-msgid "New"
-msgstr "신규"
 
 #. module: repair
 #: model:ir.model.fields,field_description:repair.field_repair_order__activity_calendar_event_id
@@ -715,12 +712,45 @@ msgstr "다음 활동 요약"
 #. module: repair
 #: model:ir.model.fields,field_description:repair.field_repair_order__activity_type_id
 msgid "Next Activity Type"
-msgstr "다음 활동 유형"
+msgstr "다음 업무 유형"
+
+#. module: repair
+#: model:ir.model.fields.selection,name:repair.selection__repair_order__invoice_method__none
+msgid "No Invoice"
+msgstr "청구서 미발행"
+
+#. module: repair
+#. odoo-python
+#: code:addons/repair/models/repair.py:0 code:addons/repair/models/repair.py:0
+#, python-format
+msgid "No account defined for product \"%s\"."
+msgstr "\"%s\" 상품에 대해 정의된 계정이 없습니다."
+
+#. module: repair
+#. odoo-python
+#: code:addons/repair/models/repair.py:0 code:addons/repair/models/repair.py:0
+#, python-format
+msgid "No pricelist found."
+msgstr "가격표를 찾을 수 없습니다!"
+
+#. module: repair
+#. odoo-python
+#: code:addons/repair/models/repair.py:0
+#, python-format
+msgid "No product defined on fees."
+msgstr "수수료가 정의된 상품이 없습니다."
 
 #. module: repair
 #: model_terms:ir.actions.act_window,help:repair.action_repair_order_tree
 msgid "No repair order found. Let's create one!"
-msgstr "수리요청서를 찾을 수 없습니다. 새로 작성해 주세요."
+msgstr "수리요청서를 찾을 수 없습니다. 지금 생성합니다!"
+
+#. module: repair
+#. odoo-python
+#: code:addons/repair/models/repair.py:0 code:addons/repair/models/repair.py:0
+#, python-format
+msgid "No valid pricelist line found."
+msgstr "유효한 가격표 내역이 없습니다."
 
 #. module: repair
 #: model:ir.model.fields.selection,name:repair.selection__repair_order__priority__0
@@ -730,12 +760,7 @@ msgstr "일반"
 #. module: repair
 #. odoo-python
 #: code:addons/repair/models/repair.py:0
-msgid "Not Available"
-msgstr "사용불가"
-
-#. module: repair
-#. odoo-python
-#: code:addons/repair/models/repair.py:0
+#, python-format
 msgid ""
 "Note that the warehouses of the return and repair locations don't match!"
 msgstr "반품 창고와 수리 장소가 일치하는 장소가 아니라는 점에 유의하시기 바랍니다!"
@@ -744,26 +769,6 @@ msgstr "반품 창고와 수리 장소가 일치하는 장소가 아니라는 �
 #: model:ir.model.fields,field_description:repair.field_repair_order__message_needaction_counter
 msgid "Number of Actions"
 msgstr "작업 수"
-
-#. module: repair
-#: model:ir.model.fields,field_description:repair.field_stock_picking_type__count_repair_late
-msgid "Number of Late Repair Orders"
-msgstr "수리 주문 지연 건수"
-
-#. module: repair
-#: model:ir.model.fields,field_description:repair.field_stock_picking_type__count_repair_confirmed
-msgid "Number of Repair Orders Confirmed"
-msgstr "확정된 수리 요청 수"
-
-#. module: repair
-#: model:ir.model.fields,field_description:repair.field_stock_picking_type__count_repair_under_repair
-msgid "Number of Repair Orders Under Repair"
-msgstr "수리 중인 수리 요청 수"
-
-#. module: repair
-#: model:ir.model.fields,field_description:repair.field_stock_picking_type__count_repair_ready
-msgid "Number of Repair Orders to Process"
-msgstr "진행 중인 수리 요청 수"
 
 #. module: repair
 #: model:ir.model.fields,field_description:repair.field_repair_order__message_has_error_counter
@@ -778,7 +783,7 @@ msgstr "조치가 필요한 메시지 수"
 #. module: repair
 #: model:ir.model.fields,help:repair.field_repair_order__message_has_error_counter
 msgid "Number of messages with delivery error"
-msgstr "전송 오류가 발생한 메시지 수입니다."
+msgstr "전송 오류 메시지 수"
 
 #. module: repair
 #: model:ir.model.fields,field_description:repair.field_stock_picking__nbr_repairs
@@ -786,58 +791,23 @@ msgid "Number of repairs linked to this picking"
 msgstr "해당 픽업과 관련된 수리 횟수"
 
 #. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.stock_repair_type_kanban
-msgid "Open"
-msgstr "열기"
-
-#. module: repair
-#: model:ir.model.fields,field_description:repair.field_repair_order__picking_type_id
-msgid "Operation Type"
-msgstr "작업 유형"
-
-#. module: repair
 #. odoo-python
-#: code:addons/repair/models/product.py:0
 #: code:addons/repair/models/repair.py:0
-msgid "Operation not supported"
-msgstr "지원되지 않는 작업"
+#, python-format
+msgid "Only draft repairs can be confirmed."
+msgstr "초안 수리만 확인할 수 있습니다."
 
 #. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_order__fees_lines
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
 msgid "Operations"
 msgstr "작업"
 
 #. module: repair
-#: model:ir.ui.menu,name:repair.repair_order_menu
-msgid "Orders"
-msgstr "주문"
-
-#. module: repair
-#: model:ir.ui.menu,name:repair.repair_picking_type_menu
-msgid "Overview"
-msgstr "전체보기"
-
-#. module: repair
-#: model:ir.model.fields,field_description:repair.field_repair_order__move_ids
-#: model_terms:ir.ui.view,arch_db:repair.report_repairorder
+#: model:ir.model.fields,field_description:repair.field_repair_order__operations
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
 msgid "Parts"
 msgstr "부품"
-
-#. module: repair
-#: model:ir.model.fields,field_description:repair.field_repair_order__parts_availability_state
-msgid "Parts Availability State"
-msgstr "부품 사용 가능 상태"
-
-#. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.report_repairorder
-msgid "Pending"
-msgstr "대기 중"
-
-#. module: repair
-#: model:ir.model.fields,field_description:repair.field_repair_order__picking_product_ids
-msgid "Picking Product"
-msgstr "품목 픽업"
 
 #. module: repair
 #: model:ir.model,name:repair.model_stock_picking_type
@@ -845,43 +815,37 @@ msgid "Picking Type"
 msgstr "선별 유형"
 
 #. module: repair
+#: model_terms:ir.ui.view,arch_db:repair.report_repairorder
+msgid "Price"
+msgstr "가격"
+
+#. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_order__pricelist_id
+msgid "Pricelist"
+msgstr "가격표"
+
+#. module: repair
+#: model:ir.model.fields,help:repair.field_repair_order__pricelist_id
+msgid "Pricelist of the selected partner."
+msgstr "선택된 협력사의 가격표."
+
+#. module: repair
+#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
+msgid "Print Quotation"
+msgstr "견적 인쇄"
+
+#. module: repair
 #: model:ir.model.fields,field_description:repair.field_repair_order__priority
 msgid "Priority"
 msgstr "우선 순위"
 
 #. module: repair
-#: model:ir.model.fields,field_description:repair.field_repair_order__procurement_group_id
-msgid "Procurement Group"
-msgstr "조달 그룹"
-
-#. module: repair
-#: model:ir.model,name:repair.model_product_template
-#: model:ir.model.fields,field_description:repair.field_repair_order__picking_product_id
+#: model:ir.model.fields,field_description:repair.field_repair_fee__product_id
+#: model:ir.model.fields,field_description:repair.field_repair_line__product_id
 #: model:ir.model.fields,field_description:repair.field_stock_warn_insufficient_qty_repair__product_id
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form_filter
 msgid "Product"
 msgstr "품목"
-
-#. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.report_repairorder
-msgid "Product A"
-msgstr "품목 A"
-
-#. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.report_repairorder
-msgid "Product B"
-msgstr "품목 B"
-
-#. module: repair
-#: model:ir.model.fields,field_description:repair.field_product_product__product_catalog_product_is_in_repair
-msgid "Product Catalog Product Is In Repair"
-msgstr "제품 카탈로그 제품 수리 중"
-
-#. module: repair
-#: model:ir.model.fields,field_description:repair.field_repair_order__product_location_dest_id
-#: model:ir.model.fields,field_description:repair.field_stock_picking_type__default_product_location_dest_id
-msgid "Product Destination Location"
-msgstr "제품 목적지 위치"
 
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
@@ -889,27 +853,19 @@ msgid "Product Moves"
 msgstr "품목 이동 현황"
 
 #. module: repair
-#: model:ir.model,name:repair.model_stock_move_line
-msgid "Product Moves (Stock Move Line)"
-msgstr "품목 이동 (재고 이동 내역)"
-
-#. module: repair
 #: model:ir.model.fields,field_description:repair.field_repair_order__product_qty
 msgid "Product Quantity"
 msgstr "품목 수량"
 
 #. module: repair
-#: model:ir.model.fields,field_description:repair.field_repair_order__product_location_src_id
-#: model:ir.model.fields,field_description:repair.field_stock_picking_type__default_product_location_src_id
-msgid "Product Source Location"
-msgstr "제품 원본 위치"
-
-#. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_line__tracking
 #: model:ir.model.fields,field_description:repair.field_repair_order__tracking
 msgid "Product Tracking"
 msgstr "품목 추적"
 
 #. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_fee__product_uom
+#: model:ir.model.fields,field_description:repair.field_repair_line__product_uom
 #: model:ir.model.fields,field_description:repair.field_repair_order__product_uom
 msgid "Product Unit of Measure"
 msgstr "품목 단위"
@@ -920,29 +876,14 @@ msgid "Product Variant"
 msgstr "품목 세부선택"
 
 #. module: repair
-#: model:ir.ui.menu,name:repair.repair_menu_product_product
-msgid "Product Variants"
-msgstr "품목 세부사항"
-
-#. module: repair
 #: model:ir.model.fields,field_description:repair.field_repair_order__product_id
 msgid "Product to Repair"
-msgstr "수리해야 할 품목"
-
-#. module: repair
-#: model:ir.ui.menu,name:repair.repair_menu_product_template
-msgid "Products"
-msgstr "품목"
+msgstr "수리해야 할 상품"
 
 #. module: repair
 #: model:ir.model.fields,help:repair.field_repair_order__lot_id
 msgid "Products repaired are all belonging to this lot"
-msgstr "수리된 품목은 모두 이 LOT에 포함됩니다."
-
-#. module: repair
-#: model:ir.model.fields,field_description:repair.field_repair_order__repair_properties
-msgid "Properties"
-msgstr "속성"
+msgstr "수리된 상품은 모두 이 LOT에 속합니다"
 
 #. module: repair
 #: model:ir.model.fields,field_description:repair.field_stock_warn_insufficient_qty_repair__quant_ids
@@ -950,111 +891,121 @@ msgid "Quant"
 msgstr "Quant"
 
 #. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_fee__product_uom_qty
+#: model:ir.model.fields,field_description:repair.field_repair_line__product_uom_qty
 #: model:ir.model.fields,field_description:repair.field_stock_warn_insufficient_qty_repair__quantity
 #: model_terms:ir.ui.view,arch_db:repair.report_repairorder
+#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_tree
 msgid "Quantity"
 msgstr "수량"
 
 #. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.report_repairorder
-msgid "RO123456"
-msgstr "RO123456"
+#: model:ir.model.fields.selection,name:repair.selection__repair_order__state__draft
+msgid "Quotation"
+msgstr "견적서"
 
 #. module: repair
-#: model:ir.model.fields,field_description:repair.field_repair_order__rating_ids
-msgid "Ratings"
-msgstr "평가"
+#: model:ir.actions.report,name:repair.action_report_repair_order
+msgid "Quotation / Order"
+msgstr "견적 / 주문"
 
 #. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.stock_repair_type_kanban
+#: model:ir.model.fields,field_description:repair.field_repair_order__quotation_notes
+#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
+msgid "Quotation Notes"
+msgstr "견적 노트"
+
+#. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form_filter
-msgid "Ready"
-msgstr "준비"
+msgid "Quotations"
+msgstr "견적서"
 
 #. module: repair
-#: model:ir.model.fields.selection,name:repair.selection__stock_move__repair_line_type__recycle
-msgid "Recycle"
-msgstr "재활용"
+#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form_filter
+msgid "Ready To Repair"
+msgstr "수리 준비 완료"
 
 #. module: repair
-#: model:ir.model.fields,field_description:repair.field_stock_picking_type__default_recycle_location_dest_id
-msgid "Recycle Destination Location"
-msgstr "재활용 목적지 위치"
+#: model:ir.model.fields.selection,name:repair.selection__repair_order__state__ready
+msgid "Ready to Repair"
+msgstr "수리 준비 완료"
 
 #. module: repair
-#: model:ir.model.fields,field_description:repair.field_repair_order__recycle_location_id
-msgid "Recycled Parts Destination Location"
-msgstr "재활용 부품 목적지 위치"
-
-#. module: repair
-#: model:ir.model.fields.selection,name:repair.selection__stock_move__repair_line_type__remove
+#: model:ir.model.fields.selection,name:repair.selection__repair_line__type__remove
 msgid "Remove"
 msgstr "제거"
 
 #. module: repair
-#: model:ir.model.fields,field_description:repair.field_stock_picking_type__default_remove_location_dest_id
-msgid "Remove Destination Location"
-msgstr "제거 목적지 위치"
-
-#. module: repair
-#: model:ir.model.fields,field_description:repair.field_repair_order__parts_location_id
-msgid "Removed Parts Destination Location"
-msgstr "제거된 부품 목적지 위치"
-
-#. module: repair
+#: model:ir.model.fields,field_description:repair.field_account_bank_statement_line__repair_ids
+#: model:ir.model.fields,field_description:repair.field_account_move__repair_ids
+#: model:ir.model.fields,field_description:repair.field_account_payment__repair_ids
 #: model:ir.model.fields,field_description:repair.field_stock_move__repair_id
 #: model:ir.model.fields,field_description:repair.field_stock_picking__repair_ids
 #: model:ir.model.fields,field_description:repair.field_stock_warn_insufficient_qty_repair__repair_id
-#: model:ir.model.fields.selection,name:repair.selection__stock_picking_type__code__repair_operation
 #: model_terms:ir.ui.view,arch_db:repair.repair_view_picking_form
 msgid "Repair"
 msgstr "수리"
 
 #. module: repair
-#: model:ir.model.fields,field_description:repair.field_stock_warehouse__repair_mto_pull_id
-msgid "Repair MTO Rule"
-msgstr "MTO 규칙 복구"
+#: model:ir.model.fields,field_description:repair.field_repair_order__description
+msgid "Repair Description"
+msgstr "수리 설명"
 
 #. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.report_repairorder
+#: model:ir.model.fields,field_description:repair.field_account_move_line__repair_fee_ids
+msgid "Repair Fee"
+msgstr "수리 수수료"
+
+#. module: repair
+#: model:ir.model,name:repair.model_repair_fee
+msgid "Repair Fees"
+msgstr "수리 수수료"
+
+#. module: repair
+#: model:ir.model.fields,field_description:repair.field_account_move_line__repair_line_ids
+msgid "Repair Line"
+msgstr "수리 명세"
+
+#. module: repair
+#: model:ir.model,name:repair.model_repair_line
+msgid "Repair Line (parts)"
+msgstr "수리 명세 (부품)"
+
+#. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
 msgid "Repair Notes"
 msgstr "수리 메모"
 
 #. module: repair
-#: model:ir.model.fields,field_description:repair.field_stock_warehouse__repair_type_id
-msgid "Repair Operation Type"
-msgstr "수리 작업 유형"
-
-#. module: repair
-#: model:ir.actions.report,name:repair.action_report_repair_order
 #: model:ir.model,name:repair.model_repair_order
-#: model:ir.model.fields,field_description:repair.field_sale_order__repair_order_ids
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form_filter
 msgid "Repair Order"
 msgstr "수리 요청"
 
 #. module: repair
-#: model:ir.model.fields,field_description:repair.field_sale_order__repair_count
-msgid "Repair Order(s)"
-msgstr "수리요청서"
+#: model_terms:ir.ui.view,arch_db:repair.report_repairorder
+msgid "Repair Order #:"
+msgstr "수리 요청 # :"
+
+#. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_fee__repair_id
+#: model:ir.model.fields,field_description:repair.field_repair_line__repair_id
+msgid "Repair Order Reference"
+msgstr "수리 요청 참고"
 
 #. module: repair
 #. odoo-python
-#: code:addons/repair/models/sale_order.py:0
 #: code:addons/repair/models/stock_picking.py:0
-#: model:ir.actions.act_window,name:repair.action_picking_repair
-#: model:ir.actions.act_window,name:repair.action_picking_repair_graph
-#: model:ir.actions.act_window,name:repair.action_repair_order_form
 #: model:ir.actions.act_window,name:repair.action_repair_order_graph
 #: model:ir.actions.act_window,name:repair.action_repair_order_tree
-#: model:ir.model.fields,field_description:repair.field_stock_lot__repair_line_ids
+#: model:ir.model.fields,field_description:repair.field_stock_lot__repair_order_ids
 #: model_terms:ir.ui.view,arch_db:repair.repair_view_picking_form
 #: model_terms:ir.ui.view,arch_db:repair.stock_production_lot_view_form
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_graph
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_pivot
+#, python-format
 msgid "Repair Orders"
 msgstr "수리 요청서"
 
@@ -1064,24 +1015,14 @@ msgid "Repair Orders Tags"
 msgstr "수리 요청서 태그"
 
 #. module: repair
-#: model:ir.actions.act_window,name:repair.action_repair_picking_type_kanban
-msgid "Repair Overview"
-msgstr "수리 개요"
-
-#. module: repair
-#: model:ir.model.fields,field_description:repair.field_stock_picking_type__repair_properties_definition
-msgid "Repair Properties"
-msgstr "수리 속성"
+#: model_terms:ir.ui.view,arch_db:repair.report_repairorder
+msgid "Repair Quotation #:"
+msgstr "수리 견적 # :"
 
 #. module: repair
 #: model:ir.model.fields,field_description:repair.field_repair_order__name
 msgid "Repair Reference"
 msgstr "수리 참고"
-
-#. module: repair
-#: model:ir.model.fields,field_description:repair.field_repair_order__repair_request
-msgid "Repair Request"
-msgstr "수리 요청"
 
 #. module: repair
 #: model:product.template,name:repair.product_service_order_repair_product_template
@@ -1097,39 +1038,58 @@ msgstr "수리 태그"
 #. module: repair
 #. odoo-python
 #: code:addons/repair/models/repair.py:0
+#, python-format
+msgid "Repair must be canceled in order to reset it to draft."
+msgstr "초안으로 재설정하려면 수리를 취소해야 합니다."
+
+#. module: repair
+#. odoo-python
+#: code:addons/repair/models/repair.py:0
+#, python-format
+msgid "Repair must be confirmed before starting reparation."
+msgstr "보상을 시작하기 전에 수리를 확인해야 합니다."
+
+#. module: repair
+#. odoo-python
+#: code:addons/repair/models/repair.py:0
+#, python-format
+msgid "Repair must be repaired in order to make the product moves."
+msgstr "상품을 이동하려면 수리해야 합니다."
+
+#. module: repair
+#. odoo-python
+#: code:addons/repair/models/repair.py:0
+#, python-format
 msgid "Repair must be under repair in order to end reparation."
 msgstr "보상을 끝내려면 수리를 받아야 합니다."
 
 #. module: repair
+#: model:ir.model.fields,field_description:repair.field_stock_lot__repair_order_count
+msgid "Repair order count"
+msgstr "수리요청서 수"
+
+#. module: repair
 #. odoo-python
 #: code:addons/repair/models/stock_lot.py:0
+#, python-format
 msgid "Repair orders of %s"
 msgstr "%s의 수리요청서"
 
 #. module: repair
-#: model:ir.model.fields,field_description:repair.field_stock_lot__repair_part_count
-msgid "Repair part count"
-msgstr "부품 수리 건수"
+#: model:mail.template,name:repair.mail_template_repair_quotation
+msgid "Repair: Quotation"
+msgstr "수리: 견적서"
 
 #. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_order__repaired
 #: model:ir.model.fields.selection,name:repair.selection__repair_order__state__done
-#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form_filter
 msgid "Repaired"
 msgstr "수리됨"
 
 #. module: repair
-#: model:ir.model.fields,field_description:repair.field_stock_lot__repaired_count
-msgid "Repaired count"
-msgstr "수리된 건수"
-
-#. module: repair
-#. odoo-python
-#: code:addons/repair/models/stock_warehouse.py:0
 #: model:ir.ui.menu,name:repair.menu_repair_order
 #: model:ir.ui.menu,name:repair.repair_menu
-#: model:stock.picking.type,name:repair.picking_type_warehouse0_repair
 #: model_terms:ir.ui.view,arch_db:repair.repair_view_picking_type_form
-#: model_terms:ir.ui.view,arch_db:repair.view_sale_order_form_inherit_repair
 msgid "Repairs"
 msgstr "수리"
 
@@ -1140,14 +1100,7 @@ msgid "Repairs order"
 msgstr "수리 요청"
 
 #. module: repair
-#. odoo-python
-#: code:addons/repair/models/stock_warehouse.py:0
-msgid "Replenish on Order (MTO)"
-msgstr "주문 보충 (MTO)"
-
-#. module: repair
 #: model:ir.ui.menu,name:repair.repair_menu_reporting
-#: model_terms:ir.ui.view,arch_db:repair.stock_repair_type_kanban
 msgid "Reporting"
 msgstr "보고"
 
@@ -1189,44 +1142,18 @@ msgstr "SMS 전송 에러"
 
 #. module: repair
 #: model:ir.model.fields,field_description:repair.field_repair_order__sale_order_id
-#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
 msgid "Sale Order"
 msgstr "판매 주문"
 
 #. module: repair
-#: model:ir.model.fields,field_description:repair.field_repair_order__sale_order_line_id
-msgid "Sale Order Line"
-msgstr "판매 주문 내역"
-
-#. module: repair
-#: model:ir.model.fields,help:repair.field_repair_order__repair_request
-msgid "Sale Order Line Description."
-msgstr "판매 주문서 내역 상세"
-
-#. module: repair
-#: model:ir.model.fields,help:repair.field_repair_order__sale_order_line_id
-msgid "Sale Order Line from which the Repair Order comes from."
-msgstr "수리 요청이 발생한 판매주문서 항목입니다."
-
-#. module: repair
 #: model:ir.model.fields,help:repair.field_repair_order__sale_order_id
-msgid "Sale Order from which the Repair Order comes from."
-msgstr "수리 요청이 발생한 판매주문서입니다."
-
-#. module: repair
-#: model:ir.model,name:repair.model_sale_order
-msgid "Sales Order"
-msgstr "판매 주문"
-
-#. module: repair
-#: model:ir.model,name:repair.model_sale_order_line
-msgid "Sales Order Line"
-msgstr "판매 주문 내역"
+msgid "Sale Order from which the product to be repaired comes from."
+msgstr "수리할 품목에 대한 판매주문서입니다."
 
 #. module: repair
 #: model:ir.model.fields,field_description:repair.field_repair_order__schedule_date
 msgid "Scheduled Date"
-msgstr "예정일"
+msgstr "계획된 날짜"
 
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form_filter
@@ -1234,15 +1161,36 @@ msgid "Search Repair Orders"
 msgstr "수리 요청서 검색"
 
 #. module: repair
+#: model:ir.model.fields,help:repair.field_repair_order__invoice_method
+msgid ""
+"Selecting 'Before Repair' or 'After Repair' will allow you to generate "
+"invoice before or after the repair is done respectively. 'No invoice' means "
+"you don't want to generate invoice for this repair order."
+msgstr ""
+"'수리 전'또는 '수리 후'를 선택하면 각각 수리 전후에 청구서를 생성할 수 있습니다. '청구서 미발행'은 이 수리 요청에 대해 청구서를"
+" 생성하지 않음을 의미합니다."
+
+#. module: repair
+#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
+msgid "Send Quotation"
+msgstr "견적서 보내기"
+
+#. module: repair
+#: model:mail.template,description:repair.mail_template_repair_quotation
+msgid "Sent manually when clicking on \"Send Quotation\" on a repair order"
+msgstr "수리요청서에서 '견적서 보내기'를 누르면 수동으로 전송합니다."
+
+#. module: repair
 #. odoo-python
 #: code:addons/repair/models/repair.py:0
-msgid "Serial number is required for product to repair : %s"
-msgstr "품목의 수리를 위한 일련번호가 필요합니다: %s"
+#, python-format
+msgid "Serial number is required for operation lines with products: %s"
+msgstr "품목의 작업 내역에 대한 시리얼 넘버가 필요합니다: %s"
 
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
 msgid "Set to Draft"
-msgstr "미결로 설정"
+msgstr "초안으로 설정"
 
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form_filter
@@ -1250,11 +1198,17 @@ msgid "Show all records which has next action date is before today"
 msgstr "다음 행동 날짜가 오늘 이전 인 모든 기록보기"
 
 #. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_line__location_id
+msgid "Source Location"
+msgstr "원래 위치"
+
+#. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
 msgid "Start Repair"
 msgstr "수리 시작"
 
 #. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_line__state
 #: model:ir.model.fields,field_description:repair.field_repair_order__state
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form_filter
 msgid "Status"
@@ -1268,10 +1222,10 @@ msgid ""
 "Today: Activity date is today\n"
 "Planned: Future activities."
 msgstr ""
-"활동 기준 상태\n"
-"기한 초과: 기한이 이미 지났습니다.\n"
-"오늘: 활동 날짜가 오늘입니다.\n"
-"예정: 향후 계획된 활동입니다."
+"활동에 기조한 상태입니다\n"
+"기한초과: 이미 기한이 지났습니다\n"
+"오늘: 활동 날짜가 오늘입니다\n"
+"계획: 향후 활동입니다."
 
 #. module: repair
 #: model:ir.model,name:repair.model_stock_move
@@ -1279,9 +1233,10 @@ msgid "Stock Move"
 msgstr "재고 이동"
 
 #. module: repair
-#: model:ir.model,name:repair.model_stock_forecasted_product_product
-msgid "Stock Replenishment Report"
-msgstr "재고 재보충 보고서"
+#: model:ir.model.fields,field_description:repair.field_repair_fee__price_subtotal
+#: model:ir.model.fields,field_description:repair.field_repair_line__price_subtotal
+msgid "Subtotal"
+msgstr "소계"
 
 #. module: repair
 #: model:ir.model.fields,field_description:repair.field_repair_tags__name
@@ -1302,95 +1257,48 @@ msgid "Tags"
 msgstr "태그"
 
 #. module: repair
-#: model:ir.model.fields,help:repair.field_repair_order__reserve_visible
-msgid "Technical field to check when we can reserve quantities"
-msgstr "수량 예약 가능 시기 확인용 기술 필드"
+#: model_terms:ir.ui.view,arch_db:repair.report_repairorder
+msgid "Tax"
+msgstr "세금"
 
 #. module: repair
-#: model:ir.model.fields,help:repair.field_repair_order__unreserve_visible
-msgid "Technical field to check when we can unreserve"
-msgstr "예약을 취소할 수 있는 경우를 확인하는 기술 필드"
+#: model:ir.model.fields,field_description:repair.field_repair_fee__tax_id
+#: model:ir.model.fields,field_description:repair.field_repair_line__tax_id
+#: model:ir.model.fields,field_description:repair.field_repair_order__amount_tax
+#: model_terms:ir.ui.view,arch_db:repair.report_repairorder
+msgid "Taxes"
+msgstr "세무"
 
 #. module: repair
-#: model:ir.model.fields.selection,name:repair.selection__repair_order__search_date_category__day_2
-#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form_filter
-msgid "The day after tomorrow"
-msgstr "모레"
+#: model:ir.model.constraint,message:repair.constraint_repair_order_name
+msgid "The name of the Repair Order must be unique!"
+msgstr "수리 요청의 이름은 고유해야 합니다!"
 
 #. module: repair
 #. odoo-python
 #: code:addons/repair/models/repair.py:0
+#, python-format
 msgid ""
 "The product unit of measure you chose has a different category than the "
 "product unit of measure."
 msgstr "선택한 상품 측정 단위가 상품 측정 단위와 다른 범주를 갖습니다."
 
 #. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.report_repairorder
-msgid "This is a repair note."
-msgstr "수리 메모입니다."
-
-#. module: repair
-#: model:ir.model.fields,help:repair.field_stock_picking_type__default_product_location_dest_id
+#: model:ir.model.fields,help:repair.field_repair_line__state
 msgid ""
-"This is the default destination location for the product to be repaired in "
-"repair orders with this operation type."
-msgstr "이 작업 유형이 있는 수리 주문에서 수리를 위해 들어오는 제품의 기본 도착지 위치입니다."
-
-#. module: repair
-#: model:ir.model.fields,help:repair.field_stock_picking_type__default_recycle_location_dest_id
-msgid ""
-"This is the default recycle destination location when you create a repair "
-"order with this operation type."
-msgstr "해당 작업 유형으로 수리요청서를 생성할 때 기본 재활용 목적지 위치로 사용됩니다."
-
-#. module: repair
-#: model:ir.model.fields,help:repair.field_stock_picking_type__default_remove_location_dest_id
-msgid ""
-"This is the default remove destination location when you create a repair "
-"order with this operation type."
-msgstr "해당 작업 유형으로 수리요청서를 생성할 때 기본 제거 목적지 위치로 사용됩니다."
-
-#. module: repair
-#: model:ir.model.fields,help:repair.field_stock_picking_type__default_product_location_src_id
-msgid ""
-"This is the default source location for the product to be repaired in repair"
-" orders with this operation type."
-msgstr "이 작업 유형의 수리 주문에서 수리가 필요한 제품의 기본 출발지 위치입니다."
+"The status of a repair line is set automatically to the one of the linked "
+"repair order."
+msgstr "수리 내역의 상태는 연결된 수리 요청 중 하나로 자동 설정됩니다."
 
 #. module: repair
 #: model:ir.model.fields,help:repair.field_repair_order__location_id
-msgid ""
-"This is the location where the components of product to repair is located."
-msgstr "수리할 제품의 부품이 있는 위치입니다."
-
-#. module: repair
-#: model:ir.model.fields,help:repair.field_repair_order__product_location_src_id
 msgid "This is the location where the product to repair is located."
 msgstr "수리할 상품이 있는 위치입니다."
 
 #. module: repair
-#: model:ir.model.fields,help:repair.field_repair_order__parts_location_id
-#: model:ir.model.fields,help:repair.field_repair_order__recycle_location_id
-msgid "This is the location where the repair parts are located."
-msgstr "수리에 필요한 부품이 있는 위치입니다."
-
-#. module: repair
-#: model:ir.model.fields,help:repair.field_repair_order__location_dest_id
-#: model:ir.model.fields,help:repair.field_repair_order__product_location_dest_id
-msgid "This is the location where the repaired product is located."
-msgstr "수리된 품목이 있는 위치입니다."
-
-#. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.stock_repair_type_kanban
-msgid "To Repair"
-msgstr "수리하기"
-
-#. module: repair
-#: model:ir.model.fields.selection,name:repair.selection__repair_order__search_date_category__today
-#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form_filter
-msgid "Today"
-msgstr "오늘"
+#: model:ir.model.fields.selection,name:repair.selection__repair_order__state__2binvoiced
+msgid "To be Invoiced"
+msgstr "청구서 발행 예정"
 
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form_filter
@@ -1398,10 +1306,16 @@ msgid "Today Activities"
 msgstr "오늘 활동"
 
 #. module: repair
-#: model:ir.model.fields.selection,name:repair.selection__repair_order__search_date_category__day_1
-#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form_filter
-msgid "Tomorrow"
-msgstr "내일"
+#: model:ir.model.fields,field_description:repair.field_repair_fee__price_total
+#: model:ir.model.fields,field_description:repair.field_repair_line__price_total
+#: model:ir.model.fields,field_description:repair.field_repair_order__amount_total
+msgid "Total"
+msgstr "합계"
+
+#. module: repair
+#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
+msgid "Total amount"
+msgstr "총계"
 
 #. module: repair
 #: model:ir.model,name:repair.model_stock_traceability_report
@@ -1421,14 +1335,9 @@ msgid ""
 msgstr "해당 수리 항목과 관련된 반품요청서가 있으며 주문서가 '완료'로 되어 있으면 참입니다. 그렇지 않은 경우 거짓입니다."
 
 #. module: repair
-#: model:ir.model.fields,field_description:repair.field_stock_move__repair_line_type
+#: model:ir.model.fields,field_description:repair.field_repair_line__type
 msgid "Type"
 msgstr "유형"
-
-#. module: repair
-#: model:ir.model.fields,field_description:repair.field_stock_picking_type__code
-msgid "Type of Operation"
-msgstr "운영 유형"
 
 #. module: repair
 #: model:ir.model.fields,help:repair.field_repair_order__activity_exception_decoration
@@ -1437,14 +1346,15 @@ msgstr "레코드에 있는 예외 활동의 유형입니다."
 
 #. module: repair
 #: model:ir.model.fields.selection,name:repair.selection__repair_order__state__under_repair
-#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form_filter
 msgid "Under Repair"
 msgstr "수리 중"
 
 #. module: repair
-#: model:ir.model.fields,field_description:repair.field_repair_order__under_warranty
-msgid "Under Warranty"
-msgstr "보증 적용 중"
+#: model:ir.model.fields,field_description:repair.field_repair_fee__price_unit
+#: model:ir.model.fields,field_description:repair.field_repair_line__price_unit
+#: model_terms:ir.ui.view,arch_db:repair.report_repairorder
+msgid "Unit Price"
+msgstr "단가"
 
 #. module: repair
 #: model:ir.model.fields,field_description:repair.field_stock_warn_insufficient_qty_repair__product_uom_name
@@ -1454,29 +1364,24 @@ msgid "Unit of Measure"
 msgstr "단위"
 
 #. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.report_repairorder
-msgid "Units"
-msgstr "단위"
+#: model:ir.model.fields,field_description:repair.field_repair_order__amount_untaxed
+msgid "Untaxed Amount"
+msgstr "공급가액"
 
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
-msgid "Unreserve"
-msgstr "예약 해제"
+msgid "Untaxed amount"
+msgstr "공급가액"
+
+#. module: repair
+#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
+msgid "UoM"
+msgstr "단위"
 
 #. module: repair
 #: model:ir.model.fields.selection,name:repair.selection__repair_order__priority__1
 msgid "Urgent"
 msgstr "긴급"
-
-#. module: repair
-#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
-msgid "Used"
-msgstr "사용됨"
-
-#. module: repair
-#: model:ir.model,name:repair.model_stock_warehouse
-msgid "Warehouse"
-msgstr "창고"
 
 #. module: repair
 #: model:ir.model,name:repair.model_stock_warn_insufficient_qty_repair
@@ -1485,9 +1390,16 @@ msgstr "수리 수량 부족 경고"
 
 #. module: repair
 #. odoo-python
-#: code:addons/repair/models/repair.py:0
+#: code:addons/repair/models/repair.py:0 code:addons/repair/models/repair.py:0
+#, python-format
 msgid "Warning"
-msgstr "주의"
+msgstr "경고"
+
+#. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_order__guarantee_limit
+#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form_filter
+msgid "Warranty Expiration"
+msgstr "보증기간 만료"
 
 #. module: repair
 #: model:ir.model.fields,field_description:repair.field_repair_order__website_message_ids
@@ -1500,46 +1412,61 @@ msgid "Website communication history"
 msgstr "웹사이트 대화 이력"
 
 #. module: repair
-#: model:ir.model.fields.selection,name:repair.selection__repair_order__search_date_category__yesterday
-#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form_filter
-msgid "Yesterday"
-msgstr "어제"
+#. odoo-python
+#: code:addons/repair/models/repair.py:0
+#, python-format
+msgid ""
+"You can not delete a repair order once it has been confirmed. You must first"
+" cancel it."
+msgstr "수리요청서가 확정된 경우에는 삭제할 수 없습니다. 먼저 취소해야 합니다."
 
 #. module: repair
 #. odoo-python
 #: code:addons/repair/models/repair.py:0
+#, python-format
+msgid ""
+"You can not delete a repair order which is linked to an invoice which has "
+"been posted once."
+msgstr "관련 청구서가 승인된 내역이 있는 경우 수리요청서는 삭제할 수 없습니다. "
+
+#. module: repair
+#. odoo-python
+#: code:addons/repair/models/repair.py:0
+#, python-format
 msgid "You can not enter negative quantities."
 msgstr "음수를 입력할 수 없습니다."
 
 #. module: repair
 #. odoo-python
 #: code:addons/repair/models/repair.py:0
-msgid "You cannot cancel a Repair Order that's already been completed"
-msgstr "이미 완료된 수리 요청은 취소할 수 없습니다"
+#, python-format
+msgid "You cannot cancel a completed repair order."
+msgstr "수리 요청이 완료된 경우에는 취소할 수 없습니다."
 
 #. module: repair
 #. odoo-python
 #: code:addons/repair/models/repair.py:0
+#, python-format
+msgid "You cannot delete a completed repair order."
+msgstr "수리 요청이 완료된 경우에는 삭제할 수 없습니다."
+
+#. module: repair
+#. odoo-python
+#: code:addons/repair/models/repair.py:0 code:addons/repair/models/repair.py:0
+#, python-format
 msgid ""
-"You cannot create a quotation for a repair order that is already linked to an existing sale order.\n"
-"Concerned repair order(s):\n"
-"%(ref_str)s"
+"You have to select a pricelist in the Repair form !\n"
+" Please set one before choosing a product."
 msgstr ""
-"기존 판매 주문과 이미 연결된 수리 주문에 대해서는 견적을 생성할 수 없습니다.\n"
-"관련 수리 주문:\n"
-"%(ref_str)s"
+"수리 양식에서 가격표를 선택해야 합니다! \n"
+"상품을 선택하기 전에 하나를 설정하십시오."
 
 #. module: repair
 #. odoo-python
 #: code:addons/repair/models/repair.py:0
-msgid ""
-"You need to define a customer for a repair order in order to create an associated quotation.\n"
-"Concerned repair order(s):\n"
-"%(ref_str)s"
-msgstr ""
-"관련 견적을 생성하려면 수리 주문에 대한 고객을 정의해야 합니다.\n"
-"관련 수리 주문:\n"
-"%(ref_str)s"
+#, python-format
+msgid "You have to select an invoice address in the repair form."
+msgstr "수리요청서의 청구서 발행 주소를 선택해주십시오."
 
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.stock_warn_insufficient_qty_repair_form_view
@@ -1547,6 +1474,12 @@ msgid "from location"
 msgstr "출발공간"
 
 #. module: repair
-#: model:ir.actions.server,name:repair.action_repair_overview
-msgid "stock.repair.type.overview"
-msgstr "stock.repair.type.overview"
+#: model:mail.template,report_name:repair.mail_template_repair_quotation
+msgid "{{ (object.name or '').replace('/','_') }}"
+msgstr "{{ (object.name or '').replace('/','_') }}"
+
+#. module: repair
+#: model:mail.template,subject:repair.mail_template_repair_quotation
+msgid ""
+"{{ object.partner_id.name }} Repair Orders (Ref {{ object.name or 'n/a' }})"
+msgstr "{{ object.partner_id.name }} 수리요청서 (Ref {{ object.name or 'n/a' }})"

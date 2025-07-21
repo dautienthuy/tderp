@@ -3,27 +3,28 @@
 # 	* sale_management
 # 
 # Translators:
-# Camille Dantinne <cmd@odoo.com>, 2024
-# Elena Varbanova, 2024
-# Kaloyan Naumov <kaloyan@lumnus.net>, 2024
-# Albena Mincheva <albena_vicheva@abv.bg>, 2024
-# Ivan Goychev <igoychev.projects@gmail.com>, 2024
-# Igor Sheludko <igor.sheludko@gmail.com>, 2024
-# Boris Stefanov <borkata@gmail.com>, 2024
-# KeyVillage, 2024
+# KeyVillage, 2023
+# Ivan Goychev <igoychev.projects@gmail.com>, 2023
+# aleksandar ivanov, 2023
+# Albena Mincheva <albena_vicheva@abv.bg>, 2023
+# Rosen Vladimirov <vladimirov.rosen@gmail.com>, 2023
+# Boris Stefanov <borkata@gmail.com>, 2023
+# Igor Sheludko <igor.sheludko@gmail.com>, 2023
+# Maria Boyadjieva <marabo2000@gmail.com>, 2023
+# Kaloyan Naumov <kaloyan@lumnus.net>, 2023
+# Martin Trigaux, 2023
+# Camille Dantinne <cmd@odoo.com>, 2023
 # Rumena Georgieva <rumena.georgieva@gmail.com>, 2024
-# Rosen Vladimirov <vladimirov.rosen@gmail.com>, 2024
-# Martin Trigaux, 2024
-# Maria Boyadjieva <marabo2000@gmail.com>, 2024
+# Elena Varbanova, 2024
 # Petko Karamotchev, 2025
 # Veselina Slavkova, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 08:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2022-10-04 09:23+0000\n"
+"PO-Revision-Date: 2022-09-22 05:54+0000\n"
 "Last-Translator: Veselina Slavkova, 2025\n"
 "Language-Team: Bulgarian (https://app.transifex.com/odoo/teams/41243/bg/)\n"
 "MIME-Version: 1.0\n"
@@ -33,23 +34,23 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: sale_management
-#: model_terms:ir.ui.view,arch_db:sale_management.report_saleorder_document_inherit_sale_management
-msgid "1.5"
-msgstr ""
-
-#. module: sale_management
-#: model_terms:ir.ui.view,arch_db:sale_management.sale_order_portal_content_inherit_sale_management
-msgid "<span class=\"btn btn-secondary\">Add to order</span>"
-msgstr ""
-
-#. module: sale_management
-#: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
-msgid "<span invisible=\"not require_payment\">of</span>"
+#: model:sale.order.template.line,name:sale_management.sale_order_template_line_1
+msgid "4 Person Desk"
 msgstr ""
 
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.report_saleorder_document_inherit_sale_management
 msgid "<span>Options</span>"
+msgstr ""
+
+#. module: sale_management
+#: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
+msgid "<span>Payment</span>"
+msgstr ""
+
+#. module: sale_management
+#: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
+msgid "<span>Signature</span>"
 msgstr ""
 
 #. module: sale_management
@@ -97,7 +98,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_search
 msgid "Archived"
-msgstr "Архивиран"
+msgstr "Архивирано"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__product_uom_category_id
@@ -122,7 +123,7 @@ msgstr "Фирма"
 #. module: sale_management
 #: model:ir.model,name:sale_management.model_res_config_settings
 msgid "Config Settings"
-msgstr "Конфигурационни настройки"
+msgstr "Настройки"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template__mail_template_id
@@ -157,7 +158,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_line__create_uid
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_option__create_uid
 msgid "Created by"
-msgstr "Създаден от"
+msgstr "Създадено от"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__create_date
@@ -185,6 +186,13 @@ msgstr "Шаблон по подразбиране"
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
 msgid "Description"
 msgstr "Описание"
+
+#. module: sale_management
+#: model_terms:ir.ui.view,arch_db:sale_management.res_config_settings_view_form
+msgid ""
+"Design your quotation templates using building blocks<br/>\n"
+"                            <em attrs=\"{'invisible': [('module_sale_quotation_builder','=',False)]}\">Warning: this option will install the Website app.</em>"
+msgstr ""
 
 #. module: sale_management
 #: model:ir.model,name:sale_management.model_digest_digest
@@ -217,16 +225,16 @@ msgid "Display Type"
 msgstr "Начин на показване"
 
 #. module: sale_management
-#. odoo-python
 #: code:addons/sale_management/models/digest.py:0
+#, python-format
 msgid "Do not have access, skip this data for user's digest email"
 msgstr ""
 "Нямате достъп, пропуснете тези данни за електронната поща на потребителя"
 
 #. module: sale_management
-#: model_terms:ir.ui.view,arch_db:sale_management.report_saleorder_document_inherit_sale_management
-msgid "Extra Chips"
-msgstr ""
+#: model_terms:ir.ui.view,arch_db:sale_management.res_config_settings_view_form
+msgid "Documentation"
+msgstr "Документация"
 
 #. module: sale_management
 #: model:ir.model.constraint,message:sale_management.constraint_sale_order_template_line_non_accountable_fields_null
@@ -261,13 +269,6 @@ msgid "ID"
 msgstr "ID"
 
 #. module: sale_management
-#: model:ir.model.fields,help:sale_management.field_sale_order_template__journal_id
-msgid ""
-"If set, SO with this template will invoice in this journal; otherwise the "
-"sales journal with the lowest sequence is used."
-msgstr ""
-
-#. module: sale_management
 #: model:ir.model.fields,help:sale_management.field_sale_order_template__active
 msgid ""
 "If unchecked, it will allow you to hide the quotation template without "
@@ -275,14 +276,17 @@ msgid ""
 msgstr ""
 
 #. module: sale_management
-#: model:ir.model.fields,field_description:sale_management.field_sale_order_template__journal_id
-msgid "Invoicing Journal"
-msgstr "Дневник за фактуриране"
-
-#. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_digest_digest__kpi_all_sale_total_value
 msgid "Kpi All Sale Total Value"
 msgstr ""
+
+#. module: sale_management
+#: model:ir.model.fields,field_description:sale_management.field_sale_order_option____last_update
+#: model:ir.model.fields,field_description:sale_management.field_sale_order_template____last_update
+#: model:ir.model.fields,field_description:sale_management.field_sale_order_template_line____last_update
+#: model:ir.model.fields,field_description:sale_management.field_sale_order_template_option____last_update
+msgid "Last Modified on"
+msgstr "Последна промяна на"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__write_uid
@@ -328,6 +332,11 @@ msgid "Number of days for the validity date computation of the quotation"
 msgstr "Брой дни за изчисляване датата на потвърждение на офертата"
 
 #. module: sale_management
+#: model:sale.order.template.option,name:sale_management.sale_order_template_option_1
+msgid "Office Chair"
+msgstr ""
+
+#. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template__require_payment
 msgid "Online Payment"
 msgstr "Онлайн плащане"
@@ -336,6 +345,11 @@ msgstr "Онлайн плащане"
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template__require_signature
 msgid "Online Signature"
 msgstr "Онлайн подписване"
+
+#. module: sale_management
+#: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
+msgid "Online confirmation"
+msgstr ""
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template__sale_order_template_option_ids
@@ -354,17 +368,6 @@ msgstr "Списък с опционални продукти"
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_portal_content_inherit_sale_management
 msgid "Options"
 msgstr "Настройки"
-
-#. module: sale_management
-#: model:ir.model.fields,field_description:sale_management.field_sale_order_template__prepayment_percent
-msgid "Prepayment percentage"
-msgstr "Процент за предплащане"
-
-#. module: sale_management
-#. odoo-python
-#: code:addons/sale_management/models/sale_order_template.py:0
-msgid "Prepayment percentage must be a valid percentage."
-msgstr "Процентът на предплащане трябва да бъде валидна стойност."
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__is_present
@@ -390,6 +393,11 @@ msgstr "Количество"
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_form_quote
 msgid "Quantity:"
 msgstr "Количество:"
+
+#. module: sale_management
+#: model:ir.model.fields,field_description:sale_management.field_res_config_settings__module_sale_quotation_builder
+msgid "Quotation Builder"
+msgstr ""
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template__number_of_days
@@ -437,7 +445,7 @@ msgstr "Шаблони за оферти"
 
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
-msgid "Quotation Validity"
+msgid "Quotation expires after"
 msgstr ""
 
 #. module: sale_management
@@ -518,7 +526,6 @@ msgstr ""
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__sequence
-#: model:ir.model.fields,field_description:sale_management.field_sale_order_template__sequence
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_line__sequence
 msgid "Sequence"
 msgstr "Последователност"
@@ -546,11 +553,6 @@ msgstr "Срокове и условия"
 msgid ""
 "The Administrator can set default Terms & Conditions in Sales Settings. "
 "Terms set here will show up instead if you select this quotation template."
-msgstr ""
-
-#. module: sale_management
-#: model:ir.model.fields,help:sale_management.field_sale_order_template__prepayment_percent
-msgid "The percentage of the amount needed to be paid to confirm quotations."
 msgstr ""
 
 #. module: sale_management
@@ -614,38 +616,36 @@ msgid ""
 msgstr ""
 
 #. module: sale_management
-#. odoo-python
 #: code:addons/sale_management/models/sale_order_option.py:0
+#, python-format
 msgid "You cannot add options to a confirmed order."
 msgstr "Не можете да добавяте опции към потвърдена поръчка."
 
 #. module: sale_management
-#. odoo-python
 #: code:addons/sale_management/models/sale_order_template_line.py:0
+#, python-format
 msgid ""
 "You cannot change the type of a sale quote line. Instead you should delete "
 "the current line and create a new line of the proper type."
 msgstr ""
 
 #. module: sale_management
-#. odoo-python
 #: code:addons/sale_management/models/sale_order.py:0
+#, python-format
 msgid ""
 "Your quotation contains products from company %(product_company)s whereas your quotation belongs to company %(quote_company)s. \n"
 " Please change the company of your quotation or remove the products from other companies (%(bad_products)s)."
 msgstr ""
-"YВашето запитване за оферта съдържа продукти от компанията %(product_company)s окато самото запитване за оферта принадлежи на компанията %(quote_company)s. \n"
-"Моля, променете компанията на вашето запитване за оферта или премахнете продуктите от други компании (%(bad_products)s)."
 
 #. module: sale_management
-#. odoo-python
 #: code:addons/sale_management/models/sale_order_template.py:0
+#, python-format
 msgid "Your template cannot contain products from multiple companies."
 msgstr ""
 
 #. module: sale_management
-#. odoo-python
 #: code:addons/sale_management/models/sale_order_template.py:0
+#, python-format
 msgid ""
 "Your template contains products from company %(product_company)s whereas your template belongs to company %(template_company)s. \n"
 " Please change the company of your template or remove the products from other companies."

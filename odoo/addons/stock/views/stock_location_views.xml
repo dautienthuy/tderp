@@ -5,6 +5,8 @@
         <field name="res_model">product.product</field>
         <field name="context">{'location': active_id, 'search_default_real_stock_available': 1, 'search_default_virtual_stock_available': 1,
                     'search_default_virtual_stock_negative': 1, 'search_default_real_stock_negative': 1, 'create': False}</field>
+        <field name="binding_model_id" ref="model_stock_location"/>
+        <field name="binding_view_types">form</field>
         <field name="search_view_id" ref="stock.stock_product_search_form_view"/>
     </record>
 
@@ -20,14 +22,11 @@
                                 class="oe_stat_button"
                                 icon="fa-random" name="%(location_open_putaway)d" type="action"
                                 groups="stock.group_stock_multi_locations" context="{'default_company_id': company_id}"/>
-                        <button string="Products"
-                                class="oe_stat_button" icon="fa-th-list"
-                                type="action" name="stock.act_product_location_open"/>
                         <button string="Current Stock"
                                 class="oe_stat_button"
                                 icon="fa-cubes" name="%(location_open_quants)d" type="action"/>
                     </div>
-                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                     <label for="name"/>
                     <h1><field name="name" placeholder="e.g. Spare Stock"/></h1>
                     <label for="location_id"/>
@@ -37,22 +36,19 @@
                         <group string="Additional Information" name="additional_info">
                             <field name="active" invisible="1"/>
                             <field name="usage"/>
-                            <field name="storage_category_id" invisible="usage != 'internal'" groups="stock.group_stock_multi_locations"/>
+                            <field name="storage_category_id" attrs="{'invisible': [('usage', '!=', 'internal')]}" groups="stock.group_stock_storage_categories"/>
                             <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
-                            <field name="scrap_location" invisible="usage not in ('inventory', 'internal')"/>
-                            <field name="replenish_location" invisible="usage != 'internal'"/>
+                            <field name="scrap_location" attrs="{'invisible': [('usage', 'not in', ('inventory', 'internal'))]}"/>
+                            <field name="return_location"/>
+                            <field name="replenish_location" attrs="{'invisible': [('usage', '!=', 'internal')]}"/>
                         </group>
-                        <group string="Cyclic Counting" invisible="usage not in ('internal', 'transit') or not company_id">
-                            <label for="cyclic_inventory_frequency" string="Inventory Frequency"/>
-                            <div class="o_row">
-                                <field name="cyclic_inventory_frequency" nolabel="1" class="oe_inline"/>
-                                <span>days</span>
-                            </div>
+                        <group string="Cyclic Counting" attrs="{'invisible': ['|', ('usage', 'not in', ('internal', 'transit')), ('company_id', '=', False)]}">
+                            <field name="cyclic_inventory_frequency"/>
                             <field name="last_inventory_date"/>
-                            <field name="next_inventory_date" invisible="not active"/>
+                            <field name="next_inventory_date" attrs="{'invisible': [('active', '=', False)]}"/>
                         </group>
                         <group string="Logistics" groups="stock.group_adv_location">
-                            <field name="removal_strategy_id" widget="radio" options="{'no_create': True}" invisible="usage in ('supplier', 'customer', 'inventory', 'production') or scrap_location or usage == 'transit' and not company_id"/>
+                            <field name="removal_strategy_id" options="{'no_create': True}"/>
                         </group>
                     </group>
                     <field name="comment" placeholder="External note..."/>
@@ -82,44 +78,35 @@
                 <filter name="customer" string="Customer" domain="[('usage', '=', 'customer')]" help="Customer Locations"/>
                 <filter name="prod_inv_location" string="Production" domain="[('usage', 'in', ['inventory', 'production'])]" help="Production Locations"/>
                 <filter name="supplier" string="Vendor" domain="[('usage', '=', 'supplier')]" help="Vendor Locations"/>
-                <separator/>
-                <filter name="empty_location" string="Empty Locations" domain="[('is_empty', '=', True)]"/>
                 <field name="location_id" string="Parent Location"/>
-                <field name="usage" string="Location Type"/>
-                <field name="warehouse_id" string="Warehouse"/>
                 <separator/>
                 <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
-                <group expand="0" string="Group By">
-                    <filter string="Warehouse" name="warehouse" domain="[]" context="{'group_by': 'warehouse_id'}"/>
-                    <filter string="Location Type" name="usage" domain="[]" context="{'group_by': 'usage'}"/>
-                </group>
             </search>
         </field>
     </record>
 
     <record id="view_location_tree2" model="ir.ui.view">
-        <field name="name">stock.location.list</field>
+        <field name="name">stock.location.tree</field>
         <field name="model">stock.location</field>
         <field name="priority" eval="2"/>
         <field name="arch" type="xml">
-            <list string="Stock Location" decoration-info="usage=='view'" multi_edit="1">
-                <field name="company_id" column_invisible="True"/>
-                <field name="active" column_invisible="True"/>
+            <tree string="Stock Location" decoration-info="usage=='view'" decoration-danger="usage=='internal'" multi_edit="1">
+                <field name="company_id" invisible="1"/>
+                <field name="active" invisible="1"/>
                 <field name="complete_name" string="Location"/>
                 <field name="usage"/>
-                <field name="is_empty" invisible="usage not in ['internal', 'transit']"/>
-                <field name="storage_category_id" readonly="usage != 'internal'" groups="stock.group_stock_multi_locations"/>
+                <field name="storage_category_id" attrs="{'readonly': [('usage', '!=', 'internal')]}" groups="stock.group_stock_storage_categories"/>
                 <field name="company_id" groups="base.group_multi_company"/>
-            </list>
+            </tree>
         </field>
     </record>
 
     <record id="stock_location_view_tree2_editable" model="ir.ui.view">
-        <field name="name">stock.location.list2.editable</field>
+        <field name="name">stock.location.tree2.editable</field>
         <field name="model">stock.location</field>
         <field name="inherit_id" ref="stock.view_location_tree2"/>
         <field name="arch" type="xml">
-            <xpath expr="//list" position="attributes">
+            <xpath expr="//tree" position="attributes">
                 <attribute name="create">false</attribute>
             </xpath>
         </field>
@@ -127,15 +114,17 @@
 
     <record model="ir.actions.act_window" id="action_storage_category_locations">
         <field name="name">Locations</field>
+        <field name="type">ir.actions.act_window</field>
         <field name="res_model">stock.location</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">tree,form</field>
         <field name="domain">[('storage_category_id', '=', active_id)]</field>
     </record>
 
     <record id="action_location_form" model="ir.actions.act_window">
         <field name="name">Locations</field>
         <field name="res_model">stock.location</field>
-        <field name="view_mode">list,form</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
         <field name="view_id" ref="view_location_tree2"/>
         <field name="search_view_id" ref="view_location_search"/>
         <field name="context">{'search_default_in_location':1}</field>
@@ -161,26 +150,27 @@
     <record id="action_prod_inv_location_form" model="ir.actions.act_window">
         <field name="name">Locations</field>
         <field name="res_model">stock.location</field>
-        <field name="view_mode">list,form</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
         <field name="view_id" ref="view_location_tree2"/>
         <field name="search_view_id" ref="view_location_search"/>
         <field name="context">{'search_default_prod_inv_location': 1}</field>
     </record>
 
     <menuitem action="action_location_form" id="menu_action_location_form"
-        parent="menu_warehouse_config" sequence="3" groups="stock.group_stock_multi_locations"/>
+        parent="menu_warehouse_config" sequence="2" groups="stock.group_stock_multi_locations"/>
 
         <!--Routes-->
         <record id="stock_location_route_tree" model="ir.ui.view">
-            <field name="name">stock.location.route.list</field>
+            <field name="name">stock.location.route.tree</field>
             <field name="model">stock.route</field>
             <field name="arch" type="xml">
-                <list string="Routes">
+                <tree string="Routes">
                     <field name="sequence" widget="handle" />
                     <field name="name"/>
-                    <field name="active" column_invisible="True"/>
+                    <field name="active" invisible="1"/>
                     <field name="company_id" groups="base.group_multi_company"/>
-                </list>
+                </tree>
             </field>
         </record>
 
@@ -192,7 +182,7 @@
                 <form string="Route">
                     <field name="company_id" invisible="1"/>
                     <sheet>
-                        <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                        <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                         <div class="oe_title">
                             <label for="name"/>
                             <h1><field name="name" placeholder="e.g. Two-steps reception"/></h1>
@@ -217,18 +207,19 @@
                             <div class="o_row">
                                 <field name="warehouse_selectable" class="oe_inline" nolabel="1"/>
                                 <field name="warehouse_domain_ids" invisible="1"/>
-                                <field name="warehouse_ids" widget="many2many_tags" class="o_field_highlighted" placeholder="e.g. Central Warehouse" nolabel="1" invisible="not warehouse_selectable"/>
+                                <field name="warehouse_ids" widget="many2many_tags" class="o_field_highlighted" placeholder="e.g. Central Warehouse" nolabel="1"
+                                       attrs="{'invisible': [('warehouse_selectable', '=', False)]}"/>
                             </div>
                         </group>
                     </group>
                     <group string="Rules" >
                         <field name="rule_ids" colspan="2" nolabel="1" context="{'default_company_id': company_id, 'form_view_ref':'stock.view_route_rule_form'}">
-                            <list>
+                            <tree>
                                 <field name="sequence" widget="handle"/>
                                 <field name="action"/>
                                 <field name="location_src_id" options="{'no_create': True}"/>
                                 <field name="location_dest_id" options="{'no_create': True}"/>
-                            </list>
+                            </tree>
                         </field>
                     </group>
                     </sheet>
@@ -250,7 +241,8 @@
         <record id="action_routes_form" model="ir.actions.act_window">
             <field name="name">Routes</field>
             <field name="res_model">stock.route</field>
-            <field name="view_mode">list,form</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree,form</field>
             <field name="view_id" ref="stock_location_route_tree" />
             <field name="help" type="html">
               <p class="o_view_nocontent_smiling_face">
@@ -264,6 +256,6 @@
             </field>
         </record>
 
-        <menuitem id="menu_routes_config" action="action_routes_form" name="Routes" parent="menu_warehouse_config" sequence="4" groups="stock.group_adv_location"/>
+        <menuitem id="menu_routes_config" action="action_routes_form" name="Routes" parent="menu_warehouse_config" sequence="3" groups="stock.group_adv_location"/>
 
 </odoo>

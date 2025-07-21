@@ -3,15 +3,16 @@
 # 	* hr_work_entry_holidays
 # 
 # Translators:
-# Martin Trigaux, 2024
+# Marius Stedjan <marius@stedjan.com>, 2022
+# Martin Trigaux, 2022
 # Rune Restad, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 08:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2022-09-20 09:01+0000\n"
+"PO-Revision-Date: 2022-09-22 05:52+0000\n"
 "Last-Translator: Rune Restad, 2024\n"
 "Language-Team: Norwegian Bokmål (https://app.transifex.com/odoo/teams/41243/nb/)\n"
 "MIME-Version: 1.0\n"
@@ -19,6 +20,27 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Language: nb\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: hr_work_entry_holidays
+#: code:addons/hr_work_entry_holidays/models/hr_leave.py:0
+#, python-format
+msgid "%s: Time Off"
+msgstr "%s: Fravær"
+
+#. module: hr_work_entry_holidays
+#: code:addons/hr_work_entry_holidays/models/hr_leave.py:0
+#, python-format
+msgid ""
+"A leave cannot be set across multiple contracts with different working schedules.\n"
+"\n"
+"Please create one time off for each contract.\n"
+"\n"
+"Time off:\n"
+"%s\n"
+"\n"
+"Contracts:\n"
+"%s"
+msgstr ""
 
 #. module: hr_work_entry_holidays
 #: model:ir.model,name:hr_work_entry_holidays.model_hr_contract
@@ -59,10 +81,18 @@ msgstr ""
 "Statusen er 'Godkjent' når fraværforespørselen er godkjent av leder."
 
 #. module: hr_work_entry_holidays
+#: code:addons/hr_work_entry_holidays/models/hr_leave.py:0
+#, python-format
+msgid ""
+"There is no employee set on the time off. Please make sure you're logged in "
+"the correct company."
+msgstr ""
+
+#. module: hr_work_entry_holidays
 #: model:ir.model,name:hr_work_entry_holidays.model_hr_leave
 #: model:ir.model.fields,field_description:hr_work_entry_holidays.field_hr_work_entry__leave_id
 msgid "Time Off"
-msgstr "Fravær"
+msgstr "Ferie"
 
 #. module: hr_work_entry_holidays
 #: model:ir.model,name:hr_work_entry_holidays.model_hr_leave_type

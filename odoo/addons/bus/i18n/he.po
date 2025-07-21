@@ -3,23 +3,21 @@
 # 	* bus
 # 
 # Translators:
-# MichaelHadar, 2024
-# ZVI BLONDER <ZVIBLONDER@gmail.com>, 2024
-# Yihya Hugirat <hugirat@gmail.com>, 2024
-# Lilach Gilliam <lilach.gilliam@gmail.com>, 2024
-# yael terner, 2024
-# Martin Trigaux, 2024
-# Ha Ketem <haketem@gmail.com>, 2024
-# NoaFarkash, 2024
-# Fishfur A Banter <fishfurbanter@gmail.com>, 2024
+# NoaFarkash, 2022
+# Fishfur A Banter <fishfurbanter@gmail.com>, 2022
+# Lilach Gilliam <lilach.gilliam@gmail.com>, 2022
+# Yihya Hugirat <hugirat@gmail.com>, 2022
+# ZVI BLONDER <ZVIBLONDER@gmail.com>, 2022
+# Martin Trigaux, 2022
+# Ha Ketem <haketem@gmail.com>, 2022
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-27 13:03+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Fishfur A Banter <fishfurbanter@gmail.com>, 2024\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2022-09-22 05:45+0000\n"
+"Last-Translator: Ha Ketem <haketem@gmail.com>, 2022\n"
 "Language-Team: Hebrew (https://app.transifex.com/odoo/teams/41243/he/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -28,24 +26,9 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n == 1 && n % 1 == 0) ? 0 : (n == 2 && n % 1 == 0) ? 1: 2;\n"
 
 #. module: bus
-#: model:ir.model,name:bus.model_res_groups
-msgid "Access Groups"
-msgstr "קבוצות הרשאה"
-
-#. module: bus
-#: model:ir.model,name:bus.model_ir_attachment
-msgid "Attachment"
-msgstr "קובץ מצורף"
-
-#. module: bus
 #: model:ir.model.fields.selection,name:bus.selection__bus_presence__status__away
 msgid "Away"
 msgstr "רחוק"
-
-#. module: bus
-#: model:ir.model,name:bus.model_bus_listener_mixin
-msgid "Can send messages via bus.bus"
-msgstr ""
 
 #. module: bus
 #: model:ir.model.fields,field_description:bus.field_bus_bus__channel
@@ -79,11 +62,6 @@ msgid "Display Name"
 msgstr "שם לתצוגה"
 
 #. module: bus
-#: model:ir.model,name:bus.model_ir_http
-msgid "HTTP Routing"
-msgstr "ניתוב HTTP"
-
-#. module: bus
 #: model:ir.model.fields,field_description:bus.field_bus_bus__id
 #: model:ir.model.fields,field_description:bus.field_bus_presence__id
 msgid "ID"
@@ -95,6 +73,12 @@ msgstr "מזהה"
 #: model:ir.model.fields,field_description:bus.field_res_users__im_status
 msgid "IM Status"
 msgstr "סטטוס IM"
+
+#. module: bus
+#: model:ir.model.fields,field_description:bus.field_bus_bus____last_update
+#: model:ir.model.fields,field_description:bus.field_bus_presence____last_update
+msgid "Last Modified on"
+msgstr "שינוי אחרון ב"
 
 #. module: bus
 #: model:ir.model.fields,field_description:bus.field_bus_presence__last_poll
@@ -124,7 +108,7 @@ msgstr "הודעה"
 #. module: bus
 #: model:ir.model,name:bus.model_ir_model
 msgid "Models"
-msgstr "מודלים"
+msgstr "דגמים"
 
 #. module: bus
 #: model:ir.model.fields.selection,name:bus.selection__bus_presence__status__offline
@@ -138,33 +122,18 @@ msgstr "מקוון"
 
 #. module: bus
 #. odoo-javascript
-#: code:addons/bus/static/src/outdated_page_watcher_service.js:0
 #: code:addons/bus/static/src/services/assets_watchdog_service.js:0
-#: code:addons/bus/static/src/services/bus_service.js:0
+#: code:addons/bus/static/src/services/assets_watchdog_service.js:0
+#, python-format
 msgid "Refresh"
 msgstr "רענן"
 
 #. module: bus
 #. odoo-javascript
-#: code:addons/bus/static/src/outdated_page_watcher_service.js:0
-#: code:addons/bus/static/src/services/bus_service.js:0
-msgid ""
-"Save your work and refresh to get the latest updates and avoid potential "
-"issues."
-msgstr ""
-
-#. module: bus
-#. odoo-javascript
 #: code:addons/bus/static/src/services/assets_watchdog_service.js:0
+#, python-format
 msgid "The page appears to be out of date."
 msgstr "נראה שהדף הינו מיושן."
-
-#. module: bus
-#. odoo-javascript
-#: code:addons/bus/static/src/outdated_page_watcher_service.js:0
-#: code:addons/bus/static/src/services/bus_service.js:0
-msgid "The page is out of date"
-msgstr ""
 
 #. module: bus
 #: model:ir.model,name:bus.model_res_users
@@ -177,23 +146,9 @@ msgid "User Presence"
 msgstr "נוכחות משתמש"
 
 #. module: bus
-#: model:ir.model,name:bus.model_res_users_settings
-msgid "User Settings"
-msgstr "הגדרות משתמש"
-
-#. module: bus
 #: model:ir.model.fields,field_description:bus.field_bus_presence__user_id
 msgid "Users"
 msgstr "משתמשים"
-
-#. module: bus
-#. odoo-python
-#: code:addons/bus/controllers/home.py:0
-msgid ""
-"Your password is the default (admin)! If this system is exposed to untrusted"
-" users it is important to change it immediately for security reasons. I will"
-" keep nagging you about it!"
-msgstr ""
 
 #. module: bus
 #: model:ir.model,name:bus.model_ir_websocket

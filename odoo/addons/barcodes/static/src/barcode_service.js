@@ -3,7 +3,8 @@
 import { isBrowserChrome, isMobileOS } from "@web/core/browser/feature_detection";
 import { registry } from "@web/core/registry";
 import { session } from "@web/session";
-import { EventBus, whenReady } from "@odoo/owl";
+
+const { EventBus, whenReady } = owl;
 
 function isEditable(element) {
     return element.matches('input,textarea,[contenteditable="true"]');
@@ -22,7 +23,7 @@ function makeBarcodeInput() {
 export const barcodeService = {
     // Keys from a barcode scanner are usually processed as quick as possible,
     // but some scanners can use an intercharacter delay (we support <= 50 ms)
-    maxTimeBetweenKeysInMs: session.max_time_between_keys_in_ms || 150,
+    maxTimeBetweenKeysInMs: session.max_time_between_keys_in_ms || 100,
 
     // this is done here to make it easily mockable in mobile tests
     isMobileChrome: isMobileOS() && isBrowserChrome(),
@@ -110,8 +111,8 @@ export const barcodeService = {
             if (ev.key === "Unidentified") {
                 return;
             }
-            if (document.activeElement && !document.activeElement.matches('input:not([type]), input[type="text"], textarea, [contenteditable], ' +
-                '[type="email"], [type="number"], [type="password"], [type="tel"], [type="search"]')) {
+            if ($(document.activeElement).not('input:text, textarea, [contenteditable], ' +
+                '[type="email"], [type="number"], [type="password"], [type="tel"], [type="search"]').length) {
                 barcodeInput.focus();
             }
             keydownHandler(ev);

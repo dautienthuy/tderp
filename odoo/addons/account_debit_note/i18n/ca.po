@@ -3,24 +3,21 @@
 # 	* account_debit_note
 # 
 # Translators:
-# Manel Fernandez Ramirez <manelfera@outlook.com>, 2024
-# Albert Parera, 2024
-# Quim - coopdevs <quim.rebull@coopdevs.org>, 2024
-# Óscar Fonseca <tecnico@pyming.com>, 2024
-# Josep Anton Belchi, 2024
-# Martin Trigaux, 2024
-# marcescu, 2024
-# jabiri7, 2024
-# Noemi Pla, 2025
-# Santiago Payà <santiagopim@gmail.com>, 2025
+# jabelchi, 2022
+# ericrolo, 2022
+# Martin Trigaux, 2022
+# Quim - eccit <quim@eccit.com>, 2022
+# marcescu, 2022
+# jabiri7, 2022
+# Óscar Fonseca <tecnico@extreme-micro.com>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server saas~15.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 08:39+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Santiago Payà <santiagopim@gmail.com>, 2025\n"
+"POT-Creation-Date: 2022-04-19 13:57+0000\n"
+"PO-Revision-Date: 2022-09-22 05:44+0000\n"
+"Last-Translator: Óscar Fonseca <tecnico@extreme-micro.com>, 2023\n"
 "Language-Team: Catalan (https://app.transifex.com/odoo/teams/41243/ca/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -31,31 +28,27 @@ msgstr ""
 #. module: account_debit_note
 #: model_terms:ir.ui.view,arch_db:account_debit_note.view_move_form_debit
 msgid "<span class=\"o_stat_text\">Debit Notes</span>"
-msgstr "<span class=\"o_stat_text\">Notes de dèbit</span>"
+msgstr "<span class=\"o_stat_text\">Notes de càrrec</span>"
+
+#. module: account_debit_note
+#: model_terms:ir.ui.view,arch_db:account_debit_note.view_move_form_debit
+msgid "Add Debit Note"
+msgstr "Afegir factura rectificativa"
 
 #. module: account_debit_note
 #: model:ir.model,name:account_debit_note.model_account_debit_note
 msgid "Add Debit Note wizard"
-msgstr "Assistent per a afegir una nota de dèbit"
+msgstr "Afegeix un assistent de nota de dèbit"
 
 #. module: account_debit_note
 #: model_terms:ir.ui.view,arch_db:account_debit_note.view_account_debit_note
 msgid "Cancel"
-msgstr "Cancel·la"
-
-#. module: account_debit_note
-#: model:ir.model.fields,help:account_debit_note.field_account_journal__debit_sequence
-msgid ""
-"Check this box if you don't want to share the same sequence for invoices and"
-" debit notes made from this journal"
-msgstr ""
-"Marqueu aquesta casella si no voleu compatir la mateixa seqüència per "
-"factures i notes de dèbit fetes des d'aquest diari."
+msgstr "Cancel·lar"
 
 #. module: account_debit_note
 #: model:ir.model.fields,field_description:account_debit_note.field_account_debit_note__copy_lines
 msgid "Copy Lines"
-msgstr "Copiar línies"
+msgstr "# de línies"
 
 #. module: account_debit_note
 #: model:ir.model.fields,field_description:account_debit_note.field_account_debit_note__country_code
@@ -79,37 +72,25 @@ msgid "Created on"
 msgstr "Creat el"
 
 #. module: account_debit_note
-#: model:ir.actions.server,name:account_debit_note.action_move_debit_note
-#: model_terms:ir.ui.view,arch_db:account_debit_note.view_account_move_filter_debit
-#: model_terms:ir.ui.view,arch_db:account_debit_note.view_account_move_line_filter_debit
-msgid "Debit Note"
-msgstr "Nota de dèbit"
-
-#. module: account_debit_note
 #: model:ir.model.fields,field_description:account_debit_note.field_account_debit_note__date
 #: model_terms:ir.ui.view,arch_db:account_debit_note.view_account_debit_note
 msgid "Debit Note Date"
 msgstr "Data de la nota de dèbit"
 
 #. module: account_debit_note
-#. odoo-python
 #: code:addons/account_debit_note/models/account_move.py:0
 #: code:addons/account_debit_note/wizard/account_debit_note.py:0
 #: model:ir.model.fields,field_description:account_debit_note.field_account_bank_statement_line__debit_note_ids
 #: model:ir.model.fields,field_description:account_debit_note.field_account_move__debit_note_ids
-#: model_terms:ir.ui.view,arch_db:account_debit_note.view_account_invoice_filter_debit
+#: model:ir.model.fields,field_description:account_debit_note.field_account_payment__debit_note_ids
+#, python-format
 msgid "Debit Notes"
 msgstr "Notes de dèbit"
 
 #. module: account_debit_note
-#: model:ir.model.fields,field_description:account_debit_note.field_account_journal__debit_sequence
-msgid "Dedicated Debit Note Sequence"
-msgstr "Seqüència de notes de dèbit dedicada"
-
-#. module: account_debit_note
 #: model:ir.model.fields,field_description:account_debit_note.field_account_debit_note__display_name
 msgid "Display Name"
-msgstr "Nom mostrat"
+msgstr "Nom a mostrar"
 
 #. module: account_debit_note
 #: model:ir.model.fields,field_description:account_debit_note.field_account_debit_note__id
@@ -127,13 +108,8 @@ msgid ""
 "In case you need to do corrections for every line, it can be in handy to "
 "copy them.  We won't copy them for debit notes from credit notes. "
 msgstr ""
-"Si cal fer correccions per a cada línia, pot ser pràctic copiar-les. No les "
-"copiarem per a les notes de dèbit des de factures rectificatives."
-
-#. module: account_debit_note
-#: model:ir.model,name:account_debit_note.model_account_journal
-msgid "Journal"
-msgstr "Diari"
+"Si cal fer correccions per a cada línia, pot ser pràctic copiar-la. No els "
+"copiarem per deutes domiciliats."
 
 #. module: account_debit_note
 #: model:ir.model,name:account_debit_note.model_account_move
@@ -143,7 +119,12 @@ msgstr "Assentament comptable"
 #. module: account_debit_note
 #: model:ir.model.fields,field_description:account_debit_note.field_account_debit_note__journal_type
 msgid "Journal Type"
-msgstr "Tipus de diari"
+msgstr "Assentaments comptables"
+
+#. module: account_debit_note
+#: model:ir.model.fields,field_description:account_debit_note.field_account_debit_note____last_update
+msgid "Last Modified on"
+msgstr "Última modificació el "
 
 #. module: account_debit_note
 #: model:ir.model.fields,field_description:account_debit_note.field_account_debit_note__write_uid
@@ -158,29 +139,31 @@ msgstr "Última actualització el"
 #. module: account_debit_note
 #: model:ir.model.fields,field_description:account_debit_note.field_account_debit_note__move_ids
 msgid "Move"
-msgstr "Assentament"
+msgstr "Assent."
 
 #. module: account_debit_note
 #: model:ir.model.fields,field_description:account_debit_note.field_account_debit_note__move_type
 msgid "Move Type"
-msgstr "Tipus d'assentament"
+msgstr "Tipus de moviment"
 
 #. module: account_debit_note
 #: model:ir.model.fields,field_description:account_debit_note.field_account_bank_statement_line__debit_note_count
 #: model:ir.model.fields,field_description:account_debit_note.field_account_move__debit_note_count
+#: model:ir.model.fields,field_description:account_debit_note.field_account_payment__debit_note_count
 msgid "Number of Debit Notes"
 msgstr "Nombre de notes de dèbit"
 
 #. module: account_debit_note
 #: model:ir.model.fields,field_description:account_debit_note.field_account_bank_statement_line__debit_origin_id
 #: model:ir.model.fields,field_description:account_debit_note.field_account_move__debit_origin_id
+#: model:ir.model.fields,field_description:account_debit_note.field_account_payment__debit_origin_id
 msgid "Original Invoice Debited"
-msgstr "Factura original debitada"
+msgstr "Factura original dèbit"
 
 #. module: account_debit_note
 #: model:ir.model.fields,field_description:account_debit_note.field_account_debit_note__reason
 msgid "Reason"
-msgstr "Motiu"
+msgstr "Raó"
 
 #. module: account_debit_note
 #: model:ir.model.fields,help:account_debit_note.field_account_debit_note__country_code
@@ -188,18 +171,19 @@ msgid ""
 "The ISO country code in two chars. \n"
 "You can use this field for quick search."
 msgstr ""
-"El codi del país ISO en dos caràcters.\n"
-"Podeu utilitzar aquest camp per una cerca ràpida."
+"EL codi ISO del país de dos caràcters.\n"
+"Podeu utilitzar aquest camp per la cerca ràpida."
 
 #. module: account_debit_note
 #: model:ir.model.fields,help:account_debit_note.field_account_bank_statement_line__debit_note_ids
 #: model:ir.model.fields,help:account_debit_note.field_account_move__debit_note_ids
+#: model:ir.model.fields,help:account_debit_note.field_account_payment__debit_note_ids
 msgid "The debit notes created for this invoice"
 msgstr "Les notes de dèbit creades per a aquesta factura"
 
 #. module: account_debit_note
-#. odoo-python
 #: code:addons/account_debit_note/wizard/account_debit_note.py:0
+#, python-format
 msgid "This debit note was created from: %s"
 msgstr "Aquesta nota de dèbit s'ha creat a partir de: %s"
 
@@ -209,28 +193,7 @@ msgid "Use Specific Journal"
 msgstr "Utilitzar diari específic"
 
 #. module: account_debit_note
-#. odoo-python
 #: code:addons/account_debit_note/wizard/account_debit_note.py:0
-msgid ""
-"You can make a debit note only for a Customer Invoice, a Customer Credit "
-"Note, a Vendor Bill or a Vendor Credit Note."
-msgstr ""
-"Només podeu fer una nota de dèbit per una factura de client, una factura "
-"rectificativa de client, una factura de proveïdor o una factura "
-"rectificativa de proveïdor. "
-
-#. module: account_debit_note
-#. odoo-python
-#: code:addons/account_debit_note/wizard/account_debit_note.py:0
+#, python-format
 msgid "You can only debit posted moves."
-msgstr "Només podeu debitar els moviments publicats."
-
-#. module: account_debit_note
-#. odoo-python
-#: code:addons/account_debit_note/wizard/account_debit_note.py:0
-msgid ""
-"You can't make a debit note for an invoice that is already linked to a debit"
-" note."
-msgstr ""
-"No podeu fer una nota de dèbit per a una factura que ja està enllaçada a una"
-" nota de dèbit."
+msgstr "Només podeu invertir els moviments publicats."

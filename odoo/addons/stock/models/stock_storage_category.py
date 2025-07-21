@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
 
 class StorageCategory(models.Model):
@@ -39,9 +39,10 @@ class StorageCategory(models.Model):
         for storage_category in self:
             storage_category.capacity_ids = storage_category.product_capacity_ids | storage_category.package_capacity_ids
 
-    def copy_data(self, default=None):
-        vals_list = super().copy_data(default=default)
-        return [dict(vals, name=self.env._("%s (copy)", category.name)) for category, vals in zip(self, vals_list)]
+    def copy(self, default=None):
+        default = dict(default or {})
+        default.update(name=_("%s (copy)") % self.name)
+        return super().copy(default)
 
 
 class StorageCategoryProductCapacity(models.Model):
@@ -50,11 +51,19 @@ class StorageCategoryProductCapacity(models.Model):
     _check_company_auto = True
     _order = "storage_category_id"
 
+    @api.model
+    def _domain_product_id(self):
+        domain = "('type', '=', 'product')"
+        if self.env.context.get('active_model') == 'product.template':
+            product_template_id = self.env.context.get('active_id', False)
+            domain = f"('product_tmpl_id', '=', {product_template_id})"
+        elif self.env.context.get('default_product_id', False):
+            product_id = self.env.context.get('default_product_id', False)
+            domain = f"('id', '=', {product_id})"
+        return f"[{domain}, '|', ('company_id', '=', False), ('company_id', '=', company_id)]"
+
     storage_category_id = fields.Many2one('stock.storage.category', ondelete='cascade', required=True, index=True)
-    product_id = fields.Many2one('product.product', 'Product', ondelete='cascade', check_company=True,
-        domain=("[('product_tmpl_id', '=', context.get('active_id', False))] if context.get('active_model') == 'product.template' else"
-            " [('id', '=', context.get('default_product_id', False))] if context.get('default_product_id') else"
-            " [('is_storable', '=', True)]"))
+    product_id = fields.Many2one('product.product', 'Product', domain=lambda self: self._domain_product_id(), ondelete='cascade', check_company=True)
     package_type_id = fields.Many2one('stock.package.type', 'Package Type', ondelete='cascade', check_company=True)
     quantity = fields.Float('Quantity', required=True)
     product_uom_id = fields.Many2one(related='product_id.uom_id')

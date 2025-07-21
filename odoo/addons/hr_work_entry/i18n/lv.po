@@ -3,17 +3,18 @@
 # 	* hr_work_entry
 # 
 # Translators:
-# Arnis Putniņš <arnis@allegro.lv>, 2024
-# ievaputnina <ievai.putninai@gmail.com>, 2024
-# Martin Trigaux, 2024
+# Anzelika Adejanova, 2022
+# Martin Trigaux, 2022
+# Arnis Putniņš <arnis@allegro.lv>, 2023
+# ievaputnina <ievai.putninai@gmail.com>, 2023
 # Armīns Jeltajevs <armins.jeltajevs@gmail.com>, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-25 07:48+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2023-04-14 05:51+0000\n"
+"PO-Revision-Date: 2022-09-22 05:52+0000\n"
 "Last-Translator: Armīns Jeltajevs <armins.jeltajevs@gmail.com>, 2025\n"
 "Language-Team: Latvian (https://app.transifex.com/odoo/teams/41243/lv/)\n"
 "MIME-Version: 1.0\n"
@@ -25,19 +26,9 @@ msgstr ""
 #. module: hr_work_entry
 #. odoo-python
 #: code:addons/hr_work_entry/models/hr_employee.py:0
+#, python-format
 msgid "%s work entries"
 msgstr "%s darba ieraksti"
-
-#. module: hr_work_entry
-#: model_terms:ir.ui.view,arch_db:hr_work_entry.hr_employee_view_form
-msgid ""
-"<span class=\"o_stat_text\">\n"
-"                            Work Entries\n"
-"                            </span>"
-msgstr ""
-"<span class=\"o_stat_text\">\n"
-"                            Darba ieraksti\n"
-"                            </span>"
 
 #. module: hr_work_entry
 #: model_terms:ir.ui.view,arch_db:hr_work_entry.hr_work_entry_view_form
@@ -61,7 +52,7 @@ msgstr "Arhivēts"
 #. module: hr_work_entry
 #: model:hr.work.entry.type,name:hr_work_entry.work_entry_type_attendance
 msgid "Attendance"
-msgstr "Apmeklējums"
+msgstr "Attendance"
 
 #. module: hr_work_entry
 #: model_terms:ir.ui.view,arch_db:hr_work_entry.hr_work_entry_view_tree
@@ -74,12 +65,16 @@ msgid "Cancelled"
 msgstr "Atcelts"
 
 #. module: hr_work_entry
-#: model:ir.model.fields,help:hr_work_entry.field_hr_work_entry__code
 #: model:ir.model.fields,help:hr_work_entry.field_hr_work_entry_type__code
 msgid ""
 "Careful, the Code is used in many references, changing it could lead to "
 "unwanted changes."
 msgstr ""
+
+#. module: hr_work_entry
+#: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry_type__code
+msgid "Code"
+msgstr "Kods"
 
 #. module: hr_work_entry
 #: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry__color
@@ -106,17 +101,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry__conflict
 msgid "Conflicts"
 msgstr ""
-
-#. module: hr_work_entry
-#: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry__country_id
-#: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry_type__country_id
-msgid "Country"
-msgstr "Valsts"
-
-#. module: hr_work_entry
-#: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry_type__country_code
-msgid "Country Code"
-msgstr "Valsts kods"
 
 #. module: hr_work_entry
 #: model_terms:ir.actions.act_window,help:hr_work_entry.hr_work_entry_type_action
@@ -163,13 +147,17 @@ msgstr "Apraksts"
 #: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry__display_name
 #: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry_type__display_name
 msgid "Display Name"
-msgstr "Nosaukums"
+msgstr "Parādīt vārdu"
 
 #. module: hr_work_entry
 #: model:ir.model.fields.selection,name:hr_work_entry.selection__hr_work_entry__state__draft
-#: model_terms:ir.ui.view,arch_db:hr_work_entry.hr_work_entry_view_search
 msgid "Draft"
 msgstr "Melnraksts"
+
+#. module: hr_work_entry
+#: model_terms:ir.ui.view,arch_db:hr_work_entry.hr_work_entry_type_view_kanban
+msgid "Dropdown menu"
+msgstr "Nolaižamā izvēlne"
 
 #. module: hr_work_entry
 #: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry__duration
@@ -190,12 +178,6 @@ msgid "End"
 msgstr ""
 
 #. module: hr_work_entry
-#: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry__external_code
-#: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry_type__external_code
-msgid "External Code"
-msgstr ""
-
-#. module: hr_work_entry
 #: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry__date_start
 msgid "From"
 msgstr "No"
@@ -209,11 +191,6 @@ msgstr ""
 #: model:ir.model,name:hr_work_entry.model_hr_work_entry_type
 msgid "HR Work Entry Type"
 msgstr ""
-
-#. module: hr_work_entry
-#: model:ir.model.fields,field_description:hr_work_entry.field_hr_employee__has_work_entries
-msgid "Has Work Entries"
-msgstr "Ir darba ieraksti"
 
 #. module: hr_work_entry
 #: model:ir.model.fields,field_description:hr_work_entry.field_hr_user_work_entry_employee__id
@@ -230,18 +207,25 @@ msgid ""
 msgstr ""
 
 #. module: hr_work_entry
+#: model:ir.model.fields,field_description:hr_work_entry.field_hr_user_work_entry_employee____last_update
+#: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry____last_update
+#: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry_type____last_update
+msgid "Last Modified on"
+msgstr "Pēdējoreiz mainīts"
+
+#. module: hr_work_entry
 #: model:ir.model.fields,field_description:hr_work_entry.field_hr_user_work_entry_employee__write_uid
 #: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry__write_uid
 #: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry_type__write_uid
 msgid "Last Updated by"
-msgstr "Pēdējo reizi atjaunoja"
+msgstr "Pēdējoreiz atjaunoja"
 
 #. module: hr_work_entry
 #: model:ir.model.fields,field_description:hr_work_entry.field_hr_user_work_entry_employee__write_date
 #: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry__write_date
 #: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry_type__write_date
 msgid "Last Updated on"
-msgstr "Pēdējās izmaiņas"
+msgstr "Pēdējoreiz atjaunots"
 
 #. module: hr_work_entry
 #: model:ir.model.fields,field_description:hr_work_entry.field_hr_user_work_entry_employee__user_id
@@ -265,17 +249,6 @@ msgid "Note: Validated work entries cannot be modified."
 msgstr ""
 
 #. module: hr_work_entry
-#: model:hr.work.entry.type,name:hr_work_entry.overtime_work_entry_type
-msgid "Overtime Hours"
-msgstr ""
-
-#. module: hr_work_entry
-#: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry__code
-#: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry_type__code
-msgid "Payroll Code"
-msgstr "Algu saraksta kods"
-
-#. module: hr_work_entry
 #: model:ir.model,name:hr_work_entry.model_resource_calendar_leaves
 msgid "Resource Time Off Detail"
 msgstr ""
@@ -293,11 +266,12 @@ msgstr ""
 #. module: hr_work_entry
 #: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry_type__sequence
 msgid "Sequence"
-msgstr "Sekvence"
+msgstr "Secība"
 
 #. module: hr_work_entry
 #. odoo-javascript
 #: code:addons/hr_work_entry/static/src/xml/work_entry_templates.xml:0
+#, python-format
 msgid "Solve conflicts first"
 msgstr ""
 
@@ -314,28 +288,12 @@ msgstr ""
 #. module: hr_work_entry
 #: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry__state
 msgid "State"
-msgstr "Stāvoklis"
+msgstr "Posmi"
 
 #. module: hr_work_entry
-#: model:ir.model.fields,help:hr_work_entry.field_hr_work_entry_type__country_code
-msgid ""
-"The ISO country code in two chars. \n"
-"You can use this field for quick search."
-msgstr ""
-"Valsts ISO kods divās rakstzīmēs.\n"
-"Jūs varat izmantot šo lauku ātrākai meklēšanai."
-
-#. module: hr_work_entry
-#. odoo-python
-#: code:addons/hr_work_entry/models/hr_work_entry.py:0
+#: model:ir.model.constraint,message:hr_work_entry.constraint_hr_work_entry_type_unique_work_entry_code
 msgid "The same code cannot be associated to multiple work entry types."
 msgstr "Vienāds kods nevar tikt saistīts vairākiem darba ierakstu veidiem."
-
-#. module: hr_work_entry
-#. odoo-python
-#: code:addons/hr_work_entry/models/hr_work_entry.py:0
-msgid "This work entry is validated. You can't delete it."
-msgstr ""
 
 #. module: hr_work_entry
 #: model_terms:ir.ui.view,arch_db:hr_work_entry.hr_work_entry_type_view_form
@@ -345,7 +303,7 @@ msgstr ""
 #. module: hr_work_entry
 #: model:ir.model.fields,field_description:hr_work_entry.field_hr_work_entry__date_stop
 msgid "To"
-msgstr "Līdz"
+msgstr "Kam"
 
 #. module: hr_work_entry
 #: model_terms:ir.actions.act_window,help:hr_work_entry.hr_work_entry_action
@@ -357,29 +315,24 @@ msgstr ""
 #. module: hr_work_entry
 #: model_terms:ir.ui.view,arch_db:hr_work_entry.hr_work_entry_view_search
 msgid "Type"
-msgstr "Tips"
+msgstr "Veids"
 
 #. module: hr_work_entry
 #. odoo-python
 #: code:addons/hr_work_entry/models/hr_work_entry.py:0
+#, python-format
 msgid "Undefined"
 msgstr "Nav definēts"
 
 #. module: hr_work_entry
 #. odoo-python
 #: code:addons/hr_work_entry/models/hr_work_entry.py:0
+#, python-format
 msgid "Undefined Type"
 msgstr ""
 
 #. module: hr_work_entry
-#: model:ir.model.fields,help:hr_work_entry.field_hr_work_entry__external_code
-#: model:ir.model.fields,help:hr_work_entry.field_hr_work_entry_type__external_code
-msgid "Use this code to export your data to a third party"
-msgstr ""
-
-#. module: hr_work_entry
 #: model:ir.model.fields.selection,name:hr_work_entry.selection__hr_work_entry__state__validated
-#: model_terms:ir.ui.view,arch_db:hr_work_entry.hr_work_entry_view_search
 msgid "Validated"
 msgstr "Apstiprināts"
 
@@ -394,6 +347,7 @@ msgid "Work Detail"
 msgstr ""
 
 #. module: hr_work_entry
+#: model_terms:ir.ui.view,arch_db:hr_work_entry.hr_employee_view_form
 #: model_terms:ir.ui.view,arch_db:hr_work_entry.hr_work_entry_view_pivot
 msgid "Work Entries"
 msgstr "Darba ieraksti"
@@ -438,20 +392,6 @@ msgstr "Darba ierakstu veidi"
 #. module: hr_work_entry
 #: model:ir.model.constraint,message:hr_work_entry.constraint_hr_work_entry__work_entry_has_end
 msgid "Work entry must end. Please define an end date or a duration."
-msgstr ""
-
-#. module: hr_work_entry
-#. odoo-python
-#: code:addons/hr_work_entry/models/hr_work_entry.py:0
-msgid ""
-"You can't change the Country of this work entry type cause it's currently "
-"used by the system. You need to delete related working entries first."
-msgstr ""
-
-#. module: hr_work_entry
-#. odoo-python
-#: code:addons/hr_work_entry/models/hr_work_entry.py:0
-msgid "You can't change the country of this specific work entry type."
 msgstr ""
 
 #. module: hr_work_entry

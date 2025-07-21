@@ -3,24 +3,25 @@
 # 	* phone_validation
 # 
 # Translators:
-# Petko Karamotchev, 2024
+# KeyVillage, 2023
+# Martin Trigaux, 2023
+# Ivan Goychev <igoychev.projects@gmail.com>, 2023
+# Ивайло Малинов <iv.malinov@gmail.com>, 2023
+# Maria Boyadjieva <marabo2000@gmail.com>, 2023
+# aleksandar ivanov, 2023
+# Rumena Georgieva <rumena.georgieva@gmail.com>, 2024
 # Elena Varbanova, 2024
-# KeyVillage, 2024
-# Maria Boyadjieva <marabo2000@gmail.com>, 2024
-# Ivan Goychev <igoychev.projects@gmail.com>, 2024
-# aleksandar ivanov, 2024
+# Petko Karamotchev, 2024
 # Venelin Stoykov, 2024
 # Veselina Slavkova, 2025
-# Milena Georgieva, 2025
-# Martin Dinovski, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-23 18:40+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Martin Dinovski, 2025\n"
+"POT-Creation-Date: 2022-09-20 09:03+0000\n"
+"PO-Revision-Date: 2022-09-22 05:53+0000\n"
+"Last-Translator: Veselina Slavkova, 2025\n"
 "Language-Team: Bulgarian (https://app.transifex.com/odoo/teams/41243/bg/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -29,16 +30,17 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: phone_validation
-#. odoo-python
 #: code:addons/phone_validation/models/phone_blacklist.py:0
-msgid "%(error)s Please correct the number and try again."
+#: code:addons/phone_validation/models/phone_blacklist.py:0
+#, python-format
+msgid " Please correct the number and try again."
 msgstr ""
 
 #. module: phone_validation
 #: model:ir.model.fields,field_description:phone_validation.field_mail_thread_phone__message_needaction
 #: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist__message_needaction
 msgid "Action Needed"
-msgstr "Необходимо действие"
+msgstr "Необходимо Действие"
 
 #. module: phone_validation
 #: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist__active
@@ -54,30 +56,19 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:phone_validation.phone_blacklist_view_form
 #: model_terms:ir.ui.view,arch_db:phone_validation.phone_blacklist_view_search
 msgid "Archived"
-msgstr "Архивиран"
+msgstr "Архивирано"
 
 #. module: phone_validation
-#. odoo-python
-#: code:addons/phone_validation/models/mail_thread_phone.py:0
-msgid "Are you sure you want to unblacklist this Phone Number?"
-msgstr ""
-
-#. module: phone_validation
-#. odoo-python
 #: code:addons/phone_validation/models/phone_blacklist.py:0
-msgid "Are you sure you want to unblacklist this phone number?"
+#, python-format
+msgid "Are you sure you want to unblacklist this Phone Number?"
 msgstr ""
 
 #. module: phone_validation
 #: model:ir.model.fields,field_description:phone_validation.field_mail_thread_phone__message_attachment_count
 #: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist__message_attachment_count
 msgid "Attachment Count"
-msgstr "Брой прикачени файлове"
-
-#. module: phone_validation
-#: model:ir.model,name:phone_validation.model_base
-msgid "Base"
-msgstr "Основа"
+msgstr "Брой Прикачени Файлове"
 
 #. module: phone_validation
 #: model_terms:ir.ui.view,arch_db:phone_validation.phone_blacklist_view_form
@@ -110,12 +101,17 @@ msgid "Blacklisted phone numbers won't receive SMS Mailings anymore."
 msgstr ""
 
 #. module: phone_validation
-#. odoo-python
 #: code:addons/phone_validation/models/res_users.py:0
+#, python-format
 msgid ""
 "Blocked by deletion of portal account %(portal_user_name)s by %(user_name)s "
 "(#%(user_id)s)"
 msgstr ""
+
+#. module: phone_validation
+#: model_terms:ir.ui.view,arch_db:phone_validation.phone_blacklist_remove_view_form
+msgid "Confirm"
+msgstr "Потвърждение"
 
 #. module: phone_validation
 #: model:ir.model,name:phone_validation.model_res_partner
@@ -126,7 +122,7 @@ msgstr "Контакт"
 #: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist__create_uid
 #: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist_remove__create_uid
 msgid "Created by"
-msgstr "Създаден от"
+msgstr "Създадено от"
 
 #. module: phone_validation
 #: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist__create_date
@@ -151,8 +147,6 @@ msgid ""
 "Field used to store sanitized phone number. Helps speeding up searches and "
 "comparisons."
 msgstr ""
-"Поле, използвано за съхранение на стандартизиран телефонен номер. Спомага за"
-" ускоряване на търсенията и сравненията."
 
 #. module: phone_validation
 #: model:ir.model.fields,field_description:phone_validation.field_mail_thread_phone__message_follower_ids
@@ -170,7 +164,7 @@ msgstr "Последователи (партньори)"
 #: model:ir.model.fields,field_description:phone_validation.field_mail_thread_phone__has_message
 #: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist__has_message
 msgid "Has Message"
-msgstr "има съобщение"
+msgstr "Има съобщение"
 
 #. module: phone_validation
 #: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist__id
@@ -196,32 +190,11 @@ msgid ""
 "If the sanitized phone number is on the blacklist, the contact won't receive"
 " mass mailing sms anymore, from any list"
 msgstr ""
-"Ако стандартизираният телефонен номер е в черния списък, то контактът няма "
-"да получава повече SMS от масови разпращания, независимо от списъка, от "
-"който са изпратени."
 
 #. module: phone_validation
-#. odoo-python
 #: code:addons/phone_validation/tools/phone_validation.py:0
-msgid "Impossible number %s: not a valid country prefix."
-msgstr ""
-
-#. module: phone_validation
-#. odoo-python
-#: code:addons/phone_validation/tools/phone_validation.py:0
-msgid "Impossible number %s: not enough digits."
-msgstr ""
-
-#. module: phone_validation
-#. odoo-python
-#: code:addons/phone_validation/tools/phone_validation.py:0
+#, python-format
 msgid "Impossible number %s: probably invalid number of digits."
-msgstr ""
-
-#. module: phone_validation
-#. odoo-python
-#: code:addons/phone_validation/tools/phone_validation.py:0
-msgid "Impossible number %s: too many digits."
 msgstr ""
 
 #. module: phone_validation
@@ -231,9 +204,6 @@ msgid ""
 "distinguish which number is blacklisted             when there is both a "
 "mobile and phone field in a model."
 msgstr ""
-"Показва дали стандартизираният телефонен номер от черния списък е мобилен "
-"номер. Помага да се разграничи кой номер е в черния списък             "
-"Когато моделът има и двете полета за мобилен номер и телефон."
 
 #. module: phone_validation
 #: model:ir.model.fields,help:phone_validation.field_mail_thread_phone__phone_blacklisted
@@ -242,19 +212,17 @@ msgid ""
 "distinguish which number is blacklisted             when there is both a "
 "mobile and phone field in a model."
 msgstr ""
-"Показва дали стандартизираният телефонен номер от черния списък е телефонен "
-"номер. Помага да се разграничи кой номер е в черния списък        Когато "
-"моделът има и двете полета за мобилен номер и телефон."
 
 #. module: phone_validation
-#. odoo-python
 #: code:addons/phone_validation/tools/phone_validation.py:0
+#, python-format
 msgid "Invalid number %s: probably incorrect prefix."
 msgstr ""
 
 #. module: phone_validation
-#. odoo-python
 #: code:addons/phone_validation/models/mail_thread_phone.py:0
+#: code:addons/phone_validation/models/mail_thread_phone.py:0
+#, python-format
 msgid "Invalid primary phone field on model %s"
 msgstr ""
 
@@ -263,6 +231,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist__message_is_follower
 msgid "Is Follower"
 msgstr "е последовател"
+
+#. module: phone_validation
+#: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist____last_update
+#: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist_remove____last_update
+msgid "Last Modified on"
+msgstr "Последна промяна на"
 
 #. module: phone_validation
 #: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist__write_uid
@@ -277,20 +251,26 @@ msgid "Last Updated on"
 msgstr "Последно актуализирано на"
 
 #. module: phone_validation
+#: model:ir.model.fields,field_description:phone_validation.field_mail_thread_phone__message_main_attachment_id
+#: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "Основен прикачен Файл"
+
+#. module: phone_validation
 #: model:ir.model.fields,field_description:phone_validation.field_mail_thread_phone__message_has_error
 #: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist__message_has_error
 msgid "Message Delivery error"
-msgstr "Грешка при доставяне на съобщението"
+msgstr "Грешка при доставката на съобщение"
 
 #. module: phone_validation
 #: model:ir.model.fields,field_description:phone_validation.field_mail_thread_phone__message_ids
 #: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist__message_ids
 msgid "Messages"
-msgstr "Syob]eniq"
+msgstr "Съобщения"
 
 #. module: phone_validation
-#. odoo-python
 #: code:addons/phone_validation/models/mail_thread_phone.py:0
+#, python-format
 msgid "Missing definition of phone fields."
 msgstr ""
 
@@ -315,7 +295,7 @@ msgstr "Брой грешки"
 #: model:ir.model.fields,help:phone_validation.field_mail_thread_phone__message_needaction_counter
 #: model:ir.model.fields,help:phone_validation.field_phone_blacklist__message_needaction_counter
 msgid "Number of messages requiring action"
-msgstr "Брой съобщения изискващи действие"
+msgstr "Брой съобщения, изискващи действие"
 
 #. module: phone_validation
 #: model:ir.model.fields,help:phone_validation.field_mail_thread_phone__message_has_error_counter
@@ -364,12 +344,11 @@ msgid "Phone/Mobile"
 msgstr "Телефон/Мобилен"
 
 #. module: phone_validation
-#. odoo-python
 #: code:addons/phone_validation/models/mail_thread_phone.py:0
+#, python-format
 msgid ""
 "Please enter at least 3 characters when searching a Phone/Mobile number."
 msgstr ""
-"Моля, въведете поне 3 символа, когато търсите телефонен/мобилен номер."
 
 #. module: phone_validation
 #: model:ir.model.fields,field_description:phone_validation.field_phone_blacklist_remove__reason
@@ -379,7 +358,6 @@ msgstr "Причина"
 
 #. module: phone_validation
 #: model:ir.model,name:phone_validation.model_phone_blacklist_remove
-#: model_terms:ir.ui.view,arch_db:phone_validation.phone_blacklist_remove_view_form
 msgid "Remove phone from blacklist"
 msgstr ""
 
@@ -389,8 +367,8 @@ msgid "Sanitized Number"
 msgstr ""
 
 #. module: phone_validation
-#. odoo-python
 #: code:addons/phone_validation/tools/phone_validation.py:0
+#, python-format
 msgid "Unable to parse %(phone)s: %(error)s"
 msgstr ""
 
@@ -400,28 +378,15 @@ msgid "Unblacklist"
 msgstr ""
 
 #. module: phone_validation
-#. odoo-python
-#: code:addons/phone_validation/wizard/phone_blacklist_remove.py:0
-msgid "Unblock Reason: %(reason)s"
+#: code:addons/phone_validation/models/phone_blacklist.py:0
+#, python-format
+msgid "Unblacklisting Reason: %s"
 msgstr ""
 
 #. module: phone_validation
 #: model:ir.model,name:phone_validation.model_res_users
 msgid "User"
 msgstr "Потребител"
-
-#. module: phone_validation
-#. odoo-python
-#: code:addons/phone_validation/models/mail_thread_phone.py:0
-msgid ""
-"You do not have the access right to unblacklist phone numbers. Please "
-"contact your administrator."
-msgstr ""
-
-#. module: phone_validation
-#: model_terms:ir.ui.view,arch_db:phone_validation.phone_blacklist_remove_view_form
-msgid "e.g \"Asked to receive our next newsletters\""
-msgstr ""
 
 #. module: phone_validation
 #: model_terms:ir.ui.view,arch_db:phone_validation.phone_blacklist_remove_view_form

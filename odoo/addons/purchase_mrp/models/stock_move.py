@@ -35,11 +35,7 @@ class StockMove(models.Model):
         # Convert uom from bom_line_uom to product_uom for bom_line
         uom_factor = bom_line.product_id.uom_id._compute_quantity(uom_factor, bom_line.product_uom_id)
 
-        price_unit = kit_price_unit * cost_share * uom_factor * bom.product_qty / bom_line.product_qty
-        if self.product_id.lot_valuated:
-            return {lot: price_unit for lot in self.lot_ids}
-        else:
-            return {self.env['stock.lot']: price_unit}
+        return (kit_price_unit * cost_share * uom_factor * bom.product_qty / bom_line.product_qty)
 
     def _get_valuation_price_and_qty(self, related_aml, to_curr):
         valuation_price_unit_total, valuation_total_qty = super()._get_valuation_price_and_qty(related_aml, to_curr)
@@ -54,5 +50,5 @@ class StockMove(models.Model):
             valuation_total_qty = self._compute_kit_quantities(related_aml.product_id, order_qty, kit_bom, filters)
             valuation_total_qty = kit_bom.product_uom_id._compute_quantity(valuation_total_qty, related_aml.product_id.uom_id)
             if float_is_zero(valuation_total_qty, precision_rounding=related_aml.product_uom_id.rounding or related_aml.product_id.uom_id.rounding):
-                raise UserError(_('Odoo is not able to generate the anglo saxon entries. The total valuation of %s is zero.', related_aml.product_id.display_name))
+                raise UserError(_('Odoo is not able to generate the anglo saxon entries. The total valuation of %s is zero.') % related_aml.product_id.display_name)
         return valuation_price_unit_total, valuation_total_qty

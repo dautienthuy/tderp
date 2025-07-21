@@ -23,7 +23,7 @@ class ReceptionReport(models.AbstractModel):
 
     def _get_moves(self, docs):
         if self.env.context.get('default_production_ids'):
-            return docs.move_finished_ids.filtered(lambda m: m.product_id.is_storable and m.state != 'cancel')
+            return docs.move_finished_ids.filtered(lambda m: m.product_id.type == 'product' and m.state != 'cancel')
         return super()._get_moves(docs)
 
     def _get_extra_domain(self, docs):
@@ -33,7 +33,7 @@ class ReceptionReport(models.AbstractModel):
 
     def _get_formatted_scheduled_date(self, source):
         if source._name == 'mrp.production':
-            return format_date(self.env, source.date_start)
+            return format_date(self.env, source.date_planned_start)
         return super()._get_formatted_scheduled_date(source)
 
     def _action_assign(self, in_move, out_move):

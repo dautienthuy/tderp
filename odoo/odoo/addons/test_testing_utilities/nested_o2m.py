@@ -52,14 +52,14 @@ class Root(models.Model):
                     move_line.update(res)
 
     def _get_default_form_view(self):
-        move_subview = E.list(
+        move_subview = E.tree(
             {'editable': 'bottom'},
             E.field(name='product_id'),
             E.field(name='unit_factor'),
             E.field(name='quantity_done'),
             E.field(
-                {'name': 'move_line_ids', 'column_invisible': '1'},
-                E.list(
+                {'name': 'move_line_ids', 'invisible': '1'},
+                E.tree(
                     E.field(name='qty_done', invisible='1'),
                     E.field(name='product_id', invisible='1'),
                     E.field(name='move_id', invisible='1'),

@@ -3,26 +3,24 @@
 # 	* sale_loyalty
 # 
 # Translators:
-# Oliver Ernest, 2024
-# Martin Trigaux, 2024
-# Stevin Lilla, 2024
-# Piia Paurson <piia@avalah.ee>, 2024
-# Eneli Õigus <enelioigus@gmail.com>, 2024
-# Maidu Targama <m.targama@gmail.com>, 2024
-# JanaAvalah, 2024
-# Triine Aavik <triine@avalah.ee>, 2024
-# Algo Kärp <algokarp@gmail.com>, 2024
-# Leaanika Randmets, 2024
-# Anna, 2024
-# Siim Raasuke, 2025
+# Martin Trigaux, 2022
+# Andre Roomet <andreroomet@gmail.com>, 2022
+# Maidu Targama <m.targama@gmail.com>, 2022
+# Piia Paurson <piia@avalah.ee>, 2022
+# Arma Gedonsky <armagedonsky@hot.ee>, 2022
+# Triine Aavik <triine@avalah.ee>, 2022
+# Rivo Zängov <eraser@eraser.ee>, 2022
+# Eneli Õigus <enelioigus@gmail.com>, 2022
+# Algo Kärp <algokarp@gmail.com>, 2022
+# Leaanika Randmets, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-19 20:37+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Siim Raasuke, 2025\n"
+"POT-Creation-Date: 2023-02-02 10:34+0000\n"
+"PO-Revision-Date: 2022-09-22 05:54+0000\n"
+"Last-Translator: Leaanika Randmets, 2023\n"
 "Language-Team: Estonian (https://app.transifex.com/odoo/teams/41243/et/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -31,10 +29,22 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: sale_loyalty
+#: model:ir.model.fields,help:sale_loyalty.field_sale_order_line__reward_identifier_code
+msgid ""
+"\n"
+"        Technical field used to link multiple reward lines from the same reward together.\n"
+"    "
+msgstr ""
+"\n"
+"        Tehniline väli, mida kasutatakse sama preemia mitme preemiarea ühendamiseks.\n"
+"    "
+
+#. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
-msgid " - On products with the following taxes: %(taxes)s"
-msgstr ""
+#, python-format
+msgid " - On product with the following taxes: %(taxes)s"
+msgstr "- Tootel, millel on järgmised maksud: %(taxes)s"
 
 #. module: sale_loyalty
 #: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_purchased_gift_card
@@ -42,19 +52,16 @@ msgid "<span class=\"fa fa-clipboard\"/> Copy"
 msgstr "<span class=\"fa fa-clipboard\"/> Kopeeri"
 
 #. module: sale_loyalty
-#: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_order_portal_loyalty_content
-msgid "<strong>Loyalty Card</strong>"
-msgstr "<strong>Lojaalsuskaart</strong>"
-
-#. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "A better global discount is already applied."
 msgstr "Parem globaalne allahindlus on juba rakendatud."
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid ""
 "A minimum of %(amount)s %(currency)s should be purchased to get the reward"
 msgstr ""
@@ -107,6 +114,7 @@ msgstr "Kupongi punkt"
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/wizard/sale_loyalty_reward_wizard.py:0
+#, python-format
 msgid "Coupon not found while trying to add the following reward: %s"
 msgstr "Järgmise preemia lisamise ajal ei leitud kupongi: %s"
 
@@ -127,7 +135,7 @@ msgstr "Loonud"
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_reward_wizard__create_date
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_order_coupon_points__create_date
 msgid "Created on"
-msgstr "Loodud"
+msgstr "Loomise kuupäev"
 
 #. module: sale_loyalty
 #: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_loyalty_coupon_wizard_view_form
@@ -136,22 +144,23 @@ msgid "Discard"
 msgstr "Loobu"
 
 #. module: sale_loyalty
-#. odoo-python
-#: code:addons/sale_loyalty/models/sale_order.py:0
-msgid "Discount %(desc)s%(tax_str)s"
-msgstr "Allahindlus %(desc)s%(tax_str)s"
-
-#. module: sale_loyalty
 #: model:ir.ui.menu,name:sale_loyalty.menu_discount_loyalty_type_config
 msgid "Discount & Loyalty"
 msgstr "Allahindlus ja lojaalsusprogramm"
+
+#. module: sale_loyalty
+#. odoo-python
+#: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
+msgid "Discount: %(desc)s%(tax_str)s"
+msgstr "Allahindlus: %(desc)s%(tax_str)s"
 
 #. module: sale_loyalty
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_coupon_wizard__display_name
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_reward_wizard__display_name
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_order_coupon_points__display_name
 msgid "Display Name"
-msgstr "Kuvatav nimi"
+msgstr "Kuva nimi"
 
 #. module: sale_loyalty
 #: model:ir.actions.act_window,name:sale_loyalty.sale_loyalty_coupon_wizard_action
@@ -166,6 +175,7 @@ msgstr "Aegumise kuupäev"
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "Free Product - %(product)s"
 msgstr "Tasuta toode - %(product)s"
 
@@ -185,14 +195,9 @@ msgid "Gift cards & eWallet"
 msgstr "Kinkekaardid ja eWallet"
 
 #. module: sale_loyalty
-#: model:ir.model,name:sale_loyalty.model_loyalty_history
-msgid "History for Loyalty cards and Ewallets"
-msgstr "Lojaalsuskaartide ja e-rahakottide ajalugu"
-
-#. module: sale_loyalty
 #: model:ir.model.fields,help:sale_loyalty.field_sale_order_line__points_cost
-msgid "How much point this reward costs on the loyalty card."
-msgstr ""
+msgid "How much point this reward cost on the loyalty card."
+msgstr "Mitu punkti maksis see preemia lojaalsuskaardil?"
 
 #. module: sale_loyalty
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_coupon_wizard__id
@@ -204,12 +209,14 @@ msgstr "ID"
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "Invalid product to claim."
 msgstr "Kehtetu tooode"
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/wizard/sale_loyalty_coupon_wizard.py:0
+#, python-format
 msgid "Invalid sales order."
 msgstr "Kehtetu müügitellimus"
 
@@ -219,22 +226,18 @@ msgid "Is a program reward line"
 msgstr "Programmi preemiarida"
 
 #. module: sale_loyalty
-#: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_order_portal_loyalty_content
-msgid "Issued"
-msgstr "Väljastatud"
-
-#. module: sale_loyalty
-#. odoo-javascript
-#: code:addons/sale_loyalty/static/src/views/fields/loyalty_total/loyalty_data_field.xml:0
-msgid "Issued :"
-msgstr "Väljastatud:"
+#: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_coupon_wizard____last_update
+#: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_reward_wizard____last_update
+#: model:ir.model.fields,field_description:sale_loyalty.field_sale_order_coupon_points____last_update
+msgid "Last Modified on"
+msgstr "Viimati muudetud"
 
 #. module: sale_loyalty
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_coupon_wizard__write_uid
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_reward_wizard__write_uid
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_order_coupon_points__write_uid
 msgid "Last Updated by"
-msgstr "Viimati uuendatud"
+msgstr "Viimati uuendas"
 
 #. module: sale_loyalty
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_coupon_wizard__write_date
@@ -244,20 +247,9 @@ msgid "Last Updated on"
 msgstr "Viimati uuendatud"
 
 #. module: sale_loyalty
-#. odoo-javascript
-#: code:addons/sale_loyalty/static/src/views/fields/loyalty_total/loyalty_data_field.xml:0
-msgid "Loyalty Card :"
-msgstr "Lojaalsuskaart:"
-
-#. module: sale_loyalty
 #: model:ir.model,name:sale_loyalty.model_loyalty_card
 msgid "Loyalty Coupon"
 msgstr "Lojaalsuskupong"
-
-#. module: sale_loyalty
-#: model:ir.model.fields,field_description:sale_loyalty.field_sale_order__loyalty_data
-msgid "Loyalty Data"
-msgstr "Lojaalsusandmed"
 
 #. module: sale_loyalty
 #: model:ir.model,name:sale_loyalty.model_loyalty_program
@@ -287,6 +279,7 @@ msgstr "Multi Product"
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid ""
 "No card found for this loyalty program and no points will be given with this"
 " order."
@@ -297,6 +290,7 @@ msgstr ""
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/wizard/sale_loyalty_reward_wizard.py:0
+#, python-format
 msgid "No reward selected."
 msgstr "Preemia valimata"
 
@@ -308,6 +302,7 @@ msgstr "Sellele kliendile ei ole preemiaid saadaval!"
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "One or more rewards on the sale order is invalid. Please check them."
 msgstr ""
 "Üks või mitu müügitellimusel olevat preemiat on kehtetu(d). Palun "
@@ -318,13 +313,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_reward_wizard__order_id
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_order_coupon_points__order_id
 msgid "Order"
-msgstr "Ost"
-
-#. module: sale_loyalty
-#. odoo-python
-#: code:addons/sale_loyalty/models/sale_order.py:0
-msgid "Order %s"
-msgstr "Tellimus %s"
+msgstr "Tellimus"
 
 #. module: sale_loyalty
 #: model:ir.model.fields,field_description:sale_loyalty.field_loyalty_program__order_count
@@ -337,11 +326,9 @@ msgid "Order Reference"
 msgstr "Tellimuse viide"
 
 #. module: sale_loyalty
-#. odoo-python
-#: code:addons/sale_loyalty/models/sale_order.py:0
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_order_coupon_points__points
 msgid "Points"
-msgstr "Punkti"
+msgstr "Punktid"
 
 #. module: sale_loyalty
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_order_line__points_cost
@@ -349,9 +336,13 @@ msgid "Points Cost"
 msgstr "Punktide hind"
 
 #. module: sale_loyalty
+#: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_order_view_form_inherit_sale_loyalty
+msgid "Promotions"
+msgstr "Kampaaniate kontroll"
+
+#. module: sale_loyalty
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_reward_wizard__reward_ids
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_order_line__reward_id
-#: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_order_view_form_inherit_sale_loyalty
 msgid "Reward"
 msgstr "Preemia"
 
@@ -415,25 +406,21 @@ msgstr "Valitud preemia"
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "TEMPORARY DISCOUNT LINE"
 msgstr "AJUTINE ALLAHINDLUSE RIDA"
 
 #. module: sale_loyalty
-#: model:ir.model.fields,help:sale_loyalty.field_sale_order_line__reward_identifier_code
-msgid ""
-"Technical field used to link multiple reward lines from the same reward "
-"together."
-msgstr ""
-
-#. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "The coupon can only be claimed on future orders."
 msgstr "Kupongi saate kasutada tulevastel tellimustel."
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "The coupon does not have enough points for the selected reward."
 msgstr "Kupongil ei ole valitud preemia jaoks piisavalt punkte."
 
@@ -445,6 +432,7 @@ msgstr "Kupongipunktide kirje on juba olemas."
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "The program is not available for this order."
 msgstr "Programm ei ole saadaval selle tellimusega."
 
@@ -456,6 +444,7 @@ msgstr "Müügitellimus, millest kupong luuakse"
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "There is nothing to discount"
 msgstr "Pole millelegi allahindlust teha"
 
@@ -467,62 +456,57 @@ msgstr "Need on tooted, mille saate selle reegliga."
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "This code is expired (%s)."
 msgstr "Kood on aegunud (%s)"
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "This code is invalid (%s)."
 msgstr "Kood on kehtetu (%s)"
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "This coupon has already been used."
 msgstr "Kupongi on juba kasutatud."
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "This coupon is expired."
 msgstr "Kupong on aegunud."
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
-msgid ""
-"This discount (%(discount)s) is not compatible with \"%(other_discount)s\". "
-"Please remove it in order to apply this one."
-msgstr ""
-
-#. module: sale_loyalty
-#. odoo-python
-#: code:addons/sale_loyalty/models/sale_order.py:0
-msgid "This program cannot be applied with code."
-msgstr "Antud programmi ei saa koodiga rakendada."
-
-#. module: sale_loyalty
-#. odoo-python
-#: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "This program is already applied to this order."
 msgstr "See programm on sellele tellimusele juba rakendatud."
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "This program is not available for public users."
 msgstr "See programm ei ole saadaval avalikele kasutajatele."
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "This program requires a code to be applied."
 msgstr "See programm nõuab koodi lisamist."
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "This promo code is already applied."
 msgstr "See sooduskood on juba lisatud."
 
@@ -533,19 +517,9 @@ msgstr ""
 "Värskendage praeguseid soodustuse ridu ja valige vajadusel uued preemiad."
 
 #. module: sale_loyalty
-#: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_order_portal_loyalty_content
-msgid "Used"
-msgstr "Kasutatud"
-
-#. module: sale_loyalty
-#. odoo-javascript
-#: code:addons/sale_loyalty/static/src/views/fields/loyalty_total/loyalty_data_field.xml:0
-msgid "Used :"
-msgstr "Kasutatud:"
-
-#. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "You don't have the required product quantities on your sales order."
 msgstr "Müügitellimsel ei ole nõutud kogus toodet."
 

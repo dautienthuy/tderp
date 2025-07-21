@@ -1,11 +1,14 @@
-import base64
 import uuid
+import json
 from markupsafe import Markup
 from odoo import _, fields, models, api
 from odoo.tools import float_repr
 from datetime import datetime
 from base64 import b64decode, b64encode
 from lxml import etree
+from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
+from cryptography.hazmat.backends import default_backend
+from cryptography.x509 import load_der_x509_certificate
 
 
 class AccountMove(models.Model):
@@ -26,7 +29,7 @@ class AccountMove(models.Model):
         :return:
         """
         self.ensure_one()
-        return self.partner_id.company_type == 'person'
+        return self.partner_id.company_type == 'person' and self.partner_id.country_code == 'SA'
 
     @api.depends('amount_total_signed', 'amount_tax_signed', 'l10n_sa_confirmation_datetime', 'company_id',
                  'company_id.vat', 'journal_id', 'journal_id.l10n_sa_production_csid_json', 'edi_document_ids',
@@ -39,9 +42,9 @@ class AccountMove(models.Model):
             if move.country_code == 'SA' and move.move_type in ('out_invoice', 'out_refund') and zatca_document and move.state != 'draft':
                 qr_code_str = ''
                 if move._l10n_sa_is_simplified():
-                    x509_cert_sudo = move.journal_id.sudo().l10n_sa_production_csid_certificate_id
+                    x509_cert = json.loads(move.journal_id.sudo().l10n_sa_production_csid_json)['binarySecurityToken']
                     xml_content = self.env.ref('l10n_sa_edi.edi_sa_zatca')._l10n_sa_generate_zatca_template(move)
-                    qr_code_str = move._l10n_sa_get_qr_code(move.journal_id, xml_content, x509_cert_sudo,
+                    qr_code_str = move._l10n_sa_get_qr_code(move.journal_id, xml_content, b64decode(x509_cert),
                                                             move.l10n_sa_invoice_signature, True)
                     qr_code_str = b64encode(qr_code_str).decode()
                 elif zatca_document.state == 'sent' and zatca_document.sudo().attachment_id.datas:
@@ -73,7 +76,7 @@ class AccountMove(models.Model):
         return self.reversed_entry_id or self.ref
 
     @api.model
-    def _l10n_sa_get_qr_code(self, journal_id, unsigned_xml, certificate, signature, is_b2c=False):
+    def _l10n_sa_get_qr_code(self, journal_id, unsigned_xml, x509_cert, signature, is_b2c=False):
         """
             Generate QR code string based on XML content of the Invoice UBL file, X509 Production Certificate
             and company info.
@@ -95,12 +98,13 @@ class AccountMove(models.Model):
         invoice_time = xpath_ns('//cbc:IssueTime')
         invoice_datetime = datetime.strptime(invoice_date + ' ' + invoice_time, '%Y-%m-%d %H:%M:%S')
 
-        if invoice_datetime and journal_id.company_id.vat and certificate and signature:
+        if invoice_datetime and journal_id.company_id.vat and x509_cert and signature:
             prehash_content = etree.tostring(root)
             invoice_hash = edi_format._l10n_sa_generate_invoice_xml_hash(prehash_content, 'digest')
 
             amount_total = float(xpath_ns('//cbc:TaxInclusiveAmount'))
             amount_tax = float(xpath_ns('//cac:TaxTotal/cbc:TaxAmount'))
+            x509_certificate = load_der_x509_certificate(b64decode(x509_cert), default_backend())
             seller_name_enc = self._l10n_sa_get_qr_code_encoding(1, journal_id.company_id.display_name.encode())
             seller_vat_enc = self._l10n_sa_get_qr_code_encoding(2, journal_id.company_id.vat.encode())
             timestamp_enc = self._l10n_sa_get_qr_code_encoding(3,
@@ -109,13 +113,15 @@ class AccountMove(models.Model):
             amount_tax_enc = self._l10n_sa_get_qr_code_encoding(5, float_repr(abs(amount_tax), 2).encode())
             invoice_hash_enc = self._l10n_sa_get_qr_code_encoding(6, invoice_hash)
             signature_enc = self._l10n_sa_get_qr_code_encoding(7, signature.encode())
-            public_key_enc = self._l10n_sa_get_qr_code_encoding(8, base64.b64decode(certificate._get_public_key_bytes(formatting='base64')))
+            public_key_enc = self._l10n_sa_get_qr_code_encoding(8,
+                                                                x509_certificate.public_key().public_bytes(Encoding.DER,
+                                                                                                           PublicFormat.SubjectPublicKeyInfo))
 
             qr_code_str = (seller_name_enc + seller_vat_enc + timestamp_enc + amount_total_enc +
                            amount_tax_enc + invoice_hash_enc + signature_enc + public_key_enc)
 
             if is_b2c:
-                qr_code_str += self._l10n_sa_get_qr_code_encoding(9, base64.b64decode(certificate._get_signature_bytes(formatting='base64')))
+                qr_code_str += self._l10n_sa_get_qr_code_encoding(9, x509_certificate.signature)
 
         return qr_code_str
 
@@ -139,13 +145,6 @@ class AccountMove(models.Model):
             # or if the submission timed out. In both cases, a user should not be able to reset it to draft.
             if move.l10n_sa_chain_index:
                 move.show_reset_to_draft_button = False
-
-    def _l10n_sa_reset_confirmation_datetime(self):
-        """ OVERRIDE: we want rejected phase 2 invoices to keep the original confirmation datetime"""
-        for move in self.filtered(lambda m: m.country_code == 'SA'):
-            zatca_doc = move.edi_document_ids.filtered(lambda d: d.edi_format_id.code == 'sa_zatca')
-            if not zatca_doc or zatca_doc[0].blocking_level != 'error':  # Error is the rejection case
-                move.l10n_sa_confirmation_datetime = False
 
     def _l10n_sa_generate_unsigned_data(self):
         """
@@ -175,21 +174,8 @@ class AccountMove(models.Model):
             xml_content)
         bootstrap_cls, title, content = ("success", _("Invoice Successfully Submitted to ZATCA"),
                                          "" if (not error or not response_data) else response_data)
-        attachment = False
         if error:
-            xml_filename = self.env['account.edi.xml.ubl_21.zatca']._export_invoice_filename(self)
-            xml_filename = xml_filename[:-4] + '-rejected.xml'
-            attachment = self.env['ir.attachment'].create({
-                'raw': xml_content,
-                'name': xml_filename,
-                'description': 'Rejected ZATCA Document not to be deleted - ثيقة ZATCA المرفوضة لا يجوز حذفها',
-                'res_id': self.id,
-                'res_model': self._name,
-                'type': 'binary',
-                'mimetype': 'application/xml',
-            })
             bootstrap_cls, title = ("danger", _("Invoice was rejected by ZATCA"))
-            error_msg = response_data['error']
             content = Markup("""
                 <p class='mb-0'>
                     %s
@@ -198,9 +184,8 @@ class AccountMove(models.Model):
                 <p class='mb-0'>
                     %s
                 </p>
-            """) % (_('The invoice was rejected by ZATCA. Please, check the response below:'), error_msg)
+            """) % (_('The invoice was rejected by ZATCA. Please, check the response below:'), response_data)
         if response_data and response_data.get('validationResults', {}).get('warningMessages'):
-            status_code = response_data.get('status_code')
             bootstrap_cls, title = ("warning", _("Invoice was Accepted by ZATCA (with Warnings)"))
             content = Markup("""
                 <p class='mb-0'>
@@ -208,36 +193,14 @@ class AccountMove(models.Model):
                 </p>
                 <hr>
                 <p class='mb-0'>
-                    <b>%s</b>%s
+                    %s
                 </p>
-            """) % (_('The invoice was accepted by ZATCA, but returned warnings. Please, check the response below:'),
-                    f"[{status_code}] " if status_code else "",
-                    Markup("<br/>").join([Markup("<b>%s</b> : %s") % (m['code'], m['message']) for m in response_data['validationResults']['warningMessages']]))
-        self.with_context(no_new_invoice=True).message_post(body=Markup("""
-                <div role='alert' class='alert alert-%s'>
-                    <h4 class='alert-heading'>%s</h4>%s
-                </div>
-            """) % (bootstrap_cls, title, content),
-            attachment_ids=attachment and [attachment.id] or []
-        )
-
-    def _is_l10n_sa_eligibile_invoice(self):
-        self.ensure_one()
-        return self.is_invoice() and self.l10n_sa_confirmation_datetime and self.country_code == 'SA'
-
-    def _get_report_base_filename(self):
-        """
-            Generate the name of the invoice PDF file according to ZATCA business rules:
-            Seller Vat Number (BT-31), Date (BT-2), Time (KSA-25), Invoice Number (BT-1)
-        """
-        if self._is_l10n_sa_eligibile_invoice():
-            return self.with_context(l10n_sa_file_format=False).env['account.edi.xml.ubl_21.zatca']._export_invoice_filename(self)
-        return super()._get_report_base_filename()
-
-    def _get_invoice_report_filename(self, extension='pdf'):
-        if self._is_l10n_sa_eligibile_invoice():
-            return self.with_context(l10n_sa_file_format=extension).env['account.edi.xml.ubl_21.zatca']._export_invoice_filename(self)
-        return super()._get_invoice_report_filename(extension)
+            """) % (_('The invoice was accepted by ZATCA, but returned warnings. Please, check the response below:'), "<br/>".join([Markup("<b>%s</b> : %s") % (m['code'], m['message']) for m in response_data['validationResults']['warningMessages']]))
+        self.message_post(body=Markup("""
+            <div role='alert' class='alert alert-%s'>
+                <h4 class='alert-heading'>%s</h4>%s
+            </div>
+        """) % (bootstrap_cls, title, content))
 
     def _l10n_sa_is_in_chain(self):
         """
@@ -247,22 +210,14 @@ class AccountMove(models.Model):
         zatca_doc_ids = self.edi_document_ids.filtered(lambda d: d.edi_format_id.code == 'sa_zatca')
         return len(zatca_doc_ids) > 0 and not any(zatca_doc_ids.filtered(lambda d: d.state == 'to_send'))
 
-    def _prepare_tax_lines_for_taxes_computation(self, tax_amls, round_from_tax_lines):
+    def _get_tax_lines_to_aggregate(self):
         """
         If the final invoice has downpayment lines, we skip the tax correction, as we need to recalculate tax amounts
         without taking into account those lines
         """
         if self.country_code == 'SA' and not self._is_downpayment() and self.line_ids._get_downpayment_lines():
-            return []
-        return super()._prepare_tax_lines_for_taxes_computation(tax_amls, round_from_tax_lines)
-
-    def _get_l10n_sa_totals(self):
-        self.ensure_one()
-        invoice_vals = self.env['account.edi.xml.ubl_21.zatca']._export_invoice_vals(self)
-        return {
-            'total_amount': invoice_vals['vals']['monetary_total_vals']['tax_inclusive_amount'],
-            'total_tax': invoice_vals['vals']['tax_total_vals'][-1]['tax_amount'],
-        }
+            return self.env['account.move.line']
+        return super()._get_tax_lines_to_aggregate()
 
 
 class AccountMoveLine(models.Model):
@@ -282,18 +237,14 @@ class AccountMoveLine(models.Model):
     @api.depends('price_subtotal', 'price_total')
     def _compute_tax_amount(self):
         super()._compute_tax_amount()
-        AccountTax = self.env['account.tax']
-        for line in self:
-            if (
-                line.move_id.country_code == 'SA'
-                and line.move_id.is_invoice(include_receipts=True)
-                and line.display_type == 'product'
-            ):
-                base_line = line.move_id._prepare_product_base_line_for_taxes_computation(line)
-                AccountTax._add_tax_details_in_base_line(base_line, line.company_id)
-                AccountTax._round_base_lines_tax_details([base_line], line.company_id)
-                line.l10n_gcc_invoice_tax_amount = sum(
-                    tax_data['tax_amount_currency']
-                    for tax_data in base_line['tax_details']['taxes_data']
-                    if not tax_data['tax'].l10n_sa_is_retention
-                )
+        taxes_vals_by_move = {}
+        for record in self:
+            move = record.move_id
+            if move.country_code == 'SA':
+                taxes_vals = taxes_vals_by_move.get(move.id)
+                if not taxes_vals:
+                    taxes_vals = move._prepare_invoice_aggregated_taxes(
+                        filter_tax_values_to_apply=lambda l, t: not self.env['account.tax'].browse(t['id']).l10n_sa_is_retention
+                    )
+                    taxes_vals_by_move[move.id] = taxes_vals
+                record.l10n_gcc_invoice_tax_amount = abs(taxes_vals.get('tax_details_per_record', {}).get(record, {}).get('tax_amount_currency', 0))

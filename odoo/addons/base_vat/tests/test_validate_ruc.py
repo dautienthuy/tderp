@@ -1,6 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from odoo.tests.common import TransactionCase, tagged
-from odoo._monkeypatches.stdnum import new_get_soap_client
+from odoo.tools._monkeypatches import new_get_soap_client
 from odoo.exceptions import ValidationError
 from unittest.mock import patch
 
@@ -106,22 +106,14 @@ class TestStructure(TransactionCase):
         with self.assertRaises(ValidationError):
             test_partner.write({'vat': "136695978"})
 
-    def test_soap_client_for_vies_loads(self):
-        # Test of stdnum get_soap_client monkeypatch. This test is mostly to
-        # see that no unexpected import errors are thrown and not caught.
-        with patch.object(Document, '_get_xml_document', return_value=etree.Element("root")), \
-                patch.object(Client, 'service', return_value=None):
-            doc = Document(location=None, transport=Transport())
-            new_get_soap_client(doc, 30)
-
     def test_rut_uy(self):
         test_partner = self.env["res.partner"].create({"name": "UY Company", "country_id": self.env.ref("base.uy").id})
         # Set a valid Number
-        test_partner.write({"vat": "215521750017"})
-        test_partner.write({"vat": "220018800014"})
-        test_partner.write({"vat": "21-55217500-17"})
-        test_partner.write({"vat": "21 55217500 17"})
-        test_partner.write({"vat": "UY215521750017"})
+        test_partner.vat = "215521750017"
+        test_partner.vat = "220018800014"
+        test_partner.vat = "21-55217500-17"
+        test_partner.vat = "21 55217500 17"
+        test_partner.vat = "UY215521750017"
 
         # Test invalid VAT (should raise a ValidationError)
         msg = "The VAT number.*does not seem to be valid"
@@ -132,27 +124,17 @@ class TestStructure(TransactionCase):
         with self.assertRaisesRegex(ValidationError, msg):
             test_partner.vat = "2155 ABC 21750017"
 
-    def test_vat_vn(self):
-        test_partner = self.env['res.partner'].create({'name': "DuongDepTrai", 'country_id': self.env.ref('base.vn').id})
-        # Valid vn vat
-        test_partner.vat = "000012345679"  # individual
-        test_partner.vat = "0123457890"  # enterprise
-        test_partner.vat = "0123457890-111"  # branch
-
-        # Test invalid VAT (should raise a ValidationError)
-        msg = "The VAT number.*does not seem to be valid"
-        with self.assertRaisesRegex(ValidationError, msg):
-            test_partner.write({'vat': '00001234567912'})
-        with self.assertRaisesRegex(ValidationError, msg):
-            test_partner.write({'vat': '10123457890'})
-        with self.assertRaisesRegex(ValidationError, msg):
-            test_partner.write({'vat': '0123457890-11134'})
+    def test_soap_client_for_vies_loads(self):
+        # Test of stdnum get_soap_client monkeypatch. This test is mostly to
+        # see that no unexpected import errors are thrown and not caught.
+        with patch.object(Document, '_get_xml_document', return_value=etree.Element("root")), \
+             patch.object(Client, 'service', return_value=None):
+            doc = Document(location=None, transport=Transport())
+            new_get_soap_client(doc, 30)
 
 
 @tagged('-standard', 'external')
 class TestStructureVIES(TestStructure):
-    allow_inherited_tests_method = True
-
     @classmethod
     def setUpClass(cls):
         super().setUpClass()

@@ -3,16 +3,17 @@
 # 	* sale_loyalty
 # 
 # Translators:
-# Wil Odoo, 2024
-# Malaz Abuidris <msea@odoo.com>, 2025
+# Martin Trigaux, 2022
+# Niyas Raphy, 2022
+# Malaz Abuidris <msea@odoo.com>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-19 20:37+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Malaz Abuidris <msea@odoo.com>, 2025\n"
+"POT-Creation-Date: 2023-02-02 10:34+0000\n"
+"PO-Revision-Date: 2022-09-22 05:54+0000\n"
+"Last-Translator: Malaz Abuidris <msea@odoo.com>, 2023\n"
 "Language-Team: Arabic (https://app.transifex.com/odoo/teams/41243/ar/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,9 +22,21 @@ msgstr ""
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
 
 #. module: sale_loyalty
+#: model:ir.model.fields,help:sale_loyalty.field_sale_order_line__reward_identifier_code
+msgid ""
+"\n"
+"        Technical field used to link multiple reward lines from the same reward together.\n"
+"    "
+msgstr ""
+"\n"
+"        حقل تقني يُستخدم لربط عدة بنود مكافآت من نفس المكافأة معاً.\n"
+"    "
+
+#. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
-msgid " - On products with the following taxes: %(taxes)s"
+#, python-format
+msgid " - On product with the following taxes: %(taxes)s"
 msgstr "- على المنتجات التي تحتوي على الضرائب التالية: %(taxes)s "
 
 #. module: sale_loyalty
@@ -32,19 +45,16 @@ msgid "<span class=\"fa fa-clipboard\"/> Copy"
 msgstr "<span class=\"fa fa-clipboard\"/> نسخة "
 
 #. module: sale_loyalty
-#: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_order_portal_loyalty_content
-msgid "<strong>Loyalty Card</strong>"
-msgstr "<strong>بطاقة الولاء</strong> "
-
-#. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "A better global discount is already applied."
 msgstr "تم تطبيق خصم شامل أفضل بالفعل. "
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid ""
 "A minimum of %(amount)s %(currency)s should be purchased to get the reward"
 msgstr "يجب شراء %(amount)s %(currency)s كحد أدنى للحصول على المكافأة  "
@@ -95,6 +105,7 @@ msgstr "نقاط الكوبون "
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/wizard/sale_loyalty_reward_wizard.py:0
+#, python-format
 msgid "Coupon not found while trying to add the following reward: %s"
 msgstr "لم يتم العثور على الكوبون عند محاولة إضافة المكافأة التالية: %s "
 
@@ -121,18 +132,19 @@ msgstr "أنشئ في"
 #: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_loyalty_coupon_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_loyalty_reward_wizard_view_form
 msgid "Discard"
-msgstr "إهمال "
-
-#. module: sale_loyalty
-#. odoo-python
-#: code:addons/sale_loyalty/models/sale_order.py:0
-msgid "Discount %(desc)s%(tax_str)s"
-msgstr "خصم بقيمة %(desc)s%(tax_str)s "
+msgstr "تجاهل"
 
 #. module: sale_loyalty
 #: model:ir.ui.menu,name:sale_loyalty.menu_discount_loyalty_type_config
 msgid "Discount & Loyalty"
 msgstr "الخصم والولاء "
+
+#. module: sale_loyalty
+#. odoo-python
+#: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
+msgid "Discount: %(desc)s%(tax_str)s"
+msgstr "الخصم: %(desc)s%(tax_str)s "
 
 #. module: sale_loyalty
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_coupon_wizard__display_name
@@ -154,6 +166,7 @@ msgstr "تاريخ انتهاء الصلاحية: "
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "Free Product - %(product)s"
 msgstr "منتج مجاني - %(product)s "
 
@@ -173,13 +186,8 @@ msgid "Gift cards & eWallet"
 msgstr "بطاقات الهدايا والمحفظة الإلكترونية "
 
 #. module: sale_loyalty
-#: model:ir.model,name:sale_loyalty.model_loyalty_history
-msgid "History for Loyalty cards and Ewallets"
-msgstr "سجل بطاقات الولاء والمَحافظ الإلكترونية "
-
-#. module: sale_loyalty
 #: model:ir.model.fields,help:sale_loyalty.field_sale_order_line__points_cost
-msgid "How much point this reward costs on the loyalty card."
+msgid "How much point this reward cost on the loyalty card."
 msgstr "عدد النقاط التي تستهلكها هذه المكافأة في بطاقة الولاء. "
 
 #. module: sale_loyalty
@@ -192,12 +200,14 @@ msgstr "المُعرف"
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "Invalid product to claim."
 msgstr "لا يمكن المطالبة بهذا المنتج. "
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/wizard/sale_loyalty_coupon_wizard.py:0
+#, python-format
 msgid "Invalid sales order."
 msgstr "أمر البيع غير صحيح. "
 
@@ -207,15 +217,11 @@ msgid "Is a program reward line"
 msgstr "بند مكافأة برنامج"
 
 #. module: sale_loyalty
-#: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_order_portal_loyalty_content
-msgid "Issued"
-msgstr "تم إصدارها "
-
-#. module: sale_loyalty
-#. odoo-javascript
-#: code:addons/sale_loyalty/static/src/views/fields/loyalty_total/loyalty_data_field.xml:0
-msgid "Issued :"
-msgstr "تم الإصدار في: "
+#: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_coupon_wizard____last_update
+#: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_reward_wizard____last_update
+#: model:ir.model.fields,field_description:sale_loyalty.field_sale_order_coupon_points____last_update
+msgid "Last Modified on"
+msgstr "آخر تعديل في"
 
 #. module: sale_loyalty
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_coupon_wizard__write_uid
@@ -232,20 +238,9 @@ msgid "Last Updated on"
 msgstr "آخر تحديث في"
 
 #. module: sale_loyalty
-#. odoo-javascript
-#: code:addons/sale_loyalty/static/src/views/fields/loyalty_total/loyalty_data_field.xml:0
-msgid "Loyalty Card :"
-msgstr "بطاقة الولاء: "
-
-#. module: sale_loyalty
 #: model:ir.model,name:sale_loyalty.model_loyalty_card
 msgid "Loyalty Coupon"
 msgstr "كوبون الولاء "
-
-#. module: sale_loyalty
-#: model:ir.model.fields,field_description:sale_loyalty.field_sale_order__loyalty_data
-msgid "Loyalty Data"
-msgstr "بيانات الولاء "
 
 #. module: sale_loyalty
 #: model:ir.model,name:sale_loyalty.model_loyalty_program
@@ -275,6 +270,7 @@ msgstr "منتج متعدد "
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid ""
 "No card found for this loyalty program and no points will be given with this"
 " order."
@@ -284,6 +280,7 @@ msgstr ""
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/wizard/sale_loyalty_reward_wizard.py:0
+#, python-format
 msgid "No reward selected."
 msgstr "لم يتم تحديد مكافأة."
 
@@ -295,6 +292,7 @@ msgstr "لا توجد مكافآت متاحة لهذا العميل!"
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "One or more rewards on the sale order is invalid. Please check them."
 msgstr "هناك مكافأة واحدة أو أكثر غير صالحة في أمر البيع. يرجى التحقق منها. "
 
@@ -304,12 +302,6 @@ msgstr "هناك مكافأة واحدة أو أكثر غير صالحة في أ
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_order_coupon_points__order_id
 msgid "Order"
 msgstr "الطلب"
-
-#. module: sale_loyalty
-#. odoo-python
-#: code:addons/sale_loyalty/models/sale_order.py:0
-msgid "Order %s"
-msgstr "طلب %s"
 
 #. module: sale_loyalty
 #: model:ir.model.fields,field_description:sale_loyalty.field_loyalty_program__order_count
@@ -322,8 +314,6 @@ msgid "Order Reference"
 msgstr "مرجع الطلب "
 
 #. module: sale_loyalty
-#. odoo-python
-#: code:addons/sale_loyalty/models/sale_order.py:0
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_order_coupon_points__points
 msgid "Points"
 msgstr "النقاط "
@@ -334,9 +324,13 @@ msgid "Points Cost"
 msgstr "تكلفة النقاط"
 
 #. module: sale_loyalty
+#: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_order_view_form_inherit_sale_loyalty
+msgid "Promotions"
+msgstr "العروض "
+
+#. module: sale_loyalty
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_reward_wizard__reward_ids
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_order_line__reward_id
-#: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_order_view_form_inherit_sale_loyalty
 msgid "Reward"
 msgstr "مكافأة"
 
@@ -399,25 +393,21 @@ msgstr "المكافأة المحددة "
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "TEMPORARY DISCOUNT LINE"
 msgstr "بند خصم مؤقت "
 
 #. module: sale_loyalty
-#: model:ir.model.fields,help:sale_loyalty.field_sale_order_line__reward_identifier_code
-msgid ""
-"Technical field used to link multiple reward lines from the same reward "
-"together."
-msgstr "حقل تقني يُستخدم لربط عدة بنود مكافآت من نفس المكافأة معاً. "
-
-#. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "The coupon can only be claimed on future orders."
 msgstr "يمكن استخدام الكوبون فقط في الطلبات المستقبلية. "
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "The coupon does not have enough points for the selected reward."
 msgstr "ليس في الكوبون نقاط كافية للمكافأة المحددة. "
 
@@ -429,6 +419,7 @@ msgstr "مدخلات نقاط الكوبون موجودة بالفعل. "
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "The program is not available for this order."
 msgstr "البرنامج غير متاح لهذا الطلب. "
 
@@ -440,6 +431,7 @@ msgstr "أمر المبيعات الذي تم إنشاء الكوبون منه"
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "There is nothing to discount"
 msgstr "لا يوجد ما يمكن تطبيق الخصم عليه "
 
@@ -451,64 +443,57 @@ msgstr "هذه هي المنتجات التي يمكن الحصول عليها �
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "This code is expired (%s)."
 msgstr "هذا الرمز منتهي الصلاحية (%s)."
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "This code is invalid (%s)."
 msgstr "هذا الكود غير صحيح (%s). "
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "This coupon has already been used."
 msgstr "هذا الكوبون مستخدم بالفعل. "
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "This coupon is expired."
 msgstr "لقد انتهت مدة صلاحية هذا الكوبون. "
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
-msgid ""
-"This discount (%(discount)s) is not compatible with \"%(other_discount)s\". "
-"Please remove it in order to apply this one."
-msgstr ""
-"الخصم (%(discount)s) غير متوافق مع \"%(other_discount)s\". يُرجى إزالته حتى "
-"تتمكن من إضافة هذا الخصم. "
-
-#. module: sale_loyalty
-#. odoo-python
-#: code:addons/sale_loyalty/models/sale_order.py:0
-msgid "This program cannot be applied with code."
-msgstr "لا يمكن تطبيق البرنامج مع الكود. "
-
-#. module: sale_loyalty
-#. odoo-python
-#: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "This program is already applied to this order."
 msgstr "تم تطبيق هذا البرنامج في هذا الطلب بالفعل. "
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "This program is not available for public users."
 msgstr "هذا البرنامج غير متاح للمستخدمين العامين. "
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "This program requires a code to be applied."
 msgstr "يتطلب هذا البرنامج رمزاً ليتم تطبيقه. "
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "This promo code is already applied."
 msgstr "هذا الكود الترويجي مطبق بالفعل. "
 
@@ -519,19 +504,9 @@ msgstr ""
 "تحديث البنود الترويجية الحالية وتحديد مكافآت جديدة، إذا كان ذلك منطبقاً. "
 
 #. module: sale_loyalty
-#: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_order_portal_loyalty_content
-msgid "Used"
-msgstr "مُستخدَم "
-
-#. module: sale_loyalty
-#. odoo-javascript
-#: code:addons/sale_loyalty/static/src/views/fields/loyalty_total/loyalty_data_field.xml:0
-msgid "Used :"
-msgstr "تم استخدامها في: "
-
-#. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
+#, python-format
 msgid "You don't have the required product quantities on your sales order."
 msgstr "لا تملك الكميات المطلوبة من المنتج في أمر البيع الخاص بك. "
 

@@ -3,27 +3,23 @@
 # 	* hr_fleet
 # 
 # Translators:
-# Wil Odoo, 2024
-# Rasareeyar Lappiam, 2025
+# Martin Trigaux, 2022
+# Wichanon Jamwutthipreecha, 2022
+# Rasareeyar Lappiam, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 17.1alpha1\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-08 06:51+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Rasareeyar Lappiam, 2025\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2022-09-22 05:46+0000\n"
+"Last-Translator: Rasareeyar Lappiam, 2023\n"
 "Language-Team: Thai (https://app.transifex.com/odoo/teams/41243/th/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: th\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-
-#. module: hr_fleet
-#: model_terms:ir.ui.view,arch_db:hr_fleet.fleet_vehicle_log_contract_view_form_inherit_hr
-msgid "<span class=\"o_stat_text\">Employee</span>"
-msgstr "<span class=\"o_stat_text\">พนักงาน</span>"
 
 #. module: hr_fleet
 #: model_terms:ir.ui.view,arch_db:hr_fleet.fleet_vehicle_view_form_inherit_hr
@@ -35,16 +31,6 @@ msgstr ""
 "                        <span class=\"o_stat_text\">พนักงาน</span>"
 
 #. module: hr_fleet
-#: model:ir.model,name:hr_fleet.model_mail_activity_plan_template
-msgid "Activity plan template"
-msgstr "แบบฟอร์มแผนกิจกรรม"
-
-#. module: hr_fleet
-#: model:ir.model.fields,field_description:hr_fleet.field_mail_activity_plan_template__responsible_type
-msgid "Assignment"
-msgstr "งานที่มอบหมาย"
-
-#. module: hr_fleet
 #: model_terms:ir.ui.view,arch_db:hr_fleet.fleet_vehicle_assignation_log_employee_view_list
 #: model_terms:ir.ui.view,arch_db:hr_fleet.fleet_vehicle_assignation_log_view_list
 msgid "Attachments"
@@ -53,6 +39,7 @@ msgstr "แนบ"
 #. module: hr_fleet
 #. odoo-python
 #: code:addons/hr_fleet/models/employee.py:0
+#, python-format
 msgid "Cannot remove address from employees with linked cars."
 msgstr "ไม่สามารถลบที่อยู่ออกจากพนักงานที่มีรถที่เชื่อมโยงได้"
 
@@ -71,6 +58,11 @@ msgstr "รถบริษัท"
 #: model_terms:ir.ui.view,arch_db:hr_fleet.fleet_vehicle_assignation_log_employee_view_list
 msgid "Current Driver"
 msgstr "คนขับปัจจุบัน"
+
+#. module: hr_fleet
+#: model_terms:ir.ui.view,arch_db:hr_fleet.fleet_vehicle_view_search_inherit_hr
+msgid "Current Driver (Employee)"
+msgstr "คนขับรถปัจจุบัน (พนักงาน)"
 
 #. module: hr_fleet
 #: model:ir.model,name:hr_fleet.model_hr_departure_wizard
@@ -104,26 +96,9 @@ msgid "Employee"
 msgstr "พนักงาน"
 
 #. module: hr_fleet
-#. odoo-python
-#: code:addons/hr_fleet/models/mail_activity_plan_template.py:0
-msgid "Employee %s is not linked to a vehicle."
-msgstr "พนักงาน %s ไม่ได้เชื่อมโยงกับยานพาหนะ"
-
-#. module: hr_fleet
 #: model:ir.model.fields,field_description:hr_fleet.field_fleet_vehicle__driver_employee_name
 msgid "Employee Name"
 msgstr "ชื่อพนักงาน"
-
-#. module: hr_fleet
-#: model:ir.model.fields.selection,name:hr_fleet.selection__mail_activity_plan_template__responsible_type__fleet_manager
-msgid "Fleet Manager"
-msgstr "การจัดการกองรถ"
-
-#. module: hr_fleet
-#. odoo-python
-#: code:addons/hr_fleet/models/mail_activity_plan_template.py:0
-msgid "Fleet Manager is limited to Employee plans."
-msgstr "ผู้จัดการระบบจัดการยานพาหนะจำกัดเฉพาะแผนพนักงานเท่านั้น"
 
 #. module: hr_fleet
 #: model_terms:ir.ui.view,arch_db:hr_fleet.view_employee_form
@@ -136,7 +111,7 @@ msgid "Future Driver (Employee)"
 msgstr "คนขับรถในอนาคต (พนักงาน)"
 
 #. module: hr_fleet
-#: model:ir.model.fields,field_description:hr_fleet.field_hr_employee__license_plate
+#: model_terms:ir.ui.view,arch_db:hr_fleet.view_employee_filter
 msgid "License Plate"
 msgstr "ป้ายทะเบียน"
 
@@ -165,7 +140,7 @@ msgstr "ข้าราชการ"
 #. module: hr_fleet
 #. odoo-python
 #: code:addons/hr_fleet/models/fleet_vehicle.py:0
-#: code:addons/hr_fleet/models/fleet_vehicle_log_contract.py:0
+#, python-format
 msgid "Related Employee"
 msgstr "พนักงานที่เกี่ยวข้อง"
 
@@ -180,16 +155,9 @@ msgid "Services for vehicles"
 msgstr "บริการสำหรับยานพาหนะ"
 
 #. module: hr_fleet
-#. odoo-python
-#: code:addons/hr_fleet/models/mail_activity_plan_template.py:0
-msgid "The vehicle of employee %(employee)s is not linked to a fleet manager."
-msgstr ""
-"ยานพาหนะของพนักงาน %(employee)s "
-"ไม่ได้เชื่อมโยงกับผู้จัดการระบบจัดการยานพาหนะ"
-
-#. module: hr_fleet
 #. odoo-javascript
 #: code:addons/hr_fleet/static/src/views/hr_fleet_kanban/hr_fleet_kanban_controller.xml:0
+#, python-format
 msgid "Upload"
 msgstr "อัปโหลด"
 

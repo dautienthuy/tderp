@@ -3,21 +3,19 @@
 # 	* website_sale_comparison
 # 
 # Translators:
-# Orel Nahmany, 2024
-# Lilach Gilliam <lilach.gilliam@gmail.com>, 2024
-# ExcaliberX <excaliberx@gmail.com>, 2024
-# Martin Trigaux, 2024
-# Yihya Hugirat <hugirat@gmail.com>, 2024
-# ZVI BLONDER <ZVIBLONDER@gmail.com>, 2024
-# or balmas, 2025
+# Lilach Gilliam <lilach.gilliam@gmail.com>, 2022
+# Yihya Hugirat <hugirat@gmail.com>, 2022
+# Martin Trigaux, 2022
+# ZVI BLONDER <ZVIBLONDER@gmail.com>, 2022
+# ExcaliberX <excaliberx@gmail.com>, 2022
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:56+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: or balmas, 2025\n"
+"POT-Creation-Date: 2022-12-15 12:45+0000\n"
+"PO-Revision-Date: 2022-09-22 05:57+0000\n"
+"Last-Translator: ExcaliberX <excaliberx@gmail.com>, 2022\n"
 "Language-Team: Hebrew (https://app.transifex.com/odoo/teams/41243/he/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -46,15 +44,8 @@ msgstr ""
 
 #. module: website_sale_comparison
 #: model_terms:ir.ui.view,arch_db:website_sale_comparison.product_compare
-msgid ""
-"<i class=\"fa fa-chevron-circle-down o_product_comparison_collpase\" "
-"role=\"img\" aria-label=\"Collapse\" title=\"Collapse\"/><span>Tags</span>"
-msgstr ""
-
-#. module: website_sale_comparison
-#: model_terms:ir.ui.view,arch_db:website_sale_comparison.product_compare
 msgid "<i class=\"fa fa-shopping-cart me-2\"/>Add to Cart"
-msgstr "<i class=\"fa fa-shopping-cart me-2\"/>הוסף לעגלה"
+msgstr ""
 
 #. module: website_sale_comparison
 #: model_terms:ir.ui.view,arch_db:website_sale_comparison.product_product
@@ -64,12 +55,6 @@ msgstr "<i class=\"fa fa-trash\" role=\"img\" aria-label=\"Remove\"/>"
 #. module: website_sale_comparison
 #: model_terms:ir.ui.view,arch_db:website_sale_comparison.product_add_to_compare
 msgid "<span class=\"fa fa-exchange me-2\"/>Compare"
-msgstr ""
-
-#. module: website_sale_comparison
-#: model_terms:ir.ui.view,arch_db:website_sale_comparison.product_attributes_body
-#: model_terms:ir.ui.view,arch_db:website_sale_comparison.product_compare
-msgid "<span>Tags</span>"
 msgstr ""
 
 #. module: website_sale_comparison
@@ -99,6 +84,11 @@ msgid "Bottom of Page"
 msgstr ""
 
 #. module: website_sale_comparison
+#: model:ir.model.fields,field_description:website_sale_comparison.field_product_attribute__category_id
+msgid "Category"
+msgstr "קטגוריה"
+
+#. module: website_sale_comparison
 #: model:ir.model.fields,field_description:website_sale_comparison.field_product_attribute_category__name
 msgid "Category Name"
 msgstr "שם קטגוריה"
@@ -106,9 +96,11 @@ msgstr "שם קטגוריה"
 #. module: website_sale_comparison
 #. odoo-javascript
 #: code:addons/website_sale_comparison/static/src/xml/comparison.xml:0
+#: code:addons/website_sale_comparison/static/src/xml/comparison.xml:0
 #: model_terms:ir.ui.view,arch_db:website_sale_comparison.add_to_compare
 #: model_terms:ir.ui.view,arch_db:website_sale_comparison.product_add_to_compare
 #: model_terms:ir.ui.view,arch_db:website_sale_comparison.snippet_options
+#, python-format
 msgid "Compare"
 msgstr "השווה"
 
@@ -116,6 +108,7 @@ msgstr "השווה"
 #. odoo-javascript
 #: code:addons/website_sale_comparison/static/src/js/website_sale_comparison.js:0
 #: model_terms:ir.ui.view,arch_db:website_sale_comparison.product_compare
+#, python-format
 msgid "Compare Products"
 msgstr "השווה מוצרים"
 
@@ -173,9 +166,9 @@ msgid "ID"
 msgstr "מזהה"
 
 #. module: website_sale_comparison
-#: model_terms:ir.ui.view,arch_db:website_sale_comparison.snippet_options
-msgid "In accordion"
-msgstr ""
+#: model:ir.model.fields,field_description:website_sale_comparison.field_product_attribute_category____last_update
+msgid "Last Modified on"
+msgstr "שינוי אחרון ב"
 
 #. module: website_sale_comparison
 #: model:ir.model.fields,field_description:website_sale_comparison.field_product_attribute_category__write_uid
@@ -193,14 +186,10 @@ msgid "None"
 msgstr "אף אחד"
 
 #. module: website_sale_comparison
-#: model_terms:ir.ui.view,arch_db:website_sale_comparison.accordion_specs_item
-#: model_terms:ir.ui.view,arch_db:website_sale_comparison.specifications_table
-msgid "Others"
-msgstr "אחר"
-
-#. module: website_sale_comparison
 #. odoo-javascript
 #: code:addons/website_sale_comparison/static/src/xml/comparison.xml:0
+#: code:addons/website_sale_comparison/static/src/xml/comparison.xml:0
+#, python-format
 msgid "Product"
 msgstr "מוצר"
 
@@ -250,8 +239,10 @@ msgstr "רצף"
 #: model:ir.model.fields,help:website_sale_comparison.field_product_attribute__category_id
 msgid ""
 "Set a category to regroup similar attributes under the same section in the "
-"Comparison page of eCommerce."
+"Comparison page of eCommerce"
 msgstr ""
+"הגדר קטגוריה לקיבוץ מחדש של תכונות דומות תחת אותו סעיף בדף השוואה של מסחר "
+"אלקטרוני"
 
 #. module: website_sale_comparison
 #: model_terms:ir.ui.view,arch_db:website_sale_comparison.product_compare
@@ -264,12 +255,12 @@ msgid "Specification"
 msgstr ""
 
 #. module: website_sale_comparison
-#: model_terms:ir.ui.view,arch_db:website_sale_comparison.accordion_specs_item
 #: model_terms:ir.ui.view,arch_db:website_sale_comparison.product_attributes_body
 msgid "Specifications"
 msgstr "מפרט"
 
 #. module: website_sale_comparison
+#: model_terms:ir.ui.view,arch_db:website_sale_comparison.product_attributes_body
 #: model_terms:ir.ui.view,arch_db:website_sale_comparison.product_compare
 msgid "Uncategorized"
 msgstr "ללא קטגוריה"
@@ -277,6 +268,8 @@ msgstr "ללא קטגוריה"
 #. module: website_sale_comparison
 #. odoo-javascript
 #: code:addons/website_sale_comparison/static/src/xml/comparison.xml:0
+#: code:addons/website_sale_comparison/static/src/xml/comparison.xml:0
+#, python-format
 msgid "Warning"
 msgstr "אזהרה"
 
@@ -288,10 +281,11 @@ msgstr "משקל"
 #. module: website_sale_comparison
 #. odoo-javascript
 #: code:addons/website_sale_comparison/static/src/xml/comparison.xml:0
+#, python-format
 msgid "You can compare max 4 products."
 msgstr "אתה יכול להשוות מקסימום 4 מוצרים."
 
 #. module: website_sale_comparison
-#: model:ir.model.fields,field_description:website_sale_comparison.field_product_attribute__category_id
-msgid "eCommerce Category"
-msgstr "קטגוריה באתר האינטרנט"
+#: model_terms:ir.ui.view,arch_db:website_sale_comparison.product_attributes_body
+msgid "or"
+msgstr "או"

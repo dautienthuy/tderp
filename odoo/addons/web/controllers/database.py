@@ -75,14 +75,13 @@ class Database(http.Controller):
             dispatch_rpc('db', 'change_admin_password', ["admin", master_pwd])
         try:
             if not re.match(DBNAME_PATTERN, name):
-                raise Exception(_('Houston, we have a database naming issue! Make sure you only use letters, numbers, underscores, hyphens, or dots in the database name, and you\'ll be golden.'))
+                raise Exception(_('Invalid database name. Only alphanumerical characters, underscore, hyphen and dot are allowed.'))
             # country code could be = "False" which is actually True in python
             country_code = post.get('country_code') or False
             dispatch_rpc('db', 'create_database', [master_pwd, name, bool(post.get('demo')), lang, password, post['login'], country_code, post['phone']])
-            credential = {'login': post['login'], 'password': password, 'type': 'password'}
-            request.session.authenticate(name, credential)
+            request.session.authenticate(name, post['login'], password)
             request.session.db = name
-            return request.redirect('/odoo')
+            return request.redirect('/web')
         except Exception as e:
             _logger.exception("Database creation error.")
             error = "Database creation error: %s" % (str(e) or repr(e))
@@ -95,7 +94,7 @@ class Database(http.Controller):
             dispatch_rpc('db', 'change_admin_password', ["admin", master_pwd])
         try:
             if not re.match(DBNAME_PATTERN, new_name):
-                raise Exception(_('Houston, we have a database naming issue! Make sure you only use letters, numbers, underscores, hyphens, or dots in the database name, and you\'ll be golden.'))
+                raise Exception(_('Invalid database name. Only alphanumerical characters, underscore, hyphen and dot are allowed.'))
             dispatch_rpc('db', 'duplicate_database', [master_pwd, name, new_name, neutralize_database])
             if request.db == name:
                 request.env.cr.close()  # duplicating a database leads to an unusable cursor
@@ -127,8 +126,6 @@ class Database(http.Controller):
             dispatch_rpc('db', 'change_admin_password', ["admin", master_pwd])
         try:
             odoo.service.db.check_super(master_pwd)
-            if name not in http.db_list():
-                raise Exception("Database %r is not known" % name)
             ts = datetime.datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S")
             filename = "%s_%s.%s" % (name, ts, backup_format)
             headers = [
@@ -143,7 +140,7 @@ class Database(http.Controller):
             error = "Database backup error: %s" % (str(e) or repr(e))
             return self._render_template(error=error)
 
-    @http.route('/web/database/restore', type='http', auth="none", methods=['POST'], csrf=False, max_content_length=None)
+    @http.route('/web/database/restore', type='http', auth="none", methods=['POST'], csrf=False)
     def restore(self, master_pwd, backup_file, name, copy=False, neutralize_database=False):
         insecure = odoo.tools.config.verify_admin_password('admin')
         if insecure and master_pwd:

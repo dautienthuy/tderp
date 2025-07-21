@@ -3,19 +3,22 @@
 # 	* barcodes_gs1_nomenclature
 # 
 # Translators:
-# Triine Aavik <triine@avalah.ee>, 2024
-# Leaanika Randmets, 2024
-# JanaAvalah, 2024
-# Stevin Lilla, 2024
+# Piia Paurson <piia@avalah.ee>, 2022
+# Martin Trigaux, 2022
+# Arma Gedonsky <armagedonsky@hot.ee>, 2022
+# Egon Raamat <egon@avalah.ee>, 2022
+# Triine Aavik <triine@avalah.ee>, 2022
+# JanaAvalah, 2023
+# Leaanika Randmets, 2023
 # Anna, 2024
 # Tairi Tiimann, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 08:40+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2022-12-15 12:50+0000\n"
+"PO-Revision-Date: 2022-09-22 05:45+0000\n"
 "Last-Translator: Tairi Tiimann, 2024\n"
 "Language-Team: Estonian (https://app.transifex.com/odoo/teams/41243/et/)\n"
 "MIME-Version: 1.0\n"
@@ -81,7 +84,7 @@ msgstr "Kodeerimine"
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields.selection,name:barcodes_gs1_nomenclature.selection__barcode_rule__type__expiration_date
 msgid "Expiration Date"
-msgstr "Aegumiskuupäev"
+msgstr "Kõlblik kuni"
 
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields,field_description:barcodes_gs1_nomenclature.field_barcode_nomenclature__gs1_separator_fnc1
@@ -114,14 +117,16 @@ msgstr ""
 #. module: barcodes_gs1_nomenclature
 #. odoo-javascript
 #: code:addons/barcodes_gs1_nomenclature/static/src/js/barcode_parser.js:0
+#, python-format
 msgid "Invalid barcode: can't be formated as date"
-msgstr "Vigane triipkood: ei saa vormindada kuupäevaks"
+msgstr "Kehtetu triipkood: ei saa kuupäevana vormindada"
 
 #. module: barcodes_gs1_nomenclature
 #. odoo-javascript
 #: code:addons/barcodes_gs1_nomenclature/static/src/js/barcode_parser.js:0
+#, python-format
 msgid "Invalid barcode: the check digit is incorrect"
-msgstr "Vigane triipkood: kontrollnumber on vale"
+msgstr "Kehtetu triipkood: kontrollnumber on vale"
 
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields,field_description:barcodes_gs1_nomenclature.field_barcode_nomenclature__is_gs1_nomenclature
@@ -152,7 +157,7 @@ msgstr "Numbriline identifikaator"
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields.selection,name:barcodes_gs1_nomenclature.selection__barcode_rule__type__pack_date
 msgid "Pack Date"
-msgstr "Paki kuupäev"
+msgstr "Pakkimise kuupäev"
 
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields.selection,name:barcodes_gs1_nomenclature.selection__barcode_rule__type__package
@@ -172,8 +177,9 @@ msgstr "Kogus"
 #. module: barcodes_gs1_nomenclature
 #. odoo-python
 #: code:addons/barcodes_gs1_nomenclature/models/barcode_nomenclature.py:0
-msgid "The FNC1 Separator Alternative is not a valid Regex: %(error)s"
-msgstr "FNC1 eraldaja alternatiiv ei ole kehtiv Regex: %(error)s"
+#, python-format
+msgid "The FNC1 Separator Alternative is not a valid Regex: "
+msgstr ""
 
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields,help:barcodes_gs1_nomenclature.field_barcode_rule__gs1_content_type
@@ -190,32 +196,35 @@ msgstr ""
 #. module: barcodes_gs1_nomenclature
 #. odoo-python
 #: code:addons/barcodes_gs1_nomenclature/models/barcode_rule.py:0
+#, python-format
+msgid "The rule pattern \"%s\" is not a valid Regex: "
+msgstr ""
+
+#. module: barcodes_gs1_nomenclature
+#. odoo-python
+#: code:addons/barcodes_gs1_nomenclature/models/barcode_rule.py:0
+#, python-format
 msgid ""
 "The rule pattern \"%s\" is not valid, it needs two groups:\n"
 "\t- A first one for the Application Identifier (usually 2 to 4 digits);\n"
 "\t- A second one to catch the value."
 msgstr ""
-"Reegli muster\"%s\" ei ole kehtiv, see vajab kahte gruppi:\n"
-"\t- Esimene rakenduse tuvastaja (Application Identifier), mis koosneb tavaliselt 2 kuni 4 numbrist;\n"
-"\t- Teine grupp väärtuse püüdmiseks."
-
-#. module: barcodes_gs1_nomenclature
-#. odoo-python
-#: code:addons/barcodes_gs1_nomenclature/models/barcode_rule.py:0
-msgid "The rule pattern '%(rule)s' is not a valid Regex: %(error)s"
-msgstr "Reegli muster '%(rule)s' ei ole kehtiv Regex: %(error)s"
+"Reegli muster \"%s\" ei kehti, see vajab kahte gruppi:\n"
+"- Esimene rakenduse identifikaator (tavaliselt 2–4 numbrit);\n"
+"- Teine, et väärtust tabada."
 
 #. module: barcodes_gs1_nomenclature
 #. odoo-python
 #: code:addons/barcodes_gs1_nomenclature/models/barcode_nomenclature.py:0
+#, python-format
 msgid ""
 "There is something wrong with the barcode rule \"%s\" pattern.\n"
 "If this rule uses decimal, check it can't get sometime else than a digit as last char for the Application Identifier.\n"
 "Check also the possible matched values can only be digits, otherwise the value can't be casted as a measure."
 msgstr ""
-"Triipkoodi reeglis \"%s\" on midagi valesti.\n"
-"Kui see reegel kasutab kümnendkohta, kontrolli, et rakenduse tuvastaja viimane märk ei oleks midagi muud kui number.\n"
-"Kontrolli ka, et võimalikud sobivad väärtused oleksid ainult numbrid, muidu ei saa väärtust mõõtmiseks ümber teisendada.\""
+"Triipkoodireegli \"%s\" mustriga on midagi valesti.\n"
+"Kui see reegel kasutab kümnendsüsteemi, kontrollige, et see ei saaks rakenduse identifikaatori viimase tähena kunagi midagi muud kui numbrit.\n"
+"Kontrollige ka, et võimalikud sobitatud väärtused võivad olla ainult numbrid, vastasel juhul ei saa väärtust mõõta."
 
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields,help:barcodes_gs1_nomenclature.field_barcode_nomenclature__is_gs1_nomenclature
@@ -224,20 +233,22 @@ msgid ""
 "This Nomenclature use the GS1 specification, only GS1-128 encoding rules is "
 "accepted is this kind of nomenclature."
 msgstr ""
-"See nomenklatuur kasutab GS1 spetsifikatsiooni; ainult GS1-128 kodeerimise "
-"reeglid on sellist tüüpi nomenklatuuri jaoks aktsepteeritud."
+"See nomenklatuur kasutab GS1 spetsifikatsiooni, seda tüüpi nomenklatuuri "
+"puhul aktsepteeritakse ainult GS1-128 kodeerimisreegleid."
 
 #. module: barcodes_gs1_nomenclature
 #. odoo-javascript
 #: code:addons/barcodes_gs1_nomenclature/static/src/js/barcode_parser.js:0
+#, python-format
 msgid "This barcode can't be parsed by any barcode rules."
-msgstr "Seda triipkoodi ei saa ühegi triipkoodi reegli abil tõlgendada."
+msgstr "Seda triipkoodi ei saa parsida ühegi triipkoodi reegliga."
 
 #. module: barcodes_gs1_nomenclature
 #. odoo-javascript
 #: code:addons/barcodes_gs1_nomenclature/static/src/js/barcode_parser.js:0
+#, python-format
 msgid "This barcode can't be partially or fully parsed."
-msgstr "Seda triipkoodi ei saa osaliselt või täielikult tõlgendada."
+msgstr "Seda triipkoodi ei saa osaliselt või täielikult parsida."
 
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields,help:barcodes_gs1_nomenclature.field_barcode_rule__encoding
@@ -245,8 +256,8 @@ msgid ""
 "This rule will apply only if the barcode is encoded with the specified "
 "encoding"
 msgstr ""
-"See reegel kehtib ainult juhul, kui triipkood on kodeeritud määratud "
-"kodeeringuga."
+"See reegel kehtib ainult siis kui triipkood on kodeeritud määratud "
+"kodeeringuga"
 
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields,field_description:barcodes_gs1_nomenclature.field_barcode_rule__type

@@ -9,22 +9,25 @@ from odoo.addons.account_edi.tests.common import AccountEdiTestCommon
 class TestEGEdiCommon(AccountEdiTestCommon):
 
     @classmethod
-    @AccountEdiTestCommon.setup_edi_format('l10n_eg_edi_eta.edi_eg_eta')
-    @AccountEdiTestCommon.setup_country('eg')
-    def setUpClass(cls):
-        super().setUpClass()
+    def setUpClass(cls, chart_template_ref='l10n_eg.egypt_chart_template_standard', edi_format_ref='l10n_eg_edi_eta.edi_eg_eta'):
+        super().setUpClass(chart_template_ref=chart_template_ref, edi_format_ref=edi_format_ref)
 
         cls.frozen_today = datetime(year=2022, month=3, day=15, hour=0, minute=0, second=0, tzinfo=timezone('utc'))
 
-        cls.currency_aed_id = cls.setup_other_currency('AED', rates=[('2022-03-15', 0.198117095128)])
+        cls.currency_aed_id = cls.env.ref('base.AED')
+        cls.currency_aed_id.write({'active': True})
+        cls.env['res.currency.rate'].search([]).unlink()
+        cls.env['res.currency.rate'].create({'currency_id': cls.currency_aed_id.id,
+                                            'rate': 0.198117095128, 'name': '2022-03-15'})
 
         # Allow to see the full result of AssertionError.
         cls.maxDiff = None
 
         cls.company_data['company'].write({
+            'country_id': cls.env.ref('base.eg').id,
             'l10n_eg_client_identifier': 'ahuh1pojnbakKK',
             'l10n_eg_client_secret': '1ashiqwhejmasn197',
-            'vat': '123-456-789',
+            'vat': 'EG1103143170L',
         })
 
         # ==== Business ====
@@ -49,7 +52,7 @@ class TestEGEdiCommon(AccountEdiTestCommon):
         })
         cls.partner_c = cls.env['res.partner'].create({
             'name': 'عميل 1',
-            'vat': '123-456-789',
+            'vat': 'EG11231212',
             'country_id': cls.env.ref('base.eg').id,
             'city': 'Iswan',
             'state_id': cls.env.ref('base.state_eg_c').id,
@@ -65,7 +68,7 @@ class TestEGEdiCommon(AccountEdiTestCommon):
         })
         cls.company_branch = cls.env['res.partner'].create({
             'name': 'branch partner',
-            'vat': '456-789-123',
+            'vat': '918KKL1',
             'country_id': cls.env.ref('base.eg').id,
             'city': 'Iswan',
             'state_id': cls.env.ref('base.state_eg_c').id,
@@ -81,7 +84,7 @@ class TestEGEdiCommon(AccountEdiTestCommon):
 
     @classmethod
     def _get_tax_by_xml_id(cls, trailing_xml_id):
-        return cls.env.ref(f'account.{cls.env.company.id}_account_tax_template_{trailing_xml_id}')
+        return cls.env.ref(f'l10n_es.{cls.env.company.id}_account_tax_template_{trailing_xml_id}')
 
     @classmethod
     def create_invoice(cls, **kwargs):

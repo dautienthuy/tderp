@@ -41,52 +41,7 @@ def check_access_token(access_token, *values):
     :rtype: bool
     """
     authentic_token = generate_access_token(*values)
-    return access_token and consteq(access_token, authentic_token)
-
-
-# Availability report.
-
-def add_to_report(report, records, available=True, reason=''):
-    """ Add records to the report with the provided values.
-
-        Structure of the report:
-        report = {
-            'providers': {
-                provider_record : {
-                    'available': true|false,
-                    'reason': "",
-                },
-            },
-            'payment_methods': {
-                pm_record : {
-                    'available': true|false,
-                    'reason': "",
-                    'supported_providers': [(provider_record, report['providers'][p]['available'])],
-                },
-            },
-        }
-
-    :param dict report: The availability report for providers and payment methods.
-    :param payment.provider|payment.method records: The records to add to the report.
-    :param bool available: Whether the records are available.
-    :param str reason: The reason for which records are not available, if any.
-    :return: None
-    """
-    if report is None or not records:  # The report might not be initialized, or no records to add.
-        return
-
-    category = 'providers' if records._name == 'payment.provider' else 'payment_methods'
-    report.setdefault(category, {})
-    for r in records:
-        report[category][r] = {
-            'available': available,
-            'reason': reason,
-        }
-        if category == 'payment_methods' and 'providers' in report:
-            report[category][r]['supported_providers'] = [
-                (p, report['providers'][p]['available'])
-                for p in r.provider_ids if p in report['providers']
-            ]
+    return access_token and consteq(ustr(access_token), authentic_token)
 
 
 # Transaction values formatting
@@ -135,8 +90,9 @@ def to_major_currency_units(minor_amount, currency, arbitrary_decimal_number=Non
     :return: The amount in major units of its currency
     :rtype: int
     """
+    currency.ensure_one()
+
     if arbitrary_decimal_number is None:
-        currency.ensure_one()
         decimal_number = CURRENCY_MINOR_UNITS.get(currency.name, currency.decimal_places)
     else:
         decimal_number = arbitrary_decimal_number
@@ -159,14 +115,12 @@ def to_minor_currency_units(major_amount, currency, arbitrary_decimal_number=Non
     :return: The amount in minor units of its currency
     :rtype: int
     """
-    if arbitrary_decimal_number is None:
+    if arbitrary_decimal_number is not None:
+        decimal_number = arbitrary_decimal_number
+    else:
         currency.ensure_one()
         decimal_number = CURRENCY_MINOR_UNITS.get(currency.name, currency.decimal_places)
-    else:
-        decimal_number = arbitrary_decimal_number
-    return int(
-        float_round(major_amount * (10**decimal_number), precision_digits=0, rounding_method='DOWN')
-    )
+    return int(float_round(major_amount * (10**decimal_number), precision_digits=0))
 
 
 # Partner values formatting
@@ -209,7 +163,8 @@ def check_rights_on_recordset(recordset):
     :param recordset: The recordset for which the rights should be checked.
     :return: None
     """
-    recordset.check_access('write')
+    recordset.check_access_rights('write')
+    recordset.check_access_rule('write')
 
 
 # Idempotency

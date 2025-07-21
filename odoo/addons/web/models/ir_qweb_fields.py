@@ -6,7 +6,8 @@ from collections import OrderedDict
 from werkzeug.urls import url_quote
 from markupsafe import Markup
 
-from odoo import api, models, fields
+from odoo import api, models
+from odoo.tools import pycompat
 from odoo.tools import html_escape as escape
 
 
@@ -35,7 +36,7 @@ class Image(models.AbstractModel):
             if max_width or max_height:
                 max_size = '%sx%s' % (max_width, max_height)
 
-        sha = hashlib.sha512(str(getattr(record, 'write_date', fields.Datetime.now())).encode('utf-8')).hexdigest()[:7]
+        sha = hashlib.sha512(str(getattr(record, '__last_update')).encode('utf-8')).hexdigest()[:7]
         max_size = '' if max_size is None else '/%s' % max_size
 
         if options.get('filename-field') and options['filename-field'] in record and record[options['filename-field']]:
@@ -105,9 +106,9 @@ class Image(models.AbstractModel):
         for name, value in atts.items():
             if value:
                 img.append(' ')
-                img.append(escape(name))
+                img.append(escape(pycompat.to_text(name)))
                 img.append('="')
-                img.append(escape(value))
+                img.append(escape(pycompat.to_text(value)))
                 img.append('"')
         img.append('/>')
 

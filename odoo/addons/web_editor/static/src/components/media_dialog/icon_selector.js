@@ -1,33 +1,18 @@
-import fonts from '@web_editor/js/wysiwyg/fonts';
+/** @odoo-module */
+
+import fonts from 'wysiwyg.fonts';
 import { SearchMedia } from './search_media';
 
 import { Component, useState } from "@odoo/owl";
 
 export class IconSelector extends Component {
-    static mediaSpecificClasses = ["fa"];
-    static mediaSpecificStyles = ["color", "background-color", "border-width", "border-color", "border-style"];
-    static mediaExtraClasses = [
-        "rounded-circle",
-        "rounded",
-        "img-thumbnail",
-        "shadow",
-        "border",
-        /^text-\S+$/,
-        /^bg-\S+$/,
-        /^fa-\S+$/,
-    ];
-    static tagNames = ["SPAN", "I"];
-    static template = "web_editor.IconSelector";
-    static components = {
-        SearchMedia,
-    };
-    static props = ["*"];
-
     setup() {
         this.state = useState({
             fonts: this.props.fonts,
             needle: '',
         });
+
+        this.searchPlaceholder = this.env._t("Search a pictogram");
     }
 
     get selectedMediaIds() {
@@ -82,3 +67,14 @@ export class IconSelector extends Component {
         return allFonts;
     }
 }
+IconSelector.mediaSpecificClasses = ['fa'];
+IconSelector.mediaSpecificStyles = ['color', 'background-color'];
+IconSelector.mediaExtraClasses = [
+    'rounded-circle', 'rounded', 'img-thumbnail', 'shadow',
+    /^text-\S+$/, /^bg-\S+$/, /^fa-\S+$/,
+];
+IconSelector.tagNames = ['SPAN', 'I'];
+IconSelector.template = 'web_editor.IconSelector';
+IconSelector.components = {
+    SearchMedia,
+};

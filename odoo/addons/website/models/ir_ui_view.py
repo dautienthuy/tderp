@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import logging
@@ -21,18 +22,9 @@ class View(models.Model):
 
     website_id = fields.Many2one('website', ondelete='cascade', string="Website")
     page_ids = fields.One2many('website.page', 'view_id')
-    controller_page_ids = fields.One2many('website.controller.page', 'view_id')
     first_page_id = fields.Many2one('website.page', string='Website Page', help='First page linked to this view', compute='_compute_first_page_id')
     track = fields.Boolean(string='Track', default=False, help="Allow to specify for one page of the website to be trackable or not")
-    visibility = fields.Selection(
-        [
-            ('', 'Public'),
-            ('connected', 'Signed In'),
-            ('restricted_group', 'Restricted Group'),
-            ('password', 'With Password')
-        ],
-        default='',
-    )
+    visibility = fields.Selection([('', 'All'), ('connected', 'Signed In'), ('restricted_group', 'Restricted Group'), ('password', 'With Password')], default='')
     visibility_password = fields.Char(groups='base.group_system', copy=False)
     visibility_password_display = fields.Char(compute='_get_pwd', inverse='_set_pwd', groups='website.group_website_designer')
 
@@ -45,7 +37,7 @@ class View(models.Model):
         crypt_context = self.env.user._crypt_context()
         for r in self:
             if r.type == 'qweb':
-                r.sudo().visibility_password = (r.visibility_password_display and crypt_context.hash(r.visibility_password_display)) or ''
+                r.sudo().visibility_password = r.visibility_password_display and crypt_context.encrypt(r.visibility_password_display) or ''
                 r.visibility = r.visibility  # double check access
 
     def _compute_first_page_id(self):
@@ -78,19 +70,19 @@ class View(models.Model):
                     raise ValueError(f"Trying to create a view for website {new_website_id} from a website {website_id} environment")
         return super().create(vals_list)
 
-    @api.depends('website_id', 'key')
-    @api.depends_context('display_key', 'display_website')
-    def _compute_display_name(self):
+    def name_get(self):
         if not (self._context.get('display_key') or self._context.get('display_website')):
-            return super()._compute_display_name()
+            return super(View, self).name_get()
 
+        res = []
         for view in self:
             view_name = view.name
             if self._context.get('display_key'):
                 view_name += ' <%s>' % view.key
             if self._context.get('display_website') and view.website_id:
                 view_name += ' [%s]' % view.website_id.name
-            view.display_name = view_name
+            res.append((view.id, view_name))
+        return res
 
     def write(self, vals):
         '''COW for ir.ui.view. This way editing websites does not impact other
@@ -233,7 +225,7 @@ class View(models.Model):
                 specific_views += view._get_specific_views()
 
         result = super(View, self + specific_views).unlink()
-        self.env.registry.clear_cache('templates')
+        self.clear_caches()
         return result
 
     def _create_website_specific_pages_for_view(self, new_view, website):
@@ -245,31 +237,9 @@ class View(models.Model):
             })
             page.menu_ids.filtered(lambda m: m.website_id.id == website.id).page_id = new_page.id
 
-    def get_view_hierarchy(self):
+    def _get_top_level_view(self):
         self.ensure_one()
-        top_level_view = self
-        while top_level_view.inherit_id:
-            top_level_view = top_level_view.inherit_id
-        top_level_view = top_level_view.with_context(active_test=False)
-        sibling_views = top_level_view.search_read([('key', '=', top_level_view.key), ('id', '!=', top_level_view.id)])
-        return {
-            'sibling_views': sibling_views,
-            'hierarchy': top_level_view._build_hierarchy_datastructure()
-        }
-
-    def _build_hierarchy_datastructure(self):
-        inherit_children = []
-        for child in self.inherit_children_ids:
-            inherit_children.append(child._build_hierarchy_datastructure())
-        return {
-            'id': self.id,
-            'name': self.name,
-            'inherit_children': inherit_children,
-            'arch_updated': self.arch_updated,
-            'website_name': self.website_id.name if self.website_id else False,
-            'active': self.active,
-            'key': self.key,
-        }
+        return self.inherit_id._get_top_level_view() if self.inherit_id else self
 
     @api.model
     def get_related_views(self, key, bundles=False):
@@ -280,12 +250,8 @@ class View(models.Model):
         # website_id. (It will then always fallback on a website, this
         # method should never be called in a generic context, even for
         # tests)
-        current_website = self.env['website'].get_current_website()
-        return super(View, self.with_context(
-            website_id=current_website.id
-        )).get_related_views(key, bundles=bundles).with_context(
-            lang=current_website.default_lang_id.code,
-        )
+        self = self.with_context(website_id=self.env['website'].get_current_website().id)
+        return super(View, self).get_related_views(key, bundles=bundles)
 
     def filter_duplicate(self):
         """ Filter current recordset only keeping the most suitable view per distinct key.
@@ -376,7 +342,7 @@ class View(models.Model):
                     """
 
     @api.model
-    @tools.ormcache('self.env.uid', 'self.env.su', 'xml_id', 'self._context.get("website_id")', cache='templates')
+    @tools.ormcache_context('self.env.uid', 'self.env.su', 'xml_id', keys=('website_id',))
     def _get_view_id(self, xml_id):
         """If a website_id is in the context and the given xml_id is not an int
         then try to get the id of the specific view for that website, but
@@ -387,7 +353,7 @@ class View(models.Model):
         method. `viewref` is probably more suitable.
 
         Archived views are ignored (unless the active_test context is set, but
-        then the ormcache will not work as expected).
+        then the ormcache_context will not work as expected).
         """
         website_id = self._context.get('website_id')
         if website_id and not isinstance(xml_id, int):
@@ -401,7 +367,7 @@ class View(models.Model):
             return view.id
         return super(View, self.sudo())._get_view_id(xml_id)
 
-    @tools.ormcache('self.id', cache='templates')
+    @tools.ormcache('self.id')
     def _get_cached_visibility(self):
         return self.visibility
 
@@ -494,20 +460,27 @@ class View(models.Model):
                 ('website_id', '=', current_website.id)
             ], limit=1)
             if website_specific_view:
-                self = website_specific_view
+                if (
+                    website_specific_view.first_page_id
+                    and website_specific_view.first_page_id.url != self.first_page_id.url
+                ):
+                    # The case here is when a generic page is edited after its
+                    # specific page has a different URL. In this case, the
+                    # generic page can still be accessed since the specific one
+                    # does not shadow it anymore. In such a case, we need the
+                    # write to be done on the edited generic page and not target
+                    # the specific one.
+                    self = self.with_context(no_cow=True)
+                else:
+                    self = website_specific_view
         super(View, self).save(value, xpath=xpath)
 
     @api.model
     def _get_allowed_root_attrs(self):
         # Related to these options:
-        # background-video, background-shapes, parallax, visibility
+        # background-video, background-shapes, parallax
         return super()._get_allowed_root_attrs() + [
             'data-bg-video-src', 'data-shape', 'data-scroll-background-ratio',
-            'data-visibility', 'data-visibility-id', 'data-visibility-selectors',
-        ] + [
-            'data-visibility-value-' + param + suffix
-            for param in ('country', 'lang', 'logged', 'utm-campaign', 'utm-medium', 'utm-source')
-            for suffix in ('', '-rule')
         ]
 
     def _get_combined_arch(self):
@@ -527,8 +500,8 @@ class View(models.Model):
             res['website_id'] = website_id
         return res
 
-    def _update_field_translations(self, fname, translations, digest=None, source_lang=None):
-        return super(View, self.with_context(no_cow=True))._update_field_translations(fname, translations, digest=digest, source_lang=source_lang)
+    def _update_field_translations(self, fname, translations, digest=None):
+        return super(View, self.with_context(no_cow=True))._update_field_translations(fname, translations, digest)
 
     def _get_base_lang(self):
         """ Returns the default language of the website as the base language if the record is bound to it """

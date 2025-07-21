@@ -1,13 +1,11 @@
-/** @odoo-module **/
+odoo.define('website.s_facebook_page', function (require) {
+'use strict';
 
-import { _t } from "@web/core/l10n/translation";
-import { pick } from "@web/core/utils/objects";
-import { clamp } from "@web/core/utils/numbers";
-import publicWidget from "@web/legacy/js/public/public_widget";
-import { debounce } from "@web/core/utils/timing";
-import { ObservingCookieWidgetMixin } from "@website/snippets/observing_cookie_mixin";
+var publicWidget = require('web.public.widget');
+var utils = require('web.utils');
+const { debounce } = require("@web/core/utils/timing");
 
-const FacebookPageWidget = publicWidget.Widget.extend(ObservingCookieWidgetMixin, {
+const FacebookPageWidget = publicWidget.Widget.extend({
     selector: '.o_facebook_page',
     disabledInEditableMode: false,
 
@@ -23,7 +21,7 @@ const FacebookPageWidget = publicWidget.Widget.extend(ObservingCookieWidgetMixin
         // to s_facebook_page snippet in master.
         this.el.classList.add("o_not_editable");
 
-        const params = pick(this.$el[0].dataset, 'href', 'id', 'height', 'tabs', 'small_header', 'hide_cover');
+        const params = _.pick(this.$el[0].dataset, 'href', 'id', 'height', 'tabs', 'small_header', 'hide_cover');
         if (!params.href) {
             return def;
         }
@@ -64,12 +62,12 @@ const FacebookPageWidget = publicWidget.Widget.extend(ObservingCookieWidgetMixin
     _renderIframe(params) {
         this._deactivateEditorObserver();
 
-        params.width = clamp(Math.floor(this.$el.width()), 180, 500);
+        params.width = utils.confine(Math.floor(this.$el.width()), 180, 500);
         if (this.previousWidth !== params.width) {
             this.previousWidth = params.width;
-            const searchParams = new URLSearchParams(params);
-            const src = "https://www.facebook.com/plugins/page.php?" + searchParams;
+            const src = $.param.querystring("https://www.facebook.com/plugins/page.php", params);
             this.iframeEl = Object.assign(document.createElement("iframe"), {
+                src: src,
                 scrolling: "no",
             });
             // TODO: remove, the "scrolling", "frameborder" and
@@ -78,9 +76,7 @@ const FacebookPageWidget = publicWidget.Widget.extend(ObservingCookieWidgetMixin
             this.iframeEl.setAttribute("frameborder", "0");
             this.iframeEl.setAttribute("allowTransparency", "true");
             this.iframeEl.setAttribute("style", `width: ${params.width}px; height: ${params.height}px; border: none; overflow: hidden;`);
-            this.iframeEl.setAttribute("aria-label", _t("Facebook"));
             this.el.replaceChildren(this.iframeEl);
-            this._manageIframeSrc(this.el, src);
         }
 
         this._activateEditorObserver();
@@ -103,4 +99,5 @@ const FacebookPageWidget = publicWidget.Widget.extend(ObservingCookieWidgetMixin
 
 publicWidget.registry.facebookPage = FacebookPageWidget;
 
-export default FacebookPageWidget;
+return FacebookPageWidget;
+});

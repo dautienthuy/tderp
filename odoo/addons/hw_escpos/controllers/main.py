@@ -11,7 +11,6 @@ import time
 import netifaces as ni
 import traceback
 
-
 escpos = printer = None
 try:
     from .. escpos import *
@@ -151,8 +150,9 @@ class EscposDriver(Thread):
             return
         while True:
             error = True
-            timestamp, task, data = self.queue.get(True)
             try:
+                timestamp, task, data = self.queue.get(True)
+
                 printer = self.get_escpos_printer()
 
                 if printer == None:

@@ -34,12 +34,7 @@ class StockMove(models.Model):
 
     def _get_source_document(self):
         res = super()._get_source_document()
-        return self.sale_line_id.order_id or res
-
-    def _get_sale_order_lines(self):
-        """ Return all possible sale order lines for one stock move. """
-        self.ensure_one()
-        return (self + self.browse(self._rollup_move_origs() | self._rollup_move_dests())).sale_line_id
+        return self.sudo().sale_line_id.order_id or res
 
     def _assign_picking_post_process(self, new=False):
         super(StockMove, self)._assign_picking_post_process(new=new)
@@ -47,22 +42,13 @@ class StockMove(models.Model):
             picking_id = self.mapped('picking_id')
             sale_order_ids = self.mapped('sale_line_id.order_id')
             for sale_order_id in sale_order_ids:
-                picking_id.message_post_with_source(
+                picking_id.message_post_with_view(
                     'mail.message_origin_link',
-                    render_values={'self': picking_id, 'origin': sale_order_id},
-                    subtype_xmlid='mail.mt_note',
-                )
+                    values={'self': picking_id, 'origin': sale_order_id},
+                    subtype_id=self.env.ref('mail.mt_note').id)
 
     def _get_all_related_sm(self, product):
         return super()._get_all_related_sm(product) | self.filtered(lambda m: m.sale_line_id.product_id == product)
-
-
-class StockMoveLine(models.Model):
-    _inherit = "stock.move.line"
-
-    def _should_show_lot_in_invoice(self):
-        return 'customer' in {self.location_id.usage, self.location_dest_id.usage}
-
 
 class ProcurementGroup(models.Model):
     _inherit = 'procurement.group'
@@ -82,27 +68,7 @@ class StockRule(models.Model):
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
-    sale_id = fields.Many2one('sale.order', compute="_compute_sale_id", inverse="_set_sale_id", string="Sales Order", store=True, index='btree_not_null')
-
-    @api.depends('group_id')
-    def _compute_sale_id(self):
-        for picking in self:
-            picking.sale_id = picking.group_id.sale_id
-
-    def _set_sale_id(self):
-        if self.group_id:
-            self.group_id.sale_id = self.sale_id
-        else:
-            if self.sale_id:
-                vals = {
-                    'sale_id': self.sale_id.id,
-                    'name': self.sale_id.name,
-                }
-            else:
-                vals = {}
-
-            pg = self.env['procurement.group'].create(vals)
-            self.group_id = pg
+    sale_id = fields.Many2one(related="group_id.sale_id", string="Sales Order", store=True, readonly=False, index='btree_not_null')
 
     def _auto_init(self):
         """
@@ -123,37 +89,27 @@ class StockPicking(models.Model):
             sale_order = move.picking_id.sale_id
             # Creates new SO line only when pickings linked to a sale order and
             # for moves with qty. done and not already linked to a SO line.
-            if not sale_order or move.sale_line_id or not move.picked or not (
-                (move.location_dest_id.usage in ['customer', 'transit'] and not move.move_dest_ids)
-                or (move.location_id.usage == 'customer' and move.to_refund)
-            ):
+            if not sale_order or move.location_dest_id.usage != 'customer' or move.sale_line_id or not move.quantity_done:
                 continue
             product = move.product_id
-            quantity = move.quantity
-            if move.to_refund:
-                quantity *= -1
-
             so_line_vals = {
                 'move_ids': [(4, move.id, 0)],
                 'name': product.display_name,
                 'order_id': sale_order.id,
                 'product_id': product.id,
                 'product_uom_qty': 0,
-                'qty_delivered': quantity,
+                'qty_delivered': move.quantity_done,
                 'product_uom': move.product_uom.id,
             }
-            so_line = sale_order.order_line.filtered(lambda sol: sol.product_id == product)
             if product.invoice_policy == 'delivery':
                 # Check if there is already a SO line for this product to get
                 # back its unit price (in case it was manually updated).
+                so_line = sale_order.order_line.filtered(lambda sol: sol.product_id == product)
                 if so_line:
                     so_line_vals['price_unit'] = so_line[0].price_unit
             elif product.invoice_policy == 'order':
                 # No unit price if the product is invoiced on the ordered qty.
                 so_line_vals['price_unit'] = 0
-            # New lines should be added at the bottom of the SO (higher sequence number)
-            if not so_line:
-                so_line_vals['sequence'] = max(sale_order.order_line.mapped('sequence')) + len(sale_order_lines_vals) + 1
             sale_order_lines_vals.append(so_line_vals)
 
         if sale_order_lines_vals:
@@ -198,11 +154,6 @@ class StockPicking(models.Model):
 
         return super(StockPicking, self)._log_less_quantities_than_expected(moves)
 
-    def _can_return(self):
-        self.ensure_one()
-        return super()._can_return() or self.sale_id
-
-
 class StockLot(models.Model):
     _inherit = 'stock.lot'
 
@@ -214,7 +165,7 @@ class StockLot(models.Model):
         sale_orders = defaultdict(lambda: self.env['sale.order'])
         for move_line in self.env['stock.move.line'].search([('lot_id', 'in', self.ids), ('state', '=', 'done')]):
             move = move_line.move_id
-            if move.picking_id.location_dest_id.usage in ('customer', 'transit') and move.sale_line_id.order_id:
+            if move.picking_id.location_dest_id.usage == 'customer' and move.sale_line_id.order_id:
                 sale_orders[move_line.lot_id.id] |= move.sale_line_id.order_id
         for lot in self:
             lot.sale_order_ids = sale_orders[lot.id]

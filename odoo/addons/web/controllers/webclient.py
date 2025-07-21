@@ -13,16 +13,52 @@ import werkzeug.wsgi
 import odoo
 import odoo.modules.registry
 from odoo import http
-from odoo.modules import get_manifest
+from odoo.modules import get_manifest, get_resource_path
 from odoo.http import request
-from odoo.tools.misc import file_path
+from odoo.tools import lazy
+from odoo.tools.misc import file_open
 from .utils import _local_web_translations
 
 
 _logger = logging.getLogger(__name__)
 
 
+@lazy
+def CONTENT_MAXAGE():
+    warnings.warn("CONTENT_MAXAGE is a deprecated alias to odoo.http.STATIC_CACHE_LONG", DeprecationWarning)
+    return http.STATIC_CACHE_LONG
+
+
+MOMENTJS_LANG_CODES_MAP = {
+    "sr_RS": "sr_cyrl",
+    "sr@latin": "sr"
+}
+
+
 class WebClient(http.Controller):
+
+    @http.route('/web/webclient/locale/<string:lang>', type='http', auth="none")
+    def load_locale(self, lang):
+        lang = MOMENTJS_LANG_CODES_MAP.get(lang, lang)
+        magic_file_finding = [lang.replace("_", '-').lower(), lang.split('_')[0]]
+        for code in magic_file_finding:
+            try:
+                return http.Response(
+                    werkzeug.wsgi.wrap_file(
+                        request.httprequest.environ,
+                        file_open(f'web/static/lib/moment/locale/{code}.js', 'rb')
+                    ),
+                    content_type='application/javascript; charset=utf-8',
+                    headers=[('Cache-Control', f'max-age={http.STATIC_CACHE}')],
+                    direct_passthrough=True,
+                )
+            except IOError:
+                _logger.debug("No moment locale for code %s", code)
+
+        return request.make_response("", headers=[
+            ('Content-Type', 'application/javascript'),
+            ('Cache-Control', f'max-age={http.STATIC_CACHE}'),
+        ])
 
     @http.route('/web/webclient/bootstrap_translations', type='json', auth="none")
     def bootstrap_translations(self, mods=None):
@@ -44,7 +80,7 @@ class WebClient(http.Controller):
         for addon_name in mods:
             manifest = get_manifest(addon_name)
             if manifest and manifest['bootstrap']:
-                f_name = file_path(f'{addon_name}/i18n/{lang}.po')
+                f_name = get_resource_path(addon_name, 'i18n', f'{lang}.po')
                 if not f_name:
                     continue
                 translations_per_module[addon_name] = {'messages': _local_web_translations(f_name)}
@@ -52,7 +88,7 @@ class WebClient(http.Controller):
         return {"modules": translations_per_module,
                 "lang_parameters": None}
 
-    @http.route('/web/webclient/translations/<string:unique>', type='http', auth='public', cors='*', readonly=True)
+    @http.route('/web/webclient/translations/<string:unique>', type='http', auth="public", cors="*")
     def translations(self, unique, mods=None, lang=None):
         """
         Load the translations for the specified language and modules
@@ -67,19 +103,18 @@ class WebClient(http.Controller):
         elif mods is None:
             mods = list(request.env.registry._init_modules) + (odoo.conf.server_wide_modules or [])
 
-        if lang and lang not in {code for code, _ in request.env['res.lang'].sudo().get_installed()}:
-            lang = None
-
         translations_per_module, lang_params = request.env["ir.http"].get_translations_for_webclient(mods, lang)
 
-        body = {
-            'lang': lang,
+        body = json.dumps({
+            'lang': lang_params and lang_params["code"],
             'lang_parameters': lang_params,
             'modules': translations_per_module,
             'multi_lang': len(request.env['res.lang'].sudo().get_installed()) > 1,
-        }
-        # The type of the route is set to HTTP, but the rpc is made with a get and expects JSON
-        response = request.make_json_response(body, [
+        })
+        response = request.make_response(body, [
+            # this method must specify a content-type application/json instead of using the default text/html set because
+            # the type of the route is set to HTTP, but the rpc is made with a get and expects JSON
+            ('Content-Type', 'application/json'),
             ('Cache-Control', f'public, max-age={http.STATIC_CACHE_LONG}'),
         ])
         return response
@@ -88,31 +123,32 @@ class WebClient(http.Controller):
     def version_info(self):
         return odoo.service.common.exp_version()
 
-    @http.route('/web/tests', type='http', auth='user', readonly=True)
-    def unit_tests_suite(self, mod=None, **kwargs):
-        return request.render('web.unit_tests_suite', {'session_info': {'view_info': request.env['ir.ui.view'].get_view_info()}})
-
-    @http.route('/web/tests/legacy', type='http', auth='user', readonly=True)
+    @http.route('/web/tests', type='http', auth="user")
     def test_suite(self, mod=None, **kwargs):
-        return request.render('web.qunit_suite', {'session_info': {'view_info': request.env['ir.ui.view'].get_view_info()}})
+        return request.render('web.qunit_suite')
 
-    @http.route('/web/tests/legacy/mobile', type='http', auth="none")
+    @http.route('/web/tests/mobile', type='http', auth="none")
     def test_mobile_suite(self, mod=None, **kwargs):
-        return request.render('web.qunit_mobile_suite', {'session_info': {'view_info': request.env['ir.ui.view'].get_view_info()}})
+        return request.render('web.qunit_mobile_suite')
 
-    @http.route('/web/bundle/<string:bundle_name>', auth='public', methods=['GET'], readonly=True)
+    @http.route('/web/benchmarks', type='http', auth="none")
+    def benchmarks(self, mod=None, **kwargs):
+        return request.render('web.benchmark_suite')
+
+    @http.route('/web/bundle/<string:bundle_name>', auth="public", methods=["GET"])
     def bundle(self, bundle_name, **bundle_params):
         """
         Request the definition of a bundle, including its javascript and css bundled assets
         """
         if 'lang' in bundle_params:
-            request.update_context(lang=request.env['res.lang']._get_code(bundle_params['lang']))
+            request.update_context(lang=bundle_params['lang'])
 
         debug = bundle_params.get('debug', request.session.debug)
         files = request.env["ir.qweb"]._get_asset_nodes(bundle_name, debug=debug, js=True, css=True)
         data = [{
             "type": tag,
             "src": attrs.get("src") or attrs.get("data-src") or attrs.get('href'),
-        } for tag, attrs in files]
+            "content": content,
+        } for tag, attrs, content in files]
 
         return request.make_json_response(data)

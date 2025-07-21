@@ -3,15 +3,16 @@
 # 	* payment_stripe
 # 
 # Translators:
-# Wil Odoo, 2024
+# Tony Ng, 2024
+# Wil Odoo, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:56+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Wil Odoo, 2024\n"
+"POT-Creation-Date: 2023-01-31 14:10+0000\n"
+"PO-Revision-Date: 2023-09-25 06:59+0000\n"
+"Last-Translator: Wil Odoo, 2025\n"
 "Language-Team: Chinese (Taiwan) (https://app.transifex.com/odoo/teams/41243/zh_TW/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -20,15 +21,9 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: payment_stripe
-#. odoo-javascript
-#: code:addons/payment_stripe/static/src/js/payment_form.js:0
-msgid "Cannot display the payment form"
-msgstr "未能顯示付款表單"
-
-#. module: payment_stripe
 #: model:ir.model.fields,field_description:payment_stripe.field_payment_provider__code
 msgid "Code"
-msgstr "代碼"
+msgstr "程式碼"
 
 #. module: payment_stripe
 #: model_terms:ir.ui.view,arch_db:payment_stripe.payment_provider_form
@@ -38,12 +33,14 @@ msgstr "連線至 Stripe"
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_provider.py:0
+#, python-format
 msgid "Could not establish the connection to the API."
 msgstr "無法建立與 API 的連線。"
 
 #. module: payment_stripe
 #. odoo-javascript
 #: code:addons/payment_stripe/static/src/js/express_checkout_form.js:0
+#, python-format
 msgid "Delivery"
 msgstr "送貨"
 
@@ -51,12 +48,6 @@ msgstr "送貨"
 #: model_terms:ir.ui.view,arch_db:payment_stripe.payment_provider_form
 msgid "Enable Apple Pay"
 msgstr "啟用 Apple Pay"
-
-#. module: payment_stripe
-#. odoo-javascript
-#: code:addons/payment_stripe/static/src/js/express_checkout_form.js:0
-msgid "Free Shipping"
-msgstr "免費送貨"
 
 #. module: payment_stripe
 #: model_terms:ir.ui.view,arch_db:payment_stripe.payment_provider_form
@@ -76,22 +67,11 @@ msgid ""
 msgstr "若你的 Stripe 帳戶啟用了網絡鈎子（webhook），便必須設定此簽章密鑰，以驗證從 Stripe 傳送到 Odoo 的訊息。"
 
 #. module: payment_stripe
-#. odoo-javascript
-#: code:addons/payment_stripe/static/src/js/payment_form.js:0
-msgid "Incorrect payment details"
-msgstr "付款資料不正確"
-
-#. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_transaction.py:0
+#, python-format
 msgid "No transaction found matching reference %s."
 msgstr "找不到符合參考 %s 的交易。"
-
-#. module: payment_stripe
-#. odoo-python
-#: code:addons/payment_stripe/models/payment_provider.py:0
-msgid "Other Payment Providers"
-msgstr "其他付款服務商"
 
 #. module: payment_stripe
 #: model:ir.model,name:payment_stripe.model_payment_provider
@@ -106,7 +86,7 @@ msgstr "付款服務商"
 #. module: payment_stripe
 #: model:ir.model,name:payment_stripe.model_payment_token
 msgid "Payment Token"
-msgstr "付款代碼"
+msgstr "付款代碼(token)"
 
 #. module: payment_stripe
 #: model:ir.model,name:payment_stripe.model_payment_transaction
@@ -114,14 +94,9 @@ msgid "Payment Transaction"
 msgstr "付款交易"
 
 #. module: payment_stripe
-#. odoo-javascript
-#: code:addons/payment_stripe/static/src/js/payment_form.js:0
-msgid "Payment processing failed"
-msgstr "付款處理失敗"
-
-#. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_provider.py:0
+#, python-format
 msgid "Please use live credentials to enable Apple Pay."
 msgstr "請使用實時登入資訊啟用 Apple Pay。"
 
@@ -133,18 +108,21 @@ msgstr "可發佈密鑰"
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_transaction.py:0
+#, python-format
 msgid "Received data with invalid intent status: %s"
 msgstr "收到資料，但意圖狀態無效： %s"
 
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_transaction.py:0
+#, python-format
 msgid "Received data with missing intent status."
 msgstr "收到資料，但缺漏意圖狀態。"
 
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_transaction.py:0
+#, python-format
 msgid "Received data with missing merchant reference"
 msgstr "收到資料，但缺漏商家參考"
 
@@ -159,17 +137,9 @@ msgid "Stripe"
 msgstr "Stripe"
 
 #. module: payment_stripe
-#. odoo-python
-#: code:addons/payment_stripe/models/payment_provider.py:0
-msgid ""
-"Stripe Connect is not available in your country, please use another payment "
-"provider."
-msgstr "你所在的國家/地區未有 Stripe Connect 服務。請使用其他付款服務商。"
-
-#. module: payment_stripe
-#: model:ir.model.fields,field_description:payment_stripe.field_payment_token__stripe_mandate
-msgid "Stripe Mandate"
-msgstr "Stripe 授權"
+#: model:ir.model.fields,field_description:payment_stripe.field_payment_transaction__stripe_payment_intent
+msgid "Stripe Payment Intent ID"
+msgstr "Stripe 付款意向識別碼"
 
 #. module: payment_stripe
 #: model:ir.model.fields,field_description:payment_stripe.field_payment_token__stripe_payment_method
@@ -179,18 +149,21 @@ msgstr "Stripe 付款方法識別碼"
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_provider.py:0
+#, python-format
 msgid "Stripe Proxy error: %(error)s"
 msgstr "Stripe 代理錯誤： %(error)s"
 
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_provider.py:0
+#, python-format
 msgid "Stripe Proxy: An error occurred when communicating with the proxy."
 msgstr "Stripe 代理程式：與代理程式通訊時發生錯誤。"
 
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_provider.py:0
+#, python-format
 msgid "Stripe Proxy: Could not establish the connection."
 msgstr "Stripe 代理程式：無法建立連線。"
 
@@ -198,6 +171,7 @@ msgstr "Stripe 代理程式：無法建立連線。"
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_provider.py:0
 #: code:addons/payment_stripe/models/payment_transaction.py:0
+#, python-format
 msgid ""
 "The communication with the API failed.\n"
 "Stripe gave us the following info about the problem:\n"
@@ -210,6 +184,7 @@ msgstr ""
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_transaction.py:0
+#, python-format
 msgid "The customer left the payment page."
 msgstr "客戶離開了付款頁面。"
 
@@ -221,6 +196,7 @@ msgstr "只用於識別 Stripe 帳戶的密鑰"
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_transaction.py:0
+#, python-format
 msgid ""
 "The refund did not go through. Please log into your Stripe Dashboard to get "
 "more information on that matter, and address any accounting discrepancies."
@@ -234,12 +210,14 @@ msgstr "此付款服務商的技術代碼。"
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_transaction.py:0
+#, python-format
 msgid "The transaction is not linked to a token."
 msgstr "交易未有連結至代碼。"
 
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_token.py:0
+#, python-format
 msgid "Unable to convert payment token to new API."
 msgstr "未能將付款代碼轉換至新的 API。"
 
@@ -251,12 +229,14 @@ msgstr "網絡鈎子簽章秘密"
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_provider.py:0
+#, python-format
 msgid "You Stripe Webhook was successfully set up!"
 msgstr "已成功設定你的 Stripe 網絡鈎子（webhook）！"
 
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_provider.py:0
+#, python-format
 msgid ""
 "You cannot create a Stripe Webhook if your Stripe Secret Key is not set."
 msgstr "若未有設定 Stripe 秘密金鑰，便無法建立 Stripe 網絡鈎子（webhook）。"
@@ -264,6 +244,7 @@ msgstr "若未有設定 Stripe 秘密金鑰，便無法建立 Stripe 網絡鈎�
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_provider.py:0
+#, python-format
 msgid ""
 "You cannot set the provider state to Enabled until your onboarding to Stripe"
 " is completed."
@@ -272,6 +253,7 @@ msgstr "完成 Stripe 新手簡介之前，不可將服務商狀態設為「已�
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_provider.py:0
+#, python-format
 msgid ""
 "You cannot set the provider to Test Mode while it is linked with your Stripe"
 " account."
@@ -280,17 +262,20 @@ msgstr "服務商連結至你的 Stripe 帳戶時，不可將它設為測試模�
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_provider.py:0
+#, python-format
 msgid "Your Stripe Webhook is already set up."
 msgstr "你的 Stripe 網絡鈎子（webhook）已經設定好。"
 
 #. module: payment_stripe
 #. odoo-javascript
 #: code:addons/payment_stripe/static/src/js/express_checkout_form.js:0
+#, python-format
 msgid "Your order"
 msgstr "你的訂單"
 
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_provider.py:0
+#, python-format
 msgid "Your web domain was successfully verified."
 msgstr "你的網域已成功驗證。"

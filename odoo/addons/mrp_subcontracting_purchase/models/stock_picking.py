@@ -31,7 +31,7 @@ class StockPicking(models.Model):
             action.update({
                 'name': _("Source PO of %s", self.name),
                 'domain': [('id', 'in', purchase_order_ids)],
-                'view_mode': 'list,form',
+                'view_mode': 'tree,form',
             })
         return action
 

@@ -3,15 +3,16 @@
 # 	* product_images
 # 
 # Translators:
-# Wil Odoo, 2024
+# Martin Trigaux, 2022
+# Abe Manyo, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 08:55+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Wil Odoo, 2024\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"PO-Revision-Date: 2022-09-22 05:54+0000\n"
+"Last-Translator: Abe Manyo, 2023\n"
 "Language-Team: Indonesian (https://app.transifex.com/odoo/teams/41243/id/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,6 +23,7 @@ msgstr ""
 #. module: product_images
 #. odoo-python
 #: code:addons/product_images/wizard/product_fetch_image_wizard.py:0
+#, python-format
 msgid ""
 "%(matching_images_count)s matching images have been found for "
 "%(product_count)s products."
@@ -32,19 +34,20 @@ msgstr ""
 #. module: product_images
 #: model_terms:ir.ui.view,arch_db:product_images.product_fetch_image_wizard_view_form
 msgid ""
-"<span invisible=\"nb_products_selected &lt;= 10000\">\n"
+"<span attrs=\"{'invisible': [('nb_products_selected', '&lt;=', 10000)]}\">\n"
 "                            As only 10,000 products can be processed per day, the remaining will be\n"
 "                            done tomorrow.\n"
 "                        </span>"
 msgstr ""
-"<span invisible=\"nb_products_selected &lt;= 10000\">\n"
-"                            Karena hanya 10,000 produk yang dapat diproses setiap hari, sisanya akan\n"
-"                            dilakukan besok.\n"
+"<span attrs=\"{'invisible': [('nb_products_selected', '&lt;=', 10000)]}\">\n"
+"                            Karena hanya 10,000 produk yang dapat diproses per hari, sisanya akan\n"
+"                            diselesaikan besok.\n"
 "                        </span>"
 
 #. module: product_images
 #. odoo-python
 #: code:addons/product_images/wizard/product_fetch_image_wizard.py:0
+#, python-format
 msgid ""
 "A task to process products in the background is already running. Please try "
 "againlater."
@@ -117,14 +120,19 @@ msgid "Image Fetch Pending"
 msgstr "Pengambilan Gambar Pending"
 
 #. module: product_images
+#: model:ir.model.fields,field_description:product_images.field_product_fetch_image_wizard____last_update
+msgid "Last Modified on"
+msgstr "Terakhir diubah pada"
+
+#. module: product_images
 #: model:ir.model.fields,field_description:product_images.field_product_fetch_image_wizard__write_uid
 msgid "Last Updated by"
-msgstr "Terakhir Diperbarui oleh"
+msgstr "Terakhir diperbarui oleh"
 
 #. module: product_images
 #: model:ir.model.fields,field_description:product_images.field_product_fetch_image_wizard__write_date
 msgid "Last Updated on"
-msgstr "Terakhir Diperbarui pada"
+msgstr "Terakhir diperbarui pada"
 
 #. module: product_images
 #: model:ir.model.fields,field_description:product_images.field_product_fetch_image_wizard__nb_products_unable_to_process
@@ -152,6 +160,7 @@ msgstr ""
 
 #. module: product_images
 #: model:ir.actions.server,name:product_images.ir_cron_fetch_image_ir_actions_server
+#: model:ir.cron,cron_name:product_images.ir_cron_fetch_image
 msgid "Product Images: Get product images from Google"
 msgstr "Gambar Produk: Dapatkan gambar produk dari Google"
 
@@ -163,6 +172,7 @@ msgstr "Varian Produk"
 #. module: product_images
 #. odoo-python
 #: code:addons/product_images/wizard/product_fetch_image_wizard.py:0
+#, python-format
 msgid "Product images"
 msgstr "Gambar-gambar produk"
 
@@ -174,12 +184,13 @@ msgstr "Produk Untuk Diproses"
 #. module: product_images
 #. odoo-python
 #: code:addons/product_images/wizard/product_fetch_image_wizard.py:0
+#, python-format
 msgid ""
 "Products are processed in the background. Images will be updated "
 "progressively."
 msgstr ""
 "Produk diproses di latar belakang. Gambar-gambar akan diupdate secara "
-"progresif."
+"progresif. "
 
 #. module: product_images
 #: model_terms:ir.ui.view,arch_db:product_images.res_config_settings_view_form
@@ -189,12 +200,14 @@ msgstr "ID Search Engine"
 #. module: product_images
 #. odoo-python
 #: code:addons/product_images/wizard/product_fetch_image_wizard.py:0
+#, python-format
 msgid "The API Key and Search Engine ID must be set in the General Settings."
 msgstr "API Key dan ID Search Engine harus ditetapkan di Pengaturan Umum."
 
 #. module: product_images
 #. odoo-python
 #: code:addons/product_images/wizard/product_fetch_image_wizard.py:0
+#, python-format
 msgid ""
 "The Custom Search API is not enabled in your Google project. Please visit "
 "your Google Cloud Platform project page and enable it, then retry. If you "
@@ -222,6 +235,8 @@ msgstr ""
 #. module: product_images
 #. odoo-python
 #: code:addons/product_images/wizard/product_fetch_image_wizard.py:0
+#: code:addons/product_images/wizard/product_fetch_image_wizard.py:0
+#, python-format
 msgid ""
 "The scheduled action \"Product Images: Get product images from Google\" has "
 "been deleted. Please contact your administrator to have the action restored "
@@ -234,6 +249,7 @@ msgstr ""
 #. module: product_images
 #. odoo-python
 #: code:addons/product_images/models/ir_cron_trigger.py:0
+#, python-format
 msgid "This action is already scheduled. Please try again later."
 msgstr "Action ini sudah dijadwalkan. Silakan coba lagi nanti"
 
@@ -255,6 +271,7 @@ msgstr "Anda memilih"
 #. module: product_images
 #. odoo-python
 #: code:addons/product_images/wizard/product_fetch_image_wizard.py:0
+#, python-format
 msgid "Your API Key or your Search Engine ID is incorrect."
 msgstr "API Key atau ID Search Engine Anda tidak benar."
 

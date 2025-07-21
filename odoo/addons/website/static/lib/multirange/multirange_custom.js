@@ -1,10 +1,12 @@
-/** @odoo-module **/
 /**
  * This code has been more that widely inspired by the multirange library
  * which can be found on https://github.com/LeaVerou/multirange.
  *
  * The license file can be found in the same folder as this file.
  */
+
+odoo.define('website_sale.multirange', function () {
+'use strict';
 
 /**
  * The multirange library will display the two values as one range input with
@@ -60,7 +62,7 @@
 const HTMLInputElement = window.HTMLInputElement;
 const descriptor = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value");
 
-export class Multirange {
+class Multirange {
     constructor(input, options = {}) {
         const self = this;
 
@@ -265,16 +267,7 @@ export class Multirange {
 
     formatNumber(number) {
         const language = document.querySelector("html").getAttribute("lang");
-        const locale = (() => {
-            switch (language) {
-                case "sr@latin":
-                    return "sr-Latn";
-                case "sr@Cyrl":
-                    return "sr-Cyrl";
-                default:
-                    return language.replaceAll("_", "-");
-            }
-        })();
+        const locale = language === "sr@latin" ? "sr-Latn-RS" : language.replace(/_/g, "-");
         let formatedNumber = number.toLocaleString(locale, {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
@@ -290,14 +283,35 @@ export class Multirange {
     }
 }
 
-export function multirange(input, options) {
+function multirange(input, options) {
     if (input.classList.contains('multirange')) {
         return;
     }
     new Multirange(input, options);
 }
 
-export default {
+return {
     Multirange: Multirange,
     init: multirange,
 };
+});
+
+odoo.define('website_sale.multirange.instance', function (require) {
+'use strict';
+
+const publicWidget = require('web.public.widget');
+const multirange = require('website_sale.multirange');
+
+publicWidget.registry.WebsiteMultirangeInputs = publicWidget.Widget.extend({
+    selector: 'input[type=range][multiple]:not(.multirange)',
+
+    /**
+     * @override
+     */
+    start() {
+        return this._super.apply(this, arguments).then(() => {
+            multirange.init(this.el);
+        });
+    },
+});
+});

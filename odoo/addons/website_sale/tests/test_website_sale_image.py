@@ -4,13 +4,14 @@ import base64
 import io
 
 from PIL import Image
+from odoo.tests.common import HOST
+from odoo.tools import config
 
-from odoo.fields import Command
-from odoo.tests import HttpCase, tagged
+import odoo.tests
 
 
-@tagged('post_install', '-at_install')
-class TestWebsiteSaleImage(HttpCase):
+@odoo.tests.common.tagged('post_install', '-at_install')
+class TestWebsiteSaleImage(odoo.tests.HttpCase):
 
     # registry_test_mode = False  # uncomment to save the product to test in browser
 
@@ -24,30 +25,29 @@ class TestWebsiteSaleImage(HttpCase):
         color_blue = '#4169E1'
         name_blue = 'Royal Blue'
 
-        self.env['product.pricelist'].sudo().search([]).action_archive()
-
         # create the color attribute
         product_attribute = self.env['product.attribute'].create({
             'name': 'Beautiful Color',
             'display_type': 'color',
-            'value_ids': [
-                Command.create({
-                    'name': name_red,
-                    'html_color': color_red,
-                    'sequence': 1,
-                }),
-                Command.create({
-                    'name': name_green,
-                    'html_color': color_green,
-                    'sequence': 2,
-                }),
-                Command.create({
-                    'name': name_blue,
-                    'html_color': color_blue,
-                    'sequence': 3,
-                }),
-            ]
         })
+
+        # create the color attribute values
+        attr_values = self.env['product.attribute.value'].create([{
+            'name': name_red,
+            'attribute_id': product_attribute.id,
+            'html_color': color_red,
+            'sequence': 1,
+        }, {
+            'name': name_green,
+            'attribute_id': product_attribute.id,
+            'html_color': color_green,
+            'sequence': 2,
+        }, {
+            'name': name_blue,
+            'attribute_id': product_attribute.id,
+            'html_color': color_blue,
+            'sequence': 3,
+        }])
 
         # first image (blue) for the template
         f = io.BytesIO()
@@ -89,21 +89,17 @@ class TestWebsiteSaleImage(HttpCase):
         image_png = base64.b64encode(f.read())
 
         # create the template, without creating the variants
-        template = self.env['product.template'].create({
+        template = self.env['product.template'].with_context(create_product_product=True).create({
             'name': 'A Colorful Image',
-            'product_template_image_ids': [
-                Command.create({'name': 'image 1', 'image_1920': image_gif}),
-                Command.create({'name': 'image 4', 'image_1920': image_svg}),
-            ],
-            'attribute_line_ids': [
-                Command.create({
-                    'attribute_id': product_attribute.id,
-                    'value_ids': [Command.set(product_attribute.value_ids.ids)],
-                })
-            ]
+            'product_template_image_ids': [(0, 0, {'name': 'image 1', 'image_1920': image_gif}), (0, 0, {'name': 'image 4', 'image_1920': image_svg})],
         })
 
-        line = template.attribute_line_ids
+        # set the color attribute and values on the template
+        line = self.env['product.template.attribute.line'].create([{
+            'attribute_id': product_attribute.id,
+            'product_tmpl_id': template.id,
+            'value_ids': [(6, 0, attr_values.ids)]
+        }])
         value_red = line.product_template_value_ids[0]
         value_green = line.product_template_value_ids[1]
 
@@ -216,9 +212,23 @@ class TestWebsiteSaleImage(HttpCase):
             [('key', '=', 'website_sale.product_picture_magnify_click')]
         ).write({'active': True})
 
-        # Ensure that no pricelist is available during the test.
+        # Ensure that only one pricelist is available during the test, with the company currency.
         # This ensures that tours with triggers on the amounts will run properly.
-        self.env['product.pricelist'].search([]).action_archive()
+        # To this purpose, we will ensure that only the public_pricelist is available for the default_website.
+        public_pricelist = self.env.ref('product.list0')
+        default_website = self.env.ref('website.default_website')
+        website_2 = self.env.ref('website.website2', raise_if_not_found=False)
+        if not website_2:
+            website_2 = self.env['website'].create({
+                'name': 'My Website 2',
+                'domain': '',
+                'sequence': 20,
+            })
+        self.env['product.pricelist'].search([
+            ('id', '!=', public_pricelist.id),
+            ('website_id', 'in', [False, default_website.id])]
+        ).website_id = website_2
+        public_pricelist.currency_id = self.env.company.currency_id
 
         self.start_tour("/", 'shop_zoom', login="admin")
 
@@ -285,24 +295,25 @@ class TestWebsiteSaleImage(HttpCase):
         product_attribute = self.env['product.attribute'].create({
             'name': 'Beautiful Color',
             'display_type': 'color',
-            'value_ids': [
-                Command.create({
-                    'name': 'Red',
-                    'sequence': 1,
-                }),
-                Command.create({
-                    'name': 'Green',
-                    'sequence': 2,
-                }),
-                Command.create({
-                    'name': 'Blue',
-                    'sequence': 3,
-                }),
-            ]
         })
 
+        # create the color attribute values
+        attr_values = self.env['product.attribute.value'].create([{
+            'name': 'Red',
+            'attribute_id': product_attribute.id,
+            'sequence': 1,
+        }, {
+            'name': 'Green',
+            'attribute_id': product_attribute.id,
+            'sequence': 2,
+        }, {
+            'name': 'Blue',
+            'attribute_id': product_attribute.id,
+            'sequence': 3,
+        }])
+
         # create the template, without creating the variants
-        template = self.env['product.template'].with_context(create_product_product=False).create({
+        template = self.env['product.template'].with_context(create_product_product=True).create({
             'name': 'Test subject',
         })
 
@@ -313,7 +324,7 @@ class TestWebsiteSaleImage(HttpCase):
         line = self.env['product.template.attribute.line'].create([{
             'attribute_id': product_attribute.id,
             'product_tmpl_id': template.id,
-            'value_ids': [Command.set(product_attribute.value_ids.ids)]
+            'value_ids': [(6, 0, attr_values.ids)]
         }])
         value_red = line.product_template_value_ids[0]
         product_red = template._get_variant_for_combination(value_red)
@@ -336,18 +347,18 @@ class TestWebsiteSaleImage(HttpCase):
         # when there is a template image, the image must be obtained from the template
         self.assertEqual(template, template._get_image_holder())
 
-@tagged('post_install', '-at_install')
-class TestWebsiteSaleRemoveImage(HttpCase):
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+@odoo.tests.common.tagged('post_install', '-at_install')
+class TestEnvironmentWebsiteSaleImage(odoo.tests.HttpCase):
+    def setUp(self):
+        super(TestEnvironmentWebsiteSaleImage, self).setUp()
         # Attachment needed for the replacement of images
-        cls.env['ir.attachment'].create({
+        IrAttachment = self.env['ir.attachment']
+        base = "http://%s:%s" % (HOST, config['http_port'])
+        IrAttachment.create({
             'public': True,
             'name': 's_default_image.jpg',
             'type': 'url',
-            'url': f'{cls.base_url()}/web/image/website.s_banner_default_image.jpg',
+            'url': base + '/web/image/website.s_banner_default_image.jpg',
         })
 
         # First image (blue) for the template.
@@ -358,20 +369,20 @@ class TestWebsiteSaleRemoveImage(HttpCase):
         name_red = 'Indian Red'
 
         # Create the color attribute.
-        cls.product_attribute = cls.env['product.attribute'].create({
+        self.product_attribute = self.env['product.attribute'].create({
             'name': 'Beautiful Color',
             'display_type': 'color',
         })
 
         # create the color attribute values
-        cls.attr_values = cls.env['product.attribute.value'].create([{
+        self.attr_values = self.env['product.attribute.value'].create([{
             'name': name_blue,
-            'attribute_id': cls.product_attribute.id,
+            'attribute_id': self.product_attribute.id,
             'html_color': color_blue,
             'sequence': 1,
         }, {
             'name': name_red,
-            'attribute_id': cls.product_attribute.id,
+            'attribute_id': self.product_attribute.id,
             'html_color': color_red,
             'sequence': 2,
         },
@@ -381,21 +392,28 @@ class TestWebsiteSaleRemoveImage(HttpCase):
         f.seek(0)
         blue_image = base64.b64encode(f.read())
 
-        cls.template = cls.env['product.template'].with_context(create_product_product=False).create({
+        self.template = self.env['product.template'].with_context(create_product_product=True).create({
             'name': 'Test Remove Image',
             'image_1920': blue_image,
         })
 
-    def test_website_sale_add_and_remove_main_product_image_no_variant(self):
+@odoo.tests.common.tagged('post_install', '-at_install')
+class TestRemoveWebsiteSaleImageNoVariant(TestEnvironmentWebsiteSaleImage):
+    def setUp(self):
+        super(TestRemoveWebsiteSaleImageNoVariant, self).setUp()
         self.product = self.env['product.product'].create({
             'product_tmpl_id': self.template.id,
         })
 
+    def test_website_sale_add_and_remove_main_product_image_no_variant(self):
         self.start_tour(self.env['website'].get_client_action_url('/'), 'add_and_remove_main_product_image_no_variant', login='admin')
         self.assertFalse(self.template.image_1920)
         self.assertFalse(self.product.image_1920)
 
-    def test_website_sale_remove_main_product_image_with_variant(self):
+@odoo.tests.common.tagged('post_install', '-at_install')
+class TestRemoveWebsiteSaleImageVariants(TestEnvironmentWebsiteSaleImage):
+    def setUp(self):
+        super(TestRemoveWebsiteSaleImageVariants, self).setUp()
         # Set the color attribute and values on the template.
         self.env['product.template.attribute.line'].create([{
             'attribute_id': self.product_attribute.id,
@@ -405,6 +423,7 @@ class TestWebsiteSaleRemoveImage(HttpCase):
         self.product = self.env['product.product'].create({
             'product_tmpl_id': self.template.id,
         })
+    def test_website_sale_remove_main_product_image_with_variant(self):
         self.start_tour(self.env['website'].get_client_action_url('/'), 'remove_main_product_image_with_variant', login='admin')
         self.assertFalse(self.template.image_1920)
         self.assertFalse(self.product.image_1920)

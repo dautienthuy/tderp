@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import re
 
-from datetime import datetime, timedelta
-
 from odoo import http, _
 from odoo.exceptions import AccessDenied
 from odoo.http import request
@@ -29,7 +27,7 @@ class Home(web_home.Home):
 
         user = request.env['res.users'].browse(request.session.pre_uid)
         if user and request.httprequest.method == 'GET':
-            cookies = request.cookies
+            cookies = request.httprequest.cookies
             key = cookies.get(TRUSTED_DEVICE_COOKIE)
             if key:
                 user_match = request.env['auth_totp.device']._check_credentials_for_uid(
@@ -58,15 +56,11 @@ class Home(web_home.Home):
                         browser=request.httprequest.user_agent.browser.capitalize(),
                         platform=request.httprequest.user_agent.platform.capitalize(),
                     )
+                    geoip = request.geoip
+                    if geoip:
+                        name += " (%s, %s)" % (geoip['city'], geoip['country_name'])
 
-                    if request.geoip.city.name:
-                        name += f" ({request.geoip.city.name}, {request.geoip.country_name})"
-
-                    key = request.env['auth_totp.device'].sudo()._generate(
-                        "browser",
-                        name,
-                        datetime.now() + timedelta(seconds=TRUSTED_DEVICE_AGE)
-                    )
+                    key = request.env['auth_totp.device']._generate("browser", name)
                     response.set_cookie(
                         key=TRUSTED_DEVICE_COOKIE,
                         value=key,

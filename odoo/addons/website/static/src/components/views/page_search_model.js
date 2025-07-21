@@ -1,9 +1,11 @@
 /** @odoo-module */
 
 import { useService } from "@web/core/utils/hooks";
+
 import { Domain } from '@web/core/domain';
 import { SearchModel } from '@web/search/search_model';
-import { onWillStart, useState } from "@odoo/owl";
+
+const { onWillStart, useState } = owl;
 
 export class PageSearchModel extends SearchModel {
     /**
@@ -13,6 +15,7 @@ export class PageSearchModel extends SearchModel {
         super.setup(...arguments);
         this.website = useService('website');
 
+        this.rpc = useService('rpc');
         this.pagesState = useState({
             websiteDomain: false,
         });

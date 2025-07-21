@@ -121,7 +121,7 @@ class RecurrenceRule(models.Model):
                 self.calendar_event_ids.write({'need_sync': False, 'partner_ids': [Command.unlink(att.partner_id.id) for att in attendees]})
 
         old_event_values = self.base_event_id and self.base_event_id.read(base_event_time_fields)[0]
-        if old_event_values and any(new_event_values.get(key) and new_event_values[key] != old_event_values[key] for key in base_event_time_fields):
+        if old_event_values and any(new_event_values[key] != old_event_values[key] for key in base_event_time_fields):
             # we need to recreate the recurrence, time_fields were modified.
             base_event_id = self.base_event_id
             non_equal_values = [
@@ -239,9 +239,3 @@ class RecurrenceRule(models.Model):
         if event:
             return event._get_event_user()
         return self.env.user
-
-    def _is_google_insertion_blocked(self, sender_user):
-        self.ensure_one()
-        has_base_event = self.base_event_id
-        has_different_owner = self.base_event_id.user_id and self.base_event_id.user_id != sender_user
-        return has_base_event and has_different_owner

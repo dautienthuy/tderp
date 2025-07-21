@@ -14,12 +14,16 @@
                         <button name="mail_action_blacklist_remove" class="fa fa-ban text-danger"
                             title="This email is blacklisted for mass mailings. Click to unblacklist."
                             type="object" context="{'default_email': email}" groups="base.group_user"
-                            invisible="not is_blacklisted"/>
-                        <field name="email" widget="email" context="{'gravatar_image': True}" required="user_ids"/>
+                            attrs="{'invisible': [('is_blacklisted', '=', False)]}"/>
+                        <field name="email" widget="email" context="{'gravatar_image': True}" attrs="{'required': [('user_ids','!=', [])]}"/>
                     </div>
                 </xpath>
                 <xpath expr="//sheet" position="after">
-                    <chatter/>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
                 </xpath>
             </field>
         </record>
@@ -29,8 +33,11 @@
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.res_partner_kanban_view"/>
             <field name="arch" type="xml">
-                <xpath expr="//footer" position="inside">
-                    <field name="activity_ids" widget="kanban_activity" class="ms-auto mt-auto"/>
+                <field name="type" position="after">
+                    <field name="activity_state"/>
+                </field>
+                <xpath expr="//div[hasclass('oe_kanban_bottom_right')]" position="inside">
+                    <field name="activity_ids" widget="kanban_activity"/>
                 </xpath>
             </field>
         </record>
@@ -54,7 +61,7 @@
         </record>
 
         <record id="res_partner_view_tree_inherit_mail" model="ir.ui.view">
-            <field name="name">res.partner.view.list.inherit.mail</field>
+            <field name="name">res.partner.view.tree.inherit.mail</field>
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.view_partner_tree"/>
             <field name="arch" type="xml">
@@ -72,10 +79,10 @@
                     <field name="id"/>
                     <templates>
                         <div t-name="activity-box">
-                            <img t-att-src="activity_image('res.partner', 'avatar_128', record.id.raw_value)" role="img" t-att-title="record.name.value" t-att-alt="record.name.value"/>
-                            <div class="ms-2">
-                                <field name="name" display="full" class="o_text_block"/>
-                                <field name="parent_id" muted="1" display="full" class="o_text_block"/>
+                            <img t-att-src="activity_image('res.partner', 'avatar_128', record.id.raw_value)" role="img" t-att-title="record.id.value" t-att-alt="record.id.value"/>
+                            <div>
+                                <field name="name" display="full"/>
+                                <field name="parent_id" muted="1" display="full"/>
                             </div>
                         </div>
                     </templates>
@@ -85,13 +92,13 @@
 
         <!-- Add mail-defined activity view to standard action on partners to manage activities related to partner model -->
         <record id="base.action_partner_form" model="ir.actions.act_window">
-            <field name="view_mode">kanban,list,form,activity</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
         </record>
         <record id="base.action_partner_customer_form" model="ir.actions.act_window">
-            <field name="view_mode">kanban,list,form,activity</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
         </record>
         <record id="base.action_partner_supplier_form" model="ir.actions.act_window">
-            <field name="view_mode">kanban,list,form,activity</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
         </record>
 
         <!--  Replace the default mass-mailing wizard in base with the composition wizard -->
@@ -100,12 +107,12 @@
             <field name="res_model">mail.compose.message</field>
             <field name="view_mode">form</field>
             <field name="target">new</field>
-            <field name="context">{
+            <field name="context" eval="{
                 'default_composition_mode': 'mass_mail',
                 'default_partner_to': '{{ object.id or \'\' }}',
-                'default_subtype_xmlid': 'mail.mt_comment',
+                'default_use_template': False,
                 'default_reply_to_force_new': True,
-            }</field>
+            }"/>
             <field name="binding_model_id" ref="base.model_res_partner"/>
             <field name="binding_view_types">list</field>
         </record>

@@ -33,6 +33,8 @@ import re
 import shutil
 import tempfile
 
+import pkg_resources
+
 try:
     import ansitoimg
 except ImportError:
@@ -45,16 +47,14 @@ from typing import Dict, List, Optional, Tuple
 from urllib.request import HTTPError
 from urllib.request import urlopen as _urlopen
 
-from packaging.markers import Marker
-from packaging.requirements import Requirement
-from packaging.tags import mac_platforms  # noqa: PLC2701
-from packaging.utils import canonicalize_name
-
 from pip._internal.index.package_finder import (
     LinkEvaluator,  # noqa: PLC2701
+    canonicalize_name,  # noqa: PLC2701
 )
 from pip._internal.models.link import Link  # noqa: PLC2701
 from pip._internal.models.target_python import TargetPython  # noqa: PLC2701
+from pip._vendor.packaging.markers import Marker
+from pip._vendor.packaging.tags import mac_platforms  # noqa: PLC2701
 
 Version = Tuple[int, ...]
 
@@ -260,10 +260,6 @@ class Ubuntu(Distribution):
         return None
 
 
-def _strip_comment(line):
-    return line.split('#', 1)[0].strip()
-
-
 def parse_requirements(reqpath: Path) -> Dict[str, List[Tuple[str, Marker]]]:
     """ Parses a requirement file to a dict of {package: [(version, markers)]}
 
@@ -271,16 +267,12 @@ def parse_requirements(reqpath: Path) -> Dict[str, List[Tuple[str, Marker]]]:
     """
     reqs = {}
     with reqpath.open('r', encoding='utf-8') as f:
-        for req_line in f:
-            req_line = _strip_comment(req_line)
-            if not req_line:
-                continue
-            requirement = Requirement(req_line)
+        for requirement in pkg_resources.parse_requirements(f):
             version = None
-            if requirement.specifier:
-                if len(requirement.specifier) > 1:
-                    raise NotImplementedError('multi spec not supported yet')
-                version = next(iter(requirement.specifier)).version
+            if requirement.specs:
+                if len(requirement.specs) > 1:
+                    raise NotImplementedError('mutli spec not supported yet')
+                version = requirement.specs[0][1]
             reqs.setdefault(requirement.name, []).append((version, requirement.marker))
     return reqs
 

@@ -3,15 +3,26 @@
 # 	* analytic
 # 
 # Translators:
+# Ivica Dimjašević <ivica.dimjasevic@storm.hr>, 2022
+# Stjepan Lovasić <stjepan.lovasic@gmail.com>, 2022
+# Karolina Tonković <karolina.tonkovic@storm.hr>, 2022
+# Vladimir Olujić <olujic.vladimir@storm.hr>, 2022
+# Đurđica Žarković <durdica.zarkovic@storm.hr>, 2022
+# Milan Tribuson <one.mile.code@gmail.com>, 2022
+# Tina Milas, 2023
+# 0ba0ac30481a756f36528ba6f9a4317e_6443a87 <52eefe24349934c364624ef40611b7a3_1010754>, 2023
+# Martin Trigaux, 2023
+# Gordana Bilas, 2024
 # Bole <bole@dajmi5.com>, 2024
+# Vladimir Vrgoč, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-27 13:03+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Bole <bole@dajmi5.com>, 2024\n"
+"POT-Creation-Date: 2023-05-23 08:23+0000\n"
+"PO-Revision-Date: 2022-09-22 05:45+0000\n"
+"Last-Translator: Vladimir Vrgoč, 2025\n"
 "Language-Team: Croatian (https://app.transifex.com/odoo/teams/41243/hr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,8 +33,16 @@ msgstr ""
 #. module: analytic
 #. odoo-python
 #: code:addons/analytic/models/analytic_account.py:0
+#, python-format
 msgid "%s (copy)"
 msgstr "%s (kopija)"
+
+#. module: analytic
+#. odoo-javascript
+#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.xml:0
+#, python-format
+msgid "(no accounts)"
+msgstr "(nema konta)"
 
 #. module: analytic
 #: model_terms:ir.ui.view,arch_db:analytic.account_analytic_plan_form_view
@@ -36,20 +55,6 @@ msgid "<span class=\"o_stat_text\">Gross Margin</span>"
 msgstr "<span class=\"o_stat_text\">Bruto marža</span>"
 
 #. module: analytic
-#. odoo-python
-#: code:addons/analytic/models/analytic_plan.py:0
-msgid ""
-"A 'Project' plan needs to exist and its id needs to be set as "
-"`analytic.project_plan` in the system variables"
-msgstr ""
-
-#. module: analytic
-#. odoo-javascript
-#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
-msgid "Account field"
-msgstr "Polje konta"
-
-#. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_plan__account_ids
 msgid "Accounts"
 msgstr "Konta"
@@ -57,23 +62,12 @@ msgstr "Konta"
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__message_needaction
 msgid "Action Needed"
-msgstr "Potrebna radnja"
+msgstr "Potrebna dodatna radnja"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__active
 msgid "Active"
-msgstr "Aktivno"
-
-#. module: analytic
-#: model:account.analytic.account,name:analytic.analytic_active_account
-msgid "Active account"
-msgstr "Aktivni konto"
-
-#. module: analytic
-#. odoo-javascript
-#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.xml:0
-msgid "Add a Line"
-msgstr "Dodaj stavku"
+msgstr "Aktivan"
 
 #. module: analytic
 #: model_terms:ir.actions.act_window,help:analytic.action_account_analytic_account_form
@@ -99,25 +93,22 @@ msgstr "Iznos"
 
 #. module: analytic
 #. odoo-javascript
-#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
-msgid "Amount field"
-msgstr "Polje iznosa"
-
-#. module: analytic
-#. odoo-javascript
 #: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.xml:0
+#: model:ir.model.fields,field_description:analytic.field_account_analytic_distribution_model__analytic_distribution
+#: model:ir.model.fields,field_description:analytic.field_analytic_mixin__analytic_distribution
+#, python-format
 msgid "Analytic"
 msgstr "Analitika"
 
 #. module: analytic
 #: model:ir.model,name:analytic.model_account_analytic_account
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__name
-#: model:ir.model.fields,field_description:analytic.field_account_analytic_line__auto_account_id
-#: model:ir.model.fields,field_description:analytic.field_analytic_plan_fields_mixin__auto_account_id
+#: model:ir.model.fields,field_description:analytic.field_account_analytic_line__account_id
 #: model_terms:ir.ui.view,arch_db:analytic.view_account_analytic_account_form
 #: model_terms:ir.ui.view,arch_db:analytic.view_account_analytic_account_search
+#: model_terms:ir.ui.view,arch_db:analytic.view_account_analytic_line_filter
 msgid "Analytic Account"
-msgstr "Konto analitike"
+msgstr "Analitički konto"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_res_config_settings__group_analytic_accounting
@@ -137,14 +128,6 @@ msgid "Analytic Accounts Count"
 msgstr "Broj analitičkih konta"
 
 #. module: analytic
-#: model:ir.model.fields,field_description:analytic.field_account_analytic_distribution_model__analytic_distribution
-#: model:ir.model.fields,field_description:analytic.field_analytic_mixin__analytic_distribution
-msgid "Analytic Distribution"
-msgstr "Analitička raspodjela"
-
-#. module: analytic
-#. odoo-javascript
-#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
 #: model:ir.model,name:analytic.model_account_analytic_distribution_model
 #: model_terms:ir.ui.view,arch_db:analytic.account_analytic_distribution_model_form_view
 #: model_terms:ir.ui.view,arch_db:analytic.account_analytic_distribution_model_tree_view
@@ -155,6 +138,19 @@ msgstr "Model analitičke distribucije"
 #: model:ir.actions.act_window,name:analytic.action_analytic_distribution_model
 msgid "Analytic Distribution Models"
 msgstr "Modeli analitičke distribucije"
+
+#. module: analytic
+#: model:ir.model.fields,field_description:analytic.field_account_analytic_distribution_model__analytic_distribution_search
+#: model:ir.model.fields,field_description:analytic.field_analytic_mixin__analytic_distribution_search
+msgid "Analytic Distribution Search"
+msgstr "Pretraga analitičkih distribucija"
+
+#. module: analytic
+#. odoo-javascript
+#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
+#, python-format
+msgid "Analytic Distribution Template"
+msgstr "Predložak analitičke ditribucije"
 
 #. module: analytic
 #: model_terms:ir.ui.view,arch_db:analytic.view_account_analytic_line_form
@@ -186,13 +182,9 @@ msgstr "Mixin Analitike"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_applicability__analytic_plan_id
+#: model_terms:ir.ui.view,arch_db:analytic.view_account_analytic_line_filter
 msgid "Analytic Plan"
 msgstr "Analitički plan"
-
-#. module: analytic
-#: model:ir.model,name:analytic.model_analytic_plan_fields_mixin
-msgid "Analytic Plan Fields"
-msgstr "Polja analitičkog plana"
 
 #. module: analytic
 #: model:ir.model,name:analytic.model_account_analytic_applicability
@@ -205,7 +197,7 @@ msgstr "Primjenjivost analitičkog plana"
 #: model_terms:ir.ui.view,arch_db:analytic.account_analytic_plan_form_view
 #: model_terms:ir.ui.view,arch_db:analytic.account_analytic_plan_tree_view
 msgid "Analytic Plans"
-msgstr "Analitički planovi"
+msgstr "Analitički plan"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_distribution_model__analytic_precision
@@ -214,14 +206,21 @@ msgid "Analytic Precision"
 msgstr "Preciznost analitike"
 
 #. module: analytic
+#: model_terms:ir.ui.view,arch_db:analytic.account_analytic_distribution_model_form_view
+msgid "Analytic distribution to apply"
+msgstr "Analitička distribucija za primjeniti"
+
+#. module: analytic
 #. odoo-python
 #: code:addons/analytic/models/analytic_plan.py:0
+#, python-format
 msgid "Analytical Accounts"
 msgstr "Konta analitike"
 
 #. module: analytic
 #. odoo-python
 #: code:addons/analytic/models/analytic_plan.py:0
+#, python-format
 msgid "Analytical Plans"
 msgstr "Analitički planovi"
 
@@ -249,12 +248,6 @@ msgid "Asustek"
 msgstr "Asustek"
 
 #. module: analytic
-#. odoo-python
-#: code:addons/analytic/models/analytic_line.py:0
-msgid "At least one analytic account must be set"
-msgstr "Najmanje jedan analitički konto mora biti postavljen"
-
-#. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__message_attachment_count
 msgid "Attachment Count"
 msgstr "Broj priloga"
@@ -269,12 +262,6 @@ msgstr "Saldo"
 #: model_terms:ir.ui.view,arch_db:analytic.view_account_analytic_account_kanban
 msgid "Balance:"
 msgstr "Saldo"
-
-#. module: analytic
-#. odoo-javascript
-#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
-msgid "Business domain"
-msgstr "Poslovna domena"
 
 #. module: analytic
 #: model:account.analytic.account,name:analytic.analytic_partners_camp_to_camp
@@ -312,12 +299,6 @@ msgid "Click to add a new analytic account plan."
 msgstr "Kliknite za dodavanje novog analitičkog plana."
 
 #. module: analytic
-#. odoo-javascript
-#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.xml:0
-msgid "Close"
-msgstr "Zatvori"
-
-#. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_plan__color
 msgid "Color"
 msgstr "Boja"
@@ -325,7 +306,7 @@ msgstr "Boja"
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__color
 msgid "Color Index"
-msgstr "Index boje"
+msgstr "Indeks boje"
 
 #. module: analytic
 #: model:account.analytic.account,name:analytic.analytic_commercial_marketing
@@ -334,9 +315,9 @@ msgstr "Komercijala i Marketing"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__company_id
-#: model:ir.model.fields,field_description:analytic.field_account_analytic_applicability__company_id
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_distribution_model__company_id
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line__company_id
+#: model:ir.model.fields,field_description:analytic.field_account_analytic_plan__company_id
 msgid "Company"
 msgstr "Tvrtka"
 
@@ -346,14 +327,9 @@ msgid "Complete Name"
 msgstr "Puni naziv"
 
 #. module: analytic
-#: model_terms:ir.ui.view,arch_db:analytic.account_analytic_distribution_model_form_view
-msgid "Conditions to meet"
-msgstr "Uvjeti za ispuniti"
-
-#. module: analytic
 #: model:ir.model,name:analytic.model_res_config_settings
 msgid "Config Settings"
-msgstr "Konfiguracijske postavke"
+msgstr "Postavke"
 
 #. module: analytic
 #: model:ir.model.fields,help:analytic.field_account_analytic_line__product_uom_category_id
@@ -443,11 +419,6 @@ msgid "Delta PC"
 msgstr "Delta PC"
 
 #. module: analytic
-#: model:account.analytic.plan,name:analytic.analytic_plan_departments
-msgid "Departments"
-msgstr "Odjeli"
-
-#. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line__name
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_plan__description
 msgid "Description"
@@ -459,40 +430,18 @@ msgid "Desertic - Hispafuentes"
 msgstr ""
 
 #. module: analytic
-#. odoo-javascript
-#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
-msgid "Disable save"
-msgstr "Onemogući spremanje"
-
-#. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__display_name
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_applicability__display_name
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_distribution_model__display_name
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line__display_name
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_plan__display_name
 msgid "Display Name"
-msgstr "Naziv za prikaz"
-
-#. module: analytic
-#: model:ir.model.fields,field_description:analytic.field_account_analytic_distribution_model__distribution_analytic_account_ids
-#: model:ir.model.fields,field_description:analytic.field_analytic_mixin__distribution_analytic_account_ids
-msgid "Distribution Analytic Account"
-msgstr "Analitički konto distribucije"
-
-#. module: analytic
-#: model_terms:ir.ui.view,arch_db:analytic.account_analytic_distribution_model_form_view
-msgid "Distribution to apply"
-msgstr "Analitička distribucija za primjeniti"
+msgstr "Naziv"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_applicability__business_domain
 msgid "Domain"
 msgstr "Domena"
-
-#. module: analytic
-#: model:account.analytic.account,name:analytic.analytic_rd_finance
-msgid "Finance"
-msgstr "Financije"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__message_follower_ids
@@ -502,13 +451,7 @@ msgstr "Pratitelji"
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__message_partner_ids
 msgid "Followers (Partners)"
-msgstr "Pratitelji (partneri)"
-
-#. module: analytic
-#. odoo-javascript
-#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
-msgid "Force applicability"
-msgstr "Forsiraj primjenjivost"
+msgstr "Pratitelji (Partneri)"
 
 #. module: analytic
 #: model:ir.actions.act_window,name:analytic.account_analytic_line_action
@@ -525,11 +468,6 @@ msgstr "Grupiraj po..."
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__has_message
 msgid "Has Message"
 msgstr "Ima poruku"
-
-#. module: analytic
-#: model:account.analytic.account,name:analytic.analytic_rd_hr
-msgid "Human Resources"
-msgstr "Ljudski resursi"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__id
@@ -562,14 +500,25 @@ msgstr ""
 "analitičkih konta. Možete pratiti troškove i prihode kako bi jednostavno analizirali poslovanje "
 
 #. module: analytic
-#: model:account.analytic.plan,name:analytic.analytic_plan_internal
-msgid "Internal"
-msgstr "Interno"
+#. odoo-javascript
+#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
+#, python-format
+msgid "Invalid"
+msgstr "Neispravno"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__message_is_follower
 msgid "Is Follower"
-msgstr "Je li pratitelj"
+msgstr "Je pratitelj"
+
+#. module: analytic
+#: model:ir.model.fields,field_description:analytic.field_account_analytic_account____last_update
+#: model:ir.model.fields,field_description:analytic.field_account_analytic_applicability____last_update
+#: model:ir.model.fields,field_description:analytic.field_account_analytic_distribution_model____last_update
+#: model:ir.model.fields,field_description:analytic.field_account_analytic_line____last_update
+#: model:ir.model.fields,field_description:analytic.field_account_analytic_plan____last_update
+msgid "Last Modified on"
+msgstr "Zadnja promjena"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__write_uid
@@ -587,12 +536,14 @@ msgstr "Promijenio"
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line__write_date
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_plan__write_date
 msgid "Last Updated on"
-msgstr "Promijenjeno"
+msgstr "Vrijeme promjene"
 
 #. module: analytic
-#: model:account.analytic.account,name:analytic.analytic_rd_legal
-msgid "Legal"
-msgstr "Pravno"
+#. odoo-javascript
+#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
+#, python-format
+msgid "Loading..."
+msgstr "Učitavanje..."
 
 #. module: analytic
 #: model:account.analytic.account,name:analytic.analytic_think_big_systems
@@ -605,8 +556,16 @@ msgid "Luminous Technologies"
 msgstr "Luminous Technologies"
 
 #. module: analytic
+#: model:ir.model.fields,field_description:analytic.field_account_analytic_account__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "Glavni prilog"
+
+#. module: analytic
+#. odoo-javascript
+#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
 #: model:ir.model.fields.selection,name:analytic.selection__account_analytic_applicability__applicability__mandatory
 #: model:ir.model.fields.selection,name:analytic.selection__account_analytic_plan__default_applicability__mandatory
+#, python-format
 msgid "Mandatory"
 msgstr "Obavezno"
 
@@ -643,9 +602,10 @@ msgstr "Nebula"
 
 #. module: analytic
 #. odoo-javascript
-#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.xml:0
-msgid "New Model"
-msgstr "Novi model"
+#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
+#, python-format
+msgid "No Analytic Accounts for this plan"
+msgstr "Nema analitičkih konta za ovaj plan"
 
 #. module: analytic
 #: model_terms:ir.actions.act_window,help:analytic.account_analytic_line_action_entries
@@ -660,8 +620,9 @@ msgstr "Na ovom kontu još nema aktivnosti"
 #. module: analytic
 #. odoo-javascript
 #: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.xml:0
-msgid "No analytic plans found"
-msgstr "Nisu pronađeni analitički planovi"
+#, python-format
+msgid "No plans available"
+msgstr "Nema raspoloživih planova"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__message_needaction_counter
@@ -684,8 +645,16 @@ msgid "Number of messages with delivery error"
 msgstr "Broj poruka sa greškama pri isporuci"
 
 #. module: analytic
+#. odoo-javascript
+#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
+#, python-format
+msgid "OK"
+msgstr "U redu"
+
+#. module: analytic
 #. odoo-python
 #: code:addons/analytic/models/analytic_mixin.py:0
+#, python-format
 msgid "One or more lines require a 100% analytic distribution."
 msgstr "Jedna ili više stavaka traže analitičku distribuciju od 100%."
 
@@ -697,12 +666,16 @@ msgstr "Operativni troškovi"
 #. module: analytic
 #. odoo-python
 #: code:addons/analytic/models/analytic_mixin.py:0
+#, python-format
 msgid "Operation not supported"
 msgstr "Operacija nije podržana"
 
 #. module: analytic
+#. odoo-javascript
+#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
 #: model:ir.model.fields.selection,name:analytic.selection__account_analytic_applicability__applicability__optional
 #: model:ir.model.fields.selection,name:analytic.selection__account_analytic_plan__default_applicability__optional
+#, python-format
 msgid "Optional"
 msgstr "Opcionalno"
 
@@ -738,43 +711,23 @@ msgid "Partner Category"
 msgstr "Kategorija partnera"
 
 #. module: analytic
-#. odoo-javascript
-#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
-msgid "Percentage"
-msgstr "Postotak"
-
-#. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__plan_id
+#: model:ir.model.fields,field_description:analytic.field_account_analytic_line__plan_id
 msgid "Plan"
 msgstr "Plan"
-
-#. module: analytic
-#. odoo-javascript
-#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
-msgid "Product field"
-msgstr ""
-
-#. module: analytic
-#: model:account.analytic.account,name:analytic.analytic_rd_production
-msgid "Production"
-msgstr "Proizvodnja"
-
-#. module: analytic
-#: model:account.analytic.plan,name:analytic.analytic_plan_projects
-msgid "Project"
-msgstr "Projekt"
-
-#. module: analytic
-#: model:ir.model.fields,field_description:analytic.field_account_analytic_line__account_id
-#: model:ir.model.fields,field_description:analytic.field_analytic_plan_fields_mixin__account_id
-msgid "Project Account"
-msgstr "Konto projekta"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line__unit_amount
 #: model_terms:ir.ui.view,arch_db:analytic.view_account_analytic_line_tree
 msgid "Quantity"
 msgstr "Količina"
+
+#. module: analytic
+#. odoo-javascript
+#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
+#, python-format
+msgid "Quick search: %s"
+msgstr "Brzo pretraživanje: %s"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__code
@@ -800,20 +753,9 @@ msgstr ""
 "na troškovima (nrp. obračun troškova puta)."
 
 #. module: analytic
-#: model:ir.model.fields,field_description:analytic.field_account_analytic_plan__root_id
-msgid "Root"
-msgstr "Korjenski"
-
-#. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__root_plan_id
 msgid "Root Plan"
 msgstr "Korjenski plan"
-
-#. module: analytic
-#. odoo-javascript
-#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.xml:0
-msgid "Save as new analytic distribution model"
-msgstr "Spremi kao novi model analitičke distribucije"
 
 #. module: analytic
 #: model:account.analytic.account,name:analytic.analytic_seagate_p2
@@ -823,7 +765,21 @@ msgstr "Seagate P2"
 #. module: analytic
 #: model_terms:ir.ui.view,arch_db:analytic.view_account_analytic_line_filter
 msgid "Search Analytic Lines"
-msgstr "Pretraži analitičke linije"
+msgstr "Traži analitičke linije"
+
+#. module: analytic
+#. odoo-javascript
+#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
+#, python-format
+msgid "Search More..."
+msgstr "Traži dalje..."
+
+#. module: analytic
+#. odoo-javascript
+#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
+#, python-format
+msgid "Search: Analytic Account"
+msgstr "Traži analitički konto"
 
 #. module: analytic
 #: model:ir.model.fields,help:analytic.field_account_analytic_distribution_model__company_id
@@ -850,10 +806,9 @@ msgid ""
 msgstr ""
 
 #. module: analytic
-#: model:ir.model.fields,field_description:analytic.field_account_analytic_distribution_model__sequence
-#: model:ir.model.fields,field_description:analytic.field_account_analytic_plan__sequence
-msgid "Sequence"
-msgstr "Sekvenca"
+#: model_terms:ir.ui.view,arch_db:analytic.account_analytic_distribution_model_form_view
+msgid "Simultaneous conditions to meet"
+msgstr ""
 
 #. module: analytic
 #: model:account.analytic.account,name:analytic.analytic_spark
@@ -864,6 +819,15 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:analytic.account_analytic_plan_form_view
 msgid "Subplans"
 msgstr "Subplanovi"
+
+#. module: analytic
+#. odoo-python
+#: code:addons/analytic/models/analytic_line.py:0
+#, python-format
+msgid ""
+"The selected account belongs to another company than the one you're trying "
+"to create an analytic item for"
+msgstr ""
 
 #. module: analytic
 #: model:account.analytic.account,name:analytic.analytic_absences
@@ -897,8 +861,14 @@ msgid "User"
 msgstr "Korisnik"
 
 #. module: analytic
+#: model_terms:ir.ui.view,arch_db:analytic.account_analytic_distribution_model_tree_view
+msgid "View"
+msgstr "Pogledaj"
+
+#. module: analytic
 #. odoo-python
 #: code:addons/analytic/models/analytic_account.py:0
+#, python-format
 msgid ""
 "You can't set a different company on your analytic account since there are "
 "some analytic items linked to it."
@@ -906,13 +876,8 @@ msgstr ""
 
 #. module: analytic
 #. odoo-python
-#: code:addons/analytic/models/analytic_plan.py:0
-msgid "You cannot add a parent to the base plan '%s'"
-msgstr ""
-
-#. module: analytic
-#. odoo-python
 #: code:addons/analytic/models/analytic_distribution_model.py:0
+#, python-format
 msgid ""
 "You defined a distribution with analytic account(s) belonging to a specific "
 "company but a model shared between companies or with a different company"

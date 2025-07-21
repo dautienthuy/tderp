@@ -37,27 +37,23 @@ class TestReports(odoo.tests.HttpCase):
         result = {}
         origin_find_record = self.env.registry['ir.binary']._find_record
 
-        def _find_record(self, xmlid=None, res_model='ir.attachment', res_id=None, access_token=None, field=None):
+        def _find_record(self, xmlid=None, res_model='ir.attachment', res_id=None, access_token=None):
             if res_model == 'ir.attachment' and res_id == image.id:
                 result['uid'] = self.env.uid
-                record = origin_find_record(self, xmlid, res_model, res_id, access_token, field)
+                record = origin_find_record(self, xmlid, res_model, res_id, access_token)
                 result.update({'record_id': record.id, 'data': record.datas})
             else:
-                record = origin_find_record(self, xmlid, res_model, res_id, access_token, field)
+                record = origin_find_record(self, xmlid, res_model, res_id, access_token)
             return record
 
         self.patch(self.env.registry['ir.binary'], '_find_record', _find_record)
 
         # 1. Request the report as admin, who has access to the image
         admin = self.env.ref('base.user_admin')
-        admin_device_log_count_before = self.env['res.device.log'].search_count([('user_id', '=', admin.id)])
         report = report.with_user(admin)
         with MockRequest(report.env) as mock_request:
-            mock_request.session = self.authenticate(admin.login, admin.login)
+            mock_request.session.sid = self.authenticate(admin.login, admin.login).sid
             report.with_context(force_report_rendering=True)._render_qweb_pdf(report.id, [partner_id])
-        # Check that no device logs have been generated
-        admin_device_log_count_after = self.env['res.device.log'].search_count([('user_id', '=', admin.id)])
-        self.assertFalse(admin_device_log_count_after - admin_device_log_count_before)
 
         self.assertEqual(
             result.get('uid'), admin.id, 'wkhtmltopdf is not fetching the image as the user printing the report'
@@ -69,14 +65,9 @@ class TestReports(odoo.tests.HttpCase):
         self.logout()
         result.clear()
         public = self.env.ref('base.public_user')
-        public_device_log_count_before = self.env['res.device.log'].search_count([('user_id', '=', public.id)])
         report = report.with_user(public)
         with MockRequest(self.env) as mock_request:
-            mock_request.session = self.authenticate(None, None)
             report.with_context(force_report_rendering=True)._render_qweb_pdf(report.id, [partner_id])
-        # Check that no device logs have been generated
-        public_device_log_count_after = self.env['res.device.log'].search_count([('user_id', '=', public.id)])
-        self.assertFalse(public_device_log_count_after - public_device_log_count_before)
 
         self.assertEqual(
             result.get('uid'), public.id, 'wkhtmltopdf is not fetching the image as the user printing the report'

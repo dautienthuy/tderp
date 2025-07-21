@@ -3,29 +3,25 @@
 # 	* account_payment
 # 
 # Translators:
-# Jonathan Spier, 2024
-# Orel Nahmany, 2024
-# Moshe Flam <pashute@gmail.com>, 2024
-# Lilach Gilliam <lilach.gilliam@gmail.com>, 2024
-# Roy Sayag, 2024
-# Netta Waizer, 2024
-# Martin Trigaux, 2024
-# NoaFarkash, 2024
-# ExcaliberX <excaliberx@gmail.com>, 2024
-# Yihya Hugirat <hugirat@gmail.com>, 2024
-# Amit Spilman <amit@laylinetech.com>, 2024
-# yael terner, 2024
-# שהאב חוסיין <shhab89@gmail.com>, 2024
+# Martin Trigaux, 2022
+# Lilach Gilliam <lilach.gilliam@gmail.com>, 2022
+# שהאב חוסיין <shhab89@gmail.com>, 2022
+# ExcaliberX <excaliberx@gmail.com>, 2022
+# Amit Spilman <amit@laylinetech.com>, 2022
+# Yihya Hugirat <hugirat@gmail.com>, 2022
+# Hed Shefer <hed@laylinetech.com>, 2022
+# ZVI BLONDER <ZVIBLONDER@gmail.com>, 2022
+# NoaFarkash, 2022
+# yael terner, 2023
 # Ha Ketem <haketem@gmail.com>, 2024
-# ZVI BLONDER <ZVIBLONDER@gmail.com>, 2024
 # or balmas, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-25 07:48+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"PO-Revision-Date: 2022-09-22 05:44+0000\n"
 "Last-Translator: or balmas, 2025\n"
 "Language-Team: Hebrew (https://app.transifex.com/odoo/teams/41243/he/)\n"
 "MIME-Version: 1.0\n"
@@ -33,20 +29,6 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Language: he\n"
 "Plural-Forms: nplurals=3; plural=(n == 1 && n % 1 == 0) ? 0 : (n == 2 && n % 1 == 0) ? 1: 2;\n"
-
-#. module: account_payment
-#. odoo-python
-#: code:addons/account_payment/wizards/payment_link_wizard.py:0
-msgid ""
-"#%(number)s - Installment of <strong>%(amount)s</strong> due on <strong "
-"class=\"text-primary\">%(date)s</strong>"
-msgstr ""
-
-#. module: account_payment
-#. odoo-javascript
-#: code:addons/account_payment/static/src/js/portal_my_invoices_payment.js:0
-msgid "%s day(s) overdue"
-msgstr "%s ימים באיחור"
 
 #. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_success
@@ -68,22 +50,6 @@ msgid "<i class=\"fa fa-fw fa-arrow-circle-right\"/> Pay Now"
 msgstr "<i class=\"fa fa-fw fa-arrow-circle-right\"/> שלם עכשיו"
 
 #. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_my_invoices_payment
-msgid ""
-"<i class=\"fa fa-fw fa-check\"/>\n"
-"                <span class=\"d-none d-md-inline\"> Authorized</span>"
-msgstr ""
-
-#. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_my_invoices_payment
-msgid ""
-"<i class=\"fa fa-fw fa-check\"/>\n"
-"                <span class=\"d-none d-md-inline\"> Paid</span>"
-msgstr ""
-"<i class=\"fa fa-fw fa-check\"/>\n"
-"          <span class=\"d-none d-md-inline\">שולם</span>"
-
-#. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_page_inherit_payment
 msgid "<i class=\"fa fa-fw fa-check-circle\"/> Paid"
 msgstr "<i class=\"fa fa-fw fa-check-circle\"/> שולם"
@@ -95,27 +61,74 @@ msgstr "<i class=\"fa fa-fw fa-check-circle\"/> ממתין"
 
 #. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_page_inherit_payment
-msgid "<i class=\"fa fa-fw fa-check-circle\"/> Processing Payment"
-msgstr "<i class=\"fa fa-fw fa-check-circle\"/> מעבד תשלום "
+msgid ""
+"<i class=\"fa fa-info\"/> You have credits card registered, you can log-in "
+"to be able to use them."
+msgstr ""
+"<i class=\"fa fa-info\"/> יש לך כרטיסי אשראי רשומים, אתה יכול להתחבר כדי "
+"שתוכל להשתמש בהם."
 
 #. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.portal_my_invoices_payment
-msgid "<span class=\"d-none d-md-inline\"> Pending</span>"
-msgstr "<span class=\"d-none d-md-inline\"> בתהליך </span>"
+msgid ""
+"<span class=\"badge rounded-pill text-bg-danger\"><i class=\"fa fa-fw fa-"
+"remove\"/><span class=\"d-none d-md-inline\"> Cancelled</span></span>"
+msgstr ""
+"<span class=\"badge rounded-pill text-bg-danger\"><i class=\"fa fa-fw fa-"
+"remove\"/><span class=\"d-none d-md-inline\"> בוטל</span></span>"
 
 #. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_payment
-msgid "<strong>Full Amount</strong><br/>"
-msgstr "<strong> סכום מלא</strong><br/>"
+#: model_terms:ir.ui.view,arch_db:account_payment.portal_my_invoices_payment
+msgid ""
+"<span class=\"badge rounded-pill text-bg-info\"><i class=\"fa fa-fw fa-"
+"clock-o\"/><span class=\"d-none d-md-inline\"> Waiting for "
+"Payment</span></span>"
+msgstr ""
+"<span class=\"badge rounded-pill text-bg-info\"><i class=\"fa fa-fw fa-"
+"clock-o\"/><span class=\"d-none d-md-inline\"> ממתין לתשלום</span></span>"
+
+#. module: account_payment
+#: model_terms:ir.ui.view,arch_db:account_payment.portal_my_invoices_payment
+msgid ""
+"<span class=\"badge rounded-pill text-bg-primary\"><i class=\"fa fa-fw fa-"
+"check\"/><span class=\"d-none d-md-inline\"> Authorized</span></span>"
+msgstr ""
+"<span class=\"badge rounded-pill text-bg-primary\"><i class=\"fa fa-fw fa-"
+"check\"/><span class=\"d-none d-md-inline\"> אושר</span></span>"
+
+#. module: account_payment
+#: model_terms:ir.ui.view,arch_db:account_payment.portal_my_invoices_payment
+msgid ""
+"<span class=\"badge rounded-pill text-bg-success\"><i class=\"fa fa-fw fa-"
+"check\"/><span class=\"d-none d-md-inline\"> Paid</span></span>"
+msgstr ""
+"<span class=\"badge rounded-pill text-bg-success\"><i class=\"fa fa-fw fa-"
+"check\"/><span class=\"d-none d-md-inline\"> שולם</span></span>"
+
+#. module: account_payment
+#: model_terms:ir.ui.view,arch_db:account_payment.portal_my_invoices_payment
+msgid ""
+"<span class=\"badge rounded-pill text-bg-success\"><i class=\"fa fa-fw fa-"
+"check\"/><span class=\"d-none d-md-inline\"> Reversed</span></span>"
+msgstr ""
+
+#. module: account_payment
+#: model_terms:ir.ui.view,arch_db:account_payment.portal_my_invoices_payment
+msgid ""
+"<span class=\"badge rounded-pill text-bg-warning\"><span class=\"d-none "
+"d-md-inline\"> Pending</span></span>"
+msgstr ""
+"<span class=\"badge rounded-pill text-bg-warning\"><span class=\"d-none "
+"d-md-inline\"> ממתין</span></span>"
 
 #. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_payment
 msgid ""
-"<strong>Installment</strong>\n"
-"                                        <br/>"
+"<strong>No suitable payment option could be found.</strong><br/>\n"
+"                                If you believe that it is an error, please contact the website administrator."
 msgstr ""
-"<strong>תשלום</strong>\n"
-"                                       <br/>"
+"<strong>לא נמצאה אפשרות תשלום מתאימה.</strong><br/>\n"
+"                                אם לדעתך מדובר בטעות, נא ליצור קשר עם מנהלי האתר."
 
 #. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.payment_refund_wizard_view_form
@@ -124,45 +137,20 @@ msgid ""
 "                        Wait a moment for it to be processed. If the refund is still pending in a\n"
 "                        few minutes, please check your payment provider configuration."
 msgstr ""
-"<strong>אזהרה! </strong>קיים החזר כספי ממתין עבור תשלום זה.                                                      אנא המתן מספר רגעים עד לסיום העיבוד. \n"
-"אם ההחזר עדיין ממתין\n"
-"                                    לאחר מספר דקות, בדוק את הגדרות ספק התשלומים שלך."
-
-#. module: account_payment
-#. odoo-python
-#: code:addons/account_payment/wizards/payment_link_wizard.py:0
-msgid "A discount will be applied if the customer pays before %s included."
-msgstr "הנחה תחול אם הלקוח משלם לפני התאריך %s כולל."
-
-#. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_payment
-msgid ""
-"A payment has already been made on this invoice, please make sure to not pay"
-" twice."
-msgstr "תשלום כבר בוצע על חשבונית זו, אנא הקפד לא לשלם פעמיים."
 
 #. module: account_payment
 #. odoo-python
 #: code:addons/account_payment/models/account_payment.py:0
+#, python-format
 msgid "A payment transaction with reference %s already exists."
 msgstr "תשלום עם מספר אסמכתא %s כבר קיים"
 
 #. module: account_payment
 #. odoo-python
 #: code:addons/account_payment/models/account_payment.py:0
+#, python-format
 msgid "A token is required to create a new payment transaction."
 msgstr "נדרש אסימון ליצירת עסקת תשלום חדשה."
-
-#. module: account_payment
-#: model:onboarding.onboarding.step,button_text:account_payment.onboarding_onboarding_step_payment_provider
-msgid "Activate Stripe"
-msgstr ""
-
-#. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_overdue_invoices_page
-msgid "Amount"
-msgstr "סכום כולל"
 
 #. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_account_payment__amount_available_for_refund
@@ -170,13 +158,9 @@ msgid "Amount Available For Refund"
 msgstr "סכום שנותר ליצירת זיכוי"
 
 #. module: account_payment
-#: model:ir.model.fields,field_description:account_payment.field_payment_link_wizard__invoice_amount_due
-msgid "Amount Due"
-msgstr "סכום לתשלום"
-
-#. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_account_bank_statement_line__amount_paid
 #: model:ir.model.fields,field_description:account_payment.field_account_move__amount_paid
+#: model:ir.model.fields,field_description:account_payment.field_account_payment__amount_paid
 msgid "Amount paid"
 msgstr "סכום ששולם"
 
@@ -190,6 +174,7 @@ msgstr "האם אתה בטוח שברצונך לבטל את העסקה המור�
 #. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_account_bank_statement_line__authorized_transaction_ids
 #: model:ir.model.fields,field_description:account_payment.field_account_move__authorized_transaction_ids
+#: model:ir.model.fields,field_description:account_payment.field_account_payment__authorized_transaction_ids
 msgid "Authorized Transactions"
 msgstr "עסקאות מורשות"
 
@@ -201,7 +186,6 @@ msgstr "לכוד עסקה"
 #. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.payment_refund_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_payment_paid
 msgid "Close"
 msgstr "סגור"
 
@@ -209,11 +193,6 @@ msgstr "סגור"
 #: model:ir.model.fields,field_description:account_payment.field_account_payment_register__payment_method_code
 msgid "Code"
 msgstr "קוד"
-
-#. module: account_payment
-#: model:ir.model,name:account_payment.model_res_config_settings
-msgid "Config Settings"
-msgstr "הגדרות תצורה"
 
 #. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_payment_refund_wizard__create_uid
@@ -231,19 +210,9 @@ msgid "Currency"
 msgstr "מטבע"
 
 #. module: account_payment
-#: model:ir.model.fields,field_description:account_payment.field_payment_link_wizard__discount_date
-msgid "Discount Date"
-msgstr "תאריך הנחה"
-
-#. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_payment_refund_wizard__display_name
 msgid "Display Name"
 msgstr "שם לתצוגה"
-
-#. module: account_payment
-#: model:ir.model.fields,field_description:account_payment.field_payment_link_wizard__display_open_installments
-msgid "Display Open Installments"
-msgstr "הצגת תשלומים פתוחים"
 
 #. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_success
@@ -251,26 +220,6 @@ msgid ""
 "Done, your online payment has been successfully processed. Thank you for "
 "your order."
 msgstr "בוצע, התשלום המקוון שלך עבר בהצלחה. תודה על הזמנתך."
-
-#. module: account_payment
-#: model:ir.model.fields,field_description:account_payment.field_payment_link_wizard__epd_info
-msgid "Early Payment Discount Information"
-msgstr "מידע על הנחה בתשלום מוקדם"
-
-#. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_payment
-msgid "Early Payment Discount of"
-msgstr "הנחת תשלום מוקדם של "
-
-#. module: account_payment
-#: model:onboarding.onboarding.step,description:account_payment.onboarding_onboarding_step_payment_provider
-msgid "Enable credit & debit card payments supported by Stripe."
-msgstr "אפשר תשלומים בכרטיסי אשראי וחיוב הנתמכים על ידי Stripe."
-
-#. module: account_payment
-#: model:ir.model.fields.selection,name:account_payment.selection__payment_refund_wizard__support_refund__full_only
-msgid "Full Only"
-msgstr "רק במלואו"
 
 #. module: account_payment
 #: model:ir.model,name:account_payment.model_payment_link_wizard
@@ -283,11 +232,6 @@ msgid "Generate a Payment Link"
 msgstr "צור קישור לתשלום"
 
 #. module: account_payment
-#: model:ir.model.fields,field_description:account_payment.field_payment_link_wizard__has_eligible_epd
-msgid "Has Eligible Epd"
-msgstr ""
-
-#. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_payment_refund_wizard__has_pending_refund
 msgid "Has a pending refund"
 msgstr "קיים החזר ממתין"
@@ -298,24 +242,11 @@ msgid "ID"
 msgstr "מזהה"
 
 #. module: account_payment
-#. odoo-python
-#: code:addons/account_payment/controllers/payment.py:0
-msgid ""
-"Impossible to pay all the overdue invoices if they don't share the same "
-"currency."
-msgstr ""
-
-#. module: account_payment
 #: model:ir.model.fields,help:account_payment.field_account_payment_method_line__payment_provider_state
 msgid ""
 "In test mode, a fake payment is processed through a test payment interface.\n"
 "This mode is advised when setting up the provider."
 msgstr ""
-
-#. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.res_config_settings_view_form
-msgid "Invoice Online Payment"
-msgstr "תשלום מקוון של חשבוניות"
 
 #. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.payment_transaction_form
@@ -326,23 +257,14 @@ msgstr "חשבוניות"
 #. odoo-python
 #: code:addons/account_payment/models/payment_transaction.py:0
 #: model:ir.model.fields,field_description:account_payment.field_payment_transaction__invoice_ids
+#, python-format
 msgid "Invoices"
 msgstr "חשבוניות"
-
-#. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_my_home_overdue_invoice
-msgid "Invoices &amp; Bills"
-msgstr "חשבוניות וחשבוניות ספק"
 
 #. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_payment_transaction__invoices_count
 msgid "Invoices Count"
 msgstr "כמות חשבוניות"
-
-#. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_my_home_account_payment
-msgid "Invoices to pay"
-msgstr "חשבוניות לתשלום"
 
 #. module: account_payment
 #: model:ir.model,name:account_payment.model_account_journal
@@ -353,6 +275,11 @@ msgstr "יומן"
 #: model:ir.model,name:account_payment.model_account_move
 msgid "Journal Entry"
 msgstr "פקודת יומן"
+
+#. module: account_payment
+#: model:ir.model.fields,field_description:account_payment.field_payment_refund_wizard____last_update
+msgid "Last Modified on"
+msgstr "שינוי אחרון ב"
 
 #. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_payment_refund_wizard__write_uid
@@ -370,11 +297,6 @@ msgid "Maximum Refund Allowed"
 msgstr "החזר מקסימלי מותר"
 
 #. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.payment_link_wizard__form_inherit_account_payment
-msgid "Next Installments"
-msgstr "תשלומים הבאים"
-
-#. module: account_payment
 #: model:ir.model.fields,help:account_payment.field_account_payment__payment_token_id
 msgid ""
 "Note that only tokens from providers allowing to capture the amount are "
@@ -387,71 +309,8 @@ msgid ""
 "Note that tokens from providers set to only authorize transactions (instead "
 "of capturing the amount) are not available."
 msgstr ""
-"שימו לב כי אסימוני תשלום מספקים שהוגדרו לאשר עסקאות בלבד (ולא לגבות את "
-"הסכום) אינם זמינים."
 
 #. module: account_payment
-#: model:onboarding.onboarding.step,step_image_alt:account_payment.onboarding_onboarding_step_payment_provider
-msgid "Onboarding Online Payments"
-msgstr ""
-
-#. module: account_payment
-#: model:ir.model,name:account_payment.model_onboarding_onboarding_step
-msgid "Onboarding Step"
-msgstr ""
-
-#. module: account_payment
-#: model:onboarding.onboarding.step,title:account_payment.onboarding_onboarding_step_payment_provider
-msgid "Online Payments"
-msgstr "תשלומים מקוונים"
-
-#. module: account_payment
-#. odoo-python
-#: code:addons/account_payment/wizards/payment_link_wizard.py:0
-msgid "Online payment option is not enabled in Configuration."
-msgstr ""
-
-#. module: account_payment
-#. odoo-python
-#: code:addons/account_payment/controllers/portal.py:0
-msgid "Overdue invoices should share the same company."
-msgstr "חשבוניות באיחור צריכות לחלוק את אותה חברה."
-
-#. module: account_payment
-#. odoo-python
-#: code:addons/account_payment/controllers/portal.py:0
-msgid "Overdue invoices should share the same currency."
-msgstr "חשבוניות באיחור צריכות לחלוק את אותו המטבע."
-
-#. module: account_payment
-#. odoo-python
-#: code:addons/account_payment/controllers/portal.py:0
-msgid "Overdue invoices should share the same partner."
-msgstr "החשבוניות באיחור צריכות להיות עבור אותו לקוח/ספק."
-
-#. module: account_payment
-#: model:ir.model.fields.selection,name:account_payment.selection__payment_refund_wizard__support_refund__partial
-msgid "Partial"
-msgstr "חלקי"
-
-#. module: account_payment
-#: model:ir.model,name:account_payment.model_account_payment_register
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_payment
-msgid "Pay"
-msgstr "שלם"
-
-#. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_payment_paid
-msgid "Pay Invoice"
-msgstr "שלם חשבונית"
-
-#. module: account_payment
-#: model:ir.model.fields,field_description:account_payment.field_res_config_settings__pay_invoices_online
-msgid "Pay Invoices Online"
-msgstr "שלם חשבוניות אונליין"
-
-#. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_docs_entry
 #: model_terms:ir.ui.view,arch_db:account_payment.portal_my_invoices_payment
 msgid "Pay Now"
 msgstr "שלם עכשיו"
@@ -462,9 +321,9 @@ msgid "Pay now"
 msgstr "שלם עכשיו"
 
 #. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_my_home_overdue_invoice
-msgid "Pay overdue"
-msgstr "תשלום באיחור"
+#: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_payment
+msgid "Pay with"
+msgstr "שלם עם"
 
 #. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_payment_refund_wizard__payment_id
@@ -478,6 +337,11 @@ msgid "Payment Amount"
 msgstr "סכום תשלום"
 
 #. module: account_payment
+#: model:ir.ui.menu,name:account_payment.payment_icon_menu
+msgid "Payment Icons"
+msgstr "סמלי תשלום"
+
+#. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_payment_provider__journal_id
 msgid "Payment Journal"
 msgstr "יומן תשלום"
@@ -485,7 +349,6 @@ msgstr "יומן תשלום"
 #. module: account_payment
 #: model:ir.model,name:account_payment.model_account_payment_method
 #: model:ir.model,name:account_payment.model_account_payment_method_line
-#: model:ir.ui.menu,name:account_payment.payment_method_menu
 msgid "Payment Methods"
 msgstr "אמצעי תשלום"
 
@@ -530,28 +393,18 @@ msgstr "תשלומים"
 
 #. module: account_payment
 #. odoo-python
-#: code:addons/account_payment/controllers/payment.py:0
-msgid "Please log in to pay your overdue invoices"
-msgstr "אנא היכנס כדי לשלם את החשבוניות באיחור"
-
-#. module: account_payment
-#. odoo-python
 #: code:addons/account_payment/models/account_payment_method_line.py:0
+#, python-format
 msgid "Provider"
 msgstr "ספק"
 
 #. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_overdue_invoices_page
-msgid "Reference"
-msgstr "מזהה"
-
-#. module: account_payment
 #. odoo-python
 #: code:addons/account_payment/models/account_payment.py:0
-#: model:ir.model.fields,field_description:account_payment.field_payment_refund_wizard__support_refund
+#: code:addons/account_payment/models/account_payment.py:0
 #: model_terms:ir.ui.view,arch_db:account_payment.payment_refund_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:account_payment.view_account_payment_form_inherit_payment
+#, python-format
 msgid "Refund"
 msgstr "החזר כספי"
 
@@ -576,6 +429,11 @@ msgid "Refunds Count"
 msgstr "מס' החזרים"
 
 #. module: account_payment
+#: model:ir.model,name:account_payment.model_account_payment_register
+msgid "Register Payment"
+msgstr "רשום תשלום"
+
+#. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.view_account_journal_form
 msgid "SETUP"
 msgstr "הגדרה"
@@ -583,7 +441,7 @@ msgstr "הגדרה"
 #. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_account_payment__payment_token_id
 msgid "Saved Payment Token"
-msgstr "אסימון תשלום נשמר"
+msgstr ""
 
 #. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_account_payment_register__payment_token_id
@@ -601,25 +459,22 @@ msgid "State"
 msgstr "סטטוס"
 
 #. module: account_payment
-#: model:onboarding.onboarding.step,done_text:account_payment.onboarding_onboarding_step_payment_provider
-msgid "Step Completed!"
-msgstr "שלב הושלם!"
-
-#. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_account_payment__suitable_payment_token_ids
 #: model:ir.model.fields,field_description:account_payment.field_account_payment_register__suitable_payment_token_ids
 msgid "Suitable Payment Token"
-msgstr "אסימון תשלום מתאים"
+msgstr ""
 
 #. module: account_payment
 #. odoo-python
 #: code:addons/account_payment/controllers/payment.py:0
+#, python-format
 msgid "The access token is invalid."
 msgstr "האסימון גישה אינו חוקי."
 
 #. module: account_payment
 #. odoo-python
 #: code:addons/account_payment/wizards/payment_refund_wizard.py:0
+#, python-format
 msgid ""
 "The amount to be refunded must be positive and cannot be superior to %s."
 msgstr "סכום הזיכוי צריך להיות מספר חיובי ולא יכול להיות יותר מ-%s."
@@ -627,38 +482,29 @@ msgstr "סכום הזיכוי צריך להיות מספר חיובי ולא י�
 #. module: account_payment
 #: model:ir.model.fields,help:account_payment.field_payment_provider__journal_id
 msgid "The journal in which the successful transactions are posted."
-msgstr "היומן שבו נרשמות העסקאות המוצלחות."
+msgstr ""
 
 #. module: account_payment
 #. odoo-python
 #: code:addons/account_payment/models/payment_transaction.py:0
+#, python-format
 msgid ""
 "The payment related to the transaction with reference %(ref)s has been "
 "posted: %(link)s"
-msgstr "התשלום הקשור לעסקה עם הפניה%(ref)s נרשם: %(link)s"
+msgstr ""
 
 #. module: account_payment
 #. odoo-python
 #: code:addons/account_payment/controllers/payment.py:0
+#: code:addons/account_payment/controllers/payment.py:0
+#, python-format
 msgid "The provided parameters are invalid."
-msgstr "הפרמטרים שסופקו אינם תקינים."
+msgstr ""
 
 #. module: account_payment
 #: model:ir.model.fields,help:account_payment.field_account_payment__source_payment_id
 msgid "The source payment of related refund payments"
-msgstr "תשלום מקור של תשלומי החזר הקשורים"
-
-#. module: account_payment
-#. odoo-python
-#: code:addons/account_payment/models/account_move.py:0
-msgid "There are pending transactions for this invoice."
-msgstr "יש עסקאות ממתינות עבור חשבונית זו."
-
-#. module: account_payment
-#. odoo-python
-#: code:addons/account_payment/models/account_move.py:0
-msgid "There is no amount to be paid."
-msgstr "אין סכום לתשלום."
+msgstr ""
 
 #. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_error
@@ -684,50 +530,30 @@ msgstr "אירעה שגיאה בעיבוד התשלום שלך: מזהה כרט�
 
 #. module: account_payment
 #. odoo-python
-#: code:addons/account_payment/models/account_move.py:0
-msgid "This invoice cannot be paid online."
-msgstr "חשבונית זו אינה ניתנת לתשלום באופן מקוון."
-
-#. module: account_payment
-#. odoo-python
-#: code:addons/account_payment/models/account_move.py:0
-msgid "This invoice has already been paid."
-msgstr "חשבונית זו כבר שולמה."
-
-#. module: account_payment
-#. odoo-python
-#: code:addons/account_payment/models/account_move.py:0
-msgid "This invoice isn't posted."
-msgstr "חשבונית זו לא נרשמה."
-
-#. module: account_payment
-#. odoo-python
-#: code:addons/account_payment/models/account_move.py:0
-msgid "This is not an outgoing invoice."
-msgstr "זו אינה חשבונית יוצאת."
-
-#. module: account_payment
-#: model:ir.model.fields,field_description:account_payment.field_account_bank_statement_line__transaction_count
-#: model:ir.model.fields,field_description:account_payment.field_account_move__transaction_count
-msgid "Transaction Count"
-msgstr "מספר עסקאות"
+#: code:addons/account_payment/models/payment_provider.py:0
+#, python-format
+msgid ""
+"To uninstall this module, please remove first the corresponding payment "
+"method line in the incoming payments tab defined on the bank journal."
+msgstr ""
 
 #. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_account_bank_statement_line__transaction_ids
 #: model:ir.model.fields,field_description:account_payment.field_account_move__transaction_ids
+#: model:ir.model.fields,field_description:account_payment.field_account_payment__transaction_ids
 msgid "Transactions"
 msgstr "עסקאות"
 
 #. module: account_payment
-#: model:ir.model.fields.selection,name:account_payment.selection__payment_refund_wizard__support_refund__none
-msgid "Unsupported"
-msgstr "לא נתמך"
+#: model:ir.model.fields,field_description:account_payment.field_payment_refund_wizard__support_refund
+msgid "Type of Refund Supported"
+msgstr "תמיכה בסוג זיכוי"
 
 #. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_account_payment__use_electronic_payment_method
 #: model:ir.model.fields,field_description:account_payment.field_account_payment_register__use_electronic_payment_method
 msgid "Use Electronic Payment Method"
-msgstr "השתמש באמצעי תשלום אלקטרוני"
+msgstr ""
 
 #. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.account_invoice_view_form_inherit_payment
@@ -737,51 +563,17 @@ msgstr "עסקה מבוטלת"
 #. module: account_payment
 #. odoo-python
 #: code:addons/account_payment/models/account_payment_method_line.py:0
+#, python-format
 msgid ""
 "You can't delete a payment method that is linked to a provider in the enabled or test state.\n"
 "Linked providers(s): %s"
 msgstr ""
-"לא ניתן למחוק אמצעי תשלום שמקושר לספק שנמצא במצב פעיל או מצב בדיקה.\n"
-"ספקים מקושרים:%s"
-
-#. module: account_payment
-#. odoo-python
-#: code:addons/account_payment/models/payment_provider.py:0
-msgid ""
-"You cannot uninstall this module as payments using this payment method "
-"already exist."
-msgstr ""
-"לא ניתן להסיר את המודול הזה מכיוון שכבר קיימות עסקאות שבוצעו באמצעות אמצעי "
-"תשלום זה."
 
 #. module: account_payment
 #. odoo-python
 #: code:addons/account_payment/models/account_journal.py:0
+#, python-format
 msgid ""
 "You must first deactivate a payment provider before deleting its journal.\n"
 "Linked providers: %s"
 msgstr ""
-"עליך קודם להשבית ספק תשלום לפני מחיקת יומן שלו.\n"
-"ספקים מקושרים: %s"
-
-#. module: account_payment
-#. odoo-javascript
-#: code:addons/account_payment/static/src/js/portal_my_invoices_payment.js:0
-msgid "due in %s day(s)"
-msgstr "לפירעון בעוד %s ימים"
-
-#. module: account_payment
-#. odoo-javascript
-#: code:addons/account_payment/static/src/js/portal_my_invoices_payment.js:0
-msgid "due today"
-msgstr "לפירעון היום"
-
-#. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_payment
-msgid "has been applied."
-msgstr "הוחל."
-
-#. module: account_payment
-#: model_terms:ir.ui.view,arch_db:account_payment.portal_my_invoices_payment
-msgid "overdue"
-msgstr "באיחור"
