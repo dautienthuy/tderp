@@ -11,4 +11,4 @@ class EquipmentPartsList(models.Model):
     code = fields.Char(u'Serial')    
     unit = fields.Selection([('chi', u'Chiếc'), ('cai', u'Cái')], string=u'Unit')
     quantity = fields.Float(u'Quantity')
-    description = fields.Char(u'description')
+    description = fields.Char(u'Description')
