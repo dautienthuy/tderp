@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 {
-    'name': 'Project TD',
+    'name': 'Project Triduc Elevator',
     'version': '1.0',
     'sequence': 1,
-    'category': 'TD',
+    'category': 'Baaesoft Standard Modules',  
+    'author': 'Baaesoft',
     'description': """
         This module will install all module dependencies of td_module.""",
     'depends': [
