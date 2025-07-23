@@ -8,7 +8,7 @@
         >
         <!-- t-translation="off" should be on next a element below -->
         <a t-if="subscription.daysLeft &gt; 0" href="#" class="oe_instance_hide_panel float-end alert-link" t-on-click.prevent="() => subscription.hideWarning()" aria-label="Dismiss">×</a>
-        <span t-if="!subscription.lastRequestStatus" class="oe_instance_register">
+        <!-- <span t-if="!subscription.lastRequestStatus" class="oe_instance_register">
             <t t-if="!subscription.hasInstalledApps">You will be able to register your database once you have installed your first app.</t>
             <t t-else="">
                 <t t-esc="expirationMessage"/>
@@ -41,7 +41,7 @@
                 </t>
                 <t t-elif="subscription.warningType === 'user'">Log in as an administrator to correct the issue.</t>
             </t>
-        </span>
+        </span> -->
         <span t-if="subscription.lastRequestStatus === 'success'" class="oe_instance_register oe_instance_success">Thank you, your registration was successful! Your database is valid until <span><t t-esc="subscription.formattedExpirationDate"/></span>.</span>
         <span t-elif="subscription.lastRequestStatus === 'update'" class="oe_instance_register oe_subscription_updated">Your subscription was updated and is valid until <span><t t-esc="subscription.formattedExpirationDate"/></span>.</span>
         <span t-elif="subscription.lastRequestStatus === 'error'" class="oe_instance_register oe_instance_error">Something went wrong while registering your database. You can try again or contact <a class="alert-link text-decoration-underline" href="https://www.odoo.com/help" target="_blank">Odoo Support</a>.</span>
