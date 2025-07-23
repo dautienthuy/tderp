@@ -13,8 +13,6 @@ class MaintenanceRequest(models.Model):
     _name = 'maintenance.request'
     _inherit = 'maintenance.request'
     _description = 'Maintenance Request'
-    _order = "id desc"
-    _check_company_auto = True
 
     @api.model_create_multi
     def create(self, vals_list):        

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="maintenance_equipment_view_form_inherit_td" model="ir.ui.view">
+        <field name="name">maintenance.equipment.view.form.inherit.td</field>
+        <field name="model">maintenance.equipment</field>
+        <field name="inherit_id" ref="maintenance.hr_equipment_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='location']" position="after">
+                <field name="parent_equipment_id"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

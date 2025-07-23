@@ -24,6 +24,7 @@
         # DATA
         # Wizards
         # VIEWS
+        'views/maintenance/maintenance_equipment_views.xml',
         # REPORT
         # MENU
         # MENU - GROUP
