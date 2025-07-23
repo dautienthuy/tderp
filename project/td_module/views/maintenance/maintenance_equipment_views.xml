@@ -8,6 +8,18 @@
             <xpath expr="//field[@name='location']" position="after">
                 <field name="parent_equipment_id"/>
             </xpath>
+            <xpath expr="//page[@name='description']" position="before">
+                <page string="Equipment Parts List" name="page_equipment_parts_list">
+                    <field name="equipment_parts_list">
+                        <tree string="Equipment Parts List" editable="bottom">
+                            <field name="code"/>
+                            <field name="unit"/>
+                            <field name="quantity"/>
+                            <field name="description"/> 
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
         </field>
     </record>
 </odoo>

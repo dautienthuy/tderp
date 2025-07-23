@@ -22,10 +22,12 @@
     'website': 'https://baaesoft.com',
     'data': [
         # SECURITY
+        'security/ir.model.access.csv',
         # DATA
         # Wizards
         # VIEWS
         'views/maintenance/maintenance_equipment_views.xml',
+        'views/maintenance/equipment_parts_list_views.xml',
         # REPORT
         # MENU
         # MENU - GROUP
