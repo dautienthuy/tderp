@@ -12,4 +12,5 @@ class MaintenanceEquipment(models.Model):
     equipment_assign_to = fields.Selection(
         [('department', 'Department'), ('customer', 'Customer'), ('other', 'Other')],
         default='customer')
-    equipment_parts_list = fields.One2many('equipment.parts.list', 'maintenance_equipment_id', string=u'Equipment Parts List')    
+    equipment_parts_list = fields.One2many('equipment.parts.list', 'maintenance_equipment_id', string=u'Equipment Parts List')
+    maintenance_cycle_ids = fields.One2many('maintenance.cycle', 'maintenance_equipment_id', string=u'Maintenance Cycle')

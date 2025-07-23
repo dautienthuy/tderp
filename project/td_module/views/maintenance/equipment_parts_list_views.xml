@@ -4,24 +4,24 @@
         <field name="name">equipment.parts.list.form</field>
         <field name="model">equipment.parts.list</field>
         <field name="arch" type="xml">
-            <form string="Equipment Parts List">                
-                <header>                    
+            <form string="Equipment Parts List">
+                <header>
                 </header>
-                <sheet>                    
+                <sheet>
                     <group>
                         <group>
                             <field name="maintenance_equipment_id" invisible="1"/>
                             <field name="code"/>
                         </group>
-                        <group>                            
+                        <group>
                             <field name="quantity"/>
-                            <field name="unit"/>
+                            <field name="uom_id"/>
                         </group>
                     </group>
                     <group>
                         <field name='description' placeholder="Internal Notes"/>
                     </group>
-                </sheet>                
+                </sheet>
             </form>
         </field>
     </record>
@@ -32,9 +32,9 @@
         <field name="arch" type="xml">
             <tree string="Equipment Parts List">
                 <field name="code"/>
-                <field name="unit"/>
+                <field name="uom_id"/>
                 <field name="quantity"/>
-                <field name="description"/>                
+                <field name="description"/>
             </tree>
         </field>
     </record>

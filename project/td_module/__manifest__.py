@@ -28,8 +28,10 @@
         # VIEWS
         'views/maintenance/maintenance_equipment_views.xml',
         'views/maintenance/equipment_parts_list_views.xml',
+        'views/maintenance/maintenance_checklist_views.xml',
         # REPORT
         # MENU
+        'menu/maintenance_menu.xml',
         # MENU - GROUP
         # POST OBJECT
         # Template

@@ -9,6 +9,6 @@ class EquipmentPartsList(models.Model):
 
     maintenance_equipment_id = fields.Many2one('maintenance.equipment', string=u'Equipment')
     code = fields.Char(u'Serial')    
-    unit = fields.Selection([('chi', u'Chiếc'), ('cai', u'Cái')], string=u'Unit')
+    uom_id = fields.Many2one('uom.uom', 'Unit')
     quantity = fields.Float(u'Quantity')
     description = fields.Char(u'Description')

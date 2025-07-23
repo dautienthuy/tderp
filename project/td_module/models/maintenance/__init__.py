@@ -3,3 +3,5 @@
 from . import maintenance_request
 from . import maintenance_equipment
 from . import equipment_parts_list
+from . import maintenance_checklist
+from . import maintenance_cycle
