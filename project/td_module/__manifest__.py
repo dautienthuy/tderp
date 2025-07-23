@@ -19,7 +19,7 @@
         'hr',
         ],
     'summary': 'TD Project Module',
-    'website': 'https://thangmaytriduc.com',
+    'website': 'https://baaesoft.com',
     'data': [
         # SECURITY
         # DATA
