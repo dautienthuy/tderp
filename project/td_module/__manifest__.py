@@ -22,6 +22,8 @@
     'website': 'https://baaesoft.com',
     'data': [
         # SECURITY
+        'security/maintenance_security.xml',
+        #
         'security/ir.model.access.csv',
         # DATA
         # Wizards
