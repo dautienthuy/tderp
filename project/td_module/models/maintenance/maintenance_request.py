@@ -14,6 +14,18 @@ class MaintenanceRequest(models.Model):
     _inherit = 'maintenance.request'
     _description = 'Maintenance Request'
 
+    date_start = fields.Date(string=u'Ngày bắt đầu',
+        default=lambda self: fields.Date.to_string(date.today()))
+    date_end = fields.Date(string=u'Ngày hoàn thành',
+        default=lambda self: fields.Date.to_string(date.today()))
+    maintenance_checklist_id = fields.Many2one('maintenance.checklist', string='Cấp bảo dưỡng')
+    date_repair = fields.Date(string=u'Ngày xảy ra sự cố')
+    technical_spec = fields.Char(string=u'Thông số kỹ thuật')
+    uom_id = fields.Many2one('uom.uom', 'Đơn vị')
+    quantity = fields.Float(u'Số lượng')
+    result = fields.Char(u'Kết quả')
+    final_settlement_line_ids = fields.One2many('maintenance.final.settlement.line', 'maintenance_request_id', string=u'Final Settlement Line')
+
     @api.model_create_multi
     def create(self, vals_list):        
         maintenance_requests = super().create(vals_list)
