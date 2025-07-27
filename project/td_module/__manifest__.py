@@ -17,6 +17,9 @@
         'maintenance',
         'documents',
         'hr',
+        'stock',
+        'delivery',
+        'stock_sms'
         ],
     'summary': 'TD Project Module',
     'website': 'https://baaesoft.com',
