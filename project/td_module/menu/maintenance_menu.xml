@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Maintenance Checklist -->
+        <record id="maintenance_checklist_action" model="ir.actions.act_window">
+            <field name="name">Maintenance Checklist</field>
+            <field name="res_model">maintenance.checklist</field>
+            <field name="view_mode">tree,form</field>            
+        </record>
+        <menuitem
+            id="menu_maintenance_checklist"
+            name="Maintenance Checklist"
+            parent="maintenance.menu_maintenance_configuration"
+            action="maintenance_checklist_action"
+            sequence="10"/>
+    </data>
+</odoo>

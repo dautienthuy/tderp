@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="equipment_parts_list_view_form" model="ir.ui.view">
+        <field name="name">equipment.parts.list.form</field>
+        <field name="model">equipment.parts.list</field>
+        <field name="arch" type="xml">
+            <form string="Equipment Parts List">
+                <header>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="maintenance_equipment_id" invisible="1"/>
+                            <field name="code"/>
+                        </group>
+                        <group>
+                            <field name="quantity"/>
+                            <field name="uom_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name='description' placeholder="Internal Notes"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="equipment_parts_list_view_tree" model="ir.ui.view">
+        <field name="name">equipment.parts.list.tree</field>
+        <field name="model">equipment.parts.list</field>
+        <field name="arch" type="xml">
+            <tree string="Equipment Parts List">
+                <field name="code"/>
+                <field name="uom_id"/>
+                <field name="quantity"/>
+                <field name="description"/>
+            </tree>
+        </field>
+    </record>
+</odoo>
