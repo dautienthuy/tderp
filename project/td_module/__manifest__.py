@@ -10,8 +10,6 @@
         This module will install all module dependencies of td_module.""",
     'depends': [
         'base',
-        # 'web_chatter_position',
-        # 'web_sheet_full_width',
         'contacts',
         'sale_management',
         'maintenance',
@@ -19,7 +17,10 @@
         'hr',
         'stock',
         'delivery',
-        'stock_sms'
+        'stock_sms',
+        'web_chatter_position',
+        'web_sheet_full_width',
+        'web_responsive',
         ],
     'summary': 'TD Project Module',
     'website': 'https://baaesoft.com',
