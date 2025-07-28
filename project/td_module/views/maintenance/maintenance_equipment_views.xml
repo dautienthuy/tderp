@@ -1,35 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="maintenance_equipment_view_form_inherit_td" model="ir.ui.view">
-        <field name="name">maintenance.equipment.view.form.inherit.td</field>
-        <field name="model">maintenance.equipment</field>
-        <field name="inherit_id" ref="maintenance.hr_equipment_view_form"/>
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='location']" position="after">
-                <field name="parent_equipment_id"/>
-            </xpath>
-            <xpath expr="//page[@name='description']" position="before">
-                <page string="Equipment Parts List" name="page_equipment_parts_list">
-                    <field name="equipment_parts_list">
-                        <tree string="Equipment Parts List" editable="bottom">
-                            <field name="code"/>
-                            <field name="uom_id"/>
-                            <field name="quantity"/>
-                            <field name="description"/> 
-                        </tree>
-                    </field>
-                </page>
-                <page string="Maintenance Cycle" name="page_maintenance_cycle">
-                    <field name="maintenance_cycle_ids">
-                        <tree string="Maintenance Cycle" editable="bottom">
-                            <field name="maintenance_checklist_id"/>
-                            <field name="date"/>
-                            <field name="uom_id"/>
-                            <field name="warning_equipment"/>
-                        </tree>
-                    </field>
-                </page>
-            </xpath>
-        </field>
-    </record>
+    <data>
+        <record id="maintenance_equipment_view_form_inherit_td" model="ir.ui.view">
+            <field name="name">maintenance.equipment.view.form.inherit.td</field>
+            <field name="model">maintenance.equipment</field>
+            <field name="inherit_id" ref="maintenance.hr_equipment_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='location']" position="after">
+                    <field name="parent_equipment_id"/>
+                </xpath>
+                <xpath expr="//page[@name='description']" position="before">
+                    <page string="Equipment Parts List" name="page_equipment_parts_list">
+                        <field name="equipment_parts_list">
+                            <tree string="Equipment Parts List" editable="bottom">
+                                <field name="code"/>
+                                <field name="uom_id"/>
+                                <field name="quantity"/>
+                                <field name="description"/> 
+                            </tree>
+                        </field>
+                    </page>
+                    <page string="Maintenance Cycle" name="page_maintenance_cycle">
+                        <field name="maintenance_cycle_ids">
+                            <tree string="Maintenance Cycle" editable="bottom">
+                                <field name="maintenance_checklist_id"/>
+                                <field name="date"/>
+                                <field name="uom_id"/>
+                                <field name="warning_equipment"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+    <!-- == -->
+    <data>
+        <record id="maintenance_equipment_view_form_inherit_hr_td" model="ir.ui.view">
+            <field name="name">maintenance.equipment.view.form.inherit.hr.td</field>
+            <field name="model">maintenance.equipment</field>
+            <field name="inherit_id" ref="hr_maintenance.maintenance_equipment_view_form_inherit_hr"/>
+            <field name="arch" type="xml">
+                <field name="equipment_assign_to" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+            </field>
+        </record>
+    </data>
 </odoo>
