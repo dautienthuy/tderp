@@ -24,14 +24,10 @@
                 <field name="date_end"/>
                 <field name="maintenance_checklist_id"/>
                 <field name="date_repair"/>
-                <field name="technical_spec"/>
-                <field name="uom_id"/>
-                <field name="quantity"/>
-                <field name="result"/>
             </field>
             <xpath expr="//group[last()]" position="after">
                 <notebook>
-                    <page string="Description" name="final_settlement_line">
+                    <page string="Chi tiết công việc" name="final_settlement_line">
                         <field name="final_settlement_line_ids">
                             <tree string="Equipment Parts List" editable="bottom">
                                 <field name="task_detail"/>
@@ -41,6 +37,14 @@
                                 <field name="tech_spec"/>  
                             </tree>
                         </field>
+                    </page>
+                    <page string="Thông tin" name="info">
+                        <group>
+                            <field name="technical_spec"/>
+                            <field name="uom_id"/>
+                            <field name="quantity"/>
+                            <field name="result"/>
+                        </group>
                     </page>
                 </notebook>
             </xpath>
