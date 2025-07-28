@@ -4,15 +4,15 @@
 # 
 # Translators:
 # Martin Trigaux, 2022
-# 敬雲 林 <chingyun@yuanchih-consult.com>, 2022
-# Wil Odoo, 2024
+# Wil Odoo, 2025
+# 敬雲 林 <chingyun@yuanchih-consult.com>, 2025
 # Tony Ng, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0+e\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-15 12:50+0000\n"
+"POT-Creation-Date: 2025-02-10 08:27+0000\n"
 "PO-Revision-Date: 2022-09-22 05:45+0000\n"
 "Last-Translator: Tony Ng, 2025\n"
 "Language-Team: Chinese (Taiwan) (https://app.transifex.com/odoo/teams/41243/zh_TW/)\n"
@@ -455,7 +455,7 @@ msgstr "決定顯示順序"
 #: model_terms:ir.ui.view,arch_db:delivery.choose_delivery_carrier_view_form
 #: model_terms:ir.ui.view,arch_db:delivery.choose_delivery_package_view_form
 msgid "Discard"
-msgstr "取消"
+msgstr "捨棄"
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_choose_delivery_carrier__display_name
@@ -513,7 +513,7 @@ msgstr "估計費用"
 #: code:addons/delivery/models/stock_picking.py:0
 #, python-format
 msgid "Exception occurred with respect to carrier on the transfer"
-msgstr ""
+msgstr "處理轉運時，承運人發生異常"
 
 #. module: delivery
 #. odoo-python
@@ -836,9 +836,14 @@ msgid "Product"
 msgstr "商品"
 
 #. module: delivery
+#: model:ir.model,name:delivery.model_product_category
+msgid "Product Category"
+msgstr "產品分類"
+
+#. module: delivery
 #: model:ir.model,name:delivery.model_stock_move_line
 msgid "Product Moves (Stock Move Line)"
-msgstr "產品移動(移庫明細)"
+msgstr "產品移動（庫存移動資料行）"
 
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_sale_order_line__product_qty
@@ -1008,7 +1013,7 @@ msgstr ""
 #. module: delivery
 #: model:ir.model.fields,field_description:delivery.field_delivery_carrier__state_ids
 msgid "States"
-msgstr "縣市"
+msgstr "狀態"
 
 #. module: delivery
 #: model:ir.model,name:delivery.model_stock_move
@@ -1240,7 +1245,7 @@ msgstr "裝運重量"
 #: model:ir.model.fields,field_description:delivery.field_stock_picking__weight_uom_name
 #: model:ir.model.fields,field_description:delivery.field_stock_quant_package__weight_uom_name
 msgid "Weight unit of measure label"
-msgstr "重量單位計量標籤"
+msgstr "重量計量單位標籤"
 
 #. module: delivery
 #: model_terms:ir.ui.view,arch_db:delivery.report_package_barcode_small_delivery
@@ -1263,6 +1268,7 @@ msgstr ""
 "\n"
 
 #. module: delivery
+#. odoo-python
 #: code:addons/delivery/models/product_category.py:0
 #, python-format
 msgid ""
@@ -1271,6 +1277,7 @@ msgid ""
 msgstr "你不可刪除送貨產品類別，因為它用於送貨物流商產品。"
 
 #. module: delivery
+#. odoo-python
 #: code:addons/delivery/models/stock_picking.py:0
 #, python-format
 msgid ""
