@@ -1460,7 +1460,7 @@ class Task(models.Model):
     def message_subscribe(self, partner_ids=None, subtype_ids=None):
         """ Set task notification based on project notification preference if user follow the project"""
         if not subtype_ids:
-            project_followers = self.project_id.message_follower_ids.filtered(lambda f: f.partner_id.id in partner_ids)
+            project_followers = self.project_id.sudo().message_follower_ids.filtered(lambda f: f.partner_id.id in partner_ids)
             for project_follower in project_followers:
                 project_subtypes = project_follower.subtype_ids
                 task_subtypes = (project_subtypes.mapped('parent_id') | project_subtypes.filtered(lambda sub: sub.internal or sub.default)).ids if project_subtypes else None
@@ -2627,7 +2627,7 @@ class Task(models.Model):
                 if project._check_project_sharing_access():
                     url = f"/my/projects/{self.parent_id.project_id.id}?task_id={self.parent_id.id}"
                 return {
-                    "name": "Portal Parent Task",
+                    "name": _("Portal Parent Task"),
                     "type": "ir.actions.act_url",
                     "url": url,
                 }
@@ -2668,7 +2668,7 @@ class Task(models.Model):
                 action['res_id'] = subtasks.id
             return action
         return {
-            'name': 'Portal Sub-tasks',
+            'name': _('Portal Sub-tasks'),
             'type': 'ir.actions.act_url',
             'url': f'/my/projects/{self.project_id.id}/task/{self.id}/subtasks' if len(subtasks) > 1 else subtasks.get_portal_url(query_string='project_sharing=1'),
         }

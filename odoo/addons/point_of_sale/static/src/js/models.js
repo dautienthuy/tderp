@@ -289,8 +289,20 @@ class PosGlobalState extends PosModel {
                     }
                 }
                 else {
-                    for (const correspondingProduct of products) {
-                        this._assignApplicableItems(pricelist, correspondingProduct, pricelistItem);
+                    for (const correspondingProduct of modelProducts) {
+                        if (pricelistItem.categ_id) {
+                            let pricelistItem_categ_id = pricelistItem.categ_id[0];
+                            let product_categ_id = correspondingProduct.categ && correspondingProduct.categ.id; 
+                            let parent_categ_ids = correspondingProduct.parent_category_ids;
+                            if (product_categ_id && parent_categ_ids) {
+                                if (_.contains(parent_categ_ids.concat(product_categ_id), pricelistItem_categ_id)) {
+                                    this._assignApplicableItems(pricelist, correspondingProduct, pricelistItem);
+                                }
+                            }
+                        } 
+                        else {
+                            this._assignApplicableItems(pricelist, correspondingProduct, pricelistItem);
+                        }
                     }
                 }
             }
@@ -1035,7 +1047,7 @@ class PosGlobalState extends PosModel {
                 self.set_synch('connected');
                 return server_ids;
             }).catch(function (error){
-                ordersToSync.forEach(order_id => self.syncingOrders.delete(order_id));
+                ordersToSync.forEach(order => self.syncingOrders.delete(order.id));
                 console.warn('Failed to send orders:', ordersToSync);
                 if(error.code === 200 ){    // Business Logic Error, not a connection problem
                     // Hide error if already shown before ...
@@ -1591,7 +1603,6 @@ class Product extends PosModel {
     }
     isPricelistItemUsable(item, date) {
         return (
-            (!item.categ_id || _.contains(this.parent_category_ids.concat(this.categ.id), item.categ_id[0])) &&
             (!item.date_start || moment.utc(item.date_start).isSameOrBefore(date)) &&
             (!item.date_end || moment.utc(item.date_end).isSameOrAfter(date))
         );
@@ -1684,7 +1695,7 @@ class Product extends PosModel {
         const taxes = this.pos.get_taxes_after_fp(this.taxes_id, order && order.fiscal_position);
         const currentTaxes = this.pos.getTaxesByIds(this.taxes_id);
         const priceAfterFp = this.pos.computePriceAfterFp(unitPrice, currentTaxes);
-        const allPrices = this.pos.compute_all(taxes, priceAfterFp, 1, this.pos.currency.rounding);
+        const allPrices = this.pos.compute_all(taxes, priceAfterFp, quantity, this.pos.currency.rounding);
         return this.pos.config.iface_tax_included === 'total' ? allPrices.total_included : allPrices.total_excluded;
     }
 
@@ -1762,7 +1773,7 @@ class Orderline extends PosModel {
         this.refunded_orderline_id = json.refunded_orderline_id;
         this.price_manually_set = json.price_manually_set ||
             this.get_display_price() !==
-            this.product.get_display_price_discount(this.order.pricelist, this.get_quantity(), this.get_discount()) * this.get_quantity();
+            this.product.get_display_price_discount(this.order.pricelist, this.get_quantity(), this.get_discount());
     }
     clone(){
         var orderline = Orderline.create({},{
