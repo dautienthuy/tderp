@@ -38,6 +38,8 @@
         'views/maintenance/maintenance_checklist_views.xml',
         #
         'views/sale/sale_order_views.xml',
+        #
+        'views/stock/stock_picking_views.xml',
         # REPORT
         # MENU
         'menu/maintenance_menu.xml',
