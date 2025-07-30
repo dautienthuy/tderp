@@ -21,6 +21,7 @@
         'web_chatter_position',
         'web_sheet_full_width',
         'web_responsive',
+        'web_save_discard_button'
         ],
     'summary': 'TD Project Module',
     'website': 'https://baaesoft.com',
@@ -38,6 +39,8 @@
         'views/maintenance/maintenance_checklist_views.xml',
         #
         'views/sale/sale_order_views.xml',
+        #
+        'views/stock/stock_picking_views.xml',
         # REPORT
         # MENU
         'menu/maintenance_menu.xml',
