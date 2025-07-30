@@ -21,6 +21,7 @@
         'web_chatter_position',
         'web_sheet_full_width',
         'web_responsive',
+        'web_save_discard_button'
         ],
     'summary': 'TD Project Module',
     'website': 'https://baaesoft.com',
