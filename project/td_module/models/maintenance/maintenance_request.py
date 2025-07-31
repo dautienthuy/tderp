@@ -25,6 +25,7 @@ class MaintenanceRequest(models.Model):
     quantity = fields.Float(u'Số lượng')
     result = fields.Char(u'Kết quả')
     final_settlement_line_ids = fields.One2many('maintenance.final.settlement.line', 'maintenance_request_id', string=u'Final Settlement Line')
+    order_id = fields.Many2one('sale.order', string=u'Sale Order')
 
     @api.model_create_multi
     def create(self, vals_list):        
