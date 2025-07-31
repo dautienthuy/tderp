@@ -44,6 +44,7 @@
         # REPORT
         # MENU
         'menu/maintenance_menu.xml',
+        'menu/sale_menu.xml',
         # MENU - GROUP
         # POST OBJECT
         # Template
@@ -52,5 +53,7 @@
     'installable': True,
     'application': True,
     'assets': {
+        "web.assets_backend": [
+    ],
     },
 }

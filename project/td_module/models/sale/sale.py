@@ -16,3 +16,4 @@ class SaleOrder(models.Model):
         ('b', 'Bank'),
         ('o', 'Other'),
     ], string="Payment Method")
+    sale_payment_term_ids = fields.One2many(comodel_name='sale.payment.term', inverse_name='order_id')
