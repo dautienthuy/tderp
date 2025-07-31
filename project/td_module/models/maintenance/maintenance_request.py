@@ -23,7 +23,7 @@ class MaintenanceRequest(models.Model):
     technical_spec = fields.Char(string=u'Thông số kỹ thuật')
     uom_id = fields.Many2one('uom.uom', 'Đơn vị')
     quantity = fields.Float(u'Số lượng')
-    unit = fields.Float(u'Đơn giá')
+    unit_price = fields.Float(u'Đơn giá')
     amount = fields.Float(u'Thành tiền')
     result = fields.Char(u'Kết quả')
     final_settlement_line_ids = fields.One2many('maintenance.final.settlement.line', 'maintenance_request_id', string=u'Final Settlement Line')

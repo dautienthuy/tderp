@@ -40,12 +40,46 @@
                         </field>
                     </page>
                     <page string="Thông tin" name="info">
-                        <group>
+                        <table class="table table-striped table-hover kderp_group_right">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Thông số kỹ thuật</th>
+                                    <th>Đơn vị</th>
+                                    <th class='text-right'>Số lượng</th>
+                                    <th class='text-right'>Đơn Giá</th>
+                                    <th class='text-right'>Thành tiền</th>
+                                    <th class='text-right'>Kết quả</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <field name="technical_spec"/>
+                                    </td>
+                                    <td>
+                                        <field name="uom_id"/>
+                                    </td>
+                                    <td>
+                                        <field name="quantity"/>
+                                    </td>
+                                    <td>
+                                        <field name="unit_price"/>
+                                    </td>
+                                    <td>
+                                        <field name="amount"/>
+                                    </td>
+                                    <td>
+                                        <field name="result"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <!-- <group>
                             <field name="technical_spec"/>
                             <field name="uom_id"/>
                             <field name="quantity"/>
                             <field name="result"/>
-                        </group>
+                        </group> -->
                     </page>
                 </notebook>
             </xpath>
