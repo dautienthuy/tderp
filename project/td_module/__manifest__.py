@@ -54,6 +54,7 @@
     'application': True,
     'assets': {
         "web.assets_backend": [
+            'td_module/static/src/css/tderp_web_theme.css',
     ],
     },
 }

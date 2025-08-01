@@ -1,0 +1,49 @@
+.responsive-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .responsive-table th,
+  .responsive-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  @media (max-width: 768px) {
+    .responsive-table thead {
+      display: none; /* Ẩn header trên mobile */
+    }
+  
+    .responsive-table, 
+    .responsive-table tbody, 
+    .responsive-table tr, 
+    .responsive-table td {
+      display: block;
+      width: 100%;
+    }
+  
+    .responsive-table tr {
+      margin-bottom: 1rem;
+      border: 1px solid #ddd;
+      padding: 0.5rem;
+    }
+  
+    .responsive-table td {
+      text-align: right;
+      position: relative;
+      padding-left: 50%;
+    }
+  
+    .responsive-table td::before {
+      content: attr(data-label);
+      position: absolute;
+      left: 0;
+      width: 45%;
+      padding-left: 8px;
+      font-weight: bold;
+      text-align: left;
+      white-space: nowrap;
+      color: #555;
+    }
+  }
