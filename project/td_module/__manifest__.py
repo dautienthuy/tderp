@@ -45,6 +45,7 @@
         # MENU
         'menu/maintenance_menu.xml',
         'menu/sale_menu.xml',
+        'menu/td_menu.xml'
         # MENU - GROUP
         # POST OBJECT
         # Template
