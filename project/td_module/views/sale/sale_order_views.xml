@@ -46,20 +46,20 @@
             <field name="payment_term_id" position="attributes">
                 <attribute name="invisible">1</attribute>
             </field>
-            <xpath expr="//group[@name='sale_header']" position="after">
-                <group string="Điều khoản thanh toán">
-                </group>
-                <field name="sale_payment_term_ids" mode="tree" nolabel="1" string="Payment Term" limit="5">
-                    <tree string="Payment Term" editable="bottom" limit="5" options="{'limit': 5}">
-                        <field name="sequence"/>
-                        <field name="type"/>
-                        <field name="start_date"/>
-                        <field name="end_date"/>
-                        <field name="name"/>
-                        <field name="percent_payment"/>
-                        <field name="total_amount"/>
-                    </tree>
-                </field>
+            <xpath expr="//page[@name='other_information']" position="after">
+                <page string="Điều khoản thanh toán" name="payment_term">
+                    <field name="sale_payment_term_ids" mode="tree" nolabel="1" string="Payment Term" limit="5">
+                        <tree string="Payment Term" editable="bottom" limit="5" options="{'limit': 5}">
+                            <field name="type"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="name"/>
+                            <field name="sequence"/>
+                            <field name="percent_payment"/>
+                            <field name="total_amount"/>
+                        </tree>
+                    </field>
+                </page>
             </xpath>
         </field>
     </record>
