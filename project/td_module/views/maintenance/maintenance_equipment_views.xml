@@ -12,6 +12,16 @@
                     <field name="expiry_inspection_stamp"/>
                 </xpath>
                 <xpath expr="//page[@name='maintenance']" position="before">
+                    <page string="Nhân sự thực hiện bảo trì" name="mainten_requipment_employee_list">
+                        <field name="mainten_requipment_employee_ids">
+                            <tree editable="bottom">
+                                <field name="employee_id"/>
+                                <field name="start_date"/>
+                                <field name="end_date"/>
+                                <field name="delivery_date"/>
+                            </tree>
+                        </field>
+                    </page>
                     <page string="Equipment Parts List" name="page_equipment_parts_list">
                         <field name="equipment_parts_list">
                             <tree string="Equipment Parts List" editable="bottom">

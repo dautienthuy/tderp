@@ -13,3 +13,4 @@ class MaintenanceEquipment(models.Model):
     maintenance_cycle_ids = fields.One2many('maintenance.cycle', 'maintenance_equipment_id', string=u'Maintenance Cycle')
     order_id = fields.Many2one('sale.order', string=u'Sale Order')
     expiry_inspection_stamp = fields.Text(u'Hạn tem kiểm định')
+    mainten_requipment_employee_ids = fields.One2many('maintenance.requipment.employee', 'equipment_id', string=u'Mainten. Mequipment Employee')
