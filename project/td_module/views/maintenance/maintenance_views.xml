@@ -9,8 +9,11 @@
         <field name="arch" type="xml">
             <xpath expr="field[@name='user_id']" position="after">
                 <field name="date_start"/>
-                <field name="date_end"/>                
-            </xpath>            
+                <field name="date_end"/>
+                <field name="last_working_day"/>
+                <field name="employee_id"/>
+                <field name="number_maintenance"/>
+            </xpath>
         </field>
     </record>
 
@@ -25,6 +28,9 @@
                 <field name="maintenance_checklist_id"/>
                 <field name="date_repair"/>
                 <field name="order_id"/>
+                <field name="last_working_day"/>
+                <field name="employee_id"/>
+                <field name="number_maintenance"/>
             </field>
             <xpath expr="//group[last()]" position="after">
                 <notebook>

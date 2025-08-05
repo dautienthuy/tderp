@@ -28,6 +28,9 @@ class MaintenanceRequest(models.Model):
     result = fields.Char(u'Kết quả')
     final_settlement_line_ids = fields.One2many('maintenance.final.settlement.line', 'maintenance_request_id', string=u'Final Settlement Line')
     order_id = fields.Many2one('sale.order', string=u'Sale Order')
+    last_working_day = fields.Date(string=u'Ngày làm việc gần nhất') 
+    employee_id = fields.Many2one('hr.employee',  u'Kỹ thuật viên')
+    number_maintenance = fields.Integer(u'Số lần BT/BD')
 
     @api.model_create_multi
     def create(self, vals_list):        
