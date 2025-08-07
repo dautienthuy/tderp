@@ -14,3 +14,14 @@ class MaintenanceEquipment(models.Model):
     order_id = fields.Many2one('sale.order', string=u'Sale Order')
     expiry_inspection_stamp = fields.Text(u'Hạn tem kiểm định')
     mainten_requipment_employee_ids = fields.One2many('maintenance.requipment.employee', 'equipment_id', string=u'Mainten. Mequipment Employee')
+
+    def btn_generate_requests(self):
+        """
+            Generates maintenance request on the delivery_date or today if none exists
+        """
+        for line in self.mainten_requipment_employee_ids:
+            requests = self.env['maintenance.request'].search([('stage_id.done', '=', False),
+                                                    ('equipment_id', '=', self.id),
+                                                    ('request_date', '=', line.delivery_date)])
+            if not requests:
+                self._create_new_request(line.delivery_date)
