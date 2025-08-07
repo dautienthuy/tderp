@@ -37,6 +37,7 @@
         'views/maintenance/maintenance_equipment_views.xml',
         'views/maintenance/equipment_parts_list_views.xml',
         'views/maintenance/maintenance_checklist_views.xml',
+        'views/product/product_template_view.xml',
         #
         'views/sale/sale_order_views.xml',
         #

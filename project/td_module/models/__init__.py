@@ -2,3 +2,4 @@
 
 from . import maintenance
 from . import sale
+from . import product
