@@ -27,6 +27,7 @@ class MaintenanceRequest(models.Model):
     amount = fields.Float(u'Thành tiền')
     result = fields.Char(u'Kết quả')
     final_settlement_line_ids = fields.One2many('maintenance.final.settlement.line', 'maintenance_request_id', string=u'Final Settlement Line')
+    detail_ids = fields.One2many('maintenance.detail', 'maintenance_request_id', string=u'Detail')
     order_id = fields.Many2one('sale.order', string=u'Sale Order')
     last_working_day = fields.Date(string=u'Ngày làm việc gần nhất') 
     employee_id = fields.Many2one('hr.employee',  u'Kỹ thuật viên')

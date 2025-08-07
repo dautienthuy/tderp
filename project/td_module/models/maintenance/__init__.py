@@ -7,3 +7,4 @@ from . import maintenance_checklist
 from . import maintenance_cycle
 from . import maintenance_final_settlement_line
 from . import maintenance_requipment_employee
+from . import maintenance_detail
