@@ -8,6 +8,17 @@ from odoo.tools.translate import _
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
+    def _get_partner_domain(self):
+        sql = """
+            SELECT
+                partner_id
+            FROM res_users
+        """
+        self.env.cr.execute(sql)
+        ids = [f[0] for f in self.env.cr.fetchall()]
+        return "[ ('id', 'not in', %s)]" %ids
+
+    partner_id = fields.Many2one(domain=lambda self: self._get_partner_domain())
     delivery_address = fields.Text(u'Delivery Address')
     inv_address = fields.Text(u'Invoice Address')
     location_id = fields.Many2one('stock.location', "Location")
