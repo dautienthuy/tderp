@@ -43,6 +43,7 @@
         #
         'views/stock/stock_picking_views.xml',
         # REPORT
+        'views/report_py3o/sale.xml',
         # MENU
         'menu/maintenance_menu.xml',
         'menu/sale_menu.xml',
