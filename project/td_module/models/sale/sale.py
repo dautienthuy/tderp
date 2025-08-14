@@ -28,3 +28,4 @@ class SaleOrder(models.Model):
         ('o', 'Other'),
     ], string="Payment Method")
     sale_payment_term_ids = fields.One2many(comodel_name='sale.payment.term', inverse_name='order_id')
+    client_code = fields.Char(u'Số hợp đồng')
