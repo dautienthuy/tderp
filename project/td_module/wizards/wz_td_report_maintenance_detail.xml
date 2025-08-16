@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>		 
+		<record id="wz_td_report_maintenance_detail_view_form" model="ir.ui.view">
+			<field name="name">wz.td.report.maintenance.detail.form</field>
+			<field name="model">wz.td.report.maintenance.detail</field>
+			<field name="arch" type="xml">
+				<form readonly="1" create="false" >
+					<group colspan="2" col="2">
+                        <field name="from_date" required="1"/>
+						<field name="to_date" required="1"/>
+					</group>
+					<footer>
+						<button string='Print' name="print_report" type="object" class="oe_highlight"/>
+						or
+						<button string="Cancel"  special="cancel" class="oe_highlight"/>
+					</footer>					
+				</form>
+			</field>
+		</record>		
+
+		<record id="action_print_wz_td_report_maintenance_detail" model="ir.actions.act_window" >
+			<field name="name">Danh sách bảo trì</field>
+			<field name="res_model">wz.td.report.maintenance.detail</field>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="wz_td_report_maintenance_detail_view_form"/>
+            <field name="target">new</field>
+		</record> 
+		
+		<!-- Project & Contract > Report > Monthly Received Work -->
+		<menuitem id="menu_report_maintenance_detail"
+			name="Danh sách bảo trì"
+			action="action_print_wz_td_report_maintenance_detail" 		
+			parent="maintenance.maintenance_reporting" 
+			sequence="50" />    
+    </data>
+</odoo>

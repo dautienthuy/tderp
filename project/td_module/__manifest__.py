@@ -18,6 +18,7 @@
         'stock',
         'delivery',
         'stock_sms',
+        'report_py3o',
         'web_chatter_position',
         'web_sheet_full_width',
         'web_responsive',
@@ -32,6 +33,7 @@
         'security/ir.model.access.csv',
         # DATA
         # Wizards
+        'wizards/wz_td_report_maintenance_detail.xml',
         # VIEWS
         'views/maintenance/maintenance_views.xml',
         'views/maintenance/maintenance_equipment_views.xml',
@@ -44,6 +46,7 @@
         'views/stock/stock_picking_views.xml',
         # REPORT
         'views/report_py3o/sale.xml',
+        'views/report_py3o/maintenance.xml',
         # MENU
         'menu/maintenance_menu.xml',
         'menu/sale_menu.xml',
