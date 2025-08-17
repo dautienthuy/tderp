@@ -27,6 +27,6 @@ class WzTdReportMaintenanceDetail(models.TransientModel):
 
     from_date = fields.Date('Từ ngày')
     to_date = fields.Date('Đến ngày')
-    # contract_history_id = fields.Many2one('kderp.contract.history', 'Contract History')
+    maintenance_request_id = fields.Many2one('maintenance.request', 'Maintenance Request')
     # detail_ids = fields.One2many(
     #     "kderp.contract.history", compute="_get_contract_history", string="Details")
