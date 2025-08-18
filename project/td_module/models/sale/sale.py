@@ -29,3 +29,4 @@ class SaleOrder(models.Model):
     ], string="Payment Method")
     sale_payment_term_ids = fields.One2many(comodel_name='sale.payment.term', inverse_name='order_id')
     client_code = fields.Char(u'Số hợp đồng')
+    date_done = fields.Datetime(u'Ngày hoàn thành', copy=False)
