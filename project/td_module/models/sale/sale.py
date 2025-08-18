@@ -19,8 +19,6 @@ class SaleOrder(models.Model):
         return "[ ('id', 'not in', %s)]" %ids
 
     partner_id = fields.Many2one(domain=lambda self: self._get_partner_domain())
-    delivery_address = fields.Text(u'Delivery Address')
-    inv_address = fields.Text(u'Invoice Address')
     location_id = fields.Many2one('stock.location', "Location")
     payment_method = fields.Selection([
         ('c', 'Cash'),
@@ -29,4 +27,6 @@ class SaleOrder(models.Model):
     ], string="Payment Method")
     sale_payment_term_ids = fields.One2many(comodel_name='sale.payment.term', inverse_name='order_id')
     client_code = fields.Char(u'Số hợp đồng')
-    date_done = fields.Datetime(u'Ngày hoàn thành', copy=False)
+    date_done = fields.Date(u'Ngày hoàn thành', copy=False)
+    feature = fields.Text(u'Đặc tính')
+    duration_contract = fields.Integer(u'Tiến độ hợp đồng')
