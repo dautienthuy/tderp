@@ -32,6 +32,7 @@
         #
         'security/ir.model.access.csv',
         # DATA
+        'data/ir_sequence_data.xml',
         # Wizards
         'wizards/wz_td_report_maintenance_detail.xml',
         # VIEWS

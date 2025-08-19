@@ -9,12 +9,20 @@ class MaintenanceEquipment(models.Model):
     _inherit = 'maintenance.equipment'
     _description = 'Maintenance Equipment'
 
+    code = fields.Char(u'Mã nội bộ')
     parent_equipment_id = fields.Many2one('maintenance.equipment', string='Thiết bị gốc')
     equipment_parts_list = fields.One2many('equipment.parts.list', 'maintenance_equipment_id', string=u'Equipment Parts List')
     maintenance_cycle_ids = fields.One2many('maintenance.cycle', 'maintenance_equipment_id', string=u'Maintenance Cycle')
     order_id = fields.Many2one('sale.order', string=u'Đơn hàng')
     expiry_inspection_stamp = fields.Text(u'Hạn tem kiểm định')
     mainten_requipment_employee_ids = fields.One2many('maintenance.requipment.employee', 'equipment_id', string=u'Mainten. Mequipment Employee')
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        # We generate a standard reference
+        for vals in vals_list:
+            vals['code'] = self.env['ir.sequence'].next_by_code('maintenance.equipment') or '/'
+        return super().create(vals_list)
 
     def _td_prepare_maintenance_request_vals(self, date):
         self.ensure_one()

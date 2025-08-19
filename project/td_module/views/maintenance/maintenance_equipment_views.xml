@@ -11,6 +11,9 @@
                         <button name="btn_generate_requests" string="Tạo yêu cầu bảo trì" type="object" class="oe_highlight"/>
                     </header>
                 </xpath>
+                <field name="category_id" position="before">
+                    <field name="code"/>
+                </field>
                 <xpath expr="//field[@name='location']" position="after">
                     <field name="parent_equipment_id"/>
                     <field name="order_id" options="{'no_open': True, 'no_create': True}"/>

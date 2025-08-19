@@ -14,6 +14,7 @@ class MaintenanceRequest(models.Model):
     _inherit = 'maintenance.request'
     _description = 'Maintenance Request'
 
+    code = fields.Char(u'Mã nội bộ')
     date_start = fields.Date(string=u'Ngày bắt đầu',
         default=lambda self: fields.Date.to_string(date.today()))
     date_end = fields.Date(string=u'Ngày hoàn thành',
@@ -34,10 +35,12 @@ class MaintenanceRequest(models.Model):
     number_maintenance = fields.Integer(u'Số lần BT/BD')
 
     @api.model_create_multi
-    def create(self, vals_list):        
-        maintenance_requests = super().create(vals_list)
-        return maintenance_requests
+    def create(self, vals_list):
+        # We generate a standard reference
+        for vals in vals_list:
+            vals['code'] = self.env['ir.sequence'].next_by_code('maintenance.request') or '/'
+        return super().create(vals_list)
 
-    def write(self, vals):       
+    def write(self, vals):
         res = super(MaintenanceRequest, self).write(vals)        
         return res
