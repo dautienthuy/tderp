@@ -36,6 +36,7 @@
         # Wizards
         'wizards/wz_td_report_maintenance_detail.xml',
         # VIEWS
+        'views/maintenance/maintenance_equipment_category_views.xml',
         'views/maintenance/maintenance_views.xml',
         'views/maintenance/maintenance_equipment_views.xml',
         'views/maintenance/equipment_parts_list_views.xml',
