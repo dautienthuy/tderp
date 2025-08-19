@@ -30,3 +30,17 @@ class SaleOrder(models.Model):
     date_done = fields.Date(u'Ngày hoàn thành', copy=False)
     feature = fields.Text(u'Đặc tính')
     duration_contract = fields.Integer(u'Tiến độ hợp đồng')
+    sale_plan_count = fields.Integer(compute='_compute_sale_plan_count', string=u"Số kế hoạch", store=True)
+    sale_plan_ids = fields.One2many('sale.plan', 'order_id')
+
+    @api.depends('sale_plan_ids')
+    def _compute_sale_plan_count(self):
+        for so in self:
+            so.sale_plan_count = len(so.sale_plan_ids)
+
+    def btn_sale_plan(self):
+        sale_plan_exit =  self.env['sale.plan'].search([('order_id', '=', self.id)])
+        if not sale_plan_exit:
+            vals = ({'order_id': self.id})
+            sale_plan = self.env['sale.plan'].create(vals)
+            return sale_plan
