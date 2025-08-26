@@ -26,7 +26,7 @@ class MaintenanceEquipment(models.Model):
         string='Maintenance Type', 
         default="corrective")
     last_working_day = fields.Date(string=u'Ngày làm việc gần nhất')
-    last_employee_id = fields.Many2one('hr.employee',  u'Kỹ thuật viên ')
+    last_employee_id = fields.Many2one('hr.employee',  u'KTV gần nhất ')
     number_maintenance = fields.Integer(u'Số lần BT/BD')
     #
     backlog_status = fields.Selection([
@@ -36,6 +36,33 @@ class MaintenanceEquipment(models.Model):
         ('waiting_purchase', 'Chờ mua sắm'),
     ], string="Tồn đọng", default=False)
     backlog_note = fields.Text("Ghi chú tồn đọng")
+    #
+    state = fields.Selection(
+        selection=[('model', 'Model'),
+            ('draft', 'Mở'),
+            ('open', 'Đang chạy'),
+            ('paused', 'Tạm dừng'),
+            ('close', 'Hoàn thành'),
+            ('cancelled', 'Hủy')],
+        string='Status',
+        copy=False,
+        default='draft')
+
+    def action_set_draft(self):
+        self.write({'state': 'draft'})
+
+    def action_confirm(self):
+        self.write({'state': 'open'})
+
+    def action_set_done(self):
+        """ Close Registration """
+        self.write({'state': 'close'})
+
+    def action_cancel(self):
+        self.write({'state': 'cancelled'})
+    
+    def action_pause(self):
+        self.write({'state': 'paused'})
 
     @api.model_create_multi
     def create(self, vals_list):

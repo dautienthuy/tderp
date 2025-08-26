@@ -8,7 +8,17 @@
             <field name="arch" type="xml">
                 <xpath expr="//sheet" position="before">
                     <header>
-                        <button name="btn_generate_requests" string="Tạo yêu cầu bảo trì" type="object" class="oe_highlight"/>
+                        <button name="btn_generate_requests" string="Tạo yêu cầu bảo trì" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'open')]}"/>
+                        <!-- -->
+                        <button name="action_confirm" string="Xác nhận" type="object" class="oe_highlight"
+                                attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                        <button name="action_set_done" string="Đóng" type="object" class="oe_highlight"
+                                attrs="{'invisible': [('state', '!=', 'open')]}"/>
+                        <button name="action_set_draft" string="Mở" type="object"
+                                attrs="{'invisible': ['|', ('state', '=', 'draft'), ('state', '=', 'close')]}"/>
+                        <button name="action_cancel" string="Hủy" type="object"
+                                attrs="{'invisible': ['|', ('state', '=', 'close'), ('state', '=', 'cancelled')]}"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,open,close,cancelled,paused"/>
                     </header>
                 </xpath>
                 <field name="category_id" position="before">
