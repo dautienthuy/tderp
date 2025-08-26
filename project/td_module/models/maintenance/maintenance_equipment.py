@@ -16,6 +16,18 @@ class MaintenanceEquipment(models.Model):
     order_id = fields.Many2one('sale.order', string=u'Đơn hàng')
     expiry_inspection_stamp = fields.Text(u'Hạn tem kiểm định')
     mainten_requipment_employee_ids = fields.One2many('maintenance.requipment.employee', 'equipment_id', string=u'Mainten. Mequipment Employee')
+    customer_id = fields.Many2one('res.partner', u'Khách hàng')
+    street = fields.Char(related='customer_id.street', string="Địa chỉ")
+    phone = fields.Char(related='customer_id.phone', string="Số điện thoại")
+    last_date = fields.Date(u'Ngày BT gần nhất', copy=False)
+    last_employee_id = fields.Many2one('hr.employee', string='KTV gần nhất')
+    backlog_status = fields.Selection([
+        ('waiting_repair', 'Chờ sửa chữa'),
+        ('waiting_disposal', 'Chờ thanh lý'),
+        ('waiting_allocate', 'Chờ cấp phát'),
+        ('waiting_purchase', 'Chờ mua sắm'),
+    ], string="Tồn đọng", default=False)
+    backlog_note = fields.Text("Ghi chú tồn đọng")
 
     @api.model_create_multi
     def create(self, vals_list):

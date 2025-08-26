@@ -13,6 +13,15 @@
                 </xpath>
                 <field name="category_id" position="before">
                     <field name="code"/>
+                    <field name="customer_id" widget="res_partner_many2one" context="{'res_partner_search_mode': 'customer'}" options="{&quot;always_reload&quot;: True}"/>
+                    <field name="street"/>
+                    <field name="phone"/>
+                </field>
+                <field name="category_id" position="after">
+                    <field name="last_date"/>
+                    <field name="last_employee_id"/>
+                    <field name="backlog_status"/>
+                    <field name="backlog_note"/>
                 </field>
                 <xpath expr="//field[@name='location']" position="after">
                     <field name="parent_equipment_id"/>
