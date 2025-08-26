@@ -18,6 +18,12 @@ class SalePaymentTerm(models.Model):
     sequence = fields.Integer(required=True, string=u'Thứ tự')
     start_date = fields.Date(string=u'Ngày bắt đầu')
     end_date = fields.Date(string=u'Ngày kết thúc')
-    total_amount = fields.Float(string=u'Tổng tiền')
+    total_amount = fields.Float(string=u'Số tiền', compute='_compute_amount', copy=False, store=True)
     percent_payment = fields.Float(string=u'Tỉ lệ(%)')
+    total_paid = fields.Float(string=u'Thanh toán')
     order_id = fields.Many2one('sale.order', string=u'Sale Order')
+
+    @api.depends('percent_payment', 'order_id.tax_totals')
+    def _compute_amount(self):
+        for line in self:
+            line.total_amount = line.order_id.amount_total * line.percent_payment*0.01
