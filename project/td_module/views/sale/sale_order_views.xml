@@ -13,6 +13,41 @@
         </record>
     </data>
     <data>
+        <!-- Báo giá -->
+        <!-- Tree -->
+        <record id="view_quotation_tree_with_onboarding_td_inherit" model="ir.ui.view">
+            <field name="name">sale.order.tree</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding"/>
+            <field name="arch" type="xml">
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="banner_route"/>
+                </xpath>
+                <field name="invoice_status" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="activity_ids" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="name" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="name" position="after">
+                    <field name="client_code"/>
+                </field>
+                <field name="partner_id" position="after">
+                    <field name="street"/>
+                    <field name="duration_contract"/>
+                </field>
+                <field name="user_id" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="company_id" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+            </field>
+        </record>
+        <!-- Đơn hàng -->
         <!-- Tree -->
         <record id="order_tree_td_inherit" model="ir.ui.view">
             <field name="name">sale.order.tree.td.inherit</field>
