@@ -13,6 +13,8 @@ class SalePlan(models.Model):
 
     name = fields.Char(string=u'Nội dung')
     date = fields.Date(string=u'Ngày kế hoạch')
+    partner_id = fields.Many2one('res.partner', u'Khách hàng')
+    street = fields.Char(related='partner_id.street', string="Địa chỉ")
     order_id = fields.Many2one('sale.order', string=u'Đơn hàng')
     excurtion_progress_ids = fields.One2many(
         comodel_name='sale.excurtion.progress', inverse_name='sale_plan_id')

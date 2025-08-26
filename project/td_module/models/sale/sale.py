@@ -41,6 +41,8 @@ class SaleOrder(models.Model):
     def btn_sale_plan(self):
         sale_plan_exit =  self.env['sale.plan'].search([('order_id', '=', self.id)])
         if not sale_plan_exit:
-            vals = ({'order_id': self.id})
+            vals = ({
+                'order_id': self.id,
+                'partner_id':self.partner_id.id})
             sale_plan = self.env['sale.plan'].create(vals)
             return sale_plan
