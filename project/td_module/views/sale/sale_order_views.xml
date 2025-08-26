@@ -13,6 +13,40 @@
         </record>
     </data>
     <data>
+        <!-- Tree -->
+        <record id="order_tree_td_inherit" model="ir.ui.view">
+            <field name="name">sale.order.tree.td.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_tree"/>
+            <field name="arch" type="xml">
+                <field name="invoice_status" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="activity_ids" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="date_order" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="name" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="name" position="after">
+                    <field name="client_code"/>
+                </field>
+                <field name="partner_id" position="after">
+                    <field name="street"/>
+                    <field name="duration_contract"/>
+                </field>
+                <field name="user_id" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="company_id" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+            </field>
+        </record>
+        <!-- Form -->
         <record id="order_form_td_inherit" model="ir.ui.view">
             <field name="name">sale.order.form.td.inherit</field>
             <field name="model">sale.order</field>
@@ -29,7 +63,27 @@
                 <xpath expr="//button[@name='action_draft']" position="after">
                      <button name="btn_sale_plan" type="object" string="tạo kế hoạch"/>
                 </xpath>
-                
+                <!-- <xpath expr="//group[@name='order_details']/div[1]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//group[@name='order_details']/div[2]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//group[@name='order_details']/field[@name='date_order'][1]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                 <xpath expr="//group[@name='order_details']/field[@name='date_order'][2]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath> -->
+                <xpath expr="//field[@name='partner_id']" position="replace">
+                    <field name="partner_id" widget="res_partner_many2one" context="{'res_partner_search_mode': 'customer'}" options="{&quot;always_reload&quot;: True}"/>
+                </xpath>
+                <xpath expr="//field[@name='partner_id']" position="before">
+                    <field name="client_code"/>
+                </xpath>
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="street"/>
+                </xpath>
                 <xpath expr="//group[@name='sales_person']/label[@for='require_signature']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
@@ -76,9 +130,6 @@
                     <field name="date_done"/>
                     <field name="feature"/>
                     <field name="duration_contract"/>
-                </field>
-                <field name="partner_id" position="before">
-                    <field name="client_code"/>
                 </field>
                 <field name="payment_term_id" position="attributes">
                     <attribute name="invisible">1</attribute>

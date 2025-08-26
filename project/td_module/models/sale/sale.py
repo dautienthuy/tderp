@@ -19,6 +19,7 @@ class SaleOrder(models.Model):
         return "[ ('id', 'not in', %s)]" %ids
 
     partner_id = fields.Many2one(domain=lambda self: self._get_partner_domain())
+    street = fields.Char(related='partner_id.street', string="Địa chỉ")
     location_id = fields.Many2one('stock.location', "Location")
     payment_method = fields.Selection([
         ('c', 'Cash'),
