@@ -30,9 +30,17 @@ class MaintenanceRequest(models.Model):
     final_settlement_line_ids = fields.One2many('maintenance.final.settlement.line', 'maintenance_request_id', string=u'Final Settlement Line')
     detail_ids = fields.One2many('maintenance.detail', 'maintenance_request_id', string=u'Detail')
     order_id = fields.Many2one('sale.order', string=u'Sale Order')
-    last_working_day = fields.Date(string=u'Ngày làm việc gần nhất') 
+    last_working_day = fields.Date(string=u'Ngày làm việc gần nhất')
     employee_id = fields.Many2one('hr.employee',  u'Kỹ thuật viên')
     number_maintenance = fields.Integer(u'Số lần BT/BD')
+    #
+    backlog_status = fields.Selection([
+        ('waiting_repair', 'Chờ sửa chữa'),
+        ('waiting_disposal', 'Chờ thanh lý'),
+        ('waiting_allocate', 'Chờ cấp phát'),
+        ('waiting_purchase', 'Chờ mua sắm'),
+    ], string="Tồn đọng", default=False)
+    backlog_note = fields.Text("Ghi chú tồn đọng")
 
     @api.model_create_multi
     def create(self, vals_list):

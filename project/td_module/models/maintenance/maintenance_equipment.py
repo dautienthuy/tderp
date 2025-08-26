@@ -19,8 +19,16 @@ class MaintenanceEquipment(models.Model):
     customer_id = fields.Many2one('res.partner', u'Khách hàng')
     street = fields.Char(related='customer_id.street', string="Địa chỉ")
     phone = fields.Char(related='customer_id.phone', string="Số điện thoại")
-    last_date = fields.Date(u'Ngày BT gần nhất', copy=False)
-    last_employee_id = fields.Many2one('hr.employee', string='KTV gần nhất')
+    #
+    maintenance_type = fields.Selection([
+        ('corrective', 'Bảo trì'), 
+        ('preventive', 'Bảo dưỡng')], 
+        string='Maintenance Type', 
+        default="corrective")
+    last_working_day = fields.Date(string=u'Ngày làm việc gần nhất')
+    last_employee_id = fields.Many2one('hr.employee',  u'Kỹ thuật viên ')
+    number_maintenance = fields.Integer(u'Số lần BT/BD')
+    #
     backlog_status = fields.Selection([
         ('waiting_repair', 'Chờ sửa chữa'),
         ('waiting_disposal', 'Chờ thanh lý'),
