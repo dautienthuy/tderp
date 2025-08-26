@@ -7,6 +7,7 @@ from odoo.tools.translate import _
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
+    _rec_name = 'client_code'
 
     def _get_partner_domain(self):
         sql = """
