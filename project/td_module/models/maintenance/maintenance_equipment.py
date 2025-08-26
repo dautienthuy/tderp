@@ -21,9 +21,9 @@ class MaintenanceEquipment(models.Model):
     phone = fields.Char(related='customer_id.phone', string="Số điện thoại")
     #
     maintenance_type = fields.Selection([
-        ('corrective', 'Bảo trì'), 
-        ('preventive', 'Bảo dưỡng')], 
-        string='Maintenance Type', 
+        ('corrective', 'BTBD'), 
+        ('preventive', 'Bảo hành')], 
+        string='Kiểu bảo trì', 
         default="corrective")
     last_working_day = fields.Date(string=u'Ngày làm việc gần nhất')
     last_employee_id = fields.Many2one('hr.employee',  u'KTV gần nhất ')

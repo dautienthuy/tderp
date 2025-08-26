@@ -28,8 +28,6 @@
                     <field name="phone"/>
                 </field>
                 <field name="category_id" position="after">
-                    <field name="last_working_day"/>
-                    <field name="last_employee_id"/>
                     <field name="number_maintenance"/>
                     <field name="backlog_status"/>
                     <field name="backlog_note"/>
@@ -38,6 +36,9 @@
                     <field name="parent_equipment_id"/>
                     <field name="order_id" options="{'no_open': True, 'no_create': True}"/>
                     <field name="expiry_inspection_stamp"/>
+                    <field name="maintenance_type"/>
+                    <field name="last_working_day"/>
+                    <field name="last_employee_id"/>
                 </xpath>
                 <xpath expr="//page[@name='maintenance']" position="before">
                     <page string="Nhân sự thực hiện bảo trì" name="mainten_requipment_employee_list">
