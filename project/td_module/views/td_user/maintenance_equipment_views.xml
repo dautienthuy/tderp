@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+    <!-- Tree -->
+    <record id="maintenance_equipment_view_td_user_tree" model="ir.ui.view">
+        <field name="name">maintenance.equipment.view.tduser.tree</field>
+        <field name="model">maintenance.equipment</field>
+        <field name="arch" type="xml">
+            <tree string="Maintenance Equipment">
+            </tree>
+        </field>
+    </record>
+    <!-- Form -->
+    <record id="maintenance_equipment_view_td_user_form" model="ir.ui.view">
+        <field name="name">maintenance.equipment.view.tduser.form</field>
+        <field name="model">maintenance.equipment</field>
+        <field name="arch" type="xml">
+            <form string="Maintenance Equipment">
+                    <header>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,open,close,cancelled,paused"/>
+                    </header>
+                <sheet>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</data>
+</odoo>
