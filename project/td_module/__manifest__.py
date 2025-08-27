@@ -46,6 +46,7 @@
 
         'views/td_user/maintenance_views.xml',
         'views/td_user/maintenance_equipment_views.xml',
+        'views/td_user/sale_order_views.xml',
         #
         'views/sale/sale_order_views.xml',
         #
