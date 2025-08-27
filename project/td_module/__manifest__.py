@@ -43,6 +43,8 @@
         'views/maintenance/maintenance_checklist_views.xml',
         'views/product/product_template_view.xml',
         'views/sale/sale_plan_views.xml',
+
+        'views/td_user/maintenance_views.xml',
         #
         'views/sale/sale_order_views.xml',
         #
@@ -53,7 +55,7 @@
         # MENU
         'menu/maintenance_menu.xml',
         'menu/sale_menu.xml',
-        #'menu/td_menu.xml'
+        'menu/td_menu.xml'
         # MENU - GROUP
         # POST OBJECT
         # Template
