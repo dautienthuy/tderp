@@ -27,6 +27,54 @@
             <field name="model">sale.order</field>
             <field name="arch" type="xml">
                 <form string="Sale Order" create="0" edit="0" delete="0">
+                    <header>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,sent,sale"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group name="sale_header">
+                            <group name="partner_details">
+                                <field name="client_code" readonly="1"/>
+                                <field name="partner_id" readonly="1" options="{'no_create': True, 'no_open': True}"/>
+                                <field name="street" readonly="1"/>
+                            </group>
+                            <group name="order_details">
+                                <field name="date_done" readonly="1"/>
+                                <field name="feature" readonly="1"/>
+                                <field name="duration_contract" readonly="1"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Chi tiết đon hàng" name="order_lines">
+                                <field name="order_line" widget="section_and_note_one2many" mode="tree,kanban" attrs="{'readonly': [('state', 'in', ('done','cancel'))]}">
+                                    <tree string="Sales Order Lines" readonly="1">
+                                        <field name="product_id"/>
+                                        <field name="product_template_id"/>
+                                        <field name="name" widget="section_and_note_text" optional="show"/>
+                                        <field name="product_uom_qty"/>
+                                    </tree>
+                                    <form string="Sales Order Lines" readonly="1">
+                                        <field name="product_id" readonly="1" options="{'no_create': True, 'no_open': True}"/>
+                                        <field name="product_template_id" readonly="1" options="{'no_create': True, 'no_open': True}"/>
+                                        <field name="name" widget="section_and_note_text" optional="show" readonly="1"/>
+                                        <field name="product_uom_qty" readonly="1"/>
+                                    </form>
+                                </field>
+                            </page>
+                            <page string="Thông tin khác" name="other_information">
+                                <group>
+                                    <group name="sales_person" tring="Bán hàng">
+                                    </group>
+                                    <group name="sale_info" string="Xuất hóa đơn &amp; thanh toán">
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
                 </form>
             </field>
         </record>
