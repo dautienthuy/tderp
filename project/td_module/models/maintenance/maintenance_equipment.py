@@ -25,6 +25,7 @@ class MaintenanceEquipment(models.Model):
         ('preventive', 'Bảo hành')], 
         string='Kiểu bảo trì', 
         default="corrective")
+    date_done = fields.Date(string=u'Ngày hoàn thành')
     last_working_day = fields.Date(string=u'Ngày làm việc gần nhất')
     last_employee_id = fields.Many2one('hr.employee',  u'KTV gần nhất ')
     number_maintenance = fields.Integer(u'Số lần BT/BD')
