@@ -56,13 +56,15 @@ class MaintenanceEquipment(models.Model):
             r.sale_plan_count = len(r.sale_plan_ids)
 
     def btn_sale_plan(self):
-        sale_plan_exit =  self.env['sale.plan'].search([('equipment_id', '=', self.id)])
-        if not sale_plan_exit:
-            vals = ({
-                'equipment_id': self.id,
-                'partner_id': self.customer_id.id})
-            sale_plan = self.env['sale.plan'].create(vals)
-            return sale_plan
+        sale_plan_exit =  self.env['sale.plan'].search([('order_id', '=', self.order_id.id)])
+        if sale_plan_exit:
+            sale_plan_exit.write({'equipment_id': self.id})
+        # if not sale_plan_exit:
+        #     vals = ({
+        #         'equipment_id': self.id,
+        #         'partner_id': self.customer_id.id})
+        #     sale_plan = self.env['sale.plan'].create(vals)
+        #     return sale_plan
 
     def action_set_draft(self):
         self.write({'state': 'draft'})
