@@ -35,12 +35,16 @@ class MaintenanceEquipment(models.Model):
     need_to_check = fields.Boolean('Cần kiểm tra')
     #
     backlog_status = fields.Selection([
-        ('waiting_repair', 'Chờ sửa chữa'),
-        ('waiting_disposal', 'Chờ thanh lý'),
-        ('waiting_allocate', 'Chờ cấp phát'),
-        ('waiting_purchase', 'Chờ mua sắm'),
-    ], string="Tồn đọng", default=False)
-    backlog_note = fields.Text("Ghi chú tồn đọng")
+        ('01', 'Bảo hành'),
+        ('02', 'Gia hạn bảo hành'),
+        ('03', 'Bảo trì'),
+        ('04', 'BT Free'),
+        ('05', 'Dừng BH, BT'),
+        ('06', 'Tạm dừng'),
+        ('07', 'Thang mới'),
+        ('08', 'Khác'),
+    ], string=u"Hạng mục", default=False)
+    backlog_note = fields.Text("Ghi chú")
     #
     state = fields.Selection(
         selection=[
