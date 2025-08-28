@@ -49,6 +49,7 @@
                     <field name="phone"/>
                 </field>
                 <field name="category_id" position="after">
+                    <field name="need_to_check"/>
                     <field name="number_maintenance"/>
                     <field name="backlog_status"/>
                     <field name="backlog_note"/>
@@ -124,4 +125,16 @@
             </field>
         </record>
     </data>
+    <!-- == -->
+    <record id="action_maintenance_equipment_expire" model="ir.actions.act_window">
+            <field name="name">Trang thiết bị</field>
+            <field name="res_model">maintenance.equipment</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('need_to_check','=',True)]</field>
+            <field name="context">{'search_default_draft': 1,
+                                   'search_default_open': 1,
+                                   'search_default_paused': 1}</field>
+        </record>
+
 </odoo>

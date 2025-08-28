@@ -28,6 +28,7 @@ class MaintenanceEquipment(models.Model):
     last_working_day = fields.Date(string=u'Ngày làm việc gần nhất')
     last_employee_id = fields.Many2one('hr.employee',  u'KTV gần nhất ')
     number_maintenance = fields.Integer(u'Số lần BT/BD')
+    need_to_check = fields.Boolean('Cần kiểm tra')
     #
     backlog_status = fields.Selection([
         ('waiting_repair', 'Chờ sửa chữa'),
