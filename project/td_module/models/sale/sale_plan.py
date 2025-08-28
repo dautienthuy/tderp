@@ -16,6 +16,7 @@ class SalePlan(models.Model):
     partner_id = fields.Many2one('res.partner', u'Khách hàng')
     street = fields.Char(related='partner_id.street', string="Địa chỉ")
     order_id = fields.Many2one('sale.order', string=u'Đơn hàng')
+    equipment_id = fields.Many2one('maintenance.equipment', string=u'Trang thiết bị')
     excurtion_progress_ids = fields.One2many(
         comodel_name='sale.excurtion.progress', inverse_name='sale_plan_id')
     construction_schedule_ids = fields.One2many(

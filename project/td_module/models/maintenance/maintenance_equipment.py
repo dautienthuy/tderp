@@ -47,6 +47,22 @@ class MaintenanceEquipment(models.Model):
         string='Status',
         copy=False,
         default='draft')
+    sale_plan_count = fields.Integer(compute='_compute_sale_plan_count', string=u"Số kế hoạch", store=True)
+    sale_plan_ids = fields.One2many('sale.plan', 'equipment_id')
+
+    @api.depends('sale_plan_ids')
+    def _compute_sale_plan_count(self):
+        for r in self:
+            r.sale_plan_count = len(r.sale_plan_ids)
+
+    def btn_sale_plan(self):
+        sale_plan_exit =  self.env['sale.plan'].search([('equipment_id', '=', self.id)])
+        if not sale_plan_exit:
+            vals = ({
+                'equipment_id': self.id,
+                'partner_id':self.customer_id_id.id})
+            sale_plan = self.env['sale.plan'].create(vals)
+            return sale_plan
 
     def action_set_draft(self):
         self.write({'state': 'draft'})
