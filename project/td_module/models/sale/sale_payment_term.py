@@ -22,6 +22,7 @@ class SalePaymentTerm(models.Model):
     percent_payment = fields.Float(string=u'Tỉ lệ(%)')
     total_paid = fields.Float(string=u'Thanh toán')
     order_id = fields.Many2one('sale.order', string=u'Sale Order')
+    equipment_id = fields.Many2one('maintenance.equipment', string=u'Trang thiết bị')
 
     @api.depends('percent_payment', 'order_id.tax_totals')
     def _compute_amount(self):

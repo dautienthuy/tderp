@@ -49,6 +49,7 @@ class MaintenanceEquipment(models.Model):
         default='draft')
     sale_plan_count = fields.Integer(compute='_compute_sale_plan_count', string=u"Số kế hoạch", store=True)
     sale_plan_ids = fields.One2many('sale.plan', 'equipment_id')
+    sale_payment_term_ids = fields.One2many(comodel_name='sale.payment.term', inverse_name='equipment_id')
 
     @api.depends('sale_plan_ids')
     def _compute_sale_plan_count(self):
