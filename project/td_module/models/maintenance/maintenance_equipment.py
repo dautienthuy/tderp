@@ -60,7 +60,7 @@ class MaintenanceEquipment(models.Model):
         if not sale_plan_exit:
             vals = ({
                 'equipment_id': self.id,
-                'partner_id':self.customer_id_id.id})
+                'partner_id': self.customer_id.id})
             sale_plan = self.env['sale.plan'].create(vals)
             return sale_plan
 
