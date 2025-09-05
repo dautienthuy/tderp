@@ -35,6 +35,7 @@
         'data/ir_sequence_data.xml',
         # Wizards
         'wizards/wz_td_report_maintenance_detail.xml',
+        'wizards/wz_td_report_sale.xml',
         # VIEWS
         'views/maintenance/maintenance_equipment_category_views.xml',
         'views/maintenance/maintenance_views.xml',
@@ -54,6 +55,7 @@
         # REPORT
         'views/report_py3o/sale.xml',
         'views/report_py3o/maintenance.xml',
+
         # MENU
         'menu/maintenance_menu.xml',
         'menu/sale_menu.xml',

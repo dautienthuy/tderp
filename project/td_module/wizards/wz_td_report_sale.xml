@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>		 
+		<record id="wz_td_report_sale_view_form" model="ir.ui.view">
+			<field name="name">wz.td.report.sale.form</field>
+			<field name="model">wz.td.report.sale</field>
+			<field name="arch" type="xml">
+				<form readonly="1" create="false" >
+					<group colspan="2" col="2">
+                        <field name="from_date" required="1"/>
+						<field name="to_date" required="1"/>
+						<field name="type" required="1"/>
+					</group>
+					<footer>
+						<button string='Print' name="print_report" type="object" class="oe_highlight"/>
+						or
+						<button string="Cancel"  special="cancel" class="oe_highlight"/>
+					</footer>					
+				</form>
+			</field>
+		</record>		
+
+		<record id="action_print_wz_td_report_sale" model="ir.actions.act_window" >
+			<field name="name">Danh sách bán hàng</field>
+			<field name="res_model">wz.td.report.sale</field>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="wz_td_report_sale_view_form"/>
+            <field name="target">new</field>
+		</record> 
+		
+		<!-- Project & Contract > Report > Monthly Received Work -->
+		<menuitem id="menu_report_td_sale"
+			name="Danh sách bán hàng"
+			action="action_print_wz_td_report_sale" 		
+			parent="sale.menu_sale_report" 
+			sequence="50" />
+    </data>
+</odoo>
