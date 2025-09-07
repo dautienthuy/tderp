@@ -13,8 +13,13 @@
 					</header>
 					<sheet>
 						<group colspan="4" col="4">
-							<field name='date_from' required="1"/>
-							<field name='date_to' required="1"/>
+							<group>
+								<field name='date_from' required="1"/>
+								<field name='state' required="1"/>
+							</group>
+							<group>
+								<field name='date_to' required="1"/>
+							</group>
 						</group>
 						<notebook>
 							<page name="salereport_detail" string="Detail">
@@ -23,9 +28,9 @@
 										<field name='rp_name'/>
 										<field name='code'/>
 										<field name='client_code'/>
-										<field name='amount_total'/>
-										<field name='amount_payment'/>
-										<field name='amount_paid'/>
+										<field name='amount_total' sum='Sub-Total'/>
+										<field name='amount_payment' sum='Sub-Total'/>
+										<field name='amount_paid' sum='Sub-Total'/>
 										<field name='street'/>
 										<field name='phone'/>
 										<field name='feature'/>

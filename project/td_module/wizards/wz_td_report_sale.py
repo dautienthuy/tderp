@@ -12,6 +12,7 @@ class WzTdReportSale(models.TransientModel):
     date_to = fields.Date(u'Đến ngày')
     sale_order_id = fields.Many2one('sale.order', 'Sale Order')
     detail_ids = fields.One2many("wz.td.report.sale.detail", compute="_get_detail_list", string=u"Danh sách")
+    state = fields.Selection([('draft', 'Báo giá'),('sale', 'Đơn hàng'), ('all', 'Đầy đủ')], string='Trạng thái', default='all')
 
     def compute(self):
         return {"tag": "reload", "type": "ir.actions.act_window_close"}
@@ -21,6 +22,10 @@ class WzTdReportSale(models.TransientModel):
         for obj in self.filtered(lambda obj: obj.date_from and obj.date_to):
             date_from = obj.date_from
             date_to = obj.date_to
+
+            a_state = ''
+            if obj.state != 'all':
+                a_state = " and state = '%s'" % obj.state
             sqlCommand = """Select
                             distinct
                             tdsd.id,
@@ -30,10 +35,11 @@ class WzTdReportSale(models.TransientModel):
                             wz_td_report_sale_detail tdsd
                         where
                             date between '{date_from}' and '{date_to}'
+                            {a_state}
                         order by
                             date
                             """.format(
-                date_from=date_from, date_to=date_to
+                date_from=date_from, date_to=date_to, a_state=a_state
             )
             cr.execute(sqlCommand)
             data = cr.fetchall()
@@ -67,6 +73,7 @@ class WzTdReportSaleDetail(models.Model):
     date = fields.Date("Ngày đặt hàng")
     commitment_date = fields.Date("Ngày hàng về")
     date_done = fields.Date("Ngày kiểm định, bàn giao")
+    state = fields.Char('Trạng thái')
 
     def init(self):
         vwName = self._table
@@ -98,7 +105,8 @@ class WzTdReportSaleDetail(models.Model):
                         max(est_progress) est_progress,
                         sp.date moving_plan,
                         so.commitment_date commitment_date,
-                        so.date_done date_done
+                        so.date_done date_done,
+                        so.state
                     from
                         sale_order so
                     left join
