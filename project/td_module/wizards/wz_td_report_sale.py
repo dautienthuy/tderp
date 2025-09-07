@@ -8,10 +8,10 @@ class WzTdReportSale(models.TransientModel):
     _description = "Wz Td Report Sale"
     _rec_name = "date_from"
 
-    date_from = fields.Date('Từ ngày')
-    date_to = fields.Date('Đến ngày')
+    date_from = fields.Date(u'Từ ngày')
+    date_to = fields.Date(u'Đến ngày')
     sale_order_id = fields.Many2one('sale.order', 'Sale Order')
-    detail_ids = fields.One2many("wz.td.report.sale.detail", compute="_get_detail_list", string="Details")
+    detail_ids = fields.One2many("wz.td.report.sale.detail", compute="_get_detail_list", string=u"Danh sách")
 
     def compute(self):
         return {"tag": "reload", "type": "ir.actions.act_window_close"}
@@ -51,7 +51,22 @@ class WzTdReportSaleDetail(models.Model):
     _rec_name = "code"
 
     code = fields.Char("Số HĐ")
-    date = fields.Date("Ngày")
+    rp_name = fields.Char("Khách hàng")
+    client_code = fields.Char("Hợp đồng khách")
+    amount_total = fields.Float("Giá trị hợp đồng")
+    amount_payment = fields.Float("Thanh toán")
+    amount_paid = fields.Float("Công nợ")
+    street = fields.Char('Địa chỉ')
+    phone = fields.Char('SĐT KH')
+    other_phone = fields.Char('SĐT Xây dựng')
+    feature = fields.Char('Đặc tính')
+    duration_contract = fields.Date("Tiến độ hợp đồng")
+    work_progress = fields.Text('Tiến độ Thi công')
+    est_progress = fields.Text('Mốc dự kiến')
+    moving_plan = fields.Date('Kế hoạch lên nhà mới')
+    date = fields.Date("Ngày đặt hàng")
+    commitment_date = fields.Date("Ngày hàng về")
+    date_done = fields.Date("Ngày kiểm định, bàn giao")
 
     def init(self):
         vwName = self._table
@@ -64,11 +79,44 @@ class WzTdReportSaleDetail(models.Model):
                     *
                 from
                     (
-                    Select 
+                    Select
+                        rp.name rp_name,
                         so.name code,
-                        so.date_order date
+                        so.date_order date,
+                        so.client_code client_code,
+                        so.amount_total,
+                        (select sum(total_paid) from sale_payment_term where order_id = so.id) amount_payment,
+                        (so.amount_total - 
+                            COALESCE((select sum(total_paid) from sale_payment_term where order_id = so.id), 0)
+                        ) amount_paid,
+                        rp.street street,
+                        rp.phone phone,
+                        rp.phone other_phone,
+                        so.feature,
+                        so.duration_contract,
+                        array_to_string(array_agg(to_char(sep.date, 'DD-MM-YYYY')||': '||sep.name),E'\n') work_progress,
+                        max(est_progress) est_progress,
+                        sp.date moving_plan,
+                        so.commitment_date commitment_date,
+                        so.date_done date_done
                     from
                         sale_order so
+                    left join
+                        res_partner rp on so.partner_id = rp.id
+                    left join
+                        sale_plan sp on so.id = sp.order_id
+                    left join
+                        sale_excurtion_progress sep on sp.id = sep.sale_plan_id
+                    left join
+                        (
+                            select
+                                sale_plan_id,
+                                array_to_string(array_agg(to_char(date, 'DD-MM-YYYY')||': '||name),E'\n') est_progress
+                            from
+                                sale_construction_schedule
+                            group by sale_plan_id
+                    ) vwscs on vwscs.sale_plan_id = sp.id
+                    group by so.id, rp.id, sp.id, vwscs.sale_plan_id
                     ) vw 
                 order by date"""
             % vwName
