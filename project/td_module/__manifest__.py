@@ -33,6 +33,7 @@
         'security/ir.model.access.csv',
         # DATA
         'data/ir_sequence_data.xml',
+        'data/cron.xml',
         # Wizards
         'wizards/wz_td_report_maintenance_detail.xml',
         'wizards/wz_td_report_sale.xml',

@@ -2,6 +2,9 @@
 
 from odoo import api, fields, models, tools
 from odoo.exceptions import ValidationError, Warning, UserError
+from datetime import timedelta
+from datetime import date
+from dateutil.relativedelta import relativedelta
 
 
 class MaintenanceEquipment(models.Model):
@@ -32,15 +35,19 @@ class MaintenanceEquipment(models.Model):
     need_to_check = fields.Boolean('Cần kiểm tra')
     #
     backlog_status = fields.Selection([
-        ('waiting_repair', 'Chờ sửa chữa'),
-        ('waiting_disposal', 'Chờ thanh lý'),
-        ('waiting_allocate', 'Chờ cấp phát'),
-        ('waiting_purchase', 'Chờ mua sắm'),
-    ], string="Tồn đọng", default=False)
-    backlog_note = fields.Text("Ghi chú tồn đọng")
+        ('01', 'Bảo hành'),
+        ('02', 'Gia hạn bảo hành'),
+        ('03', 'Bảo trì'),
+        ('04', 'BT Free'),
+        ('05', 'Dừng BH, BT'),
+        ('06', 'Tạm dừng'),
+        ('07', 'Thang mới'),
+        ('08', 'Khác'),
+    ], string=u"Hạng mục", default=False)
+    backlog_note = fields.Text("Ghi chú")
     #
     state = fields.Selection(
-        selection=[('model', 'Model'),
+        selection=[
             ('draft', 'Mở'),
             ('open', 'Đang chạy'),
             ('paused', 'Tạm dừng'),
@@ -126,3 +133,24 @@ class MaintenanceEquipment(models.Model):
                     'date_end': line.end_date,
                 })
                 maintenance_requests = self.env['maintenance.request'].create(vals)
+
+    @api.model
+    def schedule_info_maintenance_equipment_expire(self):
+        today = fields.Date.today()
+        fitler_date = today + relativedelta(day=10)
+        sql = '''
+            SELECT
+                id
+            FROM
+                maintenance_equipment
+            WHERE
+                (need_to_check = 'f' OR need_to_check is null)
+                AND state not in ('draft', 'close', 'cancelled')
+                AND date_done <= '%s';
+        ''' % fitler_date
+        self._cr.execute(sql)
+        print (sql)
+        equipment_ids = [x[0] for x in self._cr.fetchall()]
+        for r_id in equipment_ids:
+            o_equipment = self.env['maintenance.equipment'].search([('id', 'in', r_id)])
+            o_equipment.write({'need_to_check': True})
