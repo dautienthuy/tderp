@@ -10,9 +10,10 @@ class WzTdReportWeekly(models.TransientModel):
     _rec_name = "name"
 
     date_from = fields.Date(u'Từ ngày', required=True)
-    date_to = fields.Date(u'Đến ngày', compute="_compute_date_to")
+    date_to = fields.Date(u'Đến ngày', compute="_compute_date_to", store=True)
     name = fields.Char("Tuần", compute="_compute_name") # Ví dụ: Tuần 1 (01-08/08)
     week_in_month = fields.Integer("Tuần trong tháng", compute="_compute_week_in_month")
+    detail_ids = fields.One2many("wz.td.report.weekly.line", "report_id", string="Báo cáo theo loại")
 
     @api.depends("date_from")
     def _compute_date_to(self):
@@ -42,14 +43,39 @@ class WzTdReportWeekly(models.TransientModel):
     def compute(self):
         return {"tag": "reload", "type": "ir.actions.act_window_close"}
 
+    @api.onchange("date_from")
+    def compute_detail_list(self):
+        self.load_detail_list()
 
-class WzTdReportWeeklyLine(models.Model):
+    def load_detail_list(self):
+        self.detail_ids = False
+        if self.date_from:
+            detail_ids = []
+            self.env.cr.execute('''
+                SELECT
+                    backlog_status
+                FROM
+                    maintenance_request mr
+                WHERE
+                    mr.request_date >= %s
+                    AND mr.request_date <= %s
+                GROUP BY
+                    backlog_status;
+                ''', (self.date_from, self.date_to))
+            list_data = self.env.cr.dictfetchall()
+            #
+            for d in list_data:
+                detail_ids.append((0, 0, {
+                    'backlog_status': d['backlog_status'],
+                }))
+            self.detail_ids = detail_ids
+
+
+class WzTdReportWeeklyLine(models.TransientModel):
     _name = 'wz.td.report.weekly.line'
     _description = "Wz Td Report Weekly Line"
-    _auto = False
-    _order = "date desc"
-    _rec_name = "backlog_status"
 
+    report_id = fields.Many2one("wz.td.report.weekly", ondelete="cascade")
     backlog_status = fields.Selection([
         ('01', 'Bảo hành'),
         ('02', 'Gia hạn bảo hành'),
@@ -65,29 +91,3 @@ class WzTdReportWeeklyLine(models.Model):
     hoan_thanh_lich = fields.Integer("Hoàn thành theo lịch")
     ngoai_lich = fields.Integer("Ngoài lịch")
     ton_cuoi = fields.Integer("Tồn cuối")
-
-    def init(self):
-        vwName = self._table
-        cr = self._cr
-        tools.drop_view_if_exists(cr, vwName)
-        cr.execute(
-            """Create or replace view %s as
-                Select
-                    row_number() over (order by backlog_status) as id,
-                    *
-                from
-                    (
-                    Select
-                        mr.backlog_status
-                        , null ton_dau
-                        , null du_kien
-                        , null hoan_thanh_lich
-                        , null ngoai_lich
-                        , null ton_cuoi
-                    from
-                        maintenance_request mr
-                    group by mr.backlog_status
-                    ) vw
-                order by backlog_status"""
-            % vwName
-        )
