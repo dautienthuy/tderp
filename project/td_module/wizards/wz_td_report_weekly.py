@@ -48,7 +48,7 @@ class WzTdReportWeeklyLine(models.Model):
     _description = "Wz Td Report Weekly Line"
     _auto = False
     _order = "date desc"
-    _rec_name = "job_type"
+    _rec_name = "backlog_status"
 
     backlog_status = fields.Selection([
         ('01', 'Bảo hành'),
