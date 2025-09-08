@@ -88,6 +88,6 @@ class WzTdReportWeeklyLine(models.Model):
                         maintenance_request mr
                     group by mr.backlog_status
                     ) vw
-                order by date"""
+                order by backlog_status"""
             % vwName
         )
