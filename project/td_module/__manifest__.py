@@ -37,6 +37,7 @@
         # Wizards
         'wizards/wz_td_report_maintenance_detail.xml',
         'wizards/wz_td_report_sale.xml',
+        'wizards/wz_td_report_weekly.xml',
         # VIEWS
         'views/maintenance/maintenance_equipment_category_views.xml',
         'views/maintenance/maintenance_views.xml',
