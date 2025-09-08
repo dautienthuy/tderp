@@ -43,7 +43,7 @@ class MaintenanceEquipment(models.Model):
         ('06', 'Tạm dừng'),
         ('07', 'Thang mới'),
         ('08', 'Khác'),
-    ], string=u"Hạng mục", default=False)
+    ], string=u"Hạng mục", default='01')
     backlog_note = fields.Text("Ghi chú")
     #
     state = fields.Selection(
@@ -112,7 +112,8 @@ class MaintenanceEquipment(models.Model):
             'user_id': self.technician_user_id.id,
             'maintenance_team_id': self.maintenance_team_id.id,
             'duration': self.maintenance_duration,
-            'company_id': self.company_id.id or self.env.company.id
+            'company_id': self.company_id.id or self.env.company.id,
+            'backlog_status': self.backlog_status
         }
 
     def btn_generate_requests(self):

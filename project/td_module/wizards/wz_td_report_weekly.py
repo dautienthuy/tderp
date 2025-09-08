@@ -43,3 +43,51 @@ class WzTdReportWeekly(models.TransientModel):
         return {"tag": "reload", "type": "ir.actions.act_window_close"}
 
 
+class WzTdReportWeeklyLine(models.Model):
+    _name = 'wz.td.report.weekly.line'
+    _description = "Wz Td Report Weekly Line"
+    _auto = False
+    _order = "date desc"
+    _rec_name = "job_type"
+
+    backlog_status = fields.Selection([
+        ('01', 'Bảo hành'),
+        ('02', 'Gia hạn bảo hành'),
+        ('03', 'Bảo trì'),
+        ('04', 'BT Free'),
+        ('05', 'Dừng BH, BT'),
+        ('06', 'Tạm dừng'),
+        ('07', 'Thang mới'),
+        ('08', 'Khác'),
+    ], string=u"Nội dung")
+    ton_dau = fields.Integer("Tồn đầu")
+    du_kien = fields.Integer("Dự kiến")
+    hoan_thanh_lich = fields.Integer("Hoàn thành theo lịch")
+    ngoai_lich = fields.Integer("Ngoài lịch")
+    ton_cuoi = fields.Integer("Tồn cuối")
+
+    def init(self):
+        vwName = self._table
+        cr = self._cr
+        tools.drop_view_if_exists(cr, vwName)
+        cr.execute(
+            """Create or replace view %s as
+                Select
+                    row_number() over (order by backlog_status) as id,
+                    *
+                from
+                    (
+                    Select
+                        mr.backlog_status
+                        , null ton_dau
+                        , null du_kien
+                        , null hoan_thanh_lich
+                        , null ngoai_lich
+                        , null ton_cuoi
+                    from
+                        maintenance_request mr
+                    group by mr.backlog_status
+                    ) vw
+                order by date"""
+            % vwName
+        )
