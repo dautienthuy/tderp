@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="maintenance_target_view_form" model="ir.ui.view">
+        <field name="name">maintenance.target.form</field>
+        <field name="model">maintenance.target</field>
+        <field name="arch" type="xml">
+            <form string="Maintenance Target Form">
+                <header>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="month"/>
+                            <field name="year"/>
+                        </group>
+                        <group>
+                            <field name="from_date"/>
+                            <field name="to_date"/>
+                        </group>
+                    </group>                   
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="maintenance_target_view_tree" model="ir.ui.view">
+        <field name="name">maintenance.target.tree</field>
+        <field name="model">maintenance.target</field>
+        <field name="arch" type="xml">
+            <tree string="Maintenance Target List">
+                <field name="name"/>
+                <field name="from_date"/>
+                <field name="to_date"/>
+            </tree>
+        </field>
+    </record>
+</odoo>

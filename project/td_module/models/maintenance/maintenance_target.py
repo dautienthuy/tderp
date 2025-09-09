@@ -1,35 +1,66 @@
-from odoo import models, fields
+from odoo import models, fields, api
+from datetime import datetime, timedelta
+from dateutil import relativedelta
+from odoo.tools import DEFAULT_SERVER_DATE_FORMAT as DF
+from odoo.tools import date_utils, get_lang, html_escape
 
 class MaintenanceTarget(models.Model):
     _name = "maintenance.target"
     _description = "Maintenance KPI Target per Employee"
 
-    employee_id = fields.Many2one("hr.employee", string="Nhân viên", required=True)
-    month = fields.Selection(
-        [(str(m), str(m)) for m in range(1, 13)],
-        string="Tháng", required=True
-    )
-    year = fields.Integer(string="Năm", required=True, default=lambda self: fields.Date.today().year)
+    def _default_year(self):
+        today_date = fields.Date.context_today(self)
+        return today_date.strftime('%Y')
 
-    # Chỉ tiêu
-    target_requests = fields.Integer(string="Chỉ tiêu xử lý", default=0)
-    target_days = fields.Integer(string="Chỉ tiêu ngày làm việc", default=0)
+    def _default_month(self):
+        today_date = default_date = fields.Date.context_today(self)
+        if today_date.day <= 10:
+            default_date = fields.Date.context_today(self) - relativedelta.relativedelta(months=1)
+        return default_date.strftime('%m')
+    
+    name = fields.Char("Tên", compute="_compute_name", store=True)
+    month = fields.Selection([
+        ("01", "Tháng 1"),
+        ("02", "Tháng 2"),
+        ("03", "Tháng 3"),
+        ("04", "Tháng 4"),
+        ("05", "Tháng 5"),
+        ("06", "Tháng 6"),
+        ("07", "Tháng 7"),
+        ("08", "Tháng 8"),
+        ("09", "Tháng 9"),
+        ("10", "Tháng 10"),
+        ("11", "Tháng 11"),
+        ("12", "Tháng 12"),
+        ], default=_default_month, string="Tháng")
+    year = fields.Char(default=_default_year, string="Năm")
+    from_date = fields.Date(
+        string="Từ ngày", required="1")
+    to_date = fields.Date(
+        string="Đến ngày", required="1")
 
-    # Liên kết với request thực tế
-    request_ids = fields.One2many("maintenance.request", "target_id", string="Requests")
-    achieved_requests = fields.Integer(string="Đã xử lý", compute="_compute_achieved", store=True)
-    achieved_days = fields.Integer(string="Ngày LV", compute="_compute_achieved", store=True)
+    @api.onchange('month', 'year')
+    def _compute_period_dates(self):
+        for record in self:
+            period_start = fields.Date.context_today(self).replace(day=1, month=int(record.month), year=int(record.year))
+            this_month_start, this_month_end = date_utils.get_month(period_start)
+            record.from_date = this_month_start
+            record.to_date = this_month_end
 
-    progress = fields.Float(string="Tiến độ (%)", compute="_compute_progress", store=True)
-
-    def _compute_achieved(self):
+    @api.depends("month", "year")
+    def _compute_name(self):
         for rec in self:
-            reqs = rec.request_ids.filtered(lambda r: r.stage_id.name == "Done")
-            rec.achieved_requests = len(reqs)
-            rec.achieved_days = len({r.request_date.date() for r in reqs if r.request_date})
+            if rec.month and rec.year:
+                month = rec.month
+                year = rec.year
+                rec.name = f"{month}/{year}"
 
-    def _compute_progress(self):
-        for rec in self:
-            rec.progress = 0
-            if rec.target_requests:
-                rec.progress = 100.0 * rec.achieved_requests / rec.target_requests
+    # @api.onchange('report_month')
+    # def onchange_report_month(self):
+    #     if self.report_month:
+    #         date = 2.strptime(self.report_month, DF)
+    #         last_day = date + relativedelta(day=1, months=+1, days=-1,
+    #                                         hour=23, minute=59, second=59)
+    #         first_day = date + relativedelta(day=1, hour=0, minute=0, second=0)
+    #         self.from_date = first_day
+    #         self.to_date = last_day
