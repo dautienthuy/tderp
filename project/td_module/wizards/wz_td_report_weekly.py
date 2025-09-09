@@ -41,12 +41,31 @@ class WzTdReportWeekly(models.TransientModel):
             else:
                 rec.name = "Báo cáo tuần"
 
-    def compute(self):
-        return {"tag": "reload", "type": "ir.actions.act_window_close"}
-
     @api.onchange("date_from")
     def compute_detail_list(self):
         self.load_detail_list()
+        self.load_emp_list()
+
+    def load_emp_list(self):
+        self.emp_ids = False
+        if self.date_from:
+            emp_ids = []
+            sql = '''
+                SELECT
+                    employee_id
+                FROM
+                    maintenance_request mr
+                GROUP BY
+                    employee_id;
+                '''
+            self.env.cr.execute(sql)
+            list_data = self.env.cr.dictfetchall()
+            #
+            for d in list_data:
+                emp_ids.append((0, 0, {
+                    'employee_id': d['employee_id'],
+                }))
+            self.emp_ids = emp_ids
 
     def load_detail_list(self):
         self.detail_ids = False
@@ -105,7 +124,6 @@ class WzTdReportWeekly(models.TransientModel):
                 'stagecancel_id': stagecancel_id,
             }
             self.env.cr.execute(sql)
-            print (sql)
             list_data = self.env.cr.dictfetchall()
             #
             for d in list_data:
@@ -146,7 +164,7 @@ class WzTdReportWeeklyEmp(models.TransientModel):
     _name = 'wz.td.report.weekly.emp'
     _description = "Wz Td Report Weekly Emp"
 
-    report_id = fields.Many2one("weekly.report", ondelete="cascade")
+    report_id = fields.Many2one("wz.td.report.weekly", ondelete="cascade")
     employee_id = fields.Many2one("hr.employee", string="Nhân viên", required=True)
 
     ngay_lv = fields.Integer(string="Ngày LV", default=0)
