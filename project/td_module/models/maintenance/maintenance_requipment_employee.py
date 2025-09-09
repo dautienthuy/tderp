@@ -11,4 +11,5 @@ class MaintenanceRequipmentEmployee(models.Model):
     start_date = fields.Date(string=u'Ngày bắt đầu')
     end_date = fields.Date(string=u'Ngày kết thúc')
     delivery_date = fields.Date(string=u'Ngày yêu cầu') 
-    employee_id = fields.Many2one('hr.employee',  u'Kỹ thuật viên')
+    employee_id = fields.Many2one('hr.employee',  u'Nhân viên')
+    user_id = fields.Many2one('res.users',  u'Kỹ thuật viên')

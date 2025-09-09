@@ -129,7 +129,8 @@ class MaintenanceEquipment(models.Model):
                     raise ValidationError(u'Thiếu thông tin ngày trong nhân sự thực hiện bảo trì')
                 vals = self._prepare_maintenance_request_vals(line.delivery_date)
                 vals.update({
-                    'employee_id': line.employee_id.id,
+                    'user_id': line.user_id.id,
+                    'employee_id': self.employee_id.id,
                     'date_start': line.start_date,
                     'date_end': line.end_date,
                 })
