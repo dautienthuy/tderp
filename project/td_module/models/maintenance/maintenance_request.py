@@ -53,7 +53,25 @@ class MaintenanceRequest(models.Model):
         # We generate a standard reference
         for vals in vals_list:
             vals['code'] = self.env['ir.sequence'].next_by_code('maintenance.request') or '/'
-        return super().create(vals_list)
+        res = super().create(vals_list)
+        #
+        if res.user_id and res.request_date:
+
+            week_in_month = (rec.request_date.day - 1) // 7 + 1
+            #
+            d = fields.Date.to_date(res.request_date)
+            monthly = self.env["maintenance.target"].search([
+                ("month", "=", d.month),
+                ("year", "=", d.year),
+            ], limit=1)
+            if monthly:
+                line = self.env["maintenance.target.line"].search([
+                    ("monthly_id", "=", monthly.id),
+                    ("user_id", "=", res.user_id.id)
+                ], limit=1)
+                if line:
+                    res.target_line_id = line.id
+        return res
 
     def write(self, vals):
         res = super(MaintenanceRequest, self).write(vals)        
