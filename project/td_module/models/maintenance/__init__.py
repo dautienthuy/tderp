@@ -9,3 +9,4 @@ from . import maintenance_final_settlement_line
 from . import maintenance_requipment_employee
 from . import maintenance_detail
 from . import maintenance_equipment_category
+from . import maintenance_target

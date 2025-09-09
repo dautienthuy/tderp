@@ -45,6 +45,8 @@ class MaintenanceRequest(models.Model):
         ('08', 'Khác'),
     ], string=u"Hạng mục", default='01')
     backlog_note = fields.Text("Ghi chú")
+    #
+    target_id = fields.Many2one("maintenance.target", string="Chỉ tiêu")
 
     @api.model_create_multi
     def create(self, vals_list):
