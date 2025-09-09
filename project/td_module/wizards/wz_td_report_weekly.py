@@ -52,18 +52,18 @@ class WzTdReportWeekly(models.TransientModel):
             emp_ids = []
             sql = '''
                 SELECT
-                    employee_id
+                    user_id
                 FROM
                     maintenance_request mr
                 GROUP BY
-                    employee_id;
+                    user_id;
                 '''
             self.env.cr.execute(sql)
             list_data = self.env.cr.dictfetchall()
             #
             for d in list_data:
                 emp_ids.append((0, 0, {
-                    'employee_id': d['employee_id'],
+                    'user_id': d['user_id'],
                 }))
             self.emp_ids = emp_ids
 
@@ -165,7 +165,7 @@ class WzTdReportWeeklyEmp(models.TransientModel):
     _description = "Wz Td Report Weekly Emp"
 
     report_id = fields.Many2one("wz.td.report.weekly", ondelete="cascade")
-    employee_id = fields.Many2one("hr.employee", string="Nhân viên", required=True)
+    user_id = fields.Many2one("res.users", string="Nhân viên", required=True)
 
     ngay_lv = fields.Integer(string="Ngày LV", default=0)
     chi_tieu_thang = fields.Integer(string="Chỉ tiêu thang", default=0)
