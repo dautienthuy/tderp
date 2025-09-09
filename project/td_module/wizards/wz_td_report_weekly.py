@@ -50,23 +50,71 @@ class WzTdReportWeekly(models.TransientModel):
     def load_detail_list(self):
         self.detail_ids = False
         if self.date_from:
+            stagedone_id = self.env.ref('maintenance.stage_3').id
+            stagecancel_id = self.env.ref('maintenance.stage_4').id
             detail_ids = []
-            self.env.cr.execute('''
+            sql = '''
                 SELECT
                     backlog_status
+                    , SUM(CASE 
+                        WHEN request_date < '%(date_from)s' AND stage_id NOT IN (%(stagedone_id)s, %(stagecancel_id)s)
+                        THEN 1
+                        ELSE 0
+                    END) ton_dau
+                    , SUM(CASE 
+                        WHEN request_date <= '%(date_to)s' AND stage_id NOT IN (%(stagedone_id)s, %(stagecancel_id)s)
+                        THEN 1
+                        ELSE 0
+                    END) ton_cuoi
+                    , SUM(CASE 
+                        WHEN request_date > '%(date_from)s' AND request_date <= '%(date_to)s' AND stage_id NOT IN (%(stagedone_id)s, %(stagecancel_id)s)
+                        THEN 1
+                        ELSE 0
+                    END) du_kien
+                    , SUM(CASE 
+                        WHEN 
+                            request_date > '%(date_from)s' AND 
+                            request_date <= '%(date_to)s' AND 
+                            stage_id IN (%(stagedone_id)s) AND
+                            request_date <= date_end
+                        THEN 1
+                        ELSE 0
+                    END) theo_lich
+                    , SUM(CASE 
+                        WHEN 
+                            request_date > '%(date_from)s' AND 
+                            request_date <= '%(date_to)s' AND 
+                            stage_id IN (%(stagedone_id)s) AND
+                            request_date > date_end
+                        THEN 1
+                        ELSE 0
+                    END) ngoai_lich
                 FROM
                     maintenance_request mr
                 WHERE
-                    mr.request_date >= %s
-                    AND mr.request_date <= %s
+                    -- mr.request_date >= '%(date_from)s'
+                    -- AND mr.request_date <= '%(date_to)s'
+                    stage_id NOT IN (%(stagecancel_id)s)
                 GROUP BY
                     backlog_status;
-                ''', (self.date_from, self.date_to))
+                ''' % {
+                'date_to': self.date_to,
+                'date_from': self.date_from,
+                'stagedone_id': stagedone_id,
+                'stagecancel_id': stagecancel_id,
+            }
+            self.env.cr.execute(sql)
+            print (sql)
             list_data = self.env.cr.dictfetchall()
             #
             for d in list_data:
                 detail_ids.append((0, 0, {
                     'backlog_status': d['backlog_status'],
+                    'ton_dau': d['ton_dau'],
+                    'du_kien': d['du_kien'],
+                    'theo_lich': d['theo_lich'],
+                    'ngoai_lich': d['ngoai_lich'],
+                    'ton_cuoi': d['ton_cuoi'],
                 }))
             self.detail_ids = detail_ids
 
@@ -88,6 +136,6 @@ class WzTdReportWeeklyLine(models.TransientModel):
     ], string=u"Nội dung")
     ton_dau = fields.Integer("Tồn đầu")
     du_kien = fields.Integer("Dự kiến")
-    hoan_thanh_lich = fields.Integer("Hoàn thành theo lịch")
+    theo_lich = fields.Integer("Theo lịch")
     ngoai_lich = fields.Integer("Ngoài lịch")
     ton_cuoi = fields.Integer("Tồn cuối")
