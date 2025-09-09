@@ -67,11 +67,16 @@ class MaintenanceTargetLine(models.Model):
     target_week2 = fields.Integer("Chỉ tiêu tuần 2")
     target_week3 = fields.Integer("Chỉ tiêu tuần 3")
     target_week4 = fields.Integer("Chỉ tiêu tuần 4")
-    target_requests = fields.Integer("Chỉ tiêu xử lý", default=0)
+    target_requests = fields.Integer("Chỉ tiêu xử lý", compute="_total_target", store=True)
     achieved_requests = fields.Integer("Đã xử lý", compute="_compute_achieved", store=True)
     progress = fields.Float("Tiến độ (%)", compute="_compute_progress", store=True)
 
-    request_ids = fields.One2many("maintenance.request", "target_line_id")
+    request_ids = fields.One2many("maintenance.request", "target_line_id", string="Yêu cầu bảo trì")
+
+    @api.depends("target_week1","target_week2","target_week3",'target_week4')
+    def _total_target(self):
+        for rec in self:
+            rec.target_requests = rec.target_week1 + rec.target_week2 + rec.target_week3 + rec.target_week4
 
     @api.depends("request_ids")
     def _compute_achieved(self):
