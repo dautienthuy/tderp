@@ -14,6 +14,7 @@ class WzTdReportWeekly(models.TransientModel):
     name = fields.Char("Tuần", compute="_compute_name") # Ví dụ: Tuần 1 (01-08/08)
     week_in_month = fields.Integer("Tuần trong tháng", compute="_compute_week_in_month")
     detail_ids = fields.One2many("wz.td.report.weekly.line", "report_id", string="Báo cáo theo loại")
+    emp_ids = fields.One2many("wz.td.report.weekly.emp", "report_id", string="Báo cáo theo nhân viên")
 
     @api.depends("date_from")
     def _compute_date_to(self):
@@ -139,3 +140,20 @@ class WzTdReportWeeklyLine(models.TransientModel):
     theo_lich = fields.Integer("Theo lịch")
     ngoai_lich = fields.Integer("Ngoài lịch")
     ton_cuoi = fields.Integer("Tồn cuối")
+
+
+class WzTdReportWeeklyEmp(models.TransientModel):
+    _name = 'wz.td.report.weekly.emp'
+    _description = "Wz Td Report Weekly Emp"
+
+    report_id = fields.Many2one("weekly.report", ondelete="cascade")
+    employee_id = fields.Many2one("hr.employee", string="Nhân viên", required=True)
+
+    ngay_lv = fields.Integer(string="Ngày LV", default=0)
+    chi_tieu_thang = fields.Integer(string="Chỉ tiêu thang", default=0)
+    ton_dk = fields.Integer(string="Tồn ĐK", default=0)
+    du_kien = fields.Integer(string="Dự kiến", default=0)
+    theo_lich = fields.Integer(string="Theo lịch", default=0)
+    ngoai_lich = fields.Integer(string="Ngoài lịch", default=0)
+    ton_cuoi = fields.Integer(string="Tồn", default=0)
+    note = fields.Text(string="Ghi chú")
