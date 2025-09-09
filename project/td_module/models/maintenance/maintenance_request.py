@@ -57,7 +57,7 @@ class MaintenanceRequest(models.Model):
         #
         if res.user_id and res.request_date:
 
-            week_in_month = (rec.request_date.day - 1) // 7 + 1
+            week_in_month = (res.request_date.day - 1) // 7 + 1
             #
             d = fields.Date.to_date(res.request_date)
             monthly = self.env["maintenance.target"].search([
