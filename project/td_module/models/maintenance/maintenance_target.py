@@ -6,7 +6,7 @@ from odoo.tools import date_utils, get_lang, html_escape
 
 class MaintenanceTarget(models.Model):
     _name = "maintenance.target"
-    _description = "Maintenance KPI Target per Employee"
+    _description = "Maintenance Target"
 
     def _default_year(self):
         today_date = fields.Date.context_today(self)
@@ -54,13 +54,3 @@ class MaintenanceTarget(models.Model):
                 month = rec.month
                 year = rec.year
                 rec.name = f"{month}/{year}"
-
-    # @api.onchange('report_month')
-    # def onchange_report_month(self):
-    #     if self.report_month:
-    #         date = 2.strptime(self.report_month, DF)
-    #         last_day = date + relativedelta(day=1, months=+1, days=-1,
-    #                                         hour=23, minute=59, second=59)
-    #         first_day = date + relativedelta(day=1, hour=0, minute=0, second=0)
-    #         self.from_date = first_day
-    #         self.to_date = last_day
