@@ -50,20 +50,67 @@ class WzTdReportWeekly(models.TransientModel):
         self.emp_ids = False
         if self.date_from:
             emp_ids = []
+            stagedone_id = self.env.ref('maintenance.stage_3').id
+            stagecancel_id = self.env.ref('maintenance.stage_4').id
             sql = '''
                 SELECT
                     user_id
+                    , SUM(CASE 
+                        WHEN request_date < '%(date_from)s' AND stage_id NOT IN (%(stagedone_id)s, %(stagecancel_id)s)
+                        THEN 1
+                        ELSE 0
+                    END) ton_dau
+                    , SUM(CASE 
+                        WHEN request_date <= '%(date_to)s' AND stage_id NOT IN (%(stagedone_id)s, %(stagecancel_id)s)
+                        THEN 1
+                        ELSE 0
+                    END) ton_cuoi
+                    , SUM(CASE 
+                        WHEN request_date > '%(date_from)s' AND request_date <= '%(date_to)s' AND stage_id NOT IN (%(stagedone_id)s, %(stagecancel_id)s)
+                        THEN 1
+                        ELSE 0
+                    END) du_kien
+                    , SUM(CASE 
+                        WHEN 
+                            request_date > '%(date_from)s' AND 
+                            request_date <= '%(date_to)s' AND 
+                            stage_id IN (%(stagedone_id)s) AND
+                            request_date <= date_end
+                        THEN 1
+                        ELSE 0
+                    END) theo_lich
+                    , SUM(CASE 
+                        WHEN 
+                            request_date > '%(date_from)s' AND 
+                            request_date <= '%(date_to)s' AND 
+                            stage_id IN (%(stagedone_id)s) AND
+                            request_date > date_end
+                        THEN 1
+                        ELSE 0
+                    END) ngoai_lich
                 FROM
                     maintenance_request mr
+                WHERE
+                    stage_id NOT IN (%(stagecancel_id)s)
                 GROUP BY
                     user_id;
-                '''
+                '''% {
+                'date_to': self.date_to,
+                'date_from': self.date_from,
+                'stagedone_id': stagedone_id,
+                'stagecancel_id': stagecancel_id,
+            }
             self.env.cr.execute(sql)
             list_data = self.env.cr.dictfetchall()
             #
             for d in list_data:
                 emp_ids.append((0, 0, {
                     'user_id': d['user_id'],
+                    'ton_dau': d['ton_dau'],
+                    'du_kien': d['du_kien'],
+                    'theo_lich': d['theo_lich'],
+                    'ngoai_lich': d['ngoai_lich'],
+                    'ton_cuoi': d['ton_cuoi'],
                 }))
             self.emp_ids = emp_ids
 
@@ -169,7 +216,7 @@ class WzTdReportWeeklyEmp(models.TransientModel):
 
     ngay_lv = fields.Integer(string="Ngày LV", default=0)
     chi_tieu_thang = fields.Integer(string="Chỉ tiêu thang", default=0)
-    ton_dk = fields.Integer(string="Tồn ĐK", default=0)
+    ton_dau = fields.Integer(string="Tồn Đầu", default=0)
     du_kien = fields.Integer(string="Dự kiến", default=0)
     theo_lich = fields.Integer(string="Theo lịch", default=0)
     ngoai_lich = fields.Integer(string="Ngoài lịch", default=0)
