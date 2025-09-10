@@ -54,7 +54,7 @@ class WzTdReportWeekly(models.TransientModel):
             stagecancel_id = self.env.ref('maintenance.stage_4').id
             sql = '''
                 SELECT
-                    user_id
+                    mr.user_id
                     , SUM(CASE 
                         WHEN request_date < '%(date_from)s' AND stage_id NOT IN (%(stagedone_id)s, %(stagecancel_id)s)
                         THEN 1
@@ -88,17 +88,30 @@ class WzTdReportWeekly(models.TransientModel):
                         THEN 1
                         ELSE 0
                     END) ngoai_lich
+                    , SUM(CASE WHEN '%(date_from)s' >= mt.from_date AND '%(date_to)s' <= mt.to_date THEN mtl.working_day ELSE 0 END) ngay_lv
+                    , SUM(CASE 
+                        WHEN '%(date_from)s' >= mt.from_date AND '%(date_to)s' <= mt.to_date AND 1 = %(week_in_month)s THEN mtl.target_week1
+                        WHEN '%(date_from)s' >= mt.from_date AND '%(date_to)s' <= mt.to_date AND 2 = %(week_in_month)s THEN mtl.target_week2
+                        WHEN '%(date_from)s' >= mt.from_date AND '%(date_to)s' <= mt.to_date AND 3 = %(week_in_month)s THEN mtl.target_week3
+                        WHEN '%(date_from)s' >= mt.from_date AND '%(date_to)s' <= mt.to_date AND 4 = %(week_in_month)s THEN mtl.target_week4
+                        ELSE 0
+                    END) chi_tieu_thang
                 FROM
                     maintenance_request mr
+                LEFT JOIN
+                    maintenance_target_line mtl ON mr.target_line_id = mtl.id
+                LEFT JOIN
+                    maintenance_target mt ON mt.id = mtl.monthly_id
                 WHERE
                     stage_id NOT IN (%(stagecancel_id)s)
                 GROUP BY
-                    user_id;
+                    mr.user_id;
                 '''% {
                 'date_to': self.date_to,
                 'date_from': self.date_from,
                 'stagedone_id': stagedone_id,
                 'stagecancel_id': stagecancel_id,
+                'week_in_month': self.week_in_month
             }
             self.env.cr.execute(sql)
             list_data = self.env.cr.dictfetchall()
@@ -111,6 +124,8 @@ class WzTdReportWeekly(models.TransientModel):
                     'theo_lich': d['theo_lich'],
                     'ngoai_lich': d['ngoai_lich'],
                     'ton_cuoi': d['ton_cuoi'],
+                    'ngay_lv': d['ngay_lv'],
+                    'chi_tieu_thang': d['chi_tieu_thang'],
                 }))
             self.emp_ids = emp_ids
 

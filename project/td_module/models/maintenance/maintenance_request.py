@@ -47,6 +47,7 @@ class MaintenanceRequest(models.Model):
     backlog_note = fields.Text("Ghi chú")
     #
     target_line_id = fields.Many2one("maintenance.target.line", string="Chỉ tiêu")
+    week_in_month = fields.Integer("Tuần")
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -56,8 +57,8 @@ class MaintenanceRequest(models.Model):
         res = super().create(vals_list)
         #
         if res.user_id and res.request_date:
-
             week_in_month = (res.request_date.day - 1) // 7 + 1
+            res.week_in_month = week_in_month
             #
             d = fields.Date.to_date(res.request_date)
             monthly = self.env["maintenance.target"].search([
