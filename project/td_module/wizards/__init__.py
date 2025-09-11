@@ -4,3 +4,4 @@ from . import wz_td_report_base
 from . import wz_td_report_maintenance_detail
 from . import wz_td_report_sale
 from . import wz_td_report_weekly
+from . import wz_td_report_maintenance_year

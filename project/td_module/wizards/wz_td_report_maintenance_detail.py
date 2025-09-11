@@ -27,7 +27,7 @@ class WzTdReportMaintenanceDetail(models.TransientModel):
     so_thang = fields.Float('Số thang')
     ghi_chu = fields.Text('Ghi chú')
     so_lan = fields.Integer('Số lần')
-    ngay_bd = fields.Date('Ngày bảo dưỡng')
+    ngay_bd = fields.Date('Ngày bắt đầu')
     ngay_giahan = fields.Date('Ngày gia hạn')
     ngay_kt = fields.Date('Ngày kết thúc')
     du_kien = fields.Char('Dự kiến')

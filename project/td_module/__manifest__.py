@@ -36,6 +36,7 @@
         'data/cron.xml',
         # Wizards
         'wizards/wz_td_report_maintenance_detail.xml',
+        'wizards/wz_td_report_maintenance_year.xml',
         'wizards/wz_td_report_sale.xml',
         'wizards/wz_td_report_weekly.xml',
         # VIEWS
