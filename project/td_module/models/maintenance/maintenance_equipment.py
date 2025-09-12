@@ -23,6 +23,8 @@ class MaintenanceEquipment(models.Model):
     street = fields.Char(related='customer_id.street', string="Địa chỉ")
     phone = fields.Char(related='customer_id.phone', string="Số điện thoại")
     #
+    date_extend  = fields.Date(string=u'Ngày gia hạn')
+    so_thang = fields.Integer('Số thang')
     maintenance_type = fields.Selection([
         ('corrective', 'BTBD'), 
         ('preventive', 'Bảo hành')], 
@@ -113,7 +115,9 @@ class MaintenanceEquipment(models.Model):
             'maintenance_team_id': self.maintenance_team_id.id,
             'duration': self.maintenance_duration,
             'company_id': self.company_id.id or self.env.company.id,
-            'backlog_status': self.backlog_status
+            'backlog_status': self.backlog_status,
+            'so_thang': self.so_thang,
+            'number_maintenance': self.number_maintenance,
         }
 
     def btn_generate_requests(self):

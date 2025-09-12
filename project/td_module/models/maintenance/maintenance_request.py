@@ -34,6 +34,8 @@ class MaintenanceRequest(models.Model):
     employee_id = fields.Many2one('hr.employee',  u'Kỹ thuật viên')
     number_maintenance = fields.Integer(u'Số lần BT/BD')
     #
+    date_extend  = fields.Date(string=u'Ngày gia hạn')
+    so_thang = fields.Integer('Số thang')
     backlog_status = fields.Selection([
         ('01', 'Bảo hành'),
         ('02', 'Gia hạn bảo hành'),
