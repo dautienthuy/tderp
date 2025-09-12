@@ -60,7 +60,7 @@ class SaleOrder(models.Model):
     def _td_prepare_maintenance_equip_vals(self):
         self.ensure_one()
         return {
-            'name': _('[%s] %s', (self.client_code, self.name)),
+            'name':  _('[%s] %s') % (self.client_code, self.name[0:50]),
             'order_id': self.id,
             'customer_id': self.partner_id.id
         }
@@ -70,7 +70,7 @@ class SaleOrder(models.Model):
                                                     ('order_id', '=', self.id)])
         if not requests:
             vals = self._td_prepare_maintenance_equip_vals()
-            maintenance_requests = self.env['maintenance.request'].create(vals)
+            maintenance_requests = self.env['maintenance.equipment'].create(vals)
 
     def action_confirm(self):
         res = super().action_confirm()
