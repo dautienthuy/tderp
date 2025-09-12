@@ -23,8 +23,6 @@ class MaintenanceEquipment(models.Model):
     street = fields.Char(related='customer_id.street', string="Địa chỉ")
     phone = fields.Char(related='customer_id.phone', string="Số điện thoại")
     #
-    tem_kd = fields.Char(u'Tem kiểm định')
-    date_actual  = fields.Date(string=u'Ngày thực tế')
     date_extend  = fields.Date(string=u'Ngày gia hạn')
     so_thang = fields.Integer('Số thang')
     maintenance_type = fields.Selection([
