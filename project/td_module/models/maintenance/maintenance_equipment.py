@@ -135,6 +135,9 @@ class MaintenanceEquipment(models.Model):
                     'date_end': line.end_date,
                 })
                 maintenance_requests = self.env['maintenance.request'].create(vals)
+                line.sudo().write({
+                    'code_maintenance': maintenance_requests.code,
+                    'maintenance_request_id': maintenance_requests.id})
 
     @api.model
     def schedule_info_maintenance_equipment_expire(self):

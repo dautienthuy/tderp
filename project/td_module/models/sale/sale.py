@@ -34,6 +34,7 @@ class SaleOrder(models.Model):
     duration_contract = fields.Integer(u'Tiến độ hợp đồng')
     sale_plan_count = fields.Integer(compute='_compute_sale_plan_count', string=u"Số kế hoạch", store=True)
     sale_plan_ids = fields.One2many('sale.plan', 'order_id')
+    sale_type = fields.Selection([('bm', 'Bán mới'),(('bt', 'Bảo trì'))], string="Loại hợp đồng", default='bm')
 
     @api.depends('sale_plan_ids')
     def _compute_sale_plan_count(self):
