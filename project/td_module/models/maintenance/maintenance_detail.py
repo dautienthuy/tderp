@@ -19,4 +19,4 @@ class MaintenanceDetail(models.Model):
     @api.depends('quantity', 'unit_price')
     def _compute_amount(self):
         for line in self:
-            line.theoritical_amount = line.quantity * line.unit_price
+            line.amount = line.quantity * line.unit_price
