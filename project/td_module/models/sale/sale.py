@@ -67,7 +67,7 @@ class SaleOrder(models.Model):
     def _td_prepare_maintenance_equip_vals(self):
         self.ensure_one()
         return {
-            'name':  _('[%s] %s') % (self.client_code, self.name[0:50]),
+            'name':  _('[%s] %s') % (self.client_code, self.other_name[0:50]),
             'order_id': self.id,
             'customer_id': self.partner_id.id
         }
