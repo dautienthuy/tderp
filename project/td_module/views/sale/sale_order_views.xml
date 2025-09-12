@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <record id="sale_action_maintenance_equipment" model="ir.actions.act_window">
+            <field name="name">Dự án</field>
+            <field name="res_model">maintenance.equipment</field>
+            <field name="binding_model_id" ref="sale.model_sale_order"/>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{
+                'default_order_id': active_id,
+            }</field>
+            <field name="domain">[('order_id', '=', active_id)]</field>
+        </record>
+    </data>
+    <data>
         <record id="sale_action_sale_plan" model="ir.actions.act_window">
             <field name="name">Kế hoạch</field>
             <field name="res_model">sale.plan</field>
@@ -93,6 +105,12 @@
                         icon="fa-money"
                         type="action">
                         <field name="sale_plan_count" widget="statinfo" string="Kế hoạch"/>
+                    </button>
+                    <button name="%(sale_action_maintenance_equipment)d"
+                        class="oe_stat_button"
+                        icon="fa-money"
+                        type="action">
+                        <field name="maintenance_equip_count" widget="statinfo" string="Dự án"/>
                     </button>
                 </div>
                 <xpath expr="//button[@name='action_draft']" position="after">

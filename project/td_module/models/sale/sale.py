@@ -36,6 +36,8 @@ class SaleOrder(models.Model):
     sale_plan_ids = fields.One2many('sale.plan', 'order_id')
     sale_type = fields.Selection([('bm', 'Bán mới'),(('bt', 'Bảo trì'))], string="Loại hợp đồng", default='bm')
     other_name = fields.Char(u'Tên hợp đồng')
+    maintenance_equip_count = fields.Integer(compute='_compute_maintenance_equip_count', string=u"Số dự án", store=True)
+    maintenance_equip_ids = fields.One2many('maintenance.equipment', 'order_id')
 
     @api.constrains('code')
     def _check_code(self):
@@ -56,7 +58,11 @@ class SaleOrder(models.Model):
             sale_plan = self.env['sale.plan'].create(vals)
             return sale_plan
 
-    
+    @api.depends('maintenance_equip_ids')
+    def _compute_maintenance_equip_count(self):
+        for so in self:
+            so.maintenance_equip_count = len(so.maintenance_equip_ids)
+
     def _td_prepare_maintenance_equip_vals(self):
         self.ensure_one()
         return {
