@@ -41,8 +41,9 @@ class SaleOrder(models.Model):
 
     @api.constrains('client_code')
     def _check_code(self):
-        if len(self.client_code) > 1:
-            raise UserError(_('Số hợp đồng  %s đã cớ sãn trên hệ thống.' % self.client_code))
+        check = self.search_count([('client_code', '=', self.client_code)])
+        if check > 1 :
+            raise UserError(_('Số hợp đồng  %s đã có sãn trên hệ thống.' % self.client_code))
 
     @api.depends('sale_plan_ids')
     def _compute_sale_plan_count(self):
