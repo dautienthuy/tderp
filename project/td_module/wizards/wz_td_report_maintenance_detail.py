@@ -13,13 +13,13 @@ class WzTdReportMaintenance(models.TransientModel):
     maintenance_request_id = fields.Many2one('maintenance.request', 'Maintenance Request')
     detail_ids = fields.One2many("wz.td.report.maintenance.detail", "report_id", string="Chi tiết")
 
-    @api.onchange("from_date")
+    @api.onchange("from_date", "to_date")
     def compute_detail_list(self):
         self.load_detail_list()
 
     def load_detail_list(self):
         self.detail_ids = False
-        if self.from_date:
+        if self.from_date and self.to_date:
             stagedone_id = self.env.ref('maintenance.stage_3').id
             stagecancel_id = self.env.ref('maintenance.stage_4').id
             detail_ids = []
