@@ -41,8 +41,11 @@ class WzTdReportMaintenance(models.TransientModel):
                     , mr.date_actual ngay_tt
                     , mr.description sua_chua
                     , mr.tem_kd tem_kd
+                    , he.name ktv_tt
                 FROM
                     maintenance_request mr
+                LEFT JOIN
+                    res_users ru ON mr.actual_user_id = ru.id
                 LEFT JOIN
                     maintenance_equipment me ON mr.equipment_id = me.id
                 LEFT JOIN
@@ -75,7 +78,8 @@ class WzTdReportMaintenance(models.TransientModel):
                     'du_kien': d['du_kien'],
                     'ky': d['ky'],
                     'sua_chua': d['sua_chua'],
-                    'tem_kd': d['tem_kd']
+                    'tem_kd': d['tem_kd'],
+                    'ktv_tt': d['ktv_tt']
                 }))
             self.detail_ids = detail_ids
 
@@ -101,4 +105,5 @@ class WzTdReportMaintenanceDetail(models.TransientModel):
     ngay_tt = fields.Date('Ngày thực tế')
     sua_chua = fields.Char('Sửa chữa')
     tem_kd = fields.Char('Tem kiểm định')
+    ktv_tt = fields.Char('KTV thực tế')
     state = fields.Char('Trạng thái')

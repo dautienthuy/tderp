@@ -31,7 +31,7 @@ class MaintenanceRequest(models.Model):
     detail_ids = fields.One2many('maintenance.detail', 'maintenance_request_id', string=u'Detail')
     order_id = fields.Many2one('sale.order', string=u'Sale Order')
     last_working_day = fields.Date(string=u'Ngày làm việc gần nhất')
-    employee_id = fields.Many2one('hr.employee',  u'Kỹ thuật viên')
+    actual_user_id = fields.Many2one('res.users',  u'KTV thực tế')
     number_maintenance = fields.Integer(u'Số lần BT/BD')
     #
     tem_kd = fields.Char(u'Tem kiểm định')
