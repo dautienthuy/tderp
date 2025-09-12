@@ -39,7 +39,7 @@ class SaleOrder(models.Model):
     maintenance_equip_count = fields.Integer(compute='_compute_maintenance_equip_count', string=u"Số dự án", store=True)
     maintenance_equip_ids = fields.One2many('maintenance.equipment', 'order_id')
 
-    @api.constrains('code')
+    @api.constrains('client_code')
     def _check_code(self):
         if len(self.client_code) > 1:
             raise UserError(_('Số hợp đồng  %s đã cớ sãn trên hệ thống.' % self.client_code))
