@@ -35,6 +35,12 @@ class SaleOrder(models.Model):
     sale_plan_count = fields.Integer(compute='_compute_sale_plan_count', string=u"Số kế hoạch", store=True)
     sale_plan_ids = fields.One2many('sale.plan', 'order_id')
     sale_type = fields.Selection([('bm', 'Bán mới'),(('bt', 'Bảo trì'))], string="Loại hợp đồng", default='bm')
+    other_name = fields.Char(u'Tên hợp đồng')
+
+    @api.constrains('code')
+    def _check_code(self):
+        if len(self.client_code) > 1:
+            raise UserError(_('Số hợp đồng  %s đã cớ sãn trên hệ thống.' % self.client_code))
 
     @api.depends('sale_plan_ids')
     def _compute_sale_plan_count(self):
@@ -49,3 +55,24 @@ class SaleOrder(models.Model):
                 'partner_id':self.partner_id.id})
             sale_plan = self.env['sale.plan'].create(vals)
             return sale_plan
+
+    
+    def _td_prepare_maintenance_equip_vals(self):
+        self.ensure_one()
+        return {
+            'name': _('[%s] %s', (self.client_code, self.name)),
+            'order_id': self.id,
+            'customer_id': self.partner_id.id
+        }
+
+    def btn_generate_requests(self):
+        requests = self.env['maintenance.equipment'].search([('state', '!=', 'cancelled'),
+                                                    ('order_id', '=', self.id)])
+        if not requests:
+            vals = self._td_prepare_maintenance_equip_vals()
+            maintenance_requests = self.env['maintenance.request'].create(vals)
+
+    def action_confirm(self):
+        res = super().action_confirm()
+        self.btn_generate_requests()
+        return res
