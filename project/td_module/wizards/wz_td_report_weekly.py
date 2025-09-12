@@ -138,6 +138,17 @@ class WzTdReportWeekly(models.TransientModel):
             sql = '''
                 SELECT
                     backlog_status
+                    , CASE 
+                        WHEN backlog_status = '01' THEN 'Bảo hành'
+                        WHEN backlog_status = '02' THEN 'Gia hạn bảo hành'
+                        WHEN backlog_status = '03' THEN 'Bảo trì'
+                        WHEN backlog_status = '04' THEN 'BT Free'
+                        WHEN backlog_status = '05' THEN 'Dừng BH, BT'
+                        WHEN backlog_status = '06' THEN 'Tạm dừng'
+                        WHEN backlog_status = '07' THEN 'Thang mới'
+                        WHEN backlog_status = '08' THEN 'Khác'
+                    ELSE ''
+                    END name_backlog_status
                     , SUM(CASE 
                         WHEN request_date < '%(date_from)s' AND stage_id NOT IN (%(stagedone_id)s, %(stagecancel_id)s)
                         THEN 1
@@ -191,6 +202,7 @@ class WzTdReportWeekly(models.TransientModel):
             for d in list_data:
                 detail_ids.append((0, 0, {
                     'backlog_status': d['backlog_status'],
+                    'name_backlog_status': d['name_backlog_status'],
                     'ton_dau': d['ton_dau'],
                     'du_kien': d['du_kien'],
                     'theo_lich': d['theo_lich'],
@@ -215,6 +227,7 @@ class WzTdReportWeeklyLine(models.TransientModel):
         ('07', 'Thang mới'),
         ('08', 'Khác'),
     ], string=u"Nội dung")
+    name_backlog_status = fields.Char()
     ton_dau = fields.Integer("Tồn đầu")
     du_kien = fields.Integer("Dự kiến")
     theo_lich = fields.Integer("Theo lịch")
