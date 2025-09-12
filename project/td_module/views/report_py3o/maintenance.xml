@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <record id="maintenance_detail_report_py3o" model="ir.actions.report">
+        <record id="maintenance_detail_new_report_py3o" model="ir.actions.report">
             <field name="name">Báo cáo bảo trì</field>
             <field name="type">ir.actions.report</field>
-            <field name="model">wz.td.report.maintenance.detail</field>
-            <field name="report_name">py3o_report_maintenance_detail_report</field>
+            <field name="model">wz.td.report.maintenance</field>
+            <field name="report_name">py3o_report_maintenance_detail_new_report</field>
             <field name="report_type">py3o</field>
             <field name="py3o_filetype">xls</field>
             <field name="py3o_multi_in_one">1</field>
             <field name="module">td_module</field>
-            <field name="py3o_template_fallback">report_py3o/maintenance_detail.ods</field>
+            <field name="py3o_template_fallback">report_py3o/maintenance_report_detail.ods</field>
+            <field name="binding_model_id" ref="td_module.model_wz_td_report_maintenance"/>
             <field name="binding_type">report</field>
         </record>
     </data>

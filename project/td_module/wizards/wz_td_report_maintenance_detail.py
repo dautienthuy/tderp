@@ -41,11 +41,13 @@ class WzTdReportMaintenance(models.TransientModel):
                     , mr.date_actual ngay_tt
                     , mr.description sua_chua
                     , mr.tem_kd tem_kd
-                    , he.name ktv_tt
+                    , rp1.name ktv_tt
                 FROM
                     maintenance_request mr
                 LEFT JOIN
                     res_users ru ON mr.actual_user_id = ru.id
+                LEFT JOIN
+                    res_partner rp1 ON ru.partner_id = rp1.id
                 LEFT JOIN
                     maintenance_equipment me ON mr.equipment_id = me.id
                 LEFT JOIN
