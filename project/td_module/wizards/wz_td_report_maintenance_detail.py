@@ -38,8 +38,9 @@ class WzTdReportMaintenance(models.TransientModel):
                     , mr.date_end ngay_kt
                     , '' du_kien
                     , to_char(request_date, 'MM-YYYY') AS ky
-                    , '' sua_chua
-                    , '' tem_kd
+                    , mr.date_actual ngay_tt
+                    , mr.description sua_chua
+                    , mr.tem_kd tem_kd
                 FROM
                     maintenance_request mr
                 LEFT JOIN
@@ -97,6 +98,7 @@ class WzTdReportMaintenanceDetail(models.TransientModel):
     ngay_kt = fields.Date('Ngày kết thúc')
     du_kien = fields.Char('Dự kiến')
     ky = fields.Char('Kỳ làm việc')
+    ngay_tt = fields.Date('Ngày thực tế')
     sua_chua = fields.Char('Sửa chữa')
     tem_kd = fields.Char('Tem kiểm định')
     state = fields.Char('Trạng thái')
