@@ -114,6 +114,7 @@
                     <field name="partner_id" widget="res_partner_many2one" context="{'res_partner_search_mode': 'customer'}" options="{&quot;always_reload&quot;: True}"/>
                 </xpath>
                 <xpath expr="//field[@name='partner_id']" position="before">
+                    <field name="other_name" required="1"/>
                     <field name="client_code" required="1"/>
                     <field name="sale_type"/>
                 </xpath>
