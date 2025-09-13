@@ -55,6 +55,7 @@ class WzTdReportWeekly(models.TransientModel):
             sql = '''
                 SELECT
                     mr.user_id
+                    , rp.name user_name
                     , SUM(CASE 
                         WHEN request_date < '%(date_from)s' AND stage_id NOT IN (%(stagedone_id)s, %(stagecancel_id)s)
                         THEN 1
@@ -102,10 +103,14 @@ class WzTdReportWeekly(models.TransientModel):
                     maintenance_target_line mtl ON mr.target_line_id = mtl.id
                 LEFT JOIN
                     maintenance_target mt ON mt.id = mtl.monthly_id
+                LEFT JOIN
+                    res_users ru ON mr.user_id = ru.id
+                LEFT JOIN
+                    res_partner rp ON ru.partner_id = rp.id
                 WHERE
                     stage_id NOT IN (%(stagecancel_id)s)
                 GROUP BY
-                    mr.user_id;
+                    mr.user_id, rp.name;
                 '''% {
                 'date_to': self.date_to,
                 'date_from': self.date_from,
@@ -119,6 +124,7 @@ class WzTdReportWeekly(models.TransientModel):
             for d in list_data:
                 emp_ids.append((0, 0, {
                     'user_id': d['user_id'],
+                    'user_name': d['user_name'],
                     'ton_dau': d['ton_dau'],
                     'du_kien': d['du_kien'],
                     'theo_lich': d['theo_lich'],
@@ -241,7 +247,7 @@ class WzTdReportWeeklyEmp(models.TransientModel):
 
     report_id = fields.Many2one("wz.td.report.weekly", ondelete="cascade")
     user_id = fields.Many2one("res.users", string="Nhân viên", required=True)
-
+    user_name = fields.Char()
     ngay_lv = fields.Integer(string="Ngày LV", default=0)
     chi_tieu_thang = fields.Integer(string="Chỉ tiêu thang", default=0)
     ton_dau = fields.Integer(string="Tồn Đầu", default=0)
