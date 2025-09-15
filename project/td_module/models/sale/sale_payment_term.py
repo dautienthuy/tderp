@@ -14,6 +14,10 @@ class SalePaymentTerm(models.Model):
 
     name = fields.Char(string=u'Điều khoản thanh toán', required=True)
     type = fields.Selection([('adv', u'Tạm ứng'),('progress', u'Thanh toán'),('retention', u'Giữ lại')], required=True)
+    payment_type = fields.Selection([('b', u'Ngân hàng'),('c', u'Tiền mặt'),('o', u'Khác')])
+    account_bank = fields.Char(u'Số tài khoản')
+    bank = fields.Char(u'Ngân hàng')
+    ghi_chu = fields.Char(u'Ghi chú')
     note = fields.Html(string=u'Mô tả')
     sequence = fields.Integer(required=True, string=u'Thứ tự')
     start_date = fields.Date(string=u'Ngày bắt đầu')

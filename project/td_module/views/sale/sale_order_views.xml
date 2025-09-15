@@ -201,6 +201,10 @@
                                 <field name="percent_payment"/>
                                 <field name="total_amount"/>
                                 <field name="total_paid"/>
+                                <field name="payment_type"/>
+                                <field name="ghi_chu"/>
+                                <field name="account_bank" attrs="{'invisible': [('payment_type', '!=', 'b')]}"/>
+                                <field name="bank" attrs="{'invisible': [('payment_type', '!=', 'b')]}"/>
                             </tree>
                         </field>
                     </page>
