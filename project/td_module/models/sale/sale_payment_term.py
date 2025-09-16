@@ -22,6 +22,7 @@ class SalePaymentTerm(models.Model):
     sequence = fields.Integer(required=True, string=u'Thứ tự')
     start_date = fields.Date(string=u'Ngày bắt đầu')
     end_date = fields.Date(string=u'Ngày kết thúc')
+    date = fields.Date(string=u'Ngày nhận')
     total_amount = fields.Float(string=u'Số tiền được tính', compute='_compute_amount', copy=False, store=True)
     epui_total_amount = fields.Float(string=u'Số tiền')
     percent_payment = fields.Float(string=u'Tỉ lệ(%)')
