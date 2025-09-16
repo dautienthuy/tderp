@@ -7,6 +7,13 @@
             <field name="arch" type="xml">
                 <form string="Sale Plan">
                     <header>
+                        <button name="action_confirm" string="Xác nhận" type="object" class="oe_highlight"
+                                attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                        <button name="action_set_done" string="Hoàn thành" type="object" class="oe_highlight"
+                                attrs="{'invisible': [('state', '!=', 'open')]}"/>
+                        <button name="action_set_draft" string="Mở" type="object"
+                                attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,open,close"/>
                     </header>
                     <sheet>
                         <group>

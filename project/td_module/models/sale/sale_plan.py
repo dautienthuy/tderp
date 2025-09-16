@@ -32,6 +32,15 @@ class SalePlan(models.Model):
         copy=False,
         default='draft')
 
+    def action_set_draft(self):
+        self.write({'state': 'draft'})
+
+    def action_confirm(self):
+        self.write({'state': 'open'})
+
+    def action_set_done(self):
+        self.write({'state': 'close'})
+
 
 class SaleExcurtionProgress(models.Model):
     _name = "sale.excurtion.progress"
