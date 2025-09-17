@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Maintenance Checklist -->
+        <!-- <record id="action_sale_payment_term" model="ir.actions.act_window">
+            <field name="name">Payment Terms</field>
+            <field name="res_model">sale.payment.term</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem
+            id="menu_sale_payment_term"
+            name="Điều khoản thanh toán"
+            parent="sale.menu_sales_config"
+            action="action_sale_payment_term"
+            sequence="15"/> -->
+        <record id="action_sale_plan" model="ir.actions.act_window">
+            <field name="name">Tiến độ</field>
+            <field name="res_model">sale.plan</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem
+            id="menu_sale_plan"
+            name="Tiến độ"
+            parent="sale.sale_order_menu"
+            action="action_sale_plan"
+            sequence="25"/>
+    </data>
+</odoo>

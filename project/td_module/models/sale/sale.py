@@ -7,12 +7,79 @@ from odoo.tools.translate import _
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
+    _rec_name = 'client_code'
 
-    delivery_address = fields.Text(u'Delivery Address')
-    inv_address = fields.Text(u'Invoice Address')
+    def _get_partner_domain(self):
+        sql = """
+            SELECT
+                partner_id
+            FROM res_users
+        """
+        self.env.cr.execute(sql)
+        ids = [f[0] for f in self.env.cr.fetchall()]
+        return "[ ('id', 'not in', %s)]" %ids
+
+    partner_id = fields.Many2one(domain=lambda self: self._get_partner_domain())
+    street = fields.Char(related='partner_id.street', string="Địa chỉ")
     location_id = fields.Many2one('stock.location', "Location")
     payment_method = fields.Selection([
         ('c', 'Cash'),
         ('b', 'Bank'),
         ('o', 'Other'),
     ], string="Payment Method")
+    sale_payment_term_ids = fields.One2many(comodel_name='sale.payment.term', inverse_name='order_id')
+    client_code = fields.Char(u'Số hợp đồng')
+    date_done = fields.Date(u'Ngày hoàn thành', copy=False)
+    feature = fields.Text(u'Đặc tính')
+    duration_contract = fields.Integer(u'Tiến độ hợp đồng')
+    sale_plan_count = fields.Integer(compute='_compute_sale_plan_count', string=u"Số kế hoạch", store=True)
+    sale_plan_ids = fields.One2many('sale.plan', 'order_id')
+    sale_type = fields.Selection([('bm', 'Bán mới'),(('bt', 'Bảo trì'))], string="Loại hợp đồng", default='bm')
+    other_name = fields.Char(u'Tên hợp đồng')
+    maintenance_equip_count = fields.Integer(compute='_compute_maintenance_equip_count', string=u"Số dự án", store=True)
+    maintenance_equip_ids = fields.One2many('maintenance.equipment', 'order_id')
+
+    @api.constrains('client_code')
+    def _check_code(self):
+        check = self.search_count([('client_code', '=', self.client_code)])
+        if check > 1 :
+            raise UserError(_('Số hợp đồng  %s đã có sãn trên hệ thống.' % self.client_code))
+
+    @api.depends('sale_plan_ids')
+    def _compute_sale_plan_count(self):
+        for so in self:
+            so.sale_plan_count = len(so.sale_plan_ids)
+
+    def btn_sale_plan(self):
+        sale_plan_exit =  self.env['sale.plan'].search([('order_id', '=', self.id)])
+        if not sale_plan_exit:
+            vals = ({
+                'order_id': self.id,
+                'partner_id':self.partner_id.id})
+            sale_plan = self.env['sale.plan'].create(vals)
+            return sale_plan
+
+    @api.depends('maintenance_equip_ids')
+    def _compute_maintenance_equip_count(self):
+        for so in self:
+            so.maintenance_equip_count = len(so.maintenance_equip_ids)
+
+    def _td_prepare_maintenance_equip_vals(self):
+        self.ensure_one()
+        return {
+            'name':  _('[%s] %s') % (self.client_code, self.other_name),
+            'order_id': self.id,
+            'customer_id': self.partner_id.id
+        }
+
+    def btn_generate_requests(self):
+        requests = self.env['maintenance.equipment'].search([('state', '!=', 'cancelled'),
+                                                    ('order_id', '=', self.id)])
+        if not requests:
+            vals = self._td_prepare_maintenance_equip_vals()
+            maintenance_requests = self.env['maintenance.equipment'].create(vals)
+
+    def action_confirm(self):
+        res = super().action_confirm()
+        self.btn_generate_requests()
+        return res

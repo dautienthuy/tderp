@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="hr_equipment_category_view_form_inherit_td" model="ir.ui.view">
+            <field name="name">hr.equipment.category.view_form.inherit.td</field>
+            <field name="model">maintenance.equipment.category</field>
+            <field name="inherit_id" ref="maintenance.hr_equipment_category_view_form"/>
+            <field name="arch" type="xml">
+                <field name="technician_user_id" position="before">
+                    <field name="code"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -18,6 +18,7 @@
         'stock',
         'delivery',
         'stock_sms',
+        'report_py3o',
         'web_chatter_position',
         'web_sheet_full_width',
         'web_responsive',
@@ -31,19 +32,38 @@
         #
         'security/ir.model.access.csv',
         # DATA
+        'data/ir_sequence_data.xml',
+        'data/cron.xml',
         # Wizards
+        'wizards/wz_td_report_maintenance_detail.xml',
+        'wizards/wz_td_report_maintenance_year.xml',
+        'wizards/wz_td_report_sale.xml',
+        'wizards/wz_td_report_weekly.xml',
         # VIEWS
+        'views/maintenance/maintenance_target_views.xml',
+        'views/maintenance/maintenance_equipment_category_views.xml',
         'views/maintenance/maintenance_views.xml',
         'views/maintenance/maintenance_equipment_views.xml',
         'views/maintenance/equipment_parts_list_views.xml',
         'views/maintenance/maintenance_checklist_views.xml',
+        'views/product/product_template_view.xml',
+        'views/sale/sale_plan_views.xml',
+
+        'views/td_user/maintenance_views.xml',
+        'views/td_user/maintenance_equipment_views.xml',
+        'views/td_user/sale_order_views.xml',
         #
         'views/sale/sale_order_views.xml',
         #
         'views/stock/stock_picking_views.xml',
         # REPORT
+        'views/report_py3o/sale.xml',
+        'views/report_py3o/maintenance.xml',
+
         # MENU
         'menu/maintenance_menu.xml',
+        'menu/sale_menu.xml',
+        'menu/td_menu.xml'
         # MENU - GROUP
         # POST OBJECT
         # Template
@@ -52,5 +72,8 @@
     'installable': True,
     'application': True,
     'assets': {
+        "web.assets_backend": [
+            'td_module/static/src/css/tderp_web_theme.css',
+    ],
     },
 }

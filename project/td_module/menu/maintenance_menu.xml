@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <!-- Maintenance target -->
+        <record id="maintenance_target_action" model="ir.actions.act_window">
+            <field name="name">Chỉ tiêu</field>
+            <field name="res_model">maintenance.target</field>
+            <field name="view_mode">tree,form</field>            
+        </record>
+        <menuitem
+            id="menu_maintenance_target"
+            name="Chỉ tiêu"
+            parent="maintenance.menu_maintenance_configuration"
+            action="maintenance_target_action"
+            sequence="5"/>
         <!-- Maintenance Checklist -->
         <record id="maintenance_checklist_action" model="ir.actions.act_window">
             <field name="name">Maintenance Checklist</field>
@@ -12,6 +24,13 @@
             name="Maintenance Checklist"
             parent="maintenance.menu_maintenance_configuration"
             action="maintenance_checklist_action"
+            sequence="10"/>
+
+        <!-- Trang thiết bị cần kiểm tra-->
+        <menuitem id="menu_maintenance_equipment_expire" 
+            name="Cần kiểm tra"
+            action="action_maintenance_equipment_expire"
+            parent="maintenance.menu_maintenance_title"
             sequence="10"/>
     </data>
 </odoo>

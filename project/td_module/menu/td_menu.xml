@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- === Maintenance ====-->
+    <!-- Root-->
+    <menuitem id="td_sale_maintence_menu_root"
+        name="Tổng quan"
+        web_icon="td_module,static/description/icon.svg"
+        active="1"
+        sequence="1">
+    </menuitem>
+        <!-- ====================================================-->
+        <!-- Maintenance Request-->
+        <!-- Action-->
+        <record id="action_hr_equipment_request_view_td_user" model="ir.actions.act_window">
+            <field name="name">Bảo trì</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">maintenance.request</field>
+            <field name="view_mode">calendar,tree,form,pivot</field>
+            <field name="view_id" ref="hr_equipment_view_calendar_td_user"/>
+        </record>
+        <!-- Calendar -->
+        <record id="action_hr_equipment_request_view_td_user_calendar" model="ir.actions.act_window.view">
+            <field eval="20" name="sequence"/>
+            <field name="view_mode">calendar</field>
+            <field name="view_id" ref="hr_equipment_view_calendar_td_user"/>
+            <field name="act_window_id" ref="action_hr_equipment_request_view_td_user"/>
+        </record>
+        <!-- Tree -->
+        <record id="action_hr_equipment_request_view_td_user_tree" model="ir.actions.act_window.view">
+            <field eval="5" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="hr_equipment_request_view_td_user_tree"/>
+            <field name="act_window_id" ref="action_hr_equipment_request_view_td_user"/>
+        </record>
+        <!-- Form -->
+        <record id="action_hr_equipment_request_view_td_user_form" model="ir.actions.act_window.view">
+            <field eval="10" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="hr_equipment_request_view_td_user_form"/>
+            <field name="act_window_id" ref="action_hr_equipment_request_view_td_user"/>
+        </record>
+        <!-- Pivot -->
+        <record id="action_hr_equipment_request_view_td_user_pivot" model="ir.actions.act_window.view">
+            <field eval="15" name="sequence"/>
+            <field name="view_mode">pivot</field>
+            <field name="view_id" ref="hr_equipment_request_view_pivot_td_user"/>
+            <field name="act_window_id" ref="action_hr_equipment_request_view_td_user"/>
+        </record>
+        <!-- menu -->
+        <menuitem id="menu_hr_equipment_request_view_td_user" 
+            name="Bảo trì"
+            action="action_hr_equipment_request_view_td_user"
+            parent="td_sale_maintence_menu_root"
+            sequence="10"/>
+        
+        <!-- ====================================================-->
+        <!-- Maintenance Equipment-->
+        <!-- Action-->
+        <record id="action_maintenance_equipment_view_td_user" model="ir.actions.act_window">
+            <field name="name">Trang thiết bị</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">maintenance.equipment</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="maintenance_equipment_view_td_user_tree"/>
+        </record>
+        <!-- Tree -->
+        <record id="action_maintenance_equipment_view_td_user_tree" model="ir.actions.act_window.view">
+            <field eval="5" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="maintenance_equipment_view_td_user_tree"/>
+            <field name="act_window_id" ref="action_maintenance_equipment_view_td_user"/>
+        </record>
+        <!-- Form -->
+        <record id="action_maintenance_equipment_view_td_user_form" model="ir.actions.act_window.view">
+            <field eval="10" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="maintenance_equipment_view_td_user_form"/>
+            <field name="act_window_id" ref="action_maintenance_equipment_view_td_user"/>
+        </record>
+        <!-- menu -->
+        <menuitem id="menu_maintenance_equipment_view_td_user" 
+            name="Trang thiết bị"
+            action="action_maintenance_equipment_view_td_user"
+            parent="td_sale_maintence_menu_root"
+            sequence="15"/>
+
+        <!-- ====================================================-->
+        <!-- Sale Order-->
+        <!-- Action-->
+        <record id="action_sale_order_view_tduser" model="ir.actions.act_window">
+            <field name="name">Đơn hàng</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">sale.order</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="sale_order_view_tduser_tree"/>
+        </record>
+        <!-- Tree -->
+        <record id="action_sale_order_view_tduser_tree" model="ir.actions.act_window.view">
+            <field eval="5" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="sale_order_view_tduser_tree"/>
+            <field name="act_window_id" ref="action_sale_order_view_tduser"/>
+        </record>
+        <!-- Form -->
+        <record id="action_sale_order_view_tduser_form" model="ir.actions.act_window.view">
+            <field eval="10" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="sale_order_view_tduser_form"/>
+            <field name="act_window_id" ref="action_sale_order_view_tduser"/>
+        </record>
+        <!-- menu -->
+        <menuitem id="menu_sale_order_view_tduser" 
+            name="Đơn hàng"
+            action="action_sale_order_view_tduser"
+            parent="td_sale_maintence_menu_root"
+            sequence="20"/>
+</odoo>

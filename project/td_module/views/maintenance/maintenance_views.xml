@@ -10,6 +10,9 @@
             <xpath expr="field[@name='user_id']" position="after">
                 <field name="date_start"/>
                 <field name="date_end"/>
+                <field name="last_working_day"/>
+                <field name="employee_id"/>
+                <field name="number_maintenance"/>
             </xpath>
         </field>
     </record>
@@ -19,11 +22,26 @@
         <field name="model">maintenance.request</field>
         <field name="inherit_id" ref="maintenance.hr_equipment_request_view_form"/>
         <field name="arch" type="xml">
+            <field name="employee_id" position="before">
+                <field name="code" readonly="1"/>
+            </field>
             <field name="request_date" position="after">
                 <field name="date_start"/>
                 <field name="date_end"/>
                 <field name="maintenance_checklist_id"/>
                 <field name="date_repair"/>
+                <field name="order_id"/>
+                <field name="last_working_day"/>
+                <field name="number_maintenance"/>
+                <field name="tem_kd"/>
+                <field name="date_actual"/>
+                <field name="date_extend"/>
+                <field name="so_thang"/>
+            </field>
+            <field name="priority" position="after">
+                <field name="backlog_status"/>
+                <field name="backlog_note"/>
+                <field name="actual_user_id"/>
             </field>
             <xpath expr="//group[last()]" position="after">
                 <notebook>
@@ -33,18 +51,63 @@
                                 <field name="task_detail"/>
                                 <field name="uom_id"/>
                                 <field name="task_qty"/>
-                                <field name="equipment_id"/>
-                                <field name="tech_spec"/>  
+                            </tree>
+                        </field>
+                    </page>
+                    <page string="Chi tiết vật tư" name="detail">
+                        <field name="detail_ids">
+                            <tree string="Detail" editable="bottom">
+                                <field name="product_id"/>
+                                <field name="uom_id"/>
+                                <field name="technical_spec"/>
+                                <field name="quantity"/>
+                                <field name="unit_price"/>
+                                <field name="amount"/>
+                                <field name="note"/>
                             </tree>
                         </field>
                     </page>
                     <page string="Thông tin" name="info">
-                        <group>
+                        <table class="table table-striped table-hover responsive-table">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th style="text-align: center;">Thông số kỹ thuật</th>
+                                    <th style="text-align: center;">Đơn vị</th>
+                                    <th style="text-align: center;">Số lượng</th>
+                                    <th style="text-align: center;">Đơn Giá</th>
+                                    <th style="text-align: center;">Thành tiền</th>
+                                    <th style="text-align: center;">Kết quả</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td data-label="Thông số kỹ thuật">
+                                        <field name="technical_spec"/>
+                                    </td>
+                                    <td data-label="Đơn vị">
+                                        <field name="uom_id"/>
+                                    </td>
+                                    <td data-label="Đơn Giá" style="text-align: right;">
+                                        <field name="quantity"/>
+                                    </td>
+                                    <td data-label="Số lượng" style="text-align: right;">
+                                        <field name="unit_price"/>
+                                    </td>
+                                    <td data-label="Thành tiền" style="text-align: right;">
+                                        <field name="amount"/>
+                                    </td>
+                                    <td data-label="Kết quả">
+                                        <field name="result"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <!-- <group>
                             <field name="technical_spec"/>
                             <field name="uom_id"/>
                             <field name="quantity"/>
                             <field name="result"/>
-                        </group>
+                        </group> -->
                     </page>
                 </notebook>
             </xpath>

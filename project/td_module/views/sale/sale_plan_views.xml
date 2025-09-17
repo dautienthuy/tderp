@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="sale_plan_view_form" model="ir.ui.view">
+            <field name="name">sale.plan.form</field>
+            <field name="model">sale.plan</field>
+            <field name="arch" type="xml">
+                <form string="Sale Plan">
+                    <header>
+                        <button name="action_confirm" string="Xác nhận" type="object" class="oe_highlight"
+                                attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                        <button name="action_set_done" string="Hoàn thành" type="object" class="oe_highlight"
+                                attrs="{'invisible': [('state', '!=', 'open')]}"/>
+                        <button name="action_set_draft" string="Mở" type="object"
+                                attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,open,close"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="order_id" readonly="1"/>
+                                <field name="equipment_id" readonly="1"/>
+                                <field name="partner_id"/>
+                                <field name="street" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="date"/>
+                                <field name="name"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Tiến độ hợp đồng">
+                                <field name="excurtion_progress_ids" nolabel="1" colspan="2">
+                                    <tree editable="bottom">
+                                        <field name="date" />
+                                        <field name="date_number"/>
+                                        <field name="date_expected"/>
+                                        <field name="name" />
+                                        <field name="note" />
+                                    </tree>
+                                </field>
+                            </group>
+                            <group string="Tiến độ thi công">
+                                <field name="construction_schedule_ids" nolabel="1" colspan="2">
+                                    <tree editable="bottom">
+                                        <field name="date" />
+                                        <field name="name" />
+                                    </tree>
+                                </field>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="sale_plan_view_tree" model="ir.ui.view">
+            <field name="name">sale.plan.tree</field>
+            <field name="model">sale.plan</field>
+            <field name="arch" type="xml">
+                <tree string="Sale Plan">
+                    <field name="date"/>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+    </data>
+</odoo>
