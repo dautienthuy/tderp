@@ -48,6 +48,7 @@
         'views/maintenance/maintenance_checklist_views.xml',
         'views/product/product_template_view.xml',
         'views/sale/sale_plan_views.xml',
+        'views/sale/sale_contract_view.xml',
 
         'views/td_user/maintenance_views.xml',
         'views/td_user/maintenance_equipment_views.xml',
