@@ -32,6 +32,12 @@ class SalePlan(models.Model):
         copy=False,
         default='draft')
 
+    is_group_gs = fields.Boolean(compute="_compute_is_group_gs")
+
+    def _compute_is_group_gs(self):
+        for rec in self:
+            rec.is_group_gs = self.env.user.has_group("td_module.td_gs_module_group")
+
     def action_set_draft(self):
         self.write({'state': 'draft'})
 
