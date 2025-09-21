@@ -81,5 +81,61 @@ class SaleOrder(models.Model):
 
     def action_confirm(self):
         res = super().action_confirm()
-        self.btn_generate_requests()
+        #self.btn_generate_requests()
         return res
+
+    def get_lines_values(self):
+        self.ensure_one()
+        lines_values = []
+        for line in self.order_line:
+            lines_values.append({
+                "product_template_id": line.product_template_id.id,
+                "name": line.name,
+                "product_uom_qty": line.product_uom_qty,
+                "price_unit": line.price_unit,
+                "sale_order_line_id": line.id
+            })
+        return lines_values
+
+    def get_payment_term_values(self):
+        self.ensure_one()
+        lines_values = []
+        for line in self.sale_payment_term_ids:
+            lines_values.append({
+                "type": line.type,
+                "start_date": line.start_date,
+                "end_date": line.end_date,
+                "sequence": line.sequence,
+                "name": line.name,
+                "percent_payment": line.percent_payment,
+                "total_amount": line.total_amount,
+                "total_paid": line.total_paid,
+                "date": line.date,
+                "payment_type": line.payment_type,
+                "account_bank": line.account_bank,
+                "bank": line.bank,
+                "bank": line.ghi_chu
+            })
+        return lines_values
+
+    def btn_create_contract(self):
+        requests = self.env['sale.contract'].search([('state', '!=', 'cancel'),
+                                                    ('order_id', '=', self.id)])
+        if not requests:
+            vals = {
+                'order_id': self.id,
+                'partner_id': self.partner_id.id,
+                'name': self.other_name,
+                'number': self.client_code,
+                'currency_id': self.currency_id.id,
+                'contract_line_ids': [(0, 0, value) for value in self.get_lines_values()],
+                'sale_payment_term_ids': [(0, 0, value) for value in self.get_payment_term_values()]
+            }
+            sale_contract = self.env['sale.contract'].create(vals)
+            return {
+                'type': 'ir.actions.act_window',
+                'res_model': 'sale.contract',
+                'res_id': sale_contract.id,
+                'view_ids': [(False, 'form')],
+                'view_mode': 'form',
+            }

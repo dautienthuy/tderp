@@ -24,5 +24,17 @@
             parent="sale.sale_order_menu"
             action="action_sale_plan"
             sequence="25"/>
+        
+        <!-- ============================== -->
+        <record id="action_sale_contract" model="ir.actions.act_window">
+            <field name="name">Hợp đồng</field>
+            <field name="res_model">sale.contract</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="menu_sale_contract_root"
+                name="Hợp đồng"
+                parent="sale.sale_menu_root"
+                action="action_sale_contract"/>
     </data>
 </odoo>
