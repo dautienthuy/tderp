@@ -24,6 +24,7 @@ class SaleContract(models.Model):
     ], string="Status", default='draft')
 
     contract_line_ids = fields.One2many("sale.contract.line", "contract_id", string="Chi tiết")
+    sale_payment_term_ids = fields.One2many(comodel_name='sale.payment.term', inverse_name='contract_order_id')
 
     def action_set_draft(self):
         self.write({'state': 'draft'})
