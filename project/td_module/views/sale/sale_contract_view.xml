@@ -55,6 +55,25 @@
                                 <div class="clearfix"/>
                             </group>
                         </page>
+                        <page string="Điều khoản thanh toán" name="payment_term">
+                            <field name="sale_payment_term_ids" mode="tree" nolabel="1" string="Payment Term" limit="5">
+                                <tree string="Payment Term" editable="bottom" limit="5" options="{'limit': 5}">
+                                    <field name="type"/>
+                                    <field name="start_date"/>
+                                    <field name="end_date"/>
+                                    <field name="sequence"/>
+                                    <field name="name"/>
+                                    <field name="percent_payment"/>
+                                    <field name="total_amount"/>
+                                    <field name="total_paid"/>
+                                    <field name="date"/>
+                                    <field name="payment_type"/>
+                                    <field name="account_bank"/>
+                                    <field name="bank"/>
+                                    <field name="ghi_chu"/>
+                                </tree>
+                            </field>
+                        </page>
                     </notebook>
                 </sheet>
             </form>
