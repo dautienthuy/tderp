@@ -25,8 +25,8 @@ class SalePlan(models.Model):
     #
     state = fields.Selection(
         selection=[
-            ('draft', 'Mở'),
-            ('open', 'Đang chạy'),
+            ('draft', 'Bắt đầu'),
+            ('open', 'Đang thực hiện'),
             ('close', 'Hoàn thành')],
         string='Status',
         copy=False,
