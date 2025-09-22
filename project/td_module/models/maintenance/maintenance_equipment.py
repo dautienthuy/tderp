@@ -62,6 +62,17 @@ class MaintenanceEquipment(models.Model):
     sale_plan_ids = fields.One2many('sale.plan', 'equipment_id')
     sale_payment_term_ids = fields.One2many(comodel_name='sale.payment.term', inverse_name='equipment_id')
 
+    maintenance_package=fields.Selection(
+        selection=[
+            ('01', '1 Tháng/lần - Giá trị 6tr/năm'),
+            ('02', '2 Tháng/lần - Giá trị 4tr8/năm'),
+            ('03', '3 Tháng/lần - Giá trị 3tr6/năm'),],
+        string='Maintenance Package',
+        copy=False,
+        default='01')
+
+    check_date = fields.Date("Check Date")
+
     @api.depends('sale_plan_ids')
     def _compute_sale_plan_count(self):
         for r in self:
