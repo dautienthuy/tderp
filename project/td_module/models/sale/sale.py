@@ -38,6 +38,10 @@ class SaleOrder(models.Model):
     other_name = fields.Char(u'Tên hợp đồng')
     maintenance_equip_count = fields.Integer(compute='_compute_maintenance_equip_count', string=u"Số dự án", store=True)
     maintenance_equip_ids = fields.One2many('maintenance.equipment', 'order_id')
+    image_attachment_ids = fields.Many2many(
+        'ir.attachment', string="Image",
+        domain=[('mimetype', 'ilike', 'image/')]
+    )
 
     @api.constrains('client_code')
     def _check_code(self):
