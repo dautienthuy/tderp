@@ -3,9 +3,6 @@
 import ast
 
 from datetime import date, datetime, timedelta
-
-from google.auth import default
-
 from odoo import api, fields, models, SUPERUSER_ID, _
 from odoo.exceptions import UserError
 from odoo.osv import expression
