@@ -42,6 +42,8 @@
                 <field name="backlog_status"/>
                 <field name="backlog_note"/>
                 <field name="actual_user_id"/>
+                <field name="type"/>
+                <field name="image" attrs="{'invisible': [('type', '=', '02')]}" string="Ảnh minh họa"/>
             </field>
             <xpath expr="//group[last()]" position="after">
                 <notebook>
@@ -111,6 +113,21 @@
                     </page>
                 </notebook>
             </xpath>
+        </field>
+    </record>
+
+    <record id="m_equipment_request_check" model="ir.actions.act_window">
+        <field name="name">Cần kiểm tra</field>
+        <field name="res_model">maintenance.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'default_user_id': uid}</field>
+        <field name="domain">[('stage_id.sequence', '=', 1),('request_date', '&lt;', context_today())]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add a new maintenance request
+            </p><p>
+                Follow the process of the request and communicate with the collaborator.
+            </p>
         </field>
     </record>
 </odoo>

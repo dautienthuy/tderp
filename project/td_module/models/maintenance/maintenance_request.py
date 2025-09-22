@@ -3,7 +3,6 @@
 import ast
 
 from datetime import date, datetime, timedelta
-
 from odoo import api, fields, models, SUPERUSER_ID, _
 from odoo.exceptions import UserError
 from odoo.osv import expression
@@ -52,6 +51,11 @@ class MaintenanceRequest(models.Model):
     #
     target_line_id = fields.Many2one("maintenance.target.line", string="Chỉ tiêu")
     week_in_month = fields.Integer("Tuần")
+    type = fields.Selection([
+        ('01', 'Sửa chữa'),
+        ('02', 'Bảo trì'),
+        ], string="Loại hình", default='01')
+    image = fields.Binary("Image")
 
     @api.model_create_multi
     def create(self, vals_list):
