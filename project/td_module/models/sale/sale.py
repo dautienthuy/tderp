@@ -34,7 +34,13 @@ class SaleOrder(models.Model):
     duration_contract = fields.Integer(u'Tiến độ hợp đồng')
     sale_plan_count = fields.Integer(compute='_compute_sale_plan_count', string=u"Số kế hoạch", store=True)
     sale_plan_ids = fields.One2many('sale.plan', 'order_id')
-    sale_type = fields.Selection([('bm', 'Bán mới'),(('bt', 'Bảo trì'))], string="Loại hợp đồng", default='bm')
+    sale_type = fields.Selection(
+        [
+            ('bm', 'Bán mới'),
+            ('sc', 'Sửa chữa'),
+            (
+                ('bt', 'Bảo trì')
+            )], string="Loại báo giá", default='bm')
     other_name = fields.Char(u'Tên hợp đồng')
     maintenance_equip_count = fields.Integer(compute='_compute_maintenance_equip_count', string=u"Số dự án", store=True)
     maintenance_equip_ids = fields.One2many('maintenance.equipment', 'order_id')
@@ -143,3 +149,34 @@ class SaleOrder(models.Model):
                 'view_ids': [(False, 'form')],
                 'view_mode': 'form',
             }
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        base_self = self
+
+        for vals in vals_list:
+            company = vals.get('company_id') and base_self.env['res.company'].browse(
+                vals['company_id']) or base_self.env.company
+
+            default_names = {None, '/', _("New")}
+            if vals.get('name') in default_names:
+                qtype = vals.get('sale_type') or 'bm'
+                code_map = {
+                    'bt': 'sale.order.bt',  # Bảo trì → BGBTxxxxx
+                    'bm': 'sale.order.bm',  # Bán mới → BGBMxxxxx
+                    'sc': 'sale.order.sc',  # Sửa chữa → xxxMM.YY/BGSC
+                }
+                seq_code = code_map.get(qtype, 'sale.order.bm')
+
+                seq_date = None
+                if vals.get('date_order'):
+                    seq_date = fields.Datetime.context_timestamp(
+                        base_self.with_company(company),
+                        fields.Datetime.to_datetime(vals['date_order'])
+                    )
+
+                vals['name'] = base_self.with_company(company).env['ir.sequence'].next_by_code(
+                    seq_code, sequence_date=seq_date
+                ) or _("New")
+
+        return super(SaleOrder, base_self).create(vals_list)
