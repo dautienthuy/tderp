@@ -27,13 +27,14 @@
             sequence="10"/>
 
         <!-- Trang thiết bị cần kiểm tra-->
-        <menuitem id="menu_maintenance_equipment_expire" 
-            name="Cần kiểm tra"
-            action="action_maintenance_equipment_expire"
-            parent="maintenance.menu_maintenance_title"
-            sequence="10"/>
+<!--        <menuitem id="menu_maintenance_equipment_expire" -->
+<!--            name="Cần kiểm tra"-->
+<!--            action="action_maintenance_equipment_expire"-->
+<!--            parent="maintenance.menu_maintenance_title"-->
+<!--            sequence="10"/>-->
 
         <menuitem id="menu_maintenance_quotations"
+            name="Báo giá"
             action="sale.action_quotations_with_onboarding"
             parent="maintenance.menu_maintenance_title"
             sequence="10"/>
@@ -51,8 +52,9 @@
 
         <menuitem
             id="maintenance.menu_equipment_form"
-            name="Danh mục khách hàng"
+            name="Customer directory"
             parent="maintenance.menu_maintenance_title"
+            action="maintenance.hr_equipment_action"
             groups="maintenance.group_equipment_manager,base.group_user"
             sequence="2"/>
         </data>
