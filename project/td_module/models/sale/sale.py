@@ -30,6 +30,7 @@ class SaleOrder(models.Model):
     sale_payment_term_ids = fields.One2many(comodel_name='sale.payment.term', inverse_name='order_id')
     client_code = fields.Char(u'Số hợp đồng')
     date_done = fields.Date(u'Ngày hoàn thành', copy=False)
+    order_create_date = fields.Date(u'Ngày tạo', copy=False)
     feature = fields.Text(u'Đặc tính')
     duration_contract = fields.Integer(u'Tiến độ hợp đồng')
     sale_plan_count = fields.Integer(compute='_compute_sale_plan_count', string=u"Số kế hoạch", store=True)
