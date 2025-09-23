@@ -2,9 +2,23 @@
 <odoo>
 	<!-- Quotation -->
 	<data>
+		<!-- Báo giá Sửa chữa doanh nghiệp -->
+		<record id="bgsh_dn_sale_report_py3o" model="ir.actions.report">
+			<field name="name">Báo giá Sửa chữa công ty (docx)</field>
+			<field name="type">ir.actions.report</field>
+			<field name="model">sale.order</field>
+			<field name="report_name">py3o_report_sale_bgsh_dn</field>
+			<field name="report_type">py3o</field>
+			<field name="py3o_filetype">docx</field>
+			<field name="py3o_multi_in_one">1</field>
+			<field name="module">td_module</field>
+			<field name="py3o_template_fallback">report_py3o/bgsh_khdn.odt</field>
+			<field name="binding_model_id" ref="td_module.model_sale_order"/>
+			<field name="binding_type">report</field>
+		</record>
 		<!-- Báo giá Sửa chữa Tư nhân-->
 		<record id="bgsh_tn_sale_report_py3o" model="ir.actions.report">
-			<field name="name">Báo giá Sửa chữa Tư nhân (docx)</field>
+			<field name="name">Báo giá Sửa chữa tư nhân (docx)</field>
 			<field name="type">ir.actions.report</field>
 			<field name="model">sale.order</field>
 			<field name="report_name">py3o_report_sale_bgsh_tn</field>
@@ -30,7 +44,7 @@
 			<field name="binding_model_id" ref="td_module.model_sale_order"/>
 			<field name="binding_type">report</field>
 		</record> -->
-		<record id="excel_sale_report_py3o" model="ir.actions.report">
+		<!-- <record id="excel_sale_report_py3o" model="ir.actions.report">
 			<field name="name">Sale (excel)</field>
 			<field name="type">ir.actions.report</field>
 			<field name="model">sale.order</field>
@@ -42,7 +56,7 @@
 			<field name="py3o_template_fallback">report_py3o/sale.ods</field>
 			<field name="binding_model_id" ref="td_module.model_sale_order"/>
 			<field name="binding_type">report</field>
-		</record>
+		</record> -->
 	</data>
 	<data>
 		<record id="excel_sale_list_report_py3o" model="ir.actions.report">
