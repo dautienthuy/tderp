@@ -133,8 +133,8 @@
                     <field name="partner_id" widget="res_partner_many2one" context="{'res_partner_search_mode': 'customer'}" options="{&quot;always_reload&quot;: True}"/>
                 </xpath>
                 <xpath expr="//field[@name='partner_id']" position="before">
-                    <field name="other_name" required="1"/>
-                    <field name="client_code" required="1"/>
+                    <field name="other_name"/>
+                    <field name="client_code"/>
                     <field name="sale_type"/>
                 </xpath>
                 <xpath expr="//field[@name='partner_id']" position="after">
@@ -183,6 +183,7 @@
                     <attribute name="invisible">1</attribute>
                 </xpath>
                 <field name="validity_date" position="after">
+                    <field name="order_create_date"/>
                     <field name="date_done"/>
                     <field name="feature"/>
                     <field name="duration_contract"/>

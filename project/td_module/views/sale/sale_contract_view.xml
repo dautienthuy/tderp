@@ -9,18 +9,21 @@
                             attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                     <button name="action_set_draft" string="Mở" type="object"
                             attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                    <button name="btn_generate_requests" type="object" string="Tạo danh mục KH"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,cancel"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
                         <h1>
-                            <field name="name"/>
+                            <field name="name" placeholder="Nhập thông tin tên hợp đồng vào đây ..."/>
                         </h1>
                     </div>
                     <group string="Hợp đồng">
                         <group>
-                            <field name="code"/>
+                            <field name="code" invisible="1"/>
                             <field name="number" required="1"/>
+                            <field name="sale_type" required="1"/>
+                            <field name="contract_parent"/>
                         </group>
                         <group>
                             <field name="order_id"/>
@@ -31,6 +34,7 @@
                     <group string="Khách hàng">
                         <group>
                             <field name="partner_id"/>
+                            <field name="street"/>
                         </group>
                         <group>
                         </group>
@@ -73,6 +77,9 @@
                                     <field name="ghi_chu"/>
                                 </tree>
                             </field>
+                        </page>
+                        <page string="Tiến độ" name="progress">
+                            <field name="sale_plan_ids"/>
                         </page>
                     </notebook>
                 </sheet>

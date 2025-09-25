@@ -17,6 +17,7 @@ class SalePlan(models.Model):
     partner_id = fields.Many2one('res.partner', u'Khách hàng')
     street = fields.Char(related='partner_id.street', string="Địa chỉ")
     order_id = fields.Many2one('sale.order', string=u'Đơn hàng')
+    contract_id = fields.Many2one('sale.contract', string=u'Hợp đồng')
     equipment_id = fields.Many2one('maintenance.equipment', string=u'Trang thiết bị')
     excurtion_progress_ids = fields.One2many(
         comodel_name='sale.excurtion.progress', inverse_name='sale_plan_id')
@@ -25,8 +26,8 @@ class SalePlan(models.Model):
     #
     state = fields.Selection(
         selection=[
-            ('draft', 'Mở'),
-            ('open', 'Đang chạy'),
+            ('draft', 'Bắt đầu'),
+            ('open', 'Đang thực hiện'),
             ('close', 'Hoàn thành')],
         string='Status',
         copy=False,

@@ -7,7 +7,6 @@ from odoo.tools.translate import _
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
-    _rec_name = 'client_code'
 
     def _get_partner_domain(self):
         sql = """
@@ -30,6 +29,7 @@ class SaleOrder(models.Model):
     sale_payment_term_ids = fields.One2many(comodel_name='sale.payment.term', inverse_name='order_id')
     client_code = fields.Char(u'Số hợp đồng')
     date_done = fields.Date(u'Ngày hoàn thành', copy=False)
+    order_create_date = fields.Date(u'Ngày tạo', copy=False)
     feature = fields.Text(u'Đặc tính')
     duration_contract = fields.Integer(u'Tiến độ hợp đồng')
     sale_plan_count = fields.Integer(compute='_compute_sale_plan_count', string=u"Số kế hoạch", store=True)
@@ -38,9 +38,8 @@ class SaleOrder(models.Model):
         [
             ('bm', 'Bán mới'),
             ('sc', 'Sửa chữa'),
-            (
-                ('bt', 'Bảo trì')
-            )], string="Loại báo giá", default='bm')
+            ('bt', 'Bảo trì')
+        ], string="Loại báo giá", default='bm')
     other_name = fields.Char(u'Tên hợp đồng')
     maintenance_equip_count = fields.Integer(compute='_compute_maintenance_equip_count', string=u"Số dự án", store=True)
     maintenance_equip_ids = fields.One2many('maintenance.equipment', 'order_id')
@@ -49,11 +48,11 @@ class SaleOrder(models.Model):
         domain=[('mimetype', 'ilike', 'image/')]
     )
 
-    @api.constrains('client_code')
-    def _check_code(self):
-        check = self.search_count([('client_code', '=', self.client_code)])
-        if check > 1 :
-            raise UserError(_('Số hợp đồng  %s đã có sãn trên hệ thống.' % self.client_code))
+    # @api.constrains('client_code')
+    # def _check_code(self):
+    #     check = self.search_count([('client_code', '=', self.client_code)])
+    #     if check > 1 :
+    #         raise UserError(_('Số hợp đồng  %s đã có sãn trên hệ thống.' % self.client_code))
 
     @api.depends('sale_plan_ids')
     def _compute_sale_plan_count(self):
@@ -134,14 +133,15 @@ class SaleOrder(models.Model):
         if not requests:
             vals = {
                 'order_id': self.id,
-                'partner_id': self.partner_id.id,
+                'sale_type': self.sale_type,
                 'name': self.other_name,
-                'number': self.client_code,
+                'partner_id': self.partner_id.id,
                 'currency_id': self.currency_id.id,
                 'contract_line_ids': [(0, 0, value) for value in self.get_lines_values()],
-                'sale_payment_term_ids': [(0, 0, value) for value in self.get_payment_term_values()]
+                'sale_payment_term_ids': [(0, 0, value) for value in self.get_payment_term_values()],
             }
             sale_contract = self.env['sale.contract'].create(vals)
+            self.sale_plan_ids.write({'contract_id': sale_contract.id})
             return {
                 'type': 'ir.actions.act_window',
                 'res_model': 'sale.contract',
