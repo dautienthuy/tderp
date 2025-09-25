@@ -10,6 +10,7 @@ class SaleContract(models.Model):
     code = fields.Char(string="Mã nội bộ")
     number = fields.Char(string="Số hợp đồng", default='New', readonly=True, copy=False)
     partner_id = fields.Many2one("res.partner", string="Khách hàng", required=True)
+    street = fields.Char(related='partner_id.street', string="Địa chỉ", readonly="1")
     date_order = fields.Datetime(string="Ngày tạo", default=fields.Datetime.now)
     date_contract = fields.Datetime(string="Ngày hợp đồng")
     user_id = fields.Many2one("res.users", string="Người tạo", default=lambda self: self.env.user)
