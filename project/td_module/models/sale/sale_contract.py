@@ -49,6 +49,13 @@ class SaleContract(models.Model):
         if not requests:
             vals = self._td_prepare_maintenance_equip_vals()
             maintenance_requests = self.env['maintenance.equipment'].create(vals)
+            return {
+                'type': 'ir.actions.act_window',
+                'res_model': 'maintenance.equipment',
+                'res_id': maintenance_requests.id,
+                'view_ids': [(False, 'form')],
+                'view_mode': 'form',
+            }
 
     def action_set_draft(self):
         self.write({'state': 'draft'})
