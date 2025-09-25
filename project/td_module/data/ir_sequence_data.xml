@@ -14,14 +14,41 @@
         <field name="padding">5</field>
         <field name="company_id" eval="False"/>
     </record>
-    <record id="seq_sale_contract" model="ir.sequence">
+    <!-- <record id="seq_sale_contract" model="ir.sequence">
         <field name="name">Sale Contract</field>
         <field name="code">sale.contract</field>
         <field name="prefix">SC</field>
         <field name="padding">5</field>
         <field name="company_id" eval="False"/>
+    </record> -->
+    <!-- =============Hợp Đồng====================-->
+    <record id="seq_sale_contract_bt" model="ir.sequence">
+        <field name="name">HD Bảo trì</field>
+        <field name="code">sale.contract.bt</field>
+        <field name="prefix"></field>
+        <field name="suffix">%(month)s.%(y)s/HĐBT-TĐ</field>
+        <field name="padding">3</field>
+        <field name="company_id" eval="False"/>
     </record>
 
+    <record id="seq_sale_contract_bm" model="ir.sequence">
+        <field name="name">HD Bán mới</field>
+        <field name="code">sale.contract.bm</field>
+        <field name="prefix"></field>
+        <field name="suffix">%(month)s.%(y)s/HĐKT-TĐ</field>
+        <field name="padding">3</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="seq_sale_contract_sc" model="ir.sequence">
+        <field name="name">HD Sửa chữa</field>
+        <field name="code">sale.contract.sc</field>
+        <field name="prefix"></field>
+        <field name="suffix">%(month)s.%(y)s/HĐSC-TĐ</field>
+        <field name="padding">3</field>
+        <field name="company_id" eval="False"/>
+    </record>
+    <!-- =============Báo giá=====================-->
     <!-- Bảo trì: BGBTxxxxx -->
     <record id="seq_sale_order_bt" model="ir.sequence">
         <field name="name">SO Bảo trì</field>

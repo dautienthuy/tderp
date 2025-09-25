@@ -39,9 +39,8 @@ class SaleOrder(models.Model):
         [
             ('bm', 'Bán mới'),
             ('sc', 'Sửa chữa'),
-            (
-                ('bt', 'Bảo trì')
-            )], string="Loại báo giá", default='bm')
+            ('bt', 'Bảo trì')
+        ], string="Loại báo giá", default='bm')
     other_name = fields.Char(u'Tên hợp đồng')
     maintenance_equip_count = fields.Integer(compute='_compute_maintenance_equip_count', string=u"Số dự án", store=True)
     maintenance_equip_ids = fields.One2many('maintenance.equipment', 'order_id')
