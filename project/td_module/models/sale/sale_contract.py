@@ -33,6 +33,7 @@ class SaleContract(models.Model):
             ('sc', 'Sửa chữa'),
             ('bt', 'Bảo trì')
         ], string="Loại hợp đồng", default='bm')
+    sale_plan_ids = fields.One2many('sale.plan', 'contract_id')
 
     def action_set_draft(self):
         self.write({'state': 'draft'})

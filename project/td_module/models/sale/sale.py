@@ -138,9 +138,10 @@ class SaleOrder(models.Model):
                 'partner_id': self.partner_id.id,
                 'currency_id': self.currency_id.id,
                 'contract_line_ids': [(0, 0, value) for value in self.get_lines_values()],
-                'sale_payment_term_ids': [(0, 0, value) for value in self.get_payment_term_values()]
+                'sale_payment_term_ids': [(0, 0, value) for value in self.get_payment_term_values()],
             }
             sale_contract = self.env['sale.contract'].create(vals)
+            self.sale_plan_ids.write({'contract_id': sale_contract.id})
             return {
                 'type': 'ir.actions.act_window',
                 'res_model': 'sale.contract',
