@@ -35,6 +35,12 @@ class SaleContract(models.Model):
         ], string="Loại hợp đồng", default='bm')
     sale_plan_ids = fields.One2many('sale.plan', 'contract_id')
 
+    def name_get(self):
+        res = []
+        for r in self:
+            res.append((r.id, _('[%s] %s') % (r.number, r.name)))
+        return res
+
     def _td_prepare_maintenance_equip_vals(self):
         self.ensure_one()
         return {
