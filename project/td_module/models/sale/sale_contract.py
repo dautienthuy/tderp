@@ -22,7 +22,7 @@ class SaleContract(models.Model):
         ('confirm', 'Đã ký'),
         ('cancel', 'Hủy'),
     ], string="Status", default='draft')
-
+    contract_parent = fields.Many2one("sale.contract", string="Hợp đồng gốc")
     contract_line_ids = fields.One2many("sale.contract.line", "contract_id", string="Chi tiết")
     sale_payment_term_ids = fields.One2many(comodel_name='sale.payment.term', inverse_name='contract_order_id')
     company_id = fields.Many2one('res.company', string='Company', required=True,
