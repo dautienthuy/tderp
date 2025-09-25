@@ -7,7 +7,6 @@ from odoo.tools.translate import _
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
-    _rec_name = 'client_code'
 
     def _get_partner_domain(self):
         sql = """
@@ -134,9 +133,9 @@ class SaleOrder(models.Model):
         if not requests:
             vals = {
                 'order_id': self.id,
-                'partner_id': self.partner_id.id,
+                'sale_type': self.sale_type,
                 'name': self.other_name,
-                'number': self.client_code,
+                'partner_id': self.partner_id.id,
                 'currency_id': self.currency_id.id,
                 'contract_line_ids': [(0, 0, value) for value in self.get_lines_values()],
                 'sale_payment_term_ids': [(0, 0, value) for value in self.get_payment_term_values()]
