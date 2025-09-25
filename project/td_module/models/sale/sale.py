@@ -50,11 +50,11 @@ class SaleOrder(models.Model):
         domain=[('mimetype', 'ilike', 'image/')]
     )
 
-    @api.constrains('client_code')
-    def _check_code(self):
-        check = self.search_count([('client_code', '=', self.client_code)])
-        if check > 1 :
-            raise UserError(_('Số hợp đồng  %s đã có sãn trên hệ thống.' % self.client_code))
+    # @api.constrains('client_code')
+    # def _check_code(self):
+    #     check = self.search_count([('client_code', '=', self.client_code)])
+    #     if check > 1 :
+    #         raise UserError(_('Số hợp đồng  %s đã có sãn trên hệ thống.' % self.client_code))
 
     @api.depends('sale_plan_ids')
     def _compute_sale_plan_count(self):
