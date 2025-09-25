@@ -35,6 +35,21 @@ class SaleContract(models.Model):
         ], string="Loại hợp đồng", default='bm')
     sale_plan_ids = fields.One2many('sale.plan', 'contract_id')
 
+    def _td_prepare_maintenance_equip_vals(self):
+        self.ensure_one()
+        return {
+            'name': _('[%s] %s') % (self.number, self.name),
+            'contract_id': self.id,
+            'customer_id': self.partner_id.id
+        }
+
+    def btn_generate_requests(self):
+        requests = self.env['maintenance.equipment'].search([('state', '!=', 'cancelled'),
+                                                    ('contract_id', '=', self.id)])
+        if not requests:
+            vals = self._td_prepare_maintenance_equip_vals()
+            maintenance_requests = self.env['maintenance.equipment'].create(vals)
+
     def action_set_draft(self):
         self.write({'state': 'draft'})
 

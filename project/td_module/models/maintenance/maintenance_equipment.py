@@ -17,6 +17,7 @@ class MaintenanceEquipment(models.Model):
     equipment_parts_list = fields.One2many('equipment.parts.list', 'maintenance_equipment_id', string=u'Equipment Parts List')
     maintenance_cycle_ids = fields.One2many('maintenance.cycle', 'maintenance_equipment_id', string=u'Maintenance Cycle')
     order_id = fields.Many2one('sale.order', string=u'Đơn hàng')
+    contract_id = fields.Many2one('sale.contract', string=u'Hợp đồng')
     expiry_inspection_stamp = fields.Text(u'Hạn tem kiểm định')
     mainten_requipment_employee_ids = fields.One2many('maintenance.requipment.employee', 'equipment_id', string=u'Mainten. Mequipment Employee')
     customer_id = fields.Many2one('res.partner', u'Khách hàng')

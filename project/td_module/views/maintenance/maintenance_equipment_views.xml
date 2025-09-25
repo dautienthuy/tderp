@@ -62,6 +62,7 @@
                 <xpath expr="//field[@name='location']" position="after">
                     <field name="parent_equipment_id"/>
                     <field name="order_id" options="{'no_open': True, 'no_create': True}"/>
+                    <field name="contract_id" options="{'no_open': True, 'no_create': True}"/>
                     <field name="expiry_inspection_stamp"/>
                     <field name="maintenance_type"/>
                     <field name="last_working_day"/>
@@ -116,9 +117,6 @@
                         </field>
                     </page>
                 </xpath>
-                <field name="order_id" position="attributes">
-                    <attribute name="string">Hợp đồng</attribute>
-                </field>
             </field>
         </record>
     </data>
