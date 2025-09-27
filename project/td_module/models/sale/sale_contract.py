@@ -33,7 +33,22 @@ class SaleContract(models.Model):
             ('sc', 'Sửa chữa'),
             ('bt', 'Bảo trì')
         ], string="Loại hợp đồng", default='bm')
-    sale_plan_ids = fields.One2many('sale.plan', 'contract_id')
+    sale_plan_ids = fields.One2many('sale.plan', 'contract_id', string="Kế hoạch")
+    sale_plan_count = fields.Integer(compute='_compute_sale_plan_count', string=u"Số kế hoạch", store=True)
+
+    @api.depends('sale_plan_ids')
+    def _compute_sale_plan_count(self):
+        for r in self:
+            r.sale_plan_count = len(r.sale_plan_ids)
+
+    def btn_sale_plan(self):
+        sale_plan_exit =  self.env['sale.plan'].search([('contract_id', '=', self.id)])
+        if not sale_plan_exit:
+            vals = ({
+                'contract_id': self.id,
+                'partner_id':self.partner_id.id})
+            sale_plan = self.env['sale.plan'].create(vals)
+            return sale_plan
 
     def name_get(self):
         res = []
