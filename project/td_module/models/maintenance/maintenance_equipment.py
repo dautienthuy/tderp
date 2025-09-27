@@ -174,4 +174,4 @@ class MaintenanceEquipment(models.Model):
         equipment_ids = [x[0] for x in self._cr.fetchall()]
         for r_id in equipment_ids:
             o_equipment = self.env['maintenance.equipment'].search([('id', 'in', r_id)])
-            o_equipment.write({'need_to_check': True})
+            o_equipment.sudo().write({'need_to_check': True})
