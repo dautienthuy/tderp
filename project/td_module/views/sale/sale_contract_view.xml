@@ -1,102 +1,125 @@
 <odoo>
-    <record id="view_sale_contract_form" model="ir.ui.view">
-        <field name="name">sale.contract.form</field>
-        <field name="model">sale.contract</field>
-        <field name="arch" type="xml">
-            <form string="Sale Contract">
-                <header>
-                    <button name="action_confirm" string="Xác nhận" type="object" class="oe_highlight"
-                            attrs="{'invisible': [('state', '!=', 'draft')]}"/>
-                    <button name="action_set_draft" string="Mở" type="object"
-                            attrs="{'invisible': [('state', '=', 'draft')]}"/>
-                    <button name="btn_generate_requests" type="object" string="Tạo danh mục KH"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,cancel"/>
-                </header>
-                <sheet>
-                    <div class="oe_title">
-                        <h1>
-                            <field name="name" placeholder="Nhập thông tin tên hợp đồng vào đây ..."/>
-                        </h1>
-                    </div>
-                    <group string="Hợp đồng">
-                        <group>
-                            <field name="code" invisible="1"/>
-                            <field name="number" required="1"/>
-                            <field name="sale_type" required="1"/>
-                            <field name="contract_parent"/>
-                        </group>
-                        <group>
-                            <field name="order_id"/>
-                            <field name="date_order"/>
-                            <field name="date_contract"/>
-                        </group>
-                    </group>
-                    <group string="Khách hàng">
-                        <group>
-                            <field name="partner_id"/>
-                            <field name="street"/>
-                        </group>
-                        <group>
-                        </group>
-                    </group>
-                    <notebook>
-                        <page string="Chi tiết">
-                            <field name="contract_line_ids">
-                                <tree editable="bottom">
-                                    <field name="product_template_id"/>
-                                    <field name="name"/>
-                                    <field name="product_uom_qty"/>
-                                    <field name="price_unit"/>
-                                    <field name="price_subtotal" readonly="1"/>
-                                </tree>
-                            </field>
-                            <group name="note_group" col="6" class="mt-2 mt-md-0">
-                                <group colspan="4">
-                                </group>
-                                <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
-                                    <field name="amount_total" nolabel="1" colspan="2" readonly="1"/>
-                                </group>
-                                <div class="clearfix"/>
+    <data>
+        <record id="contract_action_sale_plan" model="ir.actions.act_window">
+            <field name="name">Kế hoạch</field>
+            <field name="res_model">sale.plan</field>
+            <field name="binding_model_id" ref="td_module.model_sale_contract"/>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{
+                'default_contract_id': active_id,
+            }</field>
+            <field name="domain">[('contract_id', '=', active_id)]</field>
+        </record>
+    </data>
+    <data>
+        <record id="view_sale_contract_form" model="ir.ui.view">
+            <field name="name">sale.contract.form</field>
+            <field name="model">sale.contract</field>
+            <field name="arch" type="xml">
+                <form string="Sale Contract">
+                    <header>
+                        <button name="action_confirm" string="Xác nhận" type="object" class="oe_highlight"
+                                attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                        <button name="action_set_draft" string="Mở" type="object"
+                                attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                        <button name="btn_generate_requests" type="object" string="Tạo danh mục KH"/>
+                        <button name="btn_sale_plan" type="object" string="Tạo tiến độ"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm,cancel"/>
+                    </header>
+                    <sheet>
+                        <div name="button_box" class="oe_button_box" attrs="{'invisible': [('id', '=', False)]}">
+                            <button name="%(contract_action_sale_plan)d"
+                                class="oe_stat_button"
+                                icon="fa-money"
+                                type="action">
+                                <field name="sale_plan_count" widget="statinfo" string="Kế hoạch"/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Nhập thông tin tên hợp đồng vào đây ..."/>
+                            </h1>
+                        </div>
+                        <group string="Hợp đồng">
+                            <group>
+                                <field name="code" invisible="1"/>
+                                <field name="number" required="1"/>
+                                <field name="sale_type" required="1"/>
+                                <field name="contract_parent"/>
                             </group>
-                        </page>
-                        <page string="Điều khoản thanh toán" name="payment_term">
-                            <field name="sale_payment_term_ids" mode="tree" nolabel="1" string="Payment Term" limit="5">
-                                <tree string="Payment Term" editable="bottom" limit="5" options="{'limit': 5}">
-                                    <field name="type"/>
-                                    <field name="start_date"/>
-                                    <field name="end_date"/>
-                                    <field name="sequence"/>
-                                    <field name="name"/>
-                                    <field name="percent_payment"/>
-                                    <field name="total_amount"/>
-                                    <field name="total_paid"/>
-                                    <field name="date"/>
-                                    <field name="payment_type"/>
-                                    <field name="account_bank"/>
-                                    <field name="bank"/>
-                                    <field name="ghi_chu"/>
-                                </tree>
-                            </field>
-                        </page>
-                        <page string="Tiến độ" name="progress">
-                            <field name="sale_plan_ids"/>
-                        </page>
-                    </notebook>
-                </sheet>
-            </form>
-        </field>
-    </record>
+                            <group>
+                                <field name="order_id"/>
+                                <field name="date_order"/>
+                                <field name="date_contract"/>
+                            </group>
+                        </group>
+                        <group string="Khách hàng">
+                            <group>
+                                <field name="partner_id"/>
+                                <field name="street"/>
+                            </group>
+                            <group>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Chi tiết">
+                                <field name="contract_line_ids">
+                                    <tree editable="bottom">
+                                        <field name="product_template_id"/>
+                                        <field name="name"/>
+                                        <field name="product_uom_qty"/>
+                                        <field name="price_unit"/>
+                                        <field name="price_subtotal" readonly="1"/>
+                                    </tree>
+                                </field>
+                                <group name="note_group" col="6" class="mt-2 mt-md-0">
+                                    <group colspan="4">
+                                    </group>
+                                    <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
+                                        <field name="amount_total" nolabel="1" colspan="2" readonly="1"/>
+                                    </group>
+                                    <div class="clearfix"/>
+                                </group>
+                            </page>
+                            <page string="Điều khoản thanh toán" name="payment_term">
+                                <field name="sale_payment_term_ids" mode="tree" nolabel="1" string="Payment Term" limit="5">
+                                    <tree string="Payment Term" editable="bottom" limit="5" options="{'limit': 5}">
+                                        <field name="type"/>
+                                        <field name="start_date"/>
+                                        <field name="end_date"/>
+                                        <field name="sequence"/>
+                                        <field name="name"/>
+                                        <field name="percent_payment"/>
+                                        <field name="total_amount"/>
+                                        <field name="total_paid"/>
+                                        <field name="date"/>
+                                        <field name="payment_type"/>
+                                        <field name="account_bank"/>
+                                        <field name="bank"/>
+                                        <field name="ghi_chu"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Tiến độ" name="progress">
+                                <field name="sale_plan_ids"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
 
-    <record id="view_sale_contract_tree" model="ir.ui.view">
-        <field name="name">sale.contract.tree</field>
-        <field name="model">sale.contract</field>
-        <field name="arch" type="xml">
-            <tree>
-                <field name="number"/>
-                <field name="name"/>
-                <field name="partner_id"/>
-                <field name="date_contract"/>
-            </tree>
-        </field>
-    </record>
+        <record id="view_sale_contract_tree" model="ir.ui.view">
+            <field name="name">sale.contract.tree</field>
+            <field name="model">sale.contract</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="number"/>
+                    <field name="name"/>
+                    <field name="partner_id"/>
+                    <field name="date_contract"/>
+                </tree>
+            </field>
+        </record>
+    </data>
 </odoo>
